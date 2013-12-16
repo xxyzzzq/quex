@@ -8,12 +8,11 @@ from   quex.engine.tools                           import typed
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
 from   quex.blackboard import E_IncidenceIDs, setup as Setup, Lng, \
-                              E_TerminalType
+                              E_TerminalType, \
+                              Match_Lexeme, \
+                              Match_Lexeme_or_LexemeBegin
 
 import re
-
-Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
-Match_Lexeme_or_LexemeBegin = re.compile("\\bLexeme\\b|\\bLexemeBegin\\b", re.UNICODE)
 
 class TerminalFactory:
     """Factory for Terminal-s

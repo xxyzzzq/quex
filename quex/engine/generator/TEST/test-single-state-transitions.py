@@ -17,7 +17,7 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.interval_handling               import Interval
-from   quex.engine.generator.base                  import LoopGenerator
+from   quex.engine.generator.base                  import do_loop
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.analyzer.door_id_address_label  as     address
 from   quex.engine.analyzer.door_id_address_label  import dial_db

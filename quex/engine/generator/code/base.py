@@ -19,10 +19,10 @@ CLASS HIERARCHY
                               CodeFragment
                                (abstract)
                               /       \  \__________ 
-   unicode   CodeUser_Base   /         \            \
-      |         /   \       /       GeneratedCode   CodeFinalized
-      |        /     \     /          |      |      (Finalized UserCode)
-      |       /       \   /           |      |
+             CodeUser_Base   /         \            \
+                /   \       /       GeneratedCode   CodeFinalized
+               /     \     /          |      |      (Finalized UserCode)
+              /       \   /           |      |
    CodeUserPlain    CodeUser      CodeSkip  CodeIndentationHandler ...
                         |
                         |
@@ -60,6 +60,10 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
             line_n    = -1
         return SourceRef(file_name, line_n)
 
+    def is_void(self):
+        return (self.file_name == "<default>") and (self.line_n == 0)
+
+
 
 class CodeUser_Base:
     """ABSTRACT base class for all pieces of code that have some reference into
@@ -77,24 +81,28 @@ class CodeUser_Base:
     def is_empty(self):             error_abstract_member()
     def is_whitespace(self):        error_abstract_member()
 
-class CodeUserPlain(unicode, CodeUser_Base):
+class CodeUserPlain(CodeUser_Base):
     """Plain user code that does not contain text formatting instructions
     and does not generate any code. It consists of:
 
-        self -- (unicode) text
+        .text -- (unicode) text
 
         .sr  -- Source reference (file name, line n) telling from where
                 the text was taken.
     """
-    @typed(Text=unicode)
+    @typed(Text=(str, unicode), SourceReference=SourceRef)
     def __init__(self, Text, SourceReference):
-        unicode.__init__(self, Text)
         CodeUser_Base.__init__(self, SourceReference)
+        self.__text = Text 
+
+    @property
+    def text(self):                 return self.__text
 
     @typed(Re=re._pattern_type)
-    def contains_string(self, Re):  return Re.search(string) is not None
-    def is_empty(self):             return unicode.__len__(self) == 0
-    def is_whitespace(self):        return len(self.strip()) == 0
+    def contains_string(self, Re):  return Re.search(self.text) is not None
+
+    def is_empty(self):             return len(self.__text) == 0
+    def is_whitespace(self):        return len(self.__text.strip()) == 0
 
 class CodeFragment(object):
     """ABSTRACT base class for all kinds of generated code and code which

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="174.11" date="Sun Dec 15 11:39:48 2013">
+<test-database execution-time-sec="174.11" date="Mon Dec 16 08:13:03 2013">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.13"> 
         <application file-name="test-mode-changes.py" info-request-time="1382770456L" vanished="False"/>
@@ -289,7 +289,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.55" crc="-1792493362"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="10.43"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="10.42"> 
             <application file-name="test-bol-eol.py" info-request-time="1382770456L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.63" crc="-1565444249"/>
@@ -348,10 +348,10 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="1.04"> 
+        <test title="Transition Code Generation" time-sum-sec="1.05"> 
             <application file-name="test-single-state-transitions.py" info-request-time="1383471548L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="A" result="FAIL" time_sec="0.17" crc="287456115"/>
+               <choice name="A" result="FAIL" time_sec="0.18" crc="287456115"/>
                <choice name="B" result="FAIL" time_sec="0.17" crc="-210155245"/>
                <choice name="C" result="FAIL" time_sec="0.17" crc="-1508540529"/>
                <choice name="A-UTF8" result="FAIL" time_sec="0.17" crc="287456115"/>

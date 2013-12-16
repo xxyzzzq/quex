@@ -38,7 +38,7 @@ import quex.input.regular_expression.core  as regular_expression
 from   quex.blackboard                     import setup as Setup, \
                                                   SourceRef
 from   quex.input.setup                    import NotificationDB
-from   quex.engine.generator.code.core     import UserCodeFragment
+from   quex.engine.generator.code.base     import CodeUserPlain
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
@@ -118,7 +118,7 @@ def parse_section(fh):
                           blackboard.initial_mode.sr.line_n)
         
              
-            blackboard.initial_mode = UserCodeFragment(mode_name, SourceRef.from_FileHandle(fh))
+            blackboard.initial_mode = CodeUserPlain(mode_name, SourceRef.from_FileHandle(fh))
             return
 
         elif word == "repeated_token":

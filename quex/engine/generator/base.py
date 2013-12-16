@@ -36,15 +36,15 @@ from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
                               E_MapImplementationType, \
                               setup as Setup, \
-                              Lng
+                              Lng, \
+                              Match_input, \
+                              Match_iterator
 
 from   itertools   import ifilter
 import re
 from   copy        import copy, deepcopy
 from   collections import defaultdict
 
-Match_input    = re.compile("\\binput\\b", re.UNICODE)
-Match_iterator = re.compile("\\iterator\\b", re.UNICODE)
 
 class EngineStateMachineSet:
     def __init__(self, PatternList): 

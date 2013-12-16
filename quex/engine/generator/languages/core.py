@@ -23,7 +23,9 @@ from   quex.blackboard                           import setup as Setup, \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs, \
                                                         E_DoorIdIndex, \
-                                                        E_Commands
+                                                        E_Commands, \
+                                                        Match_goto, \
+                                                        Match_QUEX_GOTO_RELOAD
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
@@ -62,8 +64,6 @@ class LanguageDB_Cpp(dict):
         self.__code_generation_reload_label               = None
         self.__code_generation_on_reload_fail_adr         = None
         self.__state_machine_identifier                   = None
-        self.Match_goto                                   = re.compile("\\bgoto\\b")
-        self.Match_QUEX_GOTO_RELOAD                       = re.compile("\\bQUEX_GOTO_RELOAD_")
 
     def register_analyzer(self, TheAnalyzer):
         self.__analyzer = TheAnalyzer
@@ -597,8 +597,8 @@ class LanguageDB_Cpp(dict):
             elif len(Content) != 0:   txt.append(Content)
 
             if      self.__code_generation_switch_cases_add_statement is not None \
-                and self.Match_goto.search(txt[-1]) is None                       \
-                and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
+                and Match_goto.search(txt[-1]) is None                       \
+                and Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
                 txt.append(1)
                 txt.append(self.__code_generation_switch_cases_add_statement)
             txt.append("\n")
