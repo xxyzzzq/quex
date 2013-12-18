@@ -310,7 +310,7 @@ class _Trace(object):
         else:
             self.__acceptance_trace = [ 
                   _AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
-                             AcceptanceID            = E_IncidenceIDs.FAILURE, 
+                             AcceptanceID            = E_IncidenceIDs.MATCH_FAILURE, 
                              AcceptingStateIndex  = InitStateIndex, 
                              PathSincePositioning = [InitStateIndex], 
                              TransitionNSincePositioning = 0)              
@@ -465,7 +465,7 @@ class _Trace(object):
         data = []
         for x in self.__acceptance_trace:
             if isinstance(x.acceptance_id, long):                     data.append(x.acceptance_id)
-            elif x.acceptance_id == E_IncidenceIDs.FAILURE:          data.append(0x5A5A5A5A)
+            elif x.acceptance_id == E_IncidenceIDs.MATCH_FAILURE:          data.append(0x5A5A5A5A)
             else:                                                  data.append(0xA5A5A5A5)
             if isinstance(x.accepting_state_index, long):          data.append(x.accepting_state_index)
             else:                                                  data.append(0x5B5B5B5B)
@@ -694,7 +694,7 @@ class _AcceptInfo(_StoreInfo):
         self.acceptance_id            = AcceptanceID
         self.accepting_state_index = AcceptingStateIndex
 
-        if self.acceptance_id == E_IncidenceIDs.FAILURE:
+        if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE:
             transition_n_since_positioning = E_TransitionN.LEXEME_START_PLUS_ONE
         else:
             transition_n_since_positioning = TransitionNSincePositioning

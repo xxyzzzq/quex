@@ -11,7 +11,8 @@ import quex.engine.state_machine.algorithm.beautifier  as beautifier
 from   quex.engine.misc.file_in  import error_msg
 #                                                         
 from   quex.engine.tools         import typed
-from   quex.blackboard           import setup     as Setup, deprecated, SourceRef
+from   quex.engine.generator.code.base import SourceRef
+from   quex.blackboard           import setup     as Setup, deprecated
 import sys
 
 class Pattern(object):

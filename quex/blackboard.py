@@ -19,7 +19,6 @@
 #            For this, it was a designated design goal to make sure that the   #
 #            imports are 'flat' and only cause environment or outer modules.   #
 #_______________________________________________________________________________
-from quex.engine.generator.code.base import CodeUser_NULL, SourceRef
 from quex.engine.misc.enum           import Enum
 from quex.engine.misc.file_in        import get_current_line_info_number
 from quex.input.setup                import QuexSetup, SETUP_INFO
@@ -131,7 +130,6 @@ E_IncidenceIDs = Enum(
     "DEDENT",
     "END_OF_STREAM",
     "EXIT_LOOP",
-    "FAILURE",
     "GOOD_TRANSITION",
     "INDENTATION_BAD",
     "INDENTATION_ERROR",
@@ -139,8 +137,10 @@ E_IncidenceIDs = Enum(
     "INDENTATION_INDENT",
     "INDENTATION_NEWLINE", 
     "INDENTATION_NODENT",
+    "INDENTATION_DEDENT",
     "INDENTATION_N_DEDENT",
-    "MATCH",
+    "MATCH_PATTERN",
+    "MATCH_FAILURE",
     "MODE_ENTRY",
     "MODE_EXIT",
     "PRE_CONTEXT_FULFILLED",
@@ -153,7 +153,7 @@ E_IncidenceIDs = Enum(
     "_DEBUG_Events")
 
 E_IncidenceIDs_SubsetAcceptanceIDs = [
-    E_IncidenceIDs.FAILURE,
+    E_IncidenceIDs.MATCH_FAILURE,
     E_IncidenceIDs.PRE_CONTEXT_FULFILLED, 
     E_IncidenceIDs.BIPD_TERMINATED, 
     E_IncidenceIDs.VOID,
@@ -163,7 +163,7 @@ E_IncidenceIDs_Subset_Terminals = [
     E_IncidenceIDs.BIPD_TERMINATED,
     E_IncidenceIDs.END_OF_STREAM,
     E_IncidenceIDs.EXIT_LOOP,
-    E_IncidenceIDs.FAILURE,
+    E_IncidenceIDs.MATCH_FAILURE,
     E_IncidenceIDs.INDENTATION_HANDLER,
     E_IncidenceIDs.INDENTATION_BAD,
     E_IncidenceIDs.INDENTATION_ERROR,
@@ -238,22 +238,22 @@ E_TerminalTypes = Enum("MATCH_PATTERN",
 #                        as their associated values.
 #-----------------------------------------------------------------------------------------
 standard_incidence_db = {
-    "on_entry":                  "On entry of a mode.",
-    "on_exit":                   "On exit of a mode.", 
-    "on_indent":                 "On opening indentation.",
-    "on_nodent":                 "On same indentation.",
-    "on_dedent":                 "On closing indentation'.",
-    "on_n_dedent":               "On closing indentation'.",
-    "on_indentation_error":      "Closing indentation on non-border.",
-    "on_indentation_bad":        "On bad character in indentation.",
-    "on_indentation":            "General Indentation Handler.",
-    "on_match":                  "On each match (before pattern action).",
+    "on_entry":                  (E_IncidenceIDs.MODE_ENTRY,          "On entry of a mode."),
+    "on_exit":                   (E_IncidenceIDs.MODE_EXIT,           "On exit of a mode."),
+    "on_indent":                 (E_IncidenceIDs.INDENTATION_INDENT,  "On opening indentation."),
+    "on_nodent":                 (E_IncidenceIDs.INDENTATION_NODENT,  "On same indentation."),
+    "on_dedent":                 (E_IncidenceIDs.INDENTATION_DEDENT,  "On closing indentation'."),
+    "on_n_dedent":               (E_IncidenceIDs.INDENTATION_N_DEDENT, "On closing indentation'."),
+    "on_indentation_error":      (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
+    "on_indentation_bad":        (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
+    "on_indentation":            (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
+    "on_match":                  (E_IncidenceIDs.MATCH_PATTERN,       "On each match (before pattern action)."),
 #   TODO        "on_token_stamp":            "On event of token stamping.",
 #   instead of: QUEX_ACTION_TOKEN_STAMP 
-    "on_after_match":            "On each match (after pattern action).",
-    "on_failure":                "In case that no pattern matches.",
-    "on_skip_range_open":        "On missing skip range delimiter.",
-    "on_end_of_stream":          "On end of file/stream.",
+    "on_after_match":            (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
+    "on_failure":                (E_IncidenceIDs.MATCH_FAILURE,       "In case that no pattern matches."),
+    "on_skip_range_open":        (E_IncidenceIDs.SKIP_RANGE_OPEN,     "On missing skip range delimiter."),
+    "on_end_of_stream":          (E_IncidenceIDs.END_OF_STREAM,       "On end of file/stream."),
 }
 
 #-----------------------------------------------------------------------------------------
@@ -284,63 +284,44 @@ initial_mode = None
 # header: code fragment that is to be pasted before mode transitions
 #         and pattern action pairs (e.g. '#include<something>'
 #-----------------------------------------------------------------------------------------
-header = CodeUser_NULL
+header = None
 
 #-----------------------------------------------------------------------------------------
 # class_body_extension: code fragment that is to be pasted inside the class definition
 #                       of the lexical analyser class.
 #-----------------------------------------------------------------------------------------
-class_body_extension = CodeUser_NULL
+class_body_extension = None
 
 #-----------------------------------------------------------------------------------------
 # class_constructor_extension: code fragment that is to be pasted inside the lexer class constructor
 #-----------------------------------------------------------------------------------------
-class_constructor_extension = CodeUser_NULL
+class_constructor_extension = None
 
 #-----------------------------------------------------------------------------------------
 # memento_extension: fragment to be pasted into the memento  class's body.
 #-----------------------------------------------------------------------------------------
-memento_class_extension = CodeUser_NULL
+memento_class_extension = None
 #-----------------------------------------------------------------------------------------
 # memento_pack_extension: fragment to be pasted into the function that packs the
 #                         lexical analyzer state in a memento.
 #-----------------------------------------------------------------------------------------
-memento_pack_extension = CodeUser_NULL
+memento_pack_extension = None
 #-----------------------------------------------------------------------------------------
 # memento_unpack_extension: fragment to be pasted into the function that unpacks the
 #                           lexical analyzer state in a memento.
 #-----------------------------------------------------------------------------------------
-memento_unpack_extension = CodeUser_NULL
+memento_unpack_extension = None
 
 fragment_db = {
-        "header":         "header",
-        "body":           "class_body_extension",
-        "init":           "class_constructor_extension",
-        "memento":        "memento_class_extension",
-        "memento_pack":   "memento_pack_extension",
-        "memento_unpack": "memento_unpack_extension",
+    "header":         "header",
+    "body":           "class_body_extension",
+    "init":           "class_constructor_extension",
+    "memento":        "memento_class_extension",
+    "memento_pack":   "memento_pack_extension",
+    "memento_unpack": "memento_unpack_extension",
 }
 
 all_section_title_list = ["start", "define", "token", "mode", "repeated_token", "token_type" ] + fragment_db.keys()
-
-class PatternShorthand:
-    def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
-        assert StateMachine.__class__.__name__ == "StateMachine"
-
-        self.name               = Name
-        self.__state_machine    = StateMachine
-        self.sr                 = SourceRef(Filename, LineN)
-        self.regular_expression = RE
-
-    def get_state_machine(self):
-        return self.__state_machine.clone()
-
-    def get_character_set(self):
-        if len(self.__state_machine.states) != 2: return None
-        t  = self.__state_machine.states[self.__state_machine.init_state_index].target_map
-        db = t.get_map()
-        if len(db) != 1: return None
-        return deepcopy(db[db.keys()[0]])
 
 #-----------------------------------------------------------------------------------------
 # shorthand_db: user defined names for regular expressions.

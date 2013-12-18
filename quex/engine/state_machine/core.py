@@ -28,7 +28,7 @@ class State:
     # Objects of this class are to be used in class StateMachine, where a 
     # dictionary maps from a start state index to a State-object.
     ## Little Slower: __slots__ = ('__core', '__origin_list', '__target_map')
-    def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.FAILURE, StateIndex=-1L, 
+    def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.MATCH_FAILURE, StateIndex=-1L, 
                  AltOriginList=None, AltTM=None):
         """Contructor of a State, i.e. a aggregation of transitions.
         """

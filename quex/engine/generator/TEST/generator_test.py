@@ -12,11 +12,7 @@ from quex.exception                   import RegularExpressionException
 from   quex.engine.tools                       import all_isinstance
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.state_router      as     state_router_generator
-from   quex.engine.generator.code.core         import PatternActionInfo, CodeFragment
 import quex.output.cpp.core                    as     cpp_generator
-from   quex.input.files.counter_db             import CounterDB
-from   quex.input.files.mode                   import IncidenceDB
-
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
@@ -26,9 +22,13 @@ from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
+from   quex.input.regular_expression.auxiliary     import PatternShorthand
+from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
+from   quex.input.files.counter_db             import CounterDB
+
 #
 import quex.blackboard as blackboard
-from   quex.blackboard import PatternShorthand, E_Compression
+from   quex.blackboard import E_Compression
 from   quex.blackboard import setup as Setup, E_IncidenceIDs, signal_character_list, Lng
 
 from   copy import deepcopy
@@ -378,7 +378,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     support_begin_of_line_f = False
     pattern_list            = []
     terminal_db             = {
-        E_IncidenceIDs.FAILURE:       Terminal(E_IncidenceIDs.FAILURE, on_failure, "FAILURE"),
+        E_IncidenceIDs.MATCH_FAILURE: Terminal(E_IncidenceIDs.MATCH_FAILURE, on_failure, "FAILURE"),
         E_IncidenceIDs.END_OF_STREAM: Terminal(E_IncidenceIDs.END_OF_STREAM, on_failure, "END_OF_STREAM"),
     }
     for pattern_str, action_str in PatternActionPairList:

@@ -6,8 +6,7 @@ from   quex.engine.misc.file_in           import \
                                                  open_file_or_die
 from   quex.engine.misc.string_handling   import blue_print
 import quex.blackboard                    as     blackboard
-import quex.engine.generator.code.core    as     action_info
-from   quex.blackboard                    import setup as Setup
+from   quex.blackboard                    import setup as Setup, Lng
 
 import re
 
@@ -49,8 +48,6 @@ def _do(Descr):
     assert Descr is not None
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
 
-    LanguageDB = Setup.language_db
-
     ## ALLOW: Descr.get_member_db().keys() == empty
 
     TemplateFile = QUEX_PATH \
@@ -79,7 +76,7 @@ def _do(Descr):
         take_text_str = Descr.take_text.get_code_string()
 
     include_guard_extension_str = get_include_guard_extension(
-                                        LanguageDB.NAMESPACE_REFERENCE(Descr.name_space) 
+                                        Lng.NAMESPACE_REFERENCE(Descr.name_space) 
                                         + "__" + Descr.class_name)
 
     # In case of plain 'C' the class name must incorporate the namespace (list)
@@ -127,8 +124,8 @@ def _do(Descr):
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
               ["$$HEADER$$",                  Descr.header.get_code_string()],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
-              ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
-              ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
+              ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
+              ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
               ["$$QUICK_SETTERS$$",           get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",         get_setter_getter(Descr)],
               ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
@@ -157,8 +154,8 @@ def _do(Descr):
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
                         ["$$TOKEN_CLASS_HEADER$$",      Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
-                        ["$$NAMESPACE_OPEN$$",          LanguageDB.NAMESPACE_OPEN(Descr.name_space)],
-                        ["$$NAMESPACE_CLOSE$$",         LanguageDB.NAMESPACE_CLOSE(Descr.name_space)],
+                        ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
+                        ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
                         ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
                         ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code_string()],
                         ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
@@ -176,7 +173,7 @@ def get_distinct_members(Descr):
     txt = ""
     for name, type_code in Descr.distinct_db.items():
         txt += __member(type_code, TL, name, NL)
-    txt += action_info.get_return_to_source_reference()
+    txt += Lng.SOURCE_REFERENCE_END()
     return txt
 
 def get_union_members(Descr):
@@ -195,7 +192,7 @@ def get_union_members(Descr):
         else:
             txt += __member(type_descr, TL, name, NL, IndentationOffset=" " * 4) + "\n"
     txt += "    } content;\n"
-    txt += action_info.get_return_to_source_reference()
+    txt += Lng.SOURCE_REFERENCE_END()
     return txt
 
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
@@ -239,7 +236,7 @@ def get_setter_getter(Descr):
                   access)
         txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
 
-    txt += action_info.get_return_to_source_reference()
+    txt += Lng.SOURCE_REFERENCE_END()
     return txt
 
 def get_quick_setters(Descr):
@@ -327,7 +324,6 @@ def get_quick_setters(Descr):
     return txt
 
 def __get_converter_configuration(IncludeGuardExtension):
-    LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
     if not Setup.converter_helper_required_f:
@@ -363,8 +359,8 @@ def __get_converter_configuration(IncludeGuardExtension):
         function_prefix       = Setup.language_db.NAMESPACE_REFERENCE(token_descr.name_space) 
         function_def_prefix   = ""
         function_def_prefix_0 = ""
-        namespace_token_open  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")
-        namespace_token_close = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", " ")
+        namespace_token_open  = Lng.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")
+        namespace_token_close = Lng.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", " ")
     else:
         function_prefix       = token_descr.class_name_safe + " ##"
         function_def_prefix   = token_descr.class_name_safe + " ##"
@@ -440,21 +436,19 @@ def clean_for_independence(txt):
 
 def common_lexeme_null_str():
     token_descr = blackboard.token_type_definition
-    LanguageDB  = Setup.language_db
     if Setup.language.upper() == "C++": 
         # LexemeNull's namespace == token namespace, no explicit naming.
         return "LexemeNullObject"
     else:                               
-        namespace_prefix = LanguageDB.NAMESPACE_REFERENCE(token_descr.name_space) 
+        namespace_prefix = Lng.NAMESPACE_REFERENCE(token_descr.name_space) 
         return "%sLexemeNullObject" % namespace_prefix
 
 def __namespace_brackets(DefineF=False):
-    LanguageDB  = Setup.language_db
     token_descr = blackboard.token_type_definition
 
     if Setup.language.upper() == "C++":
-        open_str  = LanguageDB.NAMESPACE_OPEN(token_descr.name_space).strip()
-        close_str = LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).strip()
+        open_str  = Lng.NAMESPACE_OPEN(token_descr.name_space).strip()
+        close_str = Lng.NAMESPACE_CLOSE(token_descr.name_space).strip()
         if DefineF:
             open_str  = open_str.replace("\n", "\\\n")
             close_str = close_str.replace("\n", "\\\n")

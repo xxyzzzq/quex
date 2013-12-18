@@ -6,7 +6,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 
 import quex.output.graphviz.core            as plotter
 import quex.input.regular_expression.engine as regex
-from   quex.engine.generator.code.core      import PatternActionInfo
+from   quex.input.files.mode                import PatternActionInfo
 from   quex.blackboard import setup as Setup
 Setup.normalize_f = True
 

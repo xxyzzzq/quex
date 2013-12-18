@@ -80,7 +80,7 @@ class StateCoreInfo(object):
         if AcceptanceF: assert not StoreInputPositionF 
         else:           assert PreContextID == E_PreContextIDs.NONE
                
-        # NOT: AcceptanceID != E_IncidenceIDs.FAILURE => AcceptanceF == False
+        # NOT: AcceptanceID != E_IncidenceIDs.MATCH_FAILURE => AcceptanceF == False
         #      State core info objects are also used for non-acceptance states of patterns
         self.__pattern_id = AcceptanceID
         self.state_index  = StateIndex
@@ -198,7 +198,7 @@ class StateCoreInfo(object):
         return self.get_string()
 
     def is_meaningful(self):
-        if   self.__pattern_id != E_IncidenceIDs.FAILURE: return True
+        if   self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE: return True
         elif self.state_index      != -1L:                 return True
         elif self.__acceptance_f:                          return True
         elif self.__input_position_store_f:                return True
@@ -209,7 +209,7 @@ class StateCoreInfo(object):
         txt = ""
 
         if StateMachineAndStateInfoF:
-            if self.__pattern_id != E_IncidenceIDs.FAILURE:
+            if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
                 txt += ", " + repr(self.__pattern_id).replace("L", "")
             if OriginalStatesF and self.state_index != -1L:
                 txt += ", " + repr(self.state_index).replace("L", "")

@@ -11,7 +11,8 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 verify_word_in_list
 import quex.blackboard                   as     blackboard
 from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
-from   quex.blackboard                   import setup as Setup, SourceRef
+from   quex.blackboard                   import setup as Setup
+from   quex.engine.generator.code.base   import SourceRef
 from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db

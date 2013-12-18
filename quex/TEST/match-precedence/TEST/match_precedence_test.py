@@ -5,7 +5,7 @@ sys.path.insert(0, os.getcwd())
 
 import quex.input.files.mode             as mode
 import quex.blackboard                   as blackboard
-from   quex.engine.generator.code.core   import UserCodeFragment
+from   quex.engine.generator.code.base   import CodeUser
 
 from   StringIO import StringIO
 
@@ -16,7 +16,7 @@ def do(TxtList, Op):
         sh.name = "<string>"
         mode.parse(sh)
 
-    blackboard.initial_mode = UserCodeFragment("X", SourceRef.from_FileHandle(sh))
+    blackboard.initial_mode = CodeUser("X", SourceRef.from_FileHandle(sh))
     mode.finalize()
 
     for x in sorted(blackboard.mode_db.itervalues(), key=lambda x: x.name):
