@@ -374,7 +374,7 @@ def __on_after_match_then_return(OnAfterMatchTerminal):
     return return_preparation, on_after_match_str
 
 def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
-    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.FAILURE))
+    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     if PreConditionIDList is None:

@@ -1,36 +1,37 @@
 """
+(Work in Progress)
 
    CodeFragment:
    (Delayed code generation/pasting)
-   .get_code() --> contains 'text' and 'instructions'
-   .lexeme_terminating_zero_required_f()
-   .lexeme_begin_required_f()
-   .subject_to_match_f()
+   .get_code() 
+    --> contains 'text' and 'instructions'
 
-   CodeUser_Base:
-   (Referenced source code of user)
-   .get_code() --> possibly annotated code that tells about the source ref.
+   CodeUser:
+   .get_code()
+    --> possibly annotated code that tells about the source ref.
+   .sr
+
+   CodeOnPatternMatch:
+   .get_code()
+   .lexeme_terminating_zero_required_f
+   .lexeme_begin_required_f
+   
    .sr         --> the reference into the origin (file name, line number)
 
-   GeneratedCode:
-   (Generated code by quex)
-
 CLASS HIERARCHY
-                              CodeFragment
-                               (abstract)
-                              /       \  \__________ 
-             CodeUser_Base   /         \            \
-                /   \       /       GeneratedCode   CodeFinalized
-               /     \     /          |      |      (Finalized UserCode)
-              /       \   /           |      |
-   CodeUserPlain    CodeUser      CodeSkip  CodeIndentationHandler ...
-                        |
-                        |
-                 CodeOnPatternMatch
+                               CodeFragment
+                             [+ .get_code() ]
+                     /            |                     
+                    /             |                      
+                CodeUser    CodeForTerminal            
+                [+ .sr ]    [+ lexeme_begin_required_f]   
+                            [+ lexeme_terminating_zero_required_f]
+                            
 """
 from   quex.engine.tools        import error_abstract_member, \
                                        typed
 from   quex.engine.misc.file_in import get_current_line_info_number
+from   quex.blackboard          import Lng
 
 from   collections import namedtuple
 from   copy        import deepcopy
@@ -62,8 +63,6 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
 
     def is_void(self):
         return (self.file_name == "<default>") and (self.line_n == 0)
-
-
 
 class CodeUser_Base:
     """ABSTRACT base class for all pieces of code that have some reference into
@@ -112,19 +111,16 @@ class CodeFragment(object):
     """
     __slots__ = ("__code")
     def __init__(self, Code=None):
-        self.set_code(Code)
-
-    def clone(self):                              error_abstract_member()
-    def lexeme_begin_required_f(self):            error_abstract_member()
-    def lexeme_terminating_zero_required_f(self): error_abstract_member()
-    def subject_to_match_f(self):                 error_abstract_member()
-
-    def set_code(self, Code):
         if   Code is None:                     self.__code = []
         elif isinstance(Code, (str, unicode)): self.__code = [ Code ]
         elif isinstance(Code, list):           self.__code = Code
         elif isinstance(Code, tuple):          self.__code = list(Code)
         else:                                  assert False, Code.__class__
+
+    def clone(self):                              error_abstract_member()
+    def lexeme_begin_required_f(self):            error_abstract_member()
+    def lexeme_terminating_zero_required_f(self): error_abstract_member()
+    def subject_to_match_f(self):                 error_abstract_member()
 
     def get_code(self):
         """Returns a list of strings and/or integers that are the 'core code'. 
@@ -150,9 +146,9 @@ class CodeUser(CodeUser_Base, CodeFragment):
         return CodeUser(deepcopy(self.get_code()), self.sr)
 
     def __check_code(self, condition):
-        for string in self.__code:
+        for string in self.get_code():
             if not isinstance(string, (str, unicode)): continue
-            if __condition(string): return True
+            elif __condition(string):                  return True
         return False
 
     @typed(Re=re._pattern_type)
@@ -171,9 +167,9 @@ class CodeUser(CodeUser_Base, CodeFragment):
         code = CodeFragment.get_code(self)
         if len(code) == 0: return []
 
-        result      = [ LanguageDB.SOURCE_REFERENCE_BEGIN(self.sr)]
+        result      = [ Lng.SOURCE_REFERENCE_BEGIN(self.sr)]
         result.extend(code)
-        result.append("\n%s" % LanguageDB.SOURCE_REFERENCE_END())
+        result.append("\n%s" % Lng.SOURCE_REFERENCE_END())
         return result
 
 CodeUser_NULL = CodeUser([], SourceRef())
@@ -226,3 +222,39 @@ def CodeFragment_Empty():
         _Empty = CodeFragment("")
     return _Empty
     
+class LocalizedParameter:
+    def __init__(self, Name, Default, FH=-1, PatternStr = None):
+        self.name      = Name
+        self.__default = Default
+        self.sr        = SourceRef.from_FileHandle(FH)
+        if FH == -1: self.__value = None
+        else:        self.__value = Default
+        self.__pattern_string = PatternStr
+
+    def set(self, Value, fh):
+        if self.__value is not None:
+            error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
+            error_msg("previous definition has been here.\n", self.file_name, self.line_n)
+                      
+        self.__value   = Value
+        if fh == -1:
+            self.file_name = "<string>"
+            self.line_n    = 0
+        else:
+            self.file_name = fh.name
+            self.line_n    = get_current_line_info_number(fh)
+
+    def get(self):
+        if self.__value is not None: return self.__value
+        return self.__default
+
+    def set_pattern_string(self, Value):
+        self.__pattern_string = Value
+
+    def pattern_string(self):
+        return self.__pattern_string
+
+    @property
+    def comment(self):
+        return self.name
+

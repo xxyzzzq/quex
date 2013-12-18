@@ -465,7 +465,7 @@ class LanguageDB_Cpp(dict):
         return "QUEX_NAME(pop_mode)(&self);"
 
     def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == E_IncidenceIDs.FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
+        if AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
         else:                                       return "%i" % AcceptanceID
 
     def IF(self, LValue, Operator, RValue, FirstF=True):

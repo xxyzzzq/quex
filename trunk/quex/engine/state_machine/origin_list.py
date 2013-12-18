@@ -40,7 +40,7 @@ class StateOriginList(object):
         """
         L = len(self.__list)
         if   L == 0: 
-            new_origin = StateCoreInfo(E_IncidenceIDs.FAILURE, -1L, AcceptanceF=False)
+            new_origin = StateCoreInfo(E_IncidenceIDs.MATCH_FAILURE, -1L, AcceptanceF=False)
             self.__list.append(new_origin)
             # NOTE: Here the object is in a state where there is a 'nonsense origin'. It is
             #       expected from the caller to fix this.
@@ -66,7 +66,7 @@ class StateOriginList(object):
                  to a state that is an acceptance state, the 'input_position_store_f'
                  has to be raised for all incoming origins.      
         """
-        assert type(X) == long or X == E_IncidenceIDs.FAILURE or X.__class__ == StateCoreInfo
+        assert type(X) == long or X == E_IncidenceIDs.MATCH_FAILURE or X.__class__ == StateCoreInfo
         assert StateIndex is None or type(StateIndex) == long
         assert StoreInputPositionF is not None
             
@@ -153,7 +153,7 @@ class StateOriginList(object):
            known at runtime which pre-context is actually fulfilled.
         """
         # Conditional acceptance on a pre-context is simply nonsense.
-        if MaxAcceptanceID == E_IncidenceIDs.FAILURE:
+        if MaxAcceptanceID == E_IncidenceIDs.MATCH_FAILURE:
             return (origin for origin in self.__list                  \
                     if origin.pre_context_id() != E_PreContextIDs.NONE)
         else:

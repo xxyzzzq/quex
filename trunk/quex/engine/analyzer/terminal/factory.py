@@ -1,7 +1,6 @@
 # (C) Frank-Rene Schaefer
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.analyzer.door_id_address_label  import Label, DoorID
-from   quex.engine.generator.code.core             import CodeFragment
 from   quex.engine.generator.code.base             import CodeOnPatternMatch
 from   quex.engine.tools                           import typed
 

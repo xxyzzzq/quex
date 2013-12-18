@@ -7,7 +7,6 @@ from   quex.engine.analyzer.door_id_address_label  import dial_db, \
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.generator.base                  import EngineStateMachineSet
 import quex.engine.generator.base                  as     generator
-from   quex.engine.generator.code.core             import CodeFragment
 from   quex.engine.tools                           import all_isinstance, typed
 from   quex.input.regular_expression.construct     import Pattern
 import quex.output.cpp.counter                     as     counter

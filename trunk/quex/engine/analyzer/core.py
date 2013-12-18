@@ -382,7 +382,7 @@ class Analyzer:
                 result.accept(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
                 if     x.pre_context_id == E_PreContextIDs.NONE \
-                   and x.acceptance_id     != E_IncidenceIDs.FAILURE: break
+                   and x.acceptance_id  != E_IncidenceIDs.MATCH_FAILURE: break
         else:
             # (ii) Non-Uniform Acceptance Patterns
             #

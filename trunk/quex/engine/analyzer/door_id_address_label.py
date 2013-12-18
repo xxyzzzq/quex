@@ -51,7 +51,7 @@ from   collections import namedtuple
 #______________________________________________________________________________
 class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def __new__(self, StateIndex, DoorIndex, PlainF=False):
-        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_IncidenceIDs.FAILURE
+        assert isinstance(StateIndex, (int, long)) or StateIndex in E_StateIndices or StateIndex == E_IncidenceIDs.MATCH_FAILURE
         # 'DoorIndex is None' --> right after the entry commands (targetted after reload).
         assert isinstance(DoorIndex, (int, long))  or DoorIndex is None or DoorIndex in E_DoorIdIndex, "%s" % DoorIndex
 

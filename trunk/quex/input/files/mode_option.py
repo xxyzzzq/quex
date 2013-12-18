@@ -9,7 +9,8 @@ from   quex.engine.misc.file_in           import error_msg, \
 from   quex.engine.misc.file_in           import EndOfStreamException
 from   quex.engine.tools                  import all_isinstance
 
-from   quex.blackboard                    import SourceRef, mode_description_db
+from   quex.blackboard                    import mode_description_db
+from   quex.engine.generator.code.base    import SourceRef
 
 from   collections import namedtuple
 from   copy import deepcopy

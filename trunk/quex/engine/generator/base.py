@@ -1,6 +1,5 @@
 # (C) Frank Rene Schaefer
 from   quex.engine.misc.file_in                        import error_msg
-from   quex.engine.generator.code.core                 import PatternActionInfo
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db

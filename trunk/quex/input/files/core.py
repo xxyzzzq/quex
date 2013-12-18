@@ -38,7 +38,7 @@ import quex.input.regular_expression.core  as regular_expression
 from   quex.blackboard                     import setup as Setup, \
                                                   SourceRef
 from   quex.input.setup                    import NotificationDB
-from   quex.engine.generator.code.base     import CodeUserPlain
+from   quex.engine.generator.code.base     import CodeUserPlain, SourceRef
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
@@ -236,9 +236,8 @@ def parse_pattern_name_definitions(fh):
         state_machine = pattern.sm
 
         blackboard.shorthand_db[pattern_name] = \
-                blackboard.PatternShorthand(pattern_name, state_machine, 
-                                            fh.name, get_current_line_info_number(fh),
-                                            regular_expression_str)
+                PatternShorthand(pattern_name, state_machine, 
+                                 SourceRef.from_FileHandle(fh), regular_expression_str)
 
 def parse_token_id_definitions(fh, NamesOnlyF=False):
     """NamesOnlyF == True: Allow only definition of names, no numeric values 

@@ -9,9 +9,9 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.counter_db                     import CounterDB
 import quex.input.files.consistency_check              as     consistency_check
 from   quex.engine.analyzer.door_id_address_label      import Label
-from   quex.engine.generator.code.base                 import CodeOnPatternMatch
-from   quex.engine.generator.code.core                 import CodeFragment, \
-                                                              PatternActionInfo
+from   quex.engine.generator.code.base                 import CodeOnPatternMatch, \
+                                                              CodeUser
+from   quex.engine.generator.code.base                 import CodeFragment
 
 import quex.engine.generator.skipper.character_set       as   skip_character_set
 import quex.engine.generator.skipper.range               as   skip_range
@@ -38,8 +38,8 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               verify_word_in_list
 from   quex.engine.tools import typed
 import quex.blackboard as blackboard
+from   quex.engine.generator.code.base import SourceRef
 from   quex.blackboard import setup as Setup, \
-                              SourceRef, \
                               standard_incidence_db, \
                               E_IncidenceIDs, \
                               E_IncidenceIDs_Subset_Terminals, \
@@ -94,6 +94,34 @@ class PPC(namedtuple("PPC_tuple", ("priority", "pattern", "code_fragment"))):
 
 PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "sr"))
 PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "sr", "mode_name"))
+
+class PatternActionInfo(object):
+    __slots__ = ("__pattern", "__action")
+    def __init__(self, ThePattern, TheAction):
+        self.__pattern = ThePattern
+        self.__action  = TheAction
+
+    @property
+    def line_n(self):    return self.action().sr.line_n
+    @property
+    def file_name(self): return self.action().sr.file_name
+
+    def pattern(self):   return self.__pattern
+
+    def action(self):    return self.__action
+
+    def __repr__(self):         
+        txt  = ""
+        txt += "self.mode_name      = %s\n" % repr(self.mode_name)
+        if self.pattern() not in E_IncidenceIDs:
+            txt += "self.pattern_string = %s\n" % repr(self.pattern_string())
+        txt += "self.pattern        = %s\n" % repr(self.pattern()).replace("\n", "\n      ")
+        txt += "self.action         = %s\n" % self.action().get_code_string()
+        if self.action().__class__ == UserCodeFragment:
+            txt += "self.file_name  = %s\n" % repr(self.action().sr.file_name) 
+            txt += "self.line_n     = %s\n" % repr(self.action().sr.line_n) 
+        txt += "self.incidence_id = %s\n" % repr(self.pattern().incidence_id()) 
+        return txt
 
 class ModeDescription:
     """Mode description delivered directly from the parser.
@@ -158,8 +186,8 @@ class ModeDescription:
         self.derived_from_list          = []
 
         self.pattern_action_pair_list   = []  
-        self.option_db                  = OptionDB(standard_mode_option_db)  # map: option_name    --> OptionSetting
-        self.incidence_db               = IncidenceDB(standard_incidence_db) # map: incidence_name --> CodeFragment
+        self.option_db                  = OptionDB()    # map: option_name    --> OptionSetting
+        self.incidence_db               = IncidenceDB() # map: incidence_name --> CodeFragment
 
         self.reprioritization_info_list = []  
         self.deletion_info_list         = [] 
@@ -200,7 +228,8 @@ class IncidenceDB(dict):
 
     ---------------------------------------------------------------------------
     """
-    def from_BaseModeSequence(self, BaseModeSequence):
+    @staticmethod
+    def from_BaseModeSequence(BaseModeSequence):
         """Collects the content of the 'incidence_db' member of this mode and
         its base modes. 
 
@@ -210,26 +239,27 @@ class IncidenceDB(dict):
         result = {}
         for incidence_name, info in standard_incidence_db.iteritems():
             incidence_id, comment = info
-            entry = None
+            code = None
             for mode_descr in BaseModeSequence:
-                code_fragment = mode_descr.incidence_db[incidence_name]
-                if code_fragment is not None and not code_fragment.is_whitespace():
-                    new_code_fragment = code_fragment.clone()
-                    if entry is None: entry = [ new_code_fragment ]
-                    else:             entry.append_CodeFragment(new_code_fragment)
-            result[incidence_id] = entry
+                code_fragment = mode_descr.incidence_db.get(incidence_name)
+                if   code_fragment is None: continue
+                elif code_fragment.is_whitespace(): continue
 
-        if E_IncidenceIDs.FAILURE not in result:
-            result[E_IncidenceIDs.FAILURE] = CodeFragment(
+                if code is None: code = copy(code_fragment.get_code())
+                else:            code.extend(code_fragment.get_code())
+            result[incidence_id] = CodeFragment(code)
+
+        if E_IncidenceIDs.MATCH_FAILURE not in result:
+            result[E_IncidenceIDs.MATCH_FAILURE] = CodeFragment([
                   "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % self.mode_name
                 + "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
                 + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
-            )
+            ])
         if E_IncidenceIDs.END_OF_STREAM not in result:
-            result[E_IncidenceIDs.END_OF_STREAM] = CodeFragment(
+            result[E_IncidenceIDs.END_OF_STREAM] = CodeFragment([
                 "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
                 "RETURN;\n"
-            )
+            ])
 
         return result
 
@@ -1098,10 +1128,11 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
         position = fh.tell()
             
         code = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
-        if code_obj is not None:
+        assert isinstance(code, CodeUser)
+        if code is not None:
             code.mode_name      = new_mode.name
-            code.pattern_string = PatternStr
-            new_mode.add_pattern_action_pair(code, pattern)
+            code.pattern_string = pattern_str
+            new_mode.add_pattern_action_pair(pattern, code)
             return
 
         fh.seek(position)

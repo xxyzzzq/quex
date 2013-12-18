@@ -3,11 +3,32 @@ from quex.engine.misc.file_in       import skip_whitespace, \
                                            read_identifier, \
                                            verify_word_in_list, \
                                            error_msg
-from quex.engine.state_machine.core import StateMachine
-from quex.exception                 import RegularExpressionException
+from quex.engine.state_machine.core  import StateMachine
+from quex.engine.generator.code.base import SourceRef
+from quex.exception                  import RegularExpressionException
 
 __debug_recursion_depth  = -1
 __debug_output_enabled_f = False # True / False 
+
+class PatternShorthand:
+    def __init__(self, Name="", StateMachine="", SourceReference=None, RE=""):
+        assert StateMachine.__class__.__name__ == "StateMachine"
+
+        self.name               = Name
+        self.__state_machine    = StateMachine
+        if SourceReference is None: SourceReference = SourceRef()
+        self.sr                 = SourceReference
+        self.regular_expression = RE
+
+    def get_state_machine(self):
+        return self.__state_machine.clone()
+
+    def get_character_set(self):
+        if len(self.__state_machine.states) != 2: return None
+        t  = self.__state_machine.states[self.__state_machine.init_state_index].target_map
+        db = t.get_map()
+        if len(db) != 1: return None
+        return deepcopy(db[db.keys()[0]])
 
 def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
      """Cuts the first letters of the utf8_string until an un-backslashed
@@ -92,7 +113,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
                         stream)
 
     reference = PatternDict[pattern_name]
-    assert reference.__class__.__name__ == "PatternShorthand" 
+    assert reference.__class__ == PatternShorthand
 
     # The replacement may be a state machine or a number set
     if StateMachineF:
