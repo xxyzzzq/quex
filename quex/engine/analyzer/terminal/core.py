@@ -26,7 +26,7 @@ from   quex.engine.tools                import typed
 #__________________________________________________________________________
 class Terminal(Processor):
     @typed(Name=(str,unicode), LexemeBeginRequiredF=bool, Code=list)
-    def __init__(self, IncidenceId, Code, Name, LexemeBeginRequiredF=False):
+    def __init__(self, IncidenceId, Code, Name="", LexemeBeginRequiredF=False):
         Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
         self.__incidence_id            = IncidenceId
         self.__code                    = Code

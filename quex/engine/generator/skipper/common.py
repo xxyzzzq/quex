@@ -82,7 +82,7 @@ def get_on_skip_range_open(Mode, CloserSequence):
             closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
 
         txt  = "#define Closer \"%s\"\n" % closer_string
-        txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_code_string()
+        txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_text()
         txt += "#undef  Closer\n"
         txt += "RETURN;\n"
 

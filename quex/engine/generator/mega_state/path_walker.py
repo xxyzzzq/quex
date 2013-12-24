@@ -101,7 +101,7 @@ def framework(txt, PWState, TheAnalyzer):
              implemented states had in common. Now, transitions to 
              states outside the path may happen.
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     # Three Versions of PathWalker Heads:
     if PWState.uniform_door_id is not None:
@@ -115,12 +115,12 @@ def framework(txt, PWState, TheAnalyzer):
         #           else:                                 goto TerminalDoor
         #
         # -- "goto CommonPathWalkerDoor"
-        goto_next_door = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_door_id)
+        goto_next_door = "            %s\n" % Lng.GOTO_BY_DOOR_ID(PWState.uniform_door_id)
 
         # -- "goto TerminalDoor"
         if PWState.uniform_terminal_door_id is not None:
             # All path have same terminal state and enter it at the same door
-            goto_terminal_door   = "            %s\n" % LanguageDB.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
+            goto_terminal_door   = "            %s\n" % Lng.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
         else:
             # The terminals of the paths are different
             # 
@@ -135,23 +135,23 @@ def framework(txt, PWState, TheAnalyzer):
             offset = 0
             for path_id, door_id_sequence in enumerate(PWState.door_id_sequence_list):
                 offset += len(door_id_sequence) + 1
-                tmp +=  "            %s"  % LanguageDB.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
+                tmp +=  "            %s"  % Lng.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
                                                           (PWState.index, offset - 1), FirstF=(path_id == 0))                                  \
-                      + "                %s\n" % LanguageDB.GOTO_BY_DOOR_ID(door_id_sequence[-1]) 
-            tmp += "            %s"       % LanguageDB.ELSE                                  
-            tmp += "                %s\n" % LanguageDB.UNREACHABLE
-            tmp += "            %s\n"     % LanguageDB.END_IF()                                  
+                      + "                %s\n" % Lng.GOTO_BY_DOOR_ID(door_id_sequence[-1]) 
+            tmp += "            %s"       % Lng.ELSE                                  
+            tmp += "                %s\n" % Lng.UNREACHABLE
+            tmp += "            %s\n"     % Lng.END_IF()                                  
             goto_terminal_door = tmp
 
         path_walker_head = \
-            ["    %s"            % LanguageDB.IF_INPUT("==", "*path_iterator"),
-             "        %s\n"      % LanguageDB.PATH_ITERATOR_INCREMENT,
-             "        %s"        % LanguageDB.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
+            ["    %s"            % Lng.IF_INPUT("==", "*path_iterator"),
+             "        %s\n"      % Lng.PATH_ITERATOR_INCREMENT,
+             "        %s"        % Lng.IF("*path_iterator", "!=", "QUEX_SETTING_PATH_TERMINATION_CODE"),
              goto_next_door,
-             "        %s"        % LanguageDB.ELSE,                                  
+             "        %s"        % Lng.ELSE,                                  
              goto_terminal_door,
-             "        %s\n"      % LanguageDB.END_IF(),
-             "    %s\n"          % LanguageDB.END_IF()]
+             "        %s\n"      % Lng.END_IF(),
+             "    %s\n"          % Lng.END_IF()]
     else:
         # NON UNIFORM PATHS
         #
@@ -166,12 +166,12 @@ def framework(txt, PWState, TheAnalyzer):
         #
         label          = "path_walker_%i_state_base[path_iterator - path_walker_%i_reference]" \
                          % (PWState.index, PWState.index)
-        goto_next_door = "%s" % (LanguageDB.GOTO_BY_VARIABLE(label))
+        goto_next_door = "%s" % (Lng.GOTO_BY_VARIABLE(label))
 
-        path_walker_head = ["    %s"       % LanguageDB.IF_INPUT("==", "*path_iterator"),
-                            "        %s\n" % LanguageDB.PATH_ITERATOR_INCREMENT,
+        path_walker_head = ["    %s"       % Lng.IF_INPUT("==", "*path_iterator"),
+                            "        %s\n" % Lng.PATH_ITERATOR_INCREMENT,
                             "        %s\n" % goto_next_door,
-                            "    %s\n"     % LanguageDB.END_IF()]
+                            "    %s\n"     % Lng.END_IF()]
 
     txt.extend(path_walker_head)
     return
@@ -179,7 +179,7 @@ def framework(txt, PWState, TheAnalyzer):
 def require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
     variable_db.require("path_iterator")
 
     def __door_adr_sequences(PWState):
@@ -195,7 +195,7 @@ def require_data(PWState, TheAnalyzer):
             #       used is reload during the FIRST state. The reload adapts the positions
             #       and acceptances are not changed. So, we can use the common entry
             #       to the first state as a reference here.
-            ## print "#DoorID, Adr:", [(door_id, LanguageDB.ADDRESS_BY_DOOR_ID(door_id)) for door_id in door_id_sequence]
+            ## print "#DoorID, Adr:", [(door_id, Lng.ADDRESS_BY_DOOR_ID(door_id)) for door_id in door_id_sequence]
             result.append("        ")
             result.append("/* Padding */0x0, ")
             result.extend("QUEX_LABEL(%i), " % dial_db.get_address_by_door_id(door_id, RoutedF=True)
@@ -214,7 +214,7 @@ def require_data(PWState, TheAnalyzer):
             ## Commenting the transition sequence is not dangerous. 'COMMENT' eliminates
             ## comment delimiters if they would appear in the sequence_str.
             ##   sequence_str = imap(lambda x: Interval(x[1]).get_utf8_string(), step_list[:-1])
-            ##   memory.append(LanguageDB.COMMENT("".join(sequence_str)) + "\n")
+            ##   memory.append(Lng.COMMENT("".join(sequence_str)) + "\n")
 
             result.append("        ")
             result.extend("%i, " % x.trigger for x in step_list[:-1])

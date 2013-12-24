@@ -1,23 +1,21 @@
-from   quex.engine.misc.file_in          import EndOfStreamException, \
-                                                skip_whitespace, \
-                                                check_or_die, \
-                                                get_current_line_info_number, \
-                                                error_msg, \
-                                                error_eof, \
-                                                read_identifier, \
-                                                verify_word_in_list, \
-                                                read_namespaced_name, \
-                                                check, \
-                                                read_until_letter
-from   quex.engine.generator.code.base import CodeUserPlain, \
-                                              CodeUser_NULL, \
-                                              SourceRef
-import quex.input.files.code_fragment           as     code_fragment
-from   quex.blackboard                          import setup as Setup, \
-                                                       Match_string, \
-                                                       Match_vector, \
-                                                       Match_map
-from   quex.input.setup                         import E_Files
+from   quex.engine.misc.file_in        import EndOfStreamException, \
+                                              skip_whitespace, \
+                                              check_or_die, \
+                                              get_current_line_info_number, \
+                                              error_msg, \
+                                              error_eof, \
+                                              read_identifier, \
+                                              verify_word_in_list, \
+                                              read_namespaced_name, \
+                                              check, \
+                                              read_until_letter
+from   quex.engine.generator.code.core import CodeUser, \
+                                              CodeUser_NULL
+from   quex.engine.generator.code.base import SourceRef
+import quex.input.files.code_fragment  as     code_fragment
+from   quex.blackboard                 import setup as Setup, \
+                                              Lng
+from   quex.input.setup                import E_Files
 
 token_type_code_fragment_db = { 
         "constructor":    CodeUser_NULL, 
@@ -48,9 +46,9 @@ class TokenTypeDescriptorCore:
             self.name_space            = Setup.token_class_name_space
             self.open_for_derivation_f      = False
             self.token_contains_token_id_f  = True
-            self.token_id_type         = CodeUserPlain("size_t", SourceRef())
-            self.column_number_type    = CodeUserPlain("size_t", SourceRef())
-            self.line_number_type      = CodeUserPlain("size_t", SourceRef())
+            self.token_id_type         = CodeUser("size_t", SourceRef())
+            self.column_number_type    = CodeUser("size_t", SourceRef())
+            self.line_number_type      = CodeUser("size_t", SourceRef())
 
             self.distinct_db = {}
             self.union_db    = {}
@@ -78,7 +76,7 @@ class TokenTypeDescriptorCore:
             
     def set_file_name(self, FileName):
         self._file_name = FileName
-        ext = Setup.language_db[Setup.language].extension_db[Setup.output_file_naming_scheme][E_Files.HEADER_IMPLEMTATION]
+        ext = Lng[Setup.language].extension_db[Setup.output_file_naming_scheme][E_Files.HEADER_IMPLEMTATION]
         self._file_name_implementation = FileName + ext
 
     def __repr__(self):
@@ -124,22 +122,22 @@ class TokenTypeDescriptorCore:
         # constructor / copy / destructor
         if not self.constructor.is_whitespace():
             txt += "constructor {\n"
-            txt += self.constructor.get_code_string()
+            txt += self.constructor.get_text()
             txt += "}"
         
         if self.copy is not None:
             txt += "copy {\n"
-            txt += self.copy.get_code_string()
+            txt += self.copy.get_text()
             txt += "}"
 
         if not self.destructor.is_whitespace():
             txt += "destructor {\n"
-            txt += self.destructor.get_code_string()
+            txt += self.destructor.get_text()
             txt += "}"
 
         if not self.body.is_whitespace():
             txt += "body {\n"
-            txt += self.body.get_code_string()
+            txt += self.body.get_text()
             txt += "}"
 
         return txt
@@ -177,7 +175,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
 
         # 
         self.__distinct_members_type_name_length_max = \
-               max([0] + map(lambda x: len(x.text), self.distinct_db.values()))
+               max([0] + map(lambda x: len(x.get_text()), self.distinct_db.values()))
         self.__distinct_members_variable_name_length_max = \
                max([0] + map(lambda x: len(x), self.distinct_db.keys()))
         self.__type_name_length_max = \
@@ -448,7 +446,7 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
 
                 already_defined_list.append([sub_name, sub_type])
         else:
-            assert type_descriptor.__class__ == CodeUserPlain
+            assert type_descriptor.__class__ == CodeUser
             __validate_definition(type_descriptor, name, already_defined_list, 
                                   StandardMembersF=False)
             already_defined_list.append([name, type_descriptor])
@@ -515,7 +513,7 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
         if i == -1: error_msg("missing ';'", fh)
         type_str = type_str.strip()
 
-        return [ CodeUserPlain(type_str, SourceRef.from_FileHandle(fh)), name_str ]
+        return [ CodeUser(type_str, SourceRef.from_FileHandle(fh)), name_str ]
 
 def __validate_definition(TheCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):
@@ -527,9 +525,9 @@ def __validate_definition(TheCodeFragment, NameStr,
                             FileName, LineN)
 
         # Standard Members are all numeric types
-        if    TheCodeFragment.contains_string(Match_string) \
-           or TheCodeFragment.contains_string(Match_vector) \
-           or TheCodeFragment.contains_string(Match_map):
+        if    TheCodeFragment.contains_string(Lng.Match_string) \
+           or TheCodeFragment.contains_string(Lng.Match_vector) \
+           or TheCodeFragment.contains_string(Lng.Match_map):
             type_str = TheCodeFragment.get_pure_code()
             error_msg("Numeric type required.\n" + \
                       "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, FileName, LineN)

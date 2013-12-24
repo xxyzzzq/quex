@@ -74,13 +74,13 @@ def new_skipper(counter_db, ClosingSequence):
 #    # I.e. (__quex_assert(buffer_size >= closing delimiter length)).
 #    ensure_sufficient_buffer_content(txt, len(ClosingSequence))
 #
-#    txt.append(LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P())
+#    txt.append(Lng.INPUT_P_TO_CHARACTER_BEGIN_P())
 #    first_f = True
 #    while chunk in ClosingSequence[:-1]:
-#        txt.append(LanguageDB.IF_INPUT("!=", "0x%X" % chunk, First=first_f))
-#        txt.append(LanguageDB.INPUT_P_TO_CHARACTER_BEGIN_P())
+#        txt.append(Lng.IF_INPUT("!=", "0x%X" % chunk, First=first_f))
+#        txt.append(Lng.INPUT_P_TO_CHARACTER_BEGIN_P())
 #        txt.extend([1, "continue;\n"])
-#        txt.append(LanguageDB.END_IF())
+#        txt.append(Lng.END_IF())
 #        first_f = False
 #
 #    txt.extend(ActionOnClosingDelimiter)
@@ -107,13 +107,13 @@ def new_skipper(counter_db, ClosingSequence):
 #    #     content for the delimiter, then this may not be the case. Force 
 #    #     it, and after reload recover 'input_p' from the lexeme start.  */
 #    before_reload = [ 
-#        LanguageDB.LEXEME_START_SET(),
-#        LanguageDB.INPUT_P_TO_TEXT_END(),
+#        Lng.LEXEME_START_SET(),
+#        Lng.INPUT_P_TO_TEXT_END(),
 #    ]
 #    # Normally, after reload 'input_p' needs to be incremented. However,
 #    # after recovering from lexeme start pointer, this is not necessary.*/
 #    after_reload = [
-#        LanguageDB.INPUT_P_TO_LEXEME_START(),
+#        Lng.INPUT_P_TO_LEXEME_START(),
 #    ]
 #
 #    return before_reload, after_reload
@@ -243,7 +243,7 @@ $$UPON_RELOAD_DONE_LABEL$$:
 """
 
 def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
-    LanguageDB   = Setup.language_db
+    Lng   = Lng
 
     UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
 
@@ -272,17 +272,17 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
     txt = []
     for i, x in enumerate(sequence):
         txt.append(i)
-        txt.append(LanguageDB.IF_INPUT("==", "0x%X" % x, FirstF=True)) # Opening the 'if'
+        txt.append(Lng.IF_INPUT("==", "0x%X" % x, FirstF=True)) # Opening the 'if'
         txt.append(i+1)
-        txt.append("%s\n" % LanguageDB.INPUT_P_INCREMENT())
+        txt.append("%s\n" % Lng.INPUT_P_INCREMENT())
 
-    LanguageDB.INDENT(counter_txt, i+1)
+    Lng.INDENT(counter_txt, i+1)
     if column_counter_per_chunk:
         txt.append(i+1)
         if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
-            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", column_counter_per_chunk) 
+            Lng.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", column_counter_per_chunk) 
         else:
-            LanguageDB.REFERENCE_P_COLUMN_ADD(txt, "(me->buffer._input_p - %i)" % EndSequenceChunkN, column_counter_per_chunk) 
+            Lng.REFERENCE_P_COLUMN_ADD(txt, "(me->buffer._input_p - %i)" % EndSequenceChunkN, column_counter_per_chunk) 
             txt.append(i+1)
             txt.extend(counter_txt)
     txt.append(i+1)
@@ -290,25 +290,25 @@ def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePatte
 
     for i, x in r_enumerate(sequence):
         txt.append(i)
-        txt.append("%s"   % LanguageDB.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
+        txt.append("%s"   % Lng.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
         txt.append(i+1)
-        txt.append("%s\n" % LanguageDB.LEXEME_START_SET("me->buffer._input_p - %i" % i))
+        txt.append("%s\n" % Lng.LEXEME_START_SET("me->buffer._input_p - %i" % i))
         txt.append(i+1)
-        txt.append("%s\n" % LanguageDB.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
+        txt.append("%s\n" % Lng.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
         if i == 0: break
         txt.append(i)
-        txt.append("%s"   % LanguageDB.ELSE)
+        txt.append("%s"   % Lng.ELSE)
         txt.append(i+1)
-        txt.append("%s\n" % LanguageDB.INPUT_P_ADD(- i))
+        txt.append("%s\n" % Lng.INPUT_P_ADD(- i))
         txt.append(i)
-        txt.append("%s\n" % LanguageDB.END_IF())
+        txt.append("%s\n" % Lng.END_IF())
 
     txt.append(i)
-    txt.append("%s\n" % LanguageDB.END_IF())
+    txt.append("%s\n" % Lng.END_IF())
 
     txt.extend(character_count_txt)
 
-    print "##DEBUG:\n%s" % "".join(LanguageDB.GET_PLAIN_STRINGS(txt))
+    print "##DEBUG:\n%s" % "".join(Lng.GET_PLAIN_STRINGS(txt))
     return txt
 
 def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
@@ -318,7 +318,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
 
     global template_str
 
-    LanguageDB   = Setup.language_db
+    Lng   = Lng
 
     ## debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
 
@@ -333,7 +333,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     delimiter_length = len(end_sequence_transformed)
 
     tmp = []
-    LanguageDB.COMMENT(tmp, "                         Delimiter: %s" % delimiter_comment_str)
+    Lng.COMMENT(tmp, "                         Delimiter: %s" % delimiter_comment_str)
     delimiter_comment_str = "".join(tmp)
 
     # Determine the check for the tail of the delimiter
@@ -343,20 +343,20 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
         i = 0
         for letter in EndSequence[1:]:
             i += 1
-            txt += "    %s\n"    % LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE(i-1))
-            txt += "    %s"      % LanguageDB.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         %s" % LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)
-            txt += "    %s"      % LanguageDB.END_IF()
+            txt += "    %s\n"    % Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE(i-1))
+            txt += "    %s"      % Lng.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
+            txt += "         %s" % Lng.GOTO_BY_DOOR_ID(skipper_door_id)
+            txt += "    %s"      % Lng.END_IF()
         delimiter_remainder_test_str = txt
 
     if not Mode.match_indentation_counter_newline_pattern(EndSequence):
-        goto_after_end_of_skipping_str = LanguageDB.GOTO(E_StateIndices.ANALYZER_REENTRY)
+        goto_after_end_of_skipping_str = Lng.GOTO(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
+        goto_after_end_of_skipping_str = Lng.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
@@ -367,19 +367,19 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     code_str = blue_print(template_str,
                           [
                            ["$$DELIMITER_COMMENT$$",              delimiter_comment_str],
-                           ["$$INPUT_P_INCREMENT$$",              LanguageDB.INPUT_P_INCREMENT()],
-                           ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
-                           ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
-                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
-                           ["$$ENDIF$$",                          LanguageDB.END_IF()],
+                           ["$$INPUT_P_INCREMENT$$",              Lng.INPUT_P_INCREMENT()],
+                           ["$$INPUT_P_DECREMENT$$",              Lng.INPUT_P_DECREMENT()],
+                           ["$$INPUT_GET$$",                      Lng.ACCESS_INPUT()],
+                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
+                           ["$$ENDIF$$",                          Lng.END_IF()],
                            ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
                            ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
-                           ["$$GOTO_ENTRY$$",                     LanguageDB.GOTO_BY_DOOR_ID(skipper_door_id)],
-                           ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
+                           ["$$GOTO_ENTRY$$",                     Lng.GOTO_BY_DOOR_ID(skipper_door_id)],
+                           ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                           ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
+                           ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
                            ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                           ])
@@ -390,7 +390,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_RELOAD$$",   LanguageDB.GOTO_BY_DOOR_ID(reload_door_id)]])
+                           ["$$GOTO_RELOAD$$",   Lng.GOTO_BY_DOOR_ID(reload_door_id)]])
 
     if reference_p_f:
         variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
@@ -418,7 +418,7 @@ def __lc_counting_replacements(code_str, EndSequence):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
 
     def get_character_n_after_last_newline(Sequence):
@@ -485,7 +485,7 @@ def __lc_counting_replacements(code_str, EndSequence):
         after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
 
     if len(EndSequence) > 1:
-        end_procedure = "%s\n%s" % (LanguageDB.INPUT_P_ADD(len(EndSequence)-1), end_procedure)
+        end_procedure = "%s\n%s" % (Lng.INPUT_P_ADD(len(EndSequence)-1), end_procedure)
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],

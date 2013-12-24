@@ -198,10 +198,10 @@ def __python_note_acceptance(SuccessfulOriginalStateMachineID):
 
 
 
-def replace_keywords(program_txt, LanguageDB, NoIndentF):
+def replace_keywords(program_txt, Lng, NoIndentF):
     """Replaces pseudo-code keywords with keywords of the given language."""
 
-    txt = blue_print(program_txt, LanguageDB.items())
+    txt = blue_print(program_txt, Lng.items())
 
     if NoIndentF == False:
         # delete the last newline, to prevent additional indentation

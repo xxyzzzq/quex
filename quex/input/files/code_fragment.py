@@ -17,7 +17,7 @@ from   quex.input.setup                  import NotificationDB
 from   quex.blackboard                   import QuexSetup
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
-from   quex.engine.generator.code.base   import CodeUser 
+from   quex.engine.generator.code.core   import CodeUser 
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 def parse(fh, CodeFragmentName, 
@@ -48,7 +48,7 @@ def parse(fh, CodeFragmentName,
         error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
 
 def __parse_normal(fh, code_fragment_name):
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
@@ -66,7 +66,7 @@ def __read_token_identifier(fh):
 
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN(); }
-    LanguageDB = Setup.language_db
+    Lng = Lng
     
     position = fh.tell()
     line_n   = get_current_line_info_number(fh) + 1
@@ -331,7 +331,7 @@ def __create_mode_transition_and_token_sender(fh, Command):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
 
     position     = fh.tell()
-    LanguageDB   = Setup.language_db
+    Lng   = Lng
     target_mode  = ""
     token_sender = ""
     if check(fh, "("):
@@ -370,9 +370,9 @@ def __create_mode_transition_and_token_sender(fh, Command):
         error_msg("Command %s requires at least one argument: The target mode." % Command, fh)
 
     # Code for mode change
-    if   Command == "GOTO":  txt = LanguageDB.MODE_GOTO(target_mode)
-    elif Command == "GOSUB": txt = LanguageDB.MODE_GOSUB(target_mode)
-    else:                    txt = LanguageDB.MODE_GOUP()
+    if   Command == "GOTO":  txt = Lng.MODE_GOTO(target_mode)
+    elif Command == "GOSUB": txt = Lng.MODE_GOSUB(target_mode)
+    else:                    txt = Lng.MODE_GOUP()
 
     # Code for token sending
     txt += token_sender

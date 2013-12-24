@@ -11,11 +11,11 @@ from   quex.blackboard                  import setup as Setup, \
 
 def do(ModeDB):
     assert blackboard.token_type_definition is not None
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
-                                                   + Setup.language_db["$code_base"] 
-                                                   + Setup.language_db["$analyzer_template_file"]).replace("//","/")
+                                                   + Lng["$code_base"] 
+                                                   + Lng["$analyzer_template_file"]).replace("//","/")
     LexerClassName = Setup.analyzer_class_name
 
     quex_converter_coding_name_str = Setup.converter_ucs_coding_name
@@ -51,7 +51,7 @@ def do(ModeDB):
     template_code_txt = get_file_content_or_die(QuexClassHeaderFileTemplate)
 
     include_guard_ext = get_include_guard_extension(
-            Setup.language_db.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
+            Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space) 
             + "__" + Setup.analyzer_class_name)
 
     if len(Setup.token_id_foreign_definition_file) != 0:
@@ -59,12 +59,12 @@ def do(ModeDB):
     else:
         token_id_definition_file = Setup.output_token_id_file
 
-    lexer_name_space_safe = get_include_guard_extension(LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space))
+    lexer_name_space_safe = get_include_guard_extension(Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space))
 
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
-                ["$$CLASS_BODY_EXTENSION$$",             blackboard.class_body_extension.get_code_string()],
+                ["$$CLASS_BODY_EXTENSION$$",             blackboard.class_body_extension.get_text()],
                 ["$$CONVERTER_HELPER$$",                 Setup.get_file_reference(Setup.output_buffer_codec_header)],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
@@ -74,19 +74,19 @@ def do(ModeDB):
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",         analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
-                ["$$MEMENTO_EXTENSIONS$$",               blackboard.memento_class_extension.get_code_string()],
+                ["$$MEMENTO_EXTENSIONS$$",               blackboard.memento_class_extension.get_text()],
                 ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
-                ["$$QUEX_TEMPLATE_DIR$$",                QUEX_PATH + Setup.language_db["$code_base"]],
+                ["$$QUEX_TEMPLATE_DIR$$",                QUEX_PATH + Lng["$code_base"]],
                 ["$$QUEX_VERSION$$",                     QUEX_VERSION],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.get_file_reference(token_class_file_name)],
                 ["$$TOKEN_CLASS$$",                      token_class_name],
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.get_file_reference(token_id_definition_file)],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_converter_coding_name_str],
-                ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_code_string() + "\n"],
+                ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_text() + "\n"],
              ])
 
     return txt
@@ -94,17 +94,17 @@ def do(ModeDB):
 def do_implementation(ModeDB):
 
     FileTemplate = os.path.normpath(QUEX_PATH
-                                    + Setup.language_db["$code_base"] 
+                                    + Lng["$code_base"] 
                                     + "/analyzer/TXT-Cpp.i")
     func_txt = get_file_content_or_die(FileTemplate)
 
     func_txt = blue_print(func_txt,
             [
-                ["$$CONSTRUCTOR_EXTENSTION$$",                  blackboard.class_constructor_extension.get_code_string()],
+                ["$$CONSTRUCTOR_EXTENSTION$$",                  blackboard.class_constructor_extension.get_text()],
                 ["$$CONVERTER_HELPER_I$$",                      Setup.get_file_reference(Setup.output_buffer_codec_header_i)],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values())],
-                ["$$MEMENTO_EXTENSIONS_PACK$$",                 blackboard.memento_pack_extension.get_code_string()],
-                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               blackboard.memento_unpack_extension.get_code_string()],
+                ["$$MEMENTO_EXTENSIONS_PACK$$",                 blackboard.memento_pack_extension.get_text()],
+                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               blackboard.memento_unpack_extension.get_text()],
                 ])
     return func_txt
 

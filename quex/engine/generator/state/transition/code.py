@@ -36,7 +36,7 @@ class TransitionCodeFactory:
 
     @classmethod
     def do(cls, Target):
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         if   isinstance(Target, TransitionCode): 
             return Target
@@ -50,7 +50,7 @@ class TransitionCodeFactory:
 
             assert Target.scheme_id is not None
             variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
-            return TransitionCode(LanguageDB.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
+            return TransitionCode(Lng.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
         else:
             print "#Target.class:", Target.__class__
             print "#Target:", Target
@@ -82,8 +82,8 @@ class TransitionCodeByDoorId(TransitionCode):
     def __init__(self, DoorId):
         self.__door_id = DoorId
     def code(self):       
-        LanguageDB = Setup.language_db
-        return LanguageDB.GOTO_BY_DOOR_ID(self.__door_id)
+        Lng = Lng
+        return Lng.GOTO_BY_DOOR_ID(self.__door_id)
     def drop_out_f(self): 
         return self.__door_id.drop_out_f()
     def __eq__(self, Other):

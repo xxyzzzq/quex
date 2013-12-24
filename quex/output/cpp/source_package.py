@@ -220,7 +220,7 @@ def __copy_files(FileTxt):
     input_directory  = QUEX_PATH               
     output_directory = Setup.output_directory 
 
-    file_list = map(lambda x: Setup.language_db["$code_base"] + x.strip(), FileTxt.split())
+    file_list = map(lambda x: Lng["$code_base"] + x.strip(), FileTxt.split())
 
     # Ensure that all directories exist
     directory_list = []

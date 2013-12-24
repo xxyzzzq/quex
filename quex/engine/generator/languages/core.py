@@ -17,15 +17,14 @@ from   quex.engine.analyzer.door_id_address_label import Label, \
                                                         dial_db, \
                                                         get_plain_strings
 from   quex.blackboard                           import setup as Setup, \
+                                                        Lng, \
                                                         E_StateIndices,  \
                                                         E_IncidenceIDs, \
                                                         E_InputActions,  \
                                                         E_TransitionN,   \
                                                         E_PreContextIDs, \
                                                         E_DoorIdIndex, \
-                                                        E_Commands, \
-                                                        Match_goto, \
-                                                        Match_QUEX_GOTO_RELOAD
+                                                        E_Commands
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
@@ -56,7 +55,21 @@ CppBase = {
     "$file_extension":          ".cpp",
 }
 
-class LanguageDB_Cpp(dict):
+class Lng_Cpp(dict):
+    #------------------------------------------------------------------------------
+    # Define Regular Expressions
+    #------------------------------------------------------------------------------
+    Match_input                 = re.compile("\\binput\\b", re.UNICODE)
+    Match_iterator              = re.compile("\\iterator\\b", re.UNICODE)
+    Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
+    Match_LexemeBegin           = re.compile("\\bLexemeBegin\\b", re.UNICODE)
+    Match_goto                  = re.compile("\\bgoto\\b", re.UNICODE)
+    Match_QUEX_GOTO_RELOAD      = re.compile("\\bQUEX_GOTO_RELOAD_", re.UNICODE)
+    Match_string                = re.compile("\\bstring\\b", re.UNICODE) 
+    Match_vector                = re.compile("\\bvector\\b", re.UNICODE) 
+    Match_map                   = re.compile("\\bmap\\b", re.UNICODE)
+
+
     def __init__(self, DB):      
         self.update(DB)
         self.__analyzer                                   = None
@@ -151,7 +164,7 @@ class LanguageDB_Cpp(dict):
                                         self.INPUT_P_DEREFERENCE(-1))
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
-        norm_filen_ame = Setup.get_file_reference(SourceReference.file_name) 
+        norm_file_name = Setup.get_file_reference(SourceReference.file_name) 
         return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
     def SOURCE_REFERENCE_END(self):
         return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
@@ -185,6 +198,21 @@ class LanguageDB_Cpp(dict):
 
     def DEFAULT_COUNTER_CALL(self):
         return "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"
+
+    def DEFAULT_COUNTER_PROLOG(self, FunctionName):
+        return "#ifdef      __QUEX_COUNT_VOID\n"                             \
+               "#   undef   __QUEX_COUNT_VOID\n"                             \
+               "#endif\n"                                                    \
+               "#ifdef      __QUEX_OPTION_COUNTER\n"                         \
+               "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) \\\n"          \
+               "            do {                              \\\n"          \
+               "                %s((ME), (BEGIN), (END));     \\\n"          \
+               "                __quex_debug_counter();       \\\n"          \
+               "            } while(0)\n"                                    \
+               "#else\n"                                                     \
+               "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) /* empty */\n" \
+               "#endif\n"                                                    \
+               % FunctionName
 
     def COMMAND(self, Cmd):
         if Cmd.id == E_Commands.Accepter:
@@ -597,8 +625,8 @@ class LanguageDB_Cpp(dict):
             elif len(Content) != 0:   txt.append(Content)
 
             if      self.__code_generation_switch_cases_add_statement is not None \
-                and Match_goto.search(txt[-1]) is None                       \
-                and Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
+                and self.Match_goto.search(txt[-1]) is None                       \
+                and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
                 txt.append(1)
                 txt.append(self.__code_generation_switch_cases_add_statement)
             txt.append("\n")
@@ -682,7 +710,7 @@ class LanguageDB_Cpp(dict):
             elif line != line_pragma_txt:
                 new_content.append(line)
             else:
-                new_content.append(self.SOURCE_REFERENCE_BEGIN(line_n, norm_filename))
+                new_content.append(self.SOURCE_REFERENCE_BEGIN(SourceRef(norm_filename, line_n)))
         fh.close()
         write_safely_and_close(FileName, new_content)
 
@@ -718,18 +746,18 @@ cpp_reload_backward_str = [
 
 db = {}
 
-db["C++"] = LanguageDB_Cpp(CppBase)
+db["C++"] = Lng_Cpp(CppBase)
 
 #________________________________________________________________________________
 # C
 #    
-class LanguageDB_C(LanguageDB_Cpp):
+class Lng_C(Lng_Cpp):
     def __init__(self, DB):      
-        LanguageDB_Cpp.__init__(self, DB)
+        Lng_Cpp.__init__(self, DB)
     def NAMESPACE_REFERENCE(self, NameList):
         return "".join("%s_" % name for name in NameList)
 
-db["C"] = LanguageDB_C(CppBase)
+db["C"] = Lng_C(CppBase)
 db["C"].update([
     ("$token-default-file", "/token/CDefault.qx"),
     ("$token_template_file",    "/token/TXT-C"),

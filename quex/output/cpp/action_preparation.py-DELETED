@@ -30,7 +30,7 @@ from   quex.engine.analyzer.state.core             import ReloadState, \
                                                           TerminalState
 
 
-LanguageDB   = None
+Lng   = None
 def do(Mode, IndentationSupportF, BeginOfLineSupportF):
     """The module 'quex.output.cpp.core' produces the code for the 
    state machine. However, it requires a certain data format. This function
@@ -41,9 +41,9 @@ def do(Mode, IndentationSupportF, BeginOfLineSupportF):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
-    global LanguageDB
+    global Lng
     global variable_db
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     assert Mode.__class__.__name__ == "Mode"
 

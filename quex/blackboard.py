@@ -20,24 +20,10 @@
 #            imports are 'flat' and only cause environment or outer modules.   #
 #_______________________________________________________________________________
 from quex.engine.misc.enum           import Enum
+from quex.engine.generator.code.base import CodeFragment_NULL
 from quex.engine.misc.file_in        import get_current_line_info_number
 from quex.input.setup                import QuexSetup, SETUP_INFO
 from copy                            import deepcopy
-
-import re
-
-#------------------------------------------------------------------------------
-# Define Regular Expressions
-#------------------------------------------------------------------------------
-Match_input                 = re.compile("\\binput\\b", re.UNICODE)
-Match_iterator              = re.compile("\\iterator\\b", re.UNICODE)
-Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
-Match_Lexeme_or_LexemeBegin = re.compile("\\bLexeme\\b|\\bLexemeBegin\\b", re.UNICODE)
-Match_goto                  = re.compile("\\bgoto\\b", re.UNICODE)
-Match_QUEX_GOTO_RELOAD      = re.compile("\\bQUEX_GOTO_RELOAD_", re.UNICODE)
-Match_string                = re.compile("\\bstring\\b", re.UNICODE) 
-Match_vector                = re.compile("\\bvector\\b", re.UNICODE) 
-Match_map                   = re.compile("\\bmap\\b", re.UNICODE)
 
 
 #------------------------------------------------------------------------------
@@ -64,7 +50,7 @@ class Lng_class:
         try:             return getattr(language_db, Attr)
         except KeyError: raise AttributeError
 
-Lng = Lng_class(setup)
+Lng = L ng_class(setup)
 
 #------------------------------------------------------------------------------
 # StateIndices: Values to be used as target states for transitions
@@ -139,7 +125,7 @@ E_IncidenceIDs = Enum(
     "INDENTATION_NODENT",
     "INDENTATION_DEDENT",
     "INDENTATION_N_DEDENT",
-    "MATCH_PATTERN",
+    "MATCH",
     "MATCH_FAILURE",
     "MODE_ENTRY",
     "MODE_EXIT",
@@ -226,12 +212,7 @@ E_Commands = Enum("Accepter",
                   "TemplateStateKeySet",
                   "_DEBUG_Commands")
 
-E_TerminalTypes = Enum("MATCH_PATTERN",
-                       "MATCH_FAILURE",
-                       "END_OF_STREAM",
-                       "END_OF_BIPD",
-                       "PLAIN",
-                       "_DEBUG_TerminalTypes")
+E_TerminalType = Enum("MATCH_PATTERN", "MATCH_FAILURE", "END_OF_STREAM", "_DEBUG_TerminalType")
 
 #-----------------------------------------------------------------------------------------
 # standard_incidence_db: Stores names of event handler functions as keys and their meaning
@@ -247,7 +228,7 @@ standard_incidence_db = {
     "on_indentation_error":      (E_IncidenceIDs.INDENTATION_ERROR,   "Closing indentation on non-border."),
     "on_indentation_bad":        (E_IncidenceIDs.INDENTATION_BAD,     "On bad character in indentation."),
     "on_indentation":            (E_IncidenceIDs.INDENTATION_HANDLER, "General Indentation Handler."),
-    "on_match":                  (E_IncidenceIDs.MATCH_PATTERN,       "On each match (before pattern action)."),
+    "on_match":                  (E_IncidenceIDs.MATCH,       "On each match (before pattern action)."),
 #   TODO        "on_token_stamp":            "On event of token stamping.",
 #   instead of: QUEX_ACTION_TOKEN_STAMP 
     "on_after_match":            (E_IncidenceIDs.AFTER_MATCH,         "On each match (after pattern action)."),
@@ -278,39 +259,39 @@ mode_db = {}
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
 #-----------------------------------------------------------------------------------------
-initial_mode = None
+initial_mode = CodeFragment_NULL
 
 #-----------------------------------------------------------------------------------------
 # header: code fragment that is to be pasted before mode transitions
 #         and pattern action pairs (e.g. '#include<something>'
 #-----------------------------------------------------------------------------------------
-header = None
+header = CodeFragment_NULL
 
 #-----------------------------------------------------------------------------------------
 # class_body_extension: code fragment that is to be pasted inside the class definition
 #                       of the lexical analyser class.
 #-----------------------------------------------------------------------------------------
-class_body_extension = None
+class_body_extension = CodeFragment_NULL
 
 #-----------------------------------------------------------------------------------------
 # class_constructor_extension: code fragment that is to be pasted inside the lexer class constructor
 #-----------------------------------------------------------------------------------------
-class_constructor_extension = None
+class_constructor_extension = CodeFragment_NULL
 
 #-----------------------------------------------------------------------------------------
 # memento_extension: fragment to be pasted into the memento  class's body.
 #-----------------------------------------------------------------------------------------
-memento_class_extension = None
+memento_class_extension = CodeFragment_NULL
 #-----------------------------------------------------------------------------------------
 # memento_pack_extension: fragment to be pasted into the function that packs the
 #                         lexical analyzer state in a memento.
 #-----------------------------------------------------------------------------------------
-memento_pack_extension = None
+memento_pack_extension = CodeFragment_NULL
 #-----------------------------------------------------------------------------------------
 # memento_unpack_extension: fragment to be pasted into the function that unpacks the
 #                           lexical analyzer state in a memento.
 #-----------------------------------------------------------------------------------------
-memento_unpack_extension = None
+memento_unpack_extension = CodeFragment_NULL
 
 fragment_db = {
     "header":         "header",

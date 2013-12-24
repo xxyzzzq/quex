@@ -23,10 +23,9 @@ import quex.engine.analyzer.door_id_address_label  as     address
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 import quex.engine.generator.state.transition.core as     transition_block
 from   quex.engine.analyzer.transition_map         import TransitionMap   
-from   quex.blackboard                             import setup as Setup, E_MapImplementationType, E_IncidenceIDs
+from   quex.blackboard                             import setup as Setup, E_MapImplementationType, E_IncidenceIDs, Lng
 
-Setup.language_db = languages.db["C"]              
-LanguageDB        = Setup.language_db
+Lng = languages.db["C"]              
 
 dial_db.clear()
 
@@ -130,7 +129,7 @@ def get_transition_function(tm, Codec):
         Setup.buffer_codec_transformation_info = "utf8-state-split"
         tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
         tm_txt.append("%s return (int)-1;\n" % address.Label.incidence(E_IncidenceIDs.MATCH_FAILURE))
-        tm_txt = LanguageDB.GET_PLAIN_STRINGS(tm_txt)
+        tm_txt = Lng.GET_PLAIN_STRINGS(tm_txt)
         LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
         header = \
@@ -230,7 +229,7 @@ variable_txt = get_transition_function(tm, codec)
 main_txt     = get_main_function(tm0, variable_txt, transition_txt)
 
 txt = function_txt + [ main_txt ]
-Setup.language_db.REPLACE_INDENT(txt)
+Lng.REPLACE_INDENT(txt)
 
 fh = open("test.c", "wb")
 fh.write("".join(txt))

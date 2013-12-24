@@ -8,11 +8,11 @@ from   quex.blackboard                                  import setup as Setup, E
 from   copy      import copy
 from   itertools import islice
 
-LanguageDB = None
+Lng = None
 
 def do(txt, TM):
-    global LanguageDB
-    LanguageDB = Setup.language_db
+    global Lng
+    Lng = Lng
 
     if TM is None:
         return
@@ -45,7 +45,7 @@ def do(txt, TM):
     # (*) When there was an outstanding character, then the whole bisection was
     #     implemented in an 'ELSE' block which must be closed.
     if outstanding_list is not None: 
-        txt.append(LanguageDB.ENDIF)
+        txt.append(Lng.ENDIF)
 
     txt.append("\n")
 
@@ -95,7 +95,7 @@ def __bisection(txt, TriggerMap):
        Writes code that does a mapping according to 'binary search' by
        means of if-else-blocks.
     """
-    global LanguageDB
+    global Lng
 
     T   = len(txt)
     tip = solution.get(TriggerMap)
@@ -111,12 +111,12 @@ def __bisection(txt, TriggerMap):
 
     # (*) Indent by four spaces (nested blocks are correctly indented)
     #     delete the last newline, to prevent additional indentation
-    LanguageDB.INDENT(txt, Start=T)
+    Lng.INDENT(txt, Start=T)
 
 def __get_outstanding(txt, TriggerMapEntry):
-    txt.append(LanguageDB.IF_INPUT("==", TriggerMapEntry[0].begin))
+    txt.append(Lng.IF_INPUT("==", TriggerMapEntry[0].begin))
     __get_transition(txt, TriggerMapEntry)
-    txt.append(LanguageDB.ELSE)
+    txt.append(Lng.ELSE)
     # Caller must provide later for 'ENDIF'
 
 def __get_switch(txt, TriggerMap):
@@ -144,7 +144,7 @@ def __get_switch(txt, TriggerMap):
        **not split** by a bisection. To achieve this, such regions are made a 
        transition for themselves based on the character range that they cover.
     """
-    global LanguageDB
+    global Lng
 
     case_code_list = []
     for interval, target in TriggerMap:
@@ -153,12 +153,12 @@ def __get_switch(txt, TriggerMap):
         __get_transition(target_code, (interval, target))
         case_code_list.append((range(interval.begin, interval.end), target_code))
 
-    txt.extend(LanguageDB.SELECTION("input", case_code_list))
+    txt.extend(Lng.SELECTION("input", case_code_list))
     txt.append("\n")
     return True
 
 def __get_bisection(txt, TriggerMap):
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     BisectionIndex = bisection.get_index(TriggerMap)
 
@@ -183,14 +183,14 @@ def __get_bisection(txt, TriggerMap):
     def get_if_statement(InverseF=False):
         if not InverseF:
             # If the size of one interval is 1, then replace the '<' by an '=='.
-            if   is_single_character(lower):  return LanguageDB.IF_INPUT("==", LowBegin)
-            elif is_single_character(higher): return LanguageDB.IF_INPUT("!=", HighBegin)
-            else:                             return LanguageDB.IF_INPUT("<",  HighBegin)
+            if   is_single_character(lower):  return Lng.IF_INPUT("==", LowBegin)
+            elif is_single_character(higher): return Lng.IF_INPUT("!=", HighBegin)
+            else:                             return Lng.IF_INPUT("<",  HighBegin)
         else:
             # If the size of one interval is 1, then replace the '>=' by an '=='.
-            if   is_single_character(lower):  return LanguageDB.IF_INPUT("!=", LowBegin)
-            elif is_single_character(higher): return LanguageDB.IF_INPUT("==", HighBegin)
-            else:                             return LanguageDB.IF_INPUT(">=", HighBegin)
+            if   is_single_character(lower):  return Lng.IF_INPUT("!=", LowBegin)
+            elif is_single_character(higher): return Lng.IF_INPUT("==", HighBegin)
+            else:                             return Lng.IF_INPUT(">=", HighBegin)
 
     # Note, that an '<' does involve a subtraction. A '==' only a comparison.
     # The latter is safe to be faster (or at least equally fast) on any machine.
@@ -207,15 +207,15 @@ def __get_bisection(txt, TriggerMap):
         txt.append(get_if_statement())
         __bisection(txt, lower)
         txt.append(0)
-        txt.append(LanguageDB.ELSE)
+        txt.append(Lng.ELSE)
         __bisection(txt, higher)
 
     txt.append(0)
-    txt.append(LanguageDB.END_IF())
+    txt.append(Lng.END_IF())
     txt.append("\n")
 
 def __get_comparison_sequence(txt, TriggerMap):
-    global LanguageDB
+    global Lng
 
     L = len(TriggerMap)
     trigger_map = TriggerMap
@@ -248,23 +248,23 @@ def __get_comparison_sequence(txt, TriggerMap):
         if i != 0: txt.append("\n")
         txt.append(0)
         if   i == LastI:
-            txt.append(LanguageDB.ELSE)
+            txt.append(Lng.ELSE)
         elif interval.size() == 1:
-            txt.append(LanguageDB.IF_INPUT("==", interval.begin, i==0))
+            txt.append(Lng.IF_INPUT("==", interval.begin, i==0))
         else:
-            txt.append(LanguageDB.IF_INPUT(_border_cmp, _border(interval), i==0))
+            txt.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
 
         if not target.drop_out_f():
             __get_transition(txt, entry, IndentF=True)
 
     txt.append("\n")
     txt.append(0)
-    txt.append(LanguageDB.END_IF(LastF=True))
+    txt.append(Lng.END_IF(LastF=True))
     txt.append("\n")
     return True
 
 def __get_transition(txt, TriggerMapEntry, IndentF=False):
-    global LanguageDB
+    global Lng
 
     if IndentF:
         txt.append(1)  # indent one scope
@@ -275,7 +275,7 @@ def __get_transition(txt, TriggerMapEntry, IndentF=False):
 
     if Setup.comment_transitions_f: 
         interval = TriggerMapEntry[0] 
-        LanguageDB.COMMENT(txt, interval.get_utf8_string())
+        Lng.COMMENT(txt, interval.get_utf8_string())
     else: 
         pass # txt.append("\n")
     return 

@@ -44,7 +44,7 @@ def do(Data, Mode):
 #    txt.append("%s:\n" % EndSequenceLabel)
 #    txt.append("/* Reload if necessary */\n")
 #    txt.append("/* If fail --> skipped until end of file. */\n")
-#    txt.append(LanguageDB.CHARACTER_BEGIN_P_SET())
+#    txt.append(Lng.CHARACTER_BEGIN_P_SET())
 #
 #    common_sequence = common(OpeningSequence, ClosingSequence)
 #    for chunk in common_sequence:
@@ -153,7 +153,7 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     assert map(type, CloserSequence) == [int] * len(CloserSequence)
     assert OpenerSequence != CloserSequence
 
-    LanguageDB    = Setup.language_db
+    Lng    = Lng
 
     skipper_index = sm_index.get()
 
@@ -163,13 +163,13 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     closer_length = len(CloserSequence)
 
     if not Mode.match_indentation_counter_newline_pattern(CloserSequence):
-        goto_after_end_of_skipping_str = LanguageDB.GOTO_BY_VARIABLE(E_StateIndices.ANALYZER_REENTRY)
+        goto_after_end_of_skipping_str = Lng.GOTO_BY_VARIABLE(E_StateIndices.ANALYZER_REENTRY)
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = LanguageDB.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
+        goto_after_end_of_skipping_str = Lng.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
@@ -202,20 +202,20 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
                    #
                    ["$$OPENER_LENGTH$$",                  "%i" % opener_length],
-                   ["$$INPUT_P_INCREMENT$$",              LanguageDB.INPUT_P_INCREMENT()],
-                   ["$$INPUT_P_DECREMENT$$",              LanguageDB.INPUT_P_DECREMENT()],
-                   ["$$INPUT_GET$$",                      LanguageDB.ACCESS_INPUT()],
-                   ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     LanguageDB.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
-                   ["$$ENDIF$$",                          LanguageDB.END_IF()],
+                   ["$$INPUT_P_INCREMENT$$",              Lng.INPUT_P_INCREMENT()],
+                   ["$$INPUT_P_DECREMENT$$",              Lng.INPUT_P_DECREMENT()],
+                   ["$$INPUT_GET$$",                      Lng.ACCESS_INPUT()],
+                   ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
+                   ["$$ENDIF$$",                          Lng.END_IF()],
                    ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
                    ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                   ["$$GOTO_RELOAD$$",                    LanguageDB.GOTO_RELOAD(reload_door_id)],
-                   ["$$INPUT_P_TO_LEXEME_START$$",        LanguageDB.INPUT_P_TO_LEXEME_START()],
+                   ["$$GOTO_RELOAD$$",                    Lng.GOTO_RELOAD(reload_door_id)],
+                   ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.
-                   ["$$GOTO_ENTRY$$",                     LanguageDB.GOTOBY_DOOR_ID(skipper_index)],
-                   ["$$MARK_LEXEME_START$$",              LanguageDB.LEXEME_START_SET()],
+                   ["$$GOTO_ENTRY$$",                     Lng.GOTOBY_DOOR_ID(skipper_index)],
+                   ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                    ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                    #
                    ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],

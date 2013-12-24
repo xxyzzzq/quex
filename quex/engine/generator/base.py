@@ -35,12 +35,9 @@ from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
                               E_MapImplementationType, \
                               setup as Setup, \
-                              Lng, \
-                              Match_input, \
-                              Match_iterator
+                              Lng
 
 from   itertools   import ifilter
-import re
 from   copy        import copy, deepcopy
 from   collections import defaultdict
 
