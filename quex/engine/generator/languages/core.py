@@ -13,6 +13,7 @@
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
 import quex.engine.generator.languages.cpp        as     cpp
+from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.analyzer.door_id_address_label import Label, \
                                                         dial_db, \
                                                         get_plain_strings
@@ -28,7 +29,11 @@ from   quex.blackboard                           import setup as Setup, \
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   copy                                              import copy
+
+from   quex.engine.misc.file_in import open_file_or_die, \
+                                       write_safely_and_close
+from   quex.engine.tools import typed
+from   copy      import copy
 
 from   itertools import islice
 from   math      import log
@@ -38,8 +43,6 @@ import re
 # C++
 #    
 CppBase = {
-    "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
-                           "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName),
     "$indentation_add":          cpp.__indentation_add,
     "$indentation_check_space":  cpp.__indentation_check_whitespace,
     #
@@ -213,6 +216,10 @@ class Lng_Cpp(dict):
                "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) /* empty */\n" \
                "#endif\n"                                                    \
                % FunctionName
+
+    @typed(TypeStr=(str,unicode), MaxTypeNameL=(int,long), VariableName=(str,unicode))
+    def CLASS_MEMBER_DEFINITION(self, TypeStr, MaxTypeNameL, VariableName):
+        return "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName)
 
     def COMMAND(self, Cmd):
         if Cmd.id == E_Commands.Accepter:
@@ -712,7 +719,7 @@ class Lng_Cpp(dict):
             else:
                 new_content.append(self.SOURCE_REFERENCE_BEGIN(SourceRef(norm_filename, line_n)))
         fh.close()
-        write_safely_and_close(FileName, new_content)
+        write_safely_and_close(FileName, "".join(new_content))
 
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
