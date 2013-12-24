@@ -7,11 +7,12 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
 from   quex.DEFINITIONS                 import QUEX_PATH, QUEX_VERSION
 import quex.blackboard                  as     blackboard
 from   quex.blackboard                  import setup as Setup, \
+                                               Lng, \
                                                E_IncidenceIDs
 
 def do(ModeDB):
     assert blackboard.token_type_definition is not None
-    Lng = Lng
+    
 
     QuexClassHeaderFileTemplate = os.path.normpath(  QUEX_PATH
                                                    + Lng["$code_base"] 

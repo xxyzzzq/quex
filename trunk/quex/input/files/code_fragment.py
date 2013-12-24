@@ -48,7 +48,7 @@ def parse(fh, CodeFragmentName,
         error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
 
 def __parse_normal(fh, code_fragment_name):
-    Lng = Lng
+    
 
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
@@ -66,7 +66,7 @@ def __read_token_identifier(fh):
 
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); QUEX_SETTING_AFTER_SEND_CONTINUE_OR_RETURN(); }
-    Lng = Lng
+    
     
     position = fh.tell()
     line_n   = get_current_line_info_number(fh) + 1
@@ -331,7 +331,6 @@ def __create_mode_transition_and_token_sender(fh, Command):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
 
     position     = fh.tell()
-    Lng   = Lng
     target_mode  = ""
     token_sender = ""
     if check(fh, "("):

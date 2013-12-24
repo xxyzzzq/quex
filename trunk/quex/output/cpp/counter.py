@@ -9,7 +9,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP, \
                                                            GotoDoorIdIfInputPLexemeEnd
 
-from   quex.blackboard import setup as Setup, \
+from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \
                               E_MapImplementationType
 
@@ -39,7 +39,7 @@ def get(counter_db, Name):
                                        by the 'function name'.
     ---------------------------------------------------------------------------
     """
-    Lng = Lng
+    
 
     function_name = DefaultCounterFunctionDB.get_function_name(counter_db)
     if function_name is not None:
@@ -59,7 +59,7 @@ def get(counter_db, Name):
     return function_name, implementation
 
 def __frame(FunctionName, CodeTxt, ReturnDoorId):
-    Lng = Lng
+    
 
     txt = [  \
           "#ifdef __QUEX_OPTION_COUNTER\n" \

@@ -15,7 +15,6 @@
 #
 ################################################################################
 #
-
 from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   check, \
                                                   error_msg, \
@@ -28,17 +27,17 @@ from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   read_integer, \
                                                   skip_whitespace, \
                                                   verify_word_in_list 
-from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
-from   quex.exception                      import RegularExpressionException
-import quex.blackboard                     as blackboard
 import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
-from   quex.blackboard                     import setup as Setup
 from   quex.input.setup                    import NotificationDB
+from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
 from   quex.engine.generator.code.base     import SourceRef
 from   quex.engine.generator.code.core     import CodeUser
+from   quex.blackboard                     import setup as Setup, Lng
+import quex.blackboard                     as     blackboard
+from   quex.exception                      import RegularExpressionException
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 

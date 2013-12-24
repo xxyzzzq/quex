@@ -5,11 +5,15 @@ from   quex.engine.misc.file_in  import get_file_content_or_die, \
                                         get_include_guard_extension, \
                                         error_msg
 
-import quex.blackboard                  as     blackboard
-from   quex.blackboard                  import token_id_db, get_used_token_id_set, token_id_foreign_set
 from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup                 import NotificationDB
-from   quex.blackboard                  import setup as Setup
+from   quex.blackboard                  import setup as Setup, \
+                                               Lng, \
+                                               token_id_db, \
+                                               get_used_token_id_set, \
+                                               token_id_foreign_set
+import quex.blackboard                  as     blackboard
+
 from   itertools import chain
 from   collections import defaultdict
 import time
@@ -475,7 +479,7 @@ def __autogenerate_token_id_numbers():
         token.number = __get_free_token_id()
 
 def __get_token_id_definition_txt():
-    Lng = Lng
+    
     assert len(Setup.token_id_foreign_definition_file) == 0
 
     def define_this(txt, token, L):

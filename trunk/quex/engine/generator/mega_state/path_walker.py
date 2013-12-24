@@ -101,7 +101,7 @@ def framework(txt, PWState, TheAnalyzer):
              implemented states had in common. Now, transitions to 
              states outside the path may happen.
     """
-    Lng = Lng
+    
 
     # Three Versions of PathWalker Heads:
     if PWState.uniform_door_id is not None:
@@ -179,7 +179,7 @@ def framework(txt, PWState, TheAnalyzer):
 def require_data(PWState, TheAnalyzer):
     """Defines the transition targets for each involved state.
     """
-    Lng = Lng
+    
     variable_db.require("path_iterator")
 
     def __door_adr_sequences(PWState):

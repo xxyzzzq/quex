@@ -1,6 +1,6 @@
 import quex.engine.generator.state.core      as     state_coder
 import quex.engine.generator.mega_state.core as     mega_state_coder
-from   quex.blackboard                       import setup as Setup
+from   quex.blackboard                       import setup as Setup, Lng
 
 from   collections import defaultdict
 from   itertools   import imap
@@ -11,7 +11,7 @@ def do(TheAnalyzer):
     """Generate source code for a given state machine 'SM'.
     """
     Lng.register_analyzer(TheAnalyzer)
-    Lng = Lng
+    
     assert id(Lng.analyzer) == id(TheAnalyzer)
 
     # (*) Init State must be first!

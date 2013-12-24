@@ -50,7 +50,7 @@ class Lng_class:
         try:             return getattr(language_db, Attr)
         except KeyError: raise AttributeError
 
-Lng = L ng_class(setup)
+Lng = Lng_class(setup)
 
 #------------------------------------------------------------------------------
 # StateIndices: Values to be used as target states for transitions

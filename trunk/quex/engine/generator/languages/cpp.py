@@ -17,6 +17,15 @@ def __nice(SM_ID):
 # C++
 #
 
+__return_with_on_after_match = """
+#define RETURN    do { goto __ON_AFTER_MATCH_THEN_RETURN; } while(0)
+"""
+__on_after_match_then_return_str = """
+__ON_AFTER_MATCH_THEN_RETURN:
+$$ON_AFTER_MATCH$$
+    __QUEX_PURE_RETURN;
+"""
+
 __header_definitions_txt = """
 #include <quex/code_base/analyzer/member/basic>
 #include <quex/code_base/buffer/Buffer>
@@ -34,17 +43,7 @@ __header_definitions_txt = """
 #endif
 """
 
-__return_with_on_after_match = """
-#define RETURN    do { goto __ON_AFTER_MATCH_THEN_RETURN; } while(0)
-"""
-__on_after_match_then_return_str = """
-__ON_AFTER_MATCH_THEN_RETURN:
-$$ON_AFTER_MATCH$$
-    __QUEX_PURE_RETURN;
-"""
-
-
-def header_definitions(Lng):
+def header_definitions():
     global __return_with_on_after_match
     assert len(__return_with_on_after_match) > 10
 
@@ -200,7 +199,7 @@ def __analyzer_function(StateMachineName, Setup,
                            if a stand-alone lexical engine is required (without the
                            complete mode-handling framework of quex).
     """              
-    Lng          = Lng
+    Lng = Setup.language_db
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
     txt = [blue_print(__function_signature, [
@@ -344,14 +343,14 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 """
 
 def lexeme_macro_definitions(Setup):
-    Lng = Lng
+    
     lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
     if Setup.external_lexeme_null_object != "":
         lexeme_null_object_name = Setup.external_lexeme_null_object
 
     return blue_print(__terminal_state_prolog, [
-          ["$$LEXEME_LENGTH$$",      Lng.LEXEME_LENGTH()],
-          ["$$INPUT_P$$",            Lng.INPUT_P()],
+          ["$$LEXEME_LENGTH$$",      Setup.language_db.LEXEME_LENGTH()],
+          ["$$INPUT_P$$",            Setup.language_db.INPUT_P()],
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
     ])
 

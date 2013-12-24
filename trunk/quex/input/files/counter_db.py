@@ -24,6 +24,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.interval_handling                import NumberSet
 from   quex.blackboard import setup as Setup, \
+                              Lng,            \
                               E_IncidenceIDs, \
                               E_StateIndices
 
@@ -126,7 +127,7 @@ class CounterDB:
         ___________________________________________________________________________
         """
         assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
-        Lng = Lng
+        
 
         column_count_per_chunk = self.get_column_number_per_chunk(CharacterSet)
         counter_dictionary     = self.get_counter_dictionary(CharacterSet, column_count_per_chunk)
@@ -143,7 +144,7 @@ class CounterCoderData:
         assert not CharacterSet.is_empty()
         assert isinstance(CharacterSet, NumberSet)
         assert isinstance(CounterDb, CounterDB)
-        Lng = Lng
+        
 
         if IteratorName is None:
             IteratorName = Lng.INPUT_P()
@@ -209,7 +210,7 @@ class CounterCoderData:
         assert    GlobalReloadState is None \
                or EngineType.requires_buffer_limit_code_for_reload() 
         assert TargetState is None       or isinstance(TargetState, AnalyzerState)
-        Lng = Lng
+        
 
         sm  = self.get_counting_state_machine(self.count_command_map) 
         transformation.do_state_machine(sm)

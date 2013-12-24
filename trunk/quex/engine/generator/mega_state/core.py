@@ -119,7 +119,7 @@ def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
                      ... drop out of state 541 ...
                }
     """
-    Lng = Lng
+    
     # (*) Central Label for the Templates Drop Out
     #     (The rules for having or not having a label here are complicated, 
     #      so rely on the label's usage database.)

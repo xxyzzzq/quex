@@ -107,7 +107,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
 
 def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, 
                                  LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True):
-    Lng = Lng
+    
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
 

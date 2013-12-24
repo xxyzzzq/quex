@@ -6,7 +6,7 @@ from   quex.engine.analyzer.door_id_address_label   import dial_db, DoorID
 from   quex.engine.tools                            import all_isinstance
 import quex.engine.analyzer.transition_map          as     transition_map_tool
 from   quex.blackboard import E_StateIndices, \
-                              setup as Setup
+                              Lng
 
 def relate_to_TransitionCode(tm):
     if tm is None:
@@ -36,7 +36,7 @@ class TransitionCodeFactory:
 
     @classmethod
     def do(cls, Target):
-        Lng = Lng
+        
 
         if   isinstance(Target, TransitionCode): 
             return Target
@@ -82,7 +82,7 @@ class TransitionCodeByDoorId(TransitionCode):
     def __init__(self, DoorId):
         self.__door_id = DoorId
     def code(self):       
-        Lng = Lng
+        
         return Lng.GOTO_BY_DOOR_ID(self.__door_id)
     def drop_out_f(self): 
         return self.__door_id.drop_out_f()
