@@ -17,7 +17,7 @@ from   quex.blackboard                         import setup as Setup
 from   itertools                               import chain
 from   os                                      import system
 
-Setup.language_db = languages.db["C"]
+Lng = languages.db["C"]
 
 
 if "--hwut-info" in sys.argv:

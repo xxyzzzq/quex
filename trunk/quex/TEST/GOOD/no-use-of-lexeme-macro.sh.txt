@@ -27,7 +27,7 @@ that referes to the Lexeme macros.
 <<QUEX_PATH>>/quex/output/cpp/action_preparation.py:LineN:        txt += "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
 <<QUEX_PATH>>/quex/output/cpp/counter_for_pattern.py:LineN:        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
 <<QUEX_PATH>>/quex/output/cpp/counter_for_pattern.py:LineN:        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
-<<QUEX_PATH>>/quex/output/cpp/counter_for_pattern.py:LineN:            arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
+<<QUEX_PATH>>/quex/output/cpp/counter_for_pattern.py:LineN:            arg = Lng.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 <<QUEX_PATH>>/quex/output/cpp/counter_for_pattern.py:LineN:        if counter.grid_step_n == E_Count.VOID: grid_step_n = "LexemeL"
 <<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:    /* Lexeme setup: 
 <<QUEX_PATH>>/quex/engine/generator/languages/cpp.py:LineN:     * references to the 'Lexeme'. 'LexemeNull' provides a reference to an empty

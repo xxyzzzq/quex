@@ -12,12 +12,12 @@ def do(ModeDB):
     IndentationSupportF = blackboard.required_support_indentation_count()
     BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     LexerClassName = Setup.analyzer_class_name
 
     ConfigurationTemplateFile =(  QUEX_PATH \
-                                + Setup.language_db["$code_base"] \
+                                + Lng["$code_base"] \
                                 + "/analyzer/configuration/TXT").replace("//","/")
 
     txt = get_file_content_or_die(ConfigurationTemplateFile)
@@ -90,7 +90,7 @@ def do(ModeDB):
     character_size_str = "%i" % Setup.buffer_element_size
 
     def namespace(NameSpaceList):
-        result = Setup.language_db.NAMESPACE_REFERENCE(NameSpaceList)
+        result = Lng.NAMESPACE_REFERENCE(NameSpaceList)
 
         if result == "::": return ""
 
@@ -103,34 +103,34 @@ def do(ModeDB):
             [
              ["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$QUEX_SETTING_CHARACTER_CODEC$$", codec_name],
-             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
-             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % blackboard.initial_mode.get_pure_code()],
+             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space) + "__" + Setup.analyzer_class_name)],
+             ["$$INITIAL_LEXER_MODE_ID$$",      "QUEX_NAME(ModeID_%s)" % blackboard.initial_mode.get_pure_text()],
              ["$$LEXER_BUILD_DATE$$",           time.asctime()],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_CLASS_NAME_SAFE$$",      Setup.analyzer_name_safe],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   analyzer_derived_class_name],
              ["$$MAX_MODE_CLASS_N$$",           repr(len(ModeDB))],
              ["$$NAMESPACE_MAIN$$",             namespace(Setup.analyzer_name_space)],
-             ["$$NAMESPACE_MAIN_CLOSE$$",       LanguageDB.NAMESPACE_CLOSE(Setup.analyzer_name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_MAIN_OPEN$$",        LanguageDB.NAMESPACE_OPEN(Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_CLOSE$$",       Lng.NAMESPACE_CLOSE(Setup.analyzer_name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_MAIN_OPEN$$",        Lng.NAMESPACE_OPEN(Setup.analyzer_name_space).replace("\n", "\\\n")],
              ["$$NAMESPACE_TOKEN$$",            namespace(token_descr.name_space)],
-             ["$$NAMESPACE_TOKEN_CLOSE$$",      LanguageDB.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", "\\\n")],
-             ["$$NAMESPACE_TOKEN_OPEN$$",       LanguageDB.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_CLOSE$$",      Lng.NAMESPACE_CLOSE(token_descr.name_space).replace("\n", "\\\n")],
+             ["$$NAMESPACE_TOKEN_OPEN$$",       Lng.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
              ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
              ["$$QUEX_SETTING_CHARACTER_SIZE$$", character_size_str],
-             ["$$QUEX_NAMESPACE_LEXEME_NULL_OPEN$$",   LanguageDB.NAMESPACE_OPEN(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
-             ["$$QUEX_NAMESPACE_LEXEME_NULL_CLOSE$$",  LanguageDB.NAMESPACE_CLOSE(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
+             ["$$QUEX_NAMESPACE_LEXEME_NULL_OPEN$$",   Lng.NAMESPACE_OPEN(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
+             ["$$QUEX_NAMESPACE_LEXEME_NULL_CLOSE$$",  Lng.NAMESPACE_CLOSE(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
              ["$$QUEX_LEXEME_NULL$$",                  Setup.lexeme_null_full_name_cpp],
              ["$$QUEX_LEXEME_NULL_SAFE$$",             Setup.lexeme_null_name_safe],
              ["$$QUEX_LEXEME_NULL_IN_ITS_NAMESPACE$$", Setup.lexeme_null_name],
              ["$$QUEX_VERSION$$",               QUEX_VERSION],
              ["$$TOKEN_CLASS$$",                token_descr.class_name],
              ["$$TOKEN_CLASS_NAME_SAFE$$",      token_descr.class_name_safe],
-             ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_code()],
-             ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_code()],
-             ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_code()],
+             ["$$TOKEN_COLUMN_N_TYPE$$",        token_descr.column_number_type.get_pure_text()],
+             ["$$TOKEN_ID_TYPE$$",              token_descr.token_id_type.get_pure_text()],
+             ["$$TOKEN_LINE_N_TYPE$$",          token_descr.line_number_type.get_pure_text()],
              ["$$TOKEN_PREFIX$$",               Setup.token_id_prefix],
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],

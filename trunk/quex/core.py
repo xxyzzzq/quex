@@ -1,6 +1,7 @@
 from   quex.engine.misc.file_in                 import write_safely_and_close
 
-from   quex.blackboard                          import setup as Setup
+from   quex.blackboard                          import setup as Setup, \
+                                                       Lng
 import quex.output.cpp.source_package           as source_package
 import quex.blackboard                          as blackboard
 #
@@ -97,20 +98,20 @@ def do():
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
 
-    LanguageDB.straighten_open_line_pragmas(Setup.output_header_file, "C")
-    LanguageDB.straighten_open_line_pragmas(Setup.output_code_file, "C")
+    Lng.straighten_open_line_pragmas(Setup.output_header_file, "C")
+    Lng.straighten_open_line_pragmas(Setup.output_code_file, "C")
     if not blackboard.token_type_definition.manually_written():
-        LanguageDB.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
+        Lng.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
 
     if Setup.source_package_directory != "":
         source_package.do()
 
 def analyzer_functions_get(ModeDB):
-    IndentationSupportF = blackboard.required_support_indentation_count(ModeDB)
+    IndentationSupportF = blackboard.required_support_indentation_count()
     BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
     inheritance_info_str = ""
-    analyzer_code        = ""
+    analyzer_code        = []
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -121,7 +122,7 @@ def analyzer_functions_get(ModeDB):
         # -- some modes only define event handlers that are inherited
         if len(mode.pattern_list) == 0: continue
 
-        analyzer_code += cpp_generator.do_mode(mode, mode_name_list, IndentationSupportF, BeginOfLineSupportF)
+        analyzer_code.extend(cpp_generator.do(mode, mode_name_list))
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()
@@ -129,15 +130,15 @@ def analyzer_functions_get(ModeDB):
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
         comment = []
-        Setup.language_db.ML_COMMENT(comment, 
+        Lng.ML_COMMENT(comment, 
                                      "BEGIN: MODE PATTERNS\n" + \
                                      inheritance_info_str     + \
                                      "\nEND: MODE PATTERNS")
         comment.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
-        analyzer_code += "".join(comment)
+        analyzer_code.append("".join(comment))
 
     # generate frame for analyser code
-    return cpp_generator.frame_this(analyzer_code)
+    return cpp_generator.frame_this("".join(analyzer_code))
 
 def do_plot():
     mode_db = quex_file_parser.do(Setup.input_mode_files)
@@ -175,7 +176,7 @@ def do_token_class_info():
         comment.append("%s\n" % line)
     comment.append("<<<QUEX-OPTIONS>>>")
     txt = []
-    Setup.language_db.ML_COMMENT(txt, "".join(comment), IndentN=0)
+    Lng.ML_COMMENT(txt, "".join(comment), IndentN=0)
     return "".join(txt) + "\n"
 
 

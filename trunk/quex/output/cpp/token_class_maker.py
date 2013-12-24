@@ -1,8 +1,7 @@
 # (C) 2005-2010 Frank-Rene Schaefer
 # ABSOLUTELY NO WARANTY
 from   quex.DEFINITIONS                   import QUEX_PATH
-from   quex.engine.misc.file_in           import \
-                                                 get_include_guard_extension, \
+from   quex.engine.misc.file_in           import get_include_guard_extension, \
                                                  open_file_or_die
 from   quex.engine.misc.string_handling   import blue_print
 import quex.blackboard                    as     blackboard
@@ -51,12 +50,12 @@ def _do(Descr):
     ## ALLOW: Descr.get_member_db().keys() == empty
 
     TemplateFile = QUEX_PATH \
-                   + Setup.language_db["$code_base"] \
-                   + Setup.language_db["$token_template_file"]
+                   + Lng["$code_base"] \
+                   + Lng["$token_template_file"]
 
     TemplateIFile = QUEX_PATH \
-                   + Setup.language_db["$code_base"] \
-                   + Setup.language_db["$token_template_i_file"]
+                   + Lng["$code_base"] \
+                   + Lng["$token_template_i_file"]
 
     template_str   = open_file_or_die(TemplateFile, Mode="rb").read()
     template_i_str = open_file_or_die(TemplateIFile, Mode="rb").read()
@@ -68,12 +67,12 @@ def _do(Descr):
         # Default copy operation: Plain Copy of token memory
         copy_str = "__QUEX_STD_memcpy((void*)__this, (void*)__That, sizeof(QUEX_TYPE_TOKEN));\n"
     else:
-        copy_str = Descr.copy.get_code_string()
+        copy_str = Descr.copy.get_text()
 
     if Descr.take_text is None:
         take_text_str = "return true;\n" 
     else:
-        take_text_str = Descr.take_text.get_code_string()
+        take_text_str = Descr.take_text.get_text()
 
     include_guard_extension_str = get_include_guard_extension(
                                         Lng.NAMESPACE_REFERENCE(Descr.name_space) 
@@ -115,21 +114,21 @@ def _do(Descr):
             ])
     txt = blue_print(txt,
              [
-              ["$$BODY$$",                    Descr.body.get_code_string()],
-              ["$$CONSTRUCTOR$$",             Descr.constructor.get_code_string()],
+              ["$$BODY$$",                    Descr.body.get_text()],
+              ["$$CONSTRUCTOR$$",             Descr.constructor.get_text()],
               ["$$COPY$$",                    copy_str],
-              ["$$DESTRUCTOR$$",              Descr.destructor.get_code_string()],
+              ["$$DESTRUCTOR$$",              Descr.destructor.get_text()],
               ["$$DISTINCT_MEMBERS$$",        get_distinct_members(Descr)],
-              ["$$FOOTER$$",                  Descr.footer.get_code_string()],
+              ["$$FOOTER$$",                  Descr.footer.get_text()],
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
-              ["$$HEADER$$",                  Descr.header.get_code_string()],
+              ["$$HEADER$$",                  Descr.header.get_text()],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
               ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
               ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
               ["$$QUICK_SETTERS$$",           get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",         get_setter_getter(Descr)],
-              ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
-              ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code_string()],
+              ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_text()],
+              ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_text()],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
               ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
@@ -147,17 +146,17 @@ def _do(Descr):
             ])
     txt_i = blue_print(txt_i, 
                        [
-                        ["$$CONSTRUCTOR$$",             Descr.constructor.get_code_string()],
+                        ["$$CONSTRUCTOR$$",             Descr.constructor.get_text()],
                         ["$$COPY$$",                    copy_str],
-                        ["$$DESTRUCTOR$$",              Descr.destructor.get_code_string()],
-                        ["$$FOOTER$$",                  Descr.footer.get_code_string()],
+                        ["$$DESTRUCTOR$$",              Descr.destructor.get_text()],
+                        ["$$FOOTER$$",                  Descr.footer.get_text()],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
                         ["$$TOKEN_CLASS_HEADER$$",      Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
-                        ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_code_string()],
-                        ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_code_string()],
+                        ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_text()],
+                        ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_text()],
                         ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
                        ])
 
@@ -196,10 +195,11 @@ def get_union_members(Descr):
     return txt
 
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
-    my_def  = IndentationOffset
-    my_def += Setup.language_db["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
+    my_def  = Lng.SOURCE_REFERENCE_BEGIN(TypeCode.sr)
+    my_def += IndentationOffset
+    my_def += Lng["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
                                                      VariableName, MaxVariableNameL)
-    return TypeCode.adorn_with_source_reference(my_def, ReturnToSourceF=False)
+    return my_def
 
 def get_setter_getter(Descr):
     """NOTE: All names are unique even in combined unions."""
@@ -210,12 +210,13 @@ def get_setter_getter(Descr):
     for variable_name, info in variable_db.items():
         type_code = info[0]
         access    = info[1]
-        type_str  = type_code.get_pure_code()
+        type_str  = type_code.get_pure_text()
+        txt += Lng.SOURCE_REFERENCE_BEGIN(type_code.sr)
         my_def = "    %s%s get_%s() const %s{ return %s; }" \
-               % (type_str,      " " * (TL - len(type_str)), 
-                  variable_name, " " * ((NL + TL)- len(variable_name)), 
-                  access)
-        txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
+                 % (type_str,      " " * (TL - len(type_str)), 
+                    variable_name, " " * ((NL + TL)- len(variable_name)), 
+                    access)
+        txt += my_def
 
         type_str = type_str.strip()
         type_str = type_str.replace("\t", " ")
@@ -230,11 +231,12 @@ def get_setter_getter(Descr):
                             "size_t", "uintptr_t", "ptrdiff_t"]:
             type_str += "&"
 
+        txt += Lng.SOURCE_REFERENCE_BEGIN(type_code.sr)
         my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \
                % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)
-        txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
+        txt += my_def
 
     txt += Lng.SOURCE_REFERENCE_END()
     return txt
@@ -261,7 +263,7 @@ def get_quick_setters(Descr):
         i = -1
         for name, type_info in ArgList:
             i += 1
-            type_str = type_info.get_pure_code()
+            type_str = type_info.get_pure_text()
             if type_str.find("const") != -1: type_str = type_str[5:]
             txt += "const %s& Value%i, " % (type_str, i)
         txt = txt[:-2]
@@ -356,7 +358,7 @@ def __get_converter_configuration(IncludeGuardExtension):
 
     # From Here One: 'Sharable Token Class Generation'
     if Setup.language.upper() == "C++":
-        function_prefix       = Setup.language_db.NAMESPACE_REFERENCE(token_descr.name_space) 
+        function_prefix       = Lng.NAMESPACE_REFERENCE(token_descr.name_space) 
         function_def_prefix   = ""
         function_def_prefix_0 = ""
         namespace_token_open  = Lng.NAMESPACE_OPEN(token_descr.name_space).replace("\n", " ")

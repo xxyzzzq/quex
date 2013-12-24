@@ -126,7 +126,7 @@ class CounterDB:
         ___________________________________________________________________________
         """
         assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         column_count_per_chunk = self.get_column_number_per_chunk(CharacterSet)
         counter_dictionary     = self.get_counter_dictionary(CharacterSet, column_count_per_chunk)
@@ -143,10 +143,10 @@ class CounterCoderData:
         assert not CharacterSet.is_empty()
         assert isinstance(CharacterSet, NumberSet)
         assert isinstance(CounterDb, CounterDB)
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         if IteratorName is None:
-            IteratorName = LanguageDB.INPUT_P()
+            IteratorName = Lng.INPUT_P()
 
         # If 'column_count_per_chunk' is not None, then reference positions may 
         # be used for counting (i.e. "column_n += (input_p - reference_p) * C").
@@ -209,7 +209,7 @@ class CounterCoderData:
         assert    GlobalReloadState is None \
                or EngineType.requires_buffer_limit_code_for_reload() 
         assert TargetState is None       or isinstance(TargetState, AnalyzerState)
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         sm  = self.get_counting_state_machine(self.count_command_map) 
         transformation.do_state_machine(sm)
@@ -228,7 +228,7 @@ class CounterCoderData:
         exit_incidence_id = index.get_state_machine_id() 
         exit_door_id      = DoorID.incidence(exit_incidence_id)
         exit_terminal     = Terminal(exit_incidence_id, 
-                                     [ LanguageDB.COMMAND(cmd) for cmd in self.on_exit])
+                                     [ Lng.COMMAND(cmd) for cmd in self.on_exit])
 
         if CheckLexemeEndF:
             check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(exit_door_id))

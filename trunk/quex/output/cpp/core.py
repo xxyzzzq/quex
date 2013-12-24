@@ -9,34 +9,33 @@ from   quex.engine.generator.base                  import EngineStateMachineSet
 import quex.engine.generator.base                  as     generator
 from   quex.engine.tools                           import all_isinstance, typed
 from   quex.input.regular_expression.construct     import Pattern
+from   quex.input.files.counter_db                 import CounterDB
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, \
                                                           E_IncidenceIDs, \
                                                           E_TerminalType, \
                                                           Lng
 
-@typed(BeginOfLineSupportF  = bool, 
-       ModeNameList = [(str, unicode)])
-def do(Mode, ModeNameList, IndentationSupportF, BeginOfLineSupportF):
+@typed(ModeNameList = [(str, unicode)])
+def do(Mode, ModeNameList):
     """RETURNS: The analyzer code for a mode defined in 'Mode'.
     """
     # (*) Initialize address handling
     dial_db.clear()     # BEFORE constructor of generator; 
     variable_db.init()  # because constructor creates some addresses.
 
-    pattern_list = [ x.pattern for x in Mode.ppc_list ]
-    terminal_db  = __prepare_terminals(Mode.name, Mode.ppc_list, Mode.special_terminal_db())
+    function_body,       \
+    variable_definitions = do_core(Mode.pattern_list, Mode.terminal_db)
 
-    function_body, variable_definitions = do_core(pattern_list, terminal_db)
-
-    function_txt = wrap_up(Mode.name, function_body, variable_definitions, ModeNameList)
+    function_txt = wrap_up(Mode.name, function_body, variable_definitions, 
+                           ModeNameList)
 
     # (*) Generate the counter first!
     #     (It may implement a state machine with labels and addresses
     #      which are not relevant for the main analyzer function.)
-    counter_txt = ""
-    if default_character_counter_required_f:
-        counter_txt = do_default_counter(Mode)
+    counter_txt = []
+    if Mode.default_character_counter_required_f:
+        counter_txt = do_default_counter(Mode.name, Mode.counter_db)
 
     return counter_txt + function_txt
 
@@ -110,10 +109,10 @@ def do_core(PatternList, TerminalDb):
     return function_body, variable_definitions
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
-    LanguageDB   = Setup.language_db
-    txt_function = LanguageDB["$analyzer-func"](ModeName, Setup, VariableDefs, 
+    Lng   = Lng
+    txt_function = Lng["$analyzer-func"](ModeName, Setup, VariableDefs, 
                                                 FunctionBody, ModeNameList) 
-    txt_header   = LanguageDB.HEADER_DEFINITIONS() 
+    txt_header   = Lng.HEADER_DEFINITIONS() 
     assert all_isinstance(txt_header, (str, unicode))
 
     txt_analyzer = get_plain_strings(txt_function)
@@ -121,33 +120,25 @@ def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
 
     return txt_header + txt_analyzer
 
-def do_default_counter(Mode):
+@typed(ModeName=(str,unicode), CounterDb=CounterDB)
+def do_default_counter(ModeName, CounterDb):
     dial_db.clear()
     variable_db.init()
 
+    # May be, the default counter is the same as for another mode. In that
+    # case call the default counter of the other mode with the same one and
+    # only macro.
     default_character_counter_function_name,   \
-    default_character_counter_function_code  = counter.get(Mode.counter_db, Mode.name)
+    default_character_counter_function_code  = counter.get(CounterDb, ModeName)
 
-    txt = "#ifdef      __QUEX_COUNT_VOID\n"                             \
-          "#   undef   __QUEX_COUNT_VOID\n"                             \
-          "#endif\n"                                                    \
-          "#ifdef      __QUEX_OPTION_COUNTER\n"                         \
-          "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) \\\n"          \
-          "            do {                              \\\n"          \
-          "                %s((ME), (BEGIN), (END));     \\\n"          \
-          "                __quex_debug_counter();       \\\n"          \
-          "            } while(0)\n"                                    \
-          "#else\n"                                                     \
-          "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) /* empty */\n" \
-          "#endif\n"                                                    \
-          % default_character_counter_function_name
+    txt = [ Lng.DEFAULT_COUNTER_PROLOG(default_character_counter_function_name) ]
 
     if default_character_counter_function_code is not None:
-        txt += default_character_counter_function_code
+        txt.append(default_character_counter_function_code)
 
     return txt
 
 def frame_this(Code):
-    return Setup.language_db["$frame"](Code, Setup)
+    return Lng["$frame"](Code, Setup)
 
 

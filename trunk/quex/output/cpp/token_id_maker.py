@@ -475,7 +475,7 @@ def __autogenerate_token_id_numbers():
         token.number = __get_free_token_id()
 
 def __get_token_id_definition_txt():
-    LanguageDB = Setup.language_db
+    Lng = Lng
     assert len(Setup.token_id_foreign_definition_file) == 0
 
     def define_this(txt, token, L):
@@ -491,8 +491,8 @@ def __get_token_id_definition_txt():
         prolog = ""
         epilog = ""
     else:
-        prolog = LanguageDB.NAMESPACE_OPEN(Setup.token_id_prefix_name_space)
-        epilog = LanguageDB.NAMESPACE_CLOSE(Setup.token_id_prefix_name_space)
+        prolog = Lng.NAMESPACE_OPEN(Setup.token_id_prefix_name_space)
+        epilog = Lng.NAMESPACE_CLOSE(Setup.token_id_prefix_name_space)
 
     # Considering 'items' allows to sort by name. The name is the 'key' in 
     # the dictionary 'token_id_db'.

@@ -44,7 +44,7 @@ $$ON_AFTER_MATCH$$
 """
 
 
-def header_definitions(LanguageDB):
+def header_definitions(Lng):
     global __return_with_on_after_match
     assert len(__return_with_on_after_match) > 10
 
@@ -200,7 +200,7 @@ def __analyzer_function(StateMachineName, Setup,
                            if a stand-alone lexical engine is required (without the
                            complete mode-handling framework of quex).
     """              
-    LanguageDB          = Setup.language_db
+    Lng          = Lng
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
     txt = [blue_print(__function_signature, [
@@ -225,7 +225,7 @@ def __analyzer_function(StateMachineName, Setup,
     txt.append("%s:\n" % Label.global_reentry())
 
     # -- entry to the actual function body
-    txt.append("    %s\n" % LanguageDB.LEXEME_START_SET())
+    txt.append("    %s\n" % Lng.LEXEME_START_SET())
     txt.append("    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n")
     
     txt.extend(function_body)
@@ -344,14 +344,14 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 """
 
 def lexeme_macro_definitions(Setup):
-    LanguageDB = Setup.language_db
+    Lng = Lng
     lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
     if Setup.external_lexeme_null_object != "":
         lexeme_null_object_name = Setup.external_lexeme_null_object
 
     return blue_print(__terminal_state_prolog, [
-          ["$$LEXEME_LENGTH$$",      LanguageDB.LEXEME_LENGTH()],
-          ["$$INPUT_P$$",            LanguageDB.INPUT_P()],
+          ["$$LEXEME_LENGTH$$",      Lng.LEXEME_LENGTH()],
+          ["$$INPUT_P$$",            Lng.INPUT_P()],
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
     ])
 
@@ -359,7 +359,7 @@ def __on_after_match_then_return(OnAfterMatchTerminal):
     if OnAfterMatchTerminal is None:
         return "", ""
 
-    on_after_match_str = OnAfterMatchTerminal.action.get_code_string()
+    on_after_match_str = OnAfterMatchTerminal.action.get_text()
     return_preparation = blue_print(__on_after_match_then_return_str,
                                     [["$$ON_AFTER_MATCH$$",  on_after_match_str]])
 
@@ -373,7 +373,7 @@ def __on_after_match_then_return(OnAfterMatchTerminal):
 
     return return_preparation, on_after_match_str
 
-def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
+def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
     TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
@@ -381,7 +381,7 @@ def reentry_preparation(LanguageDB, PreConditionIDList, OnAfterMatchTerminal):
         unset_pre_context_flags_str = ""
     else:
         unset_pre_context_flags_str = "".join([
-            "    " + LanguageDB.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
+            "    " + Lng.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
             for pre_context_id in PreConditionIDList
         ])
 
@@ -431,7 +431,7 @@ def terminal_states(TerminalStateList, SimpleF=False):
     return code
     
 def __frame_of_all(Code, Setup):
-    # namespace_ref   = LanguageDB.NAMESPACE_REFERENCE(Setup.analyzer_name_space)
+    # namespace_ref   = Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space)
     # if len(namespace_ref) > 2 and namespace_ref[:2] == "::":  namespace_ref = namespace_ref[2:]
     # if len(namespace_ref) > 2 and namespace_ref[-2:] == "::": namespace_ref = namespace_ref[:-2]
     # "using namespace " + namespace_ref + ";\n"       + \

@@ -14,22 +14,22 @@ from quex.blackboard import setup as Setup, \
 from operator import attrgetter
 
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
     if not TheAnalyzer.is_init_state_forward(TheState.index):
         pre_txt = []
         if TheState.index != TheAnalyzer.init_state_index:
-            pre_txt.append("\n\n    %s\n" % LanguageDB.UNREACHABLE)
+            pre_txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
         do_node(pre_txt, TheState.entry, door_tree_root)
         post_txt = []
     else:
         pre_txt, done_set = do_state_machine_entry(door_tree_root, TheState, TheAnalyzer)
-        post_txt = [ "\n\n    %s\n" % LanguageDB.UNREACHABLE ]
+        post_txt = [ "\n\n    %s\n" % Lng.UNREACHABLE ]
         post_txt.extend(do_post(door_tree_root, TheState, done_set))
             
     pre_txt.append("    ")
-    LanguageDB.STATE_DEBUG_INFO(pre_txt, TheState, TheAnalyzer)
+    Lng.STATE_DEBUG_INFO(pre_txt, TheState, TheAnalyzer)
     return pre_txt, post_txt
 
 def do_core(txt, TheState):
@@ -61,7 +61,7 @@ def do_post(door_tree_root, TheState, DoneDoorIdSet):
 def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
         for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
@@ -73,26 +73,26 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
         # assert none_is_None(txt)
 
 def code_action(txt, Node, ActionDb, GotoParentF):
-    LanguageDB = Setup.language_db
+    Lng = Lng
     txt.append(IfDoorIdReferencedLabel(Node.door_id))
 
     comment_door(txt, Node, ActionDb)
 
-    action_txt = [ LanguageDB.COMMAND(command) for command in Node.command_list ]
+    action_txt = [ Lng.COMMAND(command) for command in Node.command_list ]
     if Node.parent is not None and GotoParentF: 
         action_txt.append(1)
-        action_txt.append(LanguageDB.GOTO_BY_DOOR_ID(Node.parent.door_id))
+        action_txt.append(Lng.GOTO_BY_DOOR_ID(Node.parent.door_id))
     txt.extend(action_txt)
     txt.extend("\n")
 
 def comment_door(txt, Node, ActionDb):
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     # If the door is entered by another state, write a comment from where it is entered.
     transition_id_list = ActionDb.get_transition_id_list(Node.door_id)
     if len(transition_id_list) != 0:
         txt.append(" ")
-        LanguageDB.COMMENT(txt, "".join([ "(%s from %s) " % (x.target_state_index, x.source_state_index) for x in transition_id_list])[:-1])
+        Lng.COMMENT(txt, "".join([ "(%s from %s) " % (x.target_state_index, x.source_state_index) for x in transition_id_list])[:-1])
     else:
         txt.append("\n") 
 

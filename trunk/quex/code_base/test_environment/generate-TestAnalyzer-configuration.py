@@ -14,8 +14,8 @@ command_line.do(["-i", "nothing", "-o", "TestAnalyzer", "--token-policy", "singl
 
 # Parse default token file
 fh = open_file_or_die(os.environ["QUEX_PATH"] 
-                      + Setup.language_db["$code_base"] 
-                      + Setup.language_db["$token-default-file"])
+                      + Lng["$code_base"] 
+                      + Lng["$token-default-file"])
 quex_file_parser.parse_section(fh)
 fh.close()
 

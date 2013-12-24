@@ -53,7 +53,7 @@ def get(ThePattern, ShiftF=True):
     that the 'prepare_count_info()' function has not been called for it.  
     ---------------------------------------------------------------------------
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
     assert type(ShiftF) == bool
 
     # (*) Trivial Cases _______________________________________________________
@@ -63,7 +63,7 @@ def get(ThePattern, ShiftF=True):
 
     if ThePattern is None:
         # 'on_failure' ... count any appearing character
-        return True, [ LanguageDB.DEFAULT_COUNTER_CALL() ]
+        return True, [ Lng.DEFAULT_COUNTER_CALL() ]
 
     counter = ThePattern.count_info()
 
@@ -88,9 +88,9 @@ def get(ThePattern, ShiftF=True):
         if IncrementByLexemeLength == 0 or Increment == 0:
             return 
         elif Increment != E_Count.VOID:
-            arg = LanguageDB.VALUE_STRING(Increment)
+            arg = Lng.VALUE_STRING(Increment)
         else:
-            arg = LanguageDB.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
+            arg = Lng.MULTIPLY_WITH("LexemeL", IncrementByLexemeLength)
 
         txt.append("__QUEX_IF_COUNT_%s_ADD(%s);\n" % (HelpStr, arg))
 
@@ -123,7 +123,7 @@ def get(ThePattern, ShiftF=True):
 
         if len(txt) != 0:
             txt.append(0)
-        txt.extend(LanguageDB.GRID_STEP("self.counter._column_number_at_end", "size_t",
+        txt.extend(Lng.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                         counter.grid_step_size_by_lexeme_length, 
                                         grid_step_n, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
         txt.append("\n")

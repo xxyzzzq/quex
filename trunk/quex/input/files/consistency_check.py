@@ -118,9 +118,10 @@ def __start_mode(implemented_mode_name_list, mode_name_list):
 
     assert blackboard.initial_mode is not None
 
-    start_mode = blackboard.initial_mode.get_pure_code()
+    start_mode = blackboard.initial_mode.get_pure_text()
     FileName   = blackboard.initial_mode.sr.file_name
     LineN      = blackboard.initial_mode.sr.line_n
+
     # Start mode present and applicable?
     verify_word_in_list(start_mode, mode_name_list,
                         "Start mode '%s' is not defined." % start_mode,

@@ -60,7 +60,7 @@ class TokenTypeDescriptorCore:
 
     def set_file_name(self, FileName):
         self._file_name = FileName
-        ext = Setup.language_db[Setup.language].extension_db[Setup.output_file_naming_scheme][HEADER_IMPLEMTATION]
+        ext = Lng[Setup.language].extension_db[Setup.output_file_naming_scheme][HEADER_IMPLEMTATION]
         self._file_name_implementation = FileName + ext
 
     def __repr__(self):

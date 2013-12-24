@@ -227,7 +227,7 @@ def typed(**_parameters_):
     return check_types
 
 def error_abstract_member():
-    x = sys._getframe(i).f_code
+    x = sys._getframe(1).f_code
     assert False, "Call to '%s'. Implementation in derived class." % x.co_name
 
 class TypedSet(set):

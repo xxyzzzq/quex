@@ -35,10 +35,10 @@ import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
-from   quex.blackboard                     import setup as Setup, \
-                                                  SourceRef
+from   quex.blackboard                     import setup as Setup
 from   quex.input.setup                    import NotificationDB
-from   quex.engine.generator.code.base     import CodeUserPlain, SourceRef
+from   quex.engine.generator.code.base     import SourceRef
+from   quex.engine.generator.code.core     import CodeUser
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
@@ -118,7 +118,7 @@ def parse_section(fh):
                           blackboard.initial_mode.sr.line_n)
         
              
-            blackboard.initial_mode = CodeUserPlain(mode_name, SourceRef.from_FileHandle(fh))
+            blackboard.initial_mode = CodeUser(mode_name, SourceRef.from_FileHandle(fh))
             return
 
         elif word == "repeated_token":
@@ -310,7 +310,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
 
 def parse_default_token_definition():
     sub_fh = open_file_or_die(os.environ["QUEX_PATH"] 
-                              + Setup.language_db["$code_base"] 
-                              + Setup.language_db["$token-default-file"])
+                              + Lng["$code_base"] 
+                              + Lng["$token-default-file"])
     parse_section(sub_fh)
     sub_fh.close()

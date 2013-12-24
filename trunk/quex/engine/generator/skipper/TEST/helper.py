@@ -107,7 +107,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
 
 def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, 
                                  LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True):
-    LanguageDB = Setup.language_db
+    Lng = Lng
     if ShowPositionF: show_position_str = "1"
     else:             show_position_str = "0"
 
@@ -119,7 +119,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
         ml_txt += "    break;\n"
 
     if type(SourceCode) == list:
-        plain_code = LanguageDB.GET_PLAIN_STRINGS(SourceCode)
+        plain_code = Lng.GET_PLAIN_STRINGS(SourceCode)
         #if len(plain_code) >= 3304: 
         #    print "#3304:", plain_code[3303:3305]
         SourceCode = "".join(plain_code)
@@ -127,7 +127,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     reload_str = ""
     if ReloadF: 
         txt = []
-        for x in LanguageDB.RELOAD():
+        for x in Lng.RELOAD():
             txt.extend(x.code)
         # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
         routed_address_set = dial_db.get_address_set_subject_to_routing()
@@ -146,10 +146,10 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
                        ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        "".join(LanguageDB.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB)))),
-                       ("$$MARK_LEXEME_START$$",      LanguageDB.LEXEME_START_SET()),
+                       ("$$LOCAL_VARIABLES$$",        "".join(Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB)))),
+                       ("$$MARK_LEXEME_START$$",      Lng.LEXEME_START_SET()),
                        ("$$SOURCE_CODE$$",            SourceCode),
-                       ("$$INPUT_P_DEREFERENCE$$",    LanguageDB.ASSIGN("input", LanguageDB.INPUT_P_DEREFERENCE())),
+                       ("$$INPUT_P_DEREFERENCE$$",    Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE())),
                        ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
                        ("$$TERMINAL_FAILURE$$",       address.get_label("$terminal-FAILURE")),
                        ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),

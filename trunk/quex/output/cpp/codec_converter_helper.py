@@ -41,7 +41,7 @@ def _do(UnicodeTrafoInfo, CodecName):
 
     # Provide only the constant which are necessary
     FileName = os.path.normpath(  QUEX_PATH
-                                + Setup.language_db["$code_base"] 
+                                + Lng["$code_base"] 
                                 + "/converter_helper/TXT-from-codec-buffer.i")
     codec_header = Setup.get_file_reference(Setup.output_buffer_codec_header)
 
@@ -55,7 +55,7 @@ def _do(UnicodeTrafoInfo, CodecName):
 
     # A separate declaration header is required
     FileName = os.path.normpath(  QUEX_PATH
-                                + Setup.language_db["$code_base"] 
+                                + Lng["$code_base"] 
                                 + "/converter_helper/TXT-from-codec-buffer")
     template_h_txt = get_file_content_or_die(FileName)
     txt_h = template_h_txt.replace("$$CODEC$$", codec_name)
@@ -66,7 +66,7 @@ class ConverterWriter:
     def do(self, UnicodeTrafoInfo, ProvidedConversionInfoF=False):
         """Creates code for a conversion to utf8 according to the conversion_table.
         """
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         # The flag 'ProvidedConversionTableF' is only to be used for Unit Tests
         if ProvidedConversionInfoF: conversion_table = UnicodeTrafoInfo
@@ -95,22 +95,22 @@ class ConverterWriter:
                 # Bracket interval in the middle
                 mid_index = int(float(L)/2)
                 Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
-                txt += LanguageDB.IF_INPUT("<", Middle) 
+                txt += Lng.IF_INPUT("<", Middle) 
                 if range_index != -1: 
                     # If there is no 'unicode coversion' and all ranges belong to the 
                     # same byte formatting, then there is no need to bracket further:
                     if not __rely_on_ucs4_conversion_f:
                         txt += __bracket(conversion_list[:mid_index], range_index)
-                        txt += LanguageDB.ELSE + "\n"   
+                        txt += Lng.ELSE + "\n"   
                         txt += __bracket(conversion_list[mid_index:], range_index)
-                        txt += LanguageDB.END_IF() 
+                        txt += Lng.END_IF() 
                     if CallerRangeIndex != range_index:
                         txt += self.get_byte_formatter(range_index)
                 else:
                     txt += __bracket(conversion_list[:mid_index], range_index)
-                    txt += LanguageDB.ELSE + "\n"   
+                    txt += Lng.ELSE + "\n"   
                     txt += __bracket(conversion_list[mid_index:], range_index)
-                    txt += LanguageDB.END_IF() 
+                    txt += Lng.END_IF() 
 
             if len(txt) != 0 and txt[-1] == "\n": txt = txt[:-1]
             return "    " + txt.replace("\n", "\n    ") + "\n"

@@ -107,7 +107,7 @@ def __Setup_init_language_database(Language):
         print "Error: missing language specifier: %s" % Language
         sys.exit()
 
-    Setup.language_db = db[Setup.language]
+    Lng = db[Setup.language]
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!

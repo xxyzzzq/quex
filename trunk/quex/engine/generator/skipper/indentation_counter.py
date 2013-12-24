@@ -35,7 +35,7 @@ def do(Data, Mode=None):
     """
     global variable_db
 
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     IndentationSetup = Data["indentation_setup"]
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
@@ -57,8 +57,8 @@ def do(Data, Mode=None):
     # The finishing touch
     prolog = blue_print(prolog_txt,
                          [
-                           ["$$INPUT_GET$$",         LanguageDB.ACCESS_INPUT()],
-                           ["$$INPUT_P_INCREMENT$$", LanguageDB.INPUT_P_INCREMENT()],
+                           ["$$INPUT_GET$$",         Lng.ACCESS_INPUT()],
+                           ["$$INPUT_P_INCREMENT$$", Lng.INPUT_P_INCREMENT()],
                            ["$$LABEL$$",             counter_label],
                            ["$$ADDRESS$$",           counter_adr_str], 
                          ])
@@ -70,7 +70,7 @@ def do(Data, Mode=None):
     epilog = blue_print(epilog_txt, [
         ["$$ADDRESS$$",                 counter_adr_str], 
         ["$$END_PROCEDURE$$",           "".join(end_procedure)],
-        ["$$GOTO_REENTRY$$",            LanguageDB.GOTO_BY_DOOR_ID(DoorID.global_reentry())],
+        ["$$GOTO_REENTRY$$",            Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry())],
         ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
     ])
 
@@ -173,12 +173,12 @@ class Count_Space(IndentationCounter):
     @property
     def code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
-        LanguageDB = Setup.language_db
+        Lng = Lng
 
         # Spaces simply increment
         if self.number != -1: add_str = "%i" % self.number
         else:                 add_str = "me->" + self.variable_name
-        return "me->counter._indentation += %s;" % add_str + LanguageDB.GOTO_door_id(self.counter_door_id)
+        return "me->counter._indentation += %s;" % add_str + Lng.GOTO_door_id(self.counter_door_id)
 
 class Count_Grid(IndentationCounter):
     """________________________________________________________________________
@@ -199,13 +199,13 @@ class Count_Grid(IndentationCounter):
     @property
     def code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
-        LanguageDB = Setup.language_db
+        Lng = Lng
         
-        txt = LanguageDB.GRID_STEP("me->counter._indentation", "QUEX_TYPE_INDENTATION", self.number)
-        LanguageDB.REPLACE_INDENT(txt)
+        txt = Lng.GRID_STEP("me->counter._indentation", "QUEX_TYPE_INDENTATION", self.number)
+        Lng.REPLACE_INDENT(txt)
 
         return   "".join(txt) \
-               + LanguageDB.GOTO_DOOR_ID(self.counter_door_id)
+               + Lng.GOTO_DOOR_ID(self.counter_door_id)
 
 class Detect_Bad(IndentationCounter):
     """________________________________________________________________________
@@ -239,7 +239,7 @@ def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
                                 % Mode.name + \
                '                "No \'on_indentation_bad\' handler has been specified.\\n");'
     else:
-        code, eol_f = Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_code_string()
+        code, eol_f = Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
         txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
         txt += code
         txt += "#undef  BadCharacter\n"
@@ -254,7 +254,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     analyzer state machine. The transition_map relies on 'TransitionCode'
     objects as target.
     """
-    LanguageDB = Setup.language_db
+    Lng = Lng
 
     def extend(transition_map, character_set, Target):
         interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
@@ -266,7 +266,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         # Count indentation/column at end of run;
         # simply: current position - reference_p
         character_set  = IndentationSetup.space_db.values()[0]
-        extend(transition_map, character_set, TransitionCode(LanguageDB.GOTO_BY_DOOR_ID(CounterDoorId)))
+        extend(transition_map, character_set, TransitionCode(Lng.GOTO_BY_DOOR_ID(CounterDoorId)))
 
     else:
         # Add the space counters
