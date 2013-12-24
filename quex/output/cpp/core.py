@@ -109,7 +109,6 @@ def do_core(PatternList, TerminalDb):
     return function_body, variable_definitions
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
-    Lng   = Lng
     txt_function = Lng["$analyzer-func"](ModeName, Setup, VariableDefs, 
                                                 FunctionBody, ModeNameList) 
     txt_header   = Lng.HEADER_DEFINITIONS() 

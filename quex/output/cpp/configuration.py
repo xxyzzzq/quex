@@ -3,7 +3,7 @@ from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                make_safe_identifier
 
 from   quex.engine.misc.string_handling import blue_print
-from   quex.blackboard  import setup as Setup, E_IncidenceIDs
+from   quex.blackboard  import setup as Setup, E_IncidenceIDs, Lng
 import quex.blackboard  as blackboard
 from   quex.DEFINITIONS import QUEX_PATH, QUEX_VERSION
 import time
@@ -12,7 +12,7 @@ def do(ModeDB):
     IndentationSupportF = blackboard.required_support_indentation_count()
     BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
-    Lng = Lng
+    
 
     LexerClassName = Setup.analyzer_class_name
 

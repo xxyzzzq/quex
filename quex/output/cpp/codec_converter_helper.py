@@ -66,7 +66,7 @@ class ConverterWriter:
     def do(self, UnicodeTrafoInfo, ProvidedConversionInfoF=False):
         """Creates code for a conversion to utf8 according to the conversion_table.
         """
-        Lng = Lng
+        
 
         # The flag 'ProvidedConversionTableF' is only to be used for Unit Tests
         if ProvidedConversionInfoF: conversion_table = UnicodeTrafoInfo

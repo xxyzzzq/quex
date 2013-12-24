@@ -4,7 +4,7 @@ _______________________________________________________________________________
 """
 from   quex.blackboard import E_Count, \
                               E_IncidenceIDs, \
-                              setup as Setup
+                              Lng
 
 def get(ThePattern, ShiftF=True):
     """Line and column number actions for a pattern.
@@ -53,7 +53,7 @@ def get(ThePattern, ShiftF=True):
     that the 'prepare_count_info()' function has not been called for it.  
     ---------------------------------------------------------------------------
     """
-    Lng = Lng
+    
     assert type(ShiftF) == bool
 
     # (*) Trivial Cases _______________________________________________________

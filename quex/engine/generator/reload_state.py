@@ -1,9 +1,9 @@
 import quex.engine.generator.state.entry as entry
-from   quex.blackboard import setup as Setup, \
+from   quex.blackboard import Lng, \
                               E_StateIndices
 
 def do(TheReloadState):
-    Lng = Lng
+    
 
     if TheReloadState.entry.size() == 0:
         return []

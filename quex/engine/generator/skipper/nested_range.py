@@ -153,8 +153,6 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     assert map(type, CloserSequence) == [int] * len(CloserSequence)
     assert OpenerSequence != CloserSequence
 
-    Lng    = Lng
-
     skipper_index = sm_index.get()
 
     opener_str, opener_comment_str = get_character_sequence(OpenerSequence)

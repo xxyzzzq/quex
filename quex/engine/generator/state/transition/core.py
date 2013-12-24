@@ -4,15 +4,13 @@ import quex.engine.generator.state.transition.bisection as     bisection
 import quex.engine.analyzer.engine_supply_factory       as     engine
 from   quex.engine.analyzer.transition_map              import TransitionMap
 from   quex.engine.analyzer.door_id_address_label       import DoorID
-from   quex.blackboard                                  import setup as Setup, E_StateIndices
+from   quex.blackboard                                  import setup as Setup, E_StateIndices, Lng
 from   copy      import copy
 from   itertools import islice
 
-Lng = None
-
 def do(txt, TM):
     global Lng
-    Lng = Lng
+    
 
     if TM is None:
         return
@@ -158,7 +156,7 @@ def __get_switch(txt, TriggerMap):
     return True
 
 def __get_bisection(txt, TriggerMap):
-    Lng = Lng
+    
 
     BisectionIndex = bisection.get_index(TriggerMap)
 

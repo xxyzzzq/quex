@@ -35,7 +35,7 @@ def do(Data, Mode=None):
     """
     global variable_db
 
-    Lng = Lng
+    
 
     IndentationSetup = Data["indentation_setup"]
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
@@ -173,7 +173,7 @@ class Count_Space(IndentationCounter):
     @property
     def code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
-        Lng = Lng
+        
 
         # Spaces simply increment
         if self.number != -1: add_str = "%i" % self.number
@@ -199,7 +199,7 @@ class Count_Grid(IndentationCounter):
     @property
     def code(self):
         """Indentation counters may count as a consequence of a 'triggering'."""
-        Lng = Lng
+        
         
         txt = Lng.GRID_STEP("me->counter._indentation", "QUEX_TYPE_INDENTATION", self.number)
         Lng.REPLACE_INDENT(txt)
@@ -254,7 +254,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     analyzer state machine. The transition_map relies on 'TransitionCode'
     objects as target.
     """
-    Lng = Lng
+    
 
     def extend(transition_map, character_set, Target):
         interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)

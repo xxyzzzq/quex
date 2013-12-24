@@ -98,10 +98,10 @@ def do():
         write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
                                class_token_header)
 
-    Lng.straighten_open_line_pragmas(Setup.output_header_file, "C")
-    Lng.straighten_open_line_pragmas(Setup.output_code_file, "C")
+    Lng.straighten_open_line_pragmas(Setup.output_header_file)
+    Lng.straighten_open_line_pragmas(Setup.output_code_file)
     if not blackboard.token_type_definition.manually_written():
-        Lng.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name(), "C")
+        Lng.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name())
 
     if Setup.source_package_directory != "":
         source_package.do()

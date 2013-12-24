@@ -243,8 +243,6 @@ $$UPON_RELOAD_DONE_LABEL$$:
 """
 
 def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
-    Lng   = Lng
-
     UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
 
     # Trasform letter by letter.
@@ -317,8 +315,6 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     assert map(type, EndSequence) == [int] * len(EndSequence)
 
     global template_str
-
-    Lng   = Lng
 
     ## debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
 
@@ -418,7 +414,7 @@ def __lc_counting_replacements(code_str, EndSequence):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    Lng = Lng
+    
 
 
     def get_character_n_after_last_newline(Sequence):

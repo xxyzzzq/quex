@@ -365,7 +365,7 @@ class Lng_Cpp(dict):
         return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)
 
     def HEADER_DEFINITIONS(self):
-        return cpp.header_definitions(self)
+        return cpp.header_definitions()
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex

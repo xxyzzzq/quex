@@ -7,14 +7,14 @@ from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 from   quex.engine.tools                                 import none_is_None
 
-from quex.blackboard import setup as Setup, \
+from quex.blackboard import Lng, \
                             E_StateIndices, \
                             E_Commands
 
 from operator import attrgetter
 
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
-    Lng = Lng
+    
 
     door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
     if not TheAnalyzer.is_init_state_forward(TheState.index):
@@ -61,7 +61,7 @@ def do_post(door_tree_root, TheState, DoneDoorIdSet):
 def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
-    Lng = Lng
+    
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
         for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
@@ -73,7 +73,7 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
         # assert none_is_None(txt)
 
 def code_action(txt, Node, ActionDb, GotoParentF):
-    Lng = Lng
+    
     txt.append(IfDoorIdReferencedLabel(Node.door_id))
 
     comment_door(txt, Node, ActionDb)
@@ -86,7 +86,7 @@ def code_action(txt, Node, ActionDb, GotoParentF):
     txt.extend("\n")
 
 def comment_door(txt, Node, ActionDb):
-    Lng = Lng
+    
 
     # If the door is entered by another state, write a comment from where it is entered.
     transition_id_list = ActionDb.get_transition_id_list(Node.door_id)

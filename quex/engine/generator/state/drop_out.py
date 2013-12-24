@@ -3,7 +3,7 @@ from   quex.engine.analyzer.door_id_address_label import Label, \
                                                          IfDoorIdReferencedLabel
 from   quex.blackboard                            import E_IncidenceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
-                                                         setup as Setup
+                                                         Lng
 
 #drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
 #drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
@@ -12,7 +12,7 @@ from   quex.blackboard                            import E_IncidenceIDs, E_State
 #            DefineLabelF=False, MentionStateIndexF=False)
 
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
-    Lng = Lng
+    
     EngineType = TheAnalyzer.engine_type
     if DefineLabelF:
         txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(StateIndex)))
@@ -72,7 +72,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     txt.extend(Lng.SELECTION("last_acceptance", case_list))
 
 def position_and_goto(EngineType, X):
-    Lng = Lng
+    
     # If the pattern requires backward input position detection, then
     # jump to the entry of the detector. (This is a very seldom case)
     if EngineType.is_FORWARD():
