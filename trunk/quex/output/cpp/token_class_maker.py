@@ -197,8 +197,9 @@ def get_union_members(Descr):
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
     my_def  = Lng.SOURCE_REFERENCE_BEGIN(TypeCode.sr)
     my_def += IndentationOffset
-    my_def += Lng["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
-                                                     VariableName, MaxVariableNameL)
+    my_def += Lng.CLASS_MEMBER_DEFINITION(TypeCode.get_pure_text(), MaxTypeNameL, 
+                                          VariableName)
+    print "#mydef:", my_def
     return my_def
 
 def get_setter_getter(Descr):
@@ -228,6 +229,8 @@ def get_setter_getter(Descr):
                             "long", "unsigned long", "singed long",
                             "float", "unsigned float", "singed float",
                             "double", "unsigned double", "singed double",
+                            "uint8_t", "uint16_t", "uint32_t",
+                            "int8_t", "int16_t", "int32_t",
                             "size_t", "uintptr_t", "ptrdiff_t"]:
             type_str += "&"
 
@@ -253,7 +256,7 @@ def get_quick_setters(Descr):
                  This is so, since functions are overloaded, have the same name
                  and only identify with their types.
         """
-        signature = map(lambda x: x[1].get_pure_code(), ArgList)
+        signature = map(lambda x: x[1].get_pure_text(), ArgList)
         if signature in used_signature_list:
             return ""
         else:
