@@ -12,7 +12,6 @@ from quex.exception                   import RegularExpressionException
 from   quex.engine.tools                       import all_isinstance
 from   quex.engine.generator.languages.core    import db
 import quex.engine.generator.state_router      as     state_router_generator
-import quex.output.cpp.core                    as     cpp_generator
 # import quex.engine.generator.skipper.core          as skipper
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.languages.variable_db as     variable_db
@@ -25,17 +24,21 @@ from   quex.input.files.counter_setup              import LineColumnCounterSetup
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
 from   quex.input.files.counter_db             import CounterDB
+import quex.output.cpp.core                    as     cpp_generator
 
 #
 import quex.blackboard as blackboard
-from   quex.blackboard import E_Compression
-from   quex.blackboard import setup as Setup, E_IncidenceIDs, signal_character_list, Lng
+from   quex.blackboard import E_Compression, \
+                              setup as Setup, \
+                              E_IncidenceIDs, \
+                              signal_character_list, \
+                              Lng
 
 from   copy import deepcopy
 # Switch: Removal of source and executable file
 #         'False' --> No removal.
 if False: REMOVE_FILES = True
-else:    REMOVE_FILES = False
+else:     REMOVE_FILES = False
 
 # Switch: Verbose debug output: 
 #         'False' --> Verbose debug output
@@ -107,7 +110,7 @@ def __Setup_init_language_database(Language):
         print "Error: missing language specifier: %s" % Language
         sys.exit()
 
-    Lng = db[Setup.language]
+    Setup.language_db = db[Setup.language]
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!

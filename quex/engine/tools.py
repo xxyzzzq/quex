@@ -1,4 +1,5 @@
 from quex.engine.misc.enum  import Enum
+from quex.DEFINITIONS       import QUEX_PATH
 
 from   itertools   import izip, islice
 from   collections import deque
@@ -16,8 +17,14 @@ def print_callstack(BaseNameF=False):
         i = 2
         name_list = []
         while 1 + 1 == 2:
-            x = sys._getframe(i).f_code
-            name_list.append([x.co_filename, x.co_firstlineno, x.co_name])
+            f = sys._getframe(i)
+            x = f.f_code
+
+            # Do not consider the frame coming from the @typed decorator,
+            # (See 'def typed(**parameters)' below)
+            if x.co_name != "modified": 
+                file_name = x.co_filename[len(QUEX_PATH)+1:]
+                name_list.append([file_name, f.f_lineno, x.co_name])
             i += 1
     except:
         pass

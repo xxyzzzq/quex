@@ -6,9 +6,10 @@ import quex.input.files.mode_option                    as     mode_option
 from   quex.input.files.mode_option                    import OptionDB, \
                                                               SkipRangeData
 import quex.input.files.code_fragment                  as     code_fragment
-from   quex.input.files.counter_db                     import CounterDB
-import quex.input.files.consistency_check              as     consistency_check
-from   quex.engine.analyzer.door_id_address_label      import Label
+from   quex.input.files.counter_db                     import CounterDB, \
+                                                              CounterCoderData
+from   quex.engine.analyzer.door_id_address_label      import Label, DoorID
+from   quex.engine.analyzer.terminal.core              import TerminalGenerated
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
 from   quex.engine.generator.code.core                 import CodeTerminal, \
                                                               CodeTerminalOnMatch, \
@@ -272,7 +273,8 @@ class IncidenceDB(dict):
             blackboard.required_support_indentation_count_set()
         dict.__setitem__(self, Key, Value)
 
-    def extract_terminal_db(self):
+    @typed(factory=TerminalFactory)
+    def extract_terminal_db(self, factory):
         """SpecialTerminals: END_OF_STREAM
                              FAILURE
                              CODEC_ERROR
@@ -287,18 +289,21 @@ class IncidenceDB(dict):
             E_IncidenceIDs.END_OF_STREAM
         ]
 
-        terminal_db = {}
+        result = {}
         for incidence_id in mandatory_list:
             if incidence_id in self: continue
             terminal_type = terminal_type_db[incidence_id]
-            terminal_db[terminal_type] = Lng.DEFAULT_CODE_FRAGMENT(terminal_type)
+            result[incidence_id] = Lng.DEFAULT_CODE_FRAGMENT(terminal_type)
 
-        terminal_db.update(
-            (terminal_type_db[incidence_id], CodeTerminal(code_fragment.get_code()))
-            for incidence_id, code_fragment in self.iteritems()
-            if incidence_id in terminal_type_db
-        )
-        return terminal_db
+        for incidence_id, code_fragment in self.iteritems():
+            if incidence_id not in terminal_type_db: continue
+            terminal_type = terminal_type_db[incidence_id]
+            code_terminal = CodeTerminal(code_fragment.get_code())
+            assert terminal_type not in result
+            result[incidence_id] = factory.do(terminal_type, incidence_id, code_terminal)
+
+        return result
+
 
     def get_CodeTerminal(self, IncidenceId):
         if IncidenceId not in self:
@@ -366,7 +371,7 @@ class Mode:
         # The list is developed so that patterns can be sorted and code 
         # fragments are prepared.
         ppc_list,     \
-        skip_terminal = self.__prepare_ppc_list(base_mode_sequence, options_db)
+        skip_terminal = self.__prepare_ppc_list(base_mode_sequence, options_db, counter_db)
 
         # (*) pattern list  <-- ppc list 
         self.__pattern_list = self.__pattern_list_construct(ppc_list, counter_db)
@@ -440,7 +445,7 @@ class Mode:
     def __pattern_list_construct(self, ppc_list, CounterDb):
         pattern_list = [ 
             pattern 
-            for priority, pattern, code_fragment in sorted(ppc_list, key=attrgetter("priority")) 
+            for priority, pattern, terminal in sorted(ppc_list, key=attrgetter("priority")) 
         ]
 
         # (*) Try to determine line and column counts -- BEFORE Transformation!
@@ -517,7 +522,7 @@ class Mode:
 
         return base_mode_sequence
 
-    def __prepare_ppc_list(self, BaseModeSequence, OptionsDb):
+    def __prepare_ppc_list(self, BaseModeSequence, OptionsDb, CounterDb):
         """Priority, Pattern, CodeFragment List: 'ppc_list'
         -----------------------------------------------------------------------
         The 'ppc_list' is the list of eXtended Pattern Action Pairs.
@@ -532,13 +537,17 @@ class Mode:
         the pattern index itself.
         -----------------------------------------------------------------------
         """ 
-        ppc_list = self.__pattern_action_pairs_collect(BaseModeSequence)
+        terminal_factory = TerminalFactory(self.name, IncidenceDb, line_column_count_db) 
+
+        ppc_list = self.__pattern_action_pairs_collect(BaseModeSequence, 
+                                                       terminal_factory)
 
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
         skip_terminal = self.__prepare_skip(ppc_list, 
                                             OptionsDb.value_sequence("skip"), 
+                                            CounterDb,
                                             MHI=-4)
 
         self.__prepare_skip_range(ppc_list, 
@@ -573,29 +582,22 @@ class Mode:
         line_column_count_db, \
         default_counter_f     = self.__prepare_line_column_count_db(PPC_List)
 
-        factory = TerminalFactory(self.name, IncidenceDb, line_column_count_db) 
-
         result = {}
         if skip_terminal is not None:
             result[skip_terminal.incidence_id()] = skip_terminal
 
         # Every pattern has a terminal for the case that it matches.
-        for priority, pattern, code_terminal in PPC_List:
-            terminal      = factory.do(E_TerminalType.MATCH_PATTERN, pattern.incidence_id(), code_terminal)
+        for priority, pattern, terminal in PPC_List:
             assert terminal.incidence_id() not in result
             result[pattern.incidence_id()] = terminal
 
-        special_terminal_db = IncidenceDb.extract_terminal_db()
-        for terminal_type, code_terminal in special_terminal_db.iteritems():
-            assert terminal_type not in result
-            incidence_id = sm_index.get()
-            result[incidence_id] = factory.do(terminal_type, incidence_id, code_terminal)
+        result.update(IncidenceDb.extract_terminal_db(factory))
 
         # The following would always set the 'default_counter_f' since the mentioned
         # terminal types are mandatory. Instead of setting 'default_counter_f = True'
         # the reasons are explicitly stated below.
-        default_counter_f |= (E_TerminalType.MATCH_FAILURE in special_terminal_db)
-        default_counter_f |= (E_TerminalType.END_OF_STREAM in special_terminal_db)
+        default_counter_f |= (E_IncidenceIDs.MATCH_FAILURE in result)
+        default_counter_f |= (E_IncidenceIDs.END_OF_STREAM in result)
         return result, default_counter_f
 
     def __prepare_line_column_count_db(self, PPC_List):
@@ -612,7 +614,7 @@ class Mode:
 
         return result, default_counter_f
 
-    def __prepare_skip(self, ppc_list, SkipSetupList, MHI):
+    def __prepare_skip(self, ppc_list, SkipSetupList, CounterDb, MHI):
         """MHI = Mode hierarchie index."""
         if SkipSetupList is None or len(SkipSetupList) == 0:
             return None
@@ -650,26 +652,24 @@ class Mode:
         # It is not necessary to store the count action along with the state
         # machine.  This is done in "action_preparation.do()" for each
         # terminal.
-        def get_PPC(MHI, Cli, CmdInfo, Code):
-            priority      = PatternPriority(MHI, Cli)
-            pattern       = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
-            ppc_list.append(PPC(priority, pattern, CodeTerminal(Code)))
 
-        ccd          = CounterCoderData(self.counter_db, character_set, AfterExitDoorId)
-        incidence_id = index.get_state_machine_id()
-        code         = [ Lng.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) ]
+        ccd          = CounterCoderData(CounterDb, character_set)
+        incidence_id = sm_index.get_state_machine_id()
+        code         = CodeTerminal([ Lng.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) ])
         for cli, cmd_info in ccd.count_command_map.iteritems():
+            priority         = PatternPriority(MHI, Cli)
+            pattern          = Pattern(StateMachine.from_character_set(CmdInfo.trigger_set))
+            sub_incidence_id = sm_index.get_state_machine_id()
+            terminal         = terminal_factory.do Terminal(sub_incidence_id, Code)
             # Counting actions are added to the terminal automatically.
             # What remains to do here is only to go to the skipper.
-            sub_incidence_id = index.get_state_machine_id()
-            ppc_list.append(get_PPC(MHI, cli, cmd_info, code))
+            ppc_list.append(PPC(priority, pattern, terminal))
 
         data = { 
-            "counter_db":    self.counter_db, 
+            "counter_db":    CounterDb, 
             "character_set": character_set,
         }
-        code = skip_character_set.do(data)
-        return Terminal(incidence_id, CodeFragment(code))
+        return TerminalGenerated(incidence_id, skip_character_set.do, data)
 
     def __prepare_skip_range(self, ppc_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
@@ -692,14 +692,16 @@ class Mode:
 
         for i, data in enumerate(SrSetup):
             assert isinstance(data, SkipRangeData)
-            data.mode = self
-            code      = CodeGeneratorFunction(data, opener_pattern.sr)
+            my_data      = deepcopy(data)
+            my_data.mode = self
+            code         = CodeGeneratorFunction(data, opener_pattern.sr)
 
-            priority  = PatternPriority(MHI, i)
-            pattern   = opener_pattern.clone()
+            priority     = PatternPriority(MHI, i)
+            pattern      = opener_pattern.clone()
             incidence_id = index.get_state_machine_id()
+            terminal     = TerminalGenerated(incidence_id, CodeGeneratorFunction, my_data)
             pattern.set_incidence_id(incidence_id)
-            ppc_list.append(PPC(priority, pattern, CodeTerminal(code)))
+            ppc_list.append(PPC(priority, pattern, terminal))
 
     def __prepare_indentation_counter(self, ppc_list, ISetup, MHI):
         """Prepare indentation counter. An indentation counter is implemented by the 
@@ -782,23 +784,26 @@ class Mode:
 
         return
 
-    def __pattern_action_pairs_collect(self, BaseModeSequence):
+    def __pattern_action_pairs_collect(self, BaseModeSequence, terminal_factory):
         """Collect patterns of all inherited modes. Patterns are like virtual functions
            in C++ or other object oriented programming languages. Also, the patterns of the
            uppest mode has the highest priority, i.e. comes first.
         """
-        def get_ppc(MHI, PAP):
+        def get_ppc(MHI, PAP, terminal_factory):
             pattern_priority = PatternPriority(MHI, PAP.pattern().incidence_id()) 
             pattern          = PAP.pattern()
             code_fragment    = PAP.action()
             code             = code_fragment.get_code() # Prepares line references
             code_terminal    = CodeTerminalOnMatch(code, code_fragment.mode_name, code_fragment.pattern_string)
-            return PPC(pattern_priority, pattern, code_terminal)
+            terminal         = terminal_factory.do(E_TerminalType.MATCH_PATTERN, pattern.incidence_id(), code_terminal)
+            return PPC(pattern_priority, pattern, terminal)
 
         result = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
-            result.extend(get_ppc(mode_hierarchy_index, pap) 
-                          for pap in mode_descr.pattern_action_pair_list)
+            result.extend(
+                 get_ppc(mode_hierarchy_index, pap, terminal_factory) 
+                 for pap in mode_descr.pattern_action_pair_list
+            )
         return result
 
     def __perform_reprioritization(self, ppc_list, BaseModeSequence):
@@ -1060,34 +1065,26 @@ def parse(fh):
     while __parse_element(new_mode, fh): 
         pass
 
-def finalize():
-    """After all modes have been defined, the mode descriptions can now
-       be translated into 'real' modes.
-    """
-    # (*) Translate each mode description int a 'real' mode
-    for name, mode_descr in blackboard.mode_description_db.iteritems():
-        blackboard.mode_db[name] = Mode(mode_descr)
+def determine_start_mode(mode_db):
+    if not blackboard.initial_mode.sr.is_void():
+        return
 
-    if blackboard.initial_mode.sr.is_void():
-        # Choose an applicable mode as start mode
-        first_candidate = None
-        for name, mode in blackboard.mode_db.iteritems():
-            if mode.abstract_f(): 
-                continue
-            elif first_candidate is not None:
-                error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
-                          "Use for example 'start = %s;' in the quex source file to define an initial mode." \
-                          % first_candidate.name)
-            else:
-                first_candidate = mode
-
-        if first_candidate is None:
-            error_msg("No non-abstract mode found in source files.")
+    # Choose an applicable mode as start mode
+    first_candidate = None
+    for name, mode in mode_db.iteritems():
+        if mode.abstract_f(): 
+            continue
+        elif first_candidate is not None:
+            error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
+                      "Use for example 'start = %s;' in the quex source file to define an initial mode." \
+                      % first_candidate.name)
         else:
-            blackboard.initial_mode = CodeUser(first_candidate.name, SourceReference=first_candidate.sr)
+            first_candidate = mode
 
-    # (*) perform consistency check 
-    consistency_check.do(blackboard.mode_db)
+    if first_candidate is None:
+        error_msg("No non-abstract mode found in source files.")
+    else:
+        blackboard.initial_mode = CodeUser(first_candidate.name, SourceReference=first_candidate.sr)
 
 def __parse_option_list(new_mode, fh):
     position = fh.tell()

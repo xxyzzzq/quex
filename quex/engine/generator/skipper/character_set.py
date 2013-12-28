@@ -68,7 +68,7 @@ def do(Data):
     character_set = Data["character_set"]
         
     result = generator.do_loop(counter_db, 
-                               AfterExitDoorId   = DoorID.reentry_preparation(),
+                               AfterExitDoorId   = DoorID.continue_without_on_after_match(),
                                CharacterSet      = character_set,
                                CheckLexemeEndF   = False,
                                ReloadF           = True,

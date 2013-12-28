@@ -31,6 +31,7 @@ import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
 import quex.input.regular_expression.core  as regular_expression
+from   quex.input.regular_expression.auxiliary  import PatternShorthand
 from   quex.input.setup                    import NotificationDB
 from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
 from   quex.engine.generator.code.base     import SourceRef
@@ -60,14 +61,10 @@ def do(file_list):
         except RegularExpressionException, x:
             error_msg(x.message, fh)
         
-    # After all modes have been defined, they can be translated 
-    # into 'real' modes => call 'finalize()'!
-    mode.finalize()
-
     if Setup.token_class_only_f and blackboard.token_type_definition is None:
         parse_default_token_definition()
 
-    return blackboard.mode_db
+    return blackboard.mode_description_db
 
 default_token_type_definition_triggered_by_mode_definition_f = False
 
@@ -110,7 +107,7 @@ def parse_section(fh):
             if mode_name == "":
                 error_msg("Missing mode_name after 'start ='", fh)
 
-            elif blackboard.initial_mode is not None:
+            elif not blackboard.initial_mode.sr.is_void():
                 error_msg("start mode defined more than once!", fh, DontExitF=True)
                 error_msg("previously defined here",
                           blackboard.initial_mode.sr.file_name,

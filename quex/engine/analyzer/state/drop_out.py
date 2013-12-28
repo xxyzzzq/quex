@@ -330,8 +330,8 @@ class TerminalRouterElement(object):
                and self.position_register == Other.position_register
 
     def __repr__(self):
-        if self.acceptance_id == E_IncidenceIDs.FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
-        else:                                             assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
+        if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
+        else:                                                  assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
 
         if self.positioning != 0:
             return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),

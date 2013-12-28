@@ -175,7 +175,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
 
         # 
         self.__distinct_members_type_name_length_max = \
-               max([0] + map(lambda x: len(x.get_text()), self.distinct_db.values()))
+               max([0] + map(lambda x: len(x.get_pure_text()), self.distinct_db.values()))
         self.__distinct_members_variable_name_length_max = \
                max([0] + map(lambda x: len(x), self.distinct_db.keys()))
         self.__type_name_length_max = \

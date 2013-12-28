@@ -99,7 +99,7 @@ EasyLexer.cpp: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
 	     --engine           EasyLexer  \
 		 --token-id-offset     0x1000     \
 	     -b $(BYTES_PER_CHARACTER)     \
-		 $(QUEX_FLAG)
+		 $(QUEX_FLAG) --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	

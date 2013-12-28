@@ -141,7 +141,7 @@ def do_main(SM, BipdEntryDoorIdDb):
     if analyzer.last_acceptance_variable_required():
         variable_db.require("last_acceptance")
 
-    return txt, analyzer.reload_state
+    return txt, analyzer
 
 def do_pre_context(SM, PreContextSmIdList):
     """Pre-context detecting state machine (backward).
@@ -173,7 +173,7 @@ def do_pre_context(SM, PreContextSmIdList):
     for sm_id in PreContextSmIdList:
         variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
 
-    return txt, analyzer.reload_state
+    return txt, analyzer
 
 def do_backward_input_position_detectors(BipdDb):
     result = []
@@ -249,13 +249,10 @@ def do_analyzer(analyzer):
     variable_db.require("input") 
     return state_machine_code
 
-@typed(TerminalList=[Terminal])
-def do_terminals(TerminalList, SimpleF=False):
-    lexeme_macro_definition_str = ""
-    if not SimpleF:
-        lexeme_macro_definition_str = Lng.TERMINAL_LEXEME_MACRO_DEFINITIONS()
-    txt = [ lexeme_macro_definition_str ]
-    txt.extend(Lng.TERMINAL_CODE(TerminalList))
+@typed(TerminalList=[Terminal], SimpleF=bool)
+def do_terminals(TerminalList, TheAnalyzer, SimpleF=False):
+    txt = [ Lng.TERMINAL_LEXEME_MACRO_DEFINITIONS(SimpleF) ]
+    txt.extend(Lng.TERMINAL_CODE(TerminalList, TheAnalyzer))
     return txt
 
 def do_reentry_preparation(PreContextSmIdList, TerminalDb):
@@ -278,7 +275,7 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
 
     code                    = state_machine_coder.do(analyzer)
 
-    code.extend(do_terminals([exit_terminal], SimpleF=True))
+    code.extend(do_terminals([exit_terminal], analyzer, SimpleF=True))
 
     if ReloadF and not GlobalReloadState:
         reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)

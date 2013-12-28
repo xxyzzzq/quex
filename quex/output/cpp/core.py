@@ -1,8 +1,7 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 from   quex.engine.generator.languages.variable_db import variable_db
-from   quex.engine.analyzer.door_id_address_label  import dial_db, \
-                                                          IfDoorIdReferencedCode, \
+from   quex.engine.analyzer.door_id_address_label  import IfDoorIdReferencedCode, \
                                                           get_plain_strings
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.generator.base                  import EngineStateMachineSet
@@ -21,7 +20,6 @@ def do(Mode, ModeNameList):
     """RETURNS: The analyzer code for a mode defined in 'Mode'.
     """
     # (*) Initialize address handling
-    dial_db.clear()     # BEFORE constructor of generator; 
     variable_db.init()  # because constructor creates some addresses.
 
     function_body,       \
@@ -35,6 +33,7 @@ def do(Mode, ModeNameList):
     #      which are not relevant for the main analyzer function.)
     counter_txt = []
     if Mode.default_character_counter_required_f:
+        variable_db.init()  # because constructor creates some addresses.
         counter_txt = do_default_counter(Mode.name, Mode.counter_db)
 
     return counter_txt + function_txt
@@ -55,7 +54,7 @@ def do_core(PatternList, TerminalDb):
     # (*) Pre Context State Machine
     #     (If present: All pre-context combined in single backward analyzer.)
     pre_context, \
-    reload_backward_state = generator.do_pre_context(esms.pre_context_sm,
+    pre_analyzer          = generator.do_pre_context(esms.pre_context_sm,
                                                      esms.pre_context_sm_id_list)
 
     # assert all_isinstance(pre_context, (IfDoorIdReferencedCode, int, str, unicode))
@@ -69,16 +68,17 @@ def do_core(PatternList, TerminalDb):
     # (*) Main State Machine -- try to match core patterns
     #     Post-context handling is webbed into the main state machine.
     main, \
-    reload_forward_state  = generator.do_main(esms.sm, bipd_entry_door_id_db)
+    main_analyzer         = generator.do_main(esms.sm, bipd_entry_door_id_db)
     # assert all_isinstance(main, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Reload procedures
-    reload_procedures     = generator.do_reload_procedures(reload_forward_state, 
-                                                           reload_backward_state)
+    reload_procedures     = generator.do_reload_procedures(main_analyzer.reload_state, 
+                                                           pre_analyzer.reload_state)
     # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Terminals
-    terminals             = generator.do_terminals(TerminalDb.values())
+    terminals             = generator.do_terminals(TerminalDb.values(), 
+                                                   analyzer)
 
     # (*) Re-entry preparation
     reentry_prerpation    = generator.do_reentry_preparation(esms.pre_context_sm_id_list,
@@ -103,8 +103,6 @@ def do_core(PatternList, TerminalDb):
     function_body.extend(state_router)        # route to state by index (only if no computed gotos)
     function_body.extend(reload_procedures)
     function_body.extend(reentry_prerpation)   
-    function_body.extend(Lng.RELOAD_PROCEDURE(ForwardF=True))   
-    function_body.extend(Lng.RELOAD_PROCEDURE(ForwardF=False))   
 
     return function_body, variable_definitions
 
@@ -112,18 +110,15 @@ def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
     txt_function = Lng["$analyzer-func"](ModeName, Setup, VariableDefs, 
                                                 FunctionBody, ModeNameList) 
     txt_header   = Lng.HEADER_DEFINITIONS() 
-    assert all_isinstance(txt_header, (str, unicode))
+    assert isinstance(txt_header, (str, unicode))
 
     txt_analyzer = get_plain_strings(txt_function)
     assert all_isinstance(txt_analyzer, (str, unicode))
 
-    return txt_header + txt_analyzer
+    return [ txt_header ] + txt_analyzer
 
 @typed(ModeName=(str,unicode), CounterDb=CounterDB)
 def do_default_counter(ModeName, CounterDb):
-    dial_db.clear()
-    variable_db.init()
-
     # May be, the default counter is the same as for another mode. In that
     # case call the default counter of the other mode with the same one and
     # only macro.
