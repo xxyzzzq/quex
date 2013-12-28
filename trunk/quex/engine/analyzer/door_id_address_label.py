@@ -84,9 +84,11 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod
     def global_reentry():                  return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY)
     @staticmethod
-    def global_reentry_preparation():      return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION)
+    def return_with_on_after_match():      return DoorID(0L,         E_DoorIdIndex.RETURN_WITH_ON_AFTER_MATCH)
     @staticmethod
-    def global_reentry_preparation_2():    return DoorID(0L,         E_DoorIdIndex.GLOBAL_REENTRY_PREPARATION_2)
+    def continue_with_on_after_match():    return DoorID(0L,         E_DoorIdIndex.CONTINUE_WITH_ON_AFTER_MATCH)
+    @staticmethod
+    def continue_without_on_after_match(): return DoorID(0L,         E_DoorIdIndex.CONTINUE_WITHOUT_ON_AFTER_MATCH)
 
     def drop_out_f(self):                  return self.door_index == E_DoorIdIndex.DROP_OUT
 
@@ -120,6 +122,9 @@ class DialDB:
         self.clear()
 
     def clear(self):
+        ## print_callstack()
+        ## print "#DialDB.clear()"
+
         # Database: [DoorID] [Address] [Label] 
         # 
         # The database is represented by a dictionary that maps:
@@ -172,6 +177,10 @@ class DialDB:
         door_id                     = DoorID(state_index, door_sub_index, PlainF=True)
         address_label_pair          = self.register_door_id(door_id)
 
+        ##if address_label_pair.label in ["_1", "_138"]:
+        ##    print_callstack()
+        ##    print "#door_id, address_label_pair:", door_id, address_label_pair
+
         return door_id, address_label_pair
 
     def max_door_sub_index(self, StateIndex):
@@ -206,10 +215,11 @@ class DialDB:
             return self.new_door_id(StateIndex, DoorSubIndex)
 
         door_id = sub_db.get(DoorSubIndex)
-        if door_id is not None:
+        if door_id is None:
+            return self.new_door_id(StateIndex, DoorSubIndex)
+        else:
             return door_id
 
-        return self.new_door_id(StateIndex, DoorSubIndex)
 
     def new_door_id(self, StateIndex=None, DoorSubIndex=None):
         door_id, alp = self.__new_entry(StateIndex, DoorSubIndex)
@@ -279,11 +289,6 @@ class DialDB:
     def mark_door_id_as_routed(self, DoorId):
         self.mark_address_as_routed(self.get_address_by_door_id(DoorId))
 
-    def label_from_address(Adr):
-        #if Adr in special_label_db:
-        #    return special_label_db[Adr]
-        return "_%s" % Adr
-
 
 dial_db = DialDB()
 
@@ -306,9 +311,11 @@ class Label:
     @staticmethod
     def global_reentry(GotoedF=False):               return dial_db.get_label_by_door_id(DoorID.global_reentry(), GotoedF)
     @staticmethod
-    def global_reentry_preparation(GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.global_reentry_preparation(), GotoedF)
+    def return_with_on_after_match(GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.return_with_on_after_match(), GotoedF)
     @staticmethod
-    def global_reentry_preparation_2(GotoedF=False): return dial_db.get_label_by_door_id(DoorID.global_reentry_preparation_2(), GotoedF)
+    def continue_with_on_after_match(GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.continue_with_on_after_match(), GotoedF)
+    @staticmethod
+    def continue_without_on_after_match(GotoedF=False): return dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match(), GotoedF)
 
 class DoorID_Scheme(tuple):
     """A TargetByStateKey maps from a index, i.e. a state_key to a particular
@@ -323,7 +330,6 @@ class DoorID_Scheme(tuple):
         door_id_list = list(This)
         door_id_list.extend(list(That))
         return DoorID_Scheme(door_id_list)
-
 
 __routed_address_set = set([])
 

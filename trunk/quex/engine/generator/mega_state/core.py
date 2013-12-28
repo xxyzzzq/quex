@@ -1,4 +1,4 @@
-from   quex.blackboard                                   import setup as Setup
+from   quex.blackboard                                   import Lng
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap

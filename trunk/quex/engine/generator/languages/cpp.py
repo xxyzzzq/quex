@@ -17,46 +17,6 @@ def __nice(SM_ID):
 # C++
 #
 
-__return_with_on_after_match = """
-#define RETURN    do { goto __ON_AFTER_MATCH_THEN_RETURN; } while(0)
-"""
-__on_after_match_then_return_str = """
-__ON_AFTER_MATCH_THEN_RETURN:
-$$ON_AFTER_MATCH$$
-    __QUEX_PURE_RETURN;
-"""
-
-__header_definitions_txt = """
-#include <quex/code_base/analyzer/member/basic>
-#include <quex/code_base/buffer/Buffer>
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-#   include <quex/code_base/token/TokenQueue>
-#endif
-
-#ifdef    CONTINUE
-#   undef CONTINUE
-#endif
-#define   CONTINUE goto $$GOTO_START_PREPARATION$$; 
-
-#ifdef    RETURN
-#   undef RETURN
-#endif
-"""
-
-def header_definitions():
-    global __return_with_on_after_match
-    assert len(__return_with_on_after_match) > 10
-
-    #txt += "/MARK/ %i '%s'\n" % (len(__return_with_on_after_match),    map(ord, __return_with_on_after_match))
-    #txt += "/MARK/ '%s'\n" % __return_with_on_after_match
-    #txt += "/MARK/ %i '%s'\n" % (len(__return_without_on_after_match), map(ord, __return_without_on_after_match))
-    #txt += "/MARK/ '%s'\n" % __return_without_on_after_match
-    txt = [ __header_definitions_txt.replace("$$GOTO_START_PREPARATION$$", 
-                                             dial_db.get_label_by_door_id(DoorID.global_reentry_preparation(), GotoedF=True)) ]
-
-    txt.append(__return_with_on_after_match)
-    return txt
-
 def _local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
@@ -257,25 +217,13 @@ def __analyzer_function(StateMachineName, Setup,
     txt.append("#include <quex/code_base/temporary_macros_off>\n")
     return txt
 
-__terminal_router_str = """
-    __quex_debug("terminal router");
-    /*  if last_acceptance => goto correspondent acceptance terminal state */
-    /*  else               => execute default action                       */
-    if( last_acceptance == $$TERMINAL_FAILURE-REF$$ ) {
-        goto $$TERMINAL_FAILURE$$; /* TERMINAL: FAILURE */
-    }
-#   ifdef  QUEX_OPTION_COMPUTED_GOTOS
-    goto *last_acceptance;
-#   else
-    target_state_index = last_acceptance;
-    goto $$STATE_ROUTER$$;
-#   endif /* QUEX_OPTION_COMPUTED_GOTOS */
-"""
 __terminal_state_prolog  = """
     /* (*) Terminal states _______________________________________________________
      *
      * States that implement actions of the 'winner patterns.                     */
+"""
 
+__lexeme_macro_setup = """
     /* Lexeme setup: 
      *
      * There is a temporary zero stored at the end of each lexeme, if the action 
@@ -296,13 +244,15 @@ __terminal_state_prolog  = """
 #define LexemeNull      (&QUEX_LEXEME_NULL)
 """
 
-__reentry_preparation_str = """
+__lexeme_macro_clean_up = """
 #   undef Lexeme
 #   undef LexemeBegin
 #   undef LexemeEnd
 #   undef LexemeNull
 #   undef LexemeL
+"""
 
+__return_if_queue_full_or_simple_analyzer = """
 #   ifndef __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     if( QUEX_NAME(TokenQueue_is_full)(&self._token_queue) ) {
@@ -314,8 +264,8 @@ __reentry_preparation_str = """
     }
 #   endif
 #   endif
-$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
-$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
+"""
+__return_if_mode_changed = """
     /*  If a mode change happened, then the function must first return and
      *  indicate that another mode function is to be called. At this point, 
      *  we to force a 'return' on a mode change. 
@@ -338,8 +288,6 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
         QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #       endif
     }
-
-    goto $$GOTO_START$$;
 """
 
 def lexeme_macro_definitions(Setup):
@@ -348,29 +296,15 @@ def lexeme_macro_definitions(Setup):
     if Setup.external_lexeme_null_object != "":
         lexeme_null_object_name = Setup.external_lexeme_null_object
 
-    return blue_print(__terminal_state_prolog, [
+    txt = [ __terminal_state_prolog ]
+
+    txt.append(blue_print(__lexeme_macro_setup, [
           ["$$LEXEME_LENGTH$$",      Setup.language_db.LEXEME_LENGTH()],
           ["$$INPUT_P$$",            Setup.language_db.INPUT_P()],
           ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
-    ])
+    ]))
 
-def __on_after_match_then_return(OnAfterMatchTerminal):
-    if OnAfterMatchTerminal is None:
-        return "", ""
-
-    on_after_match_str = OnAfterMatchTerminal.action.get_text()
-    return_preparation = blue_print(__on_after_match_then_return_str,
-                                    [["$$ON_AFTER_MATCH$$",  on_after_match_str]])
-
-    txt = ["__ON_AFTER_MATCH_THEN_RETURN:\n" ]
-    txt.append(on_after_match_str)
-    txt.append("#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)\n" \
-               "    return;\n"                                    \
-               "#   else\n"                                       \
-               "    return __self_result_token_id;\n"             \
-               "#   endif\n")
-
-    return return_preparation, on_after_match_str
+    return "".join(txt)
 
 def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
     TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
@@ -384,51 +318,48 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
             for pre_context_id in PreConditionIDList
         ])
 
-    on_after_match_then_return_str, \
-    OnAfterMatchStr                 = __on_after_match_then_return(OnAfterMatchTerminal)
+    if OnAfterMatchTerminal is not None:
+        on_after_match_str = OnAfterMatchTerminal.code()
+    else:
+        on_after_match_str = ""
 
     txt = [ 
-        on_after_match_then_return_str,
-        "%s:\n" % Label.global_reentry_preparation(),
-        "/* (*) Common point for **restarting** lexical analysis.\n",
-        " *     at each time when CONTINUE is called at the end of a pattern.     */\n",
-        OnAfterMatchStr,
-        "/* FAILURE needs not to run through 'on_after_match'. It enters here.    */\n",
-        IfDoorIdReferencedLabel(DoorID.global_reentry_preparation_2()),
+        "\n",
+        "%s:"  % Label.return_with_on_after_match(), 
+        "/* RETURN -- after executing 'on_after_match' code. */\n",
+        on_after_match_str,
+        "    __QUEX_PURE_RETURN;\n",
+        "\n",
+        "%s:" % Label.continue_with_on_after_match(), 
+        "/* CONTINUE -- after executing 'on_after_match' code. */\n",
+        on_after_match_str,
+        "%s:" % Label.continue_without_on_after_match(),
+        "/* CONTINUE -- without executing 'on_after_match' (e.g. on FAILURE). */\n",
+        "\n",
+        __return_if_queue_full_or_simple_analyzer,
+        "\n",
+        __return_if_mode_changed,
+        "\n",
+        unset_pre_context_flags_str,
+        "\n",
+        "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry()), 
+        "\n",
+        "/* Avoid compiler warnings 'unreferenced label'. */\n",
+        # 'return_with_on_after_match', 'continue_with_on_after_match' and
+        # 'continue_with_on_after_match' need to be implemented always, because
+        # they are possibly used in macros. We cannot determine whether macros
+        # are used or not. 
+        Lng.UNREACHABLE_BEGIN(),
+        Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
+        Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
+        Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
+        Lng.UNREACHABLE_END(),
+        "\n",
+        __lexeme_macro_clean_up,
     ]
 
-
-    txt.append(
-      blue_print(__reentry_preparation_str, [
-          ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  unset_pre_context_flags_str],
-          ["$$GOTO_START$$",                             Label.global_reentry(GotoedF=True)],
-          # ["$$ON_AFTER_MATCH$$",                         OnAfterMatchStr],
-          ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
-          ["$$TERMINAL_FAILURE-REF$$",                   TerminalFailureRef],
-      ])
-    )
     return txt
 
-def __terminally(Terminal):
-    label = Label.incidence(Terminal.incidence_id())
-    txt = [
-       "%s: __quex_debug(\"* TERMINAL %s\\n\");\n" % (label, Terminal.name()),
-        0 
-    ]
-    txt.extend(Terminal.code())
-    txt.append("\n")
-    return txt
-
-def terminal_states(TerminalStateList, SimpleF=False):
-    """NOTE: During backward-lexing, for a pre-context, there is not need for terminal
-             states, since only the flag 'pre-context fulfilled is raised.
-
-    """      
-    code = []
-    for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
-        code.extend(__terminally(terminal))
-    return code
-    
 def __frame_of_all(Code, Setup):
     # namespace_ref   = Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space)
     # if len(namespace_ref) > 2 and namespace_ref[:2] == "::":  namespace_ref = namespace_ref[2:]

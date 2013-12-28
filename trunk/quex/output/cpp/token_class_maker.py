@@ -199,7 +199,6 @@ def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, Indentation
     my_def += IndentationOffset
     my_def += Lng.CLASS_MEMBER_DEFINITION(TypeCode.get_pure_text(), MaxTypeNameL, 
                                           VariableName)
-    print "#mydef:", my_def
     return my_def
 
 def get_setter_getter(Descr):

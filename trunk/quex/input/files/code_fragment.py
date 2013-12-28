@@ -9,16 +9,16 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 read_until_closing_bracket, \
                                                 skip_whitespace, \
                                                 verify_word_in_list
-import quex.blackboard                   as     blackboard
 from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
-from   quex.blackboard                   import setup as Setup
+import quex.blackboard                   as     blackboard
+from   quex.blackboard                   import setup as Setup, \
+                                                Lng
 from   quex.engine.generator.code.base   import SourceRef
 from   quex.input.setup                  import NotificationDB
-from   quex.blackboard                   import QuexSetup
+import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 from   quex.engine.unicode_db.parser     import ucs_property_db
 from   quex.engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.engine.generator.code.core   import CodeUser 
-import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 
 def parse(fh, CodeFragmentName, 
           ErrorOnFailureF=True, AllowBriefTokenSenderF=True, ContinueF=True):
@@ -27,7 +27,6 @@ def parse(fh, CodeFragmentName,
 
                 None in case of failure.
     """
-    assert Setup.__class__ == QuexSetup
     assert type(ErrorOnFailureF)        == bool
     assert type(AllowBriefTokenSenderF) == bool
 

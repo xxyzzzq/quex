@@ -30,6 +30,7 @@ from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 
+from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.misc.file_in import open_file_or_die, \
                                        write_safely_and_close
 from   quex.engine.tools import typed
@@ -170,7 +171,7 @@ class Lng_Cpp(dict):
         norm_file_name = Setup.get_file_reference(SourceReference.file_name) 
         return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
     def SOURCE_REFERENCE_END(self):
-        return '<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
+        return '\n<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
     def NAMESPACE_OPEN(self, NameList):
         return "".join(("    " * i + "namespace %s {\n" % name) for i, name in enumerate(NameList))
     def NAMESPACE_CLOSE(self, NameList):
@@ -362,17 +363,29 @@ class Lng_Cpp(dict):
         else:
             assert False, "Unknown Entry Action"
 
-    def TERMINAL_LEXEME_MACRO_DEFINITIONS(self):
-        return cpp.lexeme_macro_definitions(Setup)
+    def TERMINAL_LEXEME_MACRO_DEFINITIONS(self, SimpleF=False):
+        if SimpleF: return ""
+        else:       return cpp.lexeme_macro_definitions(Setup)
 
-    def TERMINAL_CODE(self, TerminalStateList): 
-        return cpp.terminal_states(TerminalStateList)
+    def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
+        code = []
+        for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
+            code.append(
+               "%s:" % Label.incidence(terminal.incidence_id()),
+               "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
+            )
+            code.extend(terminal.code(TheAnalyzer))
+            code.append("\n")
+        return code
 
     def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
         return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)
 
     def HEADER_DEFINITIONS(self):
-        return cpp.header_definitions()
+        return blue_print(cpp_header_definition_str, [
+                 ("$$CONTINUE_WITH_ON_AFTER_MATCH$$", Label.continue_with_on_after_match()),
+                 ("$$RETURN_WITH_ON_AFTER_MATCH$$",   Label.return_with_on_after_match()),
+               ])
 
     def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
         if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
@@ -503,11 +516,17 @@ class Lng_Cpp(dict):
         if AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
         else:                                       return "%i" % AcceptanceID
 
+    def UNREACHABLE_BEGIN(self):
+        return "if( 0 ) {"
+
+    def UNREACHABLE_END(self):
+        return "}"
+
     def IF(self, LValue, Operator, RValue, FirstF=True):
         if isinstance(RValue, (str,unicode)): test = "%s %s %s"   % (LValue, Operator, RValue)
         else:                                 test = "%s %s 0x%X" % (LValue, Operator, RValue)
         if FirstF: return "if( %s ) {\n"        % test
-        else:      return "} else if( %s ) {\n" % test
+        else:      return "\n} else if( %s ) {\n" % test
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)
@@ -538,7 +557,7 @@ class Lng_Cpp(dict):
         return self.IF(self.INPUT_P(), "==", self.LEXEME_START_P(), FirstF)
 
     def END_IF(self, LastF=True):
-        return { True: "}", False: "" }[LastF]
+        return { True: "\n}", False: "" }[LastF]
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
         if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
@@ -704,19 +723,20 @@ class Lng_Cpp(dict):
 
     def straighten_open_line_pragmas(self, FileName):
         norm_filename   = Setup.get_file_reference(FileName)
-        line_pragma_txt = self.SOURCE_REFERENCE_END()
+        line_pragma_txt = self.SOURCE_REFERENCE_END().strip()
 
         new_content = []
-        line_n      = 0
+        line_n      = 1 # NOT: 0!
         fh          = open_file_or_die(FileName)
         while 1 + 1 == 2:
             line = fh.readline()
             line_n += 1
             if not line: 
                 break
-            elif line != line_pragma_txt:
+            elif line.strip() != line_pragma_txt:
                 new_content.append(line)
             else:
+                line_n += 1
                 new_content.append(self.SOURCE_REFERENCE_BEGIN(SourceRef(norm_filename, line_n)))
         fh.close()
         write_safely_and_close(FileName, "".join(new_content))
@@ -750,6 +770,24 @@ cpp_reload_backward_str = [
     __quex_debug("reload impossible\\n");
     QUEX_GOTO_STATE(target_state_else_index);  /* may use 'computed goto' */
 """]
+
+cpp_header_definition_str = """
+#include <quex/code_base/analyzer/member/basic>
+#include <quex/code_base/buffer/Buffer>
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/token/TokenQueue>
+#endif
+
+#ifdef    CONTINUE
+#   undef CONTINUE
+#endif
+#define   CONTINUE do { goto $$CONTINUE_WITH_ON_AFTER_MATCH$$; } while(0)
+
+#ifdef    RETURN
+#   undef RETURN
+#endif
+#define   RETURN   do { goto $$RETURN_WITH_ON_AFTER_MATCH$$; } while(0)
+"""
 
 db = {}
 

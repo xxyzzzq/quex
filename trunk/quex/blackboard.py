@@ -185,8 +185,9 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "GLOBAL_STATE_ROUTER", 
                      "GLOBAL_END_OF_PRE_CONTEXT_CHECK", 
                      "GLOBAL_REENTRY",
-                     "GLOBAL_REENTRY_PREPARATION",
-                     "GLOBAL_REENTRY_PREPARATION_2",
+                     "RETURN_WITH_ON_AFTER_MATCH",
+                     "CONTINUE_WITH_ON_AFTER_MATCH",
+                     "CONTINUE_WITHOUT_ON_AFTER_MATCH",
                      "_DEBUG_DoorIdIndex") 
 
 E_Commands = Enum("Accepter",

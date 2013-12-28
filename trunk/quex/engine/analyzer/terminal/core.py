@@ -3,6 +3,8 @@ from   quex.engine.analyzer.state.entry import Entry
 import quex.engine.state_machine.index  as index
 from   quex.engine.tools                import typed
 
+from   types import FunctionType, NoneType
+
 #__________________________________________________________________________
 #
 # TerminalState:
@@ -25,7 +27,7 @@ from   quex.engine.tools                import typed
 # the input pointer to the position where the next analysis step starts.
 #__________________________________________________________________________
 class Terminal(Processor):
-    @typed(Name=(str,unicode), LexemeBeginRequiredF=bool, Code=list)
+    @typed(Name=(str,unicode), LexemeBeginRequiredF=bool, Code=CodeTerminal))
     def __init__(self, IncidenceId, Code, Name="", LexemeBeginRequiredF=False):
         Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
         self.__incidence_id            = IncidenceId
@@ -39,9 +41,21 @@ class Terminal(Processor):
     def name(self):
         return self.__name
 
-    def code(self):
-        return self.__code
+    def code(self, TheAnalyzer):
+        return self.__code.get_code()
 
-    def lexeme_begin_required_f(self):
-        return self.__lexeme_begin_required_f
+    def requires_lexeme_terminating_zero_f(self):
+        return self.__code.requires_lexeme_terminating_zero_f()
+
+    def requires_lexeme_begin_f(self):
+        return self.__code.requires_lexeme_begin_f()
+
+def TerminalGenerated(Terminal):
+    @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, LexemeBeginRequiredF=bool, Code=list)
+    def __init__(self, IncidenceId, GeneratorFunction, Data, Name="", LexemeBeginRequiredF=False):
+        Terminal.__init__(self, IncidenceId, CodeTerminal_NULL(), Name, LexemeBeginRequiredF)
+        self.__generator = GeneratorFunction
+
+    def code(self, TheAnalyzer):
+        return self.__generator(Data, TheAnalyzer)
 

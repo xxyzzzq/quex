@@ -7,6 +7,8 @@ from quex.engine.state_machine.core  import StateMachine
 from quex.engine.generator.code.base import SourceRef
 from quex.exception                  import RegularExpressionException
 
+from copy import deepcopy
+
 __debug_recursion_depth  = -1
 __debug_output_enabled_f = False # True / False 
 

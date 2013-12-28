@@ -5,7 +5,9 @@ from   quex.blackboard                             import setup as Setup, E_Inci
 import quex.engine.state_machine.check.outrun      as     outrun_checker
 import quex.engine.state_machine.check.superset    as     superset_check
 import quex.engine.state_machine.check.same        as     same_check
+from   quex.blackboard import E_IncidenceIDs
 from   itertools import islice
+
 
 
 def do(ModeDB):
@@ -42,7 +44,8 @@ def do(ModeDB):
     #     'on_codec_error' handler must be specified in every mode.
     if Setup.buffer_codec != "unicode" or Setup.converter_f:
         for mode in ModeDB.values():
-            if E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
+            # Later ... 
+            if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
                 error_msg("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
                           "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
                           "The feature is not yet supported, but the infrastructure is currently setup for it.",

@@ -301,7 +301,7 @@ class CounterCoderData:
             if AfterExitDoorId is not None: 
                 on_exit = CommandList(on_exit_cmd, GotoDoorId(AfterExitDoorId))
             else:
-                on_exit = CommandList(on_exit_always)
+                on_exit = CommandList(on_exit_cmd)
             return on_entry, on_exit
 
     def __on_before_after_reload_prepare(self, LexemeF):

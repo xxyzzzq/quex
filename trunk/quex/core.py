@@ -3,9 +3,12 @@ from   quex.engine.misc.file_in                 import write_safely_and_close
 from   quex.blackboard                          import setup as Setup, \
                                                        Lng
 import quex.output.cpp.source_package           as source_package
-import quex.blackboard                          as blackboard
 #
 import quex.input.files.core                    as quex_file_parser
+from   quex.input.files.mode                    import determine_start_mode, Mode
+import quex.input.files.consistency_check       as     consistency_check
+#
+from   quex.engine.analyzer.door_id_address_label  import dial_db
 #
 import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker
@@ -16,6 +19,8 @@ import quex.output.cpp.mode_classes             as mode_classes
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 import quex.output.graphviz.core                as grapviz_generator
 
+import quex.blackboard                          as blackboard
+
 def do():
     """Generates state machines for all modes. Each mode results into 
        a separate state machine that is stuck into a virtual function
@@ -24,7 +29,19 @@ def do():
     if Setup.language == "DOT": 
         return do_plot()
 
-    mode_db = quex_file_parser.do(Setup.input_mode_files)
+    mode_description_db = quex_file_parser.do(Setup.input_mode_files)
+
+    # (*) implement the lexer mode-specific analyser functions
+    #     During this process: mode_description_db --> mode_db
+    function_analyzers_implementation, \
+    mode_db                            = analyzer_functions_get(mode_description_db)
+
+    # (*) Implement the 'quex' core class from a template
+    # -- do the coding of the class framework
+    configuration_header    = configuration.do(mode_db)
+    analyzer_header         = analyzer_class.do(mode_db)
+    analyzer_implementation = analyzer_class.do_implementation(mode_db) + "\n"
+    mode_implementation     = mode_classes.do(mode_db)
 
     # (*) [Optional] Generate a converter helper
     codec_converter_helper_header, \
@@ -53,16 +70,6 @@ def do():
                                class_token_implementation)
         write_safely_and_close(Setup.output_token_id_file, token_id_header)
         return
-
-    # (*) Implement the 'quex' core class from a template
-    # -- do the coding of the class framework
-    configuration_header    = configuration.do(mode_db)
-    analyzer_header         = analyzer_class.do(mode_db)
-    analyzer_implementation = analyzer_class.do_implementation(mode_db) + "\n"
-    mode_implementation     = mode_classes.do(mode_db)
-
-    # (*) implement the lexer mode-specific analyser functions
-    function_analyzers_implementation = analyzer_functions_get(mode_db)
 
     # Implementation (Potential Inline Functions)
     if class_token_implementation is not None:
@@ -115,10 +122,17 @@ def analyzer_functions_get(ModeDB):
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
-    mode_list      = [ mode for mode in ModeDB.itervalues() if not mode.abstract_f() ]
-    mode_name_list = [ mode.name for mode in mode_list ] 
+    mode_name_list = ModeDB.keys()  
 
-    for mode in mode_list:        
+    for name, mode_descr in ModeDB.iteritems():        
+        dial_db.clear()
+
+        # -- Generate 'Mode' from 'ModeDescriptions'
+        mode = Mode(mode_descr)
+
+        blackboard.mode_db[name] = mode
+        if mode.abstract_f(): continue
+
         # -- some modes only define event handlers that are inherited
         if len(mode.pattern_list) == 0: continue
 
@@ -131,14 +145,19 @@ def analyzer_functions_get(ModeDB):
     if Setup.comment_mode_patterns_f:
         comment = []
         Lng.ML_COMMENT(comment, 
-                                     "BEGIN: MODE PATTERNS\n" + \
-                                     inheritance_info_str     + \
-                                     "\nEND: MODE PATTERNS")
+                       "BEGIN: MODE PATTERNS\n" + \
+                       inheritance_info_str     + \
+                       "\nEND: MODE PATTERNS")
         comment.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
         analyzer_code.append("".join(comment))
 
+    determine_start_mode(blackboard.mode_db)
+
+    # (*) perform consistency check on newly generated mode_db
+    consistency_check.do(blackboard.mode_db)
+
     # generate frame for analyser code
-    return cpp_generator.frame_this("".join(analyzer_code))
+    return cpp_generator.frame_this("".join(analyzer_code)), blackboard.mode_db
 
 def do_plot():
     mode_db = quex_file_parser.do(Setup.input_mode_files)
