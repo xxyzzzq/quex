@@ -39,16 +39,16 @@ init-state = 0L
 
 Positioning Info __________________________________
 State 0:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 2:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 3:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      1]: 1/set([1L])
     (*) [      2]: 2/set([1L])
     (*) [      3]: 3/set([1L])
@@ -59,33 +59,33 @@ State 3:
     (*) [      8]: 8/set([1L])
 
 State 4:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 5:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 6:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 7:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      3]: 3/set([4L])
     (*) [      4]: 4/set([4L])
     (*) [      5]: 5/set([5L])
     (*) [      6]: 6/set([5L])
 
 State 8:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      3]: 3/set([4L])
         [      4]: 4/set([4L])
 
 State 9:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      3]: 3/set([4L])
     (*) [      4]: 4/set([4L])
 
 State 10:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      3]: 3/set([4L])
     (*) [      4]: 4/set([4L])
     (*) [      7]: 7/set([8L])

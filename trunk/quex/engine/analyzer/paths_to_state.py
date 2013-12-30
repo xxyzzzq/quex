@@ -38,10 +38,10 @@ class AcceptSequence:
         return self.__sequence.__iter__()
 
     def get_string(self, Indent=0):
-        txt = [ " " * (Indent*4) + "p-id     pre-id   as-i     ps-i     tnsp\n"]
+        txt = [ " " * (Indent*4) + "p-id           pre-id   as-i     ps-i     tnsp\n"]
         for x in self.__sequence:
             #012345678012345678012345678012345678012345678
-            txt.append(" " * (Indent*4) + "%-9s%-9s%-9s%-9s%-9s\n" % ( \
+            txt.append(" " * (Indent*4) + "%-15s%-9s%-9s%-9s%-9s\n" % ( \
                         x.acceptance_id, x.pre_context_id,
                         x.accepting_state_index, x.positioning_state_index,
                         x.transition_n_since_positioning))

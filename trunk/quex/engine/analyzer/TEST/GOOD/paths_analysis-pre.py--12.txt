@@ -109,7 +109,7 @@ State 7:
 
 
 State 0:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 1:
         [      7]: NONE/set([1L])
