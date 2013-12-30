@@ -988,7 +988,7 @@ class StateMachine(object):
         for state in self.states.itervalues():
             for origin in state.origins():
                 enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
-                enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs_AcceptanceIDs)
+                enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs)
 
         def get_map(id_set, Offset):
             """The 'order' of the IDs must be maintained! In particular, a 
@@ -1000,7 +1000,7 @@ class StateMachine(object):
             return result
 
         if PreContextID_Offset is None: PreContextID_Offset = 1 # Avoid ID = 0
-        if AcceptanceID_Offset    is None: AcceptanceID_Offset    = 1 # Avoid ID = 0
+        if AcceptanceID_Offset is None: AcceptanceID_Offset    = 1 # Avoid ID = 0
         assert PreContextID_Offset > 0
         assert AcceptanceID_Offset    > 0
         return get_map(pre_context_id_set, PreContextID_Offset), \

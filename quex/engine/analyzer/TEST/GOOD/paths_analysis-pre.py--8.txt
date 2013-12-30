@@ -70,18 +70,18 @@ State 5:
 
 
 State 0:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      1]: BEGIN_OF_LINE/set([1L])
 
 State 2:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      1]: BEGIN_OF_LINE/set([1L])
 
 State 3:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      1]: BEGIN_OF_LINE/set([1L])
         [      2]: BEGIN_OF_LINE/set([5L])
 
@@ -89,6 +89,6 @@ State 4:
         [      3]: NONE/set([4L])
 
 State 5:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      2]: BEGIN_OF_LINE/set([5L])
 

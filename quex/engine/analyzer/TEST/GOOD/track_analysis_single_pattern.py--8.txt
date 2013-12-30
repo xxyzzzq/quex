@@ -11,7 +11,7 @@ init-state = 0L
 
 #State 0
     p-id     pre-id   as-i     ps-i     tnsp
-    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
 
 
 #State 1
@@ -21,6 +21,6 @@ init-state = 0L
 
 #State 2
     p-id     pre-id   as-i     ps-i     tnsp
-    FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
 
 

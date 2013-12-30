@@ -42,14 +42,14 @@ State 3:
 
 
 State 0:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 1:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      2]: 1/set([1L])
 
 State 2:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
         [      2]: 1/set([1L])
 
 State 3:

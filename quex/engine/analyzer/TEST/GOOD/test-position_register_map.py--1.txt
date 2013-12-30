@@ -22,17 +22,17 @@ init-state = 0L
 
 Positioning Info __________________________________
 State 0:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
 
 State 1:
         [      1]: NONE/set([1L])
 
 State 2:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      1]: NONE/set([1L])
 
 State 3:
-        [FAILURE]: NONE/set([0L])
+        [MATCH_FAILURE]: NONE/set([0L])
     (*) [      1]: NONE/set([1L])
 
 State 4:
