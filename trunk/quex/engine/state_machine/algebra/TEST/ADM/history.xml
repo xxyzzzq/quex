@@ -1,4 +1,4 @@
-<history date="Sat Oct  5 03:48:54 2013" element-n="43">
+<history date="Mon Dec 30 08:23:55 2013" element-n="44">
     <day year="2013" month="01" day="10">
         <history-init time="17:49:13"/>
         <crc-error time="18:15:31" application="test-intersection.py" choice="GoodCases" database-crc="1437481811" real-crc="-1865021134"/>
@@ -57,5 +57,8 @@
         <crc-error time="01:48:52" application="test-complement_end.py" choice="3" database-crc="595489109" real-crc="-1953797760"/>
         <crc-error time="01:48:53" application="test-complement_end.py" choice="4" database-crc="1070628383" real-crc="2023946967"/>
         <crc-error time="01:48:54" application="test-complement_end.py" choice="5" database-crc="-907666158" real-crc="393778705"/>
+    </day>
+    <day year="2013" month="12" day="30">
+        <crc-error time="07:23:23" application="test-algebraic-relations.py" choice="unary" database-crc="-106769247" real-crc="1858791790"/>
     </day>
 </history>

@@ -1,6 +1,8 @@
+from   quex.engine.generator.code.core  import CodeTerminal, \
+                                               CodeTerminal_NULL
 from   quex.engine.analyzer.state.core  import Processor
 from   quex.engine.analyzer.state.entry import Entry
-import quex.engine.state_machine.index  as index
+import quex.engine.state_machine.index  as     index
 from   quex.engine.tools                import typed
 
 from   types import FunctionType, NoneType
@@ -27,13 +29,12 @@ from   types import FunctionType, NoneType
 # the input pointer to the position where the next analysis step starts.
 #__________________________________________________________________________
 class Terminal(Processor):
-    @typed(Name=(str,unicode), LexemeBeginRequiredF=bool, Code=CodeTerminal))
-    def __init__(self, IncidenceId, Code, Name="", LexemeBeginRequiredF=False):
+    @typed(Name=(str,unicode), Code=CodeTerminal)
+    def __init__(self, IncidenceId, Code, Name=""):
         Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
         self.__incidence_id            = IncidenceId
         self.__code                    = Code
         self.__name                    = Name
-        self.__lexeme_begin_required_f = LexemeBeginRequiredF
 
     def incidence_id(self):
         return self.__incidence_id
@@ -50,12 +51,14 @@ class Terminal(Processor):
     def requires_lexeme_begin_f(self):
         return self.__code.requires_lexeme_begin_f()
 
-def TerminalGenerated(Terminal):
+class TerminalGenerated(Terminal):
     @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, LexemeBeginRequiredF=bool, Code=list)
-    def __init__(self, IncidenceId, GeneratorFunction, Data, Name="", LexemeBeginRequiredF=False):
-        Terminal.__init__(self, IncidenceId, CodeTerminal_NULL(), Name, LexemeBeginRequiredF)
+    def __init__(self, GeneratorFunction, Data, Name="", LexemeBeginRequiredF=False):
+        incidence_id = index.get_state_machine_id()
+        Terminal.__init__(self, incidence_id, CodeTerminal_NULL, Name, LexemeBeginRequiredF)
         self.__generator = GeneratorFunction
+        self.__data      = Data
 
     def code(self, TheAnalyzer):
-        return self.__generator(Data, TheAnalyzer)
+        return self.__generator(self.__data, TheAnalyzer)
 

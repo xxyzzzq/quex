@@ -184,7 +184,7 @@ def do_backward_input_position_detectors(BipdDb):
         result.extend(txt)
     return result, bipd_entry_door_id_db
 
-def do_reload_procedures(ReloadForwardState, ReloadBackwardState):
+def do_reload_procedures(ForwardAnalyzer, BackwardAnalyzer):
     """Lazy (delayed) code generation of the forward and backward reloaders. 
     Any state who needs reload may 'register' in a reloader. This registering may 
     happen after the code generation of forward or backward state machine.
@@ -194,10 +194,10 @@ def do_reload_procedures(ReloadForwardState, ReloadBackwardState):
         return
 
     txt = []
-    if ReloadForwardState is not None:
-        txt.extend(reload_state_coder.do(ReloadForwardState))
-    if ReloadBackwardState is not None:
-        txt.extend(reload_state_coder.do(ReloadBackwardState))
+    if ForwardAnalyzer is not None and ForwardAnalyzer.reload_state is not None:
+        txt.extend(reload_state_coder.do(ForwardAnalyzer.reload_state))
+    if BackwardAnalyzer is not None and BackwardAnalyzer.reload_state is not None:
+        txt.extend(reload_state_coder.do(BackwardAnalyzer.reload_state))
 
     variable_db.require("target_state_else_index")  # upon reload failure
     variable_db.require("target_state_index")       # upon reload success

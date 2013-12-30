@@ -195,6 +195,10 @@ def typed(**_parameters_):
         else:
             return str(TypeD)
 
+    def error(Name, Value, TypeD):
+        return "Parameter '%s' is a '%s'. Expected '%s'." \
+               % (Name, Value.__class__.__name__, name_type(TypeD))
+
     def check_types(_func_, _parameters_ = _parameters_):
         def modified(*arg_values, **kw):
             arg_names = _func_.func_code.co_varnames
@@ -206,21 +210,22 @@ def typed(**_parameters_):
                 if type_d is None:  # No requirements on type_d
                     continue
                 if value is None:
-                    assert None in type_d
+                    assert type_d is None or (type(type_d) == tuple and None in type_d), \
+                           error(name, value, type_d)
                 elif type(type_d) == tuple:
                     assert isinstance(value, type_d), \
-                           "Parameter '%s' not one of '%s'" % (name, name_type(type_d))
+                           error(name, value, type_d)
                 elif type(type_d) == list:
                     assert len(type_d) == 1
                     assert isinstance(value, list), \
-                           "Parameter '%s' not a list." % name
+                           error(name, value, type_d)
                     value_type = type_d[0]
                     assert all_isinstance(value, value_type), \
-                           "List '%s' contains element not of of '%s'" % (name, name_type(value_type))
+                           error(name, value, type_d)
                 elif type(type_d) == dict:
                     assert len(type_d) == 1
                     assert isinstance(value, dict), \
-                           "Parameter '%s' not a dictionary." % name
+                           error(name, value, type_d)
                     key_type, value_type = type_d.iteritems().next()
                     assert all_isinstance(value.iterkeys(), key_type), \
                            "Dictionary '%s' contains key not of of '%s'" % (name, name_type(key_type))
@@ -228,7 +233,7 @@ def typed(**_parameters_):
                            "Dictionary '%s' contains value not of of '%s'" % (name, name_type(value_type))
                 else:
                     assert isinstance(value, type_d), \
-                           "Parameter '%s' not of '%s'" % (name, name_type(type_d))
+                           error(name, value, type_d)
             return _func_(**kw)
         return modified
     return check_types

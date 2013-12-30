@@ -22,6 +22,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            ColumnCountReferencePSet, \
                                                            ColumnCountReferencePDeltaAdd
 from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.generator.code.core              import CodeTerminal
 from   quex.engine.interval_handling                import NumberSet
 from   quex.blackboard import setup as Setup, \
                               Lng,            \
@@ -229,7 +230,7 @@ class CounterCoderData:
         exit_incidence_id = index.get_state_machine_id() 
         exit_door_id      = DoorID.incidence(exit_incidence_id)
         exit_terminal     = Terminal(exit_incidence_id, 
-                                     [ Lng.COMMAND(cmd) for cmd in self.on_exit])
+                                     CodeTerminal([ Lng.COMMAND(cmd) for cmd in self.on_exit]))
 
         if CheckLexemeEndF:
             check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(exit_door_id))

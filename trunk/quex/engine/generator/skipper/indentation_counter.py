@@ -3,7 +3,10 @@ from   quex.blackboard                              import setup as Setup, \
 import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
+from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
+from   quex.engine.analyzer.commands                import CommandList, \
+                                                           LexemeStartToReferenceP
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -47,7 +50,7 @@ def do(Data, Mode=None):
     # The 'TransitionCode -> DoorID' has to be circumvented, because this state
     # is not officially part of the state machine.
     counter_adr          = dial_db.new_address()
-    counter_label        = dial_db.map_address_to_label(counter_adr)
+    counter_label        = dial_db.get_label_by_address(counter_adr)
     counter_adr_str      = "%i" % counter_adr
     transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
     end_procedure        = __get_end_procedure(IndentationSetup, Mode)
