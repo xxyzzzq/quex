@@ -51,9 +51,13 @@ class CodeTerminal(CodeFragment):
     def requires_lexeme_begin_f(self):            return self.__requires_lexeme_begin_f
     def requires_lexeme_terminating_zero_f(self): return self.__requires_lexeme_terminating_zero_f
 
+CodeTerminal_NULL = CodeTerminal([])
+
 class CodeTerminalOnMatch(CodeTerminal):
-    def __init__(self, Code, ModeName, PatternString):
-        self.mode_name = ModeName
-        self.pattern_string = PatternString
-        CodeTerminal.__init__(self, Code, LexemeRelevanceF=True)
+    @typed(Code=CodeFragment)
+    def __init__(self, CodeFrag):
+        code                = CodeFrag.get_code() # Prepares source line references
+        self.mode_name      = CodeFrag.mode_name
+        self.pattern_string = CodeFrag.pattern_string
+        CodeTerminal.__init__(self, code, LexemeRelevanceF=True)
     

@@ -205,7 +205,8 @@ class OptionDB(dict):
         setting = self.__get_setting(Name)
         if setting is None: return None
 
-        assert not mode_option_info_db[Name].single_setting_f()
+        assert not mode_option_info_db[Name].single_setting_f(), \
+               "'%s' is not supposed to be a value sequence." % Name
         return [ x.value for x in setting ]
 
     def value_list(self, Name):

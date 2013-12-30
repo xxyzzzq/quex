@@ -86,6 +86,9 @@ class Pattern(object):
         on a UNICODE state machine--not on a possibly transformed codec state
         machine.
         """
+        # Make sure that a pattern is not transformed before!
+        assert self.__alarm_transformed_f == False
+
         if self.__count_info is not None:
             return self.__count_info
 

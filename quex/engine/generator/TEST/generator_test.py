@@ -6,26 +6,25 @@ from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
-from quex.engine.misc.string_handling import blue_print
-from quex.exception                   import RegularExpressionException
-#
-from   quex.engine.tools                       import all_isinstance
-from   quex.engine.generator.languages.core    import db
-import quex.engine.generator.state_router      as     state_router_generator
-# import quex.engine.generator.skipper.core          as skipper
-from   quex.engine.generator.languages.variable_db import VariableDB
-import quex.engine.generator.languages.variable_db as     variable_db
+from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
-from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
-import quex.input.regular_expression.engine        as     regex
-from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
-from   quex.input.regular_expression.auxiliary     import PatternShorthand
-from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
+from   quex.engine.generator.code.core             import CodeTerminal
+import quex.engine.generator.languages.variable_db as     variable_db
+from   quex.engine.generator.languages.core    import db
+from   quex.engine.generator.languages.variable_db import VariableDB
+import quex.engine.generator.state_router      as     state_router_generator
+from   quex.engine.misc.string_handling import blue_print
+from   quex.engine.tools                       import all_isinstance
 from   quex.input.files.counter_db             import CounterDB
+from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
+from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
+from   quex.input.regular_expression.auxiliary     import PatternShorthand
+import quex.input.regular_expression.engine        as     regex
 import quex.output.cpp.core                    as     cpp_generator
 
+from   quex.exception  import RegularExpressionException
 #
 import quex.blackboard as blackboard
 from   quex.blackboard import E_Compression, \
@@ -367,9 +366,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         else:                         txt += "return true;\n"
 
 
-        txt += "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry_preparation())
+        txt += "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match())
         ## print "#", txt
-        return [ txt ]
+        return CodeTerminal([ txt ])
     
     # -- Display Setup: Patterns and the related Actions
     print "(*) Lexical Analyser Patterns:"
@@ -377,7 +376,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         print "%20s --> %s" % (pair[0], pair[1])
 
     # -- PatternList/TerminalDb
-    on_failure              = ["return false;\n"]
+    on_failure              = CodeTerminal(["return false;\n"])
     support_begin_of_line_f = False
     pattern_list            = []
     terminal_db             = {

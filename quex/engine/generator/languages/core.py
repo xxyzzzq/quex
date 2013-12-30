@@ -371,8 +371,8 @@ class Lng_Cpp(dict):
         code = []
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
             code.append(
-               "%s:" % Label.incidence(terminal.incidence_id()),
-               "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
+               "%s: " % Label.incidence(terminal.incidence_id()) \
+               + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
             )
             code.extend(terminal.code(TheAnalyzer))
             code.append("\n")

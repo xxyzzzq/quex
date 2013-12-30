@@ -72,13 +72,13 @@ def do_core(PatternList, TerminalDb):
     # assert all_isinstance(main, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Reload procedures
-    reload_procedures     = generator.do_reload_procedures(main_analyzer.reload_state, 
-                                                           pre_analyzer.reload_state)
+    reload_procedures     = generator.do_reload_procedures(main_analyzer, 
+                                                           pre_analyzer)
     # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Terminals
     terminals             = generator.do_terminals(TerminalDb.values(), 
-                                                   analyzer)
+                                                   main_analyzer)
 
     # (*) Re-entry preparation
     reentry_prerpation    = generator.do_reentry_preparation(esms.pre_context_sm_id_list,

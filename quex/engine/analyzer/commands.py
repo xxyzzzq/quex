@@ -254,10 +254,10 @@ class CommandFactory:
         E_Commands.InputPDereference:                CommandInfo(1, E_InputPAccess.READ),
         E_Commands.InputPIncrement:                  CommandInfo(1, E_InputPAccess.WRITE),
         E_Commands.LexemeResetTerminatingZero:       CommandInfo(1, E_InputPAccess.WRITE),
-        E_Commands.LexemeStartToReferenceP:          CommandInfo(1, E_InputPAccess.READ,   ("reference_p",)),
+        E_Commands.LexemeStartToReferenceP:          CommandInfo(1, E_InputPAccess.READ,   ("pointer_name",)),
         E_Commands.ColumnCountReferencePSet:         CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "offset")),
         E_Commands.ColumnCountReferencePDeltaAdd:    CommandInfo(1, E_InputPAccess.NONE,   ("pointer_name", "column_n_per_chunk")),
-        E_Commands.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,   ("grid_size")),
+        E_Commands.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,   ("grid_size",)),
         E_Commands.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,   ("grid_size", "pointer_name", "column_n_per_chunk")),
         E_Commands.ColumnCountAdd:                   CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
         E_Commands.LineCountAdd:                     CommandInfo(1, E_InputPAccess.NONE,   ("value",)),
@@ -322,8 +322,8 @@ def InputPDereference():
 def InputPToLexemeStartP():
     return CommandFactory.do(E_Commands.InputPToLexemeStartP)
 
-def LexemeStartToReferenceP():
-    return CommandFactory.do(E_Commands.LexemeStartToReferenceP)
+def LexemeStartToReferenceP(PointerName):
+    return CommandFactory.do(E_Commands.LexemeStartToReferenceP, (PointerName,))
 
 def LexemeResetTerminatingZero():
     return CommandFactory.do(E_Commands.LexemeResetTerminatingZero)

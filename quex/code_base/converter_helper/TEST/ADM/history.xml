@@ -1,4 +1,4 @@
-<history date="Sat Oct  5 03:34:44 2013" element-n="13">
+<history date="Mon Dec 30 08:20:01 2013" element-n="13">
     <day year="2010" month="11" day="07">
         <history-init time="11:07:19"/>
         <crc-error time="11:45:41" application="test-utf8" choice="Source_Empty" database-crc="-111483674" real-crc="-1971904517"/>
