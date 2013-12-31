@@ -31,6 +31,33 @@ def do():
 
     mode_description_db = quex_file_parser.do(Setup.input_mode_files)
 
+    # (*) Generate the token ids
+    #     (This needs to happen after the parsing of mode_db, since during that
+    #      the token_id_db is developed.)
+    if Setup.external_lexeme_null_object != "":
+        # Assume external implementation
+        token_id_header                        = None
+        function_map_id_to_name_implementation = ""
+    else:
+        token_id_header                        = token_id_maker.do(Setup) 
+        function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
+
+    # (*) [Optional] Make a customized token class
+    class_token_header, \
+    class_token_implementation = token_class_maker.do(function_map_id_to_name_implementation)
+
+    if Setup.token_class_only_f:
+        write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
+                                 do_token_class_info() \
+                               + class_token_header)
+        write_safely_and_close(Setup.output_token_class_file_implementation,
+                               class_token_implementation)
+        write_safely_and_close(Setup.output_token_id_file, token_id_header)
+        Lng.straighten_open_line_pragmas(Setup.output_token_id_file)
+        Lng.straighten_open_line_pragmas(Setup.output_token_class_file_implementation)
+        Lng.straighten_open_line_pragmas(blackboard.token_type_definition.get_file_name())
+        return
+
     # (*) implement the lexer mode-specific analyser functions
     #     During this process: mode_description_db --> mode_db
     function_analyzers_implementation, \
@@ -47,30 +74,6 @@ def do():
     codec_converter_helper_header, \
     codec_converter_helper_implementation = codec_converter_helper.do()
     
-    # (*) Generate the token ids
-    #     (This needs to happen after the parsing of mode_db, since during that
-    #      the token_id_db is developed.)
-    if Setup.external_lexeme_null_object != "":
-        # Assume external implementation
-        token_id_header                        = None
-        function_map_id_to_name_implementation = ""
-    else:
-        token_id_header                        = token_id_maker.do(Setup, mode_db) 
-        function_map_id_to_name_implementation = token_id_maker.do_map_id_to_name_function()
-
-    # (*) [Optional] Make a customized token class
-    class_token_header, \
-    class_token_implementation = token_class_maker.do(function_map_id_to_name_implementation)
-
-    if Setup.token_class_only_f:
-        write_safely_and_close(blackboard.token_type_definition.get_file_name(), 
-                                 do_token_class_info() \
-                               + class_token_header)
-        write_safely_and_close(Setup.output_token_class_file_implementation,
-                               class_token_implementation)
-        write_safely_and_close(Setup.output_token_id_file, token_id_header)
-        return
-
     # Implementation (Potential Inline Functions)
     if class_token_implementation is not None:
          analyzer_implementation += class_token_implementation + "\n" 
@@ -151,7 +154,8 @@ def analyzer_functions_get(ModeDB):
         comment.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
         analyzer_code.append("".join(comment))
 
-    determine_start_mode(blackboard.mode_db)
+    if not Setup.token_class_only_f:
+        determine_start_mode(blackboard.mode_db)
 
     # (*) perform consistency check on newly generated mode_db
     consistency_check.do(blackboard.mode_db)

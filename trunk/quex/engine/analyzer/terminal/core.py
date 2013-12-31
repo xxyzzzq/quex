@@ -32,9 +32,9 @@ class Terminal(Processor):
     @typed(Name=(str,unicode), Code=CodeTerminal)
     def __init__(self, IncidenceId, Code, Name=""):
         Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
-        self.__incidence_id            = IncidenceId
-        self.__code                    = Code
-        self.__name                    = Name
+        self.__incidence_id = IncidenceId
+        self.__code         = Code
+        self.__name         = Name
 
     def incidence_id(self):
         return self.__incidence_id

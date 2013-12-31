@@ -24,14 +24,23 @@ class Pattern(object):
                  "__pre_context_sm_to_be_inverted", "__pre_context_sm", 
                  "__pre_context_begin_of_line_f", 
                  "__post_context_end_of_line_f", 
+                 "__pattern_string",
                  "__count_info", 
                  "__alarm_transformed_f")
-    @typed(CoreSM=StateMachine, BeginOfLineF=bool, EndOfLineF=bool)
+    @typed(CoreSM=StateMachine, BeginOfLineF=bool, EndOfLineF=bool, AllowNothingIsNecessaryF=bool)
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
-                 BeginOfLineF=False, EndOfLineF=False, fh=-1):
+                 BeginOfLineF=False, EndOfLineF=False, fh=-1, 
+                 PatternString="",
+                 AllowNothingIsNecessaryF=False):
         assert PreContextSM is None or isinstance(PreContextSM, StateMachine)
+        Pattern.check_initial(CoreSM, 
+                              BeginOfLineF, PreContextSM, 
+                              EndOfLineF, PostContextSM, 
+                              fh,
+                              AllowNothingIsNecessaryF)
 
-        self.__sr = SourceRef.from_FileHandle(fh)
+        self.__pattern_string = PatternString
+        self.__sr             = SourceRef.from_FileHandle(fh)
 
         # (*) Setup the whole pattern
         self.__sm                         = CoreSM
@@ -66,6 +75,8 @@ class Pattern(object):
         # Detect the trivial pre-context
         self.__pre_context_begin_of_line_f = BeginOfLineF
         
+        # The line/column count information can only be determined when the 
+        # line/column count database is present. Thus, it is delayed.
         self.__count_info = None
 
         # Ensure, that the pattern is never transformed twice
@@ -74,11 +85,11 @@ class Pattern(object):
         self.__validate(fh)
     
     @property
-    def sr(self):
-        return self.__sr
+    def sr(self):             return self.__sr
 
-    def incidence_id(self):
-        return self.__sm.get_id()
+    def pattern_string(self): return self.__pattern_string
+
+    def incidence_id(self):   return self.__sm.get_id()
 
     def prepare_count_info(self, LineColumn_CounterDB, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
@@ -86,7 +97,7 @@ class Pattern(object):
         on a UNICODE state machine--not on a possibly transformed codec state
         machine.
         """
-        # Make sure that a pattern is not transformed before!
+        # Make sure that a pattern is NOT transformed before!
         assert self.__alarm_transformed_f == False
 
         if self.__count_info is not None:
@@ -252,121 +263,63 @@ class Pattern(object):
                and (self.pre_context_sm is None or not self.pre_context_sm.has_orphaned_states()) \
                and (not self.sm.has_orphaned_states())
 
-def do(core_sm, 
-       begin_of_line_f=False, pre_context=None, 
-       end_of_line_f=False,   post_context=None, 
-       fh=-1, 
-       AllowNothingIsNecessaryF = False,
-       AllowStateMachineTrafoF  = True):
+    @staticmethod
+    def check_initial(core_sm, 
+                      begin_of_line_f, pre_context, 
+                      end_of_line_f,   post_context, 
+                      fh, 
+                      AllowNothingIsNecessaryF):
 
-    assert type(begin_of_line_f) == bool
-    assert type(end_of_line_f) == bool
-    assert type(AllowNothingIsNecessaryF) == bool
+        def check(Name, Sm, fh):
+            if Sm is None: 
+                return
 
-    # Detect orphan states in the 'raw' state machines --> error in sm-building
-    for sm in [pre_context, core_sm, post_context]:
-        if sm is not None and sm.has_orphaned_states(): 
-            error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                      "Orphan state(s) = " + repr(sm.get_orphaned_state_index_list()), 
-                      fh, DontExitF=True)
+            elif Sm.has_orphaned_states(): 
+                error_msg("Orphaned state(s) detected in %spattern (optimization lack).\n" % Name + \
+                          "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                          "Orphan state(s) = " + repr(Sm.get_orphaned_state_index_list()), 
+                          fh, DontExitF=True)
+            elif Sm.is_empty():
+                error_msg("Empty %spattern." % Name, fh)
 
-    if pre_context is not None and pre_context.is_empty():   error_msg("Empty pre-context pattern.", fh)
-    if core_sm.is_empty():                                   error_msg("Empty pattern.", fh)
-    if post_context is not None and post_context.is_empty(): error_msg("Empty post-context pattern.", fh)
+            elif not AllowNothingIsNecessaryF:
+                # 'Nothing is necessary' cannot be accepted. 
+                # See the discussion in the module "quex.output.cpp.core".
+                Pattern.detect_path_of_nothing_is_necessary(Sm,  Name.strip(),  post_context_f, fh)
 
-    # Detect the 'Nothing is Necessary' error in a pattern.
-    # (*) 'Nothing is necessary' cannot be accepted. See the discussion in the 
-    #     module "quex.output.cpp.core"          
-    if not AllowNothingIsNecessaryF:
         post_context_f = (post_context is not None)
-        __detect_path_of_nothing_is_necessary(pre_context,  "pre context",  post_context_f, fh)
-        __detect_path_of_nothing_is_necessary(core_sm,      "core pattern", post_context_f, fh)
-        __detect_path_of_nothing_is_necessary(post_context, "post context", post_context_f, fh)
+        for name, sm in [("pre-context ", pre_context), ("", core_sm), ("post-context ", post_context)]:
+            check(name, sm, fh)
 
-    return Pattern(core_sm, pre_context, post_context, 
-                   begin_of_line_f, end_of_line_f, fh)
+    @staticmethod
+    def detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
+        assert Name in ["", "pre-context", "post-context"]
+        if sm is None: 
+            return
+        elif not sm.get_init_state().is_acceptance(): 
+            return
 
-def __detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):
-    assert Name in ["core pattern", "pre context", "post context"]
+        msg = "The %s contains in a 'nothing is necessary' path in the state machine.\n"   \
+              % Name                                                                     + \
+              "This means, that without reading a character the analyzer drops into\n"   + \
+              "an acceptance state. "
 
-    if sm is None: return
+        msg += { 
+            "":
+                "The analyzer would then stall.",
 
-    msg = "The %s contains in a 'nothing is necessary' path in the state machine.\n"   \
-          % Name                                                                     + \
-          "This means, that without reading a character the analyzer drops into\n"   + \
-          "an acceptance state. "
+            "pre-context":
+                "E.g., pattern 'x*/y/' means that zero or more 'x' are a pre-\n"             + \
+                "condition for 'y'. If zero appearances of 'x' are enough, then obviously\n" + \
+                "there is no pre-context for 'y'! Most likely the author intended 'x+/y/'.",
 
-    init_state = sm.get_init_state()
+            "post-context":
+                "A post context where nothing is necessary is superfluous.",
+        }[Name]
 
-    if not init_state.is_acceptance(): return
+        if Name != "post-context" and PostContextPresentF:
+            msg += "\n"                                                          \
+                   "Note: A post context does not change anything to that fact." 
 
-    msg += { 
-        "core pattern":
-            "The analyzer would then stall.",
-
-        "pre context":
-            "E.g., pattern 'x*/y/' means that zero or more 'x' are a pre-\n"             + \
-            "condition for 'y'. If zero appearances of 'x' are enough, then obviously\n" + \
-            "there is no pre-context for 'y'! Most likely the author intended 'x+/y/'.",
-
-        "post context":
-            "A post context where nothing is necessary is superfluous.",
-    }[Name]
-
-    if Name != "post context" and PostContextPresentF:
-        msg += "\n"                                                          \
-               "Note: A post context does not change anything to that fact." 
-
-    error_msg(msg, fh)
-
-def __delete_forbidden_ranges(sm, fh):
-    """Unicode does define all code points >= 0. Thus there can be no code points
-       below zero as it might result from some number set operations.
-
-       NOTE: This operation might result in orphaned states that have to 
-             be deleted.
-    """
-    global Setup
-
-    def range_error_msg(Character):
-        error_msg(  "Pattern contains character 0x%0X which is beyond the scope of\n" \
-                    % Character \
-                  + "the buffer element size (%s)\n" \
-                    % Setup.get_character_value_limit_str() + \
-                  + "Please, cut the character range of the regular expression,\n"
-                  + "adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                  + "or specify '--buffer-element-size-irrelevant' to ignore the issue.", fh)
-
-    character_value_limit = Setup.get_character_value_limit()
-
-    unicode_interval = UnicodeInterval()
-    for state in sm.states.values():
-
-        for target_state_index, trigger_set in state.target_map.get_map().items():
-            # Make sure, all transitions lie inside the unicode code range 
-            interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
-            assert len(interval_list) != 0
-            first = interval_list[0]
-            if first.begin == - sys.maxint:
-                if first.end < unicode_interval.begin:   range_error_msg(first.end - 1)
-                first.begin = unicode_interval.begin
-                if first.begin == first.end:            del interval_list[0]
-            if len(interval_list) != 0:
-                last  = interval_list[-1]
-                if last.end == sys.maxint:
-                    if last.begin >= character_value_limit: range_error_msg(last.begin)
-                    last.end = character_value_limit
-                    if last.begin == last.end:              del interval_list[-1]
-
-            if Setup.buffer_codec in ["utf16-le", "utf16-be"]:
-                # Delete the forbidden interval: D800-DFFF
-                if trigger_set.has_intersection(ForbiddenRange):
-                    error_msg("Pattern contains characters in unicode range 0xD800-0xDFFF.\n"
-                              "This range is not covered by UTF16. Cutting Interval.", fh, DontExitF=True)
-                    trigger_set.cut_interval(ForbiddenRange)
-            
-            # If the operation resulted in cutting the path to the target state, then delete it.
-            if trigger_set.is_empty():
-                state.target_map.delete_transitions_to_target(target_state_index)
+        error_msg(msg, fh)
 

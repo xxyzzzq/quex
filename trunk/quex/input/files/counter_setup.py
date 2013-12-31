@@ -427,7 +427,8 @@ def parse(fh, IndentationSetupF):
         if check(fh, "\\default"):
             pattern_str, pattern = "\\default", None
         else:
-            pattern_str, pattern = regular_expression.parse(fh)
+            pattern = regular_expression.parse(fh)
+            pattern_str = pattern.pattern_string()
             assert pattern is not None
 
         skip_whitespace(fh)

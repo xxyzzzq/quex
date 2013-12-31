@@ -33,7 +33,8 @@ from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.misc.file_in import open_file_or_die, \
                                        write_safely_and_close
-from   quex.engine.tools import typed
+from   quex.engine.tools import typed, \
+                                none_isinstance
 from   copy      import copy
 
 from   itertools import islice
@@ -368,15 +369,19 @@ class Lng_Cpp(dict):
         else:       return cpp.lexeme_macro_definitions(Setup)
 
     def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
-        code = []
+        text = []
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
-            code.append(
+            text.append(
                "%s: " % Label.incidence(terminal.incidence_id()) \
                + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
             )
-            code.extend(terminal.code(TheAnalyzer))
-            code.append("\n")
-        return code
+            code = terminal.code(TheAnalyzer)
+            assert none_isinstance(code, list), \
+                   "Terminal of class '%s' contains list element in code." \
+                   % terminal.__class__.__name__
+            text.extend(code)
+            text.append("\n")
+        return text
 
     def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
         return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)

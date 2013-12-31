@@ -74,7 +74,7 @@ def get(ThePattern, ShiftF=True):
     if         counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
        or (    counter.column_n_increment_by_lexeme_length == E_Count.VOID \
            and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
-        return True, ["__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"]
+        return True, [ Lng.DEFAULT_COUNTER_CALL() ]
 
     # (*) Determine Line and Column Number Count ______________________________
     #    

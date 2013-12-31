@@ -337,7 +337,7 @@ def ColumnCountReferencePDeltaAdd(PointerName, ColumnNPerChunk):
 def ColumnCountAdd(Value):
     return CommandFactory.do(E_Commands.ColumnCountAdd, (Value,))
 
-def ColumnCountGridAdd(Value):
+def ColumnCountGridAdd(GridSize):
     return CommandFactory.do(E_Commands.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
