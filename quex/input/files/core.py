@@ -223,8 +223,7 @@ def parse_pattern_name_definitions(fh):
         # (No possible transformation into a particular codec whatever.
         #  the state machines are transformed once, after they are expanded
         #  as patterns in a mode.)
-        regular_expression_str, pattern = \
-                regular_expression.parse(fh, AllowNothingIsFineF = True) 
+        pattern = regular_expression.parse(fh, AllowNothingIsFineF = True) 
 
         if pattern.has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
@@ -233,7 +232,7 @@ def parse_pattern_name_definitions(fh):
 
         blackboard.shorthand_db[pattern_name] = \
                 PatternShorthand(pattern_name, state_machine, 
-                                 SourceRef.from_FileHandle(fh), regular_expression_str)
+                                 SourceRef.from_FileHandle(fh), pattern.pattern_string())
 
 def parse_token_id_definitions(fh, NamesOnlyF=False):
     """NamesOnlyF == True: Allow only definition of names, no numeric values 

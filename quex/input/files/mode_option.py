@@ -283,7 +283,7 @@ def __parse_skip_option(fh, new_mode, identifier):
     whitespace skipper '[ \t\n]'. The skipper definition allows quex to
     implement a very effective way to skip these regions."""
 
-    pattern_str, pattern, trigger_set = regular_expression.parse_character_set(fh, ">")
+    pattern, trigger_set = regular_expression.parse_character_set(fh, ">")
 
     skip_whitespace(fh)
 
@@ -292,7 +292,7 @@ def __parse_skip_option(fh, new_mode, identifier):
     elif trigger_set.is_empty():
         error_msg("Empty trigger set for skipper." % identifier, fh)
 
-    return pattern_str, pattern, trigger_set
+    return pattern, trigger_set
 
 def __parse_range_skipper_option(fh, identifier, new_mode):
     """A non-nesting skipper can contain a full fledged regular expression as opener,

@@ -27,7 +27,7 @@ standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "D
 def space(L, Name):
     return " " * (L - len(Name))
 
-def do(setup, ModeDB):
+def do(setup):
     """________________________________________________________________________
        (1) Error Check 
        
@@ -51,9 +51,9 @@ def do(setup, ModeDB):
         __warn_on_double_definition()
         # If a mandatory token id is missing, this means that Quex did not
         # properly do implicit token definitions. Program error-abort.
-        __error_on_mandatory_token_id_missing(ModeDB, AssertF=True)
+        __error_on_mandatory_token_id_missing(AssertF=True)
     else:
-        __error_on_mandatory_token_id_missing(ModeDB)
+        __error_on_mandatory_token_id_missing()
 
     __error_on_no_specific_token_ids()
 
@@ -423,7 +423,7 @@ def __error_on_no_specific_token_ids():
               + "".join(token_id_str) \
               + "Refused to proceed.") 
 
-def __error_on_mandatory_token_id_missing(ModeDB, AssertF=False):
+def __error_on_mandatory_token_id_missing(AssertF=False):
     def check(AssertF, TokenID_Name):
         if AssertF:
             assert TokenID_Name in token_id_db

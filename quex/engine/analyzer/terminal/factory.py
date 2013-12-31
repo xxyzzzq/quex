@@ -138,7 +138,7 @@ class TerminalFactory:
         text = [
             self.get_counter_text(ThePattern)
         ]
-        text.append(Code.get_code())
+        text.extend(Code.get_code())
         return Terminal(IncidenceId, CodeTerminal(text), str(IncidenceId))
 
     @staticmethod

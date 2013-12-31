@@ -85,24 +85,21 @@ def do(ModeDB):
 
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
     
-    def get_name(PAP, AddSpaceF=True):
-        print "#PAP:", PAP.__class__
-        if PAP.comment in E_IncidenceIDs_Subset_Special: 
-            result = repr(PAP.comment).replace("_", " ").lower()
-        elif isinstance(PAP.comment, (str, unicode)):
-            result = PAP.comment
+    def get_name(P, AddSpaceF=True):
+        if P.incidence_id() in E_IncidenceIDs_Subset_Special: 
+            result = repr(P.comment).replace("_", " ").lower()
         else:
-            return ""
+            result = P.pattern_string()
 
         if AddSpaceF and len(result) != 0: result += " "
         return result
 
-    file_name, line_n = This.action().sr
+    file_name, line_n = This.sr
     error_msg("The %spattern '%s' %s" % (get_name(This), This.pattern_string(), ThisComment), 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
 
-    FileName, LineN   = That.action().sr
+    FileName, LineN   = That.sr
     if len(ThatComment) != 0: Space = " "
     else:                     Space = ""
 

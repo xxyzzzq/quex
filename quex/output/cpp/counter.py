@@ -52,13 +52,13 @@ def get(counter_db, Name):
                                        AfterExitDoorId = return_door_id,
                                        CheckLexemeEndF = True)
 
-    implementation = __frame(function_name, code, return_door_id) 
+    implementation = __frame(function_name, Lng.INPUT_P(), code, return_door_id) 
 
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
 
-def __frame(FunctionName, CodeTxt, ReturnDoorId):
+def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
     
 
     txt = [  \
@@ -82,7 +82,8 @@ def __frame(FunctionName, CodeTxt, ReturnDoorId):
 
     txt.append(
          "%s:\n" % dial_db.get_label_by_door_id(ReturnDoorId) \
-       + "    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+       + "    __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+         % IteratorName \
        + "   return;\n" \
        + "#  undef self\n" \
        + "}\n" \

@@ -45,7 +45,7 @@ import quex.input.regular_expression.traditional_character_set as traditional_ch
 import quex.input.regular_expression.property                  as property
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.input.regular_expression.snap_character_string      as snap_character_string
-import quex.input.regular_expression.construct                  as construct
+from   quex.input.regular_expression.construct                  import Pattern
 from   quex.input.regular_expression.auxiliary                  import __snap_until, \
                                                                        __debug_entry, \
                                                                        __debug_exit, \
@@ -124,15 +124,28 @@ def do(UTF8_String_or_Stream, PatternDict,
 
     __ensure_whitespace_follows(initial_position, stream)
     
-    pattern = construct.do(core_sm         = core, 
-                           begin_of_line_f = begin_of_line_f, 
-                           pre_context     = pre,
-                           end_of_line_f   = end_of_line_f,
-                           post_context    = post, 
-                           fh              = stream,
-                           AllowNothingIsNecessaryF = AllowNothingIsNecessaryF)
+    pattern = Pattern(CoreSM        = core, 
+                      BeginOfLineF  = begin_of_line_f,
+                      PreContextSM  = pre,
+                      EndOfLineF    = end_of_line_f,
+                      PostContextSM = post,
+                      fh            = stream,
+                      PatternString = read_pattern_string(stream, initial_position),
+                      AllowNothingIsNecessaryF = AllowNothingIsNecessaryF)
     
     return pattern
+
+def read_pattern_string(fh, StartPos):
+    """Reads the regular expression string which was interpreted to build the 
+    pattern. 
+    """
+    end_position = fh.tell()
+    fh.seek(StartPos)
+    result = fh.read(end_position - StartPos)
+    if not result:
+        result = fh.read(1)
+        fh.seek(-1, 1)
+    return result
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

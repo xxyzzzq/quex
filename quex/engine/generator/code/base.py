@@ -2,10 +2,12 @@ from   quex.engine.tools        import error_abstract_member, \
                                        typed, \
                                        all_isinstance
 from   quex.engine.misc.file_in import get_current_line_info_number
+from   quex.engine.tools        import none_isinstance
 
 from   collections import namedtuple
 from   copy        import deepcopy
 
+import types
 import re
 
 class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
@@ -50,12 +52,14 @@ class CodeFragment(object):
     or is a default setting.
     """
     __slots__ = ("__code", "__source_reference")
+    @typed(Code=(list, str, unicode, types.NoneType), SourceReference=SourceRef)
     def __init__(self, Code=None, SourceReference=SourceRef_VOID):
+        # Elements of 'Code' shall not be lists.
+        assert not isinstance(Code, list) or none_isinstance(Code, list)
+
         if   Code is None:                     self.__code = []
         elif isinstance(Code, (str, unicode)): self.__code = [ Code ]
-        elif isinstance(Code, list):           self.__code = Code
-        elif isinstance(Code, tuple):          self.__code = list(Code)
-        else:                                  assert False, Code.__class__
+        else:                                  self.__code = Code
 
         self.__source_reference = SourceReference
 

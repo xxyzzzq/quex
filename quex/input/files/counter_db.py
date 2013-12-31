@@ -17,7 +17,9 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP, \
                                                            GotoDoorIdIfInputPLexemeEnd, \
                                                            ColumnCountAdd, \
+                                                           ColumnCountGridAdd, \
                                                            ColumnCountGridAddWithReferenceP, \
+                                                           LineCountAdd, \
                                                            LineCountAddWithReferenceP, \
                                                            ColumnCountReferencePSet, \
                                                            ColumnCountReferencePDeltaAdd
@@ -292,8 +294,8 @@ class CounterCoderData:
         on_entry = CommandList(InputPToLexemeStartP())
 
         if self.column_count_per_chunk is None:
-            if OnExitDoorId is not None: on_exit = CommandList(GotoDoorId(AfterExitDoorId))
-            else:                        on_exit = None
+            if AfterExitDoorId is not None: on_exit = CommandList(GotoDoorId(AfterExitDoorId))
+            else:                           on_exit = None
             return on_entry, on_exit
         else:
             on_entry    = on_entry.concatinate(CommandList(ColumnCountReferencePSet(self.iterator_name)))

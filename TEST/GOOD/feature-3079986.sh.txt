@@ -1,5 +1,6 @@
 (0) quexify -- no output is good output
 (1) check out generated sources
+self_send(scope1::scope2::scope3::TKN_TERMINATION);
     self_send(scope1::scope2::scope3::TKN_SEMICOLON);
     self_send(scope1::scope2::scope3::TKN_OP_EQUAL);
     self_send(scope1::scope2::scope3::TKN_OP_PLUS);
@@ -9,7 +10,6 @@
     self_send(scope1::scope2::scope3::TKN_PRINT);
     self_send(scope1::scope2::scope3::TKN_INT);
     self_send(scope1::scope2::scope3::TKN_VAR);
-    self_send(scope1::scope2::scope3::TKN_TERMINATION);
    case scope1::scope2::scope3::TKN_TERMINATION:    return termination_string;
    case scope1::scope2::scope3::TKN_UNINITIALIZED:  return uninitialized_string;
    case scope1::scope2::scope3::TKN_INDENT:         return indent_string;

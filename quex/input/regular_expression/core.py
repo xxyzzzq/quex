@@ -7,9 +7,9 @@ import quex.input.regular_expression.engine                   as regex
 
 def parse(Txt_or_File, AllowNothingIsFineF=False):
 
-    pattern_str, pattern, dummy = __parse(Txt_or_File, AllowNothingIsFineF=AllowNothingIsFineF)
+    pattern, dummy = __parse(Txt_or_File, AllowNothingIsFineF=AllowNothingIsFineF)
 
-    return pattern_str, pattern
+    return pattern
 
 def parse_character_string(Txt_or_File, Terminator=None):
     return __parse(Txt_or_File, StateMachine.get_number_sequence, "character string", Terminator)
@@ -40,14 +40,6 @@ def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None,
         sh.seek(start_position)
         error_eof("regular expression", sh)
 
-    # (*) Read the pattern string.
-    end_position = sh.tell()
-    sh.seek(start_position)
-    pattern_str = sh.read(end_position - start_position)
-    if pattern_str == "":
-        pattern_str = sh.read(1)
-        sh.seek(-1, 1)
-
     # (*) Extract the object as required 
     if ExtractFunction is not None:
         result = ExtractFunction(pattern.sm)
@@ -62,5 +54,5 @@ def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None,
     else:
         result = None
 
-    return pattern_str, pattern, result
+    return pattern, result
 

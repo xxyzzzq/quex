@@ -6,6 +6,7 @@ import quex.input.files.mode_option                    as     mode_option
 from   quex.input.files.mode_option                    import OptionDB, \
                                                               SkipRangeData
 import quex.input.files.code_fragment                  as     code_fragment
+from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.input.files.counter_db                     import CounterDB, \
                                                               CounterCoderData
 from   quex.engine.analyzer.door_id_address_label      import Label, DoorID
@@ -605,15 +606,16 @@ class Mode:
         if SkipSetupList is None or len(SkipSetupList) == 0:
             return None
 
-        iterable                            = SkipSetupList.__iter__()
-        pattern_str, pattern, character_set = iterable.next()
-        source_reference                    = pattern.sr
+        iterable               = SkipSetupList.__iter__()
+        pattern, character_set = iterable.next()
+        pattern_str            = pattern.pattern_string()
+        source_reference       = pattern.sr
         # Multiple skippers from different modes are combined into one pattern.
         # This means, that we cannot say exactly where a 'skip' was defined 
         # if it intersects with another pattern.
-        for ipattern_str, ipattern, icharacter_set in iterable:
+        for ipattern, icharacter_set in iterable:
             character_set.unite_with(icharacter_set)
-            pattern_str += "|" + ipattern_str
+            pattern_str += "|" + ipattern.pattern_string()
 
         # The column/line number count actions for the characters in the 
         # character_set may differ. Thus, derive a separate set of characters
@@ -877,7 +879,7 @@ class Mode:
                 if pattern.incidence_id() >= other_pattern.incidence_id(): continue
 
                 if outrun_checker.do(pattern.sm, other_pattern.sm):
-                    __error_message(other_pattern, pattern, ExitF=True, 
+                    c_error_message(other_pattern, pattern, ExitF=True, 
                                     ThisComment  = "has lower priority but",
                                     ThatComment  = "may outrun",
                                     SuppressCode = ErrorCode)
@@ -895,7 +897,7 @@ class Mode:
                 if   pattern.incidence_id() <= other_pattern.incidence_id(): continue
                 elif not superset_check.do(pattern.sm, other_pattern.sm):    continue
 
-                __error_message(other_pattern, pattern, ExitF=True, 
+                c_error_message(other_pattern, pattern, ExitF=True, 
                                 ThisComment  = "has higher priority and",
                                 ThatComment  = "matches a subset of",
                                 SuppressCode = ErrorCode)
@@ -908,8 +910,8 @@ class Mode:
                 if other_pattern.incidence_id() >= incidence_id: 
                     continue
                 if superset_check.do(other_pattern, pattern):
-                    file_name, line_n = other_pattern.action().sr
-                    __error_message(other_pattern, pattern, 
+                    file_name, line_n = other_pattern.sr
+                    c_error_message(other_pattern, pattern, 
                                     ThisComment  = "matches a superset of what is matched by",
                                     EndComment   = "The former has precedence and the latter can never match.",
                                     ExitF        = True, 
@@ -929,7 +931,7 @@ class Mode:
 
                 # A superset of B, or B superset of A => there are common matches.
                 if same_check.do(A, B):
-                    __error_message(other_pattern, pattern, 
+                    c_error_message(other_pattern, pattern, 
                                     ThisComment  = "matches on some common lexemes as",
                                     ThatComment  = "",
                                     ExitF        = True,
@@ -950,7 +952,7 @@ class Mode:
                 sm_low = pattern_k.pattern().sm
                 if outrun_checker.do(sm_high, sm_low):
                     file_name, line_n = pattern_i.action().sr
-                    __error_message(pattern_k, pattern_i, ExitF=False, ThisComment="may outrun")
+                    c_error_message(pattern_k, pattern_i, ExitF=False, ThisComment="may outrun")
 
     def match_indentation_counter_newline_pattern(self, Sequence):
         if self.indentation_setup is None: return False
@@ -973,7 +975,7 @@ class Mode:
         if    superset_check.do(newline_info.get(), newline_suppressor_info.get()) \
            or superset_check.do(newline_suppressor_info.get(), newline_info.get()):
 
-            __error_message(newline_info, newline_suppressor_info,
+            c_error_message(newline_info, newline_suppressor_info,
                             ThisComment="matches on some common lexemes as",
                             ThatComment="") 
 
@@ -1142,12 +1144,12 @@ def __parse_element(new_mode, fh):
 
         fh.seek(position)
         description = "start of mode element: regular expression"
-        pattern_str, pattern = regular_expression.parse(fh)
+        pattern     = regular_expression.parse(fh)
 
         position    = fh.tell()
-        description = "start of mode element: code fragment for '%s'" % pattern_str
+        description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
 
-        __parse_action(new_mode, fh, pattern_str, pattern)
+        __parse_action(new_mode, fh, pattern.pattern_string(), pattern)
 
     except EndOfStreamException:
         fh.seek(position)
