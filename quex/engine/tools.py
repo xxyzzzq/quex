@@ -175,7 +175,9 @@ def none_is_None(List):
 
 def typed(**_parameters_):
     """parameter=Type                   --> isinstance(parameter, Type)
+                                            Type == None --> no requirements.
        parameter=(Type0, Type1, ...)    --> isinstance(parameter, (Type0, Type1, ...))
+                                            TypeX == None means that parameter can be None
        parameter=[Type]                 --> (1) isinstance(parameter, list)
                                             (2) all_isinstance(parameter, Type)
        parameter=[(Type0, Type1, ...)]  --> (1) isinstance(parameter, list)
@@ -185,7 +187,6 @@ def typed(**_parameters_):
                                             (3) all_isinstance(parameter.keys(), Type1)
                                         (Here, Type0 or Type1 may be a tuple (TypeA, TypeB, ...)
                                          indicating alternative types.)
-       Type == None --> no requirements.
     """
     def name_type(TypeD):
         if isinstance(TypeD, tuple):
@@ -209,23 +210,27 @@ def typed(**_parameters_):
                 value = kw[name]
                 if type_d is None:  # No requirements on type_d
                     continue
-                if value is None:
+
+                elif value is None:
                     assert type_d is None or (type(type_d) == tuple and None in type_d), \
                            error(name, value, type_d)
+
                 elif type(type_d) == tuple:
-                    assert isinstance(value, type_d), \
-                           error(name, value, type_d)
+                    if None in type_d: 
+                        # 'None' is accepted as alternative. But, if value was 'None' it
+                        # would have triggered the previous case. So, here filter it out.
+                        type_d = tuple(set(x for x in type_d if x is not None))
+                    assert isinstance(value, type_d), error(name, value, type_d)
+
                 elif type(type_d) == list:
                     assert len(type_d) == 1
-                    assert isinstance(value, list), \
-                           error(name, value, type_d)
+                    assert isinstance(value, list), error(name, value, type_d)
                     value_type = type_d[0]
-                    assert all_isinstance(value, value_type), \
-                           error(name, value, type_d)
+                    assert all_isinstance(value, value_type), error(name, value, type_d)
+
                 elif type(type_d) == dict:
                     assert len(type_d) == 1
-                    assert isinstance(value, dict), \
-                           error(name, value, type_d)
+                    assert isinstance(value, dict), error(name, value, type_d)
                     key_type, value_type = type_d.iteritems().next()
                     assert all_isinstance(value.iterkeys(), key_type), \
                            "Dictionary '%s' contains key not of of '%s'" % (name, name_type(key_type))

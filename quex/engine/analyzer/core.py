@@ -226,7 +226,7 @@ class Analyzer:
 
         if state.transition_map is None and False: 
             # NOTE: We need a way to disable this exception for PathWalkerState-s(!)
-            #       It safe, not to allow it, in general.
+            #       It's safe, not to allow it, in general.
             #------------------------------------------------------------------------
             # If the state has no further transitions then the input character does 
             # not have to be read. This is so, since without a transition map, the 

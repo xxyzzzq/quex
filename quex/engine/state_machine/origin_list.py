@@ -46,7 +46,7 @@ class StateOriginList(object):
             #       expected from the caller to fix this.
             return new_origin
 
-        assert L == 1, "Calling function not permitted on aggregated states."
+        assert L == 1, "Calling function not permitted on aggregated states. len(self.__list) == %s" % len(self.__list)
         return self.__list[0]
 
     def remove_the_only_one(self):

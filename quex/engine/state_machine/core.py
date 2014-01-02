@@ -33,16 +33,16 @@ class State:
         """Contructor of a State, i.e. a aggregation of transitions.
         """
         if AltOriginList is None:
-            self.__origin_list    = StateOriginList([
-                                      StateCoreInfo(AcceptanceID   = StateMachineID, 
-                                                    StateIndex  = StateIndex, 
-                                                    AcceptanceF = AcceptanceF)
-                                    ])
+            self.__origin_list = StateOriginList([
+                                      StateCoreInfo(AcceptanceID = StateMachineID, 
+                                                    StateIndex   = StateIndex, 
+                                                    AcceptanceF  = AcceptanceF)
+                                 ])
             self.__target_map = TargetMap()
         else:
             assert AltTM is not None
-            self.__origin_list    = AltOriginList
-            self.__target_map = AltTM
+            self.__origin_list = AltOriginList
+            self.__target_map  = AltTM
 
     @staticmethod
     def new_merged_core_state(StateList, ClearF=False):
@@ -137,9 +137,9 @@ class State:
         origin.set_pre_context_id(Value)
         if Value == E_PreContextIDs.NONE and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
-    def mark_self_as_origin(self, StateMachineID, StateIndex):
+    def mark_self_as_origin(self, AcceptanceID, StateIndex):
         origin = self.origins().get_the_only_one()
-        origin.set_pattern_id(StateMachineID)
+        origin.set_pattern_id(AcceptanceID)
         origin.state_index = StateIndex
 
     def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
@@ -859,8 +859,11 @@ class StateMachine(object):
     def get_acceptance_state_list(self):
         return [ state for state in self.states.itervalues() if state.is_acceptance() ]
 
-    def get_acceptance_state_index_list(self):
-        return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
+    def get_acceptance_state_index_list(self, AcceptanceID=None):
+        if AcceptanceID is None:
+            return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
+        else:
+            return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.origins().get_the_only_one().acceptance_id() == AcceptanceID ]
 
     def get_from_to_db(self):
         """RETURNS:
