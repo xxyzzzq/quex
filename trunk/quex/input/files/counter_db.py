@@ -26,6 +26,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.generator.code.core              import CodeTerminal
 from   quex.engine.interval_handling                import NumberSet
+from   quex.engine.tools                            import typed
 from   quex.blackboard import setup as Setup, \
                               Lng,            \
                               E_IncidenceIDs, \
@@ -174,6 +175,8 @@ class CounterCoderData:
         self.on_before_reload, \
         self.on_after_reload   = self.__on_before_after_reload_prepare(LexemeF)
 
+    @typed(GlobalReloadState = (None, ReloadState),
+           TargetState       = (None, AnalyzerState))
     def get_analyzer(self, EngineType, GlobalReloadState=None, TargetState=None, CheckLexemeEndF=False):
         """
         GlobalReloadState = None --> no Reload
@@ -209,14 +212,12 @@ class CounterCoderData:
                                      '----> ... 
         """                                      
         assert    not EngineType.requires_buffer_limit_code_for_reload() \
-               or (GlobalReloadState is not None and isinstance(GlobalReloadState, ReloadState))
+               or GlobalReloadState is not None 
         assert    GlobalReloadState is None \
                or EngineType.requires_buffer_limit_code_for_reload() 
-        assert TargetState is None       or isinstance(TargetState, AnalyzerState)
         
 
-        sm  = self.get_counting_state_machine(self.count_command_map) 
-        transformation.do_state_machine(sm)
+        sm, map_cli_to_state_index_list = self.__get_counting_state_machine(self.count_command_map) 
 
         # The 'bending' of CLI-s to the init state must wait until the entry actions
         # have been determined. Only this way, it is safe to assume that the different
@@ -237,20 +238,33 @@ class CounterCoderData:
         if CheckLexemeEndF:
             check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(exit_door_id))
 
-        trigger_id_db = {}
+        def extend_command_list(Cl):
+            command_list = Cl
+            command_list = command_list.concatinate(CommandList(InputPIncrement()))
+            if CheckLexemeEndF: command_list = check_lexeme_end.concatinate(command_list)
+            else:               command_list = Cl
+
+        def from_state_index_iterable(StateIndexList):
+            for state_index in StateIndexList:
+                for from_state_index in analyzer.from_db[state_index]:
+                    yield state_index, from_state_index
+
         # Inject the counting commands into the states that represent it
-        for cli, info in self.count_command_map.iteritems():
-            # States entering state 'cli' where command_list is to be performed:
-            for state_index in analyzer.from_db[cli]:
-                command_list = info.command_list
-                command_list = command_list.concatinate(CommandList(InputPIncrement()))
-                if CheckLexemeEndF: command_list = check_lexeme_end.concatinate(command_list)
-                else:               command_list = info.command_list
+        trigger_id_db = {}
+        for cli, state_index_list in map_cli_to_state_index_list.iteritems():
+
+            info = self.count_command_map[cli]
+            command_list = extend_command_list(info.command_list)
+
+            for state_index, from_state_index in from_state_index_iterable(state_index_list):
+                # States entering state 'cli' where command_list is to be performed:
                 # Each time the same 'to-from' transition is entered a new 
                 # trigger id is assigned, to make the transition unique.
-                transition_id = finish.entry.enter(finish.index, state_index, TransitionAction(command_list))
-                trigger_id_db[(cli, state_index)] = transition_id
-            analyzer.remove_state(cli)
+                transition_id = finish.entry.enter(finish.index, from_state_index, TransitionAction(command_list))
+                trigger_id_db[(state_index, from_state_index)] = transition_id
+
+            for state_index in state_index_list:
+                analyzer.remove_state(state_index)
 
         def door_id_provider(analyzer, ToStateIndex, FromStateIndex):
             """Provides a DoorID for specicial transitions mentioned in the 'trigger_id_db'.
@@ -275,7 +289,8 @@ class CounterCoderData:
         # (*) Transition Map __________________________________________________
         #
         for state in analyzer.state_db.itervalues():
-            state.transition_map.fill_gaps(exit_door_id)
+            if state.transition_map is not None:
+                state.transition_map.fill_gaps(exit_door_id)
             state.drop_out = DropOutGotoDoorId(exit_door_id)
 
         return analyzer, exit_terminal
@@ -404,10 +419,68 @@ class CounterCoderData:
 
         return result
 
-    def get_counting_state_machine(self, CountCommandMap):
+    def __get_counting_state_machine(self, CountCommandMap):
+        """A CountCommandMap tells about character sets and the count action
+        which they require. That is, 
+
+                    CountCommandMap: 'cli' --> 'count_info'
+
+        where 'cli' is a unique index which idenfies the required count action.
+        The 'count_info' object contains the character set which is concerned
+        (and the count action, but this is irrelevant here).
+
+        Based on the 'CountCommandMap' a simple state machine is created that
+        has a state reqpresenting each count action. (A plain transition map
+        would not suffice in case that dynamic character sizes are involved).
+
+        Then, this state machine is transformed according to the required 
+        buffer codec (see 'Setup.buffer_codec_transformation_info').
+
+
+        RETURN: [0] State machine that associates counting patterns with 
+                    acceptance ids.
+
+                [1] A mapping from the 'cli' of the counting action to the
+                    index of the state which is entered when the correspondent
+                    character is detected.
+
+        """
+        def get_state_by_acceptance_id(AcceptanceID):
+            """There should be exactly one acceptance state for the given 
+            AcceptanceID."""
+            result = None
+            for state_index, state in analyzer.state_db.itervalues():
+                if state.acceptance_id() == AcceptanceID: 
+                    assert result is None
+                    result = state_index
+            assert result is not None
+            return result
+            
+
+        # -- Generate for each character set that has the same counting action a
+        #    transition in the state machine. 
+        # -- Associate the target state with an 'AcceptanceID'.
+        #    (AcceptanceID-s survive the transformation and NFA-to-DFA)
+        # -- Store the relation between the counting action (given by the 'cli')
+        #    and the acceptance id.
         sm = StateMachine()
+        cli_acceptance_id_list = []
         for cli, count_info in CountCommandMap.iteritems():
             assert isinstance(count_info, CountCmdInfo)
-            sm.add_transition(sm.init_state_index, count_info.trigger_set, cli)
-        return sm
+            acceptance_id = index.get_state_machine_id()
+
+            state_index = sm.add_transition(sm.init_state_index, count_info.trigger_set)
+            sm.states[state_index].mark_self_as_origin(acceptance_id, state_index)
+
+            cli_acceptance_id_list.append((cli, acceptance_id))
+
+        dummy, sm = transformation.do_state_machine(sm)
+
+        # -- Provide a relation between the counting action 'cli' and the 
+        #    states which are entered if the character set triggers.
+        map_cli_to_state_index_list = dict(
+                (cli, set(sm.get_acceptance_state_index_list(acceptance_id)))
+                for cli, acceptance_id in cli_acceptance_id_list
+        )
+        return sm, map_cli_to_state_index_list
 

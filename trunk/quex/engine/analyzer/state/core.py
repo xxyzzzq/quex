@@ -6,6 +6,7 @@ from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAc
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.commands           import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
+from   quex.engine.tools import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
                                E_StateIndices, \
@@ -51,9 +52,9 @@ class AnalyzerState(Processor):
                  "map_target_index_to_character_set", 
                  "transition_map") 
 
+    @typed(StateIndex=(int,long), TheTransitionMap=(None, TransitionMap))
     def __init__(self, StateIndex, TheTransitionMap):
         # Empty transition maps are reported as 'None'
-        assert isinstance(TheTransitionMap, TransitionMap) or TheTransitionMap is None
         Processor.__init__(self, StateIndex)
         self.drop_out                          = None
         self.map_target_index_to_character_set = None
@@ -62,6 +63,7 @@ class AnalyzerState(Processor):
     @staticmethod
     def from_State(SM_State, StateIndex, EngineType):
         assert isinstance(SM_State, State)
+        assert SM_State.target_map.is_DFA_compliant()
         assert isinstance(StateIndex, (int, long))
 
         x = AnalyzerState(StateIndex, TransitionMap.from_TargetMap(SM_State.target_map))

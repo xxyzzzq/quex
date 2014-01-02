@@ -1,6 +1,4 @@
-# (C) 2009 Frank-Rene Schaefer
-import os
-import sys
+# (C) Frank-Rene Schaefer
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.utf8_state_split      as utf8_state_split
 import quex.engine.state_machine.utf16_state_split     as utf16_state_split
@@ -10,8 +8,11 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.interval_handling                   import NumberSet
 from   quex.blackboard                                 import setup as Setup
 
-sys.path.append(os.environ["QUEX_PATH"])
+from   quex.engine.tools import typed
 
+import types
+
+@typed(X=(StateMachine,None))
 def do_state_machine(X):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
@@ -20,33 +21,39 @@ def do_state_machine(X):
        [0] Transformation complete (True->yes, False->not all transformed)
        [1] Transformed state machine. It may be the same as it was 
            before if there was no transformation actually.
+
+       It is ensured that the result of this function is a DFA compliant
+       state machine.
     """
+    def ensure_dfa_compliance(SM):
+        if   SM is None:            return None
+        elif SM.is_DFA_compliant(): return SM
+        else:                       return beautifier.do(SM)
+
     if X is None: 
-        return True, X
+        return True, ensure_dfa_compliance(X)
 
-    assert isinstance(X, StateMachine)
     assert X.is_DFA_compliant()
-
     TrafoInfo = Setup.buffer_codec_transformation_info
 
     if TrafoInfo is None: 
-        return True, X
+        complete_f = True
+        result     = X
+    elif isinstance(TrafoInfo, (str, unicode)):
+        if   TrafoInfo == "utf8-state-split":  
+            complete_f = True
+            result     = utf8_state_split.do(X)
+        elif TrafoInfo == "utf16-state-split": 
+            complete_f = True
+            result     = utf16_state_split.do(X)
+        else:                                  
+            assert False
+    else:
+        # Pre-condition SM is transformed inside the member function
+        complete_f = X.transform(TrafoInfo) # All uncovered characters => 'DoorID.incidence(E_IncidenceIDs.CODEC_ERROR)'
+        result     = X
 
-    if isinstance(TrafoInfo, (str, unicode)):
-        if   TrafoInfo == "utf8-state-split":  return True, __DFA(utf8_state_split.do(X))
-        elif TrafoInfo == "utf16-state-split": return True, __DFA(utf16_state_split.do(X))
-        else:                                  assert False
-    
-    # Pre-condition SM is transformed inside the member function
-    complete_f = X.transform(TrafoInfo) # All uncovered characters => 'DoorID.incidence(E_IncidenceIDs.CODEC_ERROR)'
-    return complete_f, __DFA(X)
-
-def __DFA(SM):
-    if   SM is None:            return None
-    elif SM.is_DFA_compliant(): return SM
-
-    result = beautifier.do(SM)
-    return result
+    return complete_f, ensure_dfa_compliance(result)
 
 def do_set(number_set, TrafoInfo, fh=-1):
     """RETURNS: True  transformation successful
