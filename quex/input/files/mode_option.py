@@ -20,13 +20,13 @@ import types
 def __get_mode_name_list():
     return mode_description_db.keys()
 
-class SkipRangeData: 
+class SkipRangeData(dict): 
     def __init__(self, OpenerPattern, OpenerSequence,
                  CloserPattern, CloserSequence):
-        self.opener_pattern  = OpenerPattern
-        self.opener_sequence = OpenerSequence
-        self.closer_pattern  = CloserPattern
-        self.closer_sequence = CloserSequence
+        self["opener_pattern"]  = OpenerPattern
+        self["opener_sequence"] = OpenerSequence
+        self["closer_pattern"]  = CloserPattern
+        self["closer_sequence"] = CloserSequence
 
 #-----------------------------------------------------------------------------------------
 # mode_option_info_db: Information about properties of mode options.

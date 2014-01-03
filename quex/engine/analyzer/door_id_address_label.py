@@ -122,8 +122,8 @@ class DialDB:
         self.clear()
 
     def clear(self):
-        ## print_callstack()
-        ## print "#DialDB.clear()"
+        print_callstack()
+        print "#DialDB.clear()"
 
         # Database: [DoorID] [Address] [Label] 
         # 
@@ -220,7 +220,6 @@ class DialDB:
         else:
             return door_id
 
-
     def new_door_id(self, StateIndex=None, DoorSubIndex=None):
         door_id, alp = self.__new_entry(StateIndex, DoorSubIndex)
         return door_id
@@ -235,12 +234,10 @@ class DialDB:
 
     def get_label_by_door_id(self, DoorId, GotoedF=False):
         assert DoorId in self.__d2la, "%s" % str(DoorId)
+        address, label = self.__d2la[DoorId]
         if GotoedF:
-            address, label = self.__d2la[DoorId]
             self.__gotoed_address_set.add(address)
-            return label
-        else:
-            return self.__d2la[DoorId][1]
+        return label 
 
     def get_address_by_door_id(self, DoorId, RoutedF=False):
         address = self.__d2la[DoorId][0]

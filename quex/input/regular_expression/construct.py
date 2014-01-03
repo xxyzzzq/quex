@@ -91,6 +91,9 @@ class Pattern(object):
 
     def incidence_id(self):   return self.__sm.get_id()
 
+    def set_incidence_id(self, Id):
+        self.__sm.set_id(Id)
+
     def prepare_count_info(self, LineColumn_CounterDB, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 

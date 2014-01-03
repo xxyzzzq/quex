@@ -117,7 +117,7 @@ class PatternActionInfo(object):
         txt  = ""
         txt += "self.mode_name      = %s\n" % repr(self.mode_name)
         if self.pattern() not in E_IncidenceIDs:
-            txt += "self.pattern_string = %s\n" % repr(self.pattern_string())
+            txt += "self.pattern_string = %s\n" % repr(self.pattern().pattern_string())
         txt += "self.pattern        = %s\n" % repr(self.pattern()).replace("\n", "\n      ")
         txt += "self.action         = %s\n" % self.action().get_code_string()
         if self.action().__class__ == UserCodeFragment:
@@ -597,6 +597,7 @@ class Mode:
         )
 
         if SkipTerminal is not None:
+            print "#SkipTermina.incidence_id", SkipTerminal.incidence_id()
             result[SkipTerminal.incidence_id()] = SkipTerminal
 
         return result
@@ -645,22 +646,27 @@ class Mode:
             "counter_db":    CounterDb, 
             "character_set": character_set,
         }
-        terminal     = TerminalGenerated(skip_character_set.do, data)
-        incidence_id = terminal.incidence_id()
-        ccd          = CounterCoderData(CounterDb, character_set)
-        code         = CodeTerminal([ Lng.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) ])
+        terminal         = TerminalGenerated(skip_character_set.do, data)
+        terminal_door_id = DoorID.incidence(terminal.incidence_id())
+        code             = CodeTerminal(Lng.GOTO_BY_DOOR_ID(terminal_door_id))
+        ccd              = CounterCoderData(CounterDb, character_set)
         for cli, cmd_info in ccd.count_command_map.iteritems():
-            priority         = PatternPriority(MHI, cli)
-            pattern          = Pattern(StateMachine.from_character_set(cmd_info.trigger_set))
-            code             = CodeTerminal([Lng.COMMAND(cmd) for cmd in cmd_info.command_list])
+            # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
+            priority = PatternPriority(MHI, cli)
+            pattern  = Pattern(
+                StateMachine.from_character_set(cmd_info.trigger_set)
+            )
+            pattern.prepare_count_info(CounterDb, 
+                                       Setup.buffer_codec_transformation_info)
             sub_incidence_id = sm_index.get_state_machine_id()
-            terminal         = terminal_factory.do(E_TerminalType.PLAIN, 
-                                                   sub_incidence_id, 
-                                                   code)
+            terminal = terminal_factory.do(E_TerminalType.PLAIN, 
+                                           sub_incidence_id, 
+                                           code, pattern)
             # Counting actions are added to the terminal automatically.
             # What remains to do here is only to go to the skipper.
             ppt_list.append(PPT(priority, pattern, terminal))
 
+        print "#SkipTermina.incidence_id first", terminal_door_id, terminal.incidence_id(), code.get_code()
         return terminal
 
     def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI):
@@ -679,16 +685,13 @@ class Mode:
         if SrSetup is None or len(SrSetup) == 0:
             return
 
-        assert    Code_constructor == CodeSkipRange \
-               or Code_constructor == CodeSkipNestedRange
-
         for i, data in enumerate(SrSetup):
             assert isinstance(data, SkipRangeData)
-            my_data      = deepcopy(data)
-            my_data.mode = self
+            my_data         = deepcopy(data)
+            my_data["mode"] = self
 
             priority     = PatternPriority(MHI, i)
-            pattern      = opener_pattern.clone()
+            pattern      = deepcopy(my_data["opener_pattern"])
             terminal     = TerminalGenerated(CodeGeneratorFunction, my_data)
             pattern.set_incidence_id(terminal.incidence_id())
             ppt_list.append(PPT(priority, pattern, terminal))
@@ -805,7 +808,7 @@ class Mode:
                    and identity_checker.do(xpap[1].pattern(), Info.pattern):
                     done_f = True
                     history.append([ModeName, 
-                                    xpap[1].pattern_string(), 
+                                    xpap[1].pattern().pattern_string(), 
                                     xpap[1].mode_name,
                                     xpap[1].pattern().incidence_id(), 
                                     Info.new_pattern_index])
@@ -835,7 +838,7 @@ class Mode:
                    and superset_check.do(Info.pattern, xpap[1].pattern()):
                     done_f  = True
                     del ppt_list[i]
-                    history.append([ModeName, xpap[1].pattern_string(), xpap[1].mode_name])
+                    history.append([ModeName, xpap[1].pattern().pattern_string(), xpap[1].mode_name])
                     size   -= 1
                 else:
                     i += 1
@@ -955,9 +958,9 @@ class Mode:
                     c_error_message(pattern_k, pattern_i, ExitF=False, ThisComment="may outrun")
 
     def match_indentation_counter_newline_pattern(self, Sequence):
-        if self.indentation_setup is None: return False
+        if self.__indentation_setup is None: return False
 
-        return self.indentation_setup.newline_state_machine.get().does_sequence_match(Sequence)
+        return self.__indentation_setup.newline_state_machine.get().does_sequence_match(Sequence)
 
     def assert_indentation_setup(self):
         # (*) Indentation: Newline Pattern and Newline Suppressor Pattern
@@ -1021,7 +1024,7 @@ class Mode:
                     txt += "      (%3i) %s: %s%s\n" % \
                            (pap.pattern().incidence_id(),
                             pap.mode_name, " " * (L - len(self.name)), 
-                            pap.pattern_string())
+                            pap.pattern().pattern_string())
                 else:
                     txt += "      %s\n" % pap.pattern()
             txt += "\n"
@@ -1167,8 +1170,7 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
         code = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
         assert isinstance(code, CodeUser)
         if code is not None:
-            code.mode_name      = new_mode.name
-            code.pattern_string = pattern_str
+            code.mode_name = new_mode.name
             new_mode.add_pattern_action_pair(pattern, code)
             return
 

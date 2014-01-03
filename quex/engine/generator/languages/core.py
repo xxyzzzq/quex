@@ -15,6 +15,7 @@
 import quex.engine.generator.languages.cpp        as     cpp
 from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.analyzer.door_id_address_label import Label, \
+                                                         DoorID, \
                                                         dial_db, \
                                                         get_plain_strings
 from   quex.blackboard                           import setup as Setup, \
@@ -371,6 +372,8 @@ class Lng_Cpp(dict):
     def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
         text = []
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
+            iid = terminal.incidence_id()
+            print "#incidence, door_id, label:", iid, DoorID.incidence(iid), Label.incidence(iid)
             text.append(
                "%s: " % Label.incidence(terminal.incidence_id()) \
                + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
