@@ -5,6 +5,12 @@ quick_f=false
 COMPILER=icpc
 COMPILER_V=`icpc --version | awk ' // { print $3; exit; }`
 source /opt/intel/composerxe-2011.2.137/bin/compilervars.sh ia32
+
+if [ ! -e code/linux-2.6.22.17-kernel-dir.c ]; then
+    cd code/
+    unzip code/linux-2.6.22.17-kernel-dir.c.zip
+    cd -
+fi
 #
 case $1 in 
     HWUT-TEST) 
