@@ -1,7 +1,8 @@
 import quex.engine.utf8                   as utf8
 from   quex.engine.interval_handling      import NumberSet
 from   quex.engine.misc.file_in           import error_msg
-from   quex.blackboard import setup as Setup
+from   quex.blackboard                    import E_IncidenceIDs, \
+                                                 setup as Setup
 
 __line_counter_in_loop = """
     __QUEX_IF_COUNT_LINES_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 

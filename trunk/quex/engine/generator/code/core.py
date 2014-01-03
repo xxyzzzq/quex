@@ -13,12 +13,10 @@ class CodeUser(CodeFragment):
     def __init__(self, Code, SourceReference):
         CodeFragment.__init__(self, Code, SourceReference)
         self.mode_name      = ""
-        self.pattern_string = ""
 
     def clone(self):
         result = CodeUser(deepcopy(self.get_code()), self.sr)
         result.mode_name      = self.mode_name
-        result.pattern_string = self.pattern_string
         return result
 
     def get_code(self):
@@ -58,6 +56,5 @@ class CodeTerminalOnMatch(CodeTerminal):
     def __init__(self, CodeFrag):
         code                = CodeFrag.get_code() # Prepares source line references
         self.mode_name      = CodeFrag.mode_name
-        self.pattern_string = CodeFrag.pattern_string
         CodeTerminal.__init__(self, code, LexemeRelevanceF=True)
     

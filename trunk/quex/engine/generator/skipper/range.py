@@ -1,24 +1,27 @@
-import quex.engine.state_machine.index             as     sm_index
+from   quex.engine.analyzer.door_id_address_label  import dial_db, DoorID
 import quex.engine.analyzer.engine_supply_factory  as     engine
+from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
+from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
-from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
-from   quex.engine.generator.languages.variable_db import variable_db
+import quex.engine.state_machine.index             as     sm_index
 import quex.engine.state_machine.transformation    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import r_enumerate
+
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
-from   quex.blackboard                             import setup as Setup
-from   quex.blackboard                             import E_StateIndices
+from   quex.blackboard                             import setup as Setup, Lng
+from   quex.blackboard                             import E_StateIndices, \
+                                                          E_IncidenceIDs
 from   copy                                        import copy
 
 OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
 OnBackToLoopStart = "<<__dummy__OnBackToLoopStart__>>" 
 
-def do(Data, Mode=None):
+def do(Data, TheAnalyzer):
     """
              .-----------<----------.--------<--------.          
              |                      |                 |
@@ -27,17 +30,44 @@ def do(Data, Mode=None):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
+    print "#Hello range_set_skip"
 
     ClosingSequence = Data["closer_sequence"]
     ClosingPattern  = Data["closer_pattern"]
+    Mode            = Data["mode"]
 
     return get_skipper(ClosingSequence, ClosingPattern, Mode) 
 
-def new_skipper(counter_db, ClosingSequence):
-    #closing_sequence    = transformation.do_sequence(ClosingSequence)
-    #action_count_on_end = count_db.get_count_action_for_sequence(ClosingSequence)
+def new_skipper(TheAnalyzer):
+    """JUST A PROPOSAL"""
+    result = generator.do_loop(counter_db, 
+                               AfterExitDoorId   = door_id_first_match,
+                               CharacterSet      = NumberSet(ClosingSequence[0]).inverse(),
+                               CheckLexemeEndF   = False,
+                               ReloadF           = True,
+                               GlobalReloadState = TheAnalyzer.reload_state)
 
-    # Prepare the 'main' loop
+    result.append(
+        dial_db.get_label_by_door_id(door_id_matched_sequence_0)
+    )
+    for character in ClosingSequence[1:]:
+        result.extend([
+            Lng.IF_INPUT("!=", character),
+                Lng.IF_INPUT("==", Setup.buffer_limit_code),
+                    Lng.GOTO_BY_DOOR_ID(door_id_reload_state),
+                Lng.ELSE(),
+                    Lng.GOTO_BY_DOOR_ID(DoorId.continue_without_on_after_match()),
+                Lng.ENDIF(),
+            Lng.ENDIF(),
+        ])
+
+        
+
+#def new_skipper(counter_db, ClosingSequence):
+#    #closing_sequence    = transformation.do_sequence(ClosingSequence)
+#    #action_count_on_end = count_db.get_count_action_for_sequence(ClosingSequence)
+#
+#    # Prepare the 'main' loop
 #    character_set = NumberSet(ClosingSequence[0])
 #    character_set.invert()
 #
@@ -124,7 +154,7 @@ template_str = """
     text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
-$$ENTRY$$
+$$ENTRY$$:
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
@@ -180,7 +210,7 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
      */
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) Reload required. */
-        goto $$GOTO_RELOAD$$;
+        $$GOTO_RELOAD$$;
     }
     $$LC_ON_FIRST_DELIMITER$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
@@ -242,73 +272,6 @@ $$UPON_RELOAD_DONE_LABEL$$:
     me->buffer._input_p = me->buffer.lexeme_start_p;
 """
 
-def __terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
-    UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
-
-    # Trasform letter by letter.
-    sequence = []
-    for x in UnicodeSequence:
-        sequence.extend(transformation.do_character(x, Setup.buffer_codec_transformation_info))
-
-    EndSequenceChunkN = len(sequence)
-
-    # Column and line number count for closing delimiter
-    run_time_counting_required_f, counter_txt = \
-            counter_for_pattern.get(UnicodeEndSequencePattern, ShiftF=False)
-    # The Closing Delimiter must be a string. As such it has a pre-determined size.
-    assert not run_time_counting_required_f 
-
-    # Column and line number count for 'normal' character.
-    tm, column_counter_per_chunk = \
-            counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p", 
-                                    Trafo=Setup.buffer_codec_transformation_info)
-
-    dummy, character_count_txt, dummy = \
-            counter.get_core_step(tm, "me->buffer._input_p")
-
-
-    txt = []
-    for i, x in enumerate(sequence):
-        txt.append(i)
-        txt.append(Lng.IF_INPUT("==", "0x%X" % x, FirstF=True)) # Opening the 'if'
-        txt.append(i+1)
-        txt.append("%s\n" % Lng.INPUT_P_INCREMENT())
-
-    Lng.INDENT(counter_txt, i+1)
-    if column_counter_per_chunk:
-        txt.append(i+1)
-        if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
-            Lng.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", column_counter_per_chunk) 
-        else:
-            Lng.REFERENCE_P_COLUMN_ADD(txt, "(me->buffer._input_p - %i)" % EndSequenceChunkN, column_counter_per_chunk) 
-            txt.append(i+1)
-            txt.extend(counter_txt)
-    txt.append(i+1)
-    txt.append("break;\n")
-
-    for i, x in r_enumerate(sequence):
-        txt.append(i)
-        txt.append("%s"   % Lng.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
-        txt.append(i+1)
-        txt.append("%s\n" % Lng.LEXEME_START_SET("me->buffer._input_p - %i" % i))
-        txt.append(i+1)
-        txt.append("%s\n" % Lng.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
-        if i == 0: break
-        txt.append(i)
-        txt.append("%s"   % Lng.ELSE)
-        txt.append(i+1)
-        txt.append("%s\n" % Lng.INPUT_P_ADD(- i))
-        txt.append(i)
-        txt.append("%s\n" % Lng.END_IF())
-
-    txt.append(i)
-    txt.append("%s\n" % Lng.END_IF())
-
-    txt.extend(character_count_txt)
-
-    print "##DEBUG:\n%s" % "".join(Lng.GET_PLAIN_STRINGS(txt))
-    return txt
-
 def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     assert type(EndSequence) == list
     assert len(EndSequence) >= 1
@@ -316,10 +279,9 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
 
     global template_str
 
-    ## debug_txt = __terminal_delimiter_sequence(Mode, EndSequence, CloserPattern, 4711)
-
     # Name the $$SKIPPER$$
-    skipper_index = sm_index.get()
+    skipper_index   = sm_index.get()
+    skipper_door_id = dial_db.new_door_id(skipper_index)
 
     delimiter_str, delimiter_comment_str = get_character_sequence(EndSequence)
 
@@ -346,13 +308,14 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
         delimiter_remainder_test_str = txt
 
     if not Mode.match_indentation_counter_newline_pattern(EndSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO(E_StateIndices.ANALYZER_REENTRY)
+        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match())
+
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
+        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
@@ -368,7 +331,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
                            ["$$INPUT_GET$$",                      Lng.ACCESS_INPUT()],
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          Lng.END_IF()],
-                           ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
+                           ["$$ENTRY$$",                          dial_db.get_label_by_door_id(skipper_door_id)],
                            ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                            ["$$GOTO_ENTRY$$",                     Lng.GOTO_BY_DOOR_ID(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
@@ -493,6 +456,73 @@ def __lc_counting_replacements(code_str, EndSequence):
                       ]), \
            reference_p_required_f
 
+
+def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePattern, UponReloadDoneAdr):
+    UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
+
+    # Trasform letter by letter.
+    sequence = []
+    for x in UnicodeSequence:
+        sequence.extend(transformation.do_character(x, Setup.buffer_codec_transformation_info))
+
+    EndSequenceChunkN = len(sequence)
+
+    # Column and line number count for closing delimiter
+    run_time_counting_required_f, counter_txt = \
+            counter_for_pattern.get(UnicodeEndSequencePattern, ShiftF=False)
+    # The Closing Delimiter must be a string. As such it has a pre-determined size.
+    assert not run_time_counting_required_f 
+
+    # Column and line number count for 'normal' character.
+    tm, column_counter_per_chunk = \
+            counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p", 
+                                    Trafo=Setup.buffer_codec_transformation_info)
+
+    dummy, character_count_txt, dummy = \
+            counter.get_core_step(tm, "me->buffer._input_p")
+
+
+    txt = []
+    for i, x in enumerate(sequence):
+        txt.append(i)
+        txt.append(Lng.IF_INPUT("==", "0x%X" % x, FirstF=True)) # Opening the 'if'
+        txt.append(i+1)
+        txt.append("%s\n" % Lng.INPUT_P_INCREMENT())
+
+    Lng.INDENT(counter_txt, i+1)
+    if column_counter_per_chunk:
+        txt.append(i+1)
+        if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
+            Lng.REFERENCE_P_COLUMN_ADD(txt, "me->buffer._input_p", column_counter_per_chunk) 
+        else:
+            Lng.REFERENCE_P_COLUMN_ADD(txt, "(me->buffer._input_p - %i)" % EndSequenceChunkN, column_counter_per_chunk) 
+            txt.append(i+1)
+            txt.extend(counter_txt)
+    txt.append(i+1)
+    txt.append("break;\n")
+
+    for i, x in r_enumerate(sequence):
+        txt.append(i)
+        txt.append("%s"   % Lng.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
+        txt.append(i+1)
+        txt.append("%s\n" % Lng.LEXEME_START_SET("me->buffer._input_p - %i" % i))
+        txt.append(i+1)
+        txt.append("%s\n" % Lng.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
+        if i == 0: break
+        txt.append(i)
+        txt.append("%s"   % Lng.ELSE)
+        txt.append(i+1)
+        txt.append("%s\n" % Lng.INPUT_P_ADD(- i))
+        txt.append(i)
+        txt.append("%s\n" % Lng.END_IF())
+
+    txt.append(i)
+    txt.append("%s\n" % Lng.END_IF())
+
+    txt.extend(character_count_txt)
+
+    print "##DEBUG:\n%s" % "".join(Lng.GET_PLAIN_STRINGS(txt))
+    return txt
 
 #def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):
 #    tm, column_counter_per_chunk = \

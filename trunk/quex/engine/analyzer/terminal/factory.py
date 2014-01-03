@@ -91,7 +91,7 @@ class TerminalFactory:
             Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match())
         ] 
 
-        name = TerminalFactory.name_pattern_match_terminal(IncidenceId, Code.pattern_string)
+        name = TerminalFactory.name_pattern_match_terminal(IncidenceId, ThePattern.pattern_string())
         return Terminal(IncidenceId, CodeTerminal(text), name)
 
     def do_match_failure(self, IncidenceId, Code, ThePattern):
@@ -139,7 +139,9 @@ class TerminalFactory:
             self.get_counter_text(ThePattern)
         ]
         text.extend(Code.get_code())
-        return Terminal(IncidenceId, CodeTerminal(text), str(IncidenceId))
+        if ThePattern is None: name = str(IncidenceId)
+        else:                  name = ThePattern.pattern_string()
+        return Terminal(IncidenceId, CodeTerminal(text), name)
 
     @staticmethod
     def name_pattern_match_terminal(IncidenceId, PatternString):

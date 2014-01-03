@@ -6,7 +6,7 @@ from   quex.input.files.counter_db                import CountCmdInfo, \
                                                          CounterCoderData
 from   quex.blackboard                            import setup as Setup
 
-def do(Data):
+def do(Data, TheAnalyzer):
     """Fast implementation of character set skipping machine.
     ________________________________________________________________________
     As long as characters of a given character set appears it iterates: 
@@ -64,6 +64,7 @@ def do(Data):
           then the single state may actually be split into a real state machine of
           states.
     """
+    print "#Hello character_set_skip"
     counter_db    = Data["counter_db"]
     character_set = Data["character_set"]
         
