@@ -17,13 +17,14 @@ main(int argc, char** argv)
 
     n = fread((void*)buffer, sizeof(QUEX_TYPE_CHARACTER), 65536, fh);
 
+    printf("file:     '%s';\n"
+           "char_size: %i;\n" 
+           "byte_n:    %i;\n", DEF_FILE_NAME, sizeof(QUEX_TYPE_CHARACTER), (int)n);
+
     me.counter._column_number_at_end = 0;
     me.counter._line_number_at_end   = 0;
     DEF_COUNTER_FUNCTION(&me, &buffer[0], &buffer[n]);
 
-    printf("file:     '%s';\n"
-           "char_size: %i;\n" 
-           "byte_n:    %i;\n", DEF_FILE_NAME, sizeof(QUEX_TYPE_CHARACTER), (int)n);
     printf("column_n:  %i;\n"
            "line_n:    %i;\n", 
            (int)me.counter._column_number_at_end,

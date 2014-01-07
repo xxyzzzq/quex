@@ -1,9 +1,8 @@
-# import array
-
-from   quex.engine.interval_handling       import NumberSet, Interval
-from   quex.engine.misc.enum               import Enum
-from   quex.blackboard                     import E_StateIndices, E_Border
-
+from   quex.engine.interval_handling import NumberSet, Interval
+from   quex.engine.misc.enum         import Enum
+from   quex.blackboard               import E_StateIndices, \
+                                            E_IncidenceIDs, \
+                                            E_Border
 import sys
 from   operator import attrgetter
 
@@ -265,20 +264,29 @@ class TargetMap:
         """Replaces given target index 'Before' with the index 'After'. 
            This means, that a transition targetting to 'Before' will then transit
            to 'After'.
+
+           RETURNS: 'True' if replacement happend
+                    'False' if no replacement took place
         """   
+        found_f = False
         # replace target index in the 'normal map'
         if not self.__db.has_key(Before): 
             pass
         elif self.__db.has_key(After):    
             self.__db[After].unite_with(self.__db[Before])
             del self.__db[Before]
+            found_f = True
         else: 
             self.__db[After] = self.__db[Before]
             del self.__db[Before]
+            found_f = True
 
         # replace target index in the list of epsilon transition targets.
         if Before in self.__epsilon_target_index_list:
             self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(Before)] = After
+            found_f = True
+
+        return found_f
 
     def transform(self, TrafoInfo):
         """Transforms all related NumberSets from Unicode to a given Target 
@@ -293,14 +301,23 @@ class TargetMap:
 
            RETURNS: True  transformation of all elements successful.
                     False transformation was not possible for all elements.
+
+           NOTE: If 'False' is returned, for safety, it may be necessary to 
+                 do a 'delete_orphaned_states()' operation, because states
+                 may have been deleted from the map.
         """
         complete_f = True
-        for number_set in self.__db.values():
+        for target, number_set in self.__db.items(): # NOT '.iteritems()'
             if not number_set.transform(TrafoInfo):
                 complete_f = False
+                if number_set.is_empty():
+                    del self.__db[target]
+            else:
+                assert not number_set.is_empty()
+
         # All code points which are not available in the drain's range must
         # trigger an 'on_codec_error'.
-        self.__db[E_IncidenceIDs.CODEC_ERROR] = TrafoInfo.inv_drain_set.clone()
+        # self.__db[E_IncidenceIDs.CODEC_ERROR] = TrafoInfo.inv_drain_set.clone()
         return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):

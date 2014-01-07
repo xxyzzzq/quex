@@ -14,6 +14,7 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            GotoDoorId, \
                                                            InputPIncrement, \
+                                                           InputPDereference, \
                                                            InputPToLexemeStartP, \
                                                            GotoDoorIdIfInputPLexemeEnd, \
                                                            ColumnCountAdd, \
@@ -217,7 +218,10 @@ class CounterCoderData:
                or EngineType.requires_buffer_limit_code_for_reload() 
         
 
-        sm, map_cli_to_state_index_list = self.__get_counting_state_machine(self.count_command_map) 
+        sm, \
+        map_cli_to_incidence_id, \
+        exit_incidence_id        = self.__get_counting_state_machine(self.count_command_map) 
+        exit_door_id             = DoorID.incidence(exit_incidence_id)
 
         # The 'bending' of CLI-s to the init state must wait until the entry actions
         # have been determined. Only this way, it is safe to assume that the different
@@ -228,58 +232,35 @@ class CounterCoderData:
         else:                       finish = start
 
         start.entry.enter_before(start.index, E_StateIndices.NONE, self.on_entry)
+        loop_state_index   = index.get()
+        loop_transition_id = start.entry.enter(start.index, loop_state_index, 
+                                               TransitionAction(CommandList(InputPDereference())))
         start.entry.categorize(start.index)   # Determine DoorID-s -- those specified now, won't change later.
+        loop_door_id       = start.entry.get(loop_transition_id).door_id
 
-        exit_incidence_id = index.get_state_machine_id() 
-        exit_door_id      = DoorID.incidence(exit_incidence_id)
-        exit_terminal     = Terminal(exit_incidence_id, 
-                                     CodeTerminal([ Lng.COMMAND(cmd) for cmd in self.on_exit]))
+        terminal_list = []
+        terminal_list.append(
+            Terminal(exit_incidence_id, 
+                     CodeTerminal([ Lng.COMMAND(cmd) for cmd in self.on_exit]),
+                     Name="-- Exit --")
+        )
 
-        if CheckLexemeEndF:
-            check_lexeme_end = CommandList(GotoDoorIdIfInputPLexemeEnd(exit_door_id))
+        def get_terminal(incidence_id, cli):
+            text = [
+                Lng.COMMAND(cmd) for cmd in self.count_command_map[cli].command_list 
+            ]
+            if CheckLexemeEndF:
+                text.append(Lng.COMMAND(GotoDoorIdIfInputPLexemeEnd(exit_door_id)))
+            text.append(Lng.GOTO_BY_DOOR_ID(loop_door_id))
+            name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
+            return Terminal(incidence_id, CodeTerminal(text), name)
 
-        def extend_command_list(Cl):
-            command_list = Cl
-            command_list = command_list.concatinate(CommandList(InputPIncrement()))
-            if CheckLexemeEndF: command_list = check_lexeme_end.concatinate(command_list)
-            else:               command_list = Cl
-
-        def from_state_index_iterable(StateIndexList):
-            for state_index in StateIndexList:
-                for from_state_index in analyzer.from_db[state_index]:
-                    yield state_index, from_state_index
-
-        # Inject the counting commands into the states that represent it
-        trigger_id_db = {}
-        for cli, state_index_list in map_cli_to_state_index_list.iteritems():
-
-            info = self.count_command_map[cli]
-            command_list = extend_command_list(info.command_list)
-
-            for state_index, from_state_index in from_state_index_iterable(state_index_list):
-                # States entering state 'cli' where command_list is to be performed:
-                # Each time the same 'to-from' transition is entered a new 
-                # trigger id is assigned, to make the transition unique.
-                transition_id = finish.entry.enter(finish.index, from_state_index, TransitionAction(command_list))
-                trigger_id_db[(state_index, from_state_index)] = transition_id
-
-            for state_index in state_index_list:
-                analyzer.remove_state(state_index)
-
-        def door_id_provider(analyzer, ToStateIndex, FromStateIndex):
-            """Provides a DoorID for specicial transitions mentioned in the 'trigger_id_db'.
-            If there is an entry in 'trigger_id_db' for ('ToStateIndex', 'FromStateIndex')
-            then a corresponding DoorID is extracted from the transition_id's 
-            'state_index'. If not, then 'None' is returned. This means, that 
-            normal 'DoorID' mapping is to be applied (see 'relate_to_DoorIDs').
-            """
-            transition_id = trigger_id_db.get((ToStateIndex, FromStateIndex))
-            if transition_id is None: return None
-
-            return analyzer.state_db[transition_id.target_state_index].entry.get(transition_id).door_id
+        for cli, cl in self.count_command_map.iteritems():
+            incidence_id = map_cli_to_incidence_id[cli]
+            terminal_list.append(get_terminal(incidence_id, cli))
 
         # Setup DoorIDs in entries and transition maps
-        analyzer.prepare_DoorIDs(door_id_provider)
+        analyzer.prepare_DoorIDs()
 
         # (The following is a null operation, if the analyzer.engine_type does not
         #  require reload preparation.)
@@ -288,12 +269,12 @@ class CounterCoderData:
 
         # (*) Transition Map __________________________________________________
         #
-        for state in analyzer.state_db.itervalues():
-            if state.transition_map is not None:
-                state.transition_map.fill_gaps(exit_door_id)
-            state.drop_out = DropOutGotoDoorId(exit_door_id)
+        # for state in analyzer.state_db.itervalues():
+        #    if state.transition_map is not None:
+        #        state.transition_map.fill_gaps(exit_door_id)
+        analyzer.init_state().drop_out = DropOutGotoDoorId(exit_door_id)
 
-        return analyzer, exit_terminal
+        return analyzer, terminal_list
 
     def __on_entry_on_exit_prepare(self, AfterExitDoorId):
         """Actions to be performed at entry into the counting code fragment and 
@@ -306,14 +287,14 @@ class CounterCoderData:
 
             None, None  If there is no need to do anthing upon entry or exit.
         """
-        on_entry = CommandList(InputPToLexemeStartP())
+        on_entry = CommandList()
 
         if self.column_count_per_chunk is None:
             if AfterExitDoorId is not None: on_exit = CommandList(GotoDoorId(AfterExitDoorId))
             else:                           on_exit = None
             return on_entry, on_exit
         else:
-            on_entry    = on_entry.concatinate(CommandList(ColumnCountReferencePSet(self.iterator_name)))
+            on_entry    = CommandList(ColumnCountReferencePSet(self.iterator_name))
             on_exit_cmd = ColumnCountReferencePDeltaAdd(self.iterator_name, 
                                                         self.column_count_per_chunk)
             if AfterExitDoorId is not None: 
@@ -445,42 +426,46 @@ class CounterCoderData:
                     character is detected.
 
         """
-        def get_state_by_acceptance_id(AcceptanceID):
-            """There should be exactly one acceptance state for the given 
-            AcceptanceID."""
-            result = None
-            for state_index, state in analyzer.state_db.itervalues():
-                if state.acceptance_id() == AcceptanceID: 
-                    assert result is None
-                    result = state_index
-            assert result is not None
-            return result
-            
-
         # -- Generate for each character set that has the same counting action a
         #    transition in the state machine. 
         # -- Associate the target state with an 'AcceptanceID'.
         #    (AcceptanceID-s survive the transformation and NFA-to-DFA)
         # -- Store the relation between the counting action (given by the 'cli')
         #    and the acceptance id.
-        sm = StateMachine()
-        cli_acceptance_id_list = []
-        for cli, count_info in CountCommandMap.iteritems():
-            assert isinstance(count_info, CountCmdInfo)
+        def add(sm, TriggerSet, map_cli_to_incidence_id):
             acceptance_id = index.get_state_machine_id()
-
-            state_index = sm.add_transition(sm.init_state_index, count_info.trigger_set)
+            state_index   = sm.add_transition(sm.init_state_index, TriggerSet,
+                                              AcceptanceF=True)
             sm.states[state_index].mark_self_as_origin(acceptance_id, state_index)
 
-            cli_acceptance_id_list.append((cli, acceptance_id))
+            map_cli_to_incidence_id[cli] = acceptance_id
+            return acceptance_id
 
+        sm = StateMachine()
+        map_cli_to_incidence_id = {}
+        covered_character_set = NumberSet()
+        for cli, count_info in CountCommandMap.iteritems():
+            assert isinstance(count_info, CountCmdInfo)
+            add(sm, count_info.trigger_set, map_cli_to_incidence_id)
+            covered_character_set.unite_with(count_info.trigger_set)
+
+        missed_character_set = covered_character_set.inverse()
+        if not missed_character_set.is_empty():
+            exit_incidence_id = add(sm, missed_character_set, map_cli_to_incidence_id)
+        else:
+            exit_incidence_id = index.get_state_machine_id()
+
+        # Perform possible a character set transformation, if the buffer codec
+        # is not unicode.
         dummy, sm = transformation.do_state_machine(sm)
 
-        # -- Provide a relation between the counting action 'cli' and the 
-        #    states which are entered if the character set triggers.
-        map_cli_to_state_index_list = dict(
-                (cli, set(sm.get_acceptance_state_index_list(acceptance_id)))
-                for cli, acceptance_id in cli_acceptance_id_list
-        )
-        return sm, map_cli_to_state_index_list
+        # Any state which is not acceptance will be 'Accept Exit'.
+        # EXCEPTION: Init state -- this state cannot accept else it would be
+        #            an 'accept anything' which causes trouble.
+        for state_index, state in sm.states.iteritems():
+            if state.is_acceptance(): continue
+            state.set_acceptance()
+            state.mark_self_as_origin(exit_incidence_id, state_index)
+
+        return sm, map_cli_to_incidence_id, exit_incidence_id
 

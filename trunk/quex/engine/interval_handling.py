@@ -22,7 +22,8 @@ import sys
 from   copy      import copy
 from   itertools import izip, islice
 
-from   quex.engine.tools import r_enumerate
+from   quex.engine.tools import r_enumerate, \
+                                typed
 
 class Interval(object):
     """Representing an interval with a minimum and a maximum border. Implements
@@ -879,6 +880,7 @@ class NumberSet(object):
         result.invert()
         return result
         
+    @typed(TrafoInfo=list)
     def transform(self, TrafoInfo):
         """Transforms the given NumberSet from into a new NumberSet according 
            to the given TransformationInfo. The TransformationInfo is a list of
@@ -893,8 +895,6 @@ class NumberSet(object):
            RETURNS: True  transformation successful
                     False transformation failed, number set possibly in inconsistent state!
         """
-        assert type(TrafoInfo) == list
-
         total_verdict = True
         result        = []
         for interval in self.__intervals:

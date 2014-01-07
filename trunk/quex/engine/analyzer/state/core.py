@@ -80,14 +80,37 @@ class AnalyzerState(Processor):
 
         return x
 
-    def prepare_for_reload(self, TheAnalyzer, BeforeReloadCmdList=None, AfterReloadCmdList=None):
-        """Prepares state for reload:
-           (i)   Create entry from 'reload procedure'.
-           (ii)  Create in reload state entry from this state, so
-                 that reload is prepared propperly.
-           (iii) Adapt the transition map, so that:
-                 buffer_limit_code --> reload procedure.
-           
+    def prepare_for_reload(self, TheAnalyzer, BeforeReloadCmdList=None, 
+                           AfterReloadCmdList=None):
+        """Prepares state for reload. Reload procedure
+
+            .- State 'X' ---.               
+            |               |                .-- Reloader------. 
+            | BUFFER LIMIT  |              .----------------.  |
+            | CODE detected ------->-------| Door from X:   |  |
+            |               |              | Actions before |  |
+            |               |              | reload.        |  |
+            |               |              '----------------'  |
+            |               |                |        |        |
+            |               |                |  reload buffer> |
+            |    .----------------.          |        |        |
+            |    | Door for       |---<-------(good)--*        |
+            |    | RELOAD SUCCESS:|          |        |        |
+            |    | Actions after  |          |      (bad)      |
+            |    | Reload.        |          '------- |--------'
+            |    '----------------'                   |
+            |               |                .----------------.
+            '---------------'                | Door for       |
+                                             | RELOAD FAILURE |
+                                             '----------------'
+                                   
+                                   
+
+        (1) Create 'Door for RELOAD SUCCESS'. 
+        (2) Determine 'Door for RELOAD FAILURE'.
+        (3) Create 'Door from X' in Reloader.
+        (4) Adapt state X's transition map, so that:
+              BUFFER LIMIT CODE --> reload procedure.
         """
         assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
         assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
@@ -97,38 +120,48 @@ class AnalyzerState(Processor):
         if not TheAnalyzer.engine_type.requires_buffer_limit_code_for_reload():
             return
 
-        if self.transition_map is None: # A transition map which is not a transition map
-            return                      # cannot trigger any reload.
+        # A transition map which is not a transition map cannot trigger any reload.
+        if self.transition_map is None: 
+            return                      
 
+        assert self.index in TheAnalyzer.state_db
         reload_state = TheAnalyzer.reload_state
-        assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, E_StateIndices.RELOAD_BACKWARD)
+        assert reload_state.index in (E_StateIndices.RELOAD_FORWARD, 
+                                      E_StateIndices.RELOAD_BACKWARD)
 
-        # Prepare the entry into the state from 'After Reload'.
-        # => Emtpy transition action, nothing to do.
-        if TheAnalyzer.engine_type.is_FORWARD(): after_cl = CommandList(InputPIncrement(), InputPDereference())
-        else:                                    after_cl = CommandList(InputPDecrement(), InputPDereference())
+        # (1) Door for RELOAD SUCCESS
+        #
+        if TheAnalyzer.engine_type.is_FORWARD(): first_cmd = InputPIncrement()
+        else:                                    first_cmd = InputPDecrement()
+        after_cl = CommandList(first_cmd, InputPDereference())
+
         if AfterReloadCmdList is not None:
             after_cl = after_cl.concatinate(AfterReloadCmdList)
 
-        assert self.index in TheAnalyzer.state_db
-        self.entry.enter(self.index, reload_state.index, TransitionAction(after_cl))
-        # Need to categorize here, all other transitions have been categorized before
-        self.entry.categorize(self.index)
+        on_success_ta = TransitionAction(after_cl)
+        self.entry.enter(self.index, reload_state.index, on_success_ta)
+        self.entry.categorize(self.index) # Categorize => DoorID is available.
+        on_success_door_id = self.entry.get_door_id(self.index, reload_state.index)
 
-        # Prepare the ReloadState for an entry from this state.
-        on_success_door_id = self.entry.get_door_id(self.index, TheAnalyzer.reload_state.index)
-
+        # (2) Determin Door for RELOAD FAILURE
+        #
         if TheAnalyzer.is_init_state_forward(self.index):
             on_failure_door_id = DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)
         else:
             on_failure_door_id = DoorID.drop_out(self.index)
-        assert on_failure_door_id != on_success_door_id
 
-        reload_door_id = reload_state.add_state(self.index, on_success_door_id, on_failure_door_id, 
+        # (3) Create 'Door from X' in Reloader
+        assert on_failure_door_id != on_success_door_id
+        reload_door_id = reload_state.add_state(self.index, 
+                                                on_success_door_id, 
+                                                on_failure_door_id, 
                                                 BeforeReloadCmdList)
 
-        # Ensure a transition on 'buffer limit code' to the reload procedure.
+        # (4) Adapt transition map: BUFFER LIMIT CODE --> reload_door_id
+        #
         self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
+
+        return
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
         txt = [ "State %s:\n" % repr(self.index).replace("L", "") ]

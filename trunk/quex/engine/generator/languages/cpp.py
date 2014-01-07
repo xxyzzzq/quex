@@ -111,11 +111,15 @@ def _local_variable_definitions(VariableDB):
 
             txt.append("#   endif /* %s */\n" % condition)
             
-    return txt
+    return "".join(txt)
          
-__function_signature = """
-#include <quex/code_base/temporary_macros_on>
+_terminal_state_prolog  = """
+    /* (*) Terminal states _______________________________________________________
+     *
+     * States that implement actions of the 'winner patterns.                     */
+"""
 
+__function_signature = """
 __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me) 
 {
@@ -128,11 +132,6 @@ QUEX_NAME($$STATE_MACHINE_NAME$$_analyzer_function)(QUEX_TYPE_ANALYZER* me)
     register QUEX_TYPE_TOKEN_ID __self_result_token_id 
            = (QUEX_TYPE_TOKEN_ID)__QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
 #   endif
-#   ifdef     self
-#       undef self
-#   endif
-#   define self (*((QUEX_TYPE_ANALYZER*)me))
-#   define QUEX_LABEL_STATE_ROUTER $$LABEL_STATE_ROUTER$$ /* Required by QUEX_GOTO_STATE */
 """
 
 comment_on_post_context_position_init_str = """
@@ -150,8 +149,8 @@ comment_on_post_context_position_init_str = """
      *       to reset the input position.                                              */
 """
 
-def __analyzer_function(StateMachineName, Setup,
-                        variable_definitions, function_body, ModeNameList=[]):
+def _analyzer_function(StateMachineName, Setup, variable_definitions, 
+                       function_body, ModeNameList=[]):
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -162,66 +161,85 @@ def __analyzer_function(StateMachineName, Setup,
     Lng = Setup.language_db
     SingleModeAnalyzerF = Setup.single_mode_analyzer_f
 
-    txt = [blue_print(__function_signature, [
-        ("$$STATE_MACHINE_NAME$$", StateMachineName),
-        ("$$LABEL_STATE_ROUTER$$", Label.global_state_router()),
-    ])]
-    txt.extend(variable_definitions)
-
+    mode_definition_str   = ""
+    mode_undefinition_str = ""
     if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 
         L = max(map(lambda name: len(name), ModeNameList))
-        for name in ModeNameList:
-            txt.append("#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name))
+        mode_definition_str = "".join(
+            "#   define %s%s    (QUEX_NAME(%s))\n" % (name, " " * (L- len(name)), name)
+            for name in ModeNameList
+        )
+        mode_undefinition_str = "".join(
+            "#   undef %s\n" % name 
+            for name in ModeNameList
+        )
 
-    txt.extend([
+    function_signature_str = __function_signature.replace("$$STATE_MACHINE_NAME$$", 
+                                                          StateMachineName)
+    txt = [
+        "#include <quex/code_base/temporary_macros_on>\n",
+        function_signature_str,
+        # 
+        # Macro definitions
+        #
+        "#   ifdef     self\n",
+        "#       undef self\n",
+        "#   endif\n",
+        "#   define self (*((QUEX_TYPE_ANALYZER*)me))\n",
+        "/*  'QUEX_GOTO_STATE' requires 'QUEX_LABEL_STATE_ROUTER' */\n",
+        "#   define QUEX_LABEL_STATE_ROUTER %s\n" % Label.global_state_router(),
+        mode_definition_str,
+        lexeme_macro_setup(Lng),
+        #
+        variable_definitions,
+        #
         comment_on_post_context_position_init_str,
         "#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n",
         "       || defined(QUEX_OPTION_ASSERTS)\n",
         "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n",
         "#   endif\n",
-    ])
+        #
+        # Entry to the actual function body
+        #
+        "%s:\n" % Label.global_reentry(),
+        "    %s\n" % Lng.LEXEME_START_SET(),
+        "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n",
+    ]
 
-    txt.append("%s:\n" % Label.global_reentry())
-
-    # -- entry to the actual function body
-    txt.append("    %s\n" % Lng.LEXEME_START_SET())
-    txt.append("    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n")
-    
     txt.extend(function_body)
 
     # -- prevent the warning 'unused variable'
-    txt.append( 
-        "\n"                                                                                              \
-        "    /* Prevent compiler warning 'unused variable': use variables once in a part of the code*/\n" \
-        "    /* that is never reached (and deleted by the compiler anyway).*/\n")
-
-    # Mode Names are defined as macros, so the following is not necessary.
-    # for mode_name in ModeNameList:
-    #    txt.append("    (void)%s;\n" % mode_name)
-    txt.append(                                                             \
-        "    (void)QUEX_LEXEME_NULL;\n"                                     \
-        "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n"                 \
-        "    QUEX_ERROR_EXIT(\"Unreachable code has been reached.\\n\");\n") 
-
-    ## This was once we did not know ... if there was a goto to the initial state or not.
-    ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
-    if len(ModeNameList) != 0 and not SingleModeAnalyzerF: 
-        L = max(map(lambda name: len(name), ModeNameList))
-        for name in ModeNameList:
-            txt.append("#   undef %s\n" % name)
-
-    txt.append("#   undef self\n")
-    txt.append("#   undef QUEX_LABEL_STATE_ROUTER\n")
-    txt.append("}\n")
-
-    txt.append("#include <quex/code_base/temporary_macros_off>\n")
+    txt.extend([ 
+        "\n",                                                                                             
+        "    __quex_assert_no_passage();\n", 
+        "\n",                                                                                             
+        "    /* Following labels are referenced in macros. It cannot be detected\n"
+        "     * whether the macros are applied in user code or not. To avoid compiler.\n"
+        "     * warnings of unused labels, they are referenced in unreachable code. */\n"
+        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
+        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
+        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
+        "\n",
+        "    /* Prevent compiler warning 'unused variable'. */\n",
+        "    (void)QUEX_LEXEME_NULL;\n",                                    
+        "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n",                
+        #
+        # Macro undefinitions
+        # 
+        lexeme_macro_clean_up,
+        mode_undefinition_str,
+        "#   undef self\n",
+        "#   undef QUEX_LABEL_STATE_ROUTER\n",
+        "}\n",
+        "#include <quex/code_base/temporary_macros_off>\n",
+    ])
     return txt
 
-__terminal_state_prolog  = """
-    /* (*) Terminal states _______________________________________________________
-     *
-     * States that implement actions of the 'winner patterns.                     */
-"""
+def lexeme_macro_setup(Lng):
+    return blue_print(__lexeme_macro_setup, [
+        ["$$LEXEME_LENGTH$$",  Lng.LEXEME_LENGTH()],
+        ["$$INPUT_P$$",        Lng.INPUT_P()],
+    ])
 
 __lexeme_macro_setup = """
     /* Lexeme setup: 
@@ -244,7 +262,7 @@ __lexeme_macro_setup = """
 #define LexemeNull      (&QUEX_LEXEME_NULL)
 """
 
-__lexeme_macro_clean_up = """
+lexeme_macro_clean_up = """
 #   undef Lexeme
 #   undef LexemeBegin
 #   undef LexemeEnd
@@ -290,22 +308,6 @@ __return_if_mode_changed = """
     }
 """
 
-def lexeme_macro_definitions(Setup):
-    
-    lexeme_null_object_name = "QUEX_NAME(LexemeNullObject)"
-    if Setup.external_lexeme_null_object != "":
-        lexeme_null_object_name = Setup.external_lexeme_null_object
-
-    txt = [ __terminal_state_prolog ]
-
-    txt.append(blue_print(__lexeme_macro_setup, [
-          ["$$LEXEME_LENGTH$$",      Setup.language_db.LEXEME_LENGTH()],
-          ["$$INPUT_P$$",            Setup.language_db.INPUT_P()],
-          ["$$LEXEME_NULL_OBJECT$$", lexeme_null_object_name],
-    ]))
-
-    return "".join(txt)
-
 def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
     TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
     """Reentry preperation (without returning from the function."""
@@ -344,18 +346,6 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
         "\n",
         "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry()), 
         "\n",
-        "/* Avoid compiler warnings 'unreferenced label'. */\n",
-        # 'return_with_on_after_match', 'continue_with_on_after_match' and
-        # 'continue_with_on_after_match' need to be implemented always, because
-        # they are possibly used in macros. We cannot determine whether macros
-        # are used or not. 
-        Lng.UNREACHABLE_BEGIN(),
-        Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
-        Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
-        Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
-        Lng.UNREACHABLE_END(),
-        "\n",
-        __lexeme_macro_clean_up,
     ]
 
     return txt

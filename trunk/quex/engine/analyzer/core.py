@@ -129,7 +129,6 @@ class Analyzer:
         if GlobalReloadState is None:
             self.reload_state = ReloadState(EngineType=self.__engine_type)
         else:
-            assert GlobalReloadState.engine_type() == self.__engine_type
             self.reload_state = GlobalReloadState
 
         self.__mega_state_list          = []

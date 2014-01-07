@@ -572,10 +572,19 @@ class StateMachine(object):
                     False transformation may not have transformed all elements because
                           the target codec does not cover them.
         """
-        complete_f = True
+        complete_f         = True
+        orphans_possible_f = False
         for state in self.states.itervalues():
+            L = len(state.target_map.get_map())
             if not state.transform(TrafoInfo):
                 complete_f = False
+                if L != len(state.target_map.get_map()):
+                    orphans_possible_f = True
+
+        # If some targets have been deleted from target maps, then a orphan state 
+        # deletion operation is necessary.
+        if orphans_possible_f:
+            self.delete_orphaned_states()
 
         return complete_f
 

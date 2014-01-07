@@ -11,12 +11,12 @@ C: ./lexer tiny_lexer.c
 	@mkdir -p ./lexer # Do not trigger error if it exists '-p' does that too.
 
 tiny_lexer.cpp:
-	quex -i cpp.qx --engine tiny_lexer --buffer-based --token-policy single --token-memory-management-by-user --token-id-offset 2 --token-id-prefix TKN_ --source-package lexer
+	quex -i cpp.qx --engine tiny_lexer --buffer-based --token-policy single --token-memory-management-by-user --token-id-offset 2 --token-id-prefix TKN_ --source-package lexer --debug-exception
 	@echo Code Generation Done
 
 
 tiny_lexer.c:
-	quex -i cpp.qx --engine tiny_lexer --buffer-based --token-policy single --token-memory-management-by-user --token-id-offset 2 --token-id-prefix TKN_ --source-package lexer --language C
+	quex -i cpp.qx --engine tiny_lexer --buffer-based --token-policy single --token-memory-management-by-user --token-id-offset 2 --token-id-prefix TKN_ --source-package lexer --language C --debug-exception
 	@echo Code Generation Done
 
 clean: 

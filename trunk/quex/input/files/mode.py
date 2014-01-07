@@ -597,7 +597,6 @@ class Mode:
         )
 
         if SkipTerminal is not None:
-            print "#SkipTermina.incidence_id", SkipTerminal.incidence_id()
             result[SkipTerminal.incidence_id()] = SkipTerminal
 
         return result
@@ -648,25 +647,26 @@ class Mode:
         }
         terminal         = TerminalGenerated(skip_character_set.do, data)
         terminal_door_id = DoorID.incidence(terminal.incidence_id())
+        # Counting actions are added to the terminal automatically by the
+        # terminal_factory. The only thing that remains for each sub-terminal:
+        # 'goto skipper'.
         code             = CodeTerminal(Lng.GOTO_BY_DOOR_ID(terminal_door_id))
         ccd              = CounterCoderData(CounterDb, character_set)
         for cli, cmd_info in ccd.count_command_map.iteritems():
-            # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
-            priority = PatternPriority(MHI, cli)
-            pattern  = Pattern(
+            sub_incidence_id = sm_index.get_state_machine_id()
+            priority         = PatternPriority(MHI, cli)
+            pattern          = Pattern(
                 StateMachine.from_character_set(cmd_info.trigger_set)
             )
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
-            sub_incidence_id = sm_index.get_state_machine_id()
-            terminal = terminal_factory.do(E_TerminalType.PLAIN, 
-                                           sub_incidence_id, 
-                                           code, pattern)
-            # Counting actions are added to the terminal automatically.
-            # What remains to do here is only to go to the skipper.
-            ppt_list.append(PPT(priority, pattern, terminal))
+            pattern.set_incidence_id(sub_incidence_id)
+            # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
+            sub_terminal     = terminal_factory.do(E_TerminalType.PLAIN, 
+                                                   sub_incidence_id, 
+                                                   code, pattern)
+            ppt_list.append(PPT(priority, pattern, sub_terminal))
 
-        print "#SkipTermina.incidence_id first", terminal_door_id, terminal.incidence_id(), code.get_code()
         return terminal
 
     def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI):

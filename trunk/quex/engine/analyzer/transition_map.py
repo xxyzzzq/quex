@@ -12,7 +12,7 @@ import sys
 
 class TransitionMap(list):
     """________________________________________________________________________
-    A TransitionMap is a list of pairs:
+    A TransitionMap is a sorted list of pairs:
 
                 [ [ interval_0, target_0],
                   [ interval_1, target_1],

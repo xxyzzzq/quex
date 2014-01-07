@@ -1,6 +1,7 @@
 from   quex.engine.analyzer.state.core            import Processor
 
 import quex.engine.generator.base                 as     generator
+import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.input.files.counter_db                import CountCmdInfo, \
                                                          CounterCoderData
@@ -64,7 +65,6 @@ def do(Data, TheAnalyzer):
           then the single state may actually be split into a real state machine of
           states.
     """
-    print "#Hello character_set_skip"
     counter_db    = Data["counter_db"]
     character_set = Data["character_set"]
         
@@ -73,6 +73,7 @@ def do(Data, TheAnalyzer):
                                CharacterSet      = character_set,
                                CheckLexemeEndF   = False,
                                ReloadF           = True,
-                               GlobalReloadState = TheAnalyzer)
+                               GlobalReloadState = TheAnalyzer.reload_state, 
+                               EngineType        = engine.FORWARD)
     assert isinstance(result, list)
     return result

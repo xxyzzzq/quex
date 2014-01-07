@@ -1,4 +1,4 @@
-<history date="Mon Dec 30 08:24:27 2013" element-n="233">
+<history date="Tue Jan  7 23:24:55 2014" element-n="243">
     <day year="2009" month="04" day="25">
         <history-init time="06:37:01"/>
         <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
@@ -543,5 +543,17 @@
     <day year="2013" month="05" day="04">
         <crc-error time="05:21:17" application="default_counter.py" choice="Default-cp037" database-crc="489336039" real-crc="1180628312"/>
         <crc-error time="05:21:37" application="default_counter.py" choice="Default2-cp037" database-crc="-205443601" real-crc="-715674903"/>
+    </day>
+    <day year="2014" month="01" day="07">
+        <crc-error time="22:23:14" application="default_counter.py" choice="Default-UCS" database-crc="408076002" real-crc="620633395"/>
+        <crc-error time="22:23:25" application="default_counter.py" choice="Default2-UCS" database-crc="1840440913" real-crc="2136642516"/>
+        <crc-error time="22:23:32" application="default_counter.py" choice="Wild-UCS" database-crc="956558476" real-crc="-1925619617"/>
+        <crc-error time="22:23:48" application="default_counter.py" choice="Default2-UTF8" database-crc="2144082285" real-crc="-885403101"/>
+        <crc-error time="22:23:57" application="default_counter.py" choice="Wild-UTF8" database-crc="2138454222" real-crc="-2039156170"/>
+        <crc-error time="22:24:14" application="default_counter.py" choice="Default2-UTF16" database-crc="-800899184" real-crc="-109769662"/>
+        <crc-error time="22:24:22" application="default_counter.py" choice="Wild-UTF16" database-crc="-1253481858" real-crc="400118719"/>
+        <crc-error time="22:24:29" application="default_counter.py" choice="Default-cp037" database-crc="-1339887042" real-crc="2142376245"/>
+        <crc-error time="22:24:38" application="default_counter.py" choice="Default2-cp037" database-crc="1531574305" real-crc="2116988261"/>
+        <crc-error time="22:24:45" application="default_counter.py" choice="Wild-cp037" database-crc="1858864365" real-crc="467953581"/>
     </day>
 </history>
