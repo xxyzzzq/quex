@@ -10,31 +10,38 @@ void
 QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)
 {
 #   define self (*me)
-    QUEX_TYPE_CHARACTER* iterator    = LexemeBegin;
-    QUEX_TYPE_CHARACTER  input       = (QUEX_TYPE_CHARACTER)0;
+    QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
+    (void)me; (void)LexemeBegin; (void)LexemeEnd;
     __QUEX_IF_COUNT_SHIFT_VALUES();
-
     __quex_assert(LexemeBegin <= LexemeEnd);
-    for(iterator=LexemeBegin; iterator < LexemeEnd; ) {
-    input = *((iterator));
+    me->buffer._input_p = LexemeBegin;
+_3: /* (136 from NONE) (136 from 196) */
+    input = *(me->buffer._input_p);
+
+
+
     __quex_debug("Init State\n");
-    __quex_debug_state(288);
+    __quex_debug_state(136);
     if( input < 0xE0 ) {
         if( input < 0x80 ) {
             if( input >= 0xE ) {
-                goto _324;
-            } else if( input == 0xD ) {
-                goto _327;
-            } else if( input >= 0xA ) {
-                goto _326;
-            } else if( input == 0x9 ) {
-                goto _325;
+                goto _9;
+            
+} else if( input == 0xD ) {
+                goto _5;
+            
+} else if( input >= 0xA ) {
+                goto _8;
+            
+} else if( input == 0x9 ) {
+                goto _13;
             } else {
-                goto _324;
-            }
+                goto _9;
+            
+}
         } else {
             switch( input ) {
-                case 0xC2: goto _328;
+                case 0xC2: goto _17;
                 case 0xC3: 
                 case 0xC4: 
                 case 0xC5: 
@@ -55,23 +62,24 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
                 case 0xD4: 
                 case 0xD5: 
                 case 0xD6: 
-                case 0xD7: goto _329;
+                case 0xD7: goto _11;
                 case 0xD8: 
                 case 0xD9: 
                 case 0xDA: 
-                case 0xDB: goto _330;
+                case 0xDB: goto _14;
                 case 0xDC: 
                 case 0xDD: 
                 case 0xDE: 
-                case 0xDF: goto _329;
+                case 0xDF: goto _11;
 
             }
-        }
+        
+}
     } else {
         switch( input ) {
-            case 0xE0: goto _331;
-            case 0xE1: goto _332;
-            case 0xE2: goto _333;
+            case 0xE0: goto _6;
+            case 0xE1: goto _10;
+            case 0xE2: goto _15;
             case 0xE3: 
             case 0xE4: 
             case 0xE5: 
@@ -84,35 +92,124 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
             case 0xEC: 
             case 0xED: 
             case 0xEE: 
-            case 0xEF: goto _332;
-            case 0xF0: goto _334;
-            case 0xF1: goto _335;
+            case 0xEF: goto _10;
+            case 0xF0: goto _7;
+            case 0xF1: goto _16;
             case 0xF2: 
-            case 0xF3: goto _336;
-            case 0xF4: goto _337;
+            case 0xF3: goto _12;
+            case 0xF4: goto _18;
             case 0xF5: 
             case 0xF6: 
-            case 0xF7: goto _338;
+            case 0xF7: goto _4;
 
         }
-    }
-    __quex_debug_drop_out(288);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(136);
+    __quex_debug("Character counting terminated.\n");
+    goto _2;
+
 
     __quex_assert_no_passage();
-_334: /* (289 from 288) */
 
-_289:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(289);
+    __quex_assert_no_passage();
+_4: /* (137 from 136) (137 from 182) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _71;
+
+_71:
+
+    __quex_debug_state(137);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _10;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(137);
+goto _2;
+
+    __quex_assert_no_passage();
+_5: /* (138 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _72;
+
+_72:
+
+    __quex_debug_state(138);
+    __quex_debug_drop_out(138);
+goto _74;
+
+    __quex_assert_no_passage();
+_6: /* (139 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _75;
+
+_75:
+
+    __quex_debug_state(139);
+    switch( input ) {
+        case 0xA0: 
+        case 0xA1: 
+        case 0xA2: 
+        case 0xA3: 
+        case 0xA4: 
+        case 0xA5: 
+        case 0xA6: 
+        case 0xA7: 
+        case 0xA8: 
+        case 0xA9: 
+        case 0xAA: 
+        case 0xAB: 
+        case 0xAC: 
+        case 0xAD: 
+        case 0xAE: 
+        case 0xAF: 
+        case 0xB0: 
+        case 0xB1: 
+        case 0xB2: 
+        case 0xB3: 
+        case 0xB4: 
+        case 0xB5: 
+        case 0xB6: 
+        case 0xB7: 
+        case 0xB8: 
+        case 0xB9: 
+        case 0xBA: 
+        case 0xBB: 
+        case 0xBC: 
+        case 0xBD: 
+        case 0xBE: 
+        case 0xBF: goto _11;
+
+    }
+
+    __quex_debug_drop_out(139);
+goto _2;
+
+    __quex_assert_no_passage();
+_7: /* (140 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _76;
+
+_76:
+
+    __quex_debug_state(140);
     switch( input ) {
         case 0x84: 
         case 0x85: 
         case 0x86: 
-        case 0x87: goto _341;
+        case 0x87: goto _36;
         case 0x88: 
         case 0x89: 
         case 0x8A: 
@@ -120,7 +217,7 @@ _289:
         case 0x8C: 
         case 0x8D: 
         case 0x8E: 
-        case 0x8F: goto _342;
+        case 0x8F: goto _35;
         case 0x90: 
         case 0x91: 
         case 0x92: 
@@ -168,220 +265,148 @@ _289:
         case 0xBC: 
         case 0xBD: 
         case 0xBE: 
-        case 0xBF: goto _343;
+        case 0xBF: goto _25;
 
     }
-    __quex_debug_drop_out(289);
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_328: /* (290 from 288) */
-
-_290:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(290);
-    switch( input ) {
-        case 0x80: 
-        case 0x81: 
-        case 0x82: 
-        case 0x83: 
-        case 0x84: goto _324;
-        case 0x85: goto _326;
-        case 0x86: 
-        case 0x87: 
-        case 0x88: 
-        case 0x89: 
-        case 0x8A: 
-        case 0x8B: 
-        case 0x8C: 
-        case 0x8D: 
-        case 0x8E: 
-        case 0x8F: 
-        case 0x90: 
-        case 0x91: 
-        case 0x92: 
-        case 0x93: 
-        case 0x94: 
-        case 0x95: 
-        case 0x96: 
-        case 0x97: 
-        case 0x98: 
-        case 0x99: 
-        case 0x9A: 
-        case 0x9B: 
-        case 0x9C: 
-        case 0x9D: 
-        case 0x9E: 
-        case 0x9F: 
-        case 0xA0: 
-        case 0xA1: 
-        case 0xA2: 
-        case 0xA3: 
-        case 0xA4: 
-        case 0xA5: 
-        case 0xA6: 
-        case 0xA7: 
-        case 0xA8: 
-        case 0xA9: 
-        case 0xAA: 
-        case 0xAB: 
-        case 0xAC: 
-        case 0xAD: 
-        case 0xAE: 
-        case 0xAF: 
-        case 0xB0: 
-        case 0xB1: 
-        case 0xB2: 
-        case 0xB3: 
-        case 0xB4: 
-        case 0xB5: 
-        case 0xB6: 
-        case 0xB7: 
-        case 0xB8: 
-        case 0xB9: 
-        case 0xBA: 
-        case 0xBB: 
-        case 0xBC: 
-        case 0xBD: 
-        case 0xBE: 
-        case 0xBF: goto _324;
-
-    }
-    __quex_debug_drop_out(290);
-
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(140);
+goto _2;
 
     __quex_assert_no_passage();
-_327: /* (291 from 288) */
+_8: /* (141 from 151) (141 from 136) (141 from 179) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _77;
 
+_77:
 
-
-    ++((iterator));
-    __quex_debug_state(291);
-    __quex_debug_drop_out(291);
-goto TERMINAL_18;
-
-    __quex_assert_no_passage();
-_337: /* (292 from 288) */
-
-_292:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(292);
-    switch( input ) {
-        case 0x80: 
-        case 0x81: 
-        case 0x82: 
-        case 0x83: 
-        case 0x84: 
-        case 0x85: 
-        case 0x86: 
-        case 0x87: 
-        case 0x88: 
-        case 0x89: 
-        case 0x8A: 
-        case 0x8B: 
-        case 0x8C: 
-        case 0x8D: 
-        case 0x8E: 
-        case 0x8F: goto _347;
-        case 0x90: 
-        case 0x91: 
-        case 0x92: 
-        case 0x93: 
-        case 0x94: 
-        case 0x95: 
-        case 0x96: 
-        case 0x97: 
-        case 0x98: 
-        case 0x99: 
-        case 0x9A: 
-        case 0x9B: 
-        case 0x9C: 
-        case 0x9D: 
-        case 0x9E: 
-        case 0x9F: 
-        case 0xA0: 
-        case 0xA1: 
-        case 0xA2: 
-        case 0xA3: 
-        case 0xA4: 
-        case 0xA5: 
-        case 0xA6: 
-        case 0xA7: 
-        case 0xA8: 
-        case 0xA9: 
-        case 0xAA: 
-        case 0xAB: 
-        case 0xAC: 
-        case 0xAD: 
-        case 0xAE: 
-        case 0xAF: 
-        case 0xB0: 
-        case 0xB1: 
-        case 0xB2: 
-        case 0xB3: 
-        case 0xB4: 
-        case 0xB5: 
-        case 0xB6: 
-        case 0xB7: 
-        case 0xB8: 
-        case 0xB9: 
-        case 0xBA: 
-        case 0xBB: 
-        case 0xBC: 
-        case 0xBD: 
-        case 0xBE: 
-        case 0xBF: goto _332;
-
-    }
-    __quex_debug_drop_out(292);
-
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_state(141);
+    __quex_debug_drop_out(141);
+goto _79;
 
     __quex_assert_no_passage();
-_325: /* (293 from 288) */
+_9: /* (142 from 145) (142 from 136) (142 from 178) (142 from 151) (142 from 161) (142 from 179) (142 from 176) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _80;
 
+_80:
 
-
-    ++((iterator));
-    __quex_debug_state(293);
-    __quex_debug_drop_out(293);
-goto TERMINAL_21;
+    __quex_debug_state(142);
+    __quex_debug_drop_out(142);
+goto _82;
 
     __quex_assert_no_passage();
-_338: /* (294 from 288) (294 from 320) */
+_10: /* (143 from 154) (143 from 136) (143 from 137) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _83;
 
-_294:
+_83:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(294);
+    __quex_debug_state(143);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _332;
+    
+} else if( input >= 0x80 ) {
+        goto _11;
     } else {
 
-    }
-    __quex_debug_drop_out(294);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(143);
+goto _2;
 
     __quex_assert_no_passage();
-_333: /* (295 from 288) */
+_11: /* (145 from 136) (145 from 139) (145 from 149) (145 from 143) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _84;
 
-_295:
+_84:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(295);
+    __quex_debug_state(145);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _9;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(145);
+goto _2;
+
+    __quex_assert_no_passage();
+_12: /* (146 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _85;
+
+_85:
+
+    __quex_debug_state(146);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _19;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(146);
+goto _2;
+
+    __quex_assert_no_passage();
+_13: /* (147 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _86;
+
+_86:
+
+    __quex_debug_state(147);
+    __quex_debug_drop_out(147);
+goto _88;
+
+    __quex_assert_no_passage();
+_14: /* (148 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _89;
+
+_89:
+
+    __quex_debug_state(148);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _34;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(148);
+goto _2;
+
+    __quex_assert_no_passage();
+_15: /* (149 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _90;
+
+_90:
+
+    __quex_debug_state(149);
     switch( input ) {
-        case 0x80: goto _351;
+        case 0x80: goto _33;
         case 0x81: 
         case 0x82: 
         case 0x83: 
@@ -444,50 +469,22 @@ _295:
         case 0xBC: 
         case 0xBD: 
         case 0xBE: 
-        case 0xBF: goto _329;
+        case 0xBF: goto _11;
 
     }
-    __quex_debug_drop_out(295);
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_326: /* (296 from 290) (296 from 288) (296 from 316) */
-
-
-
-    ++((iterator));
-    __quex_debug_state(296);
-    __quex_debug_drop_out(296);
-goto TERMINAL_19;
+    __quex_debug_drop_out(149);
+goto _2;
 
     __quex_assert_no_passage();
-_332: /* (297 from 288) (297 from 292) (297 from 294) */
+_16: /* (150 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _91;
 
-_297:
+_91:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(297);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _329;
-    } else {
-
-    }
-    __quex_debug_drop_out(297);
-
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_335: /* (298 from 288) */
-
-_298:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(298);
+    __quex_debug_state(150);
     switch( input ) {
         case 0x80: 
         case 0x81: 
@@ -551,90 +548,56 @@ _298:
         case 0xBB: 
         case 0xBC: 
         case 0xBD: 
-        case 0xBE: goto _343;
-        case 0xBF: goto _355;
+        case 0xBE: goto _25;
+        case 0xBF: goto _26;
 
     }
-    __quex_debug_drop_out(298);
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_329: /* (299 from 288) (299 from 297) (299 from 303) (299 from 295) */
-
-_299:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(299);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _324;
-    } else {
-
-    }
-    __quex_debug_drop_out(299);
-
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(150);
+goto _2;
 
     __quex_assert_no_passage();
-_324: /* (300 from 307) (300 from 314) (300 from 315) (300 from 290) (300 from 316) (300 from 299) (300 from 288) */
+_17: /* (151 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _92;
 
+_92:
 
-
-    ++((iterator));
-    __quex_debug_state(300);
-    __quex_debug_drop_out(300);
-goto TERMINAL_20;
-
-    __quex_assert_no_passage();
-_336: /* (301 from 288) */
-
-_301:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(301);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _359;
-    } else {
-
-    }
-    __quex_debug_drop_out(301);
-
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_330: /* (302 from 288) */
-
-_302:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(302);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _361;
-    } else {
-
-    }
-    __quex_debug_drop_out(302);
-
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_331: /* (303 from 288) */
-
-_303:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(303);
+    __quex_debug_state(151);
     switch( input ) {
+        case 0x80: 
+        case 0x81: 
+        case 0x82: 
+        case 0x83: 
+        case 0x84: goto _9;
+        case 0x85: goto _8;
+        case 0x86: 
+        case 0x87: 
+        case 0x88: 
+        case 0x89: 
+        case 0x8A: 
+        case 0x8B: 
+        case 0x8C: 
+        case 0x8D: 
+        case 0x8E: 
+        case 0x8F: 
+        case 0x90: 
+        case 0x91: 
+        case 0x92: 
+        case 0x93: 
+        case 0x94: 
+        case 0x95: 
+        case 0x96: 
+        case 0x97: 
+        case 0x98: 
+        case 0x99: 
+        case 0x9A: 
+        case 0x9B: 
+        case 0x9C: 
+        case 0x9D: 
+        case 0x9E: 
+        case 0x9F: 
         case 0xA0: 
         case 0xA1: 
         case 0xA2: 
@@ -666,106 +629,246 @@ _303:
         case 0xBC: 
         case 0xBD: 
         case 0xBE: 
-        case 0xBF: goto _329;
+        case 0xBF: goto _9;
 
     }
-    __quex_debug_drop_out(303);
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_361: /* (304 from 302) */
-
-
-
-    ++((iterator));
-    __quex_debug_state(304);
-    __quex_debug_drop_out(304);
-goto TERMINAL_16;
+    __quex_debug_drop_out(151);
+goto _2;
 
     __quex_assert_no_passage();
-_359: /* (305 from 301) */
+_18: /* (154 from 136) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _93;
 
-_305:
+_93:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(305);
+    __quex_debug_state(154);
+    switch( input ) {
+        case 0x80: 
+        case 0x81: 
+        case 0x82: 
+        case 0x83: 
+        case 0x84: 
+        case 0x85: 
+        case 0x86: 
+        case 0x87: 
+        case 0x88: 
+        case 0x89: 
+        case 0x8A: 
+        case 0x8B: 
+        case 0x8C: 
+        case 0x8D: 
+        case 0x8E: 
+        case 0x8F: goto _22;
+        case 0x90: 
+        case 0x91: 
+        case 0x92: 
+        case 0x93: 
+        case 0x94: 
+        case 0x95: 
+        case 0x96: 
+        case 0x97: 
+        case 0x98: 
+        case 0x99: 
+        case 0x9A: 
+        case 0x9B: 
+        case 0x9C: 
+        case 0x9D: 
+        case 0x9E: 
+        case 0x9F: 
+        case 0xA0: 
+        case 0xA1: 
+        case 0xA2: 
+        case 0xA3: 
+        case 0xA4: 
+        case 0xA5: 
+        case 0xA6: 
+        case 0xA7: 
+        case 0xA8: 
+        case 0xA9: 
+        case 0xAA: 
+        case 0xAB: 
+        case 0xAC: 
+        case 0xAD: 
+        case 0xAE: 
+        case 0xAF: 
+        case 0xB0: 
+        case 0xB1: 
+        case 0xB2: 
+        case 0xB3: 
+        case 0xB4: 
+        case 0xB5: 
+        case 0xB6: 
+        case 0xB7: 
+        case 0xB8: 
+        case 0xB9: 
+        case 0xBA: 
+        case 0xBB: 
+        case 0xBC: 
+        case 0xBD: 
+        case 0xBE: 
+        case 0xBF: goto _10;
+
+    }
+
+    __quex_debug_drop_out(154);
+goto _2;
+
+    __quex_assert_no_passage();
+_19: /* (157 from 146) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _94;
+
+_94:
+
+    __quex_debug_state(157);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _365;
+    
+} else if( input >= 0x80 ) {
+        goto _20;
     } else {
 
-    }
-    __quex_debug_drop_out(305);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(157);
+goto _2;
 
     __quex_assert_no_passage();
-_365: /* (306 from 305) */
+_20: /* (159 from 157) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _95;
 
-_306:
+_95:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(306);
+    __quex_debug_state(159);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _367;
+    
+} else if( input >= 0x80 ) {
+        goto _21;
     } else {
 
-    }
-    __quex_debug_drop_out(306);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(159);
+goto _2;
 
     __quex_assert_no_passage();
-_367: /* (307 from 306) */
+_21: /* (161 from 159) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _96;
 
-_307:
+_96:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(307);
+    __quex_debug_state(161);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _324;
+    
+} else if( input >= 0x80 ) {
+        goto _9;
     } else {
 
-    }
-    __quex_debug_drop_out(307);
-goto TERMINAL_17;
+    
+}
+
+    __quex_debug_drop_out(161);
+goto _97;
 
     __quex_assert_no_passage();
-_343: /* (308 from 298) (308 from 289) */
+_22: /* (163 from 154) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _98;
 
-_308:
+_98:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(308);
+    __quex_debug_state(163);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _370;
+    
+} else if( input >= 0x80 ) {
+        goto _23;
     } else {
 
-    }
-    __quex_debug_drop_out(308);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(163);
+goto _2;
 
     __quex_assert_no_passage();
-_355: /* (309 from 298) */
+_23: /* (167 from 163) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _99;
 
-_309:
+_99:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(309);
+    __quex_debug_state(167);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _24;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(167);
+goto _2;
+
+    __quex_assert_no_passage();
+_24: /* (168 from 167) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _100;
+
+_100:
+
+    __quex_debug_state(168);
+    __quex_debug_drop_out(168);
+goto _97;
+
+    __quex_assert_no_passage();
+_25: /* (171 from 150) (171 from 140) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _102;
+
+_102:
+
+    __quex_debug_state(171);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _28;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(171);
+goto _2;
+
+    __quex_assert_no_passage();
+_26: /* (172 from 150) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _103;
+
+_103:
+
+    __quex_debug_state(172);
     switch( input ) {
         case 0x80: 
         case 0x81: 
@@ -829,41 +932,23 @@ _309:
         case 0xBB: 
         case 0xBC: 
         case 0xBD: 
-        case 0xBE: goto _370;
-        case 0xBF: goto _372;
+        case 0xBE: goto _28;
+        case 0xBF: goto _27;
 
     }
-    __quex_debug_drop_out(309);
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_370: /* (310 from 309) (310 from 308) */
-
-_310:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(310);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _374;
-    } else {
-
-    }
-    __quex_debug_drop_out(310);
-
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(172);
+goto _2;
 
     __quex_assert_no_passage();
-_372: /* (311 from 309) */
+_27: /* (173 from 172) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _104;
 
-_311:
+_104:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(311);
+    __quex_debug_state(173);
     switch( input ) {
         case 0x80: 
         case 0x81: 
@@ -927,40 +1012,89 @@ _311:
         case 0xBB: 
         case 0xBC: 
         case 0xBD: 
-        case 0xBE: goto _374;
-        case 0xBF: goto _376;
+        case 0xBE: goto _29;
+        case 0xBF: goto _31;
 
     }
-    __quex_debug_drop_out(311);
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(173);
+goto _2;
 
     __quex_assert_no_passage();
-_374: /* (312 from 311) (312 from 310) */
+_28: /* (174 from 171) (174 from 172) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _105;
 
-_312:
+_105:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(312);
+    __quex_debug_state(174);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _378;
+    
+} else if( input >= 0x80 ) {
+        goto _29;
     } else {
 
-    }
-    __quex_debug_drop_out(312);
-goto TERMINAL_17;
+    
+}
+
+    __quex_debug_drop_out(174);
+goto _2;
 
     __quex_assert_no_passage();
-_376: /* (313 from 311) */
+_29: /* (175 from 174) (175 from 173) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _106;
 
-_313:
+_106:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(313);
+    __quex_debug_state(175);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _30;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(175);
+goto _97;
+
+    __quex_assert_no_passage();
+_30: /* (176 from 187) (176 from 177) (176 from 175) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _107;
+
+_107:
+
+    __quex_debug_state(176);
+    if( input >= 0xC0 ) {
+
+    
+} else if( input >= 0x80 ) {
+        goto _9;
+    } else {
+
+    
+}
+
+    __quex_debug_drop_out(176);
+goto _82;
+
+    __quex_assert_no_passage();
+_31: /* (177 from 173) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _108;
+
+_108:
+
+    __quex_debug_state(177);
     switch( input ) {
         case 0x80: 
         case 0x81: 
@@ -1024,57 +1158,45 @@ _313:
         case 0xBB: 
         case 0xBC: 
         case 0xBD: 
-        case 0xBE: goto _378;
-        case 0xBF: goto _380;
+        case 0xBE: goto _30;
+        case 0xBF: goto _32;
 
     }
-    __quex_debug_drop_out(313);
-goto TERMINAL_17;
+
+    __quex_debug_drop_out(177);
+goto _97;
 
     __quex_assert_no_passage();
-_378: /* (314 from 313) (314 from 312) (314 from 323) */
+_32: /* (178 from 177) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _109;
 
-_314:
+_109:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(314);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _324;
-    } else {
-
-    }
-    __quex_debug_drop_out(314);
-goto TERMINAL_20;
-
-    __quex_assert_no_passage();
-_380: /* (315 from 313) */
-
-_315:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(315);
+    __quex_debug_state(178);
     if( input >= 0xBF ) {
 
-    } else if( input >= 0x80 ) {
-        goto _324;
+    
+} else if( input >= 0x80 ) {
+        goto _9;
     } else {
 
-    }
-    __quex_debug_drop_out(315);
-goto TERMINAL_20;
+    
+}
+
+    __quex_debug_drop_out(178);
+goto _82;
 
     __quex_assert_no_passage();
-_351: /* (316 from 295) */
+_33: /* (179 from 149) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _110;
 
-_316:
+_110:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(316);
+    __quex_debug_state(179);
     switch( input ) {
         case 0x80: 
         case 0x81: 
@@ -1115,9 +1237,9 @@ _316:
         case 0xA4: 
         case 0xA5: 
         case 0xA6: 
-        case 0xA7: goto _324;
+        case 0xA7: goto _9;
         case 0xA8: 
-        case 0xA9: goto _326;
+        case 0xA9: goto _8;
         case 0xAA: 
         case 0xAB: 
         case 0xAC: 
@@ -1139,170 +1261,150 @@ _316:
         case 0xBC: 
         case 0xBD: 
         case 0xBE: 
-        case 0xBF: goto _324;
+        case 0xBF: goto _9;
 
     }
-    __quex_debug_drop_out(316);
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(179);
+goto _2;
 
     __quex_assert_no_passage();
-_347: /* (317 from 292) */
+_34: /* (180 from 148) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _111;
 
-_317:
+_111:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(317);
+    __quex_debug_state(180);
+    __quex_debug_drop_out(180);
+goto _113;
+
+    __quex_assert_no_passage();
+_35: /* (181 from 140) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _114;
+
+_114:
+
+    __quex_debug_state(181);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _385;
+    
+} else if( input >= 0x80 ) {
+        goto _37;
     } else {
 
-    }
-    __quex_debug_drop_out(317);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(181);
+goto _2;
 
     __quex_assert_no_passage();
-_385: /* (318 from 317) */
+_36: /* (182 from 140) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _115;
 
-_318:
+_115:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(318);
+    __quex_debug_state(182);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _387;
+    
+} else if( input >= 0x80 ) {
+        goto _4;
     } else {
 
-    }
-    __quex_debug_drop_out(318);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_387: /* (319 from 318) */
-
-
-
-    ++((iterator));
-    __quex_debug_state(319);
-    __quex_debug_drop_out(319);
-goto TERMINAL_17;
+    __quex_debug_drop_out(182);
+goto _2;
 
     __quex_assert_no_passage();
-_341: /* (320 from 289) */
+_37: /* (186 from 181) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _116;
 
-_320:
+_116:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(320);
+    __quex_debug_state(186);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _338;
+    
+} else if( input >= 0x80 ) {
+        goto _38;
     } else {
 
-    }
-    __quex_debug_drop_out(320);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
+    __quex_debug_drop_out(186);
+goto _2;
 
     __quex_assert_no_passage();
-_342: /* (321 from 289) */
+_38: /* (187 from 186) */
+    ++(me->buffer._input_p);
+    input = *(me->buffer._input_p);
+    goto _117;
 
-_321:
+_117:
 
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(321);
+    __quex_debug_state(187);
     if( input >= 0xC0 ) {
 
-    } else if( input >= 0x80 ) {
-        goto _391;
+    
+} else if( input >= 0x80 ) {
+        goto _30;
     } else {
 
-    }
-    __quex_debug_drop_out(321);
+    
+}
 
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_391: /* (322 from 321) */
-
-_322:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(322);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _393;
-    } else {
-
-    }
-    __quex_debug_drop_out(322);
-
-goto _340; /* TERMINAL_FAILURE */
-
-    __quex_assert_no_passage();
-_393: /* (323 from 322) */
-
-_323:
-
-    ++((iterator));
-    input = *((iterator));
-    __quex_debug_state(323);
-    if( input >= 0xC0 ) {
-
-    } else if( input >= 0x80 ) {
-        goto _378;
-    } else {
-
-    }
-    __quex_debug_drop_out(323);
-
-goto _340; /* TERMINAL_FAILURE */
-TERMINAL_16:
-        __quex_debug("* terminal 16:   \n");
-        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
-            continue;
-TERMINAL_17:
-        __quex_debug("* terminal 17:   \n");
-        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
-            continue;
-TERMINAL_18:
-        __quex_debug("* terminal 18:   \n");
-        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-            continue;
-TERMINAL_19:
-        __quex_debug("* terminal 19:   \n");
-        __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-        __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-            continue;
-TERMINAL_20:
-        __quex_debug("* terminal 20:   \n");
-        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-            continue;
-TERMINAL_21:
-        __quex_debug("* terminal 21:   \n");
-                __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
-        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
-            continue;
-    }
-    __quex_assert(iterator == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+    __quex_debug_drop_out(187);
+goto _2;
+    /* (*) Terminal states _______________________________________________________
+     *
+     * States that implement actions of the 'winner patterns.                     */
+_82: __quex_debug("* TERMINAL [0000, 0008] [000E, 0084] [0086, 05FF] [0700, 2027] [202A, FFFF] [110000, oo] \n");
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_97: __quex_debug("* TERMINAL [10000, 10FFFF] \n");
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_113: __quex_debug("* TERMINAL [0600, 06FF] \n");
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_88: __quex_debug("* TERMINAL [0009] \n");
+__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_74: __quex_debug("* TERMINAL [000D] \n");
+__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_79: __quex_debug("* TERMINAL [000A, 000C] [0085] [2028, 2029] \n");
+__QUEX_IF_COUNT_LINES_ADD((size_t)1);
+__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+if( me->buffer._input_p == LexemeEnd ) goto _2;;
+goto _3;
+_2: __quex_debug("* TERMINAL -- Exit --\n");
+goto _1;
+_1:
+    __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
    return;
-_340:
-    QUEX_ERROR_EXIT("State machine failed.");
 #  undef self
 }
 #endif /* __QUEX_OPTION_COUNTER */
+
 _____________________________________________________________________________
 file:     './data/example.utf8';
 char_size: 1;

@@ -1,3 +1,4 @@
+from   quex.engine.analyzer.state.drop_out        import DropOutGotoDoorId
 from   quex.engine.analyzer.door_id_address_label import Label, \
                                                          DoorID, \
                                                          IfDoorIdReferencedLabel
@@ -36,7 +37,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             ])
         return
 
-    elif EngineType.is_CHARACTER_COUNTER():
+    elif isinstance(DropOut, DropOutGotoDoorId):
         txt.extend([
             1, '__quex_debug("Character counting terminated.\\n");\n',
             1, "%s\n" % Lng.GOTO_BY_DOOR_ID(DropOut.door_id) \

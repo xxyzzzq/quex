@@ -17,7 +17,7 @@ from   quex.blackboard                         import setup as Setup
 from   itertools                               import chain
 from   os                                      import system
 
-Lng = languages.db["C"]
+Setup.language_db = languages.db["C"]
 
 
 if "--hwut-info" in sys.argv:
@@ -34,7 +34,7 @@ elif "help" in sys.argv:
     # Generate a binary file that contains UCS coded code points of interest.
     # 
     fh = open("./data/example.utf32le", "wb")
-    letter_set = chain(xrange(0x0, 0x0F), xrange(0x83, 0x88), xrange(0x2026, 0x202B), xrange(0x5fe, 0x701), 
+    letter_set = chain(xrange(0x1, 0x10), xrange(0x83, 0x88), xrange(0x2026, 0x202B), xrange(0x5fe, 0x701), 
                        xrange(0xfffe, 0x110000, 0x1000), xrange(60, 64), xrange(0x12000, 0x12004))
 
     for letter in letter_set:
@@ -134,6 +134,7 @@ compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c " \
               + " -DDEF_FILE_NAME='\"./data/example.%s\"' " % file_extension        \
               + " -DDEF_CHARACTER_TYPE=%s "                 % buffer_element_type \
               + " -o test"
+              # + " -DDEF_DEBUG_TRACE " 
 
 print "## %s" % compile_str            
 os.system(compile_str)

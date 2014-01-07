@@ -11,6 +11,7 @@ import codecs
 from quex.DEFINITIONS         import QUEX_PATH
 from quex.engine.misc.file_in import get_file_content_or_die, \
                                      open_file_or_die, \
+                                     open_safely, \
                                      error_msg, \
                                      verify_word_in_list, \
                                      EndOfStreamException, \
@@ -19,11 +20,11 @@ from quex.engine.misc.file_in import get_file_content_or_die, \
 from quex.engine.interval_handling                            import Interval, NumberSet
 from quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
 
-__codec_db_path = QUEX_PATH + "/quex/engine/codec_db/database"
+_codec_db_path = QUEX_PATH + "/quex/engine/codec_db/database"
 
-__codec_list_db = []
-__supported_codec_list = []
-__supported_codec_list_plus_aliases = []
+_codec_list_db = []
+_supported_codec_list = []
+_supported_codec_list_plus_aliases = []
 
 def get_codec_list_db():
     """
@@ -31,15 +32,15 @@ def get_codec_list_db():
        [ CODEC_NAME  [CODEC_NAME_LIST]  [LANGUAGE_NAME_LIST] ]
        ...
     """
-    global __codec_list_db
-    if len(__codec_list_db) != 0: return __codec_list_db
+    global _codec_list_db
+    if len(_codec_list_db) != 0: return _codec_list_db
 
-    fh = open_file_or_die(__codec_db_path + "/00-ALL.txt", "rb")
+    fh = open_file_or_die(_codec_db_path + "/00-ALL.txt", "rb")
     # FIELD SEPARATOR:  ';'
     # RECORD SEPARATOR: '\n'
     # FIELDS:           [Python Coding Name]   [Aliases]   [Languages] 
     # Aliases and Languages are separated by ','
-    __codec_list_db = []
+    _codec_list_db = []
     for line in fh.readlines():
         line = line.strip()
         if len(line) == 0 or line[0] == "#": continue
@@ -50,32 +51,32 @@ def get_codec_list_db():
             language_list = map(lambda x: x.strip(), fields[2].split(","))
         except:
             print "Error in line:\n%s\n" % line
-        __codec_list_db.append([codec, aliases_list, language_list])
+        _codec_list_db.append([codec, aliases_list, language_list])
 
     fh.close()
-    return __codec_list_db
+    return _codec_list_db
 
 def get_supported_codec_list(IncludeAliasesF=False):
     assert type(IncludeAliasesF) == bool
 
-    global __supported_codec_list
-    if len(__supported_codec_list) != 0: 
-        if IncludeAliasesF: return __supported_codec_list_plus_aliases
-        else:               return __supported_codec_list
+    global _supported_codec_list
+    if len(_supported_codec_list) != 0: 
+        if IncludeAliasesF: return _supported_codec_list_plus_aliases
+        else:               return _supported_codec_list
 
     file_name = QUEX_PATH + "/quex/engine/codec_db/database/00-SUPPORTED.txt"
     content   = get_file_content_or_die(file_name)
 
-    __supported_codec_list = content.split()
-    __supported_codec_list.sort()
+    _supported_codec_list = content.split()
+    _supported_codec_list.sort()
     codec_db_list = get_codec_list_db()
     for codec_name, aliases_list, dummy in codec_db_list:
-        if codec_name in __supported_codec_list: 
-            __supported_codec_list_plus_aliases.extend(filter(lambda x: x != "", aliases_list))
+        if codec_name in _supported_codec_list: 
+            _supported_codec_list_plus_aliases.extend(filter(lambda x: x != "", aliases_list))
         
-    __supported_codec_list_plus_aliases.sort()
-    if IncludeAliasesF: return __supported_codec_list_plus_aliases
-    else:               return __supported_codec_list
+    _supported_codec_list_plus_aliases.sort()
+    if IncludeAliasesF: return _supported_codec_list_plus_aliases
+    else:               return _supported_codec_list
 
 def get_supported_language_list(CodecName=None):
     if CodecName is None:
@@ -104,7 +105,7 @@ def get_codecs_for_language(Language):
                 "No codec found for language '%s'." % Language)
     return result
 
-def __get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
+def _get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
     """Arguments FH and LineN correspond to the arguments of error_msg."""
     assert len(CodecAlias) != 0
 
@@ -150,8 +151,8 @@ class CodecTransformationInfo(list):
         if FileName is not None:
             file_name = FileName
         else:
-            distinct_codec = __get_distinct_codec_name_for_alias(Codec)
-            file_name      = __codec_db_path + "/%s.dat" % distinct_codec
+            distinct_codec = _get_distinct_codec_name_for_alias(Codec)
+            file_name      = _codec_db_path + "/%s.dat" % distinct_codec
 
         # Read coding into data structure
         self.source_set = NumberSet()
@@ -283,7 +284,7 @@ def __AUX_create_database_file(TargetEncoding, TargetEncodingName):
         input_interval.end = input
         db.append((input_interval, target_interval_begin))
 
-    fh = open_file_or_die(__codec_db_path + "/%s.dat" % TargetEncoding, "wb")
+    fh = open_file_or_die(_codec_db_path + "/%s.dat" % TargetEncoding, "wb")
     fh.write("// Describes mapping from Unicode Code pointer to Character code in %s (%s)\n" \
              % (TargetEncoding, TargetEncodingName))
     fh.write("// [SourceInterval.begin] [SourceInterval.Size]  [TargetInterval.begin] (all in hexidecimal)\n")

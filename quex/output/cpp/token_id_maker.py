@@ -415,9 +415,10 @@ def __error_on_no_specific_token_ids():
     if len(all_token_id_set) != 0:
         return
 
-    token_id_str = []
-    for name in sorted(token_id_db.iterkeys()):
-        token_id_str.append("    %s%s\n" % (Setup.token_id_prefix, name))
+    token_id_str = [
+        "    %s%s\n" % (Setup.token_id_prefix, name)
+        for name in sorted(token_id_db.iterkeys())
+    ]
 
     error_msg("No token id beyond the standard token ids are defined. Found:\n" \
               + "".join(token_id_str) \

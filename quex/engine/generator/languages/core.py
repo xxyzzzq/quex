@@ -49,9 +49,6 @@ CppBase = {
     "$indentation_add":          cpp.__indentation_add,
     "$indentation_check_space":  cpp.__indentation_check_whitespace,
     #
-    "$analyzer-func":           cpp.__analyzer_function,
-    #"$terminal-code":           cpp.__terminal_states,      
-    #"$header-definitions":      cpp.__header_definitions,
     "$frame":                   cpp.__frame_of_all,
     "$code_base":               "/quex/code_base/",
     "$token-default-file":      "/token/CppDefault.qx",
@@ -263,8 +260,9 @@ class Lng_Cpp(dict):
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
 
         elif Cmd.id == E_Commands.ColumnCountGridAdd:
-            return self.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                  Cmd.content.value, IfMacro="__QUEX_IF_COUNT_COLUMNS") 
+            txt = self.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                 Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS") 
+            return "".join(txt)
 
         elif Cmd.id == E_Commands.ColumnCountGridAddWithReferenceP:
             txt = [] 
@@ -278,7 +276,6 @@ class Lng_Cpp(dict):
             txt = []
             if Cmd.content.value != 0:
                 txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
-                txt.append(0)
             txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
             return "".join(txt)
 
@@ -365,15 +362,12 @@ class Lng_Cpp(dict):
         else:
             assert False, "Unknown Entry Action"
 
-    def TERMINAL_LEXEME_MACRO_DEFINITIONS(self, SimpleF=False):
-        if SimpleF: return ""
-        else:       return cpp.lexeme_macro_definitions(Setup)
-
     def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
-        text = []
+        text = [
+            cpp._terminal_state_prolog
+        ]
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
             iid = terminal.incidence_id()
-            print "#incidence, door_id, label:", iid, DoorID.incidence(iid), Label.incidence(iid)
             text.append(
                "%s: " % Label.incidence(terminal.incidence_id()) \
                + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
@@ -385,6 +379,11 @@ class Lng_Cpp(dict):
             text.extend(code)
             text.append("\n")
         return text
+
+    def ANALYZER_FUNCTION(self, ModeName, Setup, VariableDefs, 
+                          FunctionBody, ModeNameList):
+        return cpp._analyzer_function(ModeName, Setup, VariableDefs, 
+                                      FunctionBody, ModeNameList)
 
     def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
         return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)

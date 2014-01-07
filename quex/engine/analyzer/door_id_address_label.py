@@ -122,8 +122,8 @@ class DialDB:
         self.clear()
 
     def clear(self):
-        print_callstack()
-        print "#DialDB.clear()"
+        ## print_callstack()
+        ## print "#DialDB.clear()"
 
         # Database: [DoorID] [Address] [Label] 
         # 

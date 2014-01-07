@@ -71,14 +71,16 @@ def do_core(PatternList, TerminalDb):
     main_analyzer         = generator.do_main(esms.sm, bipd_entry_door_id_db)
     # assert all_isinstance(main, (IfDoorIdReferencedCode, int, str, unicode))
 
+    # (*) Terminals
+    #     (BEFORE 'Reload procedures' because some terminals may add entries
+    #      to the reloader.)
+    terminals             = generator.do_terminals(TerminalDb.values(), 
+                                                   main_analyzer)
+
     # (*) Reload procedures
     reload_procedures     = generator.do_reload_procedures(main_analyzer, 
                                                            pre_analyzer)
     # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
-
-    # (*) Terminals
-    terminals             = generator.do_terminals(TerminalDb.values(), 
-                                                   main_analyzer)
 
     # (*) Re-entry preparation
     reentry_prerpation    = generator.do_reentry_preparation(esms.pre_context_sm_id_list,
@@ -107,8 +109,8 @@ def do_core(PatternList, TerminalDb):
     return function_body, variable_definitions
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
-    txt_function = Lng["$analyzer-func"](ModeName, Setup, VariableDefs, 
-                                                FunctionBody, ModeNameList) 
+    txt_function = Lng.ANALYZER_FUNCTION(ModeName, Setup, VariableDefs, 
+                                         FunctionBody, ModeNameList) 
     txt_header   = Lng.HEADER_DEFINITIONS() 
     assert isinstance(txt_header, (str, unicode))
 

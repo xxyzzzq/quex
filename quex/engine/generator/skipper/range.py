@@ -30,8 +30,6 @@ def do(Data, TheAnalyzer):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
-    print "#Hello range_set_skip"
-
     ClosingSequence = Data["closer_sequence"]
     ClosingPattern  = Data["closer_pattern"]
     Mode            = Data["mode"]

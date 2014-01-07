@@ -4,6 +4,7 @@ _______________________________________________________________________________
 """
 import quex.engine.generator.base                   as     generator
 from   quex.engine.generator.languages.variable_db  import variable_db
+import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import Label, dial_db
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP, \
@@ -39,8 +40,6 @@ def get(counter_db, Name):
                                        by the 'function name'.
     ---------------------------------------------------------------------------
     """
-    
-
     function_name = DefaultCounterFunctionDB.get_function_name(counter_db)
     if function_name is not None:
         return function_name, None # Implementation has been done before.
@@ -50,7 +49,8 @@ def get(counter_db, Name):
     return_door_id = dial_db.new_door_id()
     code           = generator.do_loop(counter_db, 
                                        AfterExitDoorId = return_door_id,
-                                       CheckLexemeEndF = True)
+                                       CheckLexemeEndF = True, 
+                                       EngineType      = engine.CHARACTER_COUNTER)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, return_door_id) 
 
@@ -73,9 +73,10 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
     # Following function refers to the global 'variable_db'
     txt.extend(Lng.VARIABLE_DEFINITIONS(variable_db))
     txt.append(
-         "    (void)me; (void)LexemeBegin; (void)LexemeEnd;\n"
-         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n\n"
-       + "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
+        "    (void)me; (void)LexemeBegin; (void)LexemeEnd;\n"
+        "    __QUEX_IF_COUNT_SHIFT_VALUES();\n"
+        "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
+        "    %s = LexemeBegin;\n" % IteratorName
     )
 
     txt.extend(CodeTxt)

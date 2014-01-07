@@ -14,8 +14,6 @@ from quex.blackboard import Lng, \
 from operator import attrgetter
 
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
-    
-
     door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
     if not TheAnalyzer.is_init_state_forward(TheState.index):
         pre_txt = []
@@ -75,15 +73,14 @@ def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
 def code_action(txt, Node, ActionDb, GotoParentF):
     
     txt.append(IfDoorIdReferencedLabel(Node.door_id))
-
     comment_door(txt, Node, ActionDb)
-
-    action_txt = [ Lng.COMMAND(command) for command in Node.command_list ]
+    txt.extend([ 
+        Lng.COMMAND(command) 
+        for command in Node.command_list 
+    ])
     if Node.parent is not None and GotoParentF: 
-        action_txt.append(1)
-        action_txt.append(Lng.GOTO_BY_DOOR_ID(Node.parent.door_id))
-    txt.extend(action_txt)
-    txt.extend("\n")
+        txt.append("    %s\n" % Lng.GOTO_BY_DOOR_ID(Node.parent.door_id))
+    txt.append("\n")
 
 def comment_door(txt, Node, ActionDb):
     

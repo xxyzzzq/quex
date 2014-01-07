@@ -191,7 +191,7 @@ def do_reload_procedures(ForwardAnalyzer, BackwardAnalyzer):
     """
     # Variables that tell where to go after reload success and reload failure
     if Setup.buffer_based_analyzis_f:               
-        return
+        return []
 
     txt = []
     if ForwardAnalyzer is not None and ForwardAnalyzer.reload_state is not None:
@@ -249,33 +249,30 @@ def do_analyzer(analyzer):
     variable_db.require("input") 
     return state_machine_code
 
-@typed(TerminalList=[Terminal], SimpleF=bool)
-def do_terminals(TerminalList, TheAnalyzer, SimpleF=False):
-    txt = [ Lng.TERMINAL_LEXEME_MACRO_DEFINITIONS(SimpleF) ]
-    txt.extend(Lng.TERMINAL_CODE(TerminalList, TheAnalyzer))
-    return txt
+@typed(TerminalList=[Terminal])
+def do_terminals(TerminalList, TheAnalyzer):
+    return Lng.TERMINAL_CODE(TerminalList, TheAnalyzer)
 
 def do_reentry_preparation(PreContextSmIdList, TerminalDb):
     
     return Lng.REENTRY_PREPARATION(PreContextSmIdList, 
                                   TerminalDb.get(E_IncidenceIDs.AFTER_MATCH))
 
-def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None):
+@typed(CharacterSet=(None, NumberSet), ReloadF=bool, CheckLexemeEndF=bool, AfterExitDoorId=DoorID)
+def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None, EngineType=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
     """
-    assert CharacterSet is None or isinstance(CharacterSet, NumberSet)
-
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
 
     ccd                     = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
-    analyzer, exit_terminal = ccd.get_analyzer(engine.CHARACTER_COUNTER, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
+    analyzer, terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
 
     code                    = state_machine_coder.do(analyzer)
 
-    code.extend(do_terminals([exit_terminal], analyzer, SimpleF=True))
+    code.extend(do_terminals(terminal_list, analyzer))
 
     if ReloadF and not GlobalReloadState:
         reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)
