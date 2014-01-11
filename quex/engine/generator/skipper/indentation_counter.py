@@ -10,8 +10,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.analyzer.door_id_address_label   import dial_db, \
-                                                           Label
+from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.misc.string_handling             import blue_print
 
 def do(Data, Mode=None):

@@ -104,8 +104,6 @@ class AnalyzerState(Processor):
                                              | RELOAD FAILURE |
                                              '----------------'
                                    
-                                   
-
         (1) Create 'Door for RELOAD SUCCESS'. 
         (2) Determine 'Door for RELOAD FAILURE'.
         (3) Create 'Door from X' in Reloader.
@@ -115,13 +113,16 @@ class AnalyzerState(Processor):
         assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
         assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
 
-        # If the engine type does not require a reload preparation then the call
-        # to this function is a null-operation.
-        if not TheAnalyzer.engine_type.requires_buffer_limit_code_for_reload():
+        if Setup.buffer_based_analyzis_f:
+            # Buffer-only-mode => no reload.
             return
 
-        # A transition map which is not a transition map cannot trigger any reload.
-        if self.transition_map is None: 
+        elif not TheAnalyzer.engine_type.requires_buffer_limit_code_for_reload():
+            # Engine type does not require reload => no reload. 
+            return
+
+        elif self.transition_map is None: 
+            # No transition map => no transition to reloader.
             return                      
 
         assert self.index in TheAnalyzer.state_db

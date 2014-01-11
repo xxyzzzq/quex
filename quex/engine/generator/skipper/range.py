@@ -9,7 +9,8 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
 import quex.engine.state_machine.index             as     sm_index
 import quex.engine.state_machine.transformation    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
-from   quex.engine.tools                           import r_enumerate
+from   quex.engine.tools                           import r_enumerate, \
+                                                          typed
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
@@ -270,10 +271,9 @@ $$UPON_RELOAD_DONE_LABEL$$:
     me->buffer._input_p = me->buffer.lexeme_start_p;
 """
 
+@typed(EndSequence=[int])
 def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
-    assert type(EndSequence) == list
     assert len(EndSequence) >= 1
-    assert map(type, EndSequence) == [int] * len(EndSequence)
 
     global template_str
 
@@ -288,9 +288,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     # Determine the $$DELIMITER$$
     delimiter_length = len(end_sequence_transformed)
 
-    tmp = []
-    Lng.COMMENT(tmp, "                         Delimiter: %s" % delimiter_comment_str)
-    delimiter_comment_str = "".join(tmp)
+    delimiter_comment_str = Lng.COMMENT("                         Delimiter: %s" % delimiter_comment_str)
 
     # Determine the check for the tail of the delimiter
     delimiter_remainder_test_str = ""

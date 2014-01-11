@@ -1,7 +1,7 @@
 # (C) Frank-Rene Schaefer
 from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.analyzer.terminal.core          import Terminal
-from   quex.engine.analyzer.door_id_address_label  import Label, DoorID
+from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
 from   quex.engine.tools                           import typed
 
@@ -64,53 +64,91 @@ class TerminalFactory:
             E_TerminalType.PLAIN:         self.do_plain,
         }[TerminalType](IncidenceId, Code, ThePattern)
 
+    def __adorn_user_code(self, Code, MatchF):
+        """Adorns user code with:
+           -- storage of last character, if required for 'begin of line'
+              pre-context.
+           -- storage of the terminating zero, if the lexeme is required
+              as a zero-terminated string.
+           -- add the 'on_match' event handler in front, if match is relevant.
+           -- adding source reference information.
+        """
+        code_user                  = pretty_code(Code.get_code())
+        txt_source_reference_begin = Lng.SOURCE_REFERENCE_BEGIN(Code.sr)
+        txt_source_reference_end   = "\n%s" % Lng.SOURCE_REFERENCE_END()
+
+        lexeme_begin_f, \
+        terminating_zero_f = self.get_lexeme_flags(Code)
+
+        txt_terminating_zero = Lng.LEXEME_TERMINATING_ZERO_SET(terminating_zero_f)
+
+        if MatchF: txt_on_match = self.on_match.get_text()
+        else:      txt_on_match = ""
+
+        result = "".join([
+            self.txt_store_last_character,
+            txt_terminating_zero,
+            txt_on_match,
+            "{\n",
+            txt_source_reference_begin,
+            #
+            code_user,
+            #
+            txt_source_reference_end,
+            "\n}\n",
+        ])
+
+        return lexeme_begin_f, terminating_zero_f, result
+
+
     @typed(ThePattern=Pattern)
     def do_match_pattern(self, IncidenceId, Code, ThePattern):
         """A pattern has matched."""
         assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
 
-        code_user               = pretty_code(Code.get_code())
-
-        terminating_zero_f =    self.on_match.requires_lexeme_terminating_zero_f()       \
-                             or Code.requires_lexeme_terminating_zero_f()                \
-                             or self.on_after_match.requires_lexeme_terminating_zero_f ()
-        lexeme_begin_f     =    self.on_match.requires_lexeme_begin_f()      \
-                             or Code.requires_lexeme_begin_f()               \
-                             or self.on_after_match.requires_lexeme_begin_f() 
-
-        txt_terminating_zero = Lng.LEXEME_TERMINATING_ZERO_SET(terminating_zero_f)
+        lexeme_begin_f,     \
+        terminating_zero_f, \
+        adorned_code        = self.__adorn_user_code(Code, MatchF=True)
 
         text = [
             self.get_counter_text(ThePattern),
-            self.txt_store_last_character,
-            txt_terminating_zero,
-            self.on_match.get_text(),
-            "{\n",
-            code_user,
-            "\n}\n",
+            #
+            adorned_code,
+            #
             Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match())
         ] 
 
-        name = TerminalFactory.name_pattern_match_terminal(IncidenceId, ThePattern.pattern_string())
-        return Terminal(IncidenceId, CodeTerminal(text), name)
+        code = CodeTerminal(text, 
+                            PureCode               = Code.get_pure_code(),
+                            LexemeRelevanceF       = True,
+                            LexemeBeginF           = lexeme_begin_f,
+                            LexemeTerminatingZeroF = terminating_zero_f)
+        name = TerminalFactory.name_pattern_match_terminal(IncidenceId, 
+                                                           ThePattern.pattern_string())
+        return Terminal(IncidenceId, code, name)
 
     def do_match_failure(self, IncidenceId, Code, ThePattern):
         """No pattern in the mode has matched. Line and column numbers are 
         still counted. But, no 'on_match' or 'on_after_match' action is 
         executed.
         """
+        lexeme_begin_f,     \
+        terminating_zero_f, \
+        adorned_code        = self.__adorn_user_code(Code, MatchF=False)
+
         text = [ 
-            self.get_counter_text(None),
             Lng.IF_END_OF_FILE(),
+                self.get_counter_text(None),
                 Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
             Lng.IF_INPUT_P_EQUAL_LEXEME_START_P(FirstF=False),
                 Lng.INPUT_P_INCREMENT(),
             Lng.END_IF(),
-            "\n", 
+            self.get_counter_text(None),
+            #
+            adorned_code,
+            #
+            Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
         ]
-        text.extend(Code.get_code())
-
-        text.append(Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()))
 
         return Terminal(IncidenceId, CodeTerminal(text), "FAILURE")
 
@@ -118,17 +156,22 @@ class TerminalFactory:
         """End of Stream: The terminating zero has been reached and no further
         content can be loaded.
         """
+        lexeme_begin_f,     \
+        terminating_zero_f, \
+        adorned_code        = self.__adorn_user_code(Code, MatchF=True)
+        
         # No indentation handler => Empty string.
         text = [ 
             self.txt_indentation_handler_call,
-            self.get_counter_text(None),
+            #
+            adorned_code,
+            #
+            Lng.ML_COMMENT(
+                "End of Stream FORCES a return from the lexical analyzer, so that no\n"
+                "tokens can be filled after the termination token."
+            ),
+            Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
         ]
-        text.extend(Code.get_code())
-        text.append(
-            "    /* End of Stream FORCES a return from the lexical analyzer, so that no\n"
-            "     * tokens can be filled after the termination token.                    */\n"
-            "    RETURN;\n"
-        )
         
         return Terminal(IncidenceId, CodeTerminal(text), "END_OF_STREAM")
 
@@ -138,10 +181,26 @@ class TerminalFactory:
         text = [
             self.get_counter_text(ThePattern)
         ]
-        text.extend(Code.get_code())
+        text.extend(
+            Code.get_code()
+        )
+
+        code = CodeTerminal(text, PureCode=Code.get_code())
+
         if ThePattern is None: name = str(IncidenceId)
         else:                  name = ThePattern.pattern_string()
-        return Terminal(IncidenceId, CodeTerminal(text), name)
+
+        return Terminal(IncidenceId, code, name)
+
+    def get_lexeme_flags(self, Code):
+        lexeme_begin_f     =    self.on_match.requires_lexeme_begin_f()      \
+                             or Code.requires_lexeme_begin_f()               \
+                             or self.on_after_match.requires_lexeme_begin_f() 
+        terminating_zero_f =    self.on_match.requires_lexeme_terminating_zero_f()       \
+                             or Code.requires_lexeme_terminating_zero_f()                \
+                             or self.on_after_match.requires_lexeme_terminating_zero_f ()
+        return lexeme_begin_f, terminating_zero_f
+
 
     @staticmethod
     def name_pattern_match_terminal(IncidenceId, PatternString):

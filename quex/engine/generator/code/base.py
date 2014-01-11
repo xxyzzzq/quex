@@ -10,7 +10,7 @@ from   copy        import deepcopy
 import types
 import re
 
-class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
+class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n", "mode_name"))):
     """A reference into source code:
     _______________________________________________________________________________
       
@@ -18,13 +18,13 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
         line_n    = Number of line where code is found.
     _______________________________________________________________________________
     """
-    def __new__(self, FileName="<default>", LineN=0):
+    def __new__(self, FileName="<default>", LineN=0, ModeName=""):
         assert isinstance(FileName, (str, unicode))
         assert isinstance(LineN, (int, long))
-        return super(SourceRef, self).__new__(self, FileName, LineN)
+        return super(SourceRef, self).__new__(self, FileName, LineN, ModeName)
 
     @staticmethod
-    def from_FileHandle(Fh):
+    def from_FileHandle(Fh, ModeName=""):
         if Fh != -1:
             if not hasattr(Fh, "name"): file_name = "<nameless stream>"
             else:                       file_name = Fh.name
@@ -32,10 +32,10 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n"))):
         else:
             file_name = "<command line>"
             line_n    = -1
-        return SourceRef(file_name, line_n)
+        return SourceRef(file_name, line_n, ModeName)
 
     def is_void(self):
-        return (self.file_name == "<default>") and (self.line_n == 0)
+        return (self.file_name == "<default>") and (self.line_n == 0) and len(self.mode_name) == 0
 
 SourceRef_VOID = SourceRef()
 
@@ -70,7 +70,11 @@ class CodeFragment(object):
         return False
 
     @property
-    def sr(self): return self.__source_reference
+    def sr(self):                   
+        return self.__source_reference
+
+    def set_source_reference(self, SourceReference): 
+        self.__source_reference = SourceReference
 
     @typed(Re=re._pattern_type)
     def contains_string(self, Re):  return self.__check_code(lambda x: Re.search(x) is not None)
@@ -84,7 +88,7 @@ class CodeFragment(object):
         This function may be overwritten by a derived class. As a result there
         might be possile annotations.
         """
-        return self.get_pure_code()
+        return self.__code
 
     def get_pure_code(self):
         """Pure code as stored in the list without any annotation of the derived

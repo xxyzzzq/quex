@@ -94,12 +94,12 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
         if AddSpaceF and len(result) != 0: result += " "
         return result
 
-    file_name, line_n = This.sr
+    file_name, line_n, mode_name = This.sr
     error_msg("The %spattern '%s' %s" % (get_name(This), This.pattern_string(), ThisComment), 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
 
-    FileName, LineN   = That.sr
+    FileName, LineN, mode_name  = That.sr
     if len(ThatComment) != 0: Space = " "
     else:                     Space = ""
 

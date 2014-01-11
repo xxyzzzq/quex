@@ -5,7 +5,7 @@ if [[ $1 == "--hwut-info" ]]; then
 fi
 
 echo "Watch if the generated code compiles. If is 'ls lexer' succeeds."
-quex -i data/local-variables.qx -o Simple 
+quex -i data/local-variables.qx -o Simple --debug-exception
 rm -f ./lexer
 g++ -I$QUEX_PATH -I. \
     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \

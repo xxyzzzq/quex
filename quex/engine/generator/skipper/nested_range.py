@@ -1,18 +1,22 @@
-from   quex.engine.generator.skipper.common         import \
-                                                           get_character_sequence, \
+from   quex.engine.generator.languages.variable_db  import variable_db
+from   quex.engine.generator.skipper.common         import get_character_sequence, \
                                                            get_on_skip_range_open, \
                                                            line_column_counter_in_loop
 import quex.engine.state_machine.index              as     sm_index
-from   quex.blackboard                              import setup as Setup
+from   quex.engine.analyzer.door_id_address_label   import __nice, \
+                                                           dial_db, \
+                                                           DoorID
 from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.analyzer.door_id_address_label   import __nice, dial_db
-from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.blackboard                              import E_StateIndices
+from   quex.engine.tools                            import typed
+from   quex.blackboard                              import setup as Setup, \
+                                                           Lng, \
+                                                           E_StateIndices
 
-def do(Data, Mode):
+def do(Data, TheAnalyzer):
 
     OpeningSequence = Data["opener_sequence"]
     ClosingSequence = Data["closer_sequence"]
+    Mode            = Data["mode"]
 
     return get_skipper(OpeningSequence, ClosingSequence, Mode=Mode) 
 
@@ -79,7 +83,7 @@ $$ENTRY$$
     while( 1 + 1 == 2 ) {
         $$INPUT_GET$$ 
         if( input == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-            goto $$GOTO_RELOAD$$;
+            $$GOTO_RELOAD$$
         }
         if( input == *Skipper$$SKIPPER_INDEX$$_Closer_it ) {
             ++Skipper$$SKIPPER_INDEX$$_Closer_it;
@@ -144,16 +148,14 @@ $$LC_COUNT_AFTER_RELOAD$$
     $$ON_SKIP_RANGE_OPEN$$
 """
 
+@typed(OpenerSequence=[int], CloserSequence=[int])
 def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
-    assert OpenerSequence.__class__  == list
-    assert len(OpenerSequence)       >= 1
-    assert map(type, OpenerSequence) == [int] * len(OpenerSequence)
-    assert CloserSequence.__class__  == list
-    assert len(CloserSequence)       >= 1
-    assert map(type, CloserSequence) == [int] * len(CloserSequence)
+    assert len(OpenerSequence) >= 1
+    assert len(CloserSequence) >= 1
     assert OpenerSequence != CloserSequence
 
-    skipper_index = sm_index.get()
+    skipper_index   = sm_index.get()
+    skipper_door_id = dial_db.new_door_id(skipper_index)
 
     opener_str, opener_comment_str = get_character_sequence(OpenerSequence)
     opener_length = len(OpenerSequence)
@@ -161,13 +163,14 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     closer_length = len(CloserSequence)
 
     if not Mode.match_indentation_counter_newline_pattern(CloserSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO_BY_VARIABLE(E_StateIndices.ANALYZER_REENTRY)
+        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match())
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO_TERMINAL_BY_INCIDENCE_ID(IncidenceID.INDENTATION_HANDLER)
+        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
+
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
@@ -205,14 +208,14 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$INPUT_GET$$",                      Lng.ACCESS_INPUT()],
                    ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                    ["$$ENDIF$$",                          Lng.END_IF()],
-                   ["$$ENTRY$$",                          dial_db.map_address_to_label(skipper_adr)],
+                   ["$$ENTRY$$",                          Lng.LABEL(skipper_door_id)],
                    ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                   ["$$GOTO_RELOAD$$",                    Lng.GOTO_RELOAD(reload_door_id)],
+                   ["$$GOTO_RELOAD$$",                    Lng.GOTO_BY_DOOR_ID(reload_door_id)],
                    ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.
-                   ["$$GOTO_ENTRY$$",                     Lng.GOTOBY_DOOR_ID(skipper_index)],
+                   ["$$GOTO_ENTRY$$",                     Lng.GOTO_BY_DOOR_ID(skipper_door_id)],
                    ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                    ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                    #

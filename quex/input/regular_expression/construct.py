@@ -10,7 +10,7 @@ import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
 from   quex.engine.misc.file_in  import error_msg
 #                                                         
-from   quex.engine.tools         import typed
+from   quex.engine.tools         import typed, print_callstack
 from   quex.engine.generator.code.base import SourceRef
 from   quex.blackboard           import setup     as Setup, deprecated
 import sys
@@ -86,6 +86,12 @@ class Pattern(object):
     
     @property
     def sr(self):             return self.__sr
+
+    def set_source_reference(self, fh, Position, ModeName):
+        current_position = fh.tell()
+        fh.seek(Position)
+        self.__sr = SourceRef.from_FileHandle(fh, ModeName)
+        fh.seek(current_position)
 
     def pattern_string(self): return self.__pattern_string
 
@@ -200,9 +206,15 @@ class Pattern(object):
         assert self.__pre_context_sm is None
         assert self.__bipd_sm        is None
 
+        # Currently, the incidence_id is equivalent to the state machine id. The
+        # transformation may generate a new state machine, but the incidence id
+        # must remain the same! This will not be necessary, if state machines 
+        # do not carray ids any longer.
+        backup_incidence_id = self.incidence_id()
         c0, self.__sm                            = transformation.do_state_machine(self.__sm)
         c1, self.__pre_context_sm_to_be_inverted = transformation.do_state_machine(self.__pre_context_sm_to_be_inverted)
         c2, self.__post_context_sm               = transformation.do_state_machine(self.__post_context_sm)
+        self.set_incidence_id(backup_incidence_id)
 
         # Only if all transformation have been complete, then the transformation
         # can be considered complete.

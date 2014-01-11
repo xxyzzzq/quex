@@ -9,7 +9,7 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.input.files.counter_db                     import CounterDB, \
                                                               CounterCoderData
-from   quex.engine.analyzer.door_id_address_label      import Label, DoorID
+from   quex.engine.analyzer.door_id_address_label      import DoorID
 from   quex.engine.analyzer.terminal.core              import TerminalGenerated, \
                                                               Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
@@ -42,7 +42,7 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               skip_whitespace, \
                                                               verify_word_in_list
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
-from   quex.engine.tools import typed
+from   quex.engine.tools import typed, all_isinstance
 import quex.blackboard as blackboard
 from   quex.engine.generator.code.base import SourceRef
 from   quex.blackboard import setup as Setup, \
@@ -96,7 +96,7 @@ class PPT(namedtuple("PPT_tuple", ("priority", "pattern", "code_fragment"))):
 #-----------------------------------------------------------------------------------------
 
 PatternRepriorization = namedtuple("PatternRepriorization", ("pattern", "new_pattern_index", "sr"))
-PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "sr", "mode_name"))
+PatternDeletion       = namedtuple("PatternDeletion",       ("pattern", "pattern_index",     "sr"))
 
 class PatternActionInfo(object):
     __slots__ = ("__pattern", "__action")
@@ -196,28 +196,34 @@ class ModeDescription:
         self.deletion_info_list         = [] 
 
     @typed(ThePattern=Pattern, Action=CodeUser)
-    def add_pattern_action_pair(self, ThePattern, TheAction):
+    def add_pattern_action_pair(self, ThePattern, TheAction, fh):
         assert ThePattern.check_consistency()
 
         if ThePattern.pre_context_trivial_begin_of_line_f:
             blackboard.required_support_begin_of_line_set()
 
+        TheAction.set_source_reference(SourceRef.from_FileHandle(fh, self.name))
+
         self.pattern_action_pair_list.append(PatternActionInfo(ThePattern, TheAction))
 
-    def add_match_priority(self, ThePattern, FileName, LineN):
+    def add_match_priority(self, ThePattern, fh):
         """Whenever a pattern in the mode occurs, which is identical to that given
            by 'ThePattern', then the priority is adapted to the pattern index given
            by the current pattern index.
         """
         PatternIdx = ThePattern.incidence_id() 
-        self.reprioritization_info_list.append(PatternRepriorization(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
+        self.reprioritization_info_list.append(
+            PatternRepriorization(ThePattern, PatternIdx, SourceRef.from_FileHandle(fh, self.name))
+        )
 
-    def add_match_deletion(self, ThePattern, FileName, LineN):
+    def add_match_deletion(self, ThePattern, fh):
         """If one of the base modes contains a pattern which is identical to this
            pattern, it has to be deleted.
         """
         PatternIdx = ThePattern.incidence_id() 
-        self.deletion_info_list.append(PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN), self.name))
+        self.deletion_info_list.append(
+            PatternDeletion(ThePattern, PatternIdx, SourceRef(FileName, LineN, self.name))
+        )
 
 class IncidenceDB(dict):
     """Database of CodeFragments related to 'incidences'.
@@ -283,8 +289,8 @@ class IncidenceDB(dict):
                              ...
         """
         terminal_type_db = {
-                E_IncidenceIDs.MATCH_FAILURE: E_TerminalType.MATCH_FAILURE,
-                E_IncidenceIDs.END_OF_STREAM: E_TerminalType.END_OF_STREAM,
+            E_IncidenceIDs.MATCH_FAILURE: E_TerminalType.MATCH_FAILURE,
+            E_IncidenceIDs.END_OF_STREAM: E_TerminalType.END_OF_STREAM,
         }
         mandatory_list = [
             E_IncidenceIDs.MATCH_FAILURE, 
@@ -357,7 +363,10 @@ class Mode:
         self.sr   = Origin.sr   # 'SourceRef' -- is immutable
 
         base_mode_sequence  = self.__determine_base_mode_sequence(Origin, [], [])
-        assert len(base_mode_sequence) >= 1 # At least the mode itself is in there
+        # At least the mode itself must be there
+        # The mode itself is base_mode_sequence[-1]
+        assert len(base_mode_sequence) >= 1 \
+               and base_mode_sequence[-1].name == self.name
 
         # Collect Options
         # (A finalized Mode does not contain an option_db anymore).
@@ -387,6 +396,7 @@ class Mode:
         self.__exit_mode_name_list  = options_db.value_list("exit")  # This mode can exit to those.
         self.__incidence_db         = incidence_db
         self.__counter_db           = counter_db
+        self.__on_after_match_code  = incidence_db.get(E_IncidenceIDs.AFTER_MATCH)
 
     def abstract_f(self):           return self.__abstract_f
 
@@ -403,10 +413,11 @@ class Mode:
     def incidence_db(self): return self.__incidence_db
 
     @property
-    def pattern_list(self): return self.__pattern_list
-
+    def pattern_list(self):        return self.__pattern_list
     @property
-    def terminal_db(self):  return self.__terminal_db
+    def on_after_match_code(self): return self.__on_after_match_code
+    @property
+    def terminal_db(self):         return self.__terminal_db
 
     @property
     def default_character_counter_required_f(self): return self.__default_character_counter_required_f
@@ -457,6 +468,7 @@ class Mode:
         # (*) Cut the signalling characters from any pattern or state machine
         for pattern in pattern_list:
             pattern.cut_character_list(blackboard.signal_character_list(Setup))
+
 
         # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
         for pattern in pattern_list:
@@ -786,14 +798,18 @@ class Mode:
                 for pap in mode_descr.pattern_action_pair_list:
                     yield mode_hierarchy_index, pap
 
-        result = []
+        result   = []
+        mhi_self = len(BaseModeSequence) - 1
         for mhi, pap in pap_iterator(BaseModeSequence):
-            priority = PatternPriority(mhi, pap.pattern().incidence_id()) 
-            pattern  = pap.pattern()
+            # ALWAYS 'deepcopy' (even in the mode itself), because:
+            # -- derived patterns may relate to the pattern.
+            # -- the pattern's count info may differ from mode to mode.
+            pattern  = deepcopy(pap.pattern())
+            priority = PatternPriority(mhi, pattern.incidence_id()) 
             # Determine line and column counts -- BEFORE Character-Transformation!
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
-            code     = CodeTerminalOnMatch(pap.action()) # Prepares line references
+            code     = CodeTerminalOnMatch(pap.action()) 
             terminal = terminal_factory.do(E_TerminalType.MATCH_PATTERN, pattern.incidence_id(), code, pattern)
             result.append(PPT(priority, pattern, terminal))
 
@@ -802,22 +818,22 @@ class Mode:
     def __perform_reprioritization(self, ppt_list, BaseModeSequence):
         def repriorize(MHI, Info, ppt_list, ModeName, history):
             done_f = False
-            for xpap in ppt_list:
-                if     xpap[0].mode_hierarchy_index <= MHI \
-                   and xpap[0].pattern_index        < Info.new_pattern_index \
-                   and identity_checker.do(xpap[1].pattern(), Info.pattern):
-                    done_f = True
-                    history.append([ModeName, 
-                                    xpap[1].pattern().pattern_string(), 
-                                    xpap[1].mode_name,
-                                    xpap[1].pattern().incidence_id(), 
-                                    Info.new_pattern_index])
-                    xpap[0].mode_hierarchy_index = MHI
-                    xpap[0].pattern_index        = Info.new_pattern_index
+            for ppt in ppt_list:
+                priority, pattern, terminal = ppt
+                if   priority.mode_hierarchy_index > MHI:                      continue
+                elif priority.pattern_index        >= Info.new_pattern_index:  continue
+                elif not identity_checker.do(pattern, Info.pattern):           continue
 
-            if not done_f and Info.mode_name == ModeName:
+                done_f            = True
+                history.append([ModeName, 
+                                pattern.pattern_string(), pattern.sr.mode_name,
+                                pattern.incidence_id(), Info.new_pattern_index])
+                priority.mode_hierarchy_index = MHI
+                priority.pattern_index        = Info.new_pattern_index
+
+            if not done_f and Info.sr.mode_name == ModeName:
                 error_msg("PRIORITY mark does not have any effect.", 
-                          Info.file_name, Info.sr.line_n, DontExitF=True)
+                          Info.sr.file_name, Info.sr.line_n, DontExitF=True)
 
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
@@ -832,20 +848,20 @@ class Mode:
             size   = len(ppt_list)
             i      = 0
             while i < size:
-                xpap = ppt_list[i]
-                if     xpap[0].mode_hierarchy_index <= MHI \
-                   and xpap[0].pattern_index < Info.pattern_index \
-                   and superset_check.do(Info.pattern, xpap[1].pattern()):
+                priority, pattern, terminal = ppt_list[i]
+                if     priority.mode_hierarchy_index <= MHI \
+                   and priority.pattern_index < Info.pattern_index \
+                   and superset_check.do(Info.pattern, pattern):
                     done_f  = True
                     del ppt_list[i]
-                    history.append([ModeName, xpap[1].pattern().pattern_string(), xpap[1].mode_name])
+                    history.append([ModeName, pattern.pattern_string(), pattern.sr.mode_name])
                     size   -= 1
                 else:
                     i += 1
 
-            if not done_f and Info.mode_name == ModeName:
+            if not done_f and Info.sr.mode_name == ModeName:
                 error_msg("DELETION mark does not have any effect.", 
-                          Info.file_name, Info.sr.line_n, DontExitF=True)
+                          Info.sr.file_name, Info.sr.line_n, DontExitF=True)
 
         history = []
         for mode_hierarchy_index, mode_descr in enumerate(BaseModeSequence):
@@ -913,7 +929,7 @@ class Mode:
                 if other_pattern.incidence_id() >= incidence_id: 
                     continue
                 if superset_check.do(other_pattern, pattern):
-                    file_name, line_n = other_pattern.sr
+                    file_name, line_n, mode_name = other_pattern.sr
                     c_error_message(other_pattern, pattern, 
                                     ThisComment  = "matches a superset of what is matched by",
                                     EndComment   = "The former has precedence and the latter can never match.",
@@ -1010,23 +1026,13 @@ class Mode:
                        (entry[0], " " * (L - len(self.name)), entry[1], entry[2], entry[3], entry[4])
             txt += "\n"
 
+        assert all_isinstance(self.__pattern_list, Pattern)
         if len(self.__pattern_list) != 0:
             txt += "    PATTERN LIST:\n"
-            def my_key(x):
-                if   x.pattern() in E_IncidenceIDs: return (0, str(x.pattern()))
-                elif hasattr(x.pattern(), "sm"):    return (1, x.pattern().incidence_id())
-                else:                               return (2, x)
-
-            self.__pattern_list.sort(key=my_key)
-
-            for pap in self.__pattern_list:
-                if hasattr(pap.pattern(), "sm"): 
-                    txt += "      (%3i) %s: %s%s\n" % \
-                           (pap.pattern().incidence_id(),
-                            pap.mode_name, " " * (L - len(self.name)), 
-                            pap.pattern().pattern_string())
-                else:
-                    txt += "      %s\n" % pap.pattern()
+            for x in self.__pattern_list:
+                space  = " " * (L - len(x.sr.mode_name)) 
+                txt   += "      (%3i) %s: %s%s\n" % \
+                         (x.incidence_id(), x.sr.mode_name, space, x.pattern_string())
             txt += "\n"
 
         return txt
@@ -1132,7 +1138,7 @@ def __parse_element(new_mode, fh):
     """
     position = fh.tell()
     try:
-        description = "pattern or event handler" 
+        ##description = "pattern or event handler" 
 
         skip_whitespace(fh)
         # NOTE: Do not use 'read_word' since we need to continue directly after
@@ -1146,11 +1152,12 @@ def __parse_element(new_mode, fh):
         if __parse_event(new_mode, fh, word): return True
 
         fh.seek(position)
-        description = "start of mode element: regular expression"
+        ##description = "start of mode element: regular expression"
         pattern     = regular_expression.parse(fh)
+        pattern.set_source_reference(fh, position, new_mode.name)
 
         position    = fh.tell()
-        description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
+        ##description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
 
         __parse_action(new_mode, fh, pattern.pattern_string(), pattern)
 
@@ -1168,10 +1175,9 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
         position = fh.tell()
             
         code = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
-        assert isinstance(code, CodeUser)
         if code is not None:
-            code.mode_name = new_mode.name
-            new_mode.add_pattern_action_pair(pattern, code)
+            assert isinstance(code, CodeUser), "Found: %s" % code.__class__
+            new_mode.add_pattern_action_pair(pattern, code, fh)
             return
 
         fh.seek(position)
@@ -1184,13 +1190,13 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
             # use its id.
             fh.seek(-1, 1)
             check_or_die(fh, ";", ". Since quex version 0.33.5 this is required.")
-            new_mode.add_match_priority(pattern, fh.name, get_current_line_info_number(fh))
+            new_mode.add_match_priority(pattern, fh)
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'
             fh.seek(-1, 1)
             check_or_die(fh, ";", ". Since quex version 0.33.5 this is required.")
-            new_mode.add_match_deletion(pattern, fh.name, get_current_line_info_number(fh))
+            new_mode.add_match_deletion(pattern, fh)
             
         else:
             error_msg("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern_str + \

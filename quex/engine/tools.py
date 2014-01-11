@@ -14,7 +14,7 @@ def r_enumerate(x):
 
 def print_callstack(BaseNameF=False):
     try:
-        i = 2
+        i = 1
         name_list = []
         while 1 + 1 == 2:
             f = sys._getframe(i)
@@ -23,17 +23,29 @@ def print_callstack(BaseNameF=False):
             # Do not consider the frame coming from the @typed decorator,
             # (See 'def typed(**parameters)' below)
             if x.co_name != "modified": 
-                file_name = x.co_filename[len(QUEX_PATH)+1:]
-                name_list.append([file_name, f.f_lineno, x.co_name])
+                name_list.append([x.co_filename, f.f_lineno, x.co_name])
             i += 1
     except:
         pass
 
     L = len(name_list)
-    for i, x in r_enumerate(name_list):
-        if BaseNameF: name = os.path.basename(x[0])
-        else:         name = x[0]
-        print "%s%s:%s:%s(...)" % (" " * ((L-i)*4), name, x[1], x[2]) 
+    prev_file_name = ""
+    i = - 1
+    for x in reversed(name_list):
+        if BaseNameF: 
+            name = os.path.basename(x[0])
+            i += 1
+        else:         
+            file_name = x[0][len(QUEX_PATH)+1:]
+            if file_name != prev_file_name:
+                name = file_name
+                i += 1
+            else:
+                base_name = os.path.basename(x[0])
+                name = " " * (len(file_name) - len(base_name)) + base_name
+            prev_file_name = file_name
+            
+        print "%s%s:%s:%s(...)" % (" " * (i*4), name, x[1], x[2]) 
 
 def pair_combinations(iterable):
     other = tuple(iterable)

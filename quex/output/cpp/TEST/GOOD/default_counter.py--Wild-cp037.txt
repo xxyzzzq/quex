@@ -4,9 +4,13 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
 {
 #   define self (*me)
     QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
-    (void)me; (void)LexemeBegin; (void)LexemeEnd;
+    (void)me;
     __QUEX_IF_COUNT_SHIFT_VALUES();
+    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
+     * => Caller does not need to check
+     * BUT, if so quit immediately after 'shift values'. */
     __quex_assert(LexemeBegin <= LexemeEnd);
+    if(LexemeBegin == LexemeEnd) return;
     me->buffer._input_p = LexemeBegin;
 _3: /* (38 from 45) (38 from NONE) */
     input = *(me->buffer._input_p);
@@ -136,7 +140,7 @@ goto _3;
 _26: __quex_debug("* TERMINAL [0025] \n");
 __QUEX_IF_COUNT_LINES_ADD((size_t)1);
 __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-if( me->buffer._input_p == LexemeEnd ) goto _2;;
+if( me->buffer._input_p == LexemeEnd ) goto _1;;
 goto _3;
 _2: __quex_debug("* TERMINAL -- Exit --\n");
 goto _1;

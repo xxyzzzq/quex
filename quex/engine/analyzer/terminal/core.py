@@ -45,6 +45,9 @@ class Terminal(Processor):
     def code(self, TheAnalyzer):
         return self.__code.get_code()
 
+    def pure_code(self):
+        return self.__code.get_pure_code()
+
     def requires_lexeme_terminating_zero_f(self):
         return self.__code.requires_lexeme_terminating_zero_f()
 

@@ -1,6 +1,5 @@
 from   quex.engine.misc.string_handling           import blue_print
-from   quex.engine.analyzer.door_id_address_label import Label, \
-                                                         DoorID, \
+from   quex.engine.analyzer.door_id_address_label import DoorID, \
                                                          dial_db, \
                                                          IfDoorIdReferencedCode, \
                                                          IfDoorIdReferencedLabel
@@ -187,7 +186,7 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "#   endif\n",
         "#   define self (*((QUEX_TYPE_ANALYZER*)me))\n",
         "/*  'QUEX_GOTO_STATE' requires 'QUEX_LABEL_STATE_ROUTER' */\n",
-        "#   define QUEX_LABEL_STATE_ROUTER %s\n" % Label.global_state_router(),
+        "#   define QUEX_LABEL_STATE_ROUTER %s\n" % dial_db.get_label_by_door_id(DoorID.global_state_router()),
         mode_definition_str,
         lexeme_macro_setup(Lng),
         #
@@ -201,7 +200,7 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         #
         # Entry to the actual function body
         #
-        "%s:\n" % Label.global_reentry(),
+        "%s\n" % Lng.LABEL(DoorID.global_reentry()),
         "    %s\n" % Lng.LEXEME_START_SET(),
         "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n",
     ]
@@ -216,9 +215,12 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "    /* Following labels are referenced in macros. It cannot be detected\n"
         "     * whether the macros are applied in user code or not. To avoid compiler.\n"
         "     * warnings of unused labels, they are referenced in unreachable code. */\n"
-        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
-        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
-        "    %s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
+        "    %s /* in RETURN                */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
+        "    %s /* in CONTINUE              */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
+        "    %s /* in CONTINUE and skippers */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
+        "#   if ! defined(QUEX_OPTION_COMPUTED_GOTOS)\n",
+        "    %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_state_router()),
+        "#   endif\n",
         "\n",
         "    /* Prevent compiler warning 'unused variable'. */\n",
         "    (void)QUEX_LEXEME_NULL;\n",                                    
@@ -308,44 +310,39 @@ __return_if_mode_changed = """
     }
 """
 
-def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchTerminal):
+def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
     TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
-    if PreConditionIDList is None:
-        unset_pre_context_flags_str = ""
-    else:
-        unset_pre_context_flags_str = "".join([
-            "    " + Lng.ASSIGN("pre_context_%s_fulfilled_f" % __nice(pre_context_id), 0)
-            for pre_context_id in PreConditionIDList
-        ])
+    unset_pre_context_flags_str = Lng.PRE_CONTEXT_RESET(PreConditionIDList)
 
-    if OnAfterMatchTerminal is not None:
-        on_after_match_str = OnAfterMatchTerminal.code()
+    if OnAfterMatchCode is not None:
+        on_after_match_str = "".join([
+            Lng.SOURCE_REFERENCE_BEGIN(OnAfterMatchCode.sr),
+            OnAfterMatchCode.get_text(),
+            Lng.SOURCE_REFERENCE_END()
+        ])
     else:
         on_after_match_str = ""
 
     txt = [ 
-        "\n",
-        "%s:"  % Label.return_with_on_after_match(), 
-        "/* RETURN -- after executing 'on_after_match' code. */\n",
+        "\n%s\n"  % Lng.LABEL(DoorID.return_with_on_after_match()), 
+        Lng.COMMENT("RETURN -- after executing 'on_after_match' code."),
         on_after_match_str,
-        "    __QUEX_PURE_RETURN;\n",
-        "\n",
-        "%s:" % Label.continue_with_on_after_match(), 
-        "/* CONTINUE -- after executing 'on_after_match' code. */\n",
+        "    __QUEX_PURE_RETURN;\n\n",
+        #
+        "\n%s\n" % Lng.LABEL(DoorID.continue_with_on_after_match()), 
+        Lng.COMMENT("CONTINUE -- after executing 'on_after_match' code."),
         on_after_match_str,
-        "%s:" % Label.continue_without_on_after_match(),
-        "/* CONTINUE -- without executing 'on_after_match' (e.g. on FAILURE). */\n",
-        "\n",
-        __return_if_queue_full_or_simple_analyzer,
-        "\n",
-        __return_if_mode_changed,
-        "\n",
+        #
+        "\n%s\n" % Lng.LABEL(DoorID.continue_without_on_after_match()),
+        Lng.COMMENT("CONTINUE -- without executing 'on_after_match' (e.g. on FAILURE)."), "\n",
+        #
+        __return_if_queue_full_or_simple_analyzer, "\n",
+        __return_if_mode_changed, "\n",
+        #
         unset_pre_context_flags_str,
-        "\n",
-        "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry()), 
-        "\n",
+        "\n%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry()), 
     ]
 
     return txt

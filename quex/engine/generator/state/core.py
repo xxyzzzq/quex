@@ -4,7 +4,6 @@ from   quex.engine.generator.state.transition.code  import relate_to_TransitionC
 import quex.engine.generator.state.transition.core  as transition_block
 import quex.engine.generator.state.entry            as entry
 import quex.engine.generator.state.drop_out         as drop_out
-from   quex.engine.analyzer.door_id_address_label   import Label
 from   quex.engine.tools                            import none_isinstance, none_is_None
 from   quex.blackboard                              import setup as Setup, E_InputActions
 

@@ -1,8 +1,7 @@
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.door_id_address_label        import dial_db, \
                                                                 IfDoorIdReferencedLabel, \
-                                                                DoorID, \
-                                                                Label
+                                                                DoorID
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
 from   quex.engine.tools                                 import none_is_None
@@ -53,7 +52,6 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
 def do_post(door_tree_root, TheState, DoneDoorIdSet):
     txt = []
     do_node(txt, TheState.entry, door_tree_root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
-    # txt.append("    goto %s;\n" % Label.transition_block(TheState.index, GotoedF=True))
     return txt
 
 def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
@@ -84,12 +82,15 @@ def code_action(txt, Node, ActionDb, GotoParentF):
 
 def comment_door(txt, Node, ActionDb):
     
-
     # If the door is entered by another state, write a comment from where it is entered.
     transition_id_list = ActionDb.get_transition_id_list(Node.door_id)
     if len(transition_id_list) != 0:
         txt.append(" ")
-        Lng.COMMENT(txt, "".join([ "(%s from %s) " % (x.target_state_index, x.source_state_index) for x in transition_id_list])[:-1])
+        txt.append(
+            Lng.COMMENT("".join([ 
+                "(%s from %s) " % (x.target_state_index, x.source_state_index) for x in transition_id_list])[:-1]
+            )
+        )
     else:
         txt.append("\n") 
 

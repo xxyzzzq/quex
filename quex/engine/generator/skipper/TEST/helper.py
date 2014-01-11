@@ -5,10 +5,12 @@ import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 from   quex.engine.state_machine.core              import StateMachine
-from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
-from   quex.engine.generator.code_fragment_base import CodeFragment
+from   quex.engine.generator.code.base             import CodeFragment
+from   quex.input.regular_expression.construct     import Pattern
+from   quex.input.files.counter_db                 import CounterDB
+from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
 
@@ -19,9 +21,10 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     variable_db.variable_db.init()
     data = { 
         "character_set":        TriggerSet, 
+        "counter_db":           CounterDB(LineColumnCounterSetup_Default()),
         "require_label_SKIP_f": False, 
     }
-    skipper_code = character_set_skipper.do(data, get_mode_object("CharacterSetSkipper"))
+    skipper_code = character_set_skipper.do(data, Analyzer)
 
     marker_char_list = []
     if InitialSkipF:

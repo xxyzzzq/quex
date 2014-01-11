@@ -104,6 +104,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
+                            
                             }
                         } else {
                         
@@ -112,7 +113,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000080;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -122,6 +125,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00008F;
+                            
                             }
                         } else {
                         
@@ -134,9 +138,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000089;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -147,6 +155,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000E;
+                            
                             }
                         } else {
                         
@@ -155,7 +164,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -165,6 +176,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000074;
+                            
                             }
                         } else {
                         
@@ -177,10 +189,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00001B;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -192,6 +209,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000C;
+                            
                             }
                         } else {
                         
@@ -200,7 +218,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000028;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -210,6 +230,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00001C;
+                            
                             }
                         } else {
                         
@@ -222,9 +243,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000060;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -235,6 +260,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000060;
+                            
                             }
                         } else {
                         
@@ -243,7 +269,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000020;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -253,6 +281,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x0000A0;
+                            
                             }
                         } else {
                         
@@ -265,11 +294,17 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00009D;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
         } else {
         
@@ -282,6 +317,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00009F;
+                            
                             }
                         } else {
                         
@@ -290,7 +326,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -300,6 +338,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000010;
+                            
                             }
                         } else {
                         
@@ -312,9 +351,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00002D;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -325,6 +368,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
+                            
                             }
                         } else {
                         
@@ -333,7 +377,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -343,6 +389,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000086;
+                            
                             }
                         } else {
                         
@@ -355,10 +402,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000032;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -370,6 +422,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000023;
+                            
                             }
                         } else {
                         
@@ -378,7 +431,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000033;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -388,6 +443,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000060;
+                            
                             }
                         } else {
                         
@@ -400,9 +456,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00005D;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -413,6 +473,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00005F;
+                            
                             }
                         } else {
                         
@@ -425,8 +486,11 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00003F;
+                                
                                 }
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -436,6 +500,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000E;
+                            
                             }
                         } else {
                         
@@ -448,12 +513,19 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000058;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
+        
         }
     } else {
     
@@ -467,6 +539,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
+                            
                             }
                         } else {
                         
@@ -475,7 +548,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000019;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -485,6 +560,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000058;
+                            
                             }
                         } else {
                         
@@ -497,9 +573,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000041;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -510,6 +590,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
+                            
                             }
                         } else {
                         
@@ -518,7 +599,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000021;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -528,6 +611,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000064;
+                            
                             }
                         } else {
                         
@@ -540,10 +624,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000020;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -555,6 +644,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000010;
+                            
                             }
                         } else {
                         
@@ -563,7 +653,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00004A;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -573,6 +665,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000028;
+                            
                             }
                         } else {
                         
@@ -585,9 +678,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000023;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -598,6 +695,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000009;
+                            
                             }
                         } else {
                         
@@ -606,7 +704,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000024;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -616,6 +716,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000001;
+                            
                             }
                         } else {
                         
@@ -628,11 +729,17 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00000D;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
         } else {
         
@@ -645,6 +752,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000B;
+                            
                             }
                         } else {
                         
@@ -653,7 +761,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -663,6 +773,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00005F;
+                            
                             }
                         } else {
                         
@@ -675,9 +786,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000015;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -688,6 +803,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000018;
+                            
                             }
                         } else {
                         
@@ -696,7 +812,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000080;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -706,6 +824,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000029;
+                            
                             }
                         } else {
                         
@@ -718,10 +837,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000026;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -733,6 +857,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000087;
+                            
                             }
                         } else {
                         
@@ -741,7 +866,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000020;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -751,6 +878,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000020;
+                            
                             }
                         } else {
                         
@@ -763,9 +891,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00008F;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -776,6 +908,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000017;
+                            
                             }
                         } else {
                         
@@ -788,8 +921,11 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00001A;
+                                
                                 }
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -799,6 +935,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000047;
+                            
                             }
                         } else {
                         
@@ -811,13 +948,21 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000060;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
+        
         }
+    
     }
     *(*output_pp)++ = unicode;
 
@@ -855,6 +1000,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -865,7 +1011,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000080;
                                 goto two_bytes;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -877,6 +1025,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00008F;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -892,9 +1041,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000089;
                                     goto two_bytes;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -907,6 +1060,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000E;
                                 goto one_byte;
+                            
                             }
                         } else {
                         
@@ -917,7 +1071,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input;
                                 goto one_byte;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -927,6 +1083,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000074;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -942,10 +1099,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00001B;
                                     goto one_byte;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -957,6 +1119,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000C;
+                            
                             }goto one_byte;
                         } else {
                         
@@ -967,7 +1130,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000028;
                                 goto one_byte;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -979,6 +1144,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00001C;
                                 goto one_byte;
+                            
                             }
                         } else {
                         
@@ -994,9 +1160,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000060;
                                     goto two_bytes;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -1009,6 +1179,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000060;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1017,7 +1188,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000020;
+                            
                             }goto one_byte;
+                        
                         }
                     } else {
                     
@@ -1027,6 +1200,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x0000A0;
+                            
                             }
                         } else {
                         
@@ -1039,11 +1213,17 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00009D;
+                                
                                 }
+                            
                             }
+                        
                         }goto two_bytes;
+                    
                     }
+                
                 }
+            
             }
         } else {
         
@@ -1056,6 +1236,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00009F;
+                            
                             }
                         } else {
                         
@@ -1064,7 +1245,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
+                            
                             }
+                        
                         }goto two_bytes;
                     } else {
                     
@@ -1074,6 +1257,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000010;
+                            
                             }
                         } else {
                         
@@ -1086,9 +1270,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00002D;
+                                
                                 }
+                            
                             }
+                        
                         }goto one_byte;
+                    
                     }
                 } else {
                 
@@ -1101,6 +1289,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1109,7 +1298,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000098;
+                            
                             }goto two_bytes;
+                        
                         }
                     } else {
                     
@@ -1119,6 +1310,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000086;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1131,10 +1323,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000032;
+                                
                                 }
+                            
                             }goto one_byte;
+                        
                         }
+                    
                     }
+                
                 }
             } else {
             
@@ -1146,6 +1343,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000023;
+                            
                             }goto one_byte;
                         } else {
                         
@@ -1156,7 +1354,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000033;
                                 goto one_byte;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -1168,6 +1368,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000060;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1180,9 +1381,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x00005D;
+                                
                                 }
+                            
                             }goto two_bytes;
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -1193,6 +1398,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00005F;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1208,8 +1414,11 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00003F;
                                     goto one_byte;
+                                
                                 }
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -1219,6 +1428,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000E;
+                            
                             }goto one_byte;
                         } else {
                         
@@ -1232,12 +1442,19 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000058;
+                                
                                 }goto two_bytes;
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
+        
         }
     } else {
     
@@ -1251,6 +1468,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1261,7 +1479,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000019;
                                 goto one_byte;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -1271,6 +1491,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000058;
+                            
                             }
                         } else {
                         
@@ -1283,9 +1504,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000041;
+                                
                                 }
+                            
                             }
+                        
                         }goto one_byte;
+                    
                     }
                 } else {
                 
@@ -1298,6 +1523,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000058;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1308,7 +1534,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000021;
                                 goto two_bytes;
+                            
                             }
+                        
                         }
                     } else {
                     
@@ -1318,6 +1546,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000064;
+                            
                             }
                         } else {
                         
@@ -1330,10 +1559,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000020;
+                                
                                 }
+                            
                             }
+                        
                         }goto two_bytes;
+                    
                     }
+                
                 }
             } else {
             
@@ -1347,6 +1581,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000010;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1355,7 +1590,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x00004A;
+                            
                             }goto two_bytes;
+                        
                         }
                     } else {
                     
@@ -1365,6 +1602,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000028;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1380,9 +1618,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000023;
                                     goto one_byte;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -1395,6 +1637,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000009;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1403,7 +1646,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000024;
+                            
                             }goto two_bytes;
+                        
                         }
                     } else {
                     
@@ -1413,6 +1658,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000001;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1426,11 +1672,17 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00000D;
+                                
                                 }goto two_bytes;
+                            
                             }
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
         } else {
         
@@ -1443,6 +1695,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00000B;
+                            
                             }
                         } else {
                         
@@ -1451,7 +1704,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input;
+                            
                             }
+                        
                         }goto two_bytes;
                     } else {
                     
@@ -1463,6 +1718,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x00005F;
                                 goto one_byte;
+                            
                             }
                         } else {
                         
@@ -1476,9 +1732,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000015;
+                                
                                 }goto two_bytes;
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -1489,6 +1749,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000018;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1497,7 +1758,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000080;
+                            
                             }goto one_byte;
+                        
                         }
                     } else {
                     
@@ -1507,6 +1770,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000029;
+                            
                             }
                         } else {
                         
@@ -1519,10 +1783,15 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input + (uint32_t)0x000026;
+                                
                                 }
+                            
                             }
+                        
                         }goto two_bytes;
+                    
                     }
+                
                 }
             } else {
             
@@ -1534,6 +1803,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000087;
+                            
                             }goto one_byte;
                         } else {
                         
@@ -1542,7 +1812,9 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000020;
+                            
                             }goto two_bytes;
+                        
                         }
                     } else {
                     
@@ -1552,6 +1824,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input + (uint32_t)0x000020;
+                            
                             }goto two_bytes;
                         } else {
                         
@@ -1567,9 +1840,13 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00008F;
                                     goto one_byte;
+                                
                                 }
+                            
                             }
+                        
                         }
+                    
                     }
                 } else {
                 
@@ -1580,6 +1857,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             } else {
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000017;
+                            
                             }
                         } else {
                         
@@ -1592,8 +1870,11 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x00001A;
+                                
                                 }
+                            
                             }
+                        
                         }goto two_bytes;
                     } else {
                     
@@ -1605,6 +1886,7 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                             
                                 unicode = (uint32_t)input - (uint32_t)0x000047;
                                 goto two_bytes;
+                            
                             }
                         } else {
                         
@@ -1617,13 +1899,21 @@ QUEX_CONVERTER_CHAR_DEF(cp037, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
                                 } else {
                                 
                                     unicode = (uint32_t)input - (uint32_t)0x000060;
+                                
                                 }
+                            
                             }goto two_bytes;
+                        
                         }
+                    
                     }
+                
                 }
+            
             }
+        
         }
+    
     }
 
 

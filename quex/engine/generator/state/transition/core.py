@@ -273,7 +273,7 @@ def __get_transition(txt, TriggerMapEntry, IndentF=False):
 
     if Setup.comment_transitions_f: 
         interval = TriggerMapEntry[0] 
-        Lng.COMMENT(txt, interval.get_utf8_string())
+        txt.append(Lng.COMMENT(interval.get_utf8_string()))
     else: 
         pass # txt.append("\n")
     return 
