@@ -2,7 +2,7 @@ from   quex.blackboard                                   import Lng
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.transition_map               import TransitionMap
-from   quex.engine.analyzer.door_id_address_label        import Label, DoorID, IfDoorIdReferencedLabel
+from   quex.engine.analyzer.door_id_address_label        import DoorID, IfDoorIdReferencedLabel
 from   quex.engine.generator.state.transition.code       import TransitionCodeFactory, \
                                                                 MegaState_relate_to_transition_code
 import quex.engine.generator.state.transition.core  as transition_block

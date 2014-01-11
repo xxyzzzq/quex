@@ -146,13 +146,11 @@ def analyzer_functions_get(ModeDB):
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
-        comment = []
-        Lng.ML_COMMENT(comment, 
-                       "BEGIN: MODE PATTERNS\n" + \
-                       inheritance_info_str     + \
-                       "\nEND: MODE PATTERNS")
-        comment.append("\n") # For safety: New content may have to start in a newline, e.g. "#ifdef ..."
-        analyzer_code.append("".join(comment))
+        comment = Lng.ML_COMMENT(comment, 
+                      "BEGIN: MODE PATTERNS\n" + \
+                      inheritance_info_str     + \
+                      "\nEND: MODE PATTERNS")
+        analyzer_code.append(comment)
 
     if not Setup.token_class_only_f:
         determine_start_mode(blackboard.mode_db)
@@ -164,14 +162,14 @@ def analyzer_functions_get(ModeDB):
     return cpp_generator.frame_this("".join(analyzer_code)), blackboard.mode_db
 
 def do_plot():
-    mode_db = quex_file_parser.do(Setup.input_mode_files)
+    mode_description_db = quex_file_parser.do(Setup.input_mode_files)
 
-    for mode in mode_db.values():        
+    for mode_descr in mode_description_db.itervalues():        
+        mode = Mode(mode_descr)
         # -- some modes only define event handlers that are inherited
-        pattern_action_pair_list = mode.get_pattern_action_pair_list()
-        if len(pattern_action_pair_list) == 0: continue
+        if len(mode.pattern_list) == 0: continue
 
-        plotter = grapviz_generator.Generator(pattern_action_pair_list,
+        plotter = grapviz_generator.Generator(mode.pattern_list,
                                               StateMachineName = mode.name)
         plotter.do(Option=Setup.character_display)
 
@@ -198,8 +196,6 @@ def do_token_class_info():
         if line.find("--token-class-file") != -1: continue
         comment.append("%s\n" % line)
     comment.append("<<<QUEX-OPTIONS>>>")
-    txt = []
-    Lng.ML_COMMENT(txt, "".join(comment), IndentN=0)
-    return "".join(txt) + "\n"
+    return Lng.ML_COMMENT("".join(comment), IndentN=0)
 
 

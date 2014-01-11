@@ -1,6 +1,5 @@
 from   quex.engine.analyzer.state.drop_out        import DropOutGotoDoorId
-from   quex.engine.analyzer.door_id_address_label import Label, \
-                                                         DoorID, \
+from   quex.engine.analyzer.door_id_address_label import DoorID, \
                                                          IfDoorIdReferencedLabel
 from   quex.blackboard                            import E_IncidenceIDs, E_StateIndices, \
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \

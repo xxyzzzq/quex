@@ -22,7 +22,9 @@
             
                 unicode = (uint32_t)input - (uint32_t)0x010000;
                 goto three_bytes;
+            
             }
+        
         }
     } else {
     
@@ -34,6 +36,7 @@
             
                 unicode = (uint32_t)input - (uint32_t)0x01F7FF;
                 goto four_bytes;
+            
             }
         } else {
         
@@ -44,7 +47,10 @@
             
                 unicode = (uint32_t)input - (uint32_t)0x110000;
                 goto two_bytes;
+              
             }
+           
         }
+      
     }
 

@@ -5,7 +5,7 @@ _______________________________________________________________________________
 import quex.engine.generator.base                   as     generator
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.door_id_address_label   import Label, dial_db
+from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP, \
                                                            GotoDoorIdIfInputPLexemeEnd
@@ -73,9 +73,13 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
     # Following function refers to the global 'variable_db'
     txt.extend(Lng.VARIABLE_DEFINITIONS(variable_db))
     txt.append(
-        "    (void)me; (void)LexemeBegin; (void)LexemeEnd;\n"
+        "    (void)me;\n"
         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n"
+        "    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)\n"
+        "     * => Caller does not need to check\n"
+        "     * BUT, if so quit immediately after 'shift values'. */\n"
         "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
+        "    if(LexemeBegin == LexemeEnd) return;\n"
         "    %s = LexemeBegin;\n" % IteratorName
     )
 

@@ -1,15 +1,15 @@
-<test-database execution-time-sec="10.33" date="Mon Dec 30 08:18:19 2013">
+<test-database execution-time-sec="10.59" date="Thu Jan  9 12:16:05 2014">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.48"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.48" crc="1069820642"/>
+           <choice name="" result="OK" time_sec="0.52" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.03"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.05"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1381662239L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.03" crc="-581721676"/>
+           <choice name="" result="FAIL" time_sec="0.05" crc="-581721676"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
@@ -18,16 +18,16 @@
            <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="9.10"> 
+    <test title="Code Check with pyflakes" time-sum-sec="9.32"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="9.10" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="9.32" crc="176785168"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 
         <application file-name="macro-check.py" info-request-time="1387873736L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.05" crc="-482184837"/>
+           <choice name="" result="OK" time_sec="0.04" crc="-482184837"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
@@ -37,11 +37,11 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="0.46"> 
+        <test title="Include Guards for C/C++" time-sum-sec="0.45"> 
             <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="convention" result="OK" time_sec="0.23" crc="706574512"/>
-               <choice name="undefinition" result="OK" time_sec="0.23" crc="1307575207"/>
+               <choice name="undefinition" result="OK" time_sec="0.22" crc="1307575207"/>
             </choice-list>
         </test>
     </group>

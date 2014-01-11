@@ -67,13 +67,19 @@ def do(Data, TheAnalyzer):
     """
     counter_db    = Data["counter_db"]
     character_set = Data["character_set"]
+    if Setup.buffer_based_analyzis_f:
+        reload_f     = False
+        reload_state = None
+    else:
+        reload_f     = True
+        reload_state = TheAnalyzer.reload_state
         
     result = generator.do_loop(counter_db, 
                                AfterExitDoorId   = DoorID.continue_without_on_after_match(),
                                CharacterSet      = character_set,
                                CheckLexemeEndF   = False,
-                               ReloadF           = True,
-                               GlobalReloadState = TheAnalyzer.reload_state, 
+                               ReloadF           = reload_f,
+                               GlobalReloadState = reload_state, 
                                EngineType        = engine.FORWARD)
     assert isinstance(result, list)
     return result

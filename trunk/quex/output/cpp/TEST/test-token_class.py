@@ -3,8 +3,8 @@ import sys
 import os
 from StringIO import StringIO
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.output.cpp.token_class_maker         as token_class
-import quex.input.files.token_type               as parser
+import quex.output.cpp.token_class_maker    as token_class
+import quex.input.files.token_type          as parser
 import quex.engine.generator.languages.core as languages
 import quex.blackboard         
 

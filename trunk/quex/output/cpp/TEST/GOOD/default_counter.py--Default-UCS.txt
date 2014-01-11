@@ -5,9 +5,13 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
 #   define self (*me)
     QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
     QUEX_TYPE_CHARACTER_POSITION   reference_p                    = (QUEX_TYPE_CHARACTER_POSITION)0x0;
-    (void)me; (void)LexemeBegin; (void)LexemeEnd;
+    (void)me;
     __QUEX_IF_COUNT_SHIFT_VALUES();
+    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
+     * => Caller does not need to check
+     * BUT, if so quit immediately after 'shift values'. */
     __quex_assert(LexemeBegin <= LexemeEnd);
+    if(LexemeBegin == LexemeEnd) return;
     me->buffer._input_p = LexemeBegin;
  /* (4 from NONE) */
 __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p);
@@ -89,13 +93,13 @@ __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((me->buffer._input_p - reference_p)));
 __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
 __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
 __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p + 1);
-if( me->buffer._input_p == LexemeEnd ) goto _2;;
+if( me->buffer._input_p == LexemeEnd ) goto _1;;
 goto _4;
 _20: __quex_debug("* TERMINAL [000A] \n");
 __QUEX_IF_COUNT_LINES_ADD((size_t)1);
 __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
 __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._input_p + 1);
-if( me->buffer._input_p == LexemeEnd ) goto _2;;
+if( me->buffer._input_p == LexemeEnd ) goto _1;;
 goto _4;
 _2: __quex_debug("* TERMINAL -- Exit --\n");
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((me->buffer._input_p - reference_p)));

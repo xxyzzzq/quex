@@ -1,7 +1,7 @@
-<test-database execution-time-sec="4.92" date="Mon Dec 30 08:22:51 2013">
+<test-database execution-time-sec="4.93" date="Thu Jan  9 12:22:51 2014">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="0.75"> 
+        <test title="Large Buffer" time-sum-sec="0.76"> 
             <application file-name="test-skip.py" info-request-time="1387873735L" vanished="False"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="FAIL" time_sec="0.19" crc="982389702"/>
@@ -35,7 +35,7 @@
         <test title="Delimiter Sizes 1 and 2" time-sum-sec="0.76"> 
             <application file-name="test-skip_nested_range.py" info-request-time="1387873735L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="FAIL" time_sec="0.20" crc="-607472181"/>
+               <choice name="ANSI-C-PlainMemory" result="FAIL" time_sec="0.19" crc="-607472181"/>
                <choice name="ANSI-C" result="FAIL" time_sec="0.19" crc="-607472181"/>
                <choice name="Cpp" result="FAIL" time_sec="0.19" crc="-607472181"/>
                <choice name="Cpp_StrangeStream" result="FAIL" time_sec="0.19" crc="-607472181"/>

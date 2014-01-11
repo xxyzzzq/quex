@@ -35,7 +35,7 @@ from   quex.blackboard import setup as Setup, \
 
 from   collections import namedtuple
 
-CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list"))
+CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "special_f"))
 
 class CounterDB:
     # 'CounterDB' maps from counts to the character set that is involved.
@@ -172,6 +172,7 @@ class CounterCoderData:
 
         self.on_entry, \
         self.on_exit  = self.__on_entry_on_exit_prepare(AfterExitDoorId)
+        self.door_id_after_exit = AfterExitDoorId
 
         self.on_before_reload, \
         self.on_after_reload   = self.__on_before_after_reload_prepare(LexemeF)
@@ -245,19 +246,26 @@ class CounterCoderData:
                      Name="-- Exit --")
         )
 
-        def get_terminal(incidence_id, cli):
+        def get_terminal(incidence_id, cli, SpecialF):
+            """SpecialF = is related character set related to characters and 
+                          not to newline or grid?
+            """
             text = [
                 Lng.COMMAND(cmd) for cmd in self.count_command_map[cli].command_list 
             ]
             if CheckLexemeEndF:
-                text.append(Lng.COMMAND(GotoDoorIdIfInputPLexemeEnd(exit_door_id)))
+                if SpecialF: door_id = exit_door_id            # Add 'input_p - reference_p'
+                else:        door_id = self.door_id_after_exit # Plain exit
+                text.append(Lng.COMMAND(GotoDoorIdIfInputPLexemeEnd(door_id)))
+
             text.append(Lng.GOTO_BY_DOOR_ID(loop_door_id))
             name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
             return Terminal(incidence_id, CodeTerminal(text), name)
 
-        for cli, cl in self.count_command_map.iteritems():
+        for cli, info in self.count_command_map.iteritems():
             incidence_id = map_cli_to_incidence_id[cli]
-            terminal_list.append(get_terminal(incidence_id, cli))
+            assert incidence_id not in (t.incidence_id() for t in terminal_list)
+            terminal_list.append(get_terminal(incidence_id, cli, info.special_f))
 
         # Setup DoorIDs in entries and transition maps
         analyzer.prepare_DoorIDs()
@@ -387,14 +395,14 @@ class CounterCoderData:
             cmd = on_special(delta)
             if cmd is None: cl = CommandList()
             else:           cl = CommandList(cmd)
-            result[index.get()] = CountCmdInfo(character_set, cl)
+            result[index.get()] = CountCmdInfo(character_set, cl, True)
 
         result.update(
-            (index.get(), CountCmdInfo(character_set, CommandList(on_grid(grid_step_n))))
+            (index.get(), CountCmdInfo(character_set, CommandList(on_grid(grid_step_n)), False))
             for grid_step_n, character_set in pruned_iteritems(CounterDb.grid, CharacterSet)
         )
         result.update(
-            (index.get(), CountCmdInfo(character_set, CommandList(on_newline(delta))))
+            (index.get(), CountCmdInfo(character_set, CommandList(on_newline(delta)), False))
             for delta, character_set in pruned_iteritems(CounterDb.newline, CharacterSet)
         )
 
@@ -437,8 +445,6 @@ class CounterCoderData:
             state_index   = sm.add_transition(sm.init_state_index, TriggerSet,
                                               AcceptanceF=True)
             sm.states[state_index].mark_self_as_origin(acceptance_id, state_index)
-
-            map_cli_to_incidence_id[cli] = acceptance_id
             return acceptance_id
 
         sm = StateMachine()
@@ -446,8 +452,9 @@ class CounterCoderData:
         covered_character_set = NumberSet()
         for cli, count_info in CountCommandMap.iteritems():
             assert isinstance(count_info, CountCmdInfo)
-            add(sm, count_info.trigger_set, map_cli_to_incidence_id)
+            incidence_id = add(sm, count_info.trigger_set, map_cli_to_incidence_id)
             covered_character_set.unite_with(count_info.trigger_set)
+            map_cli_to_incidence_id[cli] = incidence_id
 
         missed_character_set = covered_character_set.inverse()
         if not missed_character_set.is_empty():

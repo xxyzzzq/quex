@@ -23,7 +23,9 @@ def do(Mode, ModeNameList):
     variable_db.init()  # because constructor creates some addresses.
 
     function_body,       \
-    variable_definitions = do_core(Mode.pattern_list, Mode.terminal_db)
+    variable_definitions = do_core(Mode.pattern_list, 
+                                   Mode.terminal_db,
+                                   Mode.on_after_match_code)
 
     function_txt = wrap_up(Mode.name, function_body, variable_definitions, 
                            ModeNameList)
@@ -39,7 +41,7 @@ def do(Mode, ModeNameList):
     return counter_txt + function_txt
 
 @typed(PatternList=[Pattern], TerminalDb={(E_IncidenceIDs, long): Terminal})
-def do_core(PatternList, TerminalDb):
+def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
     """Produces main code for an analyzer function which can detect patterns given in
     the 'PatternList' and has things to be done mentioned in 'TerminalDb'. 
 
@@ -84,7 +86,7 @@ def do_core(PatternList, TerminalDb):
 
     # (*) Re-entry preparation
     reentry_prerpation    = generator.do_reentry_preparation(esms.pre_context_sm_id_list,
-                                                             TerminalDb)
+                                                             OnAfterMatchCode)
 
     # (*) State Router
     #     (Something that can goto a state address by an given integer value)

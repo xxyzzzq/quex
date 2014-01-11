@@ -2,6 +2,8 @@ from   quex.engine.generator.code.base import SourceRef, CodeFragment
 from   quex.blackboard import Lng
 from   quex.engine.tools import typed
 
+from   copy import copy
+
 
 class CodeUser(CodeFragment):
     """User code as it is taken from some input file. It contains:
@@ -9,52 +11,55 @@ class CodeUser(CodeFragment):
           .get_code() -- list of strings or text formatting instructions
                          (including possibly annotations about its origin)
           .sr         -- the source reference where it was taken from
+          .mode_name  -- Mode where the code was defined
     """
     def __init__(self, Code, SourceReference):
         CodeFragment.__init__(self, Code, SourceReference)
-        self.mode_name      = ""
 
     def clone(self):
         result = CodeUser(deepcopy(self.get_code()), self.sr)
-        result.mode_name      = self.mode_name
-        return result
-
-    def get_code(self):
-        """Returns a list of strings and/or integers that are the 'core code'. 
-        Integers represent indentation levels. Source code is adorned with 
-        a source reference.
-        """
-        code = CodeFragment.get_code(self)
-        if len(code) == 0: return []
-
-        result      = [ Lng.SOURCE_REFERENCE_BEGIN(self.sr)]
-        result.extend(code)
-        result.append("\n%s" % Lng.SOURCE_REFERENCE_END())
         return result
 
 CodeUser_NULL = CodeUser([], SourceRef())
 
 class CodeTerminal(CodeFragment):
-    __slots__ = ("__requires_lexeme_terminating_zero_f", "__requires_lexeme_begin_f")
-    def __init__(self, Code, LexemeRelevanceF=False):
+    __slots__ = ("__requires_lexeme_terminating_zero_f", "__requires_lexeme_begin_f", "__pure_code")
+
+    @typed(LexemeRelevanceF=bool, LexemeTerminatingZeroF=bool, LexemeBeginF=bool)
+    def __init__(self, Code, LexemeRelevanceF=False, PureCode=None, 
+                 LexemeTerminatingZeroF=False, LexemeBeginF=False):
         CodeFragment.__init__(self, Code)
         if LexemeRelevanceF:
-            self.__requires_lexeme_terminating_zero_f = self.contains_string(Lng.Match_Lexeme) 
-            self.__requires_lexeme_begin_f            =    self.__requires_lexeme_terminating_zero_f \
-                                                        or self.contains_string(Lng.Match_LexemeBegin)
+            self.__requires_lexeme_terminating_zero_f = None
+            self.__requires_lexeme_begin_f            = None
         else:
-            self.__requires_lexeme_terminating_zero_f = False
-            self.__requires_lexeme_begin_f            = False
+            self.__requires_lexeme_terminating_zero_f = LexemeTerminatingZeroF
+            self.__requires_lexeme_begin_f            = LexemeBeginF
 
-    def requires_lexeme_begin_f(self):            return self.__requires_lexeme_begin_f
-    def requires_lexeme_terminating_zero_f(self): return self.__requires_lexeme_terminating_zero_f
+        if PureCode is not None: self.__pure_code = PureCode
+        else:                    self.__pure_code = Code
+
+    def requires_lexeme_begin_f(self):            
+        if self.__requires_lexeme_begin_f is None:
+            self.__requires_lexeme_begin_f =    self.requires_lexeme_terminating_zero_f() \
+                                             or self.contains_string(Lng.Match_LexemeBegin)
+        return self.__requires_lexeme_begin_f
+
+    def requires_lexeme_terminating_zero_f(self): 
+        if self.__requires_lexeme_terminating_zero_f is None:
+            self.__requires_lexeme_terminating_zero_f = self.contains_string(Lng.Match_Lexeme) 
+        return self.__requires_lexeme_terminating_zero_f
+
+    def get_pure_code(self):
+        return self.__pure_code
 
 CodeTerminal_NULL = CodeTerminal([])
 
 class CodeTerminalOnMatch(CodeTerminal):
     @typed(Code=CodeFragment)
     def __init__(self, CodeFrag):
-        code                = CodeFrag.get_code() # Prepares source line references
-        self.mode_name      = CodeFrag.mode_name
+        code           = CodeFrag.get_code() 
+        self.mode_name = CodeFrag.sr.mode_name
         CodeTerminal.__init__(self, code, LexemeRelevanceF=True)
+
     

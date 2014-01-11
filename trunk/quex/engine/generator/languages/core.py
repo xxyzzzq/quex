@@ -12,32 +12,29 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-import quex.engine.generator.languages.cpp        as     cpp
-from   quex.engine.generator.code.base            import SourceRef
-from   quex.engine.analyzer.door_id_address_label import Label, \
-                                                         DoorID, \
-                                                        dial_db, \
-                                                        get_plain_strings
-from   quex.blackboard                           import setup as Setup, \
-                                                        Lng, \
-                                                        E_StateIndices,  \
-                                                        E_IncidenceIDs, \
-                                                        E_InputActions,  \
-                                                        E_TransitionN,   \
-                                                        E_PreContextIDs, \
-                                                        E_DoorIdIndex, \
-                                                        E_Commands
+import quex.engine.generator.languages.cpp               as     cpp
+from   quex.engine.generator.code.base                   import SourceRef
 from   quex.engine.analyzer.state.core                   import AnalyzerState
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-
-from   quex.engine.misc.string_handling import blue_print
-from   quex.engine.misc.file_in import open_file_or_die, \
-                                       write_safely_and_close
+from   quex.engine.analyzer.door_id_address_label        import DoorID, \
+                                                                dial_db, \
+                                                                get_plain_strings
+from   quex.engine.misc.string_handling                  import blue_print
+from   quex.engine.misc.file_in                          import open_file_or_die, \
+                                                                write_safely_and_close
 from   quex.engine.tools import typed, \
                                 none_isinstance
+from   quex.blackboard   import setup as Setup, \
+                                Lng, \
+                                E_StateIndices,  \
+                                E_IncidenceIDs, \
+                                E_InputActions,  \
+                                E_TransitionN,   \
+                                E_PreContextIDs, \
+                                E_DoorIdIndex, \
+                                E_Commands
 from   copy      import copy
-
 from   itertools import islice
 from   math      import log
 import re
@@ -177,24 +174,24 @@ class Lng_Cpp(dict):
         return "".join("} /* Closing Namespace '%s' */\n" % name for name in NameList)
     def NAMESPACE_REFERENCE(self, NameList):
         return reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::"
-    def COMMENT(self, txt, Comment):
+    def COMMENT(self, Comment):
         """Eliminated Comment Terminating character sequence from 'Comment'
            and comment it into a single line comment.
            For compatibility with C89, we use Slash-Star comments only, no '//'.
         """
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH")
-        txt.append("/* %s */\n" % comment)
-    def ML_COMMENT(self, txt, Comment, IndentN=4):
+        return "/* %s */\n" % comment
+
+    def ML_COMMENT(self, Comment, IndentN=4):
         indent_str = " " * IndentN
         comment = Comment.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n%s * " % indent_str)
-        txt.append("%s/* %s\n%s */" % (indent_str, comment, indent_str))
+        return "%s/* %s\n%s */\n" % (indent_str, comment, indent_str)
 
     def COMMENT_STATE_MACHINE(self, txt, SM):
-        self.ML_COMMENT(txt, 
+        txt.append(self.ML_COMMENT(
                         "BEGIN: STATE MACHINE\n"        + \
                         SM.get_string(NormalizeF=False) + \
-                        "END: STATE MACHINE") 
-        txt.append("\n")
+                        "END: STATE MACHINE")) 
 
     def DEFAULT_COUNTER_FUNCTION_NAME(self, ModeName):
         return "QUEX_NAME(%s_counter)" % ModeName
@@ -216,6 +213,10 @@ class Lng_Cpp(dict):
                "#    define __QUEX_COUNT_VOID(ME, BEGIN, END) /* empty */\n" \
                "#endif\n"                                                    \
                % FunctionName
+
+    def LABEL(self, DoorId):
+        label = dial_db.get_label_by_door_id(DoorId)
+        return "%s:" % label
 
     @typed(TypeStr=(str,unicode), MaxTypeNameL=(int,long), VariableName=(str,unicode))
     def CLASS_MEMBER_DEFINITION(self, TypeStr, MaxTypeNameL, VariableName):
@@ -369,7 +370,7 @@ class Lng_Cpp(dict):
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
             iid = terminal.incidence_id()
             text.append(
-               "%s: " % Label.incidence(terminal.incidence_id()) \
+               "%s " % Lng.LABEL(DoorID.incidence(terminal.incidence_id())) \
                + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
             )
             code = terminal.code(TheAnalyzer)
@@ -385,27 +386,14 @@ class Lng_Cpp(dict):
         return cpp._analyzer_function(ModeName, Setup, VariableDefs, 
                                       FunctionBody, ModeNameList)
 
-    def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchTerminal):
-        return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchTerminal)
+    def REENTRY_PREPARATION(self, PreConditionIDList, OnAfterMatchCode):
+        return cpp.reentry_preparation(self, PreConditionIDList, OnAfterMatchCode)
 
     def HEADER_DEFINITIONS(self):
         return blue_print(cpp_header_definition_str, [
-                 ("$$CONTINUE_WITH_ON_AFTER_MATCH$$", Label.continue_with_on_after_match()),
-                 ("$$RETURN_WITH_ON_AFTER_MATCH$$",   Label.return_with_on_after_match()),
-               ])
-
-    def LABEL_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
-        if EntryN is None: return "_%i_shared_entry:\n"    % TemplateIndex
-        else:              return "_%i_shared_entry_%i:\n" % (TemplateIndex, EntryN)
-
-    def LABEL_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
-        return "%s:" % self.LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(StateMachineID) 
-
-    def LABEL_NAME_BACKWARD_INPUT_POSITION_DETECTOR(self, StateMachineID):
-        return "BIP_DETECTOR_%i" % StateMachineID
-
-    def LABEL_NAME_BACKWARD_INPUT_POSITION_RETURN(self, StateMachineID):
-        return "BIP_DETECTOR_%i_DONE" % StateMachineID
+            ("$$CONTINUE_WITH_ON_AFTER_MATCH$$", dial_db.get_label_by_door_id(DoorID.continue_with_on_after_match())),
+            ("$$RETURN_WITH_ON_AFTER_MATCH$$",   dial_db.get_label_by_door_id(DoorID.return_with_on_after_match())),
+        ])
 
     def GOTO(self, TargetStateIndex, FromStateIndex=None):
         # Only for normal 'forward analysis' the from state is of interest.
@@ -428,13 +416,6 @@ class Lng_Cpp(dict):
         # Because, only during forward analysis some actions depend on the 
         # state from where we come.
         return "goto %s;" % dial_db.get_label_by_door_id(DoorId, GotoedF=True)
-
-    def GOTO_DROP_OUT(self, StateIndex):
-        return "goto %s;" % Label.drop_out(StateIndex, GotoedF=True)
-
-    def GOTO_SHARED_ENTRY(self, TemplateIndex, EntryN=None):
-        if EntryN is None: return "goto _%i_shared_entry;"    % TemplateIndex
-        else:              return "goto _%i_shared_entry_%i;" % (TemplateIndex, EntryN)
 
     def GRID_STEP(self, VariableName, TypeName, GridWidth, StepN=1, IfMacro=None):
         """A grid step is an addition which depends on the current value 
@@ -576,6 +557,13 @@ class Lng_Cpp(dict):
         else:
             assert False
 
+    def PRE_CONTEXT_RESET(self, PreConditionIDList):
+        if PreConditionIDList is None: return ""
+        return "".join([
+            "    %s\n" % Lng.ASSIGN("pre_context_%s_fulfilled_f" % pre_context_id, 0)
+            for pre_context_id in PreConditionIDList
+        ])
+
     def ASSIGN(self, X, Y):
         return "%s = %s;" % (X, Y)
 
@@ -710,9 +698,8 @@ class Lng_Cpp(dict):
         result.extend(BeforeReloadAction)
         result.append(cpp_reload_forward_str[2])
         result.extend(AfterReloadAction)
-        result.append(
-           cpp_reload_forward_str[3].replace("$$STATE_ROUTER$$",  
-                                             Label.global_state_router(GotoedF=True)))
+        result.append(cpp_reload_forward_str[3])
+        dial_db.mark_door_id_as_gotoed(DoorID.global_state_router())
 
         return result
 

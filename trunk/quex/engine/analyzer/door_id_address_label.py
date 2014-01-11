@@ -191,9 +191,19 @@ class DialDB:
         if sub_db is None: return -1
         return max(sub_db.iterkeys()) # There must be at least one element!
 
+    def __debug_address_generation(self, DoorId, Address, *SuspectAdrList):
+        """Prints the callstack if an address of SuspectAdrList is generated.
+        """
+        if Address not in SuspectAdrList:
+            return
+        print "#DoorID %s <-> Address %s" % (DoorId, Address)
+        print_callstack()
+
     def register_door_id(self, DoorId):
         self.__address_i += 1
         address_label_pair   = AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
+
+        ## self.__debug_address_generation(DoorId, self.__address_i, 390, 479, 480, 385, 481, 416)
 
         self.__d2la[DoorId] = address_label_pair
 
@@ -288,31 +298,6 @@ class DialDB:
 
 
 dial_db = DialDB()
-
-
-class Label:
-    """This class shall be a short-hand for 'get_label_by_door_id' of global
-       labels. It was designed to provide the same interface as the 'DoorID.global_*' 
-       functions.
-    """
-    @staticmethod
-    def drop_out(StateIndex, GotoedF=False):         return dial_db.get_label_by_door_id(DoorID.drop_out(StateIndex), GotoedF)
-    @staticmethod                        
-    def transition_block(StateIndex, GotoedF=False): return dial_db.get_label_by_door_id(DoorID.transition_block(StateIndex), GotoedF)
-    @staticmethod
-    def global_state_router(GotoedF=False):          return dial_db.get_label_by_door_id(DoorID.global_state_router(), GotoedF)
-    @staticmethod
-    def incidence(IncidenceId, GotoedF=False):        return dial_db.get_label_by_door_id(DoorID.incidence(IncidenceId), GotoedF)
-    @staticmethod                        
-    def state_machine_entry(SM_Id, GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.state_machine_entry(SM_Id), GotoedF)
-    @staticmethod
-    def global_reentry(GotoedF=False):               return dial_db.get_label_by_door_id(DoorID.global_reentry(), GotoedF)
-    @staticmethod
-    def return_with_on_after_match(GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.return_with_on_after_match(), GotoedF)
-    @staticmethod
-    def continue_with_on_after_match(GotoedF=False):   return dial_db.get_label_by_door_id(DoorID.continue_with_on_after_match(), GotoedF)
-    @staticmethod
-    def continue_without_on_after_match(GotoedF=False): return dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match(), GotoedF)
 
 class DoorID_Scheme(tuple):
     """A TargetByStateKey maps from a index, i.e. a state_key to a particular

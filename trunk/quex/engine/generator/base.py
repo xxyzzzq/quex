@@ -131,8 +131,10 @@ def do_main(SM, BipdEntryDoorIdDb):
     position_register_n = len(set(analyzer.position_register_map.itervalues()))
     # Position registers
     if position_register_n == 0:
-        variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
+        if not Setup.buffer_based_analyzis_f:
+            # Not 'buffer-only-mode' => reload requires at least dummy parameters.
+            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
     else:
         variable_db.require_array("position", ElementN = position_register_n,
                                   Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
@@ -229,7 +231,6 @@ def do_variable_definitions():
 
 def do_state_machine(sm, EngineType): 
     assert len(sm.get_orphaned_state_index_list()) == 0
-    
 
     txt = []
     # -- [optional] comment state machine transitions 
@@ -238,7 +239,9 @@ def do_state_machine(sm, EngineType):
 
     # -- implement the state machine itself
     analyzer = analyzer_generator.do(sm, EngineType)
-    return do_analyzer(analyzer), analyzer
+    sm_text  = do_analyzer(analyzer)
+    txt.extend(sm_text)
+    return txt, analyzer
 
 def do_analyzer(analyzer): 
     
@@ -253,10 +256,8 @@ def do_analyzer(analyzer):
 def do_terminals(TerminalList, TheAnalyzer):
     return Lng.TERMINAL_CODE(TerminalList, TheAnalyzer)
 
-def do_reentry_preparation(PreContextSmIdList, TerminalDb):
-    
-    return Lng.REENTRY_PREPARATION(PreContextSmIdList, 
-                                  TerminalDb.get(E_IncidenceIDs.AFTER_MATCH))
+def do_reentry_preparation(PreContextSmIdList, OnAfterMatchCode):
+    return Lng.REENTRY_PREPARATION(PreContextSmIdList, OnAfterMatchCode)
 
 @typed(CharacterSet=(None, NumberSet), ReloadF=bool, CheckLexemeEndF=bool, AfterExitDoorId=DoorID)
 def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None, EngineType=None):

@@ -1,7 +1,8 @@
-from   quex.engine.analyzer.door_id_address_label  import Label, \
-                                                          DoorID, \
+from   quex.engine.analyzer.door_id_address_label  import DoorID, \
                                                           dial_db
-from   operator                                 import itemgetter
+from   quex.blackboard import Lng
+
+from   operator import itemgetter
 
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
@@ -12,7 +13,7 @@ def do(StateRouterInfoList):
 
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
-             "%s:\n" % Label.global_state_router()
+             "%s\n" % Lng.LABEL(DoorID.global_state_router()) 
 
     code   = __get_code(StateRouterInfoList)
 

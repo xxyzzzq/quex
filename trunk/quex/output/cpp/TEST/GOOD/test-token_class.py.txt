@@ -53,72 +53,72 @@ public:
     virtual ~MeinToken();
 
 
-#   line 3 "a string"
-    std::string      my_name;
 #   line 4 "a string"
+    std::string      my_name;
+#   line 5 "a string"
     std::vector<int> numbers;
-/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
 
     union {
 
-#   line 15 "a string"
+#   line 16 "a string"
         uint32_t         stream_position;
         struct {
 
-#   line 13 "a string"
+#   line 14 "a string"
             int16_t          y;
-#   line 12 "a string"
+#   line 13 "a string"
             int16_t          x;
         } data_1;
         struct {
 
-#   line 9 "a string"
+#   line 10 "a string"
             short            index;
-#   line 8 "a string"
+#   line 9 "a string"
             float            number;
         } data_0;
 
-#   line 16 "a string"
+#   line 17 "a string"
         uint16_t         who_is_that;
     } content;
 
-/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
 
 public:
 
-#   line 9 "a string"
+#   line 10 "a string"
     short            get_index() const                           { return content.data_0.index; }
-#   line 9 "a string"
+#   line 10 "a string"
     void             set_index(short Value)                      { content.data_0.index = Value; }
-#   line 3 "a string"
+#   line 4 "a string"
     std::string      get_my_name() const                         { return my_name; }
-#   line 3 "a string"
+#   line 4 "a string"
     void             set_my_name(std::string& Value)             { my_name = Value; }
-#   line 8 "a string"
+#   line 9 "a string"
     float            get_number() const                          { return content.data_0.number; }
-#   line 8 "a string"
+#   line 9 "a string"
     void             set_number(float Value)                     { content.data_0.number = Value; }
-#   line 4 "a string"
+#   line 5 "a string"
     std::vector<int> get_numbers() const                         { return numbers; }
-#   line 4 "a string"
+#   line 5 "a string"
     void             set_numbers(std::vector<int>& Value)        { numbers = Value; }
-#   line 16 "a string"
+#   line 17 "a string"
     uint16_t         get_who_is_that() const                     { return content.who_is_that; }
-#   line 16 "a string"
-    void             set_who_is_that(uint16_t& Value)            { content.who_is_that = Value; }
-#   line 12 "a string"
+#   line 17 "a string"
+    void             set_who_is_that(uint16_t Value)             { content.who_is_that = Value; }
+#   line 13 "a string"
     int16_t          get_x() const                               { return content.data_1.x; }
-#   line 12 "a string"
-    void             set_x(int16_t& Value)                       { content.data_1.x = Value; }
 #   line 13 "a string"
+    void             set_x(int16_t Value)                        { content.data_1.x = Value; }
+#   line 14 "a string"
     int16_t          get_y() const                               { return content.data_1.y; }
-#   line 13 "a string"
-    void             set_y(int16_t& Value)                       { content.data_1.y = Value; }
-#   line 15 "a string"
+#   line 14 "a string"
+    void             set_y(int16_t Value)                        { content.data_1.y = Value; }
+#   line 16 "a string"
     uint32_t         get_stream_position() const                 { return content.stream_position; }
-#   line 15 "a string"
-    void             set_stream_position(uint32_t& Value)        { content.stream_position = Value; }
-/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
+#   line 16 "a string"
+    void             set_stream_position(uint32_t Value)         { content.stream_position = Value; }
+<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>
 
     void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
     void set(const QUEX_TYPE_TOKEN_ID ID, const std::string& Value0)

@@ -128,7 +128,8 @@ def get_transition_function(tm, Codec):
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
         tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
-        tm_txt.append("%s return (int)-1;\n" % address.Label.incidence(E_IncidenceIDs.MATCH_FAILURE))
+        label  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
+        tm_txt.append("%s return (int)-1;\n" % label)
         tm_txt = Lng.GET_PLAIN_STRINGS(tm_txt)
         LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
 
@@ -161,7 +162,7 @@ def get_transition_function(tm, Codec):
 
 
     # reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
-    drop_out = "%s: return (int)-1;\n" % address.Label.drop_out(-1)
+    drop_out = "%s return (int)-1;\n" % Lng.LABEL(DoorID.drop_out(-1))
 
     txt = []
     txt.extend(header)
