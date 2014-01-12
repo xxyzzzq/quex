@@ -1,4 +1,4 @@
-from   quex.engine.generator.code.base import SourceRef, CodeFragment
+from   quex.engine.generator.code.base import SourceRef, CodeFragment, SourceRef_VOID
 from   quex.blackboard import Lng
 from   quex.engine.tools import typed
 
@@ -25,9 +25,12 @@ CodeUser_NULL = CodeUser([], SourceRef())
 class CodeTerminal(CodeFragment):
     __slots__ = ("__requires_lexeme_terminating_zero_f", "__requires_lexeme_begin_f", "__pure_code")
 
-    @typed(LexemeRelevanceF=bool, LexemeTerminatingZeroF=bool, LexemeBeginF=bool)
-    def __init__(self, Code, LexemeRelevanceF=False, PureCode=None, 
-                 LexemeTerminatingZeroF=False, LexemeBeginF=False):
+    @typed(Code=list, SourceReference=SourceRef, 
+           LexemeRelevanceF=bool, LexemeTerminatingZeroF=bool, LexemeBeginF=bool,
+           PureCode=list)
+    def __init__(self, Code, SourceReference=SourceRef_VOID, 
+                 LexemeRelevanceF=False, LexemeTerminatingZeroF=False, LexemeBeginF=False,
+                 PureCode=None):
         CodeFragment.__init__(self, Code)
         if LexemeRelevanceF:
             self.__requires_lexeme_terminating_zero_f = None

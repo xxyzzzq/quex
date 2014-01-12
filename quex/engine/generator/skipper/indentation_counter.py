@@ -1,17 +1,17 @@
-from   quex.blackboard                              import setup as Setup, \
-                                                           E_StateIndices
-import quex.blackboard                              as     blackboard
 import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            LexemeStartToReferenceP
+from   quex.engine.analyzer.door_id_address_label   import dial_db
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.misc.string_handling             import blue_print
+from   quex.blackboard                              import Lng, \
+                                                           E_StateIndices
+import quex.blackboard                              as     blackboard
 
 def do(Data, Mode=None):
     """________________________________________________________________________
@@ -72,7 +72,7 @@ def do(Data, Mode=None):
     epilog = blue_print(epilog_txt, [
         ["$$ADDRESS$$",                 counter_adr_str], 
         ["$$END_PROCEDURE$$",           "".join(end_procedure)],
-        ["$$GOTO_REENTRY$$",            Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry())],
+        ["$$GOTO_REENTRY$$",            Lng.GOTO(DoorID.global_reentry())],
         ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
     ])
 
@@ -268,7 +268,8 @@ def __get_transition_block(IndentationSetup, CounterAdr):
         # Count indentation/column at end of run;
         # simply: current position - reference_p
         character_set  = IndentationSetup.space_db.values()[0]
-        extend(transition_map, character_set, TransitionCode(Lng.GOTO_BY_DOOR_ID(CounterDoorId)))
+        counter_door_id = dial_db.get_door_id_by_address(CounterAdr)
+        extend(transition_map, character_set, TransitionCode(Lng.GOTO(counter_door_id)))
 
     else:
         # Add the space counters

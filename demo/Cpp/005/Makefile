@@ -46,7 +46,7 @@ lexer:          example.o EasyLexer.o
 
 EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine EasyLexer \
-		 --token-policy single
+		 --token-policy single --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	

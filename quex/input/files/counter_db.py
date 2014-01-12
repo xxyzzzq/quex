@@ -258,7 +258,7 @@ class CounterCoderData:
                 else:        door_id = self.door_id_after_exit # Plain exit
                 text.append(Lng.COMMAND(GotoDoorIdIfInputPLexemeEnd(door_id)))
 
-            text.append(Lng.GOTO_BY_DOOR_ID(loop_door_id))
+            text.append(Lng.GOTO(loop_door_id))
             name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
             return Terminal(incidence_id, CodeTerminal(text), name)
 
@@ -474,5 +474,6 @@ class CounterCoderData:
             state.set_acceptance()
             state.mark_self_as_origin(exit_incidence_id, state_index)
 
+        print "#sm:", sm
         return sm, map_cli_to_incidence_id, exit_incidence_id
 

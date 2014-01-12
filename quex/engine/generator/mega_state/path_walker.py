@@ -116,12 +116,12 @@ def framework(txt, PWState, TheAnalyzer):
         #           else:                                 goto TerminalDoor
         #
         # -- "goto CommonPathWalkerDoor"
-        goto_next_door = "            %s\n" % Lng.GOTO_BY_DOOR_ID(PWState.uniform_door_id)
+        goto_next_door = "            %s\n" % Lng.GOTO(PWState.uniform_door_id)
 
         # -- "goto TerminalDoor"
         if PWState.uniform_terminal_door_id is not None:
             # All path have same terminal state and enter it at the same door
-            goto_terminal_door   = "            %s\n" % Lng.GOTO_BY_DOOR_ID(PWState.uniform_terminal_door_id)
+            goto_terminal_door   = "            %s\n" % Lng.GOTO(PWState.uniform_terminal_door_id)
         else:
             # The terminals of the paths are different
             # 
@@ -138,7 +138,7 @@ def framework(txt, PWState, TheAnalyzer):
                 offset += len(door_id_sequence) + 1
                 tmp +=  "            %s"  % Lng.IF("path_iterator", "==", "&path_walker_%i_path_base[%s]" %  \
                                                           (PWState.index, offset - 1), FirstF=(path_id == 0))                                  \
-                      + "                %s\n" % Lng.GOTO_BY_DOOR_ID(door_id_sequence[-1]) 
+                      + "                %s\n" % Lng.GOTO(door_id_sequence[-1]) 
             tmp += "            %s"       % Lng.ELSE                                  
             tmp += "                %s\n" % Lng.UNREACHABLE
             tmp += "            %s\n"     % Lng.END_IF()                                  

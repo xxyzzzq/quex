@@ -164,10 +164,26 @@ class Lng_Cpp(dict):
                                         self.INPUT_P_DEREFERENCE(-1))
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
-        norm_file_name = Setup.get_file_reference(SourceReference.file_name) 
-        return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
-    def SOURCE_REFERENCE_END(self):
-        return '\n<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
+        """Return a code fragment that returns a source reference pragma. If 
+        the source reference is void, no pragma is required. 
+        """
+        if not SourceReference.is_void(): 
+            norm_file_name = Setup.get_file_reference(SourceReference.file_name) 
+            return '\n#   line %i "%s"\n' % (SourceReference.line_n, norm_file_name) 
+        else:
+            return ""
+
+    def SOURCE_REFERENCE_END(self, SourceReference=None):
+        """Return a code fragment that returns a source reference pragma which
+        tells about the file where the code has been pasted. If the SourceReference
+        is provided, it may be checked wether the 'return pragma' is necessary.
+        If not, an empty string is returned.
+        """
+        if SourceReference is None or not SourceReference.is_void(): 
+            return '\n<<<<LINE_PRAGMA_WITH_CURRENT_LINE_N_AND_FILE_NAME>>>>\n'
+        else:
+            return ""
+
     def NAMESPACE_OPEN(self, NameList):
         return "".join(("    " * i + "namespace %s {\n" % name) for i, name in enumerate(NameList))
     def NAMESPACE_CLOSE(self, NameList):
@@ -214,10 +230,6 @@ class Lng_Cpp(dict):
                "#endif\n"                                                    \
                % FunctionName
 
-    def LABEL(self, DoorId):
-        label = dial_db.get_label_by_door_id(DoorId)
-        return "%s:" % label
-
     @typed(TypeStr=(str,unicode), MaxTypeNameL=(int,long), VariableName=(str,unicode))
     def CLASS_MEMBER_DEFINITION(self, TypeStr, MaxTypeNameL, VariableName):
         return "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName)
@@ -252,10 +264,10 @@ class Lng_Cpp(dict):
                    % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk) 
 
         elif Cmd.id == E_Commands.GotoDoorId:
-            return self.GOTO_BY_DOOR_ID(Cmd.content.door_id)
+            return self.GOTO(Cmd.content.door_id)
 
         elif Cmd.id == E_Commands.GotoDoorIdIfInputPLexemeEnd:
-            return "if( %s == LexemeEnd ) %s;\n" % (self.INPUT_P(), self.GOTO_BY_DOOR_ID(Cmd.content.door_id))
+            return "if( %s == LexemeEnd ) %s;\n" % (self.INPUT_P(), self.GOTO(Cmd.content.door_id))
 
         elif Cmd.id == E_Commands.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
@@ -281,7 +293,7 @@ class Lng_Cpp(dict):
             return "".join(txt)
 
         ##elif Cmd.id == E_Commands.GotoDoorId:
-        ##    txt.append(self.GOTO_BY_DOOR_ID(Cmd.content.door_id))
+        ##    txt.append(self.GOTO(Cmd.content.door_id))
 
         elif Cmd.id == E_Commands.LineCountAddWithReferenceP:
             txt = []
@@ -395,27 +407,18 @@ class Lng_Cpp(dict):
             ("$$RETURN_WITH_ON_AFTER_MATCH$$",   dial_db.get_label_by_door_id(DoorID.return_with_on_after_match())),
         ])
 
-    def GOTO(self, TargetStateIndex, FromStateIndex=None):
-        # Only for normal 'forward analysis' the from state is of interest.
-        # Because, only during forward analysis some actions depend on the 
-        # state from where we come.
-        assert False, "USE 'GOTO_ADDRESS' or 'GOTO_BY_DOOR_ID'"
-        result = "goto %s;" % self.__label_name(TargetStateIndex, FromStateIndex)
-        return result
+    @typed(DoorId=DoorID)
+    def LABEL(self, DoorId):
+        return "%s:" % dial_db.get_label_by_door_id(DoorId)
+
+    @typed(DoorId=DoorID)
+    def GOTO(self, DoorId):
+        if DoorId.last_acceptance_f():
+             return "QUEX_GOTO_TERMINAL(last_acceptance);"
+        return "goto %s;" % dial_db.get_label_by_door_id(DoorId, GotoedF=True)
 
     def GOTO_BY_VARIABLE(self, VariableName):
         return "QUEX_GOTO_STATE(%s);" % VariableName 
-
-    def GOTO_BY_DOOR_ID(self, DoorId):
-        assert DoorId.__class__.__name__ == "DoorID"
-
-        if     DoorId.door_index  == E_DoorIdIndex.ACCEPTANCE \
-           and DoorId.state_index == E_IncidenceIDs.VOID:
-             return "QUEX_GOTO_TERMINAL(last_acceptance);"
-        # Only for normal 'forward analysis' the from state is of interest.
-        # Because, only during forward analysis some actions depend on the 
-        # state from where we come.
-        return "goto %s;" % dial_db.get_label_by_door_id(DoorId, GotoedF=True)
 
     def GRID_STEP(self, VariableName, TypeName, GridWidth, StepN=1, IfMacro=None):
         """A grid step is an addition which depends on the current value 
