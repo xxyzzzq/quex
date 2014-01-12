@@ -83,7 +83,7 @@ class TransitionCodeByDoorId(TransitionCode):
         self.__door_id = DoorId
     def code(self):       
         
-        return Lng.GOTO_BY_DOOR_ID(self.__door_id)
+        return Lng.GOTO(self.__door_id)
     def drop_out_f(self): 
         return self.__door_id.drop_out_f()
     def __eq__(self, Other):

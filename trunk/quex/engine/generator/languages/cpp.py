@@ -215,11 +215,11 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "    /* Following labels are referenced in macros. It cannot be detected\n"
         "     * whether the macros are applied in user code or not. To avoid compiler.\n"
         "     * warnings of unused labels, they are referenced in unreachable code. */\n"
-        "    %s /* in RETURN                */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.return_with_on_after_match()),
-        "    %s /* in CONTINUE              */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match()),
-        "    %s /* in CONTINUE and skippers */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match()),
+        "    %s /* in RETURN                */\n" % Lng.GOTO(DoorID.return_with_on_after_match()),
+        "    %s /* in CONTINUE              */\n" % Lng.GOTO(DoorID.continue_with_on_after_match()),
+        "    %s /* in CONTINUE and skippers */\n" % Lng.GOTO(DoorID.continue_without_on_after_match()),
         "#   if ! defined(QUEX_OPTION_COMPUTED_GOTOS)\n",
-        "    %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_state_router()),
+        "    %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO(DoorID.global_state_router()),
         "#   endif\n",
         "\n",
         "    /* Prevent compiler warning 'unused variable'. */\n",
@@ -342,7 +342,7 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
         __return_if_mode_changed, "\n",
         #
         unset_pre_context_flags_str,
-        "\n%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry()), 
+        "\n%s\n" % Lng.GOTO(DoorID.global_reentry()), 
     ]
 
     return txt

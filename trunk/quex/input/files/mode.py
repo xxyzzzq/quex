@@ -657,12 +657,12 @@ class Mode:
             "counter_db":    CounterDb, 
             "character_set": character_set,
         }
-        terminal         = TerminalGenerated(skip_character_set.do, data)
+        terminal         = TerminalGenerated(skip_character_set.do, data, Name="Character Set Skipper")
         terminal_door_id = DoorID.incidence(terminal.incidence_id())
         # Counting actions are added to the terminal automatically by the
         # terminal_factory. The only thing that remains for each sub-terminal:
         # 'goto skipper'.
-        code             = CodeTerminal(Lng.GOTO_BY_DOOR_ID(terminal_door_id))
+        code             = CodeTerminal([Lng.GOTO(terminal_door_id)])
         ccd              = CounterCoderData(CounterDb, character_set)
         for cli, cmd_info in ccd.count_command_map.iteritems():
             sub_incidence_id = sm_index.get_state_machine_id()
@@ -677,6 +677,7 @@ class Mode:
             sub_terminal     = terminal_factory.do(E_TerminalType.PLAIN, 
                                                    sub_incidence_id, 
                                                    code, pattern)
+            sub_terminal.set_name("Entry to 'skip': %s" % sub_terminal.name())
             ppt_list.append(PPT(priority, pattern, sub_terminal))
 
         return terminal
@@ -684,14 +685,14 @@ class Mode:
     def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppt_list, MHI, SkipRangeSetupList,  
-                                       skip_range.do)
+                                       skip_range.do, "skip range")
 
     def __prepare_skip_nested_range(self, ppt_list, SkipNestedRangeSetupList, MHI):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppt_list, MHI, SkipNestedRangeSetupList, 
-                                       skip_nested_range.do)
+                                       skip_nested_range.do, "skip nested range")
 
-    def __prepare_skip_range_core(self, ppt_list, MHI, SrSetup, CodeGeneratorFunction):
+    def __prepare_skip_range_core(self, ppt_list, MHI, SrSetup, CodeGeneratorFunction, SkipperName):
         """MHI = Mode hierarchie index."""
 
         if SrSetup is None or len(SrSetup) == 0:
@@ -704,7 +705,7 @@ class Mode:
 
             priority     = PatternPriority(MHI, i)
             pattern      = deepcopy(my_data["opener_pattern"])
-            terminal     = TerminalGenerated(CodeGeneratorFunction, my_data)
+            terminal     = TerminalGenerated(CodeGeneratorFunction, my_data, Name=SkipperName)
             pattern.set_incidence_id(terminal.incidence_id())
             ppt_list.append(PPT(priority, pattern, terminal))
 
@@ -753,7 +754,7 @@ class Mode:
             priority = PatternPriority(MHI, 0)
             pattern  = Pattern(sm, IncidenceId=E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE, 
                                PatternStr=pattern_str)
-            code     = CodeTerminal([Lng.GOTO_BY_DOOR_ID(DoorID.global_reentry())])
+            code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])
             terminal = terminal_factory.do(E_TerminalType.PLAIN, incidence_id, code)
             ppt_list.append(PPT(priority, pattern, terminal))
 

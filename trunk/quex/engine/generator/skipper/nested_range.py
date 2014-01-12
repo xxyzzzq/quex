@@ -163,13 +163,13 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     closer_length = len(CloserSequence)
 
     if not Mode.match_indentation_counter_newline_pattern(CloserSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match())
+        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.continue_without_on_after_match())
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
+        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
 
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
@@ -211,11 +211,11 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$ENTRY$$",                          Lng.LABEL(skipper_door_id)],
                    ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
                    ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
-                   ["$$GOTO_RELOAD$$",                    Lng.GOTO_BY_DOOR_ID(reload_door_id)],
+                   ["$$GOTO_RELOAD$$",                    Lng.GOTO(reload_door_id)],
                    ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.
-                   ["$$GOTO_ENTRY$$",                     Lng.GOTO_BY_DOOR_ID(skipper_door_id)],
+                   ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
                    ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                    ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
                    #

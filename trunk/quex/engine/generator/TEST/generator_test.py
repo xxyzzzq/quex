@@ -7,7 +7,7 @@ from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.analyzer.door_id_address_label  import Label, dial_db
+from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
 from   quex.engine.generator.code.core             import CodeTerminal
@@ -366,7 +366,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         else:                         txt += "return true;\n"
 
 
-        txt += "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.continue_with_on_after_match())
+        txt += "%s\n" % Lng.GOTO(DoorID.continue_with_on_after_match())
         ## print "#", txt
         return CodeTerminal([ txt ])
     

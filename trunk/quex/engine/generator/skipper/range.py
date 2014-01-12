@@ -53,9 +53,9 @@ def new_skipper(TheAnalyzer):
         result.extend([
             Lng.IF_INPUT("!=", character),
                 Lng.IF_INPUT("==", Setup.buffer_limit_code),
-                    Lng.GOTO_BY_DOOR_ID(door_id_reload_state),
+                    Lng.GOTO(door_id_reload_state),
                 Lng.ELSE(),
-                    Lng.GOTO_BY_DOOR_ID(DoorId.continue_without_on_after_match()),
+                    Lng.GOTO(DoorId.continue_without_on_after_match()),
                 Lng.ENDIF(),
             Lng.ENDIF(),
         ])
@@ -299,19 +299,19 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
             i += 1
             txt += "    %s\n"    % Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE(i-1))
             txt += "    %s"      % Lng.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         %s" % Lng.GOTO_BY_DOOR_ID(skipper_door_id)
+            txt += "         %s" % Lng.GOTO(skipper_door_id)
             txt += "    %s"      % Lng.END_IF()
         delimiter_remainder_test_str = txt
 
     if not Mode.match_indentation_counter_newline_pattern(EndSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.continue_without_on_after_match())
+        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.continue_without_on_after_match())
 
     else:
         # If there is indentation counting involved, then the counter's terminal id must
         # be determined at this place.
         # If the ending delimiter is a subset of what the 'newline' pattern triggers 
         # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO_BY_DOOR_ID(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
+        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
 
     if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
     else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
@@ -329,7 +329,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
                            ["$$ENDIF$$",                          Lng.END_IF()],
                            ["$$ENTRY$$",                          dial_db.get_label_by_door_id(skipper_door_id)],
                            ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
-                           ["$$GOTO_ENTRY$$",                     Lng.GOTO_BY_DOOR_ID(skipper_door_id)],
+                           ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
@@ -345,7 +345,7 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_RELOAD$$",   Lng.GOTO_BY_DOOR_ID(reload_door_id)]])
+                           ["$$GOTO_RELOAD$$",   Lng.GOTO(reload_door_id)]])
 
     if reference_p_f:
         variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")

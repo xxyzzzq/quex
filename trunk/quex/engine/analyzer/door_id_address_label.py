@@ -91,6 +91,8 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     def continue_without_on_after_match(): return DoorID(0L,         E_DoorIdIndex.CONTINUE_WITHOUT_ON_AFTER_MATCH)
 
     def drop_out_f(self):                  return self.door_index == E_DoorIdIndex.DROP_OUT
+    def last_acceptance_f(self):           return     self.door_index  == E_DoorIdIndex.ACCEPTANCE \
+                                                  and self.state_index == E_IncidenceIDs.VOID
 
     def __repr__(self):
         return "DoorID(s=%s, d=%s)" % (self.state_index, self.door_index)

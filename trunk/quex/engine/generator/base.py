@@ -269,6 +269,7 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
         CharacterSet = NumberSet_All()
 
     ccd                     = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
+    print "#CharacterSet:", CharacterSet
     analyzer, terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
 
     code                    = state_machine_coder.do(analyzer)

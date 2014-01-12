@@ -23,7 +23,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
 
     if EngineType.is_BACKWARD_PRE_CONTEXT():
         txt.append(1)
-        txt.append("%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.global_end_of_pre_context_check()))
+        txt.append("%s\n" % Lng.GOTO(DoorID.global_end_of_pre_context_check()))
         return
 
     elif EngineType.is_BACKWARD_INPUT_POSITION():
@@ -32,14 +32,14 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             txt.extend([ 
                 1, '__quex_debug("pattern %i: backward input position detected\\n");\n' % incidence_id,
                 1, "%s\n\n" % Lng.INPUT_P_INCREMENT(),
-                1, "%s\n" % Lng.GOTO_BY_DOOR_ID(DoorID.incidence(incidence_id)) \
+                1, "%s\n" % Lng.GOTO(DoorID.incidence(incidence_id)) \
             ])
         return
 
     elif isinstance(DropOut, DropOutGotoDoorId):
         txt.extend([
             1, '__quex_debug("Character counting terminated.\\n");\n',
-            1, "%s\n" % Lng.GOTO_BY_DOOR_ID(DropOut.door_id) \
+            1, "%s\n" % Lng.GOTO(DropOut.door_id) \
         ])
         return
 
@@ -78,12 +78,12 @@ def position_and_goto(EngineType, X):
     if EngineType.is_FORWARD():
         bipd_entry_door_id = EngineType.bipd_entry_door_id_db.get(X.acceptance_id)
         if bipd_entry_door_id is not None:                        
-            return Lng.GOTO_BY_DOOR_ID(bipd_entry_door_id) 
+            return Lng.GOTO(bipd_entry_door_id) 
 
     # Position the input pointer and jump to terminal.
     positioning_str   = Lng.POSITIONING(X)
     if len(positioning_str) != 0: positioning_str += "\n"
-    goto_terminal_str = Lng.GOTO_BY_DOOR_ID(DoorID.incidence(X.acceptance_id))
+    goto_terminal_str = Lng.GOTO(DoorID.incidence(X.acceptance_id))
     return [
         0, positioning_str, "\n" if len(positioning_str) != 0 else "",
         0, goto_terminal_str

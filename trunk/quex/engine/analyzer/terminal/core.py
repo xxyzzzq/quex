@@ -39,6 +39,10 @@ class Terminal(Processor):
     def incidence_id(self):
         return self.__incidence_id
 
+    @typed(Name=(str,unicode))
+    def set_name(self, Name):
+        self.__name = Name
+
     def name(self):
         return self.__name
 
