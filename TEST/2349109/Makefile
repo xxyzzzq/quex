@@ -2,6 +2,8 @@ INPUT=newline-skipper-utf8 # This is overidden by a command line argument of the
 
 all: $(INPUT)
 
+# -DQUEX_OPTION_DEBUG_SHOW
+
 newline-skipper: 
 	@quex -i token.qx newline-skipper.qx -o Simple --token-policy single --debug-exception
 	@g++ -I$(QUEX_PATH) -I./ Simple*.cpp ../lexer-simply.cpp -ggdb -o lexer \

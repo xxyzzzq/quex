@@ -673,6 +673,7 @@ class NumberSet(object):
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
         if isinstance(Other, Interval): 
+            assert False, "Try to delete this code, 'Other' shall be NumberSet!"
             if Other.end   < self_begin: return False
             if Other.begin > self_end:   return False
 
@@ -682,25 +683,25 @@ class NumberSet(object):
                 elif Other.end   <= y.begin: break
                 # x.end > y.begin  (lacks condition: x.begin < y.end)
                 # y.end > x.begin  (lacks condition: y.begin < x.end)
-                if Other.begin < y.end or y.begin < Other.end: return True
+                elif Other.begin < y.end or y.begin < Other.end: return True
 
             return False
 
         Other_begin = Other.__intervals[0].begin
         Other_end   = Other.__intervals[-1].end
-        if Other_end   < self_begin: return False
-        if Other_begin > self_end:   return False
+        if   Other_end   < self_begin: return False
+        elif Other_begin > self_end:   return False
 
         for x in Other.__intervals:
-            if x.end < self_begin:   continue
-            elif x.begin > self_end: break
+            if   x.end   < self_begin: continue
+            elif x.begin > self_end:   break
             for y in self.__intervals:
                 # PASTE: Implement Interval::overlap() for performance reasons.
                 if   x.begin >= y.end:   continue
                 elif x.end   <= y.begin: break
                 # x.end > y.begin  (lacks condition: x.begin < y.end)
                 # y.end > x.begin  (lacks condition: y.begin < x.end)
-                if x.begin < y.end or y.begin < x.end: return True
+                elif x.begin < y.end or y.begin < x.end: return True
         return False
 
     def intersect_with(self, Other):

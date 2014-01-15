@@ -349,7 +349,7 @@ class Lng_Cpp(dict):
                    % (on_success_adr, on_failure_adr)                                                        
 
         elif Cmd.id == E_Commands.LexemeStartToReferenceP:
-            return "    %s\n" % self.LEXEME_START_SET(Cmd.reference_pointer_name)
+            return "    %s\n" % self.LEXEME_START_SET(Cmd.content.pointer_name)
 
         elif Cmd.id == E_Commands.LexemeResetTerminatingZero:
             return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
