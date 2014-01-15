@@ -80,6 +80,7 @@ def do(Data, TheAnalyzer):
                                CheckLexemeEndF   = False,
                                ReloadF           = reload_f,
                                GlobalReloadState = reload_state, 
-                               EngineType        = engine.FORWARD)
+                               EngineType        = engine.FORWARD,
+                               MaintainLexemeF   = False)
     assert isinstance(result, list)
     return result

@@ -50,7 +50,8 @@ def get(counter_db, Name):
     code           = generator.do_loop(counter_db, 
                                        AfterExitDoorId = return_door_id,
                                        CheckLexemeEndF = True, 
-                                       EngineType      = engine.CHARACTER_COUNTER)
+                                       EngineType      = engine.CHARACTER_COUNTER,
+                                       MaintainLexemeF = False)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, return_door_id) 
 

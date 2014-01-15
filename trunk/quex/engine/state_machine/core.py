@@ -296,17 +296,17 @@ class StateMachine(object):
             if i == self.init_state_index: continue
             del self.states[i]
 
-    def delete_transitions_on_interval(self, TheInterval):
+    def delete_transitions_on_number(self, Number):
         """This function deletes any transition on 'Value' to another
            state. The resulting orphaned states are deleted. The operation
-           may leave orphaned states! The need to be deleted manually.
+           may leave orphaned states! They need to be deleted manually.
         """
         for state in self.states.itervalues():
             # 'items()' not 'iteritems()' because 'delete_transitions_to_target()'
             # may change the dictionaries content.
             for target_state_index, trigger_set in state.target_map.get_map().items():
-                if trigger_set.has_intersection(TheInterval):
-                    trigger_set.cut_interval(TheInterval)
+                if trigger_set.contains(Number):
+                    trigger_set.cut_interval(Interval(Number))
 
                 # If the operation resulted in cutting the path to the target state, then delete it.
                 if trigger_set.is_empty():

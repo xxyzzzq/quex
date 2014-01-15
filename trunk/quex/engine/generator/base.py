@@ -259,8 +259,8 @@ def do_terminals(TerminalList, TheAnalyzer):
 def do_reentry_preparation(PreContextSmIdList, OnAfterMatchCode):
     return Lng.REENTRY_PREPARATION(PreContextSmIdList, OnAfterMatchCode)
 
-@typed(CharacterSet=(None, NumberSet), ReloadF=bool, CheckLexemeEndF=bool, AfterExitDoorId=DoorID)
-def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None, EngineType=None):
+@typed(CharacterSet=(None, NumberSet), ReloadF=bool, CheckLexemeEndF=bool, AfterExitDoorId=DoorID, MaintainLexemeF=bool)
+def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None, EngineType=None, MaintainLexemeF=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -268,11 +268,11 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
 
-    ccd                     = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId)
-    print "#CharacterSet:", CharacterSet
-    analyzer, terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
-
-    code                    = state_machine_coder.do(analyzer)
+    ccd           = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId, 
+                                     LexemeF=MaintainLexemeF)
+    analyzer, \
+    terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
+    code          = state_machine_coder.do(analyzer)
 
     code.extend(do_terminals(terminal_list, analyzer))
 

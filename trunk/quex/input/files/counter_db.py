@@ -3,7 +3,7 @@ from   quex.engine.state_machine.transformation     import homogeneous_chunk_n_p
 import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.state_machine.index              as     index
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.drop_out          import DropOutGotoDoorId
+from   quex.engine.analyzer.state.drop_out          import DropOutUnreachable
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.analyzer.core                    import Analyzer
 from   quex.engine.analyzer.state.core              import ReloadState, AnalyzerState
@@ -15,11 +15,13 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            GotoDoorId, \
                                                            InputPIncrement, \
                                                            InputPDereference, \
+                                                           InputPDecrement, \
                                                            InputPToLexemeStartP, \
                                                            GotoDoorIdIfInputPLexemeEnd, \
                                                            ColumnCountAdd, \
                                                            ColumnCountGridAdd, \
                                                            ColumnCountGridAddWithReferenceP, \
+                                                           LexemeStartToReferenceP, \
                                                            LineCountAdd, \
                                                            LineCountAddWithReferenceP, \
                                                            ColumnCountReferencePSet, \
@@ -179,7 +181,7 @@ class CounterCoderData:
 
     @typed(GlobalReloadState = (None, ReloadState),
            TargetState       = (None, AnalyzerState))
-    def get_analyzer(self, EngineType, GlobalReloadState=None, TargetState=None, CheckLexemeEndF=False):
+    def get_analyzer(self, EngineType, GlobalReloadState=None, CheckLexemeEndF=False):
         """
         GlobalReloadState = None --> no Reload
         TargetState = None       --> loop.
@@ -221,51 +223,18 @@ class CounterCoderData:
 
         sm, \
         map_cli_to_incidence_id, \
-        exit_incidence_id        = self.__get_counting_state_machine(self.count_command_map) 
-        exit_door_id             = DoorID.incidence(exit_incidence_id)
+        incidence_id_inconsiderate = self.__get_counting_state_machine(self.count_command_map) 
 
         # The 'bending' of CLI-s to the init state must wait until the entry actions
         # have been determined. Only this way, it is safe to assume that the different
         # counting actions are implemented at a seperate entry.
         analyzer = Analyzer(sm, EngineType, GlobalReloadState=GlobalReloadState)
-        start    = analyzer.init_state()
-        if TargetState is not None: finish = TargetState
-        else:                       finish = start
+        door_id_loop = self.setup_loop_anchor(analyzer)
 
-        start.entry.enter_before(start.index, E_StateIndices.NONE, self.on_entry)
-        loop_state_index   = index.get()
-        loop_transition_id = start.entry.enter(start.index, loop_state_index, 
-                                               TransitionAction(CommandList(InputPDereference())))
-        start.entry.categorize(start.index)   # Determine DoorID-s -- those specified now, won't change later.
-        loop_door_id       = start.entry.get(loop_transition_id).door_id
-
-        terminal_list = []
-        terminal_list.append(
-            Terminal(exit_incidence_id, 
-                     CodeTerminal([ Lng.COMMAND(cmd) for cmd in self.on_exit]),
-                     Name="-- Exit --")
-        )
-
-        def get_terminal(incidence_id, cli, SpecialF):
-            """SpecialF = is related character set related to characters and 
-                          not to newline or grid?
-            """
-            text = [
-                Lng.COMMAND(cmd) for cmd in self.count_command_map[cli].command_list 
-            ]
-            if CheckLexemeEndF:
-                if SpecialF: door_id = exit_door_id            # Add 'input_p - reference_p'
-                else:        door_id = self.door_id_after_exit # Plain exit
-                text.append(Lng.COMMAND(GotoDoorIdIfInputPLexemeEnd(door_id)))
-
-            text.append(Lng.GOTO(loop_door_id))
-            name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
-            return Terminal(incidence_id, CodeTerminal(text), name)
-
-        for cli, info in self.count_command_map.iteritems():
-            incidence_id = map_cli_to_incidence_id[cli]
-            assert incidence_id not in (t.incidence_id() for t in terminal_list)
-            terminal_list.append(get_terminal(incidence_id, cli, info.special_f))
+        terminal_list      = self.get_terminal_list(incidence_id_inconsiderate, 
+                                                    door_id_loop,
+                                                    map_cli_to_incidence_id, 
+                                                    CheckLexemeEndF)
 
         # Setup DoorIDs in entries and transition maps
         analyzer.prepare_DoorIDs()
@@ -275,14 +244,87 @@ class CounterCoderData:
         for state in analyzer.state_db.itervalues():
             state.prepare_for_reload(analyzer, self.on_before_reload, self.on_after_reload)
 
-        # (*) Transition Map __________________________________________________
+        # (*) All transitions are captured with 'inconsiderate'. No failure possible!
         #
-        # for state in analyzer.state_db.itervalues():
-        #    if state.transition_map is not None:
-        #        state.transition_map.fill_gaps(exit_door_id)
-        analyzer.init_state().drop_out = DropOutGotoDoorId(exit_door_id)
+        analyzer.init_state().drop_out = DropOutUnreachable()
 
         return analyzer, terminal_list
+
+    def setup_loop_anchor(self, analyzer):
+        """Sets up the init state of the analyzer so that it can be gotoed
+        in a loop.
+
+        RETURNS: DoorID which should be targetted by as re-entry into the loop.
+        """
+        anchor = analyzer.init_state()
+
+        # -- Actions before the loop start
+        anchor.entry.enter_before(anchor.index, E_StateIndices.NONE, 
+                                  self.on_entry)
+
+        # -- Actions that happen at every loop re-entry
+        if Setup.variable_character_sizes_f():
+            on_re_entry = CommandList(LexemeStartToReferenceP(self.iterator_name),
+                                      InputPDereference())
+        else:
+            on_re_entry = CommandList(InputPDereference())
+
+        loop_transition_id = anchor.entry.enter(anchor.index, anchor.index, 
+                                                TransitionAction(on_re_entry))
+
+        # Determine DoorID-s -- those specified now, won't change later.
+        anchor.entry.categorize(anchor.index)   
+
+        return anchor.entry.get(loop_transition_id).door_id
+
+    def get_terminal_list(self, IncidenceIdInconsiderate, 
+                          DoorIdLoop, MapCliToIncidenceId, CheckLexemeEndF):
+        incidence_id_exit = index.get_state_machine_id()
+        door_id_exit      = DoorID.incidence(incidence_id_exit)
+        goto_loop_anchor  = GotoDoorId(DoorIdLoop)
+
+        def get_CodeTerminal(CmdList):
+            return CodeTerminal([Lng.COMMAND(cmd) for cmd in CmdList])
+
+        def get_terminal(incidence_id, cli, SpecialF):
+            """SpecialF = is related character set related to characters and 
+                          not to newline or grid?
+            """
+            cl = [
+                cmd for cmd in self.count_command_map[cli].command_list 
+            ]
+            if CheckLexemeEndF:
+                if SpecialF: door_id = door_id_exit            # Add 'input_p - reference_p'
+                else:        door_id = self.door_id_after_exit # Plain exit
+                cl.append(GotoDoorIdIfInputPLexemeEnd(door_id))
+
+            cl.append(goto_loop_anchor)
+            name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
+            return Terminal(incidence_id, get_CodeTerminal(cl), name)
+
+        result = []
+        if IncidenceIdInconsiderate is not None:
+            result.append(
+                Terminal(IncidenceIdInconsiderate, 
+                         get_CodeTerminal([ 
+                             InputPDecrement(),
+                             GotoDoorId(door_id_exit),
+                         ]),
+                         Name="-- Inconsiderate --")
+            )
+
+        result.append(
+            Terminal(incidence_id_exit, 
+                     get_CodeTerminal(self.on_exit),
+                     Name="-- Exit --")
+        )
+
+        for cli, info in self.count_command_map.iteritems():
+            incidence_id = MapCliToIncidenceId[cli]
+            assert incidence_id not in (t.incidence_id() for t in result)
+            result.append(get_terminal(incidence_id, cli, info.special_f))
+
+        return result
 
     def __on_entry_on_exit_prepare(self, AfterExitDoorId):
         """Actions to be performed at entry into the counting code fragment and 
@@ -327,24 +369,28 @@ class CounterCoderData:
         by some handler. If not, the how buffer may be reloaded by setting the 
         lexeme start pointer to the input pointer.
         """
-        if self.column_count_per_chunk is None:
-            return None, None
-        else:
-            on_before_reload = ColumnCountReferencePDeltaAdd(self.iterator_name, 
-                                                             self.column_count_per_chunk)
-            on_after_reload  = ColumnCountReferencePSet(self.iterator_name)
+        on_before_reload = []
+        on_after_reload  = []
+        if self.column_count_per_chunk is not None:
+            on_before_reload.append(
+                ColumnCountReferencePDeltaAdd(self.iterator_name, 
+                                              self.column_count_per_chunk)
+            )
+            on_after_reload.append(
+                ColumnCountReferencePSet(self.iterator_name)
+            )
 
-        on_before_reload = CommandList(on_before_reload)
-        on_after_reload  = CommandList(on_after_reload)
-
-        if not LexemeF:
+        if not LexemeF and not Setup.variable_character_sizes_f():
             # The lexeme start pointer defines the lower border of memory to be 
             # kept when reloading. Setting it to the input pointer allows for 
             # the whole buffer to be reloaded. THIS CAN ONLY BE DONE IF THE 
             # LEXEME IS NOT IMPORTANT!
-            on_before_reload = on_before_reload.concatinate(LexemeStartToReferenceP(self.iterator_name))
+            on_before_reload.append(
+                LexemeStartToReferenceP(self.iterator_name)
+            )
 
-        return on_before_reload, on_after_reload
+        return CommandList.from_iterable(on_before_reload), \
+               CommandList.from_iterable(on_after_reload)
 
     def __count_command_map_prepare(self, CounterDb, CharacterSet):
         """Returns a list of NumberSet objects where for each X of the list it holds:
@@ -440,7 +486,7 @@ class CounterCoderData:
         #    (AcceptanceID-s survive the transformation and NFA-to-DFA)
         # -- Store the relation between the counting action (given by the 'cli')
         #    and the acceptance id.
-        def add(sm, TriggerSet, map_cli_to_incidence_id):
+        def add(sm, TriggerSet):
             acceptance_id = index.get_state_machine_id()
             state_index   = sm.add_transition(sm.init_state_index, TriggerSet,
                                               AcceptanceF=True)
@@ -452,15 +498,15 @@ class CounterCoderData:
         covered_character_set = NumberSet()
         for cli, count_info in CountCommandMap.iteritems():
             assert isinstance(count_info, CountCmdInfo)
-            incidence_id = add(sm, count_info.trigger_set, map_cli_to_incidence_id)
+            incidence_id = add(sm, count_info.trigger_set)
             covered_character_set.unite_with(count_info.trigger_set)
             map_cli_to_incidence_id[cli] = incidence_id
 
-        missed_character_set = covered_character_set.inverse()
-        if not missed_character_set.is_empty():
-            exit_incidence_id = add(sm, missed_character_set, map_cli_to_incidence_id)
+        inconsiderate_set = covered_character_set.inverse()
+        if not inconsiderate_set.is_empty():
+            incidence_id_inconsiderate = add(sm, inconsiderate_set) 
         else:
-            exit_incidence_id = index.get_state_machine_id()
+            incidence_id_inconsiderate = None
 
         # Perform possible a character set transformation, if the buffer codec
         # is not unicode.
@@ -472,8 +518,7 @@ class CounterCoderData:
         for state_index, state in sm.states.iteritems():
             if state.is_acceptance(): continue
             state.set_acceptance()
-            state.mark_self_as_origin(exit_incidence_id, state_index)
+            state.mark_self_as_origin(incidence_id_inconsiderate, state_index)
 
-        print "#sm:", sm
-        return sm, map_cli_to_incidence_id, exit_incidence_id
+        return sm, map_cli_to_incidence_id, incidence_id_inconsiderate
 
