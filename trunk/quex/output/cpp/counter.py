@@ -8,7 +8,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP, \
-                                                           GotoDoorIdIfInputPLexemeEnd
+                                                           GotoDoorIdIfInputPEqualPointer
 
 from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \

@@ -40,6 +40,7 @@ _______________________________________________________________________________
 """
 from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.commands              import CommandList
+import quex.engine.analyzer.command_list_shared_tail as command_list_shared_tail
 from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
 from quex.engine.tools import pair_combinations
@@ -328,7 +329,7 @@ class CandidateList:
         sharing_door_set = set()
         for x, y in pair_combinations(DoorSet):
             assert x.parent == y.parent 
-            cmd_list = CommandList.get_shared_tail(x.command_list, y.command_list)
+            cmd_list = command_list_shared_tail.get(x.command_list, y.command_list)
             if cmd_list.is_empty(): continue
             entry    = shared_db.get(cmd_list)
             if entry is None:
@@ -379,7 +380,7 @@ class CandidateList:
         command_list = NewDoor.command_list
         for door in self.available_door_set:
             if door.parent != NewDoor.parent: continue
-            cmd_list = CommandList.get_shared_tail(door.command_list, command_list)
+            cmd_list = command_list_shared_tail.get(door.command_list, command_list)
             if cmd_list.is_empty(): continue
             shared_f = True
             # It is impossible that exact the same command list appears in another

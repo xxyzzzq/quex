@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.59" date="Thu Jan  9 12:16:05 2014">
+<test-database execution-time-sec="17.09" date="Thu Jan 16 23:03:18 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -6,10 +6,10 @@
            <choice name="" result="OK" time_sec="0.52" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.05"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.06"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1381662239L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.05" crc="-581721676"/>
+           <choice name="" result="FAIL" time_sec="0.06" crc="-581721676"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
@@ -18,10 +18,10 @@
            <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="9.32"> 
+    <test title="Code Check with pyflakes" time-sum-sec="15.82"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="9.32" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="15.82" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 

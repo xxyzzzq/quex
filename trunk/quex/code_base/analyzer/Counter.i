@@ -80,22 +80,22 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         __QUEX_IF_COUNT_INDENTATION(size_t* it = 0x0);
 
-        __QUEX_STD_printf("   Counter:\n");
+        __QUEX_STD_fprintf(stderr, "   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
+        __QUEX_STD_fprintf(stderr, "   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
+        __QUEX_STD_fprintf(stderr, "   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
+        __QUEX_STD_fprintf(stderr, "   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
+        __QUEX_STD_fprintf(stderr, "   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
 #       endif
 #       ifdef  QUEX_OPTION_INDENTATION_TRIGGER
-        __QUEX_STD_printf("   _indentation = %i;\n", (int)me->_indentation);
-        __QUEX_STD_printf("   _indentation_stack = {");
+        __QUEX_STD_fprintf(stderr, "   _indentation = %i;\n", (int)me->_indentation);
+        __QUEX_STD_fprintf(stderr, "   _indentation_stack = {");
         for(it = me->_indentation_stack.front; it != me->_indentation_stack.back + 1; ++it) {
-            __QUEX_STD_printf("%i, ", (int)me->_indentation);
+            __QUEX_STD_fprintf(stderr, "%i, ", (int)me->_indentation);
         }
-        __QUEX_STD_printf("}");
+        __QUEX_STD_fprintf(stderr, "}");
 #       endif
     }
 

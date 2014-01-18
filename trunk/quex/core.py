@@ -146,10 +146,9 @@ def analyzer_functions_get(ModeDB):
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
-        comment = Lng.ML_COMMENT(comment, 
-                      "BEGIN: MODE PATTERNS\n" + \
-                      inheritance_info_str     + \
-                      "\nEND: MODE PATTERNS")
+        comment = Lng.ML_COMMENT("BEGIN: MODE PATTERNS\n" + \
+                                 inheritance_info_str     + \
+                                 "\nEND: MODE PATTERNS")
         analyzer_code.append(comment)
 
     if not Setup.token_class_only_f:

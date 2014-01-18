@@ -11,7 +11,7 @@ from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConside
                                                                   DropOutConsideration_relate
 import quex.engine.state_machine.index          as     index
 from   quex.engine.tools                        import UniformObject
-from   quex.blackboard                          import E_Compression, E_Commands
+from   quex.blackboard                          import E_Compression, E_Cmd
 
 from   itertools import izip
 
@@ -253,7 +253,7 @@ class PathWalkerState(MegaState):
         for action in self.entry.itervalues():
             path_iterator_cmd_n = 0
             for cmd in action.command_list:
-                if cmd.id != E_Commands.PathIteratorSet: continue
+                if cmd.id != E_Cmd.PathIteratorSet: continue
                 path_iterator_cmd_n += 1
                 assert path_iterator_cmd_n < 2
 

@@ -8,7 +8,7 @@ from   quex.engine.tools                                 import none_is_None
 
 from quex.blackboard import Lng, \
                             E_StateIndices, \
-                            E_Commands
+                            E_Cmd
 
 from operator import attrgetter
 

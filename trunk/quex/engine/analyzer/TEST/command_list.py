@@ -5,7 +5,8 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.analyzer.commands import *
-from   quex.blackboard               import E_Commands
+from   quex.blackboard               import E_Cmd
+import quex.engine.analyzer.command_list_shared_tail as command_list_shared_tail
 
 from   collections import defaultdict
 from   copy import deepcopy
@@ -75,7 +76,7 @@ def call(Name, Iterable0, Iterable1):
     cl1      = CommandList.from_iterable(Iterable1)
     # print "#cl0:", cl0
     # print "#cl1:", cl1
-    result   = CommandList.get_shared_tail(cl0, cl1)
+    result   = command_list_shared_tail.get(cl0, cl1)
     count_db[Name] += 1
     # print_cl("This", cl0)
     # print_cl("That", cl1)
@@ -128,6 +129,7 @@ class Cursor:
 
     def step(self):
         i = 0
+        print "#flags:", self.flags
         while i < len(self.flags) and self.flags[i]:
             self.flags[i] = False
             i += 1
@@ -143,10 +145,10 @@ class Cursor:
         return list0, list1
 
 if "2-1" in sys.argv:
-    for shared_cmd_id in E_Commands:
-        if shared_cmd_id == E_Commands._DEBUG_Commands: continue
-        for other_cmd_id in E_Commands:
-            if other_cmd_id == E_Commands._DEBUG_Commands: continue
+    for shared_cmd_id in E_Cmd:
+        if shared_cmd_id == E_Cmd._DEBUG_Commands: continue
+        for other_cmd_id in E_Cmd:
+            if other_cmd_id == E_Cmd._DEBUG_Commands: continue
             elif other_cmd_id == shared_cmd_id:            continue
 
             # print "#______________________________________________________"
@@ -169,15 +171,15 @@ elif "all-common" in sys.argv:
         assert len(result) == len(cmd_list)
 
 elif "misc" in sys.argv:
-    for cmd_id in E_Commands:
-        if cmd_id == E_Commands._DEBUG_Commands: continue
+    for cmd_id in E_Cmd:
+        if cmd_id == E_Cmd._DEBUG_Commands: continue
         cmd = get_cmd(cmd_id)
         result = call("only one common", [cmd], [cmd])
         assert len(result) == 1
         assert result[0] == cmd
 
-        for other_cmd_id in E_Commands:
-            if   other_cmd_id == E_Commands._DEBUG_Commands: continue
+        for other_cmd_id in E_Cmd:
+            if   other_cmd_id == E_Cmd._DEBUG_Commands: continue
             elif other_cmd_id == cmd_id: continue
             other_cmd = get_cmd(other_cmd_id)
             result = call("1-1 no common", [cmd], [other_cmd])
