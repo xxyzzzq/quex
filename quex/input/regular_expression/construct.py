@@ -84,6 +84,10 @@ class Pattern(object):
 
         self.__validate(fh)
     
+    @staticmethod
+    def from_character_set(CharacterSet):
+        return Pattern(StateMachine.from_character_set(CharacterSet))
+
     @property
     def sr(self):             return self.__sr
 

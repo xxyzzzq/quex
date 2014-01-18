@@ -11,7 +11,7 @@ CFLAGS = \
 CC = g++ -I$(QUEX_PATH) -I. $(CFLAGS) -ggdb \
 
 error-lexer:
-	quex -i simple.qx -o Simple --token-policy single # --debug-exception
+	quex -i simple.qx -o Simple --token-policy single --debug-exception
 	$(CC) -DSTRANGE_STREAM \
 	      ../lexer-simply.cpp Simple.cpp -o error-lexer
 

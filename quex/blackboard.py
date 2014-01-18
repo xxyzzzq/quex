@@ -99,6 +99,8 @@ E_Count = Enum("VIRGIN",
                "NONE",
                "_DEBUG_Count")
 
+E_CharacterCountType = Enum("CHARACTER", "LINE", "GRID", "_DEBUG_CharacterCountType")
+
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 
 E_TerminalType = Enum("MATCH_PATTERN",  # A pattern match
@@ -190,14 +192,14 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "CONTINUE_WITHOUT_ON_AFTER_MATCH",
                      "_DEBUG_DoorIdIndex") 
 
-E_Commands = Enum("Accepter",
+E_Cmd = Enum("Accepter",
                   "ColumnCountAdd",
                   "ColumnCountGridAdd",
                   "ColumnCountGridAddWithReferenceP",
                   "ColumnCountReferencePDeltaAdd",
                   "ColumnCountReferencePSet",
                   "GotoDoorId",
-                  "GotoDoorIdIfInputPLexemeEnd",
+                  "GotoDoorIdIfInputPEqualPointer",
                   "InputPDecrement",
                   "InputPDereference",
                   "InputPToLexemeStartP",

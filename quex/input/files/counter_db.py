@@ -17,7 +17,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPDereference, \
                                                            InputPDecrement, \
                                                            InputPToLexemeStartP, \
-                                                           GotoDoorIdIfInputPLexemeEnd, \
+                                                           GotoDoorIdIfInputPEqualPointer, \
                                                            ColumnCountAdd, \
                                                            ColumnCountGridAdd, \
                                                            ColumnCountGridAddWithReferenceP, \
@@ -33,11 +33,13 @@ from   quex.engine.tools                            import typed
 from   quex.blackboard import setup as Setup, \
                               Lng,            \
                               E_IncidenceIDs, \
-                              E_StateIndices
+                              E_StateIndices, \
+                              E_CharacterCountType
 
 from   collections import namedtuple
 
-CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "special_f"))
+CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "cc_type"))
+# cc_type = (E_CharacterCountType)
 
 class CounterDB:
     # 'CounterDB' maps from counts to the character set that is involved.
@@ -221,20 +223,20 @@ class CounterCoderData:
                or EngineType.requires_buffer_limit_code_for_reload() 
         
 
-        sm, \
-        map_cli_to_incidence_id, \
+        sm,                        \
+        map_cli_to_incidence_id,   \
         incidence_id_inconsiderate = self.__get_counting_state_machine(self.count_command_map) 
 
         # The 'bending' of CLI-s to the init state must wait until the entry actions
         # have been determined. Only this way, it is safe to assume that the different
         # counting actions are implemented at a seperate entry.
-        analyzer = Analyzer(sm, EngineType, GlobalReloadState=GlobalReloadState)
-        door_id_loop = self.setup_loop_anchor(analyzer)
+        analyzer      = Analyzer(sm, EngineType, GlobalReloadState=GlobalReloadState)
+        door_id_loop  = self.setup_loop_anchor(analyzer)
 
-        terminal_list      = self.get_terminal_list(incidence_id_inconsiderate, 
-                                                    door_id_loop,
-                                                    map_cli_to_incidence_id, 
-                                                    CheckLexemeEndF)
+        terminal_list = self.get_terminal_list(incidence_id_inconsiderate, 
+                                               door_id_loop,
+                                               map_cli_to_incidence_id, 
+                                               CheckLexemeEndF)
 
         # Setup DoorIDs in entries and transition maps
         analyzer.prepare_DoorIDs()
@@ -296,7 +298,7 @@ class CounterCoderData:
             if CheckLexemeEndF:
                 if SpecialF: door_id = door_id_exit            # Add 'input_p - reference_p'
                 else:        door_id = self.door_id_after_exit # Plain exit
-                cl.append(GotoDoorIdIfInputPLexemeEnd(door_id))
+                cl.append(GotoDoorIdIfInputPEqualPointer(door_id, "LexemeEnd"))
 
             cl.append(goto_loop_anchor)
             name = self.count_command_map[cli].trigger_set.get_string(Option="hex")
@@ -322,7 +324,7 @@ class CounterCoderData:
         for cli, info in self.count_command_map.iteritems():
             incidence_id = MapCliToIncidenceId[cli]
             assert incidence_id not in (t.incidence_id() for t in result)
-            result.append(get_terminal(incidence_id, cli, info.special_f))
+            result.append(get_terminal(incidence_id, cli, info.cc_type == E_CharacterCountType.CHARACTER))
 
         return result
 
@@ -441,14 +443,14 @@ class CounterCoderData:
             cmd = on_special(delta)
             if cmd is None: cl = CommandList()
             else:           cl = CommandList(cmd)
-            result[index.get()] = CountCmdInfo(character_set, cl, True)
+            result[index.get()] = CountCmdInfo(character_set, cl, E_CharacterCountType.CHARACTER)
 
         result.update(
-            (index.get(), CountCmdInfo(character_set, CommandList(on_grid(grid_step_n)), False))
+            (index.get(), CountCmdInfo(character_set, CommandList(on_grid(grid_step_n)), E_CharacterCountType.GRID))
             for grid_step_n, character_set in pruned_iteritems(CounterDb.grid, CharacterSet)
         )
         result.update(
-            (index.get(), CountCmdInfo(character_set, CommandList(on_newline(delta)), False))
+            (index.get(), CountCmdInfo(character_set, CommandList(on_newline(delta)), E_CharacterCountType.LINE))
             for delta, character_set in pruned_iteritems(CounterDb.newline, CharacterSet)
         )
 

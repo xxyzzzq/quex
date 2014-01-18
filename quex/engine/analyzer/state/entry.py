@@ -4,7 +4,7 @@ from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.tools                          import TypedDict
 from   quex.blackboard                            import setup as Setup, \
                                                          E_IncidenceIDs, \
-                                                         E_Commands, \
+                                                         E_Cmd, \
                                                          E_PostContextIDs, \
                                                          E_PreContextIDs,  \
                                                          E_StateIndices, \
@@ -195,7 +195,7 @@ class Entry(object):
         return False
 
     def has_command(self, CmdId):
-        assert CmdId in E_Commands
+        assert CmdId in E_Cmd
         for action in self.__db.itervalues():
             if action.command_list.has_command_id(CmdId): 
                 return True
@@ -383,11 +383,11 @@ class Entry(object):
             ssk_command_list    = []
             spi_command_list    = []
             for cmd in door.command_list:
-                if   cmd.id == E_Commands.Accepter:            accept_command_list.append(cmd)
-                elif cmd.id == E_Commands.PreContextOK:        pcok_command_list.append(cmd)
-                elif cmd.id == E_Commands.TemplateStateKeySet: ssk_command_list.append(cmd)
-                elif cmd.id == E_Commands.PathIteratorSet:     spi_command_list.append(cmd)
-                elif cmd.id == E_Commands.StoreInputPosition:  store_command_list.append(cmd)
+                if   cmd.id == E_Cmd.Accepter:            accept_command_list.append(cmd)
+                elif cmd.id == E_Cmd.PreContextOK:        pcok_command_list.append(cmd)
+                elif cmd.id == E_Cmd.TemplateStateKeySet: ssk_command_list.append(cmd)
+                elif cmd.id == E_Cmd.PathIteratorSet:     spi_command_list.append(cmd)
+                elif cmd.id == E_Cmd.StoreInputPosition:  store_command_list.append(cmd)
 
             result.append("    .from %s:" % repr(transition_id.source_state_index).replace("L", ""))
             a_txt  = get_accepters(accept_command_list)
