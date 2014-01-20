@@ -80,6 +80,25 @@ from   collections import namedtuple
 from   operator    import attrgetter
 from   copy        import deepcopy, copy
 
+
+E_R = Enum("AcceptanceRegister",
+           "Buffer",
+           "Column",
+           "Input",
+           "InputP",
+           "LexemeStartP",
+           "Line",
+           "PathIterator",
+           "PreContextFlags",
+           "ReferenceP",
+           "PositionRegister",
+           "Pointer",
+           "TargetStateElseIndex",
+           "TargetStateIndex",
+           "TemplateStateKey",
+           "ThreadOfControl")
+
+
 #______________________________________________________________________________
 # Command: Information about an operation to be executed. It consists mainly
 #     of a command identifier (from E_Cmd) and the content which specifies
@@ -89,6 +108,11 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __new__(self, Id, Content, Hash=None):
         if Hash is None: Hash = hash(Id) ^ hash(Content)
         return super(Command, self).__new__(self, Id, Content, Hash)
+
+    @staticmethod
+    def StoreInputPosition(PreContextID, PositionRegister, Offset):
+        return CommandFactory.do(E_Cmd.StoreInputPosition, (PreContextID, PositionRegister, Offset,))
+
 
     def clone(self):         
         if self.content is None:
@@ -208,12 +232,6 @@ class AccepterContent:
 
         return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
 
-E_InputPAccess = Enum("WRITE",     # writes value to 'x'
-                      "READ",      # reads value of 'x'
-                      "NONE",      # does nothing to 'x'
-                      "BRANCH",    # commands cannot be moved before or after this command
-                      "E_InputAccess_DEBUG")
-
 #______________________________________________________________________________
 # CommandInfo: Information about a command. CommandInfo-s provide information
 #     about commands based on the command identifier. That is:
@@ -235,7 +253,6 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
     @property
     def write_f(self): return self.access == E_InputPAccess.WRITE
 
-
 #______________________________________________________________________________
 # CommandFactory: Produces Command-s. It contains a database which maps from 
 #     command identifiers to CommandInfo-s. And, it contains the '.do()' 
@@ -244,180 +261,204 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
 # For a sleeker look, dedicated function are provided below which all implement
 # a call to 'CommandFactory.do()' in a briefer way.
 #______________________________________________________________________________
-access_db = {
-    # 1        -> Read
-    # 2        -> Write
-    # 1+2 == 3 -> Read/Write
-    E_Cmd.Accepter:                         (PreContextFlag(1), AcceptanceRegister(2))
-    E_Cmd.GotoDoorId:                       (Branch(),),
-    E_Cmd.GotoDoorIdIfInputPEqualPointer:   (Branch(), InputP(1), Access(0, "pointer_name")),
+# 1        -> Read
+# 2        -> Write
+# 1+2 == 3 -> Read/Write
+RegisterAccessRight = namedtuple("AccessRight", ("write_f", "read_f"))
 
-    E_Cmd.InputPToLexemeStartP:             (InputP(2), LexemeStartP(1)),
-    E_Cmd.InputPDecrement:                  (InputP(1+2),),
-    E_Cmd.InputPIncrement:                  (InputP(1+2),), 
-    E_Cmd.InputPDereference:                (Input(2),  InputP(1),),
-    E_Cmd.LexemeResetTerminatingZero:       (Buffer(2), LexemeStartP(1), InputP(1), Input(2)), 
+def __configure():
+    cost_db      = {}
+    content_db   = {}
+    access_db    = {}    # map: register_id --> RegisterAccessRight
+    r = 1                # READ
+    w = 2                # WRITE
+    #                    # 1 + 2 = READ/WRITE
+    brancher_set = set() # set of ids of branching/goto-ing commands.
 
-    E_Cmd.LexemeStartToReferenceP:          (LexemeStartP(1+2), Access(0, "pointer_name")),
-    E_Cmd.ColumnCountReferencePSet:         (ReferenceP(2),),
-    E_Cmd.ColumnCountReferencePDeltaAdd:    (Column(1+2), ReferenceP(1)),
-    E_Cmd.ColumnCountGridAdd:               (Column(1+2), )
-    E_Cmd.ColumnCountGridAddWithReferenceP: (Column(1+2), ReferenceP(1+2)), 
-    E_Cmd.ColumnCountAdd:                   (Column(1+2),)
-    E_Cmd.LineCountAdd:                     (LineCountAdd(1+2),),
-    E_Cmd.LineCountAddWithReferenceP:       (LineCountAdd(1+2), ReferenceP(1+2)),
-    E_Cmd.PathIteratorSet:                  (PathIterator(2),)
-    E_Cmd.PreContextOK:                     (Access(2, "pre_context_id"),), 
-    E_Cmd.PrepareAfterReload:               (TargetStateIndex(2), TargetStateElseIndex(2)),
-    E_Cmd.StoreInputPosition:               (InputP(1), Access(1, "position_register")),
-    E_Cmd.TemplateStateKeySet:              (TemplateStateKey(2),),
-}
-
-def register_list(Cmd):
-
-
-
-content_db = {
-    E_Cmd.Accepter:                         CommandInfo(1, (PreContextFlag, AcceptanceRegister(A.W)),   AccepterContent),
-    E_Cmd.GotoDoorId:                       CommandInfo(1, (Branch(),), ("door_id",)),
-    E_Cmd.GotoDoorIdIfInputPEqualPointer:   CommandInfo(1, (Branch(), InputP(A.R), Access("pointer_name", A.R)), ("door_id", "pointer_name")),
-
-    E_Cmd.InputPToLexemeStartP:             CommandInfo(1, (InputP(A.W), LexemeStartP(A.R))),
-    E_Cmd.InputPDecrement:                  CommandInfo(1, (InputP(A.RW),)),
-    E_Cmd.InputPIncrement:                  CommandInfo(1, (InputP(A.RW),)), 
-    E_Cmd.InputPDereference:                CommandInfo(1, (Input(A.W),  InputP(A.R),)),
-    E_Cmd.LexemeResetTerminatingZero:       CommandInfo(1, (Buffer(A.W), LexemeStartP(A.R), InputP(A.R)), 
-
-    E_Cmd.LexemeStartToReferenceP:          CommandInfo(1, (LexemeStartP(A.W), Access("pointer_name", A.R)),   ("pointer_name",)),
-    E_Cmd.ColumnCountReferencePSet:         CommandInfo(1, E_InputPAccess.NONE,    ("pointer_name", "offset")),
-    E_Cmd.ColumnCountReferencePDeltaAdd:    CommandInfo(1, E_InputPAccess.NONE,    ("pointer_name", "column_n_per_chunk")),
-    E_Cmd.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,    ("grid_size",)),
-    E_Cmd.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,    ("grid_size", "pointer_name", "column_n_per_chunk")),
-    E_Cmd.ColumnCountAdd:                   CommandInfo(1, E_InputPAccess.NONE,    ("value",)),
-    E_Cmd.LineCountAdd:                     CommandInfo(1, E_InputPAccess.NONE,    ("value",)),
-    E_Cmd.LineCountAddWithReferenceP:       CommandInfo(1, E_InputPAccess.NONE,    ("value", "pointer_name", "column_n_per_chunk")),
-    E_Cmd.PathIteratorSet:                  CommandInfo(1, E_InputPAccess.NONE,    ("path_walker_id", "path_id", "offset")),
-    E_Cmd.PreContextOK:                     CommandInfo(1, (PreContextFlag(A.W),), ("pre_context_id",)),
-    E_Cmd.PrepareAfterReload:               CommandInfo(1, E_InputPAccess.NONE,    ("on_success_door_id", "on_failure_door_id")),
-    E_Cmd.StoreInputPosition:               CommandInfo(1, E_InputPAccess.READ,    ("pre_context_id", "position_register", "offset")),
-    E_Cmd.TemplateStateKeySet:              CommandInfo(1, E_InputPAccess.NONE,    ("state_key",)),
-}
-
-class CommandFactory:
-    db = {
-        E_Cmd.Accepter:                         CommandInfo(1, (PreContextFlag, AcceptanceRegister(A.W)),   AccepterContent),
-        E_Cmd.GotoDoorId:                       CommandInfo(1, (Branch(),), ("door_id",)),
-        E_Cmd.GotoDoorIdIfInputPEqualPointer:   CommandInfo(1, (Branch(), InputP(A.R), Access("pointer_name", A.R)), ("door_id", "pointer_name")),
-
-        E_Cmd.InputPToLexemeStartP:             CommandInfo(1, (InputP(A.W), LexemeStartP(A.R))),
-        E_Cmd.InputPDecrement:                  CommandInfo(1, (InputP(A.RW),)),
-        E_Cmd.InputPIncrement:                  CommandInfo(1, (InputP(A.RW),)), 
-        E_Cmd.InputPDereference:                CommandInfo(1, (Input(A.W),  InputP(A.R),)),
-        E_Cmd.LexemeResetTerminatingZero:       CommandInfo(1, (Buffer(A.W), LexemeStartP(A.R), InputP(A.R)), 
-
-        E_Cmd.LexemeStartToReferenceP:          CommandInfo(1, (LexemeStartP(A.W), Access("pointer_name", A.R)),   ("pointer_name",)),
-        E_Cmd.ColumnCountReferencePSet:         CommandInfo(1, E_InputPAccess.NONE,    ("pointer_name", "offset")),
-        E_Cmd.ColumnCountReferencePDeltaAdd:    CommandInfo(1, E_InputPAccess.NONE,    ("pointer_name", "column_n_per_chunk")),
-        E_Cmd.ColumnCountGridAdd:               CommandInfo(1, E_InputPAccess.NONE,    ("grid_size",)),
-        E_Cmd.ColumnCountGridAddWithReferenceP: CommandInfo(1, E_InputPAccess.NONE,    ("grid_size", "pointer_name", "column_n_per_chunk")),
-        E_Cmd.ColumnCountAdd:                   CommandInfo(1, E_InputPAccess.NONE,    ("value",)),
-        E_Cmd.LineCountAdd:                     CommandInfo(1, E_InputPAccess.NONE,    ("value",)),
-        E_Cmd.LineCountAddWithReferenceP:       CommandInfo(1, E_InputPAccess.NONE,    ("value", "pointer_name", "column_n_per_chunk")),
-        E_Cmd.PathIteratorSet:                  CommandInfo(1, E_InputPAccess.NONE,    ("path_walker_id", "path_id", "offset")),
-        E_Cmd.PreContextOK:                     CommandInfo(1, (PreContextFlag(A.W),), ("pre_context_id",)),
-        E_Cmd.PrepareAfterReload:               CommandInfo(1, E_InputPAccess.NONE,    ("on_success_door_id", "on_failure_door_id")),
-        E_Cmd.StoreInputPosition:               CommandInfo(1, E_InputPAccess.READ,    ("pre_context_id", "position_register", "offset")),
-        E_Cmd.TemplateStateKeySet:              CommandInfo(1, E_InputPAccess.NONE,    ("state_key",)),
-        # CountColumnN_ReferenceSet
-        # CountColumnN_ReferenceAdd
-        # CountColumnN_Add
-        # CountColumnN_Grid
-        # CountLineN_Add
-    }
-
-    @staticmethod
-    def do(Id, ParameterList=None):
-        # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
-        #       then return pointer to object in database.
-        assert ParameterList is None or type(ParameterList) == tuple, "ParameterList: '%s'" % str(ParameterList)
-        content_type = CommandFactory.db[Id].content_type
-        if ParameterList is None:
-            if content_type is None: content = None
-            else:                    content = content_type()
+    def get_register_access_info(Info):
+        register_id            = Info[0]
+        rights                 = Info[1]
+        register_access_rights = RegisterAccessRight(rights & r, rights & w)
+        if len(Info) == 2:
+            return (register_id, (register_access_rights, None))
+        elif len(Info) == 3:
+            specifier = Info[2]
+            return (register_id, (register_access_rights, Info[2]))
         else:
-            L        = len(ParameterList)
-            if   L == 0: content = None
-            elif L == 1: content = content_type(ParameterList[0])
-            elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
-            elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+            assert False
 
-        return Command(Id, content)
+    def c(CmdId, ParameterList, *RegisterAccessInfoList):
+        # -- access to related 'registers'
+        access_db[CmdId] = dict(
+            get_register_access_info(info) for info in RegisterAccessInfoList
+        )
+        # -- parameters that specify the command
+        if type(ParameterList) != tuple:
+            content_db[CmdId] = ParameterList # Constructor
+        elif len(ParameterList) == 0:
+            content_db[CmdId] = None
+        else:
+            content_db[CmdId] = namedtuple("%s_content" % CmdId, ParameterList)
+        
+        # -- computational cost of the command
+        cost_db[CmdId] = 1
+
+        # -- determine whether command is subject to 'goto/branching'
+        for register_id in (info[0] for info in RegisterAccessInfoList):
+            if register_id == E_R.ThreadOfControl: brancher_set.add(CmdId)
+
+    c(E_Cmd.Accepter,                         AccepterContent, 
+                                              (E_R.PreContextFlags,r), (E_R.AcceptanceRegister,w))
+    c(E_Cmd.PreContextOK,                     ("pre_context_id",), 
+                                              (E_R.PreContextFlags,w))
+    #
+    c(E_Cmd.GotoDoorId,                       ("door_id",), 
+                                              (E_R.ThreadOfControl,r))
+    c(E_Cmd.GotoDoorIdIfInputPEqualPointer,   ("door_id", "pointer_name"),
+                                              (E_R.ThreadOfControl,r), (E_R.InputP,r), (E_R.Pointer,r,"pointer_name"))
+    #
+    c(E_Cmd.InputPToLexemeStartP,             None, (E_R.InputP,w), (E_R.LexemeStartP, r))
+    c(E_Cmd.StoreInputPosition,               ("pre_context_id", "position_register", "offset"),
+                                              (E_R.InputP,r), 
+                                              (E_R.PreContextFlags,r),
+                                              (E_R.PositionRegister,w,"position_register"))
+    c(E_Cmd.InputPDecrement,                  None, (E_R.InputP,r+w))
+    c(E_Cmd.InputPIncrement,                  None, (E_R.InputP,r+w))
+    c(E_Cmd.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
+    #
+    c(E_Cmd.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r),   (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
+    c(E_Cmd.LexemeStartToReferenceP,          ("pointer_name",), 
+                                              (E_R.LexemeStartP,r+w), (E_R.Pointer,r,"pointer_name"))
+    #
+    c(E_Cmd.ColumnCountReferencePSet,         ("pointer_name", "offset"),
+                                              (E_R.ReferenceP,w))
+    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer_name", "column_n_per_chunk"),
+                                              (E_R.Column,r+w), (E_R.ReferenceP,r))
+    c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
+                                              (E_R.Column,r+w))
+    c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer_name", "column_n_per_chunk"),
+                                              (E_R.Column,r+w), (E_R.ReferenceP,r+w))
+    c(E_Cmd.ColumnCountAdd,                   ("value",),
+                                              (E_R.Column,r+w))
+    c(E_Cmd.LineCountAdd,                     ("value",),
+                                              (E_R.Line,r+w))
+    c(E_Cmd.LineCountAddWithReferenceP,       ("value", "pointer_name", "column_n_per_chunk"),
+                                              (E_R.Line,r+w), (E_R.ReferenceP,r+w))
+    #
+    c(E_Cmd.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
+                                              (E_R.PathIterator,w))
+    c(E_Cmd.TemplateStateKeySet,              ("state_key",),
+                                              (E_R.TemplateStateKey,w))
+    #
+    c(E_Cmd.PrepareAfterReload,               ("on_success_door_id", "on_failure_door_id"),
+                                              (E_R.TargetStateIndex,w), (E_R.TargetStateElseIndex,w))
+
+    return access_db, content_db, brancher_set, cost_db
+
+__access_db,    \
+__content_db,   \
+__brancher_set, \
+_cost_db       = __configure()
+
+def is_branching(CmdId):
+    global __brancher_set
+    return CmdId in __brancher_set
+
+
+def get_register_access_iterable(Cmd):
+    global __access_db
+    for register_id, info in __access_db[Cmd.id].iteritems():
+        right, specifier = info
+        if specifier is not None:
+            register_id = "%s:%i" % (specifier, Cmd._asdict()[specifier])
+        yield register_id, right
+
+def get_register_access_db(Cmd):
+    return dict( 
+        (register_id, right)
+        for register_id, right in get_register_access_iterable(Cmd)
+    )
+
+def _cmd(Id, *ParameterList):
+    global __content_db
+    # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
+    #       then return pointer to object in database.
+    L = len(ParameterList)
+    if   L == 0: 
+        content = None
+    else:
+        content_type = __content_db[Id]
+        if   L == 1: content = content_type(ParameterList[0])
+        elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
+        elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+
+    return Command(Id, content)
 
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return CommandFactory.do(E_Cmd.StoreInputPosition, (PreContextID, PositionRegister, Offset,))
+    return _cmd(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
 
 def PreContextOK(PreContextID):
-    return CommandFactory.do(E_Cmd.PreContextOK, (PreContextID,))
+    return _cmd(E_Cmd.PreContextOK, PreContextID)
 
 def TemplateStateKeySet(StateKey):
-    return CommandFactory.do(E_Cmd.TemplateStateKeySet, (StateKey,))
+    return _cmd(E_Cmd.TemplateStateKeySet, StateKey)
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return CommandFactory.do(E_Cmd.PathIteratorSet, (PathWalkerID, PathID, Offset,))
+    return _cmd(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
 
 def PathIteratorIncrement():
-    return CommandFactory.do(E_Cmd.PathIteratorIncrement)
+    return _cmd(E_Cmd.PathIteratorIncrement)
 
 def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
-    return CommandFactory.do(E_Cmd.PrepareAfterReload, (OnSuccessDoorId, OnFailureDoorId,))
+    return _cmd(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
 
 def InputPIncrement():
-    return CommandFactory.do(E_Cmd.InputPIncrement)
+    return _cmd(E_Cmd.InputPIncrement)
 
 def InputPDecrement():
-    return CommandFactory.do(E_Cmd.InputPDecrement)
+    return _cmd(E_Cmd.InputPDecrement)
 
 def InputPDereference():
-    return CommandFactory.do(E_Cmd.InputPDereference)
+    return _cmd(E_Cmd.InputPDereference)
 
 def InputPToLexemeStartP():
-    return CommandFactory.do(E_Cmd.InputPToLexemeStartP)
+    return _cmd(E_Cmd.InputPToLexemeStartP)
 
 def LexemeStartToReferenceP(PointerName):
-    return CommandFactory.do(E_Cmd.LexemeStartToReferenceP, (PointerName,))
+    return _cmd(E_Cmd.LexemeStartToReferenceP, PointerName)
 
 def LexemeResetTerminatingZero():
-    return CommandFactory.do(E_Cmd.LexemeResetTerminatingZero)
+    return _cmd(E_Cmd.LexemeResetTerminatingZero)
 
 def ColumnCountReferencePSet(PointerName, Offset=0):
-    return CommandFactory.do(E_Cmd.ColumnCountReferencePSet, (PointerName, Offset,))
+    return _cmd(E_Cmd.ColumnCountReferencePSet, PointerName, Offset)
 
 def ColumnCountReferencePDeltaAdd(PointerName, ColumnNPerChunk):
-    return CommandFactory.do(E_Cmd.ColumnCountReferencePDeltaAdd, (PointerName, ColumnNPerChunk,))
+    return _cmd(E_Cmd.ColumnCountReferencePDeltaAdd, PointerName, ColumnNPerChunk)
 
 def ColumnCountAdd(Value):
-    return CommandFactory.do(E_Cmd.ColumnCountAdd, (Value,))
+    return _cmd(E_Cmd.ColumnCountAdd, Value)
 
 def ColumnCountGridAdd(GridSize):
-    return CommandFactory.do(E_Cmd.ColumnCountGridAdd, (GridSize,))
+    return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return CommandFactory.do(E_Cmd.ColumnCountGridAddWithReferenceP, (Value, PointerName,ColumnNPerChunk))
+    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, (Value, PointerName,ColumnNPerChunk))
 
 def LineCountAdd(Value):
-    return CommandFactory.do(E_Cmd.LineCountAdd, (Value,))
+    return _cmd(E_Cmd.LineCountAdd, (Value,))
 
 def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return CommandFactory.do(E_Cmd.LineCountAddWithReferenceP, (Value, PointerName, ColumnNPerChunk))
+    return _cmd(E_Cmd.LineCountAddWithReferenceP, (Value, PointerName, ColumnNPerChunk))
 
 def GotoDoorId(DoorId):
-    return CommandFactory.do(E_Cmd.GotoDoorId, (DoorId,))
+    return _cmd(E_Cmd.GotoDoorId, (DoorId,))
 
 def GotoDoorIdIfInputPEqualPointer(DoorId, PointerName):
-    return CommandFactory.do(E_Cmd.GotoDoorIdIfInputPEqualPointer, (DoorId, PointerName))
+    return _cmd(E_Cmd.GotoDoorIdIfInputPEqualPointer, DoorId, PointerName)
 
 def Accepter():
-    return CommandFactory.do(E_Cmd.Accepter)
+    return _cmd(E_Cmd.Accepter)
 
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
@@ -462,7 +503,8 @@ class CommandList(list):
         return super(CommandList, self).__len__() == 0
 
     def cost(self):
-        return sum(CommandFactory.db[cmd.id].cost for cmd in self)
+        global _cost_db
+        return sum(_cost_db[cmd.id] for cmd in self)
 
     def has_command_id(self, CmdId):
         assert CmdId in E_Cmd

@@ -279,7 +279,7 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
             txt = [] 
-            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk),
+            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk)
             txt.extend(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                       Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS")) 
             self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
@@ -489,10 +489,7 @@ class Lng_Cpp(dict):
                    % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk))
 
     def REFERENCE_P_RESET(self, txt, IteratorName, AddOneF=False):
-        if AddOneF:
-            txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s + 1);\n" % IteratorName)
-        else:
-            txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName)
+        txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName)
     
     def MODE_GOTO(self, Mode):
         return "QUEX_NAME(enter_mode)(&self, &%s);" % Mode
