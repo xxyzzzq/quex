@@ -330,7 +330,8 @@ class CandidateList:
         for x, y in pair_combinations(DoorSet):
             assert x.parent == y.parent 
             cmd_list = command_list_shared_tail.get(x.command_list, y.command_list)
-            if cmd_list.is_empty(): continue
+            if cmd_list is None: continue
+            cmd_list = CommandList.from_iterable(cmd_list)
             entry    = shared_db.get(cmd_list)
             if entry is None:
                 shared_db[cmd_list] = DoorCombination(cmd_list, Parent=x.parent, DoorSet=set([x, y]))
@@ -381,7 +382,8 @@ class CandidateList:
         for door in self.available_door_set:
             if door.parent != NewDoor.parent: continue
             cmd_list = command_list_shared_tail.get(door.command_list, command_list)
-            if cmd_list.is_empty(): continue
+            if cmd_list is None: continue
+            cmd_list = CommandList.from_iterable(cmd_list)
             shared_f = True
             # It is impossible that exact the same command list appears in another
             # door combination with the same parent. Otherwise, it would have been
