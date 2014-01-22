@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.49" date="Thu Jan  9 12:22:53 2014">
+<test-database execution-time-sec="0.48" date="Mon Jan 20 18:54:31 2014">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1387873735L" vanished="False"/>
@@ -27,7 +27,7 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.27"> 
+        <test title="read_integer(...)" time-sum-sec="0.26"> 
             <application file-name="test-read_integer.py" info-request-time="1387873735L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="hex" result="OK" time_sec="0.04" crc="952788026"/>

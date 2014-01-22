@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.67" date="Thu Jan  9 12:23:47 2014">
+<test-database execution-time-sec="0.66" date="Mon Jan 20 18:54:31 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.22"> 
@@ -15,7 +15,7 @@
                <choice name="ADAPT" result="OK" time_sec="0.08" crc="320921215"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.13"> 
+        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.12"> 
             <application file-name="test-hopcroft-minimization-3.py" info-request-time="1387873735L" vanished="False"/>
             <choice-list number="2" same_result="False">
                <choice name="NEW" result="OK" time_sec="0.06" crc="-323018526"/>
@@ -24,16 +24,16 @@
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-nfa-to-dfa.py" info-request-time="1387873735L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1794649778"/>
-            </choice-list>
-        </test>
         <test title="Conversion to DFA - Special Case" time-sum-sec="0.10"> 
             <application file-name="test-nfa-to-dfa-special.py" info-request-time="1387873735L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.10" crc="1159177584"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-nfa-to-dfa.py" info-request-time="1387873735L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1794649778"/>
             </choice-list>
         </test>
     </group>

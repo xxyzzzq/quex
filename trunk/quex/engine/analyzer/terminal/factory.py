@@ -1,8 +1,9 @@
 # (C) Frank-Rene Schaefer
 from   quex.input.regular_expression.construct     import Pattern
-from   quex.engine.analyzer.terminal.core          import Terminal
+from   quex.engine.analyzer.terminal.core          import Terminal, TerminalGenerated
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
+import quex.engine.state_machine.index             as     index
 from   quex.engine.tools                           import typed
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
@@ -12,6 +13,8 @@ from   quex.blackboard import E_IncidenceIDs, setup as Setup, Lng, \
                               E_TerminalType
 
 import re
+import types
+from   copy import copy
 
 class TerminalFactory:
     """Factory for Terminal-s
@@ -201,6 +204,15 @@ class TerminalFactory:
         else:                  name = ThePattern.pattern_string()
 
         return Terminal(IncidenceId, code, name)
+
+    @typed(ThePattern=(None, Pattern), GeneratorFunction=types.FunctionType, Data=dict, Name=(str,unicode))
+    def do_generator(self, ThePattern, GeneratorFunction, Data, Name):
+        incidence_id = index.get_state_machine_id()
+        if ThePattern is not None:
+            prefix_code = [ self.get_counter_text(ThePattern) ]
+        else:
+            prefix_code = []
+        return TerminalGenerated(incidence_id, GeneratorFunction, Data, Name, prefix_code) 
 
     def get_lexeme_flags(self, Code):
         lexeme_begin_f     =    self.on_match.requires_lexeme_begin_f()      \

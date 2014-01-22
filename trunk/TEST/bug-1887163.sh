@@ -16,6 +16,6 @@ quex -i error-2.qx --engine Simple
 echo
 
 echo "Third Use Case:"
-quex -i error-3.qx --engine Simple
+quex -i error-3.qx --engine Simple # --debug-exception
 echo
 cd $tmp

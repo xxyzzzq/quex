@@ -177,11 +177,9 @@ class Pattern(object):
 
         if         self.__bipd_sm_to_be_inverted is not None \
            and not self.__bipd_sm_to_be_inverted.is_DFA_compliant(): 
-            self.__bipd_sm_to_be_inverted        = beautifier.do(self.__bipd_sm_to_be_inverted)
+            self.__bipd_sm_to_be_inverted = beautifier.do(self.__bipd_sm_to_be_inverted)
 
-
-        self.__bipd_sm = setup_backward_input_position_detector.do(self.__sm, 
-                                                                   self.__bipd_sm_to_be_inverted) 
+        self.__bipd_sm = beautifier.do(reverse.do(self.__bipd_sm_to_be_inverted))
 
     def cut_character_list(self, CharacterList):
         """Characters can only be cut, if transformation is done and 
@@ -317,9 +315,11 @@ class Pattern(object):
             return
         elif not sm.get_init_state().is_acceptance(): 
             return
+        if len(Name) == 0: name_str = "core pattern"
+        else:              name_str = Name
 
         msg = "The %s contains in a 'nothing is necessary' path in the state machine.\n"   \
-              % Name                                                                     + \
+              % name_str                                                                     + \
               "This means, that without reading a character the analyzer drops into\n"   + \
               "an acceptance state. "
 
