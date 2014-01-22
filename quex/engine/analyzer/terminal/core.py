@@ -6,6 +6,7 @@ import quex.engine.state_machine.index  as     index
 from   quex.engine.tools                import typed
 
 from   types import FunctionType, NoneType
+from   copy  import copy
 
 #__________________________________________________________________________
 #
@@ -59,13 +60,18 @@ class Terminal(Processor):
         return self.__code.requires_lexeme_begin_f()
 
 class TerminalGenerated(Terminal):
-    @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, LexemeBeginRequiredF=bool, Code=list)
-    def __init__(self, GeneratorFunction, Data, Name="", LexemeBeginRequiredF=False):
-        incidence_id = index.get_state_machine_id()
-        Terminal.__init__(self, incidence_id, CodeTerminal_NULL, Name, LexemeBeginRequiredF)
-        self.__generator = GeneratorFunction
-        self.__data      = Data
+    @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, Code=list)
+    def __init__(self, IncidenceId, GeneratorFunction, Data, Name="", PrefixCode=None):
+        Terminal.__init__(self, IncidenceId, CodeTerminal_NULL, Name)
+        self.__generator   = GeneratorFunction
+        self.__data        = Data
+        self.__prefix_code = PrefixCode
 
     def code(self, TheAnalyzer):
-        return self.__generator(self.__data, TheAnalyzer)
+        result = copy(self.__prefix_code)
+        result.extend(
+            self.__generator(self.__data, TheAnalyzer)
+        )
+        return result
+
 

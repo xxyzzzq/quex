@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.95" date="Thu Jan  9 12:24:10 2014">
+<test-database execution-time-sec="3.98" date="Mon Jan 20 18:54:34 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.10"> 
         <application file-name="test-pattern-matching.py" info-request-time="1387873736L" vanished="False"/>
@@ -25,14 +25,14 @@
            <choice name="pattern" result="OK" time_sec="0.12" crc="577634184"/>
         </choice-list>
     </test>
-    <test title="Operations" time-sum-sec="0.62"> 
+    <test title="Operations" time-sum-sec="0.63"> 
         <application file-name="test-operations.py" info-request-time="1387873736L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="0" result="OK" time_sec="0.09" crc="-492283134"/>
            <choice name="1" result="OK" time_sec="0.13" crc="-719213083"/>
            <choice name="2" result="OK" time_sec="0.16" crc="761785520"/>
            <choice name="3" result="OK" time_sec="0.15" crc="1834498166"/>
-           <choice name="special" result="FAIL" time_sec="0.09" crc="-1169111113"/>
+           <choice name="special" result="FAIL" time_sec="0.10" crc="-1169111113"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">

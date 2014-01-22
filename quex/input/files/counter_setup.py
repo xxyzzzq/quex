@@ -172,15 +172,14 @@ class Base:
         error_msg("Character set specification '%s' intersects" % Name, FH, 
                   DontExitF=True, WarningF=False)
         error_msg("with definition for '%s' at this place." % Before.name, 
-                  Before.file_name, Before.line_n)
+                  Before.sr)
 
     @staticmethod
     def _error_state_machine_intersection(Name, Before, FH):
         error_msg("Character set specification '%s' intersects with" % Name, FH, 
                   DontExitF=True, WarningF=False)
         error_msg("the ending of the pattern for '%s' at this place." % Before.name, 
-                  Before.file_name, Before.line_n,
-                  DontExitF=True, WarningF=False)
+                  Before.sr, DontExitF=True, WarningF=False)
         error_msg("Note, that 'newline' and cannot end with a character which is subject\n"
                   "to indentation counting (i.e. 'space' or 'grid').", FH)
 

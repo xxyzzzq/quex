@@ -12,8 +12,7 @@ from   quex.input.files.counter_db                     import CounterDB, \
 from   quex.engine.analyzer.commands                   import ColumnCountAdd, \
                                                               GotoDoorId
 from   quex.engine.analyzer.door_id_address_label      import DoorID
-from   quex.engine.analyzer.terminal.core              import TerminalGenerated, \
-                                                              Terminal
+from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
 from   quex.engine.generator.code.core                 import CodeTerminal, \
                                                               CodeTerminalOnMatch, \
@@ -59,6 +58,7 @@ from   copy        import deepcopy, copy
 from   collections import namedtuple
 from   operator    import itemgetter, attrgetter
 from   itertools   import islice
+import types
 
 class PatternPriority(object):
     """Description of a pattern's priority.
@@ -566,18 +566,26 @@ class Mode:
 
         self.__prepare_skip_range(ppt_list, 
                                   OptionsDb.value_sequence("skip_range"), 
-                                  MHI=-3)
+                                  MHI=-3, terminal_factory=terminal_factory, CounterDb=CounterDb)
         self.__prepare_skip_nested_range(ppt_list, 
                                          OptionsDb.value_sequence("skip_nested_range"), 
-                                         MHI=-3)
+                                         MHI=-3, terminal_factory=terminal_factory, CounterDb=CounterDb)
 
         self.__prepare_indentation_counter(ppt_list, 
                                            OptionsDb.value("indentation"), 
-                                           MHI=-1)
+                                           MHI=-1, terminal_factory=terminal_factory, CounterDb=CounterDb)
 
         # (*) Delete and reprioritize
         self.__perform_deletion(ppt_list, BaseModeSequence) 
         self.__perform_reprioritization(ppt_list, BaseModeSequence) 
+
+        # (*) re-assign incidence_ids
+        #     The incidence ids must be re-assigned according to the 
+        #     position in the list.
+        for priority, pattern, terminal in ppt_list:
+            new_incidence_id = index.get_sm_index()
+            pattern.set_incidence_id(new_incidence_id)
+            terminal.set_incidence_id(new_incidence_id)
 
         # (*) pattern list  <-- ppc list 
         pattern_list = self.__pattern_list_construct(ppt_list, 
@@ -665,7 +673,11 @@ class Mode:
             "counter_db":    CounterDb, 
             "character_set": character_set,
         }
-        terminal          = TerminalGenerated(skip_character_set.do, data, Name="Character Set Skipper")
+        # The terminal is not related to a pattern, because it is entered
+        # from the sub_terminals. Each sub_terminal relates to a sub character
+        # set.
+        terminal          = terminal_factory.do_generator(None, skip_character_set.do, 
+                                                          data, "Character Set Skipper")
         terminal_door_id  = DoorID.incidence(terminal.incidence_id())
         goto_terminal_str = Lng.GOTO(terminal_door_id)
         # Counting actions are added to the terminal automatically by the
@@ -688,22 +700,26 @@ class Mode:
             sub_terminal     = terminal_factory.do(E_TerminalType.MATCH_PATTERN, 
                                                    sub_incidence_id, 
                                                    code, pattern)
-            sub_terminal.set_name("Entry to 'skip': %s" % sub_terminal.name())
+            sub_terminal.set_name("Entry to 'skip': %s" % cmd_info.trigger_set.get_string("hex"))
+            assert sub_terminal.incidence_id() == sub_incidence_id
+            print "#sub_terminal:", sub_incidence_id
             ppt_list.append(PPT(priority, pattern, sub_terminal))
 
         return terminal
 
-    def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI):
+    def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppt_list, MHI, SkipRangeSetupList,  
-                                       skip_range.do, "skip range")
+                                       skip_range.do, "skip range", terminal_factory, CounterDb)
 
-    def __prepare_skip_nested_range(self, ppt_list, SkipNestedRangeSetupList, MHI):
+    def __prepare_skip_nested_range(self, ppt_list, SkipNestedRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
         self.__prepare_skip_range_core(ppt_list, MHI, SkipNestedRangeSetupList, 
-                                       skip_nested_range.do, "skip nested range")
+                                       skip_nested_range.do, "skip nested range", terminal_factory, CounterDb)
 
-    def __prepare_skip_range_core(self, ppt_list, MHI, SrSetup, CodeGeneratorFunction, SkipperName):
+    @typed(CodeGeneratorFunction=types.FunctionType)
+    def __prepare_skip_range_core(self, ppt_list, MHI, SrSetup, CodeGeneratorFunction, SkipperName,
+                                  terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
 
         if SrSetup is None or len(SrSetup) == 0:
@@ -716,11 +732,14 @@ class Mode:
 
             priority     = PatternPriority(MHI, i)
             pattern      = deepcopy(my_data["opener_pattern"])
-            terminal     = TerminalGenerated(CodeGeneratorFunction, my_data, Name=SkipperName)
+            pattern.prepare_count_info(CounterDb, 
+                                       Setup.buffer_codec_transformation_info)
+            terminal     = terminal_factory.do_generator(pattern, CodeGeneratorFunction, 
+                                                         my_data, SkipperName)
             pattern.set_incidence_id(terminal.incidence_id())
             ppt_list.append(PPT(priority, pattern, terminal))
 
-    def __prepare_indentation_counter(self, ppt_list, ISetup, MHI):
+    def __prepare_indentation_counter(self, ppt_list, ISetup, MHI, terminal_factory, CounterDb):
         """Prepare indentation counter. An indentation counter is implemented by the 
         following:
 
@@ -755,7 +774,7 @@ class Mode:
         #
         #  TODO: newline = newline/\C{newline suppressor}, i.e. a newline is only a
         #        newline if it is followed by something else than a newline suppressor.
-        ppc_suppressed_newline = None
+        ppt_suppressed_newline = None
         if ISetup.newline_suppressor_state_machine.get() is not None:
             pattern_str =   "(" + ISetup.newline_suppressor_state_machine.pattern_string() + ")" \
                           + "(" + ISetup.newline_state_machine.pattern_string() +            ")"
@@ -765,9 +784,11 @@ class Mode:
             priority = PatternPriority(MHI, 0)
             pattern  = Pattern(sm, IncidenceId=E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE, 
                                PatternStr=pattern_str)
+            pattern.prepare_count_info(CounterDb, 
+                                       Setup.buffer_codec_transformation_info)
             code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])
             terminal = terminal_factory.do(E_TerminalType.PLAIN, incidence_id, code)
-            ppt_list.append(PPT(priority, pattern, terminal))
+            ppt_suppressed_newline = PPT(priority, pattern, terminal)
 
 
         # When there is an empty line, then there shall be no indentation count on it.
@@ -790,13 +811,16 @@ class Mode:
             "indentation_setup": ISetup 
         }
 
-        if ppc_suppressed_newline is not None:
-            ppt_list.append(ppc_suppressed_newline)
+        if ppt_suppressed_newline is not None:
+            ppt_list.append(ppt_suppressed_newline)
 
         priority = PatternPriority(MHI, 1)
         pattern  = Pattern(sm)
+        pattern.prepare_count_info(CounterDb, 
+                                   Setup.buffer_codec_transformation_info)
         # pattern.set_incidence_id(IncidenceId=E_IncidenceIDs.INDENTATION_NEWLINE)
-        terminal = TerminalGenerated(indentation_counter.do, data)
+        terminal = terminal_factory.do_generator(pattern, indentation_counter.do, 
+                                                 data, "Indentation Counter")
         ppt_list.append(PPT(priority, pattern, terminal))
         return
 
@@ -1133,7 +1157,7 @@ def __parse_element(new_mode, fh):
     """
     position = fh.tell()
     try:
-        ##description = "pattern or event handler" 
+        description = "pattern or event handler" 
 
         skip_whitespace(fh)
         # NOTE: Do not use 'read_word' since we need to continue directly after
@@ -1147,12 +1171,12 @@ def __parse_element(new_mode, fh):
         if __parse_event(new_mode, fh, word): return True
 
         fh.seek(position)
-        ##description = "start of mode element: regular expression"
+        description = "start of mode element: regular expression"
         pattern     = regular_expression.parse(fh)
         pattern.set_source_reference(fh, position, new_mode.name)
 
         position    = fh.tell()
-        ##description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
+        description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
 
         __parse_action(new_mode, fh, pattern.pattern_string(), pattern)
 

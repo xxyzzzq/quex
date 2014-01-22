@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.66" date="Thu Jan  9 19:01:30 2014">
+<test-database execution-time-sec="5.41" date="Mon Jan 20 18:54:35 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.00"> 
         <application file-name="test-token_class.py" info-request-time="1387873736L" vanished="False"/>
@@ -7,16 +7,16 @@
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="3.22"> 
+        <test title="Default Implementation" time-sum-sec="2.98"> 
             <application file-name="default_counter.py" info-request-time="1389131584L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="Default-UCS" result="OK" time_sec="0.24" crc="465702767"/>
                <choice name="Default2-UCS" result="OK" time_sec="0.25" crc="-1162147153"/>
                <choice name="Wild-UCS" result="OK" time_sec="0.25" crc="722265215"/>
-               <choice name="Default-UTF8" result="FAIL" time_sec="0.29" crc="952987760"/>
-               <choice name="Default2-UTF8" result="FAIL" time_sec="0.34" crc="-885403101"/>
+               <choice name="Default-UTF8" result="FAIL" time_sec="0.21" crc="952987760"/>
+               <choice name="Default2-UTF8" result="FAIL" time_sec="0.22" crc="-885403101"/>
                <choice name="Wild-UTF8" result="OK" time_sec="0.32" crc="-794179234"/>
-               <choice name="Default-UTF16" result="FAIL" time_sec="0.24" crc="-160513910"/>
+               <choice name="Default-UTF16" result="FAIL" time_sec="0.19" crc="-160513910"/>
                <choice name="Default2-UTF16" result="OK" time_sec="0.26" crc="720108908"/>
                <choice name="Wild-UTF16" result="OK" time_sec="0.26" crc="1380808290"/>
                <choice name="Default-cp037" result="OK" time_sec="0.24" crc="-1809986843"/>
@@ -26,21 +26,12 @@
         </test>
     </group>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.26"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.25"> 
             <application file-name="test-converter-x.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="816612133"/>
                <choice name="2" result="OK" time_sec="0.09" crc="-1539714730"/>
                <choice name="3" result="OK" time_sec="0.08" crc="1282397399"/>
-            </choice-list>
-        </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="1.85"> 
-            <application file-name="test-converter-C.py" info-request-time="1387873736L" vanished="False"/>
-            <choice-list number="4" same_result="False">
-               <choice name="cp737" result="OK" time_sec="0.46" crc="1246986017"/>
-               <choice name="cp866" result="OK" time_sec="0.45" crc="822098519"/>
-               <choice name="cp1256" result="OK" time_sec="0.45" crc="1051252697"/>
-               <choice name="cp037" result="OK" time_sec="0.49" crc="1056223298"/>
             </choice-list>
         </test>
         <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.33"> 
@@ -50,6 +41,15 @@
                <choice name="2" result="OK" time_sec="0.09" crc="-1075785192"/>
                <choice name="3" result="OK" time_sec="0.08" crc="-1324094235"/>
                <choice name="4" result="OK" time_sec="0.08" crc="-489839902"/>
+            </choice-list>
+        </test>
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="1.85"> 
+            <application file-name="test-converter-C.py" info-request-time="1387873736L" vanished="False"/>
+            <choice-list number="4" same_result="False">
+               <choice name="cp737" result="OK" time_sec="0.46" crc="1246986017"/>
+               <choice name="cp866" result="OK" time_sec="0.45" crc="822098519"/>
+               <choice name="cp1256" result="OK" time_sec="0.45" crc="1051252697"/>
+               <choice name="cp037" result="OK" time_sec="0.49" crc="1056223298"/>
             </choice-list>
         </test>
     </group>

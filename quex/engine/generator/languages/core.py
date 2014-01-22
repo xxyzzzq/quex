@@ -380,7 +380,6 @@ class Lng_Cpp(dict):
             cpp._terminal_state_prolog
         ]
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
-            iid = terminal.incidence_id()
             text.append(
                "%s " % Lng.LABEL(DoorID.incidence(terminal.incidence_id())) \
                + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),

@@ -79,6 +79,7 @@ from   quex.blackboard       import E_Cmd, \
 from   collections import namedtuple
 from   operator    import attrgetter
 from   copy        import deepcopy, copy
+import types
 
 
 E_R = Enum("AcceptanceRegister",
@@ -383,11 +384,17 @@ def _cmd(Id, *ParameterList):
     global __content_db
     # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
     #       then return pointer to object in database.
-    L = len(ParameterList)
-    if   L == 0: 
+    content_type = __content_db[Id]
+    if content_type is None:
+        # No content
         content = None
+    elif isinstance(content_type, types.ClassType):
+        # Use 'real' constructor
+        content = content_type() 
     else:
-        content_type = __content_db[Id]
+        # A tuple that describes the usage of the 'namedtuple' constructor.
+        L = len(ParameterList)
+        assert L != 0
         if   L == 1: content = content_type(ParameterList[0])
         elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
         elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
@@ -443,16 +450,16 @@ def ColumnCountGridAdd(GridSize):
     return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, (Value, PointerName,ColumnNPerChunk))
+    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, PointerName,ColumnNPerChunk)
 
 def LineCountAdd(Value):
-    return _cmd(E_Cmd.LineCountAdd, (Value,))
+    return _cmd(E_Cmd.LineCountAdd, Value)
 
 def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return _cmd(E_Cmd.LineCountAddWithReferenceP, (Value, PointerName, ColumnNPerChunk))
+    return _cmd(E_Cmd.LineCountAddWithReferenceP, Value, PointerName, ColumnNPerChunk)
 
 def GotoDoorId(DoorId):
-    return _cmd(E_Cmd.GotoDoorId, (DoorId,))
+    return _cmd(E_Cmd.GotoDoorId, DoorId)
 
 def GotoDoorIdIfInputPEqualPointer(DoorId, PointerName):
     return _cmd(E_Cmd.GotoDoorIdIfInputPEqualPointer, DoorId, PointerName)
@@ -525,7 +532,7 @@ class CommandList(list):
         if accepter is None:
             accepter = Accepter()
             self.append(accepter)
-
+        
         return accepter
 
     def replace_position_registers(self, PositionRegisterMap):
