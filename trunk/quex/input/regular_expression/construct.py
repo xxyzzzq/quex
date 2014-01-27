@@ -5,9 +5,9 @@ from   quex.engine.state_machine.utf16_state_split  import ForbiddenRange
 import quex.engine.state_machine.character_counter  as character_counter
 import quex.engine.state_machine.setup_post_context as setup_post_context
 import quex.engine.state_machine.setup_pre_context  as setup_pre_context
-import quex.engine.state_machine.setup_backward_input_position_detector  as setup_backward_input_position_detector
 import quex.engine.state_machine.transformation        as     transformation
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
+import quex.engine.state_machine.algebra.reverse      as reverse
 from   quex.engine.misc.file_in  import error_msg
 #                                                         
 from   quex.engine.tools         import typed, print_callstack
@@ -202,6 +202,9 @@ class Pattern(object):
         # Make sure that a pattern is never transformed twice
         assert self.__alarm_transformed_f == False
         self.__alarm_transformed_f = True
+        print "#callstack:"
+        print_callstack()
+        print "#sm:", self.__sm
 
         # Transformation MUST be called before any pre-context or bipd
         # is mounted.

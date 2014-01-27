@@ -84,6 +84,7 @@ import types
 
 E_R = Enum("AcceptanceRegister",
            "Buffer",
+           "Indentation",
            "Column",
            "Input",
            "InputP",
@@ -109,11 +110,6 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __new__(self, Id, Content, Hash=None):
         if Hash is None: Hash = hash(Id) ^ hash(Content)
         return super(Command, self).__new__(self, Id, Content, Hash)
-
-    @staticmethod
-    def StoreInputPosition(PreContextID, PositionRegister, Offset):
-        return CommandFactory.do(E_Cmd.StoreInputPosition, (PreContextID, PositionRegister, Offset,))
-
 
     def clone(self):         
         if self.content is None:
@@ -331,16 +327,27 @@ def __configure():
     c(E_Cmd.LexemeStartToReferenceP,          ("pointer_name",), 
                                               (E_R.LexemeStartP,r+w), (E_R.Pointer,r,"pointer_name"))
     #
+    c(E_Cmd.IndentationAdd,                   ("value",),
+                                              (E_R.Indentation,r+w))
+    c(E_Cmd.IndentationGridAdd,               ("grid_size",),
+                                              (E_R.Indentation,r+w))
+    c(E_Cmd.IndentationReferencePSet,         ("pointer_name", "offset"),
+                                              (E_R.ReferenceP,w))
+    c(E_Cmd.IndentationReferencePDeltaAdd,    ("pointer_name", "indentation_n_per_chunk"),
+                                              (E_R.Indentation,r+w), (E_R.ReferenceP,r))
+    c(E_Cmd.IndentationGridAddWithReferenceP, ("grid_size", "pointer_name", "indentation_n_per_chunk"),
+                                              (E_R.Indentation,r+w), (E_R.ReferenceP,r+w))
+    #
+    c(E_Cmd.ColumnCountAdd,                   ("value",),
+                                              (E_R.Column,r+w))
+    c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
+                                              (E_R.Column,r+w))
     c(E_Cmd.ColumnCountReferencePSet,         ("pointer_name", "offset"),
                                               (E_R.ReferenceP,w))
     c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer_name", "column_n_per_chunk"),
                                               (E_R.Column,r+w), (E_R.ReferenceP,r))
-    c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
-                                              (E_R.Column,r+w))
     c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer_name", "column_n_per_chunk"),
                                               (E_R.Column,r+w), (E_R.ReferenceP,r+w))
-    c(E_Cmd.ColumnCountAdd,                   ("value",),
-                                              (E_R.Column,r+w))
     c(E_Cmd.LineCountAdd,                     ("value",),
                                               (E_R.Line,r+w))
     c(E_Cmd.LineCountAddWithReferenceP,       ("value", "pointer_name", "column_n_per_chunk"),

@@ -31,14 +31,18 @@ from   copy  import copy
 #__________________________________________________________________________
 class Terminal(Processor):
     @typed(Name=(str,unicode), Code=CodeTerminal)
-    def __init__(self, IncidenceId, Code, Name=""):
-        Processor.__init__(self, index.map_incidence_id_to_state_index(IncidenceId), Entry())
-        self.__incidence_id = IncidenceId
+    def __init__(self, Code, Name=""):
+        Processor.__init__(self, index.get(), Entry())
+        self.__incidence_id = None
         self.__code         = Code
         self.__name         = Name
 
     def incidence_id(self):
         return self.__incidence_id
+
+    def set_incidence_id(self, IncidenceId):
+        assert self.__incidence_id is None
+        self.__incidence_id = IncidenceId
 
     @typed(Name=(str,unicode))
     def set_name(self, Name):
@@ -61,8 +65,8 @@ class Terminal(Processor):
 
 class TerminalGenerated(Terminal):
     @typed(Name=(str,unicode), GeneratorFunction=FunctionType, Data=dict, Code=list)
-    def __init__(self, IncidenceId, GeneratorFunction, Data, Name="", PrefixCode=None):
-        Terminal.__init__(self, IncidenceId, CodeTerminal_NULL, Name)
+    def __init__(self, GeneratorFunction, Data, Name="", PrefixCode=None):
+        Terminal.__init__(self, CodeTerminal_NULL, Name)
         self.__generator   = GeneratorFunction
         self.__data        = Data
         self.__prefix_code = PrefixCode

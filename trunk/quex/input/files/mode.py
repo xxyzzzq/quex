@@ -7,13 +7,12 @@ from   quex.input.files.mode_option                    import OptionDB, \
                                                               SkipRangeData
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
-from   quex.input.files.counter_db                     import CounterDB, \
-                                                              CounterCoderData
-from   quex.engine.analyzer.commands                   import ColumnCountAdd, \
-                                                              GotoDoorId
+from   quex.input.files.counter_db                     import CounterDB
 from   quex.engine.analyzer.door_id_address_label      import DoorID
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
+from   quex.engine.analyzer.commands                   import ColumnCountAdd, \
+                                                              GotoDoorId
 from   quex.engine.generator.code.core                 import CodeTerminal, \
                                                               CodeTerminalOnMatch, \
                                                               CodeUser
@@ -311,7 +310,9 @@ class IncidenceDB(dict):
             terminal_type = terminal_type_db[incidence_id]
             code_terminal = CodeTerminal(code_fragment.get_code())
             assert terminal_type not in result
-            result[incidence_id] = factory.do(terminal_type, incidence_id, code_terminal)
+            terminal = factory.do(terminal_type, code_terminal)
+            terminal.set_incidence_id(incidence_id)
+            result[incidence_id] = terminal
 
         return result
 
@@ -471,7 +472,7 @@ class Mode:
         for pattern in pattern_list:
             if not pattern.transform(Setup.buffer_codec_transformation_info):
                 error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
-                          pattern.file_name, pattern.sr.line_n, DontExitF=True)
+                          pattern.sr, DontExitF=True)
 
         # (*) Cut the signalling characters from any pattern or state machine
         for pattern in pattern_list:
@@ -579,23 +580,16 @@ class Mode:
         self.__perform_deletion(ppt_list, BaseModeSequence) 
         self.__perform_reprioritization(ppt_list, BaseModeSequence) 
 
-        # (*) re-assign incidence_ids
-        #     The incidence ids must be re-assigned according to the 
-        #     position in the list.
-        for priority, pattern, terminal in ppt_list:
-            new_incidence_id = index.get_sm_index()
-            pattern.set_incidence_id(new_incidence_id)
-            terminal.set_incidence_id(new_incidence_id)
-
-        # (*) pattern list  <-- ppc list 
-        pattern_list = self.__pattern_list_construct(ppt_list, 
-                                                     CounterDb)
-
-        # (*) termina_db
+        # (*) terminal_db
+        #     ALSO: Assigns incidence ids according to position on list!
         terminal_db  = self.__prepare_terminals(ppt_list, 
                                                 IncidenceDb, 
                                                 skip_terminal, 
                                                 terminal_factory)
+
+        # (*) pattern list  <-- ppc list 
+        pattern_list = self.__pattern_list_construct(ppt_list, 
+                                                     CounterDb)
 
         return pattern_list, terminal_db, terminal_factory.required_default_counter_f
 
@@ -611,6 +605,15 @@ class Mode:
         A terminal consists plainly of an 'incidence_id' and a list of text which
         represents the code to be executed when it is reached.
         """
+        # (*) re-assign incidence_ids
+        #     The incidence ids must be re-assigned according to the 
+        #     position in the list.
+        for priority, pattern, terminal in PPT_List:
+            incidence_id = dial_db.new_incidence_id()
+            assert terminal.incidence_id() is None
+            pattern.set_incidence_id(incidence_id)
+            terminal.set_incidence_id(incidence_id)
+
         result = {}
 
         # Every pattern has a terminal for the case that it matches.
@@ -620,6 +623,7 @@ class Mode:
         )
 
         # Some incidences have their own terminal
+        # THEIR INCIDENCE ID REMAINS FIXED!
         result.update(
             IncidenceDb.extract_terminal_db(terminal_factory)
         )
@@ -678,31 +682,25 @@ class Mode:
         # set.
         terminal          = terminal_factory.do_generator(None, skip_character_set.do, 
                                                           data, "Character Set Skipper")
+        terminal.set_incidence_id(E_IncidenceIDs.SKIP)
         terminal_door_id  = DoorID.incidence(terminal.incidence_id())
         goto_terminal_str = Lng.GOTO(terminal_door_id)
         # Counting actions are added to the terminal automatically by the
         # terminal_factory. The only thing that remains for each sub-terminal:
         # 'goto skipper'.
-        ccd = CounterCoderData(CounterDb, character_set)
+        dummy, \
+        count_command_map = CounterDb.get_count_command_map(character_set)
 
-        def get_code(CmdInfo):
-            return 
-
-        for cli, cmd_info in ccd.count_command_map.iteritems():
-            sub_incidence_id = sm_index.get_state_machine_id()
-            priority         = PatternPriority(MHI, cli)
+        for cliid, cmd_info in ccd.count_command_map.iteritems():
+            priority         = PatternPriority(MHI, cliid)
             pattern          = Pattern.from_character_set(cmd_info.trigger_set)
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
-            pattern.set_incidence_id(sub_incidence_id)
             # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
             code             = CodeTerminal([ goto_terminal_str ])
             sub_terminal     = terminal_factory.do(E_TerminalType.MATCH_PATTERN, 
-                                                   sub_incidence_id, 
                                                    code, pattern)
             sub_terminal.set_name("Entry to 'skip': %s" % cmd_info.trigger_set.get_string("hex"))
-            assert sub_terminal.incidence_id() == sub_incidence_id
-            print "#sub_terminal:", sub_incidence_id
             ppt_list.append(PPT(priority, pattern, sub_terminal))
 
         return terminal
@@ -736,7 +734,6 @@ class Mode:
                                        Setup.buffer_codec_transformation_info)
             terminal     = terminal_factory.do_generator(pattern, CodeGeneratorFunction, 
                                                          my_data, SkipperName)
-            pattern.set_incidence_id(terminal.incidence_id())
             ppt_list.append(PPT(priority, pattern, terminal))
 
     def __prepare_indentation_counter(self, ppt_list, ISetup, MHI, terminal_factory, CounterDb):
@@ -787,7 +784,7 @@ class Mode:
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
             code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])
-            terminal = terminal_factory.do(E_TerminalType.PLAIN, incidence_id, code)
+            terminal = terminal_factory.do(E_TerminalType.PLAIN, code)
             ppt_suppressed_newline = PPT(priority, pattern, terminal)
 
 
@@ -846,7 +843,7 @@ class Mode:
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
             code     = CodeTerminalOnMatch(pap.action()) 
-            terminal = terminal_factory.do(E_TerminalType.MATCH_PATTERN, pattern.incidence_id(), code, pattern)
+            terminal = terminal_factory.do(E_TerminalType.MATCH_PATTERN, code, pattern)
             result.append(PPT(priority, pattern, terminal))
 
         return result

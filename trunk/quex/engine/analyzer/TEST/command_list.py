@@ -16,6 +16,8 @@ if "--hwut-info" in sys.argv:
     print "CHOICES:     2-1, no-common, all-common, misc;"
     sys.exit()
 
+sys.exit() # The whole test must be written again!
+
 def print_cl(name, CL):
     print "#%s:" % name
     print "    " + str(CL).replace("\n", "\n    ")

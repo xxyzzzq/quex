@@ -19,7 +19,8 @@ from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
                                                                 dial_db, \
-                                                                get_plain_strings
+                                                                get_plain_strings, \
+                                                                IfDoorIdReferencedCode
 from   quex.engine.misc.string_handling                  import blue_print
 from   quex.engine.misc.file_in                          import open_file_or_die, \
                                                                 write_safely_and_close
@@ -380,16 +381,15 @@ class Lng_Cpp(dict):
             cpp._terminal_state_prolog
         ]
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
-            text.append(
-               "%s " % Lng.LABEL(DoorID.incidence(terminal.incidence_id())) \
-               + "__quex_debug(\"* TERMINAL %s\\n\");\n" % terminal.name(),
-            )
-            code = terminal.code(TheAnalyzer)
-            assert none_isinstance(code, list), \
-                   "Terminal of class '%s' contains list element in code." \
-                   % terminal.__class__.__name__
-            text.extend(code)
-            text.append("\n")
+            door_id = DoorID.incidence(terminal.incidence_id())
+            t_txt = ["%s __quex_debug(\"* TERMINAL %s\\n\");\n" % \
+                     (Lng.LABEL(door_id), terminal.name())]
+            code  = terminal.code(TheAnalyzer)
+            assert none_isinstance(code, list)
+            t_txt.extend(code)
+            t_txt.append("\n")
+
+            text.append(IfDoorIdReferencedCode(door_id, t_txt))
         return text
 
     def ANALYZER_FUNCTION(self, ModeName, Setup, VariableDefs, 

@@ -24,11 +24,11 @@ import quex.engine.analyzer.engine_supply_factory      as     engine_supply_fact
 from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
 from   quex.input.files.counter_db                     import CounterDB, \
                                                               CounterCoderData
-from   quex.input.files.counter_setup                  import LineColumnCounterSetup_Default
 from   quex.input.regular_expression.construct         import Pattern
 import quex.output.cpp.counter_for_pattern             as     counter_for_pattern
 
 from   quex.engine.tools                               import all_isinstance, \
+                                                              all_true, \
                                                               none_is_None, \
                                                               typed
 from   quex.blackboard import E_IncidenceIDs, \
@@ -46,6 +46,8 @@ class EngineStateMachineSet:
     def __init__(self, PatternList): 
         assert isinstance(PatternList, list)
         assert all_isinstance(PatternList, Pattern)
+        assert all_true(PatternList, lambda p: p.incidence_id() is not None)
+
 
         # (*) Core SM, Pre-Context SM, ...
         #     ... and sometimes backward input position SMs.
@@ -272,8 +274,8 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
                                      LexemeF=MaintainLexemeF)
     analyzer, \
     terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
-    code          = state_machine_coder.do(analyzer)
 
+    code          = state_machine_coder.do(analyzer)
     code.extend(do_terminals(terminal_list, analyzer))
 
     if ReloadF and not GlobalReloadState:
@@ -283,10 +285,6 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
         variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
 
     variable_db.require("input") 
-    # Upon reload, the reference pointer may have to be added. When the reload is
-    # done the reference pointer needs to be reset. 
-    if ccd.column_count_per_chunk is not None:
-        variable_db.require("reference_p")
 
     return code
 
