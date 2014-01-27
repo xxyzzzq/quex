@@ -15,7 +15,7 @@ spec_txt = """
 
 fh = StringIO(spec_txt)
 fh.name    = "<string>"
-lcc_setup  = counter_setup.parse(fh, IndentationSetupF=False)
+lcc_setup  = counter_setup.parse_line_column_counter(fh)
 counter_db = CounterDB(lcc_setup)
 
 if "--hwut-info" in sys.argv:

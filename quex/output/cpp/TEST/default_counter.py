@@ -105,7 +105,7 @@ if lcc_setup is None:
     spec_txt += ">"
     fh = StringIO(spec_txt)
     fh.name = "<string>"
-    lcc_setup = counter_setup.parse(fh, IndentationSetupF=False)
+    lcc_setup = counter_setup.parse_line_column_counter(fh, IndentationSetupF=False)
 
 counter_db = CounterDB(lcc_setup)
 

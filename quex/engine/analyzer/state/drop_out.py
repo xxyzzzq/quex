@@ -252,7 +252,7 @@ class AcceptanceCheckerElement(object):
 
     def __init__(self, PreContextID, AcceptanceID):
         assert    isinstance(AcceptanceID, (int, long)) \
-               or AcceptanceID in E_IncidenceIDs
+               or AcceptanceID in E_IncidenceIDs, "%s" % AcceptanceID
         self.pre_context_id = PreContextID
         self.acceptance_id  = AcceptanceID
 

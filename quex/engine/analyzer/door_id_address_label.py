@@ -74,11 +74,11 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def transition_block(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
     @staticmethod                        
-    def global_state_router():             return DoorID(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
-    @staticmethod                        
     def incidence(IncidenceId):            return DoorID(index.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
     def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
+    @staticmethod                        
+    def global_state_router():             return DoorID(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
     @staticmethod                         
     def global_end_of_pre_context_check(): return DoorID(0L,         E_DoorIdIndex.GLOBAL_END_OF_PRE_CONTEXT_CHECK)
     @staticmethod
@@ -118,8 +118,8 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
 #______________________________________________________________________________
 AddressLabelPair = namedtuple("AddressLabelPair_tuple", ("address", "label"))
 
-class DialDB:
-    __slots__ = ( "__d2la", "__door_id_db", "__gotoed_address_set", "__routed_address_set" )
+class DialDB(object):
+    __slots__ = ( "__d2la", "__door_id_db", "__gotoed_address_set", "__routed_address_set", "__address_i", "__incidence_id_i" )
     def __init__(self):
         self.clear()
 
@@ -151,6 +151,9 @@ class DialDB:
 
         # Address counter to generate unique addresses
         self.__address_i = long(-1)
+
+        # Unique incidence id inside a mode
+        self.__incidence_id_i = long(-1)
 
     def routed_address_set(self):
         return self.__routed_address_set
@@ -231,6 +234,10 @@ class DialDB:
             return self.new_door_id(StateIndex, DoorSubIndex)
         else:
             return door_id
+
+    def new_incidence_id(self):
+        self.__incidence_id_counter += 1
+        return self.__incidence_id_counter
 
     def new_door_id(self, StateIndex=None, DoorSubIndex=None):
         door_id, alp = self.__new_entry(StateIndex, DoorSubIndex)

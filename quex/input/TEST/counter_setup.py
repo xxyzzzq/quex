@@ -5,7 +5,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
 
-import quex.input.files.counter_setup as     indentation
+import quex.input.files.counter_setup as     counter_setup
 from   quex.engine.misc.file_in       import EndOfStreamException, error_msg, error_eof
 
 if "--hwut-info" in sys.argv:
@@ -30,7 +30,7 @@ def test(Text):
     descr = None
     # descr = indentation.parse(sh, IndentationSetupF=False)
     try:    
-        descr = indentation.parse(sh, IndentationSetupF=False)
+        descr = counter_setup.parse_indentation(sh, IndentationSetupF=False)
         pass
 
     except EndOfStreamException:

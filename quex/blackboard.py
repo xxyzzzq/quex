@@ -193,6 +193,11 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "_DEBUG_DoorIdIndex") 
 
 E_Cmd = Enum("Accepter",
+                  "IndentationAdd",
+                  "IndentationGridAdd",
+                  "IndentationGridAddWithReferenceP",
+                  "IndentationReferencePSet",
+                  "IndentationReferencePDeltaAdd",
                   "ColumnCountAdd",
                   "ColumnCountGridAdd",
                   "ColumnCountGridAddWithReferenceP",

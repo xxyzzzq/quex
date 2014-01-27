@@ -3,8 +3,6 @@ from   quex.engine.analyzer.state.core            import Processor
 import quex.engine.generator.base                 as     generator
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.input.files.counter_db                import CountCmdInfo, \
-                                                         CounterCoderData
 from   quex.blackboard                            import setup as Setup
 
 def do(Data, TheAnalyzer):

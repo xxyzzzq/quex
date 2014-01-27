@@ -10,7 +10,7 @@ ISO8859_7_Lex.cpp: greek.qx
 	quex -i greek.qx         \
 		 --codec iso8859_7   \
 		 --token-id-prefix TKN_ \
-		 -o ISO8859_7_Lex
+		 -o ISO8859_7_Lex 
 
 iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
 	g++ -c -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
@@ -43,8 +43,8 @@ utf8-lexer: utf8-lexer.cpp
 		$<                       \
 		$(CCFLAG_ASSERTS)        \
 		UTF8Lex.cpp              \
+		-DQUEX_OPTION_DEBUG_SHOW \
 		-o $@
-		# -DQUEX_OPTION_DEBUG_SHOW \
 	
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

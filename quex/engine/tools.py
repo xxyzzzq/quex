@@ -170,6 +170,16 @@ def _get_value_check_function(Type):
             return is_ok
     return None
 
+def all_true(List, Condition):
+    for x in List:
+        if Condition(x) != True: return False
+    return True
+
+def none_true(List, Condition):
+    for x in List:
+        if Condition(x) == True: return False
+    return True
+
 def all_isinstance(List, Type):
     if Type is None: return True
     is_ok = _get_value_check_function(Type) # 'Type' is coded in 'is_ok'

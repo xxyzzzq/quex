@@ -7,10 +7,11 @@ from quex.engine.misc.file_in import get_current_line_info_number, \
                                      verify_word_in_list, \
                                      read_integer
 
-from   quex.engine.generator.code.base    import LocalizedParameter
-from   quex.engine.interval_handling      import NumberSet
-from   quex.engine.state_machine.core     import StateMachine
-import quex.input.regular_expression.core as     regular_expression
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.generator.code.base            import LocalizedParameter
+from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.state_machine.core             import StateMachine
+import quex.input.regular_expression.core         as     regular_expression
 
 class Base:
     def __init__(self, fh, Name, IdentifierList):
@@ -102,6 +103,80 @@ class Base:
         # Here, the space_db can have only one value. If it is '1' than 
         # the indentation is based soley on single spaces.
         return self.space_db.has_key(1)
+
+    def get_count_command_map(self, CharacterSet, ColumnNPerChunk=None):
+        """Returns a list of NumberSet objects where for each X of the list it holds:
+
+             (i)  X is subset of CharacterSet
+                   
+             (ii) It is related to a different counter action than Y,
+                  for each other object Y in the list.
+
+           RETURNS: 
+
+                        map:  CLIID -->  (NumberSet, CommandList)
+
+           NOTE: A 'CLIID' is a UNIQUE incidence id served by 'dial_db'. 
+                 => Can be used for terminals implementing the CommandList. 
+
+           where each entry means: "If an input character lies in NumberSet
+           then the counting action given by CommandList has to be executed.
+           The CommandList is distinctly associated with a CLIID, a command
+           list index.
+        """
+        ColumnNPerChunk = self.get_column_number_per_chunk(CharacterSet)
+
+        def pruned_iteritems(Db, CharacterSet):
+            for value, character_set in Db.iteritems():
+                if CharacterSet is None: pruned = character_set
+                else:                    pruned = character_set.intersection(CharacterSet)
+                if pruned.is_empty():    continue
+                yield value, pruned
+
+        def on_special(Delta):
+            if ColumnNPerChunk is None:  return ColumnCountAdd(Delta)
+            else:                        return None
+
+        def on_grid(GridStepN):
+            if ColumnNPerChunk is None:  return ColumnCountGridAdd(GridStepN)
+            else:                        return ColumnCountGridAddWithReferenceP(GridStepN, 
+                                                                                 self.iterator_name,
+                                                                                 ColumnNPerChunk)
+
+        def on_newline(Delta):
+            if ColumnNPerChunk is None: return LineCountAdd(Delta)
+            else:                       return LineCountAddWithReferenceP(Delta, 
+                                                                          self.iterator_name, 
+                                                                          ColumnNPerChunk)
+
+        result = {}
+        for delta, character_set in pruned_iteritems(self.special, CharacterSet):
+            cmd = on_special(delta)
+            if cmd is None: cl = CommandList()
+            else:           cl = CommandList(cmd)
+            result[dial_db.new_incidence_id()] = CountCmdInfo(character_set, cl, E_CharacterCountType.CHARACTER)
+
+        result.update(
+            (dial_db.new_incidence_id(),
+             CountCmdInfo(character_set, CommandList(on_grid(grid_step_n)), E_CharacterCountType.GRID))
+            for grid_step_n, character_set in pruned_iteritems(self.grid, CharacterSet)
+        )
+        result.update(
+            (dial_db.new_incidence_id(), 
+             CountCmdInfo(character_set, CommandList(on_newline(delta)), E_CharacterCountType.LINE))
+            for delta, character_set in pruned_iteritems(self.newline, CharacterSet)
+        )
+
+        if column_count_per_chunk is not None:
+            on_before_reload = [
+                ColumnCountReferencePDeltaAdd(self.iterator_name, 
+                                              self.column_count_per_chunk)
+            ]
+            on_after_reload = [
+                ColumnCountReferencePSet(self.iterator_name)
+            ]
+
+        return ColumnNPerChunk, result, on_before_reload, on_after_reload
 
     def consistency_check(self, fh):
         def check_grid_values_integer_multiples(GridDB):
@@ -400,7 +475,13 @@ class IndentationSetup(Base):
 
         return txt
 
-def parse(fh, IndentationSetupF):
+def parse_indentation(fh):
+    return __parse(fh, IndentationSetup(fh))
+
+def parse_line_column_counter(fh):
+    return __parse(fh, LineColumnCounterSetup(fh))
+
+def __parse(fh, result):
     """Parses pattern definitions of the form:
    
           [ \t]                                       => grid 4;
@@ -408,8 +489,6 @@ def parse(fh, IndentationSetupF):
 
        In other words the right hand side *must* be a character set.
     """
-    if IndentationSetupF: result = IndentationSetup(fh)
-    else:                 result = LineColumnCounterSetup(fh)
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #

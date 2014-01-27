@@ -20,6 +20,20 @@ def do(Data, Mode=None):
     
     Indentation Counter:
 
+                indentation = 0
+                column      = 0
+                       |
+                       |<------------------------.
+                .-------------.                  |
+                | INDENTATION |       indentation += count
+                | COUNTER     |       column      += count
+                '-------------'                  |
+                       |                         |
+                       +-------- whitspace -->---'
+                       |
+                   Re-Enter 
+                   Analyzer
+                                            
     An indentation counter is a single state that iterates to itself as long
     as whitespace occurs. During that iteration the column counter is adapted.
     There are two types of adaption:
@@ -41,6 +55,23 @@ def do(Data, Mode=None):
 
     IndentationSetup = Data["indentation_setup"]
     assert IndentationSetup.__class__.__name__ == "IndentationSetup"
+
+    if Setup.buffer_based_analyzis_f:
+        reload_f     = False
+        reload_state = None
+    else:
+        reload_f     = True
+        reload_state = TheAnalyzer.reload_state
+
+    result = generator.do_loop(counter_db, 
+                               AfterExitDoorId   = DoorID.continue_without_on_after_match(),
+                               CharacterSet      = character_set,
+                               CheckLexemeEndF   = False,
+                               ReloadF           = reload_f,
+                               GlobalReloadState = reload_state, 
+                               EngineType        = engine.FORWARD,
+                               MaintainLexemeF   = False)
+    assert isinstance(result, list)
 
     Mode = None
     if IndentationSetup.containing_mode_name() != "":
