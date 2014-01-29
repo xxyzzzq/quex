@@ -1,4 +1,5 @@
 from   quex.engine.misc.file_in                     import get_current_line_info_number
+from   quex.engine.counter                          import CounterSetupLineColumn
 from   quex.engine.interval_handling                import UnicodeInterval, Interval
 from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.utf16_state_split  import ForbiddenRange
@@ -104,7 +105,8 @@ class Pattern(object):
     def set_incidence_id(self, Id):
         self.__sm.set_id(Id)
 
-    def prepare_count_info(self, LineColumn_CounterDB, CodecTrafoInfo):                
+    @typed(CsLC=CounterSetupLineColumn)
+    def prepare_count_info(self, CsLC, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 
         on a UNICODE state machine--not on a possibly transformed codec state
@@ -112,15 +114,12 @@ class Pattern(object):
         """
         # Make sure that a pattern is NOT transformed before!
         assert self.__alarm_transformed_f == False
-
-        if self.__count_info is not None:
-            return self.__count_info
+        assert self.__count_info is None           
 
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = character_counter.do(self.__sm, 
-                                                 LineColumn_CounterDB, 
+        self.__count_info = character_counter.do(self.__sm, CsLC, 
                                                  self.pre_context_trivial_begin_of_line_f, 
                                                  CodecTrafoInfo)
         return self.__count_info

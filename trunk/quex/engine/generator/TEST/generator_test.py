@@ -379,15 +379,18 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     support_begin_of_line_f = False
     pattern_list            = []
     terminal_db             = {
-        E_IncidenceIDs.MATCH_FAILURE: Terminal(E_IncidenceIDs.MATCH_FAILURE, on_failure, "FAILURE"),
-        E_IncidenceIDs.END_OF_STREAM: Terminal(E_IncidenceIDs.END_OF_STREAM, on_failure, "END_OF_STREAM"),
+        E_IncidenceIDs.MATCH_FAILURE: Terminal(on_failure, "FAILURE"),
+        E_IncidenceIDs.END_OF_STREAM: Terminal(on_failure, "END_OF_STREAM"),
     }
+    terminal_db[E_IncidenceIDs.MATCH_FAILURE].set_incidence_id(E_IncidenceIDs.MATCH_FAILURE)
+    terminal_db[E_IncidenceIDs.END_OF_STREAM].set_incidence_id(E_IncidenceIDs.END_OF_STREAM)
     for pattern_str, action_str in PatternActionPairList:
         pattern                  =  regex.do(pattern_str, PatternDictionary)
         support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
         pattern_list.append(pattern)
-        name     = TerminalFactory.name_pattern_match_terminal(pattern.incidence_id(), pattern_str)
-        terminal = Terminal(pattern.incidence_id(), action(action_str), name)
+        name     = TerminalFactory.name_pattern_match_terminal(pattern_str)
+        terminal = Terminal(action(action_str), name)
+        terminal.set_incidence_id(pattern.incidence_id())
         terminal_db[pattern.incidence_id()] = terminal
 
     # -- create default action that prints the name and the content of the token
@@ -407,7 +410,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     Setup.analyzer_class_name = sm_name
 
     for pattern in pattern_list:
-        pattern.prepare_count_info(CounterSetupLineColumn_Default()), CodecTrafoInfo=None)
+        pattern.prepare_count_info(CounterSetupLineColumn_Default(), CodecTrafoInfo=None)
         pattern.mount_post_context_sm()
         pattern.mount_pre_context_sm()
         pattern.cut_character_list(signal_character_list(Setup))
