@@ -1,4 +1,4 @@
-import quex.input.files.counter_setup     as     counter_setup
+import quex.input.files.counter           as     counter
 import quex.input.regular_expression.core as     regular_expression
 from   quex.engine.counter_db             import CounterSetupLineColumn_Default
 from   quex.engine.tools                  import all_isinstance
@@ -261,11 +261,11 @@ def parse(fh, new_mode):
         value = __parse_range_skipper_option(fh, identifier, new_mode)
         
     elif identifier == "indentation":
-        value = counter_setup.parse_indentation(fh)
+        value = counter.parse_indentation(fh)
         value.set_containing_mode_name(new_mode.name)
 
     elif identifier == "counter":
-        value = counter_setup.parse_line_column_counter(fh)
+        value = counter.parse_line_column_counter(fh)
 
     elif identifier in ("entry", "exit", "restrict"):
         value = read_option_value(fh, ListF=True) # A 'list' of strings

@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine    as     core
-import quex.input.files.counter_setup          as     counter_setup
+import quex.input.files.counter                as     counter
 from   quex.engine.counter_db                  import CounterSetupLineColumn_Default
 from   quex.engine.interval_handling           import NumberSet, Interval
 import quex.engine.generator.languages.core    as     languages
@@ -102,7 +102,7 @@ if counter_db is None:
     spec_txt += ">"
     fh = StringIO(spec_txt)
     fh.name = "<string>"
-    counter_db = counter_setup.parse_line_column_counter(fh, IndentationSetupF=False)
+    counter_db = counter.parse_line_column_counter(fh, IndentationSetupF=False)
 
 # (*) Execute the Test ________________________________________________________
 
