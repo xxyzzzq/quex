@@ -1,6 +1,6 @@
 import quex.input.files.counter           as     counter
 import quex.input.regular_expression.core as     regular_expression
-from   quex.engine.counter_db             import CounterSetupLineColumn_Default
+from   quex.engine.counter                import CounterSetupLineColumn_Default
 from   quex.engine.tools                  import all_isinstance
 from   quex.engine.generator.code.base    import SourceRef
 from   quex.engine.tools                  import typed

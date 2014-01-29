@@ -8,7 +8,7 @@ from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.generator.code.base             import CodeFragment
 from   quex.engine.state_machine.core              import StateMachine
-from   quex.engine.counter_db                      import CounterSetupLineColumn_Default
+from   quex.engine.counter                         import CounterSetupLineColumn_Default
 from   quex.input.regular_expression.construct     import Pattern
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
