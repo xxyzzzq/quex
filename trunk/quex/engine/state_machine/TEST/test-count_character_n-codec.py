@@ -5,8 +5,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine as     core
-import quex.input.files.counter_setup       as     counter_setup
-from   quex.input.files.counter_db          import CounterDB
+import quex.input.files.counter             as     counter
 from   StringIO                             import StringIO
 
 spec_txt = """
@@ -16,8 +15,7 @@ spec_txt = """
 
 fh = StringIO(spec_txt)
 fh.name    = "<string>"
-lcc_setup  = counter_setup.parse_line_column_counter(fh, IndentationSetupF=False)
-counter_db = CounterDB(lcc_setup)
+counter_db = counter.parse_line_column_counter(fh, IndentationSetupF=False)
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Codec Engine"
