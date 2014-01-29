@@ -11,6 +11,8 @@ from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.code.base            import LocalizedParameter
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
+from   quex.engine.counter                        import CounterSetupIndentation, \
+                                                         CounterSetupIndentation
 import quex.input.regular_expression.core         as     regular_expression
 
 class Base:
