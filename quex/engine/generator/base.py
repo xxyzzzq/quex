@@ -22,8 +22,6 @@ import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.analyzer.state.core                 import ReloadState
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
-from   quex.input.files.counter                        import CounterDB, \
-                                                              CounterCoderData
 from   quex.input.regular_expression.construct         import Pattern
 import quex.output.cpp.counter_for_pattern             as     counter_for_pattern
 

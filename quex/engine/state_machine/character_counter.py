@@ -118,7 +118,7 @@ def do(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
 
                 .newline
                 .grid
-                .special 
+                .column 
 
     RESTRICTION _______________________________________________________________
 
@@ -379,7 +379,7 @@ class Count(object):
 
         # (*) Column Numbering
         #     Still, 'self.column_n_increment != E_Count.VOID'. Otherwise, 'return' was triggered.
-        for delta, character_set in Count.counter_db.special.iteritems():
+        for delta, character_set in Count.counter_db.column.iteritems():
             if character_set.is_superset(CharacterSet):
                 # 'CharacterSet' does not contain anything beyond 'character_set'
                 Count.line_n_increment_by_lexeme_length   <<= 0

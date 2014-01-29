@@ -31,23 +31,6 @@ class Base:
         self.name                   = Name
         self.__containing_mode_name = ""
 
-    def _seal(self, AllCharSet, ParameterBad=None):
-        if len(self.space_db) != 0 or len(self.grid_db) != 0:
-            # If spaces ore grids (or both) are defined, then it can be 
-            # assumed that the specification as is, is intended
-            return
-
-        default_space = ord(' ')
-        default_tab   = ord('\t')
-        Bad           = None if ParameterBad is None else ParameterBad.get()
-        if len(self.space_db) == 0:
-            if (Bad is None or not Bad.contains(default_space)) and not AllCharSet.contains(default_space):
-                self.specify_space("[ ]", NumberSet(default_space), 1, self.fh)
-
-        if len(self.grid_db) == 0:
-            if (Bad is None or not Bad.contains(default_tab)) and not AllCharSet.contains(default_tab):
-                self.specify_grid("[\\t]", NumberSet(default_tab), 4, self.fh)
-
     def set_containing_mode_name(self, ModeName):
         assert isinstance(ModeName, (str, unicode))
         self.__containing_mode_name = ModeName
@@ -66,9 +49,8 @@ class Base:
         parameter.set(Value, FH)
         parameter.set_pattern_string(PatternStr)
 
-    def specify_space(self, PatternStr, CharSet, Count, FH=-1):
-        if not isinstance(CharSet, NumberSet):
-            CharSet = extract_trigger_set(FH, "space", Pattern=CharSet)
+    def specify_space(self, Pattern, Count, FH=-1):
+        CharSet = extract_trigger_set(FH, "space", Pattern)
 
         self._check("space", self.space_db, CharSet, FH, Key=Count)
 
@@ -79,9 +61,8 @@ class Base:
         else:
             self.space_db[Count] = LocalizedParameter("space", CharSet, FH, PatternStr)
 
-    def specify_grid(self, PatternStr, CharSet, Count, FH=-1):
-        if not isinstance(CharSet, NumberSet):
-            CharSet = extract_trigger_set(FH, "grid", Pattern=CharSet)
+    def specify_grid(self, Pattern, Count, FH=-1):
+        CharSet = extract_trigger_set(FH, "grid", Pattern)
 
         self._check("grid", self.grid_db, CharSet, FH, Key=Count)
 
@@ -296,28 +277,6 @@ class ParserDataLineColumn(Base):
         self.newline_db = {}
 
     def seal(self, DefaultSpaceSpec, FH):
-        all_char_set = NumberSet(  _extract_interval_lists(self.space_db) 
-                                 + _extract_interval_lists(self.grid_db)
-                                 + _extract_interval_lists(self.newline_db))
-        Base._seal(self, all_char_set)
-
-        default_newline = ord('\n')
-        if len(self.newline_db) == 0:
-            default_newline  = NumberSet(ord('\n'))
-            newline_char_set = default_newline.clone() # In case, it is going to be defined elsewhere
-            # default_newline = NumberSet([Interval(0x0A), # Line Feed 
-            #                  Interval(0x0B),            # Vertical Tab 
-            #                  Interval(0x0C),            # Form Feed 
-            #                  #        0x0D              --> set to '0' newlines, left out.
-            #                  Interval(0x85),            # Next Line 
-            #                  Interval(0x2028),          # Line Separator 
-            #                  Interval(0x2029)])         # Paragraph Separator 
-            # self.specify_newline("[\x0A\x0B\x0C\x85\X2028\X2029]", 
-
-            # Collect all characters mentioned in 'space_db' and 'grid_db'
-            newline_char_set.subtract(all_char_set)
-            if not newline_char_set.is_empty():
-                self.specify_newline("[\\n]", newline_char_set, 1, self.fh)
 
         if DefaultSpaceSpec is not None:
             # Collect all characters mentioned in 'space_db', 'grid_db', 'newline_db'
@@ -339,9 +298,8 @@ class ParserDataLineColumn(Base):
             if character_set.get().has_intersection(Setting): 
                 Base._error_character_set_intersection(Name, character_set, FH)
 
-    def specify_newline(self, PatternStr, CharSet, Count, FH=-1):
-        if not isinstance(CharSet, NumberSet):
-            CharSet = extract_trigger_set(FH, "newline", Pattern=CharSet)
+    def specify_newline(self, Pattern, CharSet, Count, FH=-1):
+        CharSet = extract_trigger_set(FH, "newline", Pattern)
 
         self._check("newline", self.newline_db, CharSet, FH, Key=Count)
 
@@ -350,7 +308,7 @@ class ParserDataLineColumn(Base):
         if entry is not None:
             entry.get().unite_with(CharSet)
         else:
-            self.newline_db[Count] = LocalizedParameter("newline", CharSet, FH, PatternStr)
+            self.newline_db[Count] = LocalizedParameter("newline", CharSet, FH, Pattern.pattern_string())
 
     def __repr__(self):
         txt  = Base.__repr__(self)
@@ -369,18 +327,6 @@ class ParserDataIndentation(Base):
         all_char_set = NumberSet(  _extract_interval_lists(self.space_db) 
                                  + _extract_interval_lists(self.grid_db))
         Base._seal(self, all_char_set, self.bad_character_set)
-
-        if len(self.space_db) == 0 and len(self.grid_db) == 0:
-            error_msg("No space or grid defined for indentation counting. Default\n"
-                      "values ' ' and '\\t' could not be used since they are specified as 'bad'.",
-                      self.file_name, self.line_n)
-
-        if self.newline_state_machine.get() is None:
-            sm      = StateMachine()
-            end_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\n')), AcceptanceF=True)
-            mid_idx = sm.add_transition(sm.init_state_index, NumberSet(ord('\r')), AcceptanceF=False)
-            sm.add_transition(mid_idx, NumberSet(ord('\n')), end_idx, AcceptanceF=False)
-            self.specify_newline("(\\r\\n)|(\\n)", sm, self.fh)
 
     def _error_if_intersection(self, Setting, FH, Name):
         if Name == "suppressor":
@@ -431,17 +377,11 @@ class ParserDataIndentation(Base):
 
         self._specify(self.bad_character_set, CharSet, PatternStr, FH)
 
-    def specify_newline(self, PatternStr, SM, FH=-1):
-        if not isinstance(SM, StateMachine):
-            SM = SM.sm
-
-        self._specify(self.newline_state_machine, SM, PatternStr, FH)
+    def specify_newline(self, Pattern, FH=-1):
+        self._specify(self.newline_state_machine, Pattern.sm, Pattern.pattern_string(), FH)
 
     def specify_suppressor(self, PatternStr, SM, FH=-1):
-        if not isinstance(SM, StateMachine):
-            SM = SM.sm
-
-        self._specify(self.newline_suppressor_state_machine, SM, PatternStr, FH)
+        self._specify(self.newline_suppressor_state_machine, Pattern.sm, Pattern.pattern_string(), FH)
 
     def indentation_count_character_set(self):
         """Returns the superset of all characters that are involved in
@@ -478,12 +418,27 @@ class ParserDataIndentation(Base):
         return txt
 
 def parse_line_column_counter(fh):
-    result = __parse(fh, ParserDataLineColumn(fh))
-    return CounterSetupLineColumn(result)
+    result, default_column_n_per_char = __parse(fh, ParserDataLineColumn(fh))
+    return CounterSetupLineColumn(result, default_column_n_per_char)
 
 def parse_indentation(fh):
-    result = __parse(fh, ParserDataIndentation(fh))
+    result, default_column_n_per_char = __parse(fh, ParserDataIndentation(fh))
     return CounterSetupIndentation(result)
+
+def __parse_definition_head(fh, result):
+
+    if check(fh, "\\default"): pattern = None
+    else:                      pattern = regular_expression.parse(fh)
+
+    skip_whitespace(fh)
+    check_or_die(fh, "=>", " after character set definition.")
+
+    skip_whitespace(fh)
+    identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
+
+    verify_word_in_list(identifier, result.identifier_list, 
+                        "Unrecognized indentation specifier '%s'." % identifier, fh)
+    skip_whitespace(fh)
 
 def __parse(fh, result):
     """Parses pattern definitions of the form:
@@ -498,7 +453,7 @@ def __parse(fh, result):
     #
     skip_whitespace(fh)
 
-    default_space_spec = 1 # Define spacing of remaining characters
+    default_column_n_per_char = 1 # Define spacing of remaining characters
     while 1 + 1 == 2:
         skip_whitespace(fh)
 
@@ -506,63 +461,43 @@ def __parse(fh, result):
             break
         
         # A regular expression state machine
-        if check(fh, "\\default"):
-            pattern_str, pattern = "\\default", None
-        else:
-            pattern = regular_expression.parse(fh)
-            pattern_str = pattern.pattern_string()
-            assert pattern is not None
-
-        skip_whitespace(fh)
-        check_or_die(fh, "=>", " after character set definition.")
-
-        skip_whitespace(fh)
-        identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
-
-        verify_word_in_list(identifier, result.identifier_list, 
-                            "Unrecognized indentation specifier '%s'." % identifier, fh)
-
+        pattern, identifier = __parse_definition_head(fh, result)
         if pattern is None:
             # The '\\default' only has meaning for 'space' in a counter setup
             if identifier != "space":
                 error_msg("Keyword '\\default' can only be used for definition of 'space'.", fh)
             elif IndentationSetupF:
                 error_msg("Keyword '\\default' cannot be used in indentation setup.", fh)
-            default_space_spec = read_value_specifier(fh, "space", 1)
+            default_column_n_per_char = read_value_specifier(fh, "space", 1)
+
         else:
             # The following treats ALL possible identifiers, including those which may be 
             # inadmissible for a setup. 'verify_word_in_list()' would abort in case that
             # an inadmissible identifier has been found--so there is no harm.
-            skip_whitespace(fh)
             if identifier == "space":
                 value = read_value_specifier(fh, "space", 1)
-                result.specify_space(pattern_str, pattern, value, fh)
+                result.specify_space(pattern, value, fh)
             elif identifier == "grid":
                 value = read_value_specifier(fh, "grid")
-                result.specify_grid(pattern_str, pattern, value, fh)
+                result.specify_grid(pattern, value, fh)
             elif identifier == "bad":
-                result.specify_bad(pattern_str, pattern, fh)
+                result.specify_bad(pattern, fh)
             elif identifier == "newline":
                 if IndentationSetupF:
-                    result.specify_newline(pattern_str, pattern, fh)
+                    result.specify_newline(pattern, fh)
                 else:
                     value = read_value_specifier(fh, "newline", 1)
-                    result.specify_newline(pattern_str, pattern, value, fh)
+                    result.specify_newline(pattern, value, fh)
             elif identifier == "suppressor":
-                result.specify_suppressor(pattern_str, pattern, fh)
+                result.specify_suppressor(pattern, fh)
             else:
                 assert False, "Unreachable code reached."
 
         if not check(fh, ";"):
             error_msg("Missing ';' after '%s' specification." % identifier, fh)
 
-    if IndentationSetupF:
-        assert default_space_spec is 1
-        result.seal()
-    else:
-        result.seal(default_space_spec, fh)
     result.consistency_check(fh)
-    return result
+    return result, default_column_n_per_char
 
 def read_value_specifier(fh, Keyword, Default=None):
     skip_whitespace(fh)

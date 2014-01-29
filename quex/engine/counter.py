@@ -1,33 +1,23 @@
-def _adapt(db):
-    return dict((count, parameter.get()) 
-                for count, parameter in db.iteritems())
-
-class CounterSetupIndentation(object):
-    def __init__(self, IndSetup):
-        self.special               = _adapt(IndSetup.space_db)
-        self.grid                  = _adapt(IndSetup.grid_db)
-        self.sm_newline            = IndSetup.newline_state_machine
-        self.sm_newline_suppressor = IndSetup.newline_state_machine
-        self.bad_character_set     = IndSetup.bad_character_set.get()
-
-    def homogeneous_spaces(self):
-        # Note, from about the grid_db does not accept grid values of '1'
-        if   len(self.grid_db) != 0:   return False
-        elif len(self.space_db) != 1 : return False
-        # Here, the space_db can have only one value. If it is '1' than 
-        # the indentation is based soley on single spaces.
-        return self.space_db.has_key(1)
+from  quex.engine.interval_handling import NumberSet
 
 class CounterSetupLineColumn(object):
-    # 'CounterDB' maps from counts to the character set that is involved.
-    __slots__ = ("special", "grid", "newline")
+    __slots__ = ("column", "grid", "newline")
 
-    def __init__(self, LccSetup):
+    def __init__(self, LccSetup=None, DefaultColumNPerCharacter=None, SourceReference=None):
         """Generate a counter db from a line column counter setup."""
-        assert LCC_Setup is not None
-        self.special = _adapt(LccSetup.space_db)
-        self.grid    = _adapt(LccSetup.grid_db)
-        self.newline = _adapt(LccSetup.newline_db)
+        assert SourceReference is not None
+
+        self.sr = SourceReference
+        if LccSetup is None:
+            self.column  = {}
+            self.grid    = {}
+            self.newline = {}
+        else:
+            self.column  = _adapt(LccSetup.space_db)
+            self.grid    = _adapt(LccSetup.grid_db)
+            self.newline = _adapt(LccSetup.newline_db)
+
+        self.defaultize(DefaultColumNPerCharacter)
 
     def get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes
@@ -93,7 +83,6 @@ class CounterSetupLineColumn(object):
             else:                        return ColumnCountGridAddWithReferenceP(GridStepN, 
                                                                                  self.iterator_name,
                                                                                  ColumnNPerChunk)
-
         def on_newline(Delta):
             if ColumnNPerChunk is None: return LineCountAdd(Delta)
             else:                       return LineCountAddWithReferenceP(Delta, 
@@ -129,13 +118,112 @@ class CounterSetupLineColumn(object):
 
         return ColumnNPerChunk, result, on_before_reload, on_after_reload
 
-_CounterDb_Default = None
-def CounterDb_Default():
-    global _CounterDb_Default
+    def defaultize(self, DefaultColumNPerCharacter):
+        all_set = _get_all_character_set(self.column, self.grid, self.newline)
 
-    if _CounterDb_Default is not None:
-        default = CounterSetupLineColumn()
-        default.seal(DefaultSpaceSpec=1, FH=-1)
-        _CounterDb_Default = CounterDB(default)
-    return _CounterDb_Default
+        self.column, \
+        self.grid    = _defaultize_column_and_grid(self.column, self.grid, all_set)
+        self.newline = _defaultize_if_admissible(self.newline, 1, ord('\n'), all_set)
+
+
+class CounterSetupIndentation(object):
+    __slots__ = ("special", "grid", "sm_newline", "sm_newline_suppressor", "bad_character_set")
+    def __init__(self, IndSetup, SourceReference):
+        self.sr                    = SourceReference
+        self.column                = _adapt(IndSetup.space_db)
+        self.grid                  = _adapt(IndSetup.grid_db)
+        self.sm_newline            = IndSetup.newline_state_machine
+        self.sm_newline_suppressor = IndSetup.newline_suppressor_state_machine
+        self.bad_character_set     = IndSetup.bad_character_set.get()
+
+        self.defaultize()
+
+    def homogeneous_spaces(self):
+        # Note, from about the grid_db does not accept grid values of '1'
+        if   len(self.grid) != 0:   return False
+        elif len(self.column) != 1 : return False
+        # Here, the column can have only one value. If it is '1' than 
+        # the indentation is based soley on single spaces.
+        return self.column.has_key(1)
+
+    def defaultize(self):
+        all_set = _get_all_character_set(self.column, self.grid)
+        all_set.unite_with(self.bad_character_set)
+
+        self.column, \
+        self.grid   = _defaultize_column_and_grid(self.column, self.grid, all_set)
+
+        if len(self.column) == 0 and len(self.grid) == 0:
+            error_msg("No space or grid defined for indentation counting. Default\n"
+                      "values ' ' and '\\t' could not be used since they are specified as 'bad'.",
+                      self.sr)
+
+        self.sm_newline = self.defaultize_sm_newline(all_set)
+
+    def defaultize_sm_newline(self, all_set):
+        if self.sm_newline is not None:
+            return self.sm_newline
+
+        newline     = ord('\n')
+        retour      = ord('\r')
+        newline_set = NumberSet(newline)
+        retour_set  = NumberSet(retour)
+        end_idx     = None
+        sm          = StateMachine()
+        if not all_set.contains(newline):
+            end_idx = sm.add_transition(sm.init_state_index, newline_set, AcceptanceF=True)
+            all_set.unite_with(newline_set)
+
+        if not all_set.contains(retour):
+            all_set.unite_with(retour_set)
+            mid_idx = sm.add_transition(sm.init_state_index, retour_set, AcceptanceF=False)
+            sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
+        return sm
+
+
+_CounterSetupLineColumn_Default = None
+def CounterSetupLineColumn_Default():
+    global _CounterSetupLineColumn_Default
+    if _CounterSetupLineColumn_Default is None:
+        _CounterSetupLineColumn_Default = CounterSetupLineColumn()
+    return _CounterSetupLineColumn_Default
+
+def _adapt(db):
+    return dict((count, parameter.get()) for count, parameter in db.iteritems())
+
+def _get_all_character_set(*DbList):
+    result = NumberSet()
+    for db in DbList:
+        for character_set in db.itervalues():
+            result.unite_with(character_set)
+    return result
+
+def _is_admissible(db, DefaultChar, AllCharSet, Bad):
+    if   len(db) != 0:                                  return False
+    elif Bad is not None and Bad.contains(DefaultChar): return False
+    elif AllCharSet.contains(DefaultChar):              return False
+    else:                                               return True
+
+def _defaultize_if_admissible(db, Count, DefaultChar, all_set, Bad=None):
+    """'all_set' is adpated, for further investigations.
+    """
+    if len(db) != 0:
+        return
+    if _is_admissible(db, DefaultChar, all_set, Bad):
+        default_set = NumberSet(DefaultChar)
+        all_set.unite_with(default_set)         # ADAPT 'all_set'
+        return { Count: NumberSet(DefaultChar) } 
+    else:
+        return {}
+
+def _defaultize_column_and_grid(column, grid, all_set, Bad=None):
+    """Note, that 'all_set' is adapted if default values are inserted.
+    """
+    if len(column) == 0 and len(grid) == 0:
+        # If columns ore grids (or both) are defined, then it can be 
+        # assumed that the specification as is, is intended
+        column = _defaultize_if_admissible(column, 1, ord(' '), all_set, Bad)
+        grid   = _defaultize_if_admissible(grid, 4, ord('\t'), all_set, Bad)
+    return column, grid
+
 

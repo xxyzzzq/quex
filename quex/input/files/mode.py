@@ -378,7 +378,7 @@ class Mode:
         incidence_db = IncidenceDB.from_BaseModeSequence(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        counter_db = CounterDB(options_db.value("counter"))
+        counter_db = options_db.value("counter")
         self.__indentation_setup = None
 
         # Intermediate Step: Priority-Pattern-Terminal List (PPT list)
@@ -440,7 +440,7 @@ class Mode:
     def match_indentation_counter_newline_pattern(self, Sequence):
         if self.__indentation_setup is None: return False
 
-        return self.__indentation_setup.newline_state_machine.get().does_sequence_match(Sequence)
+        return self.__indentation_setup.sm_newline.does_sequence_match(Sequence)
 
     def __is_abstract(self, IncidenceDb, OriginalOptionDb):
         """If the mode has incidences and/or patterns defined it is free to be 

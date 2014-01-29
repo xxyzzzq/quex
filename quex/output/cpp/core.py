@@ -8,7 +8,7 @@ from   quex.engine.generator.base                  import EngineStateMachineSet
 import quex.engine.generator.base                  as     generator
 from   quex.engine.tools                           import all_isinstance, typed
 from   quex.input.regular_expression.construct     import Pattern
-from   quex.input.files.counter_db                 import CounterSetupLineColumn
+from   quex.engine.counter                         import CounterSetupLineColumn
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, \
                                                           E_IncidenceIDs, \
