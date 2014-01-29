@@ -42,45 +42,6 @@ from   collections import namedtuple
 CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "cc_type"))
 # cc_type = (E_CharacterCountType)
 
-class CounterDB:
-    # 'CounterDB' maps from counts to the character set that is involved.
-    __slots__ = ("special", "grid", "newline")
-
-    def __init__(self, LCC_Setup):
-        """Generate a counter db from a line column counter setup."""
-        assert LCC_Setup is not None
-        def adapt(db):
-            return dict((count, parameter.get()) for count, parameter in db.iteritems())
-        self.special = adapt(LCC_Setup.space_db)
-        self.grid    = adapt(LCC_Setup.grid_db)
-        self.newline = adapt(LCC_Setup.newline_db)
-
-    def get_column_number_per_chunk(self, CharacterSet):
-        """Considers the counter database which tells what character causes
-        what increment in line and column numbers. However, only those characters
-        are considered which appear in the CharacterSet. 
-
-        'CharacterSet' is None: All characters considered.
-
-        If the special character handling column number increment always
-        add the same value the return value is not None. Else, it is.
-
-        RETURNS: None -- If there is no distinct column increment 
-                 >= 0 -- The increment of column number for every character
-                         from CharacterSet.
-        """
-        result     = None
-        number_set = None
-        for delta, character_set in self.special.iteritems():
-            if CharacterSet is None or character_set.has_intersection(CharacterSet):
-                if result is None: result = delta; number_set = character_set
-                else:              return None
-
-        if Setup.variable_character_sizes_f():
-            result = homogeneous_chunk_n_per_character(number_set, 
-                                                       Setup.buffer_codec_transformation_info)
-        return result
-
     def get_count_command_map(self, CharacterSet = None):
         """Provide a map which associates intervals with line/column counting 
         actions as well as appropriate increments of the input pointer.

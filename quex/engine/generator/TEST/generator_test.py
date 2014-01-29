@@ -17,8 +17,7 @@ from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.state_router      as     state_router_generator
 from   quex.engine.misc.string_handling import blue_print
 from   quex.engine.tools                       import all_isinstance
-from   quex.input.files.counter_db             import CounterDB
-from   quex.input.files.counter_setup              import LineColumnCounterSetup_Default
+from   quex.engine.counter_db                  import CounterSetupLineColumn_Default
 from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
@@ -408,7 +407,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     Setup.analyzer_class_name = sm_name
 
     for pattern in pattern_list:
-        pattern.prepare_count_info(CounterDB(LineColumnCounterSetup_Default()), CodecTrafoInfo=None)
+        pattern.prepare_count_info(CounterSetupLineColumn_Default()), CodecTrafoInfo=None)
         pattern.mount_post_context_sm()
         pattern.mount_pre_context_sm()
         pattern.cut_character_list(signal_character_list(Setup))

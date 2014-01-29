@@ -3,14 +3,13 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling           import NumberSet, Interval
 import quex.input.regular_expression.engine    as     core
 import quex.input.files.counter_setup          as     counter_setup
-from   quex.input.files.counter_db             import CounterDB
-from   quex.input.files.counter_setup          import LineColumnCounterSetup_Default
-import quex.output.cpp.counter                 as     counter
+from   quex.engine.counter_db                  import CounterSetupLineColumn_Default
+from   quex.engine.interval_handling           import NumberSet, Interval
 import quex.engine.generator.languages.core    as     languages
 import quex.engine.codec_db.core               as     codec_db
+import quex.output.cpp.counter                 as     counter
 from   StringIO                                import StringIO
 
 from   quex.blackboard                         import setup as Setup
@@ -69,10 +68,10 @@ elif codec == "UTF16":
 else:                 
     Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(codec)
 
-lcc_setup = None
+counter_db = None
 
 if   choice == "Default":
-    lcc_setup = LineColumnCounterSetup_Default()
+    counter_db = CounterSetupLineColumn_Default()
 elif choice == "Default2":
     spec_txt = """
        [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029]      => newline 1;
@@ -97,17 +96,13 @@ buffer_element_type, Setup.tbuffer_element_size = {
         "UTF16": ("uint16_t", 2),
 }[codec]
 
-
-
-# If 'lcc_setup' is not given as an object, then create one from
+# If 'counter_db' is not given as an object, then create one from
 # the specification string.
-if lcc_setup is None:
+if counter_db is None:
     spec_txt += ">"
     fh = StringIO(spec_txt)
     fh.name = "<string>"
-    lcc_setup = counter_setup.parse_line_column_counter(fh, IndentationSetupF=False)
-
-counter_db = CounterDB(lcc_setup)
+    counter_db = counter_setup.parse_line_column_counter(fh, IndentationSetupF=False)
 
 # (*) Execute the Test ________________________________________________________
 

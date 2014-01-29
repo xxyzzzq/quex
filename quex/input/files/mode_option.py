@@ -1,17 +1,17 @@
 import quex.input.files.counter_setup     as     counter_setup
-from   quex.input.files.counter_setup     import LineColumnCounterSetup_Default
 import quex.input.regular_expression.core as     regular_expression
+from   quex.engine.counter_db             import CounterSetupLineColumn_Default
+from   quex.engine.tools                  import all_isinstance
+from   quex.engine.generator.code.base    import SourceRef
+from   quex.engine.tools                  import typed
 from   quex.engine.misc.file_in           import error_msg, \
                                                  get_current_line_info_number, \
                                                  skip_whitespace, \
                                                  read_identifier, \
-                                                 verify_word_in_list
-from   quex.engine.misc.file_in           import EndOfStreamException
-from   quex.engine.tools                  import all_isinstance
+                                                 verify_word_in_list, \
+                                                 EndOfStreamException
 
 from   quex.blackboard                    import mode_description_db
-from   quex.engine.generator.code.base    import SourceRef
-from   quex.engine.tools                  import typed
 
 from   collections import namedtuple
 from   copy import deepcopy
@@ -88,7 +88,7 @@ mode_option_info_db = {
    # -- indentation setup information
    "indentation":       ModeOptionInfo(False, False),
    # --line/column counter information
-   "counter":           ModeOptionInfo(False, False, Default=LineColumnCounterSetup_Default),
+   "counter":           ModeOptionInfo(False, False, Default=CounterSetupLineColumn_Default),
 }
 
 class OptionDB(dict):
