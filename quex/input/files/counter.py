@@ -12,7 +12,7 @@ from   quex.engine.generator.code.base            import LocalizedParameter
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.counter                        import CounterSetupIndentation, \
-                                                         CounterSetupIndentation
+                                                         CounterSetupLineColumn
 import quex.input.regular_expression.core         as     regular_expression
 
 class Base:
@@ -290,7 +290,7 @@ class Base:
         txt += Base._db_to_text("Grids", self.grid_db)
         return txt
 
-class LineColumnCounterSetup(Base):
+class ParserDataLineColumn(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
         self.newline_db = {}
@@ -357,7 +357,7 @@ class LineColumnCounterSetup(Base):
         txt += Base._db_to_text("Newlines", self.newline_db)
         return txt
 
-class IndentationSetup(Base):
+class ParserDataIndentation(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Indentation counter", ("space", "grid", "bad", "newline", "suppressor"))
 
@@ -477,11 +477,13 @@ class IndentationSetup(Base):
 
         return txt
 
-def parse_indentation(fh):
-    return __parse(fh, IndentationSetup(fh))
-
 def parse_line_column_counter(fh):
-    return __parse(fh, LineColumnCounterSetup(fh))
+    result = __parse(fh, ParserDataLineColumn(fh))
+    return CounterSetupLineColumn(result)
+
+def parse_indentation(fh):
+    result = __parse(fh, ParserDataIndentation(fh))
+    return CounterSetupIndentation(result)
 
 def __parse(fh, result):
     """Parses pattern definitions of the form:
@@ -604,14 +606,14 @@ def extract_trigger_set(fh, Keyword, Pattern):
     assert len(transition_map) == 1
     return transition_map.values()[0]
 
-_LineColumnCounterSetup_Default = None
-def LineColumnCounterSetup_Default():
-    global _LineColumnCounterSetup_Default
+_ParserDataLineColumn_Default = None
+def ParserDataLineColumn_Default():
+    global _ParserDataLineColumn_Default
 
-    if _LineColumnCounterSetup_Default is None:
-        _LineColumnCounterSetup_Default = LineColumnCounterSetup()
-        _LineColumnCounterSetup_Default.seal(DefaultSpaceSpec=1, FH=-1)
-    return _LineColumnCounterSetup_Default
+    if _ParserDataLineColumn_Default is None:
+        _ParserDataLineColumn_Default = ParserDataLineColumn()
+        _ParserDataLineColumn_Default.seal(DefaultSpaceSpec=1, FH=-1)
+    return _ParserDataLineColumn_Default
 
 def _extract_interval_lists(db):
     """Extract interval lists of all involved number sets."""

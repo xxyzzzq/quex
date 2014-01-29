@@ -8,7 +8,7 @@ from   quex.engine.generator.base                  import EngineStateMachineSet
 import quex.engine.generator.base                  as     generator
 from   quex.engine.tools                           import all_isinstance, typed
 from   quex.input.regular_expression.construct     import Pattern
-from   quex.input.files.counter_db                 import CounterDB
+from   quex.input.files.counter_db                 import CounterSetupLineColumn
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, \
                                                           E_IncidenceIDs, \
@@ -121,7 +121,7 @@ def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
 
     return [ txt_header ] + txt_analyzer
 
-@typed(ModeName=(str,unicode), CounterDb=CounterDB)
+@typed(ModeName=(str,unicode), CounterDb=CounterSetupLineColumn)
 def do_default_counter(ModeName, CounterDb):
     # May be, the default counter is the same as for another mode. In that
     # case call the default counter of the other mode with the same one and
