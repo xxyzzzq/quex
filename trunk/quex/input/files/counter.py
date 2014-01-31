@@ -31,6 +31,14 @@ class CountInfoDb(dict):
     """A database that maintains information about a 'count' dependent on
     a character set. For example, a 'count' may be the number of columns
     which are increment when a character from a chracter set appears.
+    For a column counter database the specification
+
+                       10 --> [a-ln-z]
+                       15 --> [m]
+                       5  --> [ ]
+
+    means, that if a letter != m occurs => "column_n += 10", if an 'm'
+    occurs => "column_n += 15", and if space occurs "column_n += 5".
     """
     def __init__(self, Name):
         self.name
@@ -68,10 +76,10 @@ class Base:
         self.identifier_list        = IdentifierList
         self.name                   = Name
         self.__containing_mode_name = ""
-        self.__occupied_map         = OccupiedMap()
+        self._occupied_map          = OccupiedMap()
 
     def specify_space(self, Pattern, Count, fh=-1):
-        self.space_db.enter(Pattern, Count, self.__occupied_map, fh)
+        self.space_db.enter(Pattern, Count, self._occupied_map, fh)
 
     def specify_grid(self, Pattern, Count, fh=-1):
         if Count == 0: 
@@ -80,7 +88,7 @@ class Base:
             error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
                       "count of '1'. The latter is faster to compute.",
                       fh, DontExitF=True)
-        self.grid_db.enter(Pattern, Count, self.__occupied_map, fh)
+        self.grid_db.enter(Pattern, Count, self._occupied_map, fh)
 
     def set_containing_mode_name(self, ModeName):
         assert isinstance(ModeName, (str, unicode))
@@ -199,7 +207,7 @@ class ParserDataLineColumn(Base):
             self.space_db[DefaultSpaceSpec] = LocalizedParameter("space", remainder, fh, "PatternStr")
 
     def specify_newline(self, CharSet, Count, fh=-1):
-        self.newline_db.enter(CharSet, Count, self.__occupied_map, fh)
+        self.newline_db.enter(CharSet, Count, self._occupied_map, fh)
 
     def __repr__(self):
         txt  = Base.__repr__(self)
@@ -228,9 +236,9 @@ class ParserDataIndentation(Base):
         if self.newline.get() is None: 
             _error_defined_before(self.newline)
         ending_char_set = Setting.get_ending_character_set()
-        self.__occupied_map.check("newline", "ending characters", ending_char_set, fh)
+        self._occupied_map.check("newline", "ending characters", ending_char_set, fh)
         self.sm_newline.set(Pattern.sm, fh, Pattern.pattern_string())
-        self.__occupied_map.add(ending_char_set, self.bad_character_set)
+        self._occupied_map.add(ending_char_set, self.bad_character_set)
 
     def specify_suppressor(self, Pattern, SM, fh=-1):
         if self.sm_newline_suppressor.get() is None: 

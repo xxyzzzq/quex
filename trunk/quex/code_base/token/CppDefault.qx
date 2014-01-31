@@ -21,12 +21,10 @@ $INCLUDE_CONVERTER_DECLARATION
         self._id    = Other._id;
         self.text   = Other.text;
         self.number = Other.number;
-    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
-    #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
         __QUEX_IF_COUNT_LINES(self._line_n     = Other._line_n);
         __QUEX_IF_COUNT_COLUMNS(self._column_n = Other._column_n);
-    #   endif
-    #   endif
+#       endif
    }
 
    body {
@@ -124,7 +122,7 @@ $INCLUDE_CONVERTER_DECLARATION
         $NAMESPACE_OPEN
         inline std::ostream&
         operator<<(std::ostream& ostr, const $TOKEN_CLASS& Tok)
-        { ostr << std::string(Tok); return ostr; }
+        { ostr << Tok.get_string(); return ostr; }
         $NAMESPACE_CLOSE
 
 $INCLUDE_CONVERTER_IMPLEMENTATION
