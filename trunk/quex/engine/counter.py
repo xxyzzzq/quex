@@ -2,6 +2,8 @@ from  quex.engine.generator.code.base import SourceRef_VOID
 from  quex.engine.interval_handling   import NumberSet
 from  quex.engine.tools               import return_None
 
+from  collections import namedtuple
+
 CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "cc_type"))
 
 class CounterSetupLineColumn(object):
@@ -15,6 +17,7 @@ class CounterSetupLineColumn(object):
         """Generate a counter db from a line column counter setup."""
 
         self.sr = SourceReference
+
         if LccSetup is None:
             self.column  = {}  
             self.grid    = {}  
@@ -252,7 +255,7 @@ class CountCmdInfoFactory:
     def add(self, CC_Type, Parameter, TriggerSet):
         self.incidence_id_map[dial_db.new_incidence_id()] = self._do(CC_Type, Parameter, TriggerSet)
 
-    def _do(self, CC_Type, Parameter, TriggerSet)
+    def _do(self, CC_Type, Parameter, TriggerSet):
         """                   .---------------.
                          ---->| Count Command |----> DoorIdDone
                               '---------------'
@@ -267,15 +270,15 @@ class CountCmdInfoFactory:
     def _command(CC_Type, Parameter):
         if self.column_count_per_chunk is None:
             cmd = {
-                E_CharacterCountType.COLUMN: ColumnCountAdd
-                E_CharacterCountType.GRID:   ColumnCountGridAdd
-                E_CharacterCountType.LINE:   LineCountAdd
+                E_CharacterCountType.COLUMN: ColumnCountAdd,
+                E_CharacterCountType.GRID:   ColumnCountGridAdd,
+                E_CharacterCountType.LINE:   LineCountAdd,
             }[CC_Type](Parameter)
         else:
             cmd = {
-                E_CharacterCountType.COLUMN: return_None
-                E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP
-                E_CharacterCountType.LINE:   LineCountAddWithReferenceP
+                E_CharacterCountType.COLUMN: return_None,
+                E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP,
+                E_CharacterCountType.LINE:   LineCountAddWithReferenceP,
             }[CC_Type](Parameter, self.input_p_name, self.column_count_per_chunk)
 
         if cmd is None: return []
@@ -325,7 +328,7 @@ class CountCmdInfoFactory_WithCheckLexemeEnd(CountCmdInfoFactory):
         CountCmdInfoFactory.__init__(self, ColumnNPerChunk, DoorIdDone, InputPName)
         self.door_id_undone = DoorIdUndone
         
-    def _do(self, CC_Type, Parameter, TriggerSet)
+    def _do(self, CC_Type, Parameter, TriggerSet):
         """     .---------------.    ,----------.   no
            ---->| Count Command |---< LexemeEnd? >------> DoorIdUndone
                 '---------------'    '----+-----'
