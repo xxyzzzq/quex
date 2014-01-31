@@ -236,8 +236,8 @@ class DialDB(object):
             return door_id
 
     def new_incidence_id(self):
-        self.__incidence_id_counter += 1
-        return self.__incidence_id_counter
+        self.__incidence_id_i += 1
+        return self.__incidence_id_i
 
     def new_door_id(self, StateIndex=None, DoorSubIndex=None):
         door_id, alp = self.__new_entry(StateIndex, DoorSubIndex)

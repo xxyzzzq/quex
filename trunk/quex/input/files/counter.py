@@ -15,6 +15,42 @@ from   quex.engine.counter                        import CounterSetupIndentation
                                                          CounterSetupLineColumn
 import quex.input.regular_expression.core         as     regular_expression
 
+class OccupiedMap:
+    def __init__(self):
+        self.__map = []
+
+    def add(self, CharSet, Parameter):
+        self.__map.append((CharSet, Parameter))
+
+    def check(self, Name, TypeName, CharSet, fh):
+        for character_set, before in occupied_map:
+            if not character_set.has_intersection(CharSet): continue
+            _error_set_intersection(Name, TypeName, Before, fh)
+
+class CountInfoDb(dict):
+    """A database that maintains information about a 'count' dependent on
+    a character set. For example, a 'count' may be the number of columns
+    which are increment when a character from a chracter set appears.
+    """
+    def __init__(self, Name):
+        self.name
+
+    def enter(self, CharSet, Count, occupied_map, fh):
+        if CharSet.is_empty(): error_msg("Empty character set found.", fh)
+        occupied_map.check(self.name, "characterSet", CharSet, fh)
+
+        self._check(CharSet, DbList)
+
+        parameter = self.get(Count)
+        if parameter is not None:
+            parameter.get().unite_with(CharSet)
+        else:
+            parameter = LocalizedParameter(self.name, CharSet, fh, Pattern.pattern_string()) 
+            self[Count] = parameter
+
+        occupied_map.add(CharSet, parameter)
+        return entry
+
 class Base:
     def __init__(self, fh, Name, IdentifierList):
         self.fh = fh
@@ -25,11 +61,26 @@ class Base:
             self.file_name = "no file handle"
             self.line_n    = -1
 
-        self.space_db               = {}  # Maps: space width --> character_set
-        self.grid_db                = {}  # Maps: grid width  --> character_set
+        self.space_db = CountInfoDb("space") # Maps: space width --> character_set
+        self.grid_db  = CountInfoDb("grid")  # Maps: grid width  --> character_set
+        self._db_list = [ self.space_db, self.grid_db ]
+
         self.identifier_list        = IdentifierList
         self.name                   = Name
         self.__containing_mode_name = ""
+        self.__occupied_map         = OccupiedMap()
+
+    def specify_space(self, Pattern, Count, fh=-1):
+        self.space_db.enter(Pattern, Count, self.__occupied_map, fh)
+
+    def specify_grid(self, Pattern, Count, fh=-1):
+        if Count == 0: 
+            error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", fh)
+        if Count == 1:
+            error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
+                      "count of '1'. The latter is faster to compute.",
+                      fh, DontExitF=True)
+        self.grid_db.enter(Pattern, Count, self.__occupied_map, fh)
 
     def set_containing_mode_name(self, ModeName):
         assert isinstance(ModeName, (str, unicode))
@@ -38,128 +89,12 @@ class Base:
     def containing_mode_name(self):
         return self.__containing_mode_name
 
-    def _check(self, Name, Before, Setting, FH, Key=None):
-        self._error_msg_if_defined_earlier(Before, FH, Key=Key, Name=Name)
+    def _check(self, Name, Before, Setting, fh, Key=None):
+        self._error_msg_if_defined_earlier(Before, fh, Key=Key, Name=Name)
         if Setting.__class__ == NumberSet: 
-            self._error_msg_if_character_set_empty(Setting, FH)
-        self._error_if_intersection(Setting, FH, Name)
+            self._error_msg_if_character_set_empty(Setting, fh)
+        self._error_if_intersection(Setting, fh, Name)
 
-    def _specify(self, parameter, Value, PatternStr, FH):
-        self._check(parameter.name, parameter, Value, FH)
-        parameter.set(Value, FH)
-        parameter.set_pattern_string(PatternStr)
-
-    def specify_space(self, Pattern, Count, FH=-1):
-        CharSet = extract_trigger_set(FH, "space", Pattern)
-
-        self._check("space", self.space_db, CharSet, FH, Key=Count)
-
-        # Note, a space count of '0' is theoretically possible
-        entry = self.space_db.get(Count)
-        if entry is not None:
-            entry.get().unite_with(CharSet)
-        else:
-            self.space_db[Count] = LocalizedParameter("space", CharSet, FH, PatternStr)
-
-    def specify_grid(self, Pattern, Count, FH=-1):
-        CharSet = extract_trigger_set(FH, "grid", Pattern)
-
-        self._check("grid", self.grid_db, CharSet, FH, Key=Count)
-
-        if Count == 0: 
-            error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", FH)
-        if Count == 1:
-            error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
-                      "count of '1'. The latter is faster to compute.",
-                      FH, DontExitF=True)
-
-        entry = self.grid_db.get(Count)
-        if entry is not None:
-            entry.get().unite_with(CharSet)
-        else:
-            self.grid_db[Count] = LocalizedParameter("grid", CharSet, FH, PatternStr)
-
-    def homogeneous_spaces(self):
-        # Note, from about the grid_db does not accept grid values of '1'
-        if   len(self.grid_db) != 0:   return False
-        elif len(self.space_db) != 1 : return False
-        # Here, the space_db can have only one value. If it is '1' than 
-        # the indentation is based soley on single spaces.
-        return self.space_db.has_key(1)
-
-    def get_count_command_map(self, CharacterSet, ColumnNPerChunk=None):
-        """Returns a list of NumberSet objects where for each X of the list it holds:
-
-             (i)  X is subset of CharacterSet
-                   
-             (ii) It is related to a different counter action than Y,
-                  for each other object Y in the list.
-
-           RETURNS: 
-
-                        map:  CLIID -->  (NumberSet, CommandList)
-
-           NOTE: A 'CLIID' is a UNIQUE incidence id served by 'dial_db'. 
-                 => Can be used for terminals implementing the CommandList. 
-
-           where each entry means: "If an input character lies in NumberSet
-           then the counting action given by CommandList has to be executed.
-           The CommandList is distinctly associated with a CLIID, a command
-           list index.
-        """
-        ColumnNPerChunk = self.get_column_number_per_chunk(CharacterSet)
-
-        def pruned_iteritems(Db, CharacterSet):
-            for value, character_set in Db.iteritems():
-                if CharacterSet is None: pruned = character_set
-                else:                    pruned = character_set.intersection(CharacterSet)
-                if pruned.is_empty():    continue
-                yield value, pruned
-
-        def on_special(Delta):
-            if ColumnNPerChunk is None:  return ColumnCountAdd(Delta)
-            else:                        return None
-
-        def on_grid(GridStepN):
-            if ColumnNPerChunk is None:  return ColumnCountGridAdd(GridStepN)
-            else:                        return ColumnCountGridAddWithReferenceP(GridStepN, 
-                                                                                 self.iterator_name,
-                                                                                 ColumnNPerChunk)
-
-        def on_newline(Delta):
-            if ColumnNPerChunk is None: return LineCountAdd(Delta)
-            else:                       return LineCountAddWithReferenceP(Delta, 
-                                                                          self.iterator_name, 
-                                                                          ColumnNPerChunk)
-
-        result = {}
-        for delta, character_set in pruned_iteritems(self.special, CharacterSet):
-            cmd = on_special(delta)
-            if cmd is None: cl = CommandList()
-            else:           cl = CommandList(cmd)
-            result[dial_db.new_incidence_id()] = CountCmdInfo(character_set, cl, E_CharacterCountType.CHARACTER)
-
-        result.update(
-            (dial_db.new_incidence_id(),
-             CountCmdInfo(character_set, CommandList(on_grid(grid_step_n)), E_CharacterCountType.GRID))
-            for grid_step_n, character_set in pruned_iteritems(self.grid, CharacterSet)
-        )
-        result.update(
-            (dial_db.new_incidence_id(), 
-             CountCmdInfo(character_set, CommandList(on_newline(delta)), E_CharacterCountType.LINE))
-            for delta, character_set in pruned_iteritems(self.newline, CharacterSet)
-        )
-
-        if column_count_per_chunk is not None:
-            on_before_reload = [
-                ColumnCountReferencePDeltaAdd(self.iterator_name, 
-                                              self.column_count_per_chunk)
-            ]
-            on_after_reload = [
-                ColumnCountReferencePSet(self.iterator_name)
-            ]
-
-        return ColumnNPerChunk, result, on_before_reload, on_after_reload
 
     def consistency_check(self, fh):
         def check_grid_values_integer_multiples(GridDB):
@@ -211,50 +146,23 @@ class Base:
         elif len(self.grid_db) == 0:
             check_homogenous_space_counts(self.space_db)
 
-    def _error_if_intersection(self, FH, Name):
+    def _error_if_intersection(self, fh, Name):
         assert False, "Must be implemented by derived class."
 
-    def _error_if_intersection_base(self, Candidate, FH, Name):
+    def _error_if_intersection_base(self, Candidate, fh, Name):
         # 'space'
         for character_set in self.space_db.values():
             if character_set.get().has_intersection(Candidate): 
-                Base._error_character_set_intersection(Name, character_set, FH)
+                Base._error_character_set_intersection(Name, character_set, fh)
 
         # 'grid'
         for character_set in self.grid_db.values():
             if character_set.get().has_intersection(Candidate):
-                Base._error_character_set_intersection(Name, character_set, FH)
+                Base._error_character_set_intersection(Name, character_set, fh)
 
-    @staticmethod
-    def _error_character_set_intersection(Name, Before, FH):
-        error_msg("Character set specification '%s' intersects" % Name, FH, 
-                  DontExitF=True, WarningF=False)
-        error_msg("with definition for '%s' at this place." % Before.name, 
-                  Before.sr)
-
-    @staticmethod
-    def _error_state_machine_intersection(Name, Before, FH):
-        error_msg("Character set specification '%s' intersects with" % Name, FH, 
-                  DontExitF=True, WarningF=False)
-        error_msg("the ending of the pattern for '%s' at this place." % Before.name, 
-                  Before.sr, DontExitF=True, WarningF=False)
-        error_msg("Note, that 'newline' and cannot end with a character which is subject\n"
-                  "to indentation counting (i.e. 'space' or 'grid').", FH)
-
-    def _error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
-        """If Key is not None, than 'Before' is a database."""
-        if Key is None:
-            if Before.get().is_empty(): return
-            error_msg("'" + Before.name + "' has been defined before;", FH, DontExitF=True, WarningF=False)
-            error_msg("at this place.", Before.file_name, Before.line_n)
-        #if Key is not None:
-        #    if Before.has_key(Key) == False: return
-        #    error_msg("'%s' has been defined before for %i;" % (Name, Key), FH, DontExitF=True, WarningF=False)
-        #    error_msg("at this place.", Before[Key].file_name, Before[Key].line_n)
-
-    def _error_msg_if_character_set_empty(self, CharSet, FH):
+    def _error_msg_if_character_set_empty(self, CharSet, fh):
         if not CharSet.is_empty(): return
-        error_msg("Empty character set found.", FH)
+        error_msg("Empty character set found.", fh)
 
     @staticmethod
     def _db_to_text(title, db):
@@ -275,8 +183,9 @@ class ParserDataLineColumn(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
         self.newline_db = {}
+        self._db_list.append(self.newline_db)
 
-    def seal(self, DefaultSpaceSpec, FH):
+    def seal(self, DefaultSpaceSpec, fh):
 
         if DefaultSpaceSpec is not None:
             # Collect all characters mentioned in 'space_db', 'grid_db', 'newline_db'
@@ -287,28 +196,10 @@ class ParserDataLineColumn(Base):
             before = self.space_db.get(DefaultSpaceSpec)
             if before is not None:
                 remainder.unite_with(before.get())
-            self.space_db[DefaultSpaceSpec] = LocalizedParameter("space", remainder, FH, "PatternStr")
+            self.space_db[DefaultSpaceSpec] = LocalizedParameter("space", remainder, fh, "PatternStr")
 
-    def _error_if_intersection(self, Setting, FH, Name):
-        assert Setting.__class__ == NumberSet
-        self._error_if_intersection_base(Setting, FH, Name)
-
-        # 'newline'
-        for character_set in self.newline_db.values():
-            if character_set.get().has_intersection(Setting): 
-                Base._error_character_set_intersection(Name, character_set, FH)
-
-    def specify_newline(self, Pattern, CharSet, Count, FH=-1):
-        CharSet = extract_trigger_set(FH, "newline", Pattern)
-
-        self._check("newline", self.newline_db, CharSet, FH, Key=Count)
-
-        # Note, a space count of '0' is theoretically possible
-        entry = self.newline_db.get(Count)
-        if entry is not None:
-            entry.get().unite_with(CharSet)
-        else:
-            self.newline_db[Count] = LocalizedParameter("newline", CharSet, FH, Pattern.pattern_string())
+    def specify_newline(self, CharSet, Count, fh=-1):
+        self.newline_db.enter(CharSet, Count, self.__occupied_map, fh)
 
     def __repr__(self):
         txt  = Base.__repr__(self)
@@ -319,85 +210,44 @@ class ParserDataIndentation(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Indentation counter", ("space", "grid", "bad", "newline", "suppressor"))
 
-        self.bad_character_set                = LocalizedParameter("bad",        NumberSet())
-        self.newline_state_machine            = LocalizedParameter("newline",    None)
-        self.newline_suppressor_state_machine = LocalizedParameter("suppressor", None)
+        self.bad_character_set     = LocalizedParameter("bad",        NumberSet())
+        self.sm_newline            = LocalizedParameter("newline",    None)
+        self.sm_newline_suppressor = LocalizedParameter("suppressor", None)
+
+    def specify_bad(self, CharSet, PatternStr, fh=-1):
+        if self.bad_character_set.get().is_empty(): 
+            _error_defined_before(self.bad_character_set)
+
+        occupied_map.check("bad", "character set", CharSet, fh):
+        self.bad_character_set.set(CharSet, fh, PatternStr)
+        # 'bad' indentation characters are not subject to indentation counting so they
+        # very well intersect with newline or suppressor.
+        # NOT: "occupied_map.add(CharSet, self.bad_character_set)"           !!
+
+    def specify_newline(self, Pattern, fh=-1):
+        if self.newline.get() is None: 
+            _error_defined_before(self.newline)
+        ending_char_set = Setting.get_ending_character_set()
+        self.__occupied_map.check("newline", "ending characters", ending_char_set, fh)
+        self.sm_newline.set(Pattern.sm, fh, Pattern.pattern_string())
+        self.__occupied_map.add(ending_char_set, self.bad_character_set)
+
+    def specify_suppressor(self, Pattern, SM, fh=-1):
+        if self.sm_newline_suppressor.get() is None: 
+            _error_defined_before(self.sm_newline_suppressor)
+
+        # Newline suppressors are totally free. 
+        # -- They can contain newlines indentation count characters etc.
+        # -- They are not subject to intersection check.
+        #
+        # NOT: "occupied_map.check("bad", CharSet, fh)"                      !!
+        self.sm_newline_suppressor.set(Pattern.sm, fh, Pattern.pattern_string())
+        # NOT: "occupied_map.add(CharSet, self.bad_character_set)"           !!
 
     def seal(self):
         all_char_set = NumberSet(  _extract_interval_lists(self.space_db) 
                                  + _extract_interval_lists(self.grid_db))
         Base._seal(self, all_char_set, self.bad_character_set)
-
-    def _error_if_intersection(self, Setting, FH, Name):
-        if Name == "suppressor":
-            # Newline suppressors are totally free. They can contain newlines, indentation count
-            # characters and whatsoever. They are not subject to intersection check.
-            return
-        
-        elif Name == "newline":
-            assert Setting.__class__ == StateMachine
-            assert Setting is not None
-            candidate = Setting.get_ending_character_set()
-        else:
-            assert Setting.__class__ == NumberSet
-            candidate = Setting
-
-        self._error_if_intersection_base(candidate, FH, Name)
-
-        # 'bad'
-        if Name != "newline":
-            # 'bad' indentation characters are not subject to indentation counting so they
-            # very well intersect with newline or suppressor.
-            if self.bad_character_set.get().has_intersection(candidate):                
-                Base._error_character_set_intersection(Name, self.bad_character_set, FH)
-
-        # 'newline'
-        if Name != "bad" and self.newline_state_machine.get() is not None:
-            # The 'bad' character set can very well appear as the end of newline, since it is
-            # not used for indentation counting.
-            ending_character_set = self.newline_state_machine.get().get_ending_character_set()
-            if ending_character_set.has_intersection(candidate):            
-                Base._error_state_machine_intersection(Name, self.newline_state_machine, FH)
-
-        # 'suppressor'
-        # Note, the suppressor pattern is free. No indentation is counted after it. Thus if
-        # it ends with characters which are subject to indentation counting, then there is
-        # no harm or confusion.
-
-    def _error_msg_if_defined_earlier(self, Before, FH, Key=None, Name=""):
-        """If Key is not None, than 'Before' is a database."""
-
-        if Name in ["newline", "suppressor"] and Before.get() is None: 
-            return
-        Base._error_msg_if_defined_earlier(self, Before, FH, Key, Name)
-
-    def specify_bad(self, PatternStr, CharSet, FH=-1):
-        if not isinstance(CharSet, NumberSet):
-            CharSet = extract_trigger_set(FH, "bad", Pattern=CharSet)
-
-        self._specify(self.bad_character_set, CharSet, PatternStr, FH)
-
-    def specify_newline(self, Pattern, FH=-1):
-        self._specify(self.newline_state_machine, Pattern.sm, Pattern.pattern_string(), FH)
-
-    def specify_suppressor(self, PatternStr, SM, FH=-1):
-        self._specify(self.newline_suppressor_state_machine, Pattern.sm, Pattern.pattern_string(), FH)
-
-    def indentation_count_character_set(self):
-        """Returns the superset of all characters that are involved in
-        indentation counting. That is the set of character that can appear
-        between newline and the first non whitespace character.  
-        """
-        result = NumberSet()
-        for character_set in self.space_db.values():
-            result.unite_with(character_set.get())
-        for character_set in self.grid_db.values():
-            result.unite_with(character_set.get())
-        return result
-
-    def consistency_check(self, fh):
-        Base.consistency_check(self, fh)
-        assert not self.newline_state_machine.get().is_empty()
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -406,12 +256,12 @@ class ParserDataIndentation(Base):
         txt += "    %s\n" % self.bad_character_set.get().get_utf8_string()
 
         txt += "Newline:\n"
-        sm = self.newline_state_machine.get()
+        sm = self.sm_newline.get()
         if sm is None: txt += "    <none>\n"
         else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
 
         txt += "Suppressor:\n"
-        sm = self.newline_suppressor_state_machine.get()
+        sm = self.sm_newline_suppressor.get()
         if sm is None: txt += "    <none>\n"
         else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
 
@@ -437,7 +287,7 @@ def __parse_definition_head(fh, result):
     identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
 
     verify_word_in_list(identifier, result.identifier_list, 
-                        "Unrecognized indentation specifier '%s'." % identifier, fh)
+                        "Unrecognized specifier '%s'." % identifier, fh)
     skip_whitespace(fh)
 
 def __parse(fh, result):
@@ -476,20 +326,29 @@ def __parse(fh, result):
             # an inadmissible identifier has been found--so there is no harm.
             if identifier == "space":
                 value = read_value_specifier(fh, "space", 1)
-                result.specify_space(pattern, value, fh)
+                char_set = extract_trigger_set(fh, pattern, "space")
+                result.specify_space(char_set, value, fh)
+
             elif identifier == "grid":
                 value = read_value_specifier(fh, "grid")
-                result.specify_grid(pattern, value, fh)
+                char_set = extract_trigger_set(fh, pattern, "grid")
+                result.specify_grid(char_set, value, fh)
+
             elif identifier == "bad":
-                result.specify_bad(pattern, fh)
+                char_set = extract_trigger_set(fh, pattern, "bad")
+                result.specify_bad(char_set, fh)
+
             elif identifier == "newline":
                 if IndentationSetupF:
                     result.specify_newline(pattern, fh)
                 else:
-                    value = read_value_specifier(fh, "newline", 1)
-                    result.specify_newline(pattern, value, fh)
+                    value    = read_value_specifier(fh, "newline", 1)
+                    char_set = extract_trigger_set(fh, pattern, "newline")
+                    result.specify_newline(char_set, value, fh)
+
             elif identifier == "suppressor":
                 result.specify_suppressor(pattern, fh)
+
             else:
                 assert False, "Unreachable code reached."
 
@@ -502,16 +361,14 @@ def __parse(fh, result):
 def read_value_specifier(fh, Keyword, Default=None):
     skip_whitespace(fh)
     value = read_integer(fh)
-    if value is not None: 
-        return value
+    if value is not None:     return value
+
     # not a number received, is it an identifier?
     variable = read_identifier(fh)
-    if variable != "":
-        return variable
-    elif Default is not None:
-        return Default
-    else:
-        error_msg("Missing integer or variable name after keyword '%s'." % Keyword, fh) 
+    if   variable != "":      return variable
+    elif Default is not None: return Default
+
+    error_msg("Missing integer or variable name after keyword '%s'." % Keyword, fh) 
 
 def extract_trigger_set(fh, Keyword, Pattern):
     def check_can_be_matched_by_single_character(SM):
@@ -541,15 +398,6 @@ def extract_trigger_set(fh, Keyword, Pattern):
     assert len(transition_map) == 1
     return transition_map.values()[0]
 
-_ParserDataLineColumn_Default = None
-def ParserDataLineColumn_Default():
-    global _ParserDataLineColumn_Default
-
-    if _ParserDataLineColumn_Default is None:
-        _ParserDataLineColumn_Default = ParserDataLineColumn()
-        _ParserDataLineColumn_Default.seal(DefaultSpaceSpec=1, FH=-1)
-    return _ParserDataLineColumn_Default
-
 def _extract_interval_lists(db):
     """Extract interval lists of all involved number sets."""
     result = []
@@ -557,3 +405,25 @@ def _extract_interval_lists(db):
         result.extend(x.get().get_intervals(PromiseToTreatWellF=True))
     return result
 
+def _error_set_intersection(Name, TypeName, Before, fh):
+    def type_name(Parameter):
+        if Parameter.get().__class__ == NumberSet: return "character set"
+        else:                                      return "ending characters"
+
+    note_f = False
+    if TypeName != "character set" or type_name(Before) != "character set":
+        note_f = True
+
+    error_msg("The %s defined in '%s' intersects" % (TypeName, Name),
+              fh, DontExitF=True, WarningF=False)
+    error_msg("with %s defined '%s' at this place." % (type_name(Before), Before.name), 
+              Before.sr, DontExitF=note_f, WarningF=False)
+
+    if note_f:
+        error_msg("Note, for example, 'newline' cannot end with a character which is subject\n"
+                  "to indentation counting (i.e. 'space' or 'grid').", fh)
+
+def _error_defined_before(Before, fh):
+    error_msg("'%s' has been defined before;" % Before.name, fh, 
+              DontExitF=True, WarningF=False)
+    error_msg("at this place.", Before.file_name, Before.line_n)

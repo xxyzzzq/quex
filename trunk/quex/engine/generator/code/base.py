@@ -122,7 +122,7 @@ class LocalizedParameter:
         else:        self.__value = Default
         self.__pattern_string = PatternStr
 
-    def set(self, Value, fh):
+    def set(self, Value, fh, PatternStr=None):
         if self.__value is not None:
             error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
             error_msg("previous definition has been here.\n", self.file_name, self.line_n)
@@ -134,6 +134,8 @@ class LocalizedParameter:
         else:
             self.file_name = fh.name
             self.line_n    = get_current_line_info_number(fh)
+
+        self.__pattern_string = PatternStr
 
     def get(self):
         if self.__value is not None: return self.__value
