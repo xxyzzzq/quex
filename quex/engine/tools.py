@@ -332,3 +332,10 @@ class TypedDict(dict):
         return "%s as value. Found '%s'" % \
                 (self._error(self.__value_class), Value.__class__.__name__)
 
+def return_None(*Any):
+    """A function that returns None independent of the number of arguments."""
+    return None
+
+def return_empty_list(*Any):
+    """A function that returns None independent of the number of arguments."""
+    return []

@@ -1,5 +1,6 @@
 # (C) Frank Rene Schaefer
 from   quex.engine.misc.file_in                        import error_msg
+import quex.engine.terminal_map                        import terminal_map
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
@@ -268,8 +269,16 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
 
-    ccd           = CounterCoderData(CounterDb, CharacterSet, AfterExitDoorId, 
-                                     LexemeF=MaintainLexemeF)
+    # incidence_map: (character set, incidence_id)
+    # incidence_db:  incidence_id --> command list
+    incidence_id_map, \
+    incidence_db      = CounterDb.get_command_map(CharacterSet, CheckLexemeEndF)
+
+
+    sm,           \
+    on_reentry,   \
+    terminal_else = terminal_map.do(incidence_id_map, ReloadF, AfterExitDoorId)
+    
     analyzer, \
     terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
 
