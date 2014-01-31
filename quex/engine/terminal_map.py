@@ -56,9 +56,9 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
 
     def prepare_else(sm, state):
         covered_set = state.target_map.get_trigger_set_union()
-        if ReloadF:                   covered_set.unite_with(blc_set)
-        if covered_set.is_all():      continue
-        if iid_else is None: iid_else = dial_db.new_incidence_id()
+        if ReloadF:               covered_set.unite_with(blc_set)
+        if covered_set.is_all():  return
+        if iid_else is None:      iid_else = dial_db.new_incidence_id()
         uncovered_set = covered_set.inverse()
         add(sm, state, uncovered_set, iid_else)
 
@@ -91,7 +91,7 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
 
     return sm, on_reentry, terminal_else
 
-def get_count_command_list(CCInfo)
+def get_count_command_list(CCInfo):
     cl = copy(CCInfo.command_list)
 
     cl.append(
@@ -113,7 +113,7 @@ def get_terminal(CLIID, CCInfo):
     terminal.set_incidence_id(CLIID)
     return terminal
 
-def get_plain_terminal(IncidenceId, Code, Name)
+def get_plain_terminal(IncidenceId, Code, Name):
     terminal = Terminal(Code, Name)
     terminal.set_incidence_id(IncidenceId)
     return terminal
@@ -184,10 +184,11 @@ def get_analyzer():
       
 
 
-def get_state_machine(TerminalMap):
+def DELETE_get_state_machine(TerminalMap):
     # -- Generate for each character set that has the same counting action a
     #    transition in the state machine. 
     # -- Associate the target state with an 'AcceptanceID'.
     #    (AcceptanceID-s survive the transformation and NFA-to-DFA)
     # -- Store the relation between the counting action (given by the 'cliid')
     #    and the acceptance id.
+    pass

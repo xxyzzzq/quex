@@ -1,6 +1,6 @@
 # (C) Frank Rene Schaefer
 from   quex.engine.misc.file_in                        import error_msg
-import quex.engine.terminal_map                        import terminal_map
+import quex.engine.terminal_map                        as     terminal_map
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
