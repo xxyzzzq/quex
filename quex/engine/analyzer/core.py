@@ -63,10 +63,10 @@ from   collections      import defaultdict
 from   itertools        import imap
 from   operator         import attrgetter
 
-def do(SM, EngineType=engine.FORWARD):
+def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None, OnBeforeReload=None, OnAfterReload=None):
 
     # Generate Analyzer from StateMachine
-    analyzer = Analyzer(SM, EngineType)
+    analyzer = Analyzer(SM, EngineType, ReloadStateExtern)
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
@@ -89,7 +89,7 @@ def do(SM, EngineType=engine.FORWARD):
     # (The following is a null operation, if the analyzer.engine_type does not
     #  require reload preparation.)
     for state in analyzer.state_db.itervalues():
-        state.prepare_for_reload(analyzer) 
+        state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
 
     return analyzer
 
@@ -97,8 +97,8 @@ class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
        effective code generation.
     """
-    def __init__(self, SM, EngineType, GlobalReloadState=None):
-        """GlobalReloadState is only to be specified if the analyzer needs
+    def __init__(self, SM, EngineType, ReloadStateExtern=None):
+        """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
         assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
@@ -126,10 +126,12 @@ class Analyzer:
             for state_index in self.__trace_db.iterkeys()]
         )
 
-        if GlobalReloadState is None:
-            self.reload_state = ReloadState(EngineType=self.__engine_type)
+        if ReloadStateExtern is None:
+            self.reload_state          = ReloadState(EngineType=self.__engine_type)
+            self.reload_state_extern_f = False
         else:
-            self.reload_state = GlobalReloadState
+            self.reload_state          = ReloadStateExtern
+            self.reload_state_extern_f = True
 
         self.__mega_state_list          = []
         self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())

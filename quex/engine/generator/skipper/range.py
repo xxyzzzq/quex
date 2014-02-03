@@ -44,7 +44,7 @@ def new_skipper(TheAnalyzer):
                                CharacterSet      = NumberSet(ClosingSequence[0]).inverse(),
                                CheckLexemeEndF   = False,
                                ReloadF           = True,
-                               GlobalReloadState = TheAnalyzer.reload_state, 
+                               ReloadStateExtern = TheAnalyzer.reload_state, 
                                MaintainLexemeF   = False)
 
     result.append(

@@ -77,7 +77,7 @@ def do(Data, TheAnalyzer):
                                CharacterSet      = character_set,
                                CheckLexemeEndF   = False,
                                ReloadF           = reload_f,
-                               GlobalReloadState = reload_state, 
+                               ReloadStateExtern = reload_state, 
                                EngineType        = engine.FORWARD,
                                MaintainLexemeF   = False)
     assert isinstance(result, list)

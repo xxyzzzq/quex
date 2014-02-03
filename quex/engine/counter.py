@@ -1,10 +1,16 @@
 from  quex.engine.generator.code.base import SourceRef_VOID
 from  quex.engine.interval_handling   import NumberSet
 from  quex.engine.tools               import return_None
+from  quex.engine.analyzer.door_id_address_label import dial_db
+from  quex.blackboard import E_CharacterCountType, \
+                             setup as Setup
+from   quex.engine.analyzer.commands  import CommandList, \
+                                             ColumnCountReferencePDeltaAdd, \
+                                             ColumnCountReferencePSet
 
 from  collections import namedtuple
 
-CountCmdInfo = namedtuple("CountCmdInfo_tuple", ("trigger_set", "command_list", "cc_type"))
+CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "paramter", "character_set"))
 
 class CounterSetupLineColumn(object):
     __slots__ = ("sr",      # Source Reference
@@ -36,7 +42,7 @@ class CounterSetupLineColumn(object):
 
         'CharacterSet' is None: All characters considered.
 
-        If the special character handling column number increment always
+        If the column character handling column number increment always
         add the same value the return value is not None. Else, it is.
 
         RETURNS: None -- If there is no distinct column increment 
@@ -45,7 +51,7 @@ class CounterSetupLineColumn(object):
         """
         result     = None
         number_set = None
-        for delta, character_set in self.special.iteritems():
+        for delta, character_set in self.column.iteritems():
             if CharacterSet is None or character_set.has_intersection(CharacterSet):
                 if result is None: result = delta; number_set = character_set
                 else:              return None
@@ -55,31 +61,7 @@ class CounterSetupLineColumn(object):
                                                        Setup.buffer_codec_transformation_info)
         return result
 
-    def get_count_command_map(self, CharacterSet, InputPName, DoorIdIfNotLexemeEnd=None):
-        """Returns a list of NumberSet objects where for each X of the list it holds:
-
-
-           DoorIdIfNotLexemeEnd = None => Lexeme end is not to be checked.
-
-             (i)  X is subset of CharacterSet
-                   
-             (ii) It is related to a different counter action than Y,
-                  for each other object Y in the list.
-
-           RETURNS: 
-
-                        map:  CLIID -->  (NumberSet, CommandList)
-
-           NOTE: A 'CLIID' is a UNIQUE incidence id served by 'dial_db'. 
-                 => Can be used for terminals implementing the CommandList. 
-
-           where each entry means: "If an input character lies in NumberSet
-           then the counting action given by CommandList has to be executed.
-           The CommandList is distinctly associated with a CLIID, a command
-           list index.
-        """
-        ColumnNPerChunk = self.get_column_number_per_chunk(CharacterSet)
-
+    def get_factory(self, CharacterSet, InputPName):
         def pruned_iteritems(Db, CharacterSet):
             for value, character_set in Db.iteritems():
                 if CharacterSet is None: pruned = character_set
@@ -87,29 +69,22 @@ class CounterSetupLineColumn(object):
                 if pruned.is_empty():    continue
                 yield value, pruned
             
-        if not CheckLexemeEndF:
-            factory = CountCmdInfoFactory(ColumnNPerChunk, 
-                                          DoorIdDone, 
-                                          InputPName)
-        else:
-            factory = CountCmdInfoFactory_WithCheckLexemeEnd(ColumnNPerChunk, 
-                                                             DoorIdDone, 
-                                                             InputPName, 
-                                                             DoorIdUndone)
+        cmap = []
+        cmap.extend(
+            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.CHARACTER, delta, character_set)
+            for delta, character_set in pruned_iteritems(self.column, CharacterSet)
+        )
+        cmap.extend(
+            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.GRID, grid_step_n, character_set)
+            for grid_step_n, character_set in pruned_iteritems(self.grid, CharacterSet)
+        )
+        cmap.extend(
+            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.LINE, delta, character_set)
+            for delta, character_set in pruned_iteritems(self.newline, CharacterSet)
+        )
+        ColumnNPerChunk = self.get_column_number_per_chunk(CharacterSet)
 
-        for delta, character_set in pruned_iteritems(self.column, CharacterSet):
-            factory.add(E_CharacterCountType.CHARACTER, delta, character_set)
-        
-        for grid_step_n, character_set in pruned_iteritems(self.grid, CharacterSet):
-            factory.add(E_CharacterCountType.GRID, grid_step_n, character_set)
-
-        for delta, character_set in pruned_iteritems(self.newline, CharacterSet):
-            factory.add(E_CharacterCountType.LINE, delta, character_set)
-
-        return ColumnNPerChunk, \
-               factory.incidence_id_map, \
-               factory.on_before_reload, \
-               factory.on_after_reload
+        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName) 
 
     def defaultize(self, DefaultColumNPerCharacter):
         all_set = _get_all_character_set(self.column, self.grid, self.newline)
@@ -240,32 +215,61 @@ def _defaultize_column_and_grid(column, grid, all_set, Bad=None):
         grid   = _defaultize_if_admissible(grid, 4, ord('\t'), all_set, Bad)
     return column, grid
 
-class CountCmdInfoFactory:
-    def __init__(self, ColumnNPerChunk, DoorIdDone, InputPName):
+class CountCmdFactory:
+    def __init__(self, CMap, ColumnNPerChunk, InputPName):
+        self.__map                  = CMap
         self.column_count_per_chunk = ColumnNPerChunk
-        self.door_id_done           = DoorIdDone
         self.input_p_name           = InputPName
 
-        # Actions before and after reload buffer.
-        self.on_before_reload, \
-        self.on_after_reload   = self._before_and_after_reload()
+    def get_incidence_id_map(self):
+        return [ (x.character_set, x.incidence_id) for x in self.__map ]
 
-        self.incidence_id_map  = dict()
+    def get_terminal_list(self, IncidenceMap, DoorIdOk, DoorIdOnLexemeEnd=None):
+        self.door_id_ok            = DoorIdOk
+        self.door_id_on_lexeme_end = DoorIdOnLexemeEnd
+        return [ self._get_terminal(x) for character_set, x in self.IncidenceMap.iteritems() ] 
 
-    def add(self, CC_Type, Parameter, TriggerSet):
-        self.incidence_id_map[dial_db.new_incidence_id()] = self._do(CC_Type, Parameter, TriggerSet)
+    def _get_terminal():
+        assert self.door_id_ok is not None
 
-    def _do(self, CC_Type, Parameter, TriggerSet):
+        if self.door_id_on_lexeme_end is not None:
+            cl = self._do_with_lexeme_end_check(x.cc_type, x.parameter)
+        else:
+            cl = self._do(x.cc_type, x.parameter)
+
+        terminal = Terminal(cl)
+        terminal.set_incidence_id(x.incidence_id)
+        return terminal
+
+    def _do(self, CC_Type, Parameter):
         """                   .---------------.
-                         ---->| Count Command |----> DoorIdDone
+                         ---->| Count Command |----> DoorIdOk
                               '---------------'
-
-        NOTE: CountCmdInfoFactory_WithCheckLexemeEnd overwrites this member 
-              function.
         """
         cl = self._command(CC_Type, Parameter) 
-        cl.append(GotoDoorId(DoorIdDone))
-        return CountCmdInfo(TriggerSet, cl, CC_Type)
+        cl.append(GotoDoorId(DoorIdOk))
+        return cl
+
+    def _do_with_lexeme_end_check(self, CC_Type, Parameter):
+        """     .---------------.    ,----------.   no
+           ---->| Count Command |---< LexemeEnd? >------> DoorIdOk
+                '---------------'    '----+-----'
+                                          | yes
+                                   .---------------.
+                                   |  Lexeme End   |
+                                   | Count Command |----> DoorIdOnLexemeEnd
+                                   '---------------'
+        """
+        assert self.door_id_ok is not None
+        assert self.door_id_on_lexeme_end is not None
+
+        cl = self._command(CC_Type, Parameter)
+        cl.extend([
+            GotoDoorIdIfInputPNotEqualPointer("LexemeEnd", self.door_id_ok),
+            self._command_on_lexeme_end(CC_Type, Parameter),
+            GotoDoorId(self.door_id_on_lexeme_end)
+        ])
+        return cl
 
     def _command(CC_Type, Parameter):
         if self.column_count_per_chunk is None:
@@ -291,7 +295,7 @@ class CountCmdInfoFactory:
         return ColumnCountReferencePDeltaAdd(self.input_p_name, 
                                              self.column_count_per_chunk)
 
-    def _before_and_after_reload(self):
+    def get_on_before_reload(self):
         """BEFORE RELOAD:
                                                          input_p
                                                          |
@@ -302,8 +306,14 @@ class CountCmdInfoFactory:
                    column_n += (input_p - reference_p) * C
 
               where C = self.column_count_per_chunk.
+        """
+        if self.column_count_per_chunk is None: return []
 
-           AFTER RELOAD:
+        return [ ColumnCountReferencePDeltaAdd(self.input_p_name, 
+                                               self.column_count_per_chunk) ]
+
+    def get_on_after_reload(self):
+        """AFTER RELOAD:
 
              input_p
              |
@@ -311,39 +321,9 @@ class CountCmdInfoFactory:
              |
              reference_p
         """
-        on_before_reload = []
-        on_after_reload  = []
-        if self.column_count_per_chunk is not None:
-            on_before_reload.append(
-                ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                              self.column_count_per_chunk) 
-            )
-            on_after_reload.append( 
-                ColumnCountReferencePSet(self.input_p_name) 
-            )
-        return on_before_reload, on_after_reload
+        if self.column_count_per_chunk is None: return []
 
-class CountCmdInfoFactory_WithCheckLexemeEnd(CountCmdInfoFactory):
-    def __init__(self, ColumnNPerChunk, DoorIdDone, InputPName, DoorIdUndone):
-        CountCmdInfoFactory.__init__(self, ColumnNPerChunk, DoorIdDone, InputPName)
-        self.door_id_undone = DoorIdUndone
-        
-    def _do(self, CC_Type, Parameter, TriggerSet):
-        """     .---------------.    ,----------.   no
-           ---->| Count Command |---< LexemeEnd? >------> DoorIdUndone
-                '---------------'    '----+-----'
-                                          | yes
-                                   .---------------.
-                                   |  Lexeme End   |
-                                   | Count Command |---> DoorIdDone
-                                   '---------------'
-        """
-        cl = self._command(CC_Type, Parameter)
-        cl.extend([
-            GotoDoorIdIfInputPNotEqualPointer("LexemeEnd", self.door_id_undone),
-            self._command_on_lexeme_end(CC_Type, Parameter),
-            GotoDoorId(self.door_id_done)
-        ])
-        return CountCmdInfo(TriggerSet, cl, CC_Type)
+        return [ ColumnCountReferencePSet(self.input_p_name) ]
+
 
 

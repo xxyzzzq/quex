@@ -80,12 +80,13 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
                                                    main_analyzer)
 
     # (*) Reload procedures
-    reload_procedures     = generator.do_reload_procedures(main_analyzer, 
-                                                           pre_analyzer)
+    reload_procedure_fw  = generator.do_reload_procedure(main_analyzer)
+    reload_procedure_bw  = generator.do_reload_procedure(pre_analyzer)
+
     # assert all_isinstance(reload_procedures, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Re-entry preparation
-    reentry_prerpation    = generator.do_reentry_preparation(esms.pre_context_sm_id_list,
+    reentry_preparation  = generator.do_reentry_preparation(esms.pre_context_sm_id_list,
                                                              OnAfterMatchCode)
 
     # (*) State Router
@@ -105,8 +106,9 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
     function_body.extend(bipd)                # (seldom != empty; only for pseudo-ambiguous post contexts)
     function_body.extend(terminals)           
     function_body.extend(state_router)        # route to state by index (only if no computed gotos)
-    function_body.extend(reload_procedures)
-    function_body.extend(reentry_prerpation)   
+    function_body.extend(reload_procedure_fw)
+    function_body.extend(reload_procedure_bw)
+    function_body.extend(reentry_preparation)   
 
     return function_body, variable_definitions
 
