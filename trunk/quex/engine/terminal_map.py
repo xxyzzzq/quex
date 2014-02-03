@@ -1,3 +1,15 @@
+from   quex.engine.state_machine.core             import StateMachine
+import quex.engine.state_machine.index            as     index
+import quex.engine.state_machine.transformation   as     transformation
+from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.analyzer.commands              import InputPDecrement, \
+                                                         InputPToLexemeStartP, \
+                                                         GotoDoorId, \
+                                                         LexemeStartToReferenceP
+from   quex.engine.analyzer.terminal.core         import Terminal
+
+from  quex.blackboard import setup as Setup
 
 def do(IncidenceIdMap, ReloadF, DoorIdExit):
     """Brief: Generates a state machine that implements the transition
@@ -43,35 +55,35 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         
     """
     sm       = StateMachine()
-    iid_else = None
     blc_set  = NumberSet(Setup.buffer_limit_code)
 
-    def add(sm, state, TriggerSet, IncidenceId):
-        target_state_index = index.get()
+    def add(sm, TriggerSet, IncidenceId):
+        target_state_index = sm.add_transition(sm.init_state_index, TriggerSet)
         target_state       = sm.states[target_state_index]
-        state.add_transition(TriggerSet, target_state_index)
-        target_state.mark_self_as_origin(IncidenceId, 
-                                         target_state_index)
+        target_state.mark_self_as_origin(IncidenceId, target_state_index)
         target_state.set_acceptance(True)
 
-    def prepare_else(sm, state):
+    def prepare_else(sm, StateIndex, iid_else):
+        state       = sm.states[StateIndex]
         covered_set = state.target_map.get_trigger_set_union()
         if ReloadF:               covered_set.unite_with(blc_set)
-        if covered_set.is_all():  return
+        if covered_set.is_all():  return iid_else
         if iid_else is None:      iid_else = dial_db.new_incidence_id()
         uncovered_set = covered_set.inverse()
-        add(sm, state, uncovered_set, iid_else)
+        add(sm, StateIndex, uncovered_set)
+        return iid_else
 
     sm         = StateMachine()
     init_state = sm.get_init_state()
-    for character_set, incidence_id in CodeMap:
+    for character_set, incidence_id in IncidenceIdMap:
         # 'cliid' = unique command list incidence id.
-        add(sm, init_state, character_set, incidence_id)
+        add(sm, character_set, incidence_id)
 
     dummy, sm = transformation.do_state_machine(sm)
 
-    for state in sm.states.itervalues():
-        prepare_else(state)
+    iid_else = None
+    for state_index in sm.states.keys():
+        iid_else = prepare_else(sm, state_index, iid_else)
 
     # When the state machine is left upon occurrence of an else 
     # character. Then 
@@ -91,104 +103,23 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
 
     return sm, on_reentry, terminal_else
 
-def get_count_command_list(CCInfo):
-    cl = copy(CCInfo.command_list)
-
-    cl.append(
-        GotoDoorIdIfInputPNotEqualPointer(door_id_reentry, "LexemeEnd")
-    )
-    if cc_type == E_CharacterCountType.CHARACTER:
-        cl.append(
-            ColumnCountReferencePDeltaAdd(self.iterator_name, 
-                                          self.column_count_per_chunk)
-        )
-    cl.append(GotoDoorId(door_id_exit))
-
-    return cl
-
-def get_terminal(CLIID, CCInfo):
-    code = get_count_command_list(CCInfo)
-    name = CCInfo.trigger_set.get_string("hex")
-    terminal = Terminal(code, name)
-    terminal.set_incidence_id(CLIID)
-    return terminal
-
-def get_plain_terminal(IncidenceId, Code, Name):
-    terminal = Terminal(Code, Name)
-    terminal.set_incidence_id(IncidenceId)
-    return terminal
-
-def loopy():
-    incidence_id_map = [
-        (cc_info.trigger_set, cliid)
-        for cliid, cc_info in count_command_map.iteritems()
-    ]
-
-    sm, on_reentry, on_inconsiderare, iid_inconsiderate = doodle(incidence_id_map, ReloadF)
+def extend_before_and_after_reload():
+    """The 'lexeme_start_p' restricts the amount of data which is load into the
+    buffer upon reload--if the lexeme needs to be maintained. If the lexeme
+    does not need to be maintained, then the whole buffer can be refilled.
     
-    terminal_list = [
-        get_terminal(cliid, cc_info)
-        for cliid, cc_info in count_command_map.iteritems()
-    ]
-    terminal_list.append(
-        get_plain_terminal(iid_inconsiderate, on_inconsiderate, "<inconsiderate>")
-    )
-
-    return sm, on_reentry, terminal_list
-
-def _on_before_after_reload_prepare(LexemeF):
-    """Actions to be performed before and after reload.
-
-    RETURNS: 
+    For this, the 'lexeme_start_p' is set to the input pointer. 
     
-        [0], [1]    Commands to be executed before and after buffer reload. 
-                    This basically adapts the reference pointer for column 
-                    number counting. 
-                 
-        None, None  If column number counting cannot profit from the a fixed
-                    ColumnCountPerChunk (applying "column += (p-reference_p)*c")
+    EXCEPTION: Variable character sizes. There, the 'lexeme_start_p' is used
+    to mark the begin of the current letter. However, letters are short, so 
+    the drawback is tiny.
 
-    The LexemeF tells whether the current lexeme is important, i.e. treated
-    by some handler. If not, the how buffer may be reloaded by setting the 
-    lexeme start pointer to the input pointer.
+    RETURN: [0] on_before_reload
+            [1] on_after_reload
     """
-    on_before_reload = []
-    on_after_reload  = []
-    if self.column_count_per_chunk is not None:
-        on_before_reload.append(
-            ColumnCountReferencePDeltaAdd(self.iterator_name, 
-                                          self.column_count_per_chunk)
-        )
-        on_after_reload.append(
-            ColumnCountReferencePSet(self.iterator_name)
-        )
+    if not Setup.variable_character_sizes_f():
+        return [], []
 
-    if not LexemeF and not Setup.variable_character_sizes_f():
-        # The lexeme start pointer defines the lower border of memory to be 
-        # kept when reloading. Setting it to the input pointer allows for 
-        # the whole buffer to be reloaded. THIS CAN ONLY BE DONE IF THE 
-        # LEXEME IS NOT IMPORTANT!
-        on_before_reload.append(
-            LexemeStartToReferenceP(self.iterator_name)
-        )
+    return [ LexemeStartToReferenceP(Lng.INPUT_P())], \
+           [ InputPToLexemeStartP() ]
 
-    return CommandList.from_iterable(on_before_reload), \
-           CommandList.from_iterable(on_after_reload)
-
-
-def get_analyzer():
-    sm, on_reentry, terminal_list = loopy()
-
-    analyzer = Analyzer(sm, EngineType, GlobalReloadState=GlobalReloadState)
-
-      
-
-
-def DELETE_get_state_machine(TerminalMap):
-    # -- Generate for each character set that has the same counting action a
-    #    transition in the state machine. 
-    # -- Associate the target state with an 'AcceptanceID'.
-    #    (AcceptanceID-s survive the transformation and NFA-to-DFA)
-    # -- Store the relation between the counting action (given by the 'cliid')
-    #    and the acceptance id.
-    pass

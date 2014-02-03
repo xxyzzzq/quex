@@ -186,11 +186,11 @@ def get_loop_setup():
         on_reentry.append(InputPDereference())
         on_exit.append(GotoDoorId(ExitDoorId))
 
-    @typed(GlobalReloadState = (None, ReloadState),
+    @typed(ReloadStateExtern = (None, ReloadState),
            TargetState       = (None, AnalyzerState))
-    def get_analyzer(self, EngineType, GlobalReloadState=None, CheckLexemeEndF=False):
+    def get_analyzer(self, EngineType, ReloadStateExtern=None, CheckLexemeEndF=False):
         """
-        GlobalReloadState = None --> no Reload
+        ReloadStateExtern = None --> no Reload
         TargetState = None       --> loop.
 
         The possibility of a dynamic character size codec forces to transform
@@ -223,8 +223,8 @@ def get_loop_setup():
                                      '----> ... 
         """                                      
         assert    not EngineType.requires_buffer_limit_code_for_reload() \
-               or GlobalReloadState is not None 
-        assert    GlobalReloadState is None \
+               or ReloadStateExtern is not None 
+        assert    ReloadStateExtern is None \
                or EngineType.requires_buffer_limit_code_for_reload() 
         
 
@@ -234,7 +234,7 @@ def get_loop_setup():
         # The 'bending' of CLIID-s to the init state must wait until the entry actions
         # have been determined. Only this way, it is safe to assume that the different
         # counting actions are implemented at a seperate entry.
-        analyzer      = Analyzer(sm, EngineType, GlobalReloadState=GlobalReloadState)
+        analyzer      = Analyzer(sm, EngineType, ReloadStateExtern=ReloadStateExtern)
         door_id_loop  = self.setup_loop_anchor(analyzer)
 
         terminal_list = self.get_terminal_list(iid_inconsiderate, 

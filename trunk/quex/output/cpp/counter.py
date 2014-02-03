@@ -48,10 +48,9 @@ def get(counter_db, Name):
 
     return_door_id = dial_db.new_door_id()
     code           = generator.do_loop(counter_db, 
-                                       AfterExitDoorId = return_door_id,
-                                       CheckLexemeEndF = True, 
-                                       EngineType      = engine.CHARACTER_COUNTER,
-                                       MaintainLexemeF = False)
+                                       DoorIdExit      = return_door_id,
+                                       LexemeEndCheckF = True, 
+                                       EngineType      = engine.CHARACTER_COUNTER)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, return_door_id) 
 

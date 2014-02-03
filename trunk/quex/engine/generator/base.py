@@ -187,25 +187,22 @@ def do_backward_input_position_detectors(BipdDb):
         result.extend(txt)
     return result, bipd_entry_door_id_db
 
-def do_reload_procedures(ForwardAnalyzer, BackwardAnalyzer):
+def do_reload_procedure(TheAnalyzer):
     """Lazy (delayed) code generation of the forward and backward reloaders. 
     Any state who needs reload may 'register' in a reloader. This registering may 
     happen after the code generation of forward or backward state machine.
     """
     # Variables that tell where to go after reload success and reload failure
-    if Setup.buffer_based_analyzis_f:               
-        return []
-
-    txt = []
-    if ForwardAnalyzer is not None and ForwardAnalyzer.reload_state is not None:
-        txt.extend(reload_state_coder.do(ForwardAnalyzer.reload_state))
-    if BackwardAnalyzer is not None and BackwardAnalyzer.reload_state is not None:
-        txt.extend(reload_state_coder.do(BackwardAnalyzer.reload_state))
+    if Setup.buffer_based_analyzis_f:       return []
 
     variable_db.require("target_state_else_index")  # upon reload failure
     variable_db.require("target_state_index")       # upon reload success
 
-    return txt
+    if   TheAnalyzer is None:               return []
+    elif TheAnalyzer.reload_state is None:  return []
+    elif TheAnalyzer.reload_state_extern_f: return []
+
+    return reload_state_coder.do(TheAnalyzer.reload_state)
 
 def do_state_router():
     routed_address_set = dial_db.routed_address_set()
@@ -260,8 +257,8 @@ def do_terminals(TerminalList, TheAnalyzer):
 def do_reentry_preparation(PreContextSmIdList, OnAfterMatchCode):
     return Lng.REENTRY_PREPARATION(PreContextSmIdList, OnAfterMatchCode)
 
-@typed(CharacterSet=(None, NumberSet), ReloadF=bool, CheckLexemeEndF=bool, AfterExitDoorId=DoorID, MaintainLexemeF=bool)
-def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False, ReloadF=False, GlobalReloadState=None, EngineType=None, MaintainLexemeF=None):
+@typed(CharacterSet=(None, NumberSet), ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
+def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None, EngineType=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -269,31 +266,58 @@ def do_loop(CounterDb, AfterExitDoorId, CharacterSet=None, CheckLexemeEndF=False
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
 
-    # incidence_map: (character set, incidence_id)
-    # incidence_db:  incidence_id --> command list
-    incidence_id_map, \
-    incidence_db      = CounterDb.get_command_map(CharacterSet, CheckLexemeEndF)
+    if not LexemeEndCheckF: door_id_on_lexeme_end = None
+    else:                   door_id_on_lexeme_end = DoorIdExit
 
+    # (*) Construct State Machine and Terminals _______________________________
+    #
+    # -- The state machine / analyzer
+    ccfactory         = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
+    incidence_id_map  = ccfactory.get_incidence_id_map()
+    on_before_reload  = ccfactory.get_on_before_reload()
+    on_after_reload   = ccfactory.get_on_after_reload()
 
-    sm,           \
-    on_reentry,   \
-    terminal_else = terminal_map.do(incidence_id_map, ReloadF, AfterExitDoorId)
-    
-    analyzer, \
-    terminal_list = ccd.get_analyzer(EngineType, GlobalReloadState, CheckLexemeEndF=CheckLexemeEndF)
+    sm,               \
+    on_reentry,       \
+    terminal_else     = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
+    on_before_reload, \
+    on_after_reload   = terminal_map.extend_before_and_after_reload(on_before_reload, 
+                                                                    on_after_reload) 
 
-    code          = state_machine_coder.do(analyzer)
-    code.extend(do_terminals(terminal_list, analyzer))
+    assert LexemeMaintainF == False
+    analyzer = analyzer_generator.do(sm, engine.FORWARD(), ReloadStateExtern,
+                                     on_before_reload, on_after_reload)
 
-    if ReloadF and not GlobalReloadState:
-        reload_code = Generator.code_reload_procedures(analyzer.reload_state, None)
-        code.extend(reload_code)
+    # -- The terminals 
+    #
+    # DoorID of reentry:
+    entry           = analyzer.init_state().entry
+    transition_id   = entry.enter(init_state_index, sm_index.get(), TransitionAction(on_reentry))
+    entry.categorize(init_state_index)
+    door_id_reentry = entry.get(transition_id).door_id
+
+    terminal_list = ccfactory.get_terminal_list(Lng.INPUT_P(), 
+                                                DoorIdOk=door_id_reentry, 
+                                                DoorIdOnLexemeEnd=door_id_on_lexeme_end)
+    terminal_list.append(terminal_else)
+
+    # (*) Generate Code _______________________________________________________
+    txt = [
+        do_analyzer(analyzer)
+    ]
+    txt.extend(
+        do_terminals(terminal_list, analyzer)
+    )
+    txt.extend(
+        do_reload_procedure(analyzer)
+    )
+    if ReloadStateExtern is not None:
         variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
         variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
 
     variable_db.require("input") 
 
-    return code
+    return txt
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell
