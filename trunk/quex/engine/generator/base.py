@@ -272,20 +272,21 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     # (*) Construct State Machine and Terminals _______________________________
     #
     # -- The state machine / analyzer
-    ccfactory         = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
-    incidence_id_map  = ccfactory.get_incidence_id_map()
-    on_before_reload  = ccfactory.get_on_before_reload()
-    on_after_reload   = ccfactory.get_on_after_reload()
+    ccfactory          = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
+    incidence_id_map   = ccfactory.get_incidence_id_map()
 
-    sm,               \
-    on_reentry,       \
-    terminal_else     = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
-    on_before_reload, \
-    on_after_reload   = terminal_map.extend_before_and_after_reload(on_before_reload, 
-                                                                    on_after_reload) 
+    sm,           \
+    on_reentry,   \
+    terminal_else = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
 
-    assert LexemeMaintainF == False
-    analyzer = analyzer_generator.do(sm, engine.FORWARD(), ReloadStateExtern,
+    on_before_reload_0  = ccfactory.get_on_before_reload()
+    on_after_reload_0   = ccfactory.get_on_after_reload()
+    on_before_reload_1, \
+    on_after_reload_1   = terminal_map.get_before_and_after_reload()
+    on_before_reload    = on_before_reload_0 + on_before_reload_1
+    on_after_reload     = on_after_reload_0  + on_after_reload_1
+
+    analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern,
                                      on_before_reload, on_after_reload)
 
     # -- The terminals 

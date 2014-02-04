@@ -74,7 +74,7 @@ class StateCoreInfo(object):
         assert type(AcceptanceF) == bool
         assert type(StoreInputPositionF) == bool
         assert type(RestoreInputPositionF) == bool
-        assert AcceptanceID    in E_IncidenceIDs_SubsetAcceptanceIDs or (isinstance(AcceptanceID, long)    and AcceptanceID >= 0) 
+        assert AcceptanceID in E_IncidenceIDs_SubsetAcceptanceIDs or (isinstance(AcceptanceID, long)    and AcceptanceID >= 0) 
         assert PreContextID in E_PreContextIDs or (isinstance(PreContextID, long) and PreContextID >= 0), PreContextID
 
         if AcceptanceF: assert not StoreInputPositionF 
@@ -146,8 +146,9 @@ class StateCoreInfo(object):
     def acceptance_id(self):
         return self.__pattern_id
 
-    def set_pattern_id(self, Value):
-        self.__pattern_id = Value
+    def set_pattern_id(self, AcceptanceID):
+        assert AcceptanceID in E_IncidenceIDs_SubsetAcceptanceIDs or (isinstance(AcceptanceID, long)    and AcceptanceID >= 0) 
+        self.__pattern_id = AcceptanceID
 
     def is_acceptance(self):
         return self.__acceptance_f

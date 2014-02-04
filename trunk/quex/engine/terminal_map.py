@@ -8,6 +8,7 @@ from   quex.engine.analyzer.commands              import InputPDecrement, \
                                                          GotoDoorId, \
                                                          LexemeStartToReferenceP
 from   quex.engine.analyzer.terminal.core         import Terminal
+from   quex.engine.generator.code.core            import CodeTerminal
 
 from  quex.blackboard import setup as Setup
 
@@ -79,6 +80,7 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         # 'cliid' = unique command list incidence id.
         add(sm, character_set, incidence_id)
 
+    print "#smc:", sm
     dummy, sm = transformation.do_state_machine(sm)
 
     iid_else = None
@@ -98,12 +100,13 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
             on_else    = [ InputPDecrement() ]
         on_else.append(GotoDoorId(DoorIdExit))
 
-        terminal_else = Terminal(on_else, "<ELSE>")
+        terminal_else = Terminal(CodeTerminal(on_else), "<ELSE>")
         terminal_else.set_incidence_id(iid_else)
 
+    print "#smc1", sm
     return sm, on_reentry, terminal_else
 
-def extend_before_and_after_reload():
+def get_before_and_after_reload():
     """The 'lexeme_start_p' restricts the amount of data which is load into the
     buffer upon reload--if the lexeme needs to be maintained. If the lexeme
     does not need to be maintained, then the whole buffer can be refilled.
