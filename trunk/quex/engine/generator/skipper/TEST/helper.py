@@ -148,7 +148,7 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     return blue_print(customized_unit_test_function_txt,
                       [("$$MARKER_LIST$$",            ml_txt),
                        ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        "".join(Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB)))),
+                       ("$$LOCAL_VARIABLES$$",        Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB))),
                        ("$$MARK_LEXEME_START$$",      Lng.LEXEME_START_SET()),
                        ("$$SOURCE_CODE$$",            SourceCode),
                        ("$$INPUT_P_DEREFERENCE$$",    Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE())),

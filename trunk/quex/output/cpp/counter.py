@@ -7,8 +7,7 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.commands                import CommandList, \
-                                                           InputPToLexemeStartP, \
-                                                           GotoDoorIdIfInputPEqualPointer
+                                                           InputPToLexemeStartP
 
 from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \
@@ -71,7 +70,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
     ]
 
     # Following function refers to the global 'variable_db'
-    txt.extend(Lng.VARIABLE_DEFINITIONS(variable_db))
+    txt.append(Lng.VARIABLE_DEFINITIONS(variable_db))
     txt.append(
         "    (void)me;\n"
         "    __QUEX_IF_COUNT_SHIFT_VALUES();\n"
@@ -95,5 +94,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )
 
+    for i, txt_elm in enumerate(txt):
+        print "#[%i] %s '%s'" % (i, txt_elm.__class__, txt_elm)
     return "".join(Lng.GET_PLAIN_STRINGS(txt))
 

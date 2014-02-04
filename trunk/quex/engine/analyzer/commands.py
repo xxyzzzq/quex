@@ -311,7 +311,7 @@ def __configure():
     #
     c(E_Cmd.GotoDoorId,                       ("door_id",), 
                                               (E_R.ThreadOfControl,r))
-    c(E_Cmd.GotoDoorIdIfInputPEqualPointer,   ("door_id", "pointer_name"),
+    c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id", "pointer_name"),
                                               (E_R.ThreadOfControl,r), (E_R.InputP,r), (E_R.Pointer,r,"pointer_name"))
     #
     c(E_Cmd.InputPToLexemeStartP,             None, (E_R.InputP,w), (E_R.LexemeStartP, r))
@@ -468,8 +468,8 @@ def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
 def GotoDoorId(DoorId):
     return _cmd(E_Cmd.GotoDoorId, DoorId)
 
-def GotoDoorIdIfInputPEqualPointer(DoorId, PointerName):
-    return _cmd(E_Cmd.GotoDoorIdIfInputPEqualPointer, DoorId, PointerName)
+def GotoDoorIdIfInputPNotEqualPointer(DoorId, PointerName):
+    return _cmd(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, PointerName)
 
 def Accepter():
     return _cmd(E_Cmd.Accepter)

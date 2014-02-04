@@ -518,7 +518,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 
     txt.extend(character_count_txt)
 
-    print "##DEBUG:\n%s" % "".join(Lng.GET_PLAIN_STRINGS(txt))
+    # print "##DEBUG:\n%s" % "".join(Lng.GET_PLAIN_STRINGS(txt))
     return txt
 
 #def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):

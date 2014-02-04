@@ -365,6 +365,7 @@ def get_plain_strings(txt_list):
         elif dial_db.label_is_gotoed(elm.label): 
             # If an address is referenced, the correspondent code is inserted.
             txt_list[i:i+1] = elm.code
+            # print "#elm.code:", elm.code
             # txt_list = txt_list[:i] + elm.code + txt_list[i+1:]
             size += len(elm.code) - 1
             i    -= 1

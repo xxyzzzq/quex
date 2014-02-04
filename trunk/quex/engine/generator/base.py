@@ -20,7 +20,9 @@ import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
+from   quex.engine.analyzer.commands                   import CommandList
 from   quex.engine.analyzer.state.core                 import ReloadState
+from   quex.engine.analyzer.state.entry_action         import TransitionAction
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
 from   quex.input.regular_expression.construct         import Pattern
@@ -283,8 +285,8 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     on_after_reload_0   = ccfactory.get_on_after_reload()
     on_before_reload_1, \
     on_after_reload_1   = terminal_map.get_before_and_after_reload()
-    on_before_reload    = on_before_reload_0 + on_before_reload_1
-    on_after_reload     = on_after_reload_0  + on_after_reload_1
+    on_before_reload    = CommandList.from_iterable(on_before_reload_0 + on_before_reload_1)
+    on_after_reload     = CommandList.from_iterable(on_after_reload_0  + on_after_reload_1)
 
     analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern,
                                      on_before_reload, on_after_reload)
@@ -293,8 +295,8 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     #
     # DoorID of reentry:
     entry           = analyzer.init_state().entry
-    transition_id   = entry.enter(init_state_index, sm_index.get(), TransitionAction(on_reentry))
-    entry.categorize(init_state_index)
+    transition_id   = entry.enter(sm.init_state_index, index.get(), TransitionAction(CommandList.from_iterable(on_reentry)))
+    entry.categorize(sm.init_state_index)
     door_id_reentry = entry.get(transition_id).door_id
 
     terminal_list = ccfactory.get_terminal_list(Lng.INPUT_P(), 
@@ -303,15 +305,18 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     terminal_list.append(terminal_else)
 
     # (*) Generate Code _______________________________________________________
-    txt = [
-        do_analyzer(analyzer)
-    ]
-    txt.extend(
-        do_terminals(terminal_list, analyzer)
-    )
-    txt.extend(
-        do_reload_procedure(analyzer)
-    )
+    txt_main             = do_analyzer(analyzer)
+    assert all_isinstance(txt_main, (IfDoorIdReferencedCode, int, str, unicode))
+    txt_terminals        = do_terminals(terminal_list, analyzer)
+    assert all_isinstance(txt_terminals, (IfDoorIdReferencedCode, int, str, unicode))
+    txt_reload_procedure = do_reload_procedure(analyzer)
+    assert all_isinstance(txt_reload_procedure, (IfDoorIdReferencedCode, int, str, unicode))
+
+    txt = []
+    txt.extend(txt_main)
+    txt.extend(txt_terminals)
+    txt.extend(txt_reload_procedure)
+
     if ReloadStateExtern is not None:
         variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
         variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
