@@ -10,7 +10,8 @@ from   quex.engine.analyzer.commands              import InputPDecrement, \
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.generator.code.core            import CodeTerminal
 
-from  quex.blackboard import setup as Setup
+from  quex.blackboard import setup as Setup, \
+                             Lng
 
 def do(IncidenceIdMap, ReloadF, DoorIdExit):
     """Brief: Generates a state machine that implements the transition
@@ -58,8 +59,8 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
     sm       = StateMachine()
     blc_set  = NumberSet(Setup.buffer_limit_code)
 
-    def add(sm, TriggerSet, IncidenceId):
-        target_state_index = sm.add_transition(sm.init_state_index, TriggerSet)
+    def add(sm, StateIndex, TriggerSet, IncidenceId):
+        target_state_index = sm.add_transition(StateIndex, TriggerSet)
         target_state       = sm.states[target_state_index]
         target_state.mark_self_as_origin(IncidenceId, target_state_index)
         target_state.set_acceptance(True)
@@ -71,14 +72,14 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         if covered_set.is_all():  return iid_else
         if iid_else is None:      iid_else = dial_db.new_incidence_id()
         uncovered_set = covered_set.inverse()
-        add(sm, StateIndex, uncovered_set)
+        add(sm, StateIndex, uncovered_set, iid_else)
         return iid_else
 
     sm         = StateMachine()
     init_state = sm.get_init_state()
     for character_set, incidence_id in IncidenceIdMap:
         # 'cliid' = unique command list incidence id.
-        add(sm, character_set, incidence_id)
+        add(sm, sm.init_state_index, character_set, incidence_id)
 
     print "#smc:", sm
     dummy, sm = transformation.do_state_machine(sm)
@@ -100,7 +101,7 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
             on_else    = [ InputPDecrement() ]
         on_else.append(GotoDoorId(DoorIdExit))
 
-        terminal_else = Terminal(CodeTerminal(on_else), "<ELSE>")
+        terminal_else = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in on_else]), "<ELSE>")
         terminal_else.set_incidence_id(iid_else)
 
     print "#smc1", sm

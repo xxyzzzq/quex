@@ -267,8 +267,8 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.GotoDoorId:
             return self.GOTO(Cmd.content.door_id)
 
-        elif Cmd.id == E_Cmd.GotoDoorIdIfInputPEqualPointer:
-            return "if( %s == %s ) %s;\n" % (self.INPUT_P(), Cmd.content.pointer_name, self.GOTO(Cmd.content.door_id))
+        elif Cmd.id == E_Cmd.GotoDoorIdIfInputPNotEqualPointer:
+            return "if( %s != %s ) %s;\n" % (self.INPUT_P(), Cmd.content.pointer_name, self.GOTO(Cmd.content.door_id))
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 

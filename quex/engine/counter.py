@@ -1,16 +1,23 @@
-from  quex.engine.generator.code.base import SourceRef_VOID
-from  quex.engine.interval_handling   import NumberSet
-from  quex.engine.tools               import return_None
+from  quex.engine.analyzer.terminal.core         import Terminal
+from  quex.engine.generator.code.base            import SourceRef_VOID
+from  quex.engine.generator.code.core            import CodeTerminal
+from  quex.engine.interval_handling              import NumberSet
+from  quex.engine.tools                          import return_None
 from  quex.engine.analyzer.door_id_address_label import dial_db
-from  quex.blackboard import E_CharacterCountType, \
-                             setup as Setup
-from   quex.engine.analyzer.commands  import CommandList, \
-                                             ColumnCountReferencePDeltaAdd, \
-                                             ColumnCountReferencePSet
+from  quex.engine.analyzer.commands              import CommandList, \
+                                                        ColumnCountReferencePDeltaAdd, \
+                                                        ColumnCountReferencePSet, \
+                                                        ColumnCountGridAddWithReferenceP, \
+                                                        LineCountAddWithReferenceP, \
+                                                        GotoDoorId, \
+                                                        GotoDoorIdIfInputPNotEqualPointer
 
+from  quex.blackboard import E_CharacterCountType, \
+                             setup as Setup, \
+                             Lng
 from  collections import namedtuple
 
-CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "paramter", "character_set"))
+CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "parameter", "character_set"))
 
 class CounterSetupLineColumn(object):
     __slots__ = ("sr",      # Source Reference
@@ -71,7 +78,7 @@ class CounterSetupLineColumn(object):
             
         cmap = []
         cmap.extend(
-            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.CHARACTER, delta, character_set)
+            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, delta, character_set)
             for delta, character_set in pruned_iteritems(self.column, CharacterSet)
         )
         cmap.extend(
@@ -227,18 +234,18 @@ class CountCmdFactory:
     def get_terminal_list(self, IncidenceMap, DoorIdOk, DoorIdOnLexemeEnd=None):
         self.door_id_ok            = DoorIdOk
         self.door_id_on_lexeme_end = DoorIdOnLexemeEnd
-        return [ self._get_terminal(x) for character_set, x in self.IncidenceMap.iteritems() ] 
+        return [ self._get_terminal(x) for x in self.__map ] 
 
-    def _get_terminal():
+    def _get_terminal(self, X):
         assert self.door_id_ok is not None
 
         if self.door_id_on_lexeme_end is not None:
-            cl = self._do_with_lexeme_end_check(x.cc_type, x.parameter)
+            cl = self._do_with_lexeme_end_check(X.cc_type, X.parameter)
         else:
-            cl = self._do(x.cc_type, x.parameter)
+            cl = self._do(X.cc_type, X.parameter)
 
-        terminal = Terminal(cl)
-        terminal.set_incidence_id(x.incidence_id)
+        terminal = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in cl]))
+        terminal.set_incidence_id(X.incidence_id)
         return terminal
 
     def _do(self, CC_Type, Parameter):
@@ -264,14 +271,20 @@ class CountCmdFactory:
         assert self.door_id_on_lexeme_end is not None
 
         cl = self._command(CC_Type, Parameter)
-        cl.extend([
-            GotoDoorIdIfInputPNotEqualPointer("LexemeEnd", self.door_id_ok),
-            self._command_on_lexeme_end(CC_Type, Parameter),
+        cl.append(
+            GotoDoorIdIfInputPNotEqualPointer(self.door_id_ok, "LexemeEnd"),
+        )
+
+        check_cmd = self._command_on_lexeme_end(CC_Type, Parameter)
+        if check_cmd is not None:
+            cl.append(check_cmd)
+
+        cl.append(
             GotoDoorId(self.door_id_on_lexeme_end)
-        ])
+        )
         return cl
 
-    def _command(CC_Type, Parameter):
+    def _command(self, CC_Type, Parameter):
         if self.column_count_per_chunk is None:
             cmd = {
                 E_CharacterCountType.COLUMN: ColumnCountAdd,
@@ -288,7 +301,7 @@ class CountCmdFactory:
         if cmd is None: return []
         else:           return [ cmd ]
 
-    def _command_on_lexeme_end(CC_Type, Parameter):
+    def _command_on_lexeme_end(self, CC_Type, Parameter):
         if   self.column_count_per_chunk is None:    return None
         elif CC_Type != E_CharacterCountType.COLUMN: return None
 
