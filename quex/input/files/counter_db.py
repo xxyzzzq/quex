@@ -3,7 +3,6 @@ from   quex.engine.state_machine.transformation     import homogeneous_chunk_n_p
 import quex.engine.state_machine.transformation     as     transformation
 import quex.engine.state_machine.index              as     index
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.state.drop_out          import DropOutUnreachable
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.analyzer.core                    import Analyzer
 from   quex.engine.analyzer.state.core              import ReloadState, AnalyzerState
