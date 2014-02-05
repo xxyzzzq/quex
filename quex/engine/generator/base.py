@@ -22,6 +22,7 @@ from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
 from   quex.engine.analyzer.commands                   import CommandList
 from   quex.engine.analyzer.state.core                 import ReloadState
+from   quex.engine.analyzer.state.drop_out             import DropOutGotoDoorId
 from   quex.engine.analyzer.state.entry_action         import TransitionAction
 import quex.engine.analyzer.engine_supply_factory      as     engine_supply_factory
 from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
@@ -130,19 +131,6 @@ def do_main(SM, BipdEntryDoorIdDb):
     """
     txt, analyzer = do_state_machine(SM, engine.Class_FORWARD(BipdEntryDoorIdDb))
 
-    # Number of different entries in the position register map
-    position_register_n = len(set(analyzer.position_register_map.itervalues()))
-    # Position registers
-    if position_register_n == 0:
-        if not Setup.buffer_based_analyzis_f:
-            # Not 'buffer-only-mode' => reload requires at least dummy parameters.
-            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
-    else:
-        variable_db.require_array("position", ElementN = position_register_n,
-                                  Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
-        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
-
     if analyzer.last_acceptance_variable_required():
         variable_db.require("last_acceptance")
 
@@ -178,6 +166,8 @@ def do_pre_context(SM, PreContextSmIdList):
     for sm_id in PreContextSmIdList:
         variable_db.require("pre_context_%i_fulfilled_f", Index = sm_id)
 
+    variable_db.require("input") 
+
     return txt, analyzer
 
 def do_backward_input_position_detectors(BipdDb):
@@ -197,12 +187,25 @@ def do_reload_procedure(TheAnalyzer):
     # Variables that tell where to go after reload success and reload failure
     if Setup.buffer_based_analyzis_f:       return []
 
-    variable_db.require("target_state_else_index")  # upon reload failure
-    variable_db.require("target_state_index")       # upon reload success
-
     if   TheAnalyzer is None:               return []
     elif TheAnalyzer.reload_state is None:  return []
     elif TheAnalyzer.reload_state_extern_f: return []
+
+    variable_db.require("target_state_else_index")  # upon reload failure
+    variable_db.require("target_state_index")       # upon reload success
+
+    # Number of different entries in the position register map
+    position_register_n = len(set(TheAnalyzer.position_register_map.itervalues()))
+    # Position registers
+    if position_register_n == 0:
+        if not Setup.buffer_based_analyzis_f:
+            # Not 'buffer-only-mode' => reload requires at least dummy parameters.
+            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
+            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
+    else:
+        variable_db.require_array("position", ElementN = position_register_n,
+                                  Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
+        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
 
     return reload_state_coder.do(TheAnalyzer.reload_state)
 
@@ -239,6 +242,7 @@ def do_state_machine(sm, EngineType):
 
     # -- implement the state machine itself
     analyzer = analyzer_generator.do(sm, EngineType)
+    analyzer_generator.prepare_reload(analyzer)
     sm_text  = do_analyzer(analyzer)
     txt.extend(sm_text)
     return txt, analyzer
@@ -265,34 +269,41 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
     """
+    assert ReloadF or ReloadStateExtern is None
+
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
-
-    if not LexemeEndCheckF: door_id_on_lexeme_end = None
-    else:                   door_id_on_lexeme_end = DoorIdExit
 
     # (*) Construct State Machine and Terminals _______________________________
     #
     # -- The state machine / analyzer
     ccfactory          = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
     incidence_id_map   = ccfactory.get_incidence_id_map()
+    reference_p_f      = ccfactory.requires_reference_p()
 
     sm,           \
     on_reentry,   \
     terminal_else = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
 
-    on_before_reload_0  = ccfactory.get_on_before_reload()
-    on_after_reload_0   = ccfactory.get_on_after_reload()
-    on_before_reload_1, \
-    on_after_reload_1   = terminal_map.get_before_and_after_reload()
-    on_before_reload    = CommandList.from_iterable(on_before_reload_0 + on_before_reload_1)
-    on_after_reload     = CommandList.from_iterable(on_after_reload_0  + on_after_reload_1)
+    analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern)
+    analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
-    analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern,
-                                     on_before_reload, on_after_reload)
+    if ReloadF:
+        on_before_reload_0  = ccfactory.get_on_before_reload()
+        on_after_reload_0   = ccfactory.get_on_after_reload()
+        on_before_reload_1, \
+        on_after_reload_1   = terminal_map.get_before_and_after_reload()
+        on_before_reload    = CommandList.from_iterable(on_before_reload_0 + on_before_reload_1)
+        on_after_reload     = CommandList.from_iterable(on_after_reload_0  + on_after_reload_1)
+
+        analyzer_generator.prepare_reload(analyzer_generator, ReloadStateExtern,
+                                          on_before_reload, on_after_reload)
 
     # -- The terminals 
     #
+    if not LexemeEndCheckF: door_id_on_lexeme_end = None
+    else:                   door_id_on_lexeme_end = DoorIdExit
+
     # DoorID of reentry:
     entry           = analyzer.init_state().entry
     transition_id   = entry.enter(sm.init_state_index, index.get(), TransitionAction(CommandList.from_iterable(on_reentry)))
@@ -317,11 +328,8 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     txt.extend(txt_terminals)
     txt.extend(txt_reload_procedure)
 
-    if ReloadStateExtern is not None:
-        variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % 0)
-
-    variable_db.require("input") 
+    if reference_p_f:
+        variable_db.require("reference_p")
 
     return txt
 

@@ -94,7 +94,5 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )
 
-    for i, txt_elm in enumerate(txt):
-        print "#[%i] %s '%s'" % (i, txt_elm.__class__, txt_elm)
     return "".join(Lng.GET_PLAIN_STRINGS(txt))
 

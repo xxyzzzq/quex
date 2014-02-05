@@ -201,9 +201,7 @@ class Pattern(object):
         # Make sure that a pattern is never transformed twice
         assert self.__alarm_transformed_f == False
         self.__alarm_transformed_f = True
-        print "#callstack:"
-        print_callstack()
-        print "#sm:", self.__sm
+        # print_callstack()
 
         # Transformation MUST be called before any pre-context or bipd
         # is mounted.

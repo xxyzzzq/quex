@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.state.drop_out        import DropOutUnreachable
+from   quex.engine.analyzer.state.drop_out        import DropOutGotoDoorId
 from   quex.engine.analyzer.door_id_address_label import DoorID, \
                                                          IfDoorIdReferencedLabel
 from   quex.blackboard                            import E_IncidenceIDs, E_StateIndices, \
@@ -36,8 +36,8 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
             ])
         return
 
-    elif isinstance(DropOut, DropOutUnreachable):
-        txt.append("%s\n" % Lng.UNREACHABLE)
+    elif isinstance(DropOut, DropOutGotoDoorId):
+        txt.append("%s\n" % Lng.GOTO(DropOut.door_id))
         return
 
     info = DropOut.trivialize()

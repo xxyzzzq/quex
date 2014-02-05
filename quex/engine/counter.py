@@ -228,6 +228,9 @@ class CountCmdFactory:
         self.column_count_per_chunk = ColumnNPerChunk
         self.input_p_name           = InputPName
 
+    def requires_reference_p(self):
+        return self.column_count_per_chunk is not None
+
     def get_incidence_id_map(self):
         return [ (x.character_set, x.incidence_id) for x in self.__map ]
 
