@@ -1,6 +1,8 @@
-from   quex.engine.analyzer.commands import repr_acceptance_id, repr_pre_context_id, repr_positioning
-from   quex.blackboard               import E_PreContextIDs, E_IncidenceIDs, E_TransitionN
-from   itertools                     import ifilter, imap
+from   quex.engine.analyzer.commands              import repr_acceptance_id, repr_pre_context_id, repr_positioning
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.tools                          import typed
+from   quex.blackboard                            import E_PreContextIDs, E_IncidenceIDs, E_TransitionN
+from   itertools                                  import ifilter, imap
 
 class DropOut(object):
     """The general drop-out of a state has the following two 'sub-tasks'
@@ -181,9 +183,10 @@ class DropOut(object):
 
         return "".join(txt)
 
-class DropOutUnreachable(object):
-    def __init__(self):
-        pass
+class DropOutGotoDoorId(object):
+    @typed(DoorId=DoorID)
+    def __init__(self, DoorId):
+        self.door_id = DoorId
 
 class DropOutIndifferent(DropOut):
     def __init__(self):

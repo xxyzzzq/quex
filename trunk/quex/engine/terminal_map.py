@@ -81,7 +81,6 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         # 'cliid' = unique command list incidence id.
         add(sm, sm.init_state_index, character_set, incidence_id)
 
-    print "#smc:", sm
     dummy, sm = transformation.do_state_machine(sm)
 
     iid_else = None
@@ -104,7 +103,6 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         terminal_else = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in on_else]), "<ELSE>")
         terminal_else.set_incidence_id(iid_else)
 
-    print "#smc1", sm
     return sm, on_reentry, terminal_else
 
 def get_before_and_after_reload():

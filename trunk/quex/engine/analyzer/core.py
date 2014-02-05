@@ -63,7 +63,7 @@ from   collections      import defaultdict
 from   itertools        import imap
 from   operator         import attrgetter
 
-def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None, OnBeforeReload=None, OnAfterReload=None):
+def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None):
 
     # Generate Analyzer from StateMachine
     analyzer = Analyzer(SM, EngineType, ReloadStateExtern)
@@ -80,14 +80,19 @@ def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None, OnBeforeReload=Non
         # MegaState.transition_map:    Interval --> TargetByStateKey
         #                           or Interval --> DoorID
 
-    # Implement the infrastructure for 'reload':
-    # -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
-    # -- The 'reload state' does certain things dependent on the from what state
-    #    it is entered.
-    # -- The states have a dedicated entry from after the reload procedure.
+    return analyzer
 
-    # (The following is a null operation, if the analyzer.engine_type does not
-    #  require reload preparation.)
+def prepare_reload(analyzer, OnBeforeReload=None, OnAfterReload=None):
+    """Implement the infrastructure for 'reload':
+
+       -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
+       -- The 'reload state' does certain things dependent on the from what state
+          it is entered.
+       -- The states have a dedicated entry from after the reload procedure.
+      
+       (The following is a null operation, if the analyzer.engine_type does not
+        require reload preparation.)
+    """
     for state in analyzer.state_db.itervalues():
         state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
 
