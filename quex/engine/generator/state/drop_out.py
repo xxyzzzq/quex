@@ -44,7 +44,8 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
     # (1) Trivial Solution
     if info is not None:
         for i, easy in enumerate(info):
-            Lng.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, position_and_goto(EngineType, easy[1]))
+            Lng.IF_PRE_CONTEXT(txt, i == 0, easy[0].pre_context_id, 
+                               position_and_goto(EngineType, easy[1]))
         return
 
     # (2) Separate: Pre-Context Check and Routing to Terminal
@@ -56,7 +57,7 @@ def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateInd
         txt.append(1)
         Lng.IF_PRE_CONTEXT(txt, i == 0, element.pre_context_id, 
                                   Lng.ASSIGN("last_acceptance", 
-                                                    Lng.ACCEPTANCE(element.acceptance_id)))
+                                             Lng.ACCEPTANCE(element.acceptance_id)))
         if element.pre_context_id == E_PreContextIDs.NONE: 
             break # No check after the unconditional acceptance
 

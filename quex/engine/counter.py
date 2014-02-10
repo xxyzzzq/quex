@@ -1,48 +1,41 @@
-from  quex.engine.analyzer.terminal.core         import Terminal
-from  quex.engine.generator.code.base            import SourceRef_VOID
-from  quex.engine.generator.code.core            import CodeTerminal
-from  quex.engine.interval_handling              import NumberSet
-from  quex.engine.tools                          import return_None
-from  quex.engine.analyzer.door_id_address_label import dial_db
-from  quex.engine.analyzer.commands              import CommandList, \
-                                                        ColumnCountReferencePDeltaAdd, \
-                                                        ColumnCountReferencePSet, \
-                                                        ColumnCountGridAddWithReferenceP, \
-                                                        LineCountAddWithReferenceP, \
-                                                        GotoDoorId, \
-                                                        GotoDoorIdIfInputPNotEqualPointer
+from   quex.input.files.parser_data.counter       import CountCmdMap
+from   quex.engine.analyzer.terminal.core         import Terminal
+from   quex.engine.generator.code.base            import SourceRef_VOID
+from   quex.engine.generator.code.core            import CodeTerminal
+from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.tools                          import return_None
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.analyzer.commands              import CommandList, \
+                                                         ColumnCountAdd, \
+                                                         ColumnCountGridAdd, \
+                                                         ColumnCountReferencePDeltaAdd, \
+                                                         ColumnCountReferencePSet, \
+                                                         ColumnCountGridAddWithReferenceP, \
+                                                         LineCountAdd, \
+                                                         LineCountAddWithReferenceP, \
+                                                         GotoDoorId, \
+                                                         GotoDoorIdIfInputPNotEqualPointer
+import quex.engine.state_machine.transformation   as     transformation
 
-from  quex.blackboard import E_CharacterCountType, \
-                             setup as Setup, \
-                             Lng
-from  collections import namedtuple
+from   quex.blackboard import E_CharacterCountType, \
+                              setup as Setup, \
+                              Lng
+from   collections import namedtuple
 
 CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "parameter", "character_set"))
 
 class CounterSetupLineColumn(object):
-    __slots__ = ("sr",      # Source Reference
-                 "column",  # Column Number Increment --> CharacterSet
-                 "grid",    # Grid Step Size          --> CharacterSet
-                 "newline") # Newline Number          --> CharacterSet
+    __slots__ = ("sr",                 # Source Reference
+                 "count_command_map")  # Column Number Increment --> CharacterSet
 
-    def __init__(self, LccSetup=None, DefaultColumNPerCharacter=None, 
-                 SourceReference=SourceRef_VOID):
+    def __init__(self, CountCmdMap=None, SourceReference=SourceRef_VOID):
         """Generate a counter db from a line column counter setup."""
 
         self.sr = SourceReference
+        if CountCmdMap is None: self.count_command_map = []
+        else:                   self.count_command_map = CountCmdMap
 
-        if LccSetup is None:
-            self.column  = {}  
-            self.grid    = {}  
-            self.newline = {}  
-        else:
-            self.column  = _adapt(LccSetup.space_db)
-            self.grid    = _adapt(LccSetup.grid_db)
-            self.newline = _adapt(LccSetup.newline_db)
-
-        self.defaultize(DefaultColumNPerCharacter)
-
-    def get_column_number_per_chunk(self, CharacterSet):
+    def __get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes
         what increment in line and column numbers. However, only those characters
         are considered which appear in the CharacterSet. 
@@ -56,50 +49,49 @@ class CounterSetupLineColumn(object):
                  >= 0 -- The increment of column number for every character
                          from CharacterSet.
         """
-        result     = None
-        number_set = None
-        for delta, character_set in self.column.iteritems():
-            if CharacterSet is None or character_set.has_intersection(CharacterSet):
-                if result is None: result = delta; number_set = character_set
-                else:              return None
+        column_incr_per_character = None
+        number_set                = None
+        for character_set, info in self.count_command_map.get_map():
+            if info.cc_type != E_CharacterCountType.COLUMN: 
+                continue
+            elif column_incr_per_character is None:       
+                column_incr_per_character = info.value
+                number_set                = character_set
+            elif gccolumn_incr_per_character == info.value: 
+                number_set.unite_with(character_set)
+            else:
+                return None
 
-        if Setup.variable_character_sizes_f():
-            result = homogeneous_chunk_n_per_character(number_set, 
-                                                       Setup.buffer_codec_transformation_info)
-        return result
+        # HERE: There is only ONE 'column_n_increment' command. It appears on
+        # the character set 'number_set'. If the character set is represented
+        # by the same number of chunks, than the column number per chunk is
+        # found.
+        if not Setup.variable_character_sizes_f():
+            return column_incr_per_character
+
+        chunk_n_per_character = \
+            transformation.homogeneous_chunk_n_per_character(number_set, 
+                                              Setup.buffer_codec_transformation_info)
+        if chunk_n_per_character  is None:
+            return None
+        else:
+            return float(column_incr_per_character) / chunk_n_per_character
 
     def get_factory(self, CharacterSet, InputPName):
-        def pruned_iteritems(Db, CharacterSet):
-            for value, character_set in Db.iteritems():
-                if CharacterSet is None: pruned = character_set
-                else:                    pruned = character_set.intersection(CharacterSet)
-                if pruned.is_empty():    continue
-                yield value, pruned
-            
-        cmap = []
-        cmap.extend(
-            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.COLUMN, delta, character_set)
-            for delta, character_set in pruned_iteritems(self.column, CharacterSet)
-        )
-        cmap.extend(
-            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.GRID, grid_step_n, character_set)
-            for grid_step_n, character_set in pruned_iteritems(self.grid, CharacterSet)
-        )
-        cmap.extend(
-            CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.LINE, delta, character_set)
-            for delta, character_set in pruned_iteritems(self.newline, CharacterSet)
-        )
-        ColumnNPerChunk = self.get_column_number_per_chunk(CharacterSet)
+        ColumnNPerChunk = self.__get_column_number_per_chunk(CharacterSet)
+
+        def pruned_iterable(CountCmdMap, CharacterSet):
+            for character_set, info in self.count_command_map.get_map():
+                if not character_set.has_intersection(CharacterSet):
+                    continue
+                yield character_set.intersection(CharacterSet), info
+
+        cmap = [
+            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
+            for intersection, info in pruned_iterable(self.count_command_map, CharacterSet)
+        ]
 
         return CountCmdFactory(cmap, ColumnNPerChunk, InputPName) 
-
-    def defaultize(self, DefaultColumNPerCharacter):
-        all_set = _get_all_character_set(self.column, self.grid, self.newline)
-
-        self.column, \
-        self.grid    = _defaultize_column_and_grid(self.column, self.grid, all_set)
-        self.newline = _defaultize_if_admissible(self.newline, 1, ord('\n'), all_set)
-
 
 class CounterSetupIndentation(object):
     __slots__ = ("sr",                     # Source Reference
@@ -176,12 +168,19 @@ class CounterSetupIndentation(object):
             sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
         return sm
 
-
 _CounterSetupLineColumn_Default = None
 def CounterSetupLineColumn_Default():
     global _CounterSetupLineColumn_Default
+
     if _CounterSetupLineColumn_Default is None:
-        _CounterSetupLineColumn_Default = CounterSetupLineColumn()
+        count_command_map = CountCmdMap()
+        count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
+        count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
+        count_command_map.add(None,                 "space",   1, SourceRef_VOID) # "\else"
+        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit())
+
+        _CounterSetupLineColumn_Default = CounterSetupLineColumn(count_command_map)
+
     return _CounterSetupLineColumn_Default
 
 def _adapt(db):
@@ -205,21 +204,28 @@ def _defaultize_if_admissible(db, Count, DefaultChar, all_set, Bad=None):
     """
     if len(db) != 0:
         return
-    if _is_admissible(db, DefaultChar, all_set, Bad):
+    elif _is_admissible(db, DefaultChar, all_set, Bad):
         default_set = NumberSet(DefaultChar)
         all_set.unite_with(default_set)         # ADAPT 'all_set'
-        return { Count: NumberSet(DefaultChar) } 
+        return { Count: default_set } 
     else:
         return {}
 
 def _defaultize_column_and_grid(column, grid, all_set, Bad=None):
     """Note, that 'all_set' is adapted if default values are inserted.
     """
-    if len(column) == 0 and len(grid) == 0:
-        # If columns ore grids (or both) are defined, then it can be 
-        # assumed that the specification as is, is intended
-        column = _defaultize_if_admissible(column, 1, ord(' '), all_set, Bad)
-        grid   = _defaultize_if_admissible(grid, 4, ord('\t'), all_set, Bad)
+    if len(grid) == 0:
+        # Define the 'grid' step on tabulator, if it is not covered by some
+        # other parameter.
+        grid = _defaultize_if_admissible(grid, 4, ord('\t'), all_set, Bad)
+    
+    remaining_set = all_set.inverse()
+    if Bad is not None: 
+        remaining_set.subtract(Bad)
+
+    if not remaining_set.is_empty():
+        column = { 1: remaining_set.inverse() }
+
     return column, grid
 
 class CountCmdFactory:

@@ -1,4 +1,4 @@
-import quex.engine.state_machine.index  as     index
+import quex.engine.state_machine.index  as     sm_index
 from   quex.engine.tools                import print_callstack, TypedDict, TypedSet
 from   quex.blackboard                  import E_IncidenceIDs, E_StateIndices, E_DoorIdIndex
 
@@ -74,7 +74,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def transition_block(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
     @staticmethod                        
-    def incidence(IncidenceId):            return DoorID(index.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
+    def incidence(IncidenceId):            return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
     def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
     @staticmethod                        
@@ -119,7 +119,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
 AddressLabelPair = namedtuple("AddressLabelPair_tuple", ("address", "label"))
 
 class DialDB(object):
-    __slots__ = ( "__d2la", "__door_id_db", "__gotoed_address_set", "__routed_address_set", "__address_i", "__incidence_id_i" )
+    __slots__ = ( "__d2la", "__door_id_db", "__gotoed_address_set", "__routed_address_set", "__address_i", "__incidence_id_i", "__map_incidence_id_to_state_index" )
     def __init__(self):
         self.clear()
 
@@ -155,6 +155,9 @@ class DialDB(object):
         # Unique incidence id inside a mode
         self.__incidence_id_i = long(-1)
 
+        # Mapping from incidence_id to terminal state index
+        self.__map_incidence_id_to_state_index = {}
+
     def routed_address_set(self):
         return self.__routed_address_set
 
@@ -172,7 +175,7 @@ class DialDB(object):
         DoorID-s is maintained in '.__door_id_db'.
         """
         def specify(StateIndex, DoorSubIndex):
-            if StateIndex is None:   state_index = index.get() # generate a new StateIndex
+            if StateIndex is None:   state_index = sm_index.get() # generate a new StateIndex
             else:                    state_index = StateIndex
             if DoorSubIndex is None: door_sub_index = self.max_door_sub_index(state_index) + 1
             else:                    door_sub_index = DoorSubIndex
@@ -181,10 +184,6 @@ class DialDB(object):
         state_index, door_sub_index = specify(StateIndex, DoorSubIndex)
         door_id                     = DoorID(state_index, door_sub_index, PlainF=True)
         address_label_pair          = self.register_door_id(door_id)
-
-        ##if address_label_pair.label in ["_1", "_138"]:
-        ##    print_callstack()
-        ##    print "#door_id, address_label_pair:", door_id, address_label_pair
 
         return door_id, address_label_pair
 
@@ -304,6 +303,17 @@ class DialDB(object):
 
     def mark_door_id_as_routed(self, DoorId):
         self.mark_address_as_routed(self.get_address_by_door_id(DoorId))
+
+    def map_incidence_id_to_state_index(self, IncidenceId):
+        assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
+
+        index = self.__map_incidence_id_to_state_index.get(IncidenceId)
+        if index is None:
+            index = sm_index.get()
+            self.__map_incidence_id_to_state_index[IncidenceId] = index
+
+        return index
+    
 
 
 dial_db = DialDB()

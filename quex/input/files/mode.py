@@ -378,7 +378,7 @@ class Mode:
         incidence_db = IncidenceDB.from_BaseModeSequence(base_mode_sequence)
 
         # Determine Line/Column Counter Database
-        counter_db = options_db.value("counter")
+        counter_db   = options_db.value("counter")
         self.__indentation_setup = None
 
         # Intermediate Step: Priority-Pattern-Terminal List (PPT list)
@@ -963,8 +963,6 @@ class Mode:
             # 'low' comes after 'high' => 'i' has precedence
             # Check for domination.
             if superset_check.do(high, low):
-                print "#sm0:", high.incidence_id(), high.sm.get_string(NormalizeF=False, Option="hex")
-                print "#sm1:", high.incidence_id(), low.sm.get_string(NormalizeF=False, Option="hex")
                 c_error_message(high, low, 
                                 ThisComment  = "matches a superset of what is matched by",
                                 EndComment   = "The former has precedence and the latter can never match.",

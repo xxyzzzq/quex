@@ -5,13 +5,16 @@ _______________________________________________________________________________
 import quex.engine.generator.base                   as     generator
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
-from   quex.engine.analyzer.door_id_address_label   import dial_db
+from   quex.engine.analyzer.door_id_address_label   import dial_db, \
+                                                           DoorID, \
+                                                           IfDoorIdReferencedCode
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP
 
 from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \
-                              E_MapImplementationType
+                              E_MapImplementationType, \
+                              E_IncidenceIDs
 
 def get(counter_db, Name):
     """Implement the default counter for a given Counter Database. 
@@ -45,19 +48,19 @@ def get(counter_db, Name):
 
     function_name  = Lng.DEFAULT_COUNTER_FUNCTION_NAME(Name) 
 
-    return_door_id = dial_db.new_door_id()
-    code           = generator.do_loop(counter_db, 
-                                       DoorIdExit      = return_door_id,
-                                       LexemeEndCheckF = True, 
-                                       EngineType      = engine.CHARACTER_COUNTER)
+    door_id_return = dial_db.new_door_id()
+    code, \
+    door_id_else = generator.do_loop(counter_db, 
+                                     DoorIdExit      = door_id_return,
+                                     LexemeEndCheckF = True)
 
-    implementation = __frame(function_name, Lng.INPUT_P(), code, return_door_id) 
+    implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, door_id_else) 
 
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
 
-def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
+def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdElse):
     
 
     txt = [  \
@@ -84,8 +87,16 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
 
     txt.extend(CodeTxt)
 
+    door_id_failure = DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE)
     txt.append(
-         "%s:\n" % dial_db.get_label_by_door_id(ReturnDoorId) \
+        IfDoorIdReferencedCode(door_id_failure,
+        [
+            "%s\n" % Lng.LABEL(door_id_failure),
+            "    %s\n" % Lng.GOTO(DoorIdElse),
+        ])
+    )
+    txt.append(
+         "%s:\n" % dial_db.get_label_by_door_id(DoorIdReturn) \
        + "    __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
          % IteratorName \
        + "   return;\n" \
@@ -93,6 +104,8 @@ def __frame(FunctionName, IteratorName, CodeTxt, ReturnDoorId):
        + "}\n" \
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )
+
+
 
     return "".join(Lng.GET_PLAIN_STRINGS(txt))
 
