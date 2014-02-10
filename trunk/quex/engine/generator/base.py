@@ -187,25 +187,33 @@ def do_reload_procedure(TheAnalyzer):
     # Variables that tell where to go after reload success and reload failure
     if Setup.buffer_based_analyzis_f:       return []
 
-    if   TheAnalyzer is None:               return []
-    elif TheAnalyzer.reload_state is None:  return []
-    elif TheAnalyzer.reload_state_extern_f: return []
+    if   TheAnalyzer is None:                                  return []
+    elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION(): return []
+    elif TheAnalyzer.reload_state is None:                     return []
+    elif TheAnalyzer.reload_state_extern_f:                    return []
 
     variable_db.require("target_state_else_index")  # upon reload failure
     variable_db.require("target_state_index")       # upon reload success
 
     # Number of different entries in the position register map
-    position_register_n = len(set(TheAnalyzer.position_register_map.itervalues()))
     # Position registers
+    if TheAnalyzer.position_register_map is None:
+        position_register_n = 0
+    else:
+        position_register_n = len(set(TheAnalyzer.position_register_map.itervalues()))
+
     if position_register_n == 0:
         if not Setup.buffer_based_analyzis_f:
             # Not 'buffer-only-mode' => reload requires at least dummy parameters.
-            variable_db.require("position",          Initial = "(void*)0x0", Type = "void*")
-            variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
+            variable_db.require_array("position", ElementN = 0,
+                                      Initial = "(void*)0x0")
+            variable_db.require("PositionRegisterN", 
+                                Initial = "(size_t)%i" % position_register_n)
     else:
         variable_db.require_array("position", ElementN = position_register_n,
                                   Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
-        variable_db.require("PositionRegisterN", Initial = "(size_t)%i" % position_register_n)
+        variable_db.require("PositionRegisterN", 
+                            Initial = "(size_t)%i" % position_register_n)
 
     return reload_state_coder.do(TheAnalyzer.reload_state)
 
@@ -264,10 +272,13 @@ def do_reentry_preparation(PreContextSmIdList, OnAfterMatchCode):
     return Lng.REENTRY_PREPARATION(PreContextSmIdList, OnAfterMatchCode)
 
 @typed(CharacterSet=(None, NumberSet), ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
-def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None, EngineType=None):
+def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
+
+       NOTE: This function does NOT code the FAILURE terminal. The caller needs to 
+             do this if required.
     """
     assert ReloadF or ReloadStateExtern is None
 
@@ -277,13 +288,14 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     # (*) Construct State Machine and Terminals _______________________________
     #
     # -- The state machine / analyzer
-    ccfactory          = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
-    incidence_id_map   = ccfactory.get_incidence_id_map()
-    reference_p_f      = ccfactory.requires_reference_p()
+    ccfactory        = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
+    incidence_id_map = ccfactory.get_incidence_id_map()
+    reference_p_f    = ccfactory.requires_reference_p()
 
-    sm,           \
-    on_reentry,   \
-    terminal_else = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
+    sm,            \
+    on_entry,      \
+    on_reentry,    \
+    terminal_else  = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
 
     analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
@@ -306,13 +318,21 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
 
     # DoorID of reentry:
     entry           = analyzer.init_state().entry
-    transition_id   = entry.enter(sm.init_state_index, index.get(), TransitionAction(CommandList.from_iterable(on_reentry)))
+        
+    # OnEntry
+    ta_on_entry = entry.get_action(sm.init_state_index, E_StateIndices.NONE)
+    ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
+                                                       on_entry)
+
+    # OnReEntry
+    transition_id   = entry.enter(sm.init_state_index, index.get(), 
+                                  TransitionAction(CommandList.from_iterable(on_reentry)))
     entry.categorize(sm.init_state_index)
     door_id_reentry = entry.get(transition_id).door_id
 
-    terminal_list = ccfactory.get_terminal_list(Lng.INPUT_P(), 
-                                                DoorIdOk=door_id_reentry, 
-                                                DoorIdOnLexemeEnd=door_id_on_lexeme_end)
+    terminal_list   = ccfactory.get_terminal_list(Lng.INPUT_P(), 
+                                                  DoorIdOk=door_id_reentry, 
+                                                  DoorIdOnLexemeEnd=door_id_on_lexeme_end)
     terminal_list.append(terminal_else)
 
     # (*) Generate Code _______________________________________________________
@@ -320,18 +340,21 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     assert all_isinstance(txt_main, (IfDoorIdReferencedCode, int, str, unicode))
     txt_terminals        = do_terminals(terminal_list, analyzer)
     assert all_isinstance(txt_terminals, (IfDoorIdReferencedCode, int, str, unicode))
-    txt_reload_procedure = do_reload_procedure(analyzer)
-    assert all_isinstance(txt_reload_procedure, (IfDoorIdReferencedCode, int, str, unicode))
+
+    if ReloadF:
+        txt_reload_procedure = do_reload_procedure(analyzer)
+        assert all_isinstance(txt_reload_procedure, (IfDoorIdReferencedCode, int, str, unicode))
 
     txt = []
     txt.extend(txt_main)
     txt.extend(txt_terminals)
-    txt.extend(txt_reload_procedure)
+    if ReloadF:
+        txt.extend(txt_reload_procedure)
 
     if reference_p_f:
         variable_db.require("reference_p")
 
-    return txt
+    return txt, DoorID.incidence(terminal_else.incidence_id())
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell

@@ -175,37 +175,41 @@ of the default token stamping action.
 Customization
 =============
 
-By default, Quex counts line numbers and columns with the following values:
+By default, the relation between characters and count actions is the
+following:
 
-    Spaces:   1 by [-oo, '\b'], ['\v', oo]
-    Grids:    4 by '\t'
-    Newlines: 1 by '\n'
+    Add '1' to column number:      [-oo, '\b'], ['\v', oo]
+    Add '1' to newline number:     '\n'
+    Make a step on a '4'-er grid:  '\t'
 
-When issues of 'character fonts' or Unicode character widths become an
-issue the default counting behavior may not be sufficient. To specify
-a different counting behavior the mode option ``counter`` may be used.
+When issues of 'character fonts' or Unicode character widths become an issue
+the default counting behavior may not be sufficient. To specify a different
+counting behavior the mode option ``counter`` may be used.  Inside this option,
+pairs of character sets and their related action can be defined using
+the following syntax:
+
+.. code-block:: cpp
+
+       character-set '=>' action [ argument ] ';'
+
+Available actions names are ``space``, ``grid``, and ``newline``. The key word
+``\else`` is a placeholder for the set of remaining characters which are not
+covered by explicitly. Using this syntax the aforementioned default definition
+can be specified as shown below.
 
 .. code-block:: cpp
 
     mode X :
     <counter:
-       \default => space 1;
-       [\t]     => grid 4;
-       \n       => newline 1;
+       \else  => space 1;
+       [\t]   => grid 4;
+       [\n]   => newline 1;
     >
     {
         ...
     }
 
-defines the default aforementioned counting behavior. The syntax of ``counter``
-parameter definition follows the scheme:
-
-.. code-block:: cpp
-
-       pattern '=>' parameter-name [argument] ';'
-
-Available parameter names are ``space``, ``grid``, and ``newline``. They are
-explained below:
+The actions 'space', 'grid' and 'newline are now described:
 
    .. describe :: space [number|variable]
 
@@ -213,9 +217,6 @@ explained below:
       given by ``pattern``. It may be a constant number or defined dynamically
       by the setting of ``variable`` which will be defined as a member of the
       lexical analyzer.
-
-      If ``\default`` is defined as pattern then this refers to all characters
-      which have not been mentioned in any other parameter.
 
    .. describe :: grid [number|variable]
    

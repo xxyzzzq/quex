@@ -448,69 +448,6 @@ class NumberSet(object):
 
         self.__intervals.insert(insertion_index, combination)
 
-    def cut_interval(self, CutInterval):
-        """Adds an interval and ensures that no overlap with existing
-        intervals occurs. Note: the 'touch' test is faster here, because
-        only one interval is checked against.!"""
-        assert CutInterval.__class__ == Interval
-        if CutInterval.is_empty(): return
-        
-        # (*) determine if the interval has any intersection at all
-        if    len(self.__intervals) == 0                          \
-           or CutInterval.begin >  self.__intervals[-1].end       \
-           or CutInterval.end   <= self.__intervals[0].begin:
-            # (the cutting interval cannot cut out anything)
-            return
-
-        Y = CutInterval
-        remainder_low = None
-        remainder_up  = None
-        # (*) find the first interval with which the cutting interval intersects.
-        i = -1
-        for x in self.__intervals:
-            i += 1
-            # (1) an intersecting interval is not yet reached
-            if Y.begin >= x.end:    continue                        
-            # (2) an intersecting interval was never reached
-            #     (the cutting interval cannot cut out anything)
-            elif Y.end < x.begin:   return
-            # (3) INTERSECTION (implicit from above conditions)
-            #     the following conditions are not mutually exclusive.
-            #     from now on it is clear that the loop will be left.
-            # (3a) the cut leaves a 'lower interval'
-            if x.begin < Y.begin:   remainder_low = Interval(x.begin, Y.begin)
-            # (3b) the cut leaves an 'upper interval'
-            if x.end > Y.end:       remainder_up  = Interval(Y.end, x.end)
-            # (3c) the interval has been swallowed completely 
-            #      (both remainders stay empty)
-            insertion_index = i
-            break
-
-        # (*) find the last interval that is concerned with the cut
-        toucher_front = i 
-        toucher_back  = i
-
-        if remainder_up is None and i != len(self.__intervals) - 1:
-            for x in self.__intervals[i+1:]:
-                i += 1
-                # (1) last interval was swallowed complety, current interval has no intersection
-                if Y.end <= x.begin: break
-                # (2) INTERSECTION (implicit)
-                toucher_back = i
-                # (2a) last intersecting interval (probably) not yet reached
-                if Y.end > x.end:   continue
-                # (2b) last cutting leaves an upper interval
-                if Y.end < x.end:    
-                    remainder_up  = Interval(Y.end, x.end)
-                    break
-
-        # Delete all intervals that touched the 'cut interval'
-        del self.__intervals[toucher_front:toucher_back+1]
-
-        # insert the upper remainder first, so that it comes after the lower remainder
-        if remainder_up  is not None: self.__intervals.insert(insertion_index, remainder_up)
-        if remainder_low is not None: self.__intervals.insert(insertion_index, remainder_low)
-
     def contains(self, Number):
         """True  => if Number in NumberSet
            False => else
@@ -800,6 +737,69 @@ class NumberSet(object):
 
         # Delete all intervals that where skipped.
         del self.__intervals[i+1:]
+
+    def cut_interval(self, CutInterval):
+        """Adds an interval and ensures that no overlap with existing
+        intervals occurs. Note: the 'touch' test is faster here, because
+        only one interval is checked against.!"""
+        assert CutInterval.__class__ == Interval
+        if CutInterval.is_empty(): return
+        
+        # (*) determine if the interval has any intersection at all
+        if    len(self.__intervals) == 0                          \
+           or CutInterval.begin >  self.__intervals[-1].end       \
+           or CutInterval.end   <= self.__intervals[0].begin:
+            # (the cutting interval cannot cut out anything)
+            return
+
+        Y = CutInterval
+        remainder_low = None
+        remainder_up  = None
+        # (*) find the first interval with which the cutting interval intersects.
+        i = -1
+        for x in self.__intervals:
+            i += 1
+            # (1) an intersecting interval is not yet reached
+            if Y.begin >= x.end:    continue                        
+            # (2) an intersecting interval was never reached
+            #     (the cutting interval cannot cut out anything)
+            elif Y.end < x.begin:   return
+            # (3) INTERSECTION (implicit from above conditions)
+            #     the following conditions are not mutually exclusive.
+            #     from now on it is clear that the loop will be left.
+            # (3a) the cut leaves a 'lower interval'
+            if x.begin < Y.begin:   remainder_low = Interval(x.begin, Y.begin)
+            # (3b) the cut leaves an 'upper interval'
+            if x.end > Y.end:       remainder_up  = Interval(Y.end, x.end)
+            # (3c) the interval has been swallowed completely 
+            #      (both remainders stay empty)
+            insertion_index = i
+            break
+
+        # (*) find the last interval that is concerned with the cut
+        toucher_front = i 
+        toucher_back  = i
+
+        if remainder_up is None and i != len(self.__intervals) - 1:
+            for x in self.__intervals[i+1:]:
+                i += 1
+                # (1) last interval was swallowed complety, current interval has no intersection
+                if Y.end <= x.begin: break
+                # (2) INTERSECTION (implicit)
+                toucher_back = i
+                # (2a) last intersecting interval (probably) not yet reached
+                if Y.end > x.end:   continue
+                # (2b) last cutting leaves an upper interval
+                if Y.end < x.end:    
+                    remainder_up  = Interval(Y.end, x.end)
+                    break
+
+        # Delete all intervals that touched the 'cut interval'
+        del self.__intervals[toucher_front:toucher_back+1]
+
+        # insert the upper remainder first, so that it comes after the lower remainder
+        if remainder_up  is not None: self.__intervals.insert(insertion_index, remainder_up)
+        if remainder_low is not None: self.__intervals.insert(insertion_index, remainder_low)
 
     def difference(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet

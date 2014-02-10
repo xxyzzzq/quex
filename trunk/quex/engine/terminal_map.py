@@ -72,6 +72,9 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         if covered_set.is_all():  return iid_else
         if iid_else is None:      iid_else = dial_db.new_incidence_id()
         uncovered_set = covered_set.inverse()
+        uncovered_set.cut_lesser(0)
+        uncovered_set.cut_greater_or_equal(Setup.get_character_value_limit())
+        if uncovered_set.is_empty(): return iid_else
         add(sm, StateIndex, uncovered_set, iid_else)
         return iid_else
 
@@ -81,7 +84,11 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         # 'cliid' = unique command list incidence id.
         add(sm, sm.init_state_index, character_set, incidence_id)
 
+    print "#sm0", sm.get_string(NormalizeF=True, Option="hex")
+
     dummy, sm = transformation.do_state_machine(sm)
+
+    print "#sm1", sm.get_string(NormalizeF=True, Option="hex")
 
     iid_else = None
     for state_index in sm.states.keys():
@@ -93,9 +100,11 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         terminal_else = None
     else:
         if Setup.variable_character_sizes_f():
+            on_entry   = [ LexemeStartToReferenceP(Lng.INPUT_P()) ]
             on_reentry = [ LexemeStartToReferenceP(Lng.INPUT_P()) ]
             on_else    = [ InputPToLexemeStartP() ]
         else:
+            on_entry   = []
             on_reentry = []
             on_else    = [ InputPDecrement() ]
         on_else.append(GotoDoorId(DoorIdExit))
@@ -103,7 +112,8 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         terminal_else = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in on_else]), "<ELSE>")
         terminal_else.set_incidence_id(iid_else)
 
-    return sm, on_reentry, terminal_else
+    print "#sm2", sm.get_string(NormalizeF=True, Option="hex")
+    return sm, on_entry, on_reentry, terminal_else
 
 def get_before_and_after_reload():
     """The 'lexeme_start_p' restricts the amount of data which is load into the
