@@ -4,7 +4,7 @@ import quex.engine.analyzer.optimizer              as     optimizer
 import quex.engine.analyzer.track_analysis         as     track_analysis
 from   quex.engine.analyzer.position_register_map  import print_this
 import quex.engine.analyzer.engine_supply_factory  as     engine
-from   quex.engine.generator.base                  import get_combined_state_machine
+from   quex.engine.state_machine.engine_state_machine_set                  import get_combined_state_machine
 from   quex.blackboard                             import E_InputActions, setup as Setup
 
 import sys

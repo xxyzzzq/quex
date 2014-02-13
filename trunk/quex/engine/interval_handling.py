@@ -738,6 +738,22 @@ class NumberSet(object):
         # Delete all intervals that where skipped.
         del self.__intervals[i+1:]
 
+    def mask(self, Begin, End):
+        """Begin = first element in range to include.
+           End   = first element after the range to include.
+        """
+        self.cut_lesser(Begin)
+        self.cut_greater_or_equal(End)
+
+    def covers_range(self, Begin, End):
+        """Begin = first element in range to include.
+           End   = first element after the range to include.
+        """
+        if   len(self.__intervals) != 1:        return False
+        elif self.__intervals[0].begin > Begin: return False
+        elif self.__intervals[0].end < End:     return False
+        else:                                   return True
+
     def cut_interval(self, CutInterval):
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because

@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as     regex
-from   quex.engine.generator.base            import get_combined_state_machine
 from   quex.blackboard                       import E_InputActions
 import quex.engine.analyzer.TEST.help        as     help
 

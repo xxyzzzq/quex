@@ -65,12 +65,14 @@ def do(Data, TheAnalyzer):
     """
     counter_db    = Data["counter_db"]
     character_set = Data["character_set"]
+
     if Setup.buffer_based_analyzis_f:
         reload_f     = False
         reload_state = None
     else:
         reload_f     = True
         reload_state = TheAnalyzer.reload_state
+
         
     result = generator.do_loop(counter_db, 
                                AfterExitDoorId   = DoorID.continue_without_on_after_match(),
@@ -80,5 +82,6 @@ def do(Data, TheAnalyzer):
                                ReloadStateExtern = reload_state, 
                                EngineType        = engine.FORWARD,
                                MaintainLexemeF   = False)
+
     assert isinstance(result, list)
     return result

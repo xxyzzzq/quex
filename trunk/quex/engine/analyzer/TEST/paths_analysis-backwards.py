@@ -6,7 +6,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine  as regex
 import quex.engine.state_machine.algorithm.acceptance_pruning as     acceptance_pruning
-from   quex.engine.generator.base                 import get_combined_state_machine
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.blackboard                            import E_InputActions
 import help
