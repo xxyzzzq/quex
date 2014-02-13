@@ -1,6 +1,5 @@
 # (C) Frank Rene Schaefer
 from   quex.engine.misc.file_in                        import error_msg
-import quex.engine.terminal_map                        as     terminal_map
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
@@ -8,10 +7,9 @@ from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               IfDoorIdReferencedCode, \
                                                               get_plain_strings, \
                                                               dial_db
-import quex.engine.state_machine.parallelize           as     parallelize
-import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 import quex.engine.state_machine.index                 as     index
 from   quex.engine.state_machine.core                  import StateMachine
+from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
 import quex.engine.generator.state.transition.core     as     transition_block
@@ -39,55 +37,9 @@ from   quex.blackboard import E_IncidenceIDs, \
                               setup as Setup, \
                               Lng
 
-from   itertools   import ifilter
 from   copy        import copy, deepcopy
 from   collections import defaultdict
 
-
-class EngineStateMachineSet:
-    def __init__(self, PatternList): 
-        assert isinstance(PatternList, list)
-        assert all_isinstance(PatternList, Pattern)
-        assert all_true(PatternList, lambda p: p.incidence_id() is not None)
-
-
-        # (*) Core SM, Pre-Context SM, ...
-        #     ... and sometimes backward input position SMs.
-        self.sm,                    \
-        self.pre_context_sm,        \
-        self.bipd_sm_db,            \
-        self.pre_context_sm_id_list = self.__prepare(PatternList)
-
-    def __prepare(self, PatternList):
-        # -- setup of state machine lists and id lists
-        core_sm_list,                 \
-        pre_context_sm_list,          \
-        incidence_id_and_bipd_sm_list = self.__prepare_sm_lists(PatternList)
-
-        # (*) Create (combined) state machines
-        #     Backward input position detection (bipd) remains separate engines.
-        return get_combined_state_machine(core_sm_list),                  \
-               get_combined_state_machine(pre_context_sm_list,            \
-                                          FilterDominatedOriginsF=False), \
-               dict((incidence_id, sm) for incidence_id, sm in incidence_id_and_bipd_sm_list), \
-               [ sm.get_id() for sm in pre_context_sm_list ]
-
-    def __prepare_sm_lists(self, PatternList):
-        # -- Core state machines of patterns
-        state_machine_list = [ pattern.sm for pattern in PatternList ]
-
-        # -- Pre-Contexts
-        pre_context_sm_list = [    
-            pattern.pre_context_sm for pattern in PatternList \
-            if pattern.pre_context_sm is not None 
-        ]
-
-        # -- Backward input position detection (BIPD)
-        bipd_sm_list = [
-            (pattern.incidence_id(), pattern.bipd_sm) for pattern in PatternList \
-            if pattern.bipd_sm is not None 
-        ]
-        return state_machine_list, pre_context_sm_list, bipd_sm_list
 
 # MAIN:      sm --> analyzer
 #            sm_txt --> code_analyzer
@@ -281,6 +233,55 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
              do this if required.
     """
     assert ReloadF or ReloadStateExtern is None
+    assert CounterDb.covers_range(0, Setup.get_character_value_limit())
+
+    def prepare_entry_and_reentry(analyzer, on_begin):
+        """Prepare the entry and re-entry doors into the initial state
+        of the loop-implementing initial state.
+
+                       .----------.
+                       | on_entry |
+                       '----------'
+                            |         .------------.
+                            |<--------| on_reentry |<-----.
+                            |         '------------'      |
+                    .----------------.                    |
+                    |                +-----> Terminal ----+----> Exit
+                    |      ...       |
+                    |                +-----> Terminal - - 
+                    '----------------'
+
+           RETURNS: DoorID of the re-entry door which is used to iterate in 
+                    the loop.
+        """
+        # Entry into state machine
+        entry = analyzer.init_state().entry
+        init_state_index = analyzer.init_state_index
+            
+        # OnEntry
+        ta_on_entry = entry.get_action(init_state_index, E_StateIndices.NONE)
+        ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
+                                                           on_begin)
+
+        # OnReEntry
+        tid_reentry = entry.enter(init_state_index, index.get(), 
+                                  TransitionAction(CommandList.from_iterable(on_begin)))
+        entry.categorize(init_state_index)
+
+        return entry.get(tid_reentry).door_id
+
+    def prepare_reload(analyzer, ccfactory, ccsm): 
+        on_before_reload = CommandList.from_iterable(
+              ccfactory.on_before_reload
+            + ccsm.on_before_reload
+        )
+        on_after_reload  = CommandList.from_iterable(
+              ccfactory.on_after_reload
+            + ccsm.on_after_reload
+        )
+
+        analyzer_generator.prepare_reload(analyzer, ReloadStateExtern,
+                                          on_before_reload, on_after_reload)
 
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
@@ -292,139 +293,45 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     incidence_id_map = ccfactory.get_incidence_id_map()
     reference_p_f    = ccfactory.requires_reference_p()
 
-    sm,            \
-    on_entry,      \
-    on_reentry,    \
-    terminal_else  = terminal_map.do(incidence_id_map, ReloadF, DoorIdExit)
+    beyond_iid = dial_db.new_incidence_id()
+    beyond_set = CharacterSet.inverse().mask(0, Setup.get_character_value_limit())
+    incidence_id_map.append((beyond_set, beyond_iid))
 
-    analyzer = analyzer_generator.do(sm, engine.FORWARD, ReloadStateExtern)
+    cssm = CharacterStateMachineSet(incidence_id_map)
+
+    analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
-    if ReloadF:
-        on_before_reload_0  = ccfactory.get_on_before_reload()
-        on_after_reload_0   = ccfactory.get_on_after_reload()
-        on_before_reload_1, \
-        on_after_reload_1   = terminal_map.get_before_and_after_reload()
-        on_before_reload    = CommandList.from_iterable(on_before_reload_0 + on_before_reload_1)
-        on_after_reload     = CommandList.from_iterable(on_after_reload_0  + on_after_reload_1)
+    door_id_reentry = prepare_entry_and_reentry(analyzer, cssm.on_begin) 
+    code_on_putback = CodeTerminal([Lng.COMMAND(cmd) for cmd in ccsm.on_putback])
 
-        analyzer_generator.prepare_reload(analyzer_generator, ReloadStateExtern,
-                                          on_before_reload, on_after_reload)
-
-    # -- The terminals 
-    #
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
-    # DoorID of reentry:
-    entry           = analyzer.init_state().entry
-        
-    # OnEntry
-    ta_on_entry = entry.get_action(sm.init_state_index, E_StateIndices.NONE)
-    ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                       on_entry)
+    # -- Analyzer: Prepare Reload
+    if ReloadF:
+        prepare_reload(analyzer, ccfactory, ReloadStateExtern)
 
-    # OnReEntry
-    transition_id   = entry.enter(sm.init_state_index, index.get(), 
-                                  TransitionAction(CommandList.from_iterable(on_reentry)))
-    entry.categorize(sm.init_state_index)
-    door_id_reentry = entry.get(transition_id).door_id
-
+    # -- The terminals 
+    #
     terminal_list   = ccfactory.get_terminal_list(Lng.INPUT_P(), 
-                                                  DoorIdOk=door_id_reentry, 
-                                                  DoorIdOnLexemeEnd=door_id_on_lexeme_end)
-    terminal_list.append(terminal_else)
+                                                  DoorIdOk          = door_id_reentry, 
+                                                  DoorIdOnLexemeEnd = door_id_on_lexeme_end)
+    terminal_beyond = Terminal(code_on_putback, "<BEYOND>") # Put last considered character back
+    terminal_beyond.set_incidence_id(beyond_iid)
+    terminal_list.append(terminal_beyond)
 
     # (*) Generate Code _______________________________________________________
-    txt_main             = do_analyzer(analyzer)
-    assert all_isinstance(txt_main, (IfDoorIdReferencedCode, int, str, unicode))
-    txt_terminals        = do_terminals(terminal_list, analyzer)
-    assert all_isinstance(txt_terminals, (IfDoorIdReferencedCode, int, str, unicode))
-
-    if ReloadF:
-        txt_reload_procedure = do_reload_procedure(analyzer)
-        assert all_isinstance(txt_reload_procedure, (IfDoorIdReferencedCode, int, str, unicode))
-
     txt = []
-    txt.extend(txt_main)
-    txt.extend(txt_terminals)
+    txt.extend(do_analyzer(analyzer))
+    txt.extend(do_terminals(terminal_list, analyzer))
     if ReloadF:
-        txt.extend(txt_reload_procedure)
+        txt.extend(do_reload_procedure(analyzer))
 
     if reference_p_f:
         variable_db.require("reference_p")
 
     return txt, DoorID.incidence(terminal_else.incidence_id())
-
-def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
-    """Creates a DFA state machine that incorporates the paralell
-       process of all pattern passed as state machines in 
-       the StateMachine_List. Each origins of each state machine
-       are kept in the final state, if it is not dominated.
-
-       Performs: -- parallelization
-                 -- translation from NFA to DFA
-                 -- Frank Schaefers Adapted Hopcroft optimization.
-
-       Again: The state machine ids of the original state machines
-              are traced through the whole process.
-              
-       FilterDominatedOriginsF, if set to False, can disable the filtering
-              of dominated origins. This is important for pre-contexts, because,
-              all successful patterns need to be reported!            
-                      
-    """   
-    if len(StateMachine_List) == 0:
-        return None
-
-    def __check(Place, sm):
-        __check_on_orphan_states(Place, sm)
-        __check_on_init_state_not_acceptance(Place, sm)
-
-    def __check_on_orphan_states(Place, sm):
-        orphan_state_list = sm.get_orphaned_state_index_list()
-        if len(orphan_state_list) == 0: return
-        error_msg("After '%s'" % Place + "\n" + \
-                  "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
-                  "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                  "Orphan state(s) = " + repr(orphan_state_list)) 
-
-    def __check_on_init_state_not_acceptance(Place, sm):
-        init_state = sm.get_init_state()
-        if init_state.is_acceptance():
-            error_msg("After '%s'" % Place + "\n" + \
-                      "The initial state is 'acceptance'. This should never appear.\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
-
-        for dummy in ifilter(lambda origin: origin.is_acceptance(), init_state.origins()):
-            error_msg("After '%s'" % Place + "\n" + \
-                      "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
-
-    # (1) mark at each state machine the machine and states as 'original'.
-    #      
-    #     This is necessary to trace in the combined state machine the
-    #     pattern that actually matched. Note, that a state machine in
-    #     the StateMachine_List represents one possible pattern that can
-    #     match the current input.   
-    #
-    for sm in StateMachine_List:
-        sm.mark_state_origins()
-        assert sm.is_DFA_compliant(), sm.get_string(Option="hex")
-
-    # (2) setup all patterns in paralell 
-    sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False) #, CloneF=False)
-    __check("Parallelization", sm)
-
-    # (4) determine for each state in the DFA what is the dominating original state
-    if FilterDominatedOriginsF: sm.filter_dominated_origins()
-    __check("Filter Dominated Origins", sm)
-
-    # (3) convert the state machine to an DFA (paralellization created an NFA)
-    sm = beautifier.do(sm)
-    __check("NFA to DFA, Hopcroft Minimization", sm)
-    
-    return sm
 
 _increment_actions_for_utf8 = [
      1, "if     ( ((*iterator) & 0x80) == 0 ) { iterator += 1; } /* 1byte character */\n",

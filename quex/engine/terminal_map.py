@@ -65,6 +65,14 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         target_state.mark_self_as_origin(IncidenceId, target_state_index)
         target_state.set_acceptance(True)
 
+    sm         = StateMachine()
+    init_state = sm.get_init_state()
+    for character_set, incidence_id in IncidenceIdMap:
+        # 'cliid' = unique command list incidence id.
+        add(sm, sm.init_state_index, character_set, incidence_id)
+
+    dummy, sm = transformation.do_state_machine(sm)
+
     def prepare_else(sm, StateIndex, iid_else):
         state       = sm.states[StateIndex]
         covered_set = state.target_map.get_trigger_set_union()
@@ -77,18 +85,6 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         if uncovered_set.is_empty(): return iid_else
         add(sm, StateIndex, uncovered_set, iid_else)
         return iid_else
-
-    sm         = StateMachine()
-    init_state = sm.get_init_state()
-    for character_set, incidence_id in IncidenceIdMap:
-        # 'cliid' = unique command list incidence id.
-        add(sm, sm.init_state_index, character_set, incidence_id)
-
-    print "#sm0", sm.get_string(NormalizeF=True, Option="hex")
-
-    dummy, sm = transformation.do_state_machine(sm)
-
-    print "#sm1", sm.get_string(NormalizeF=True, Option="hex")
 
     iid_else = None
     for state_index in sm.states.keys():
@@ -112,26 +108,5 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         terminal_else = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in on_else]), "<ELSE>")
         terminal_else.set_incidence_id(iid_else)
 
-    print "#sm2", sm.get_string(NormalizeF=True, Option="hex")
     return sm, on_entry, on_reentry, terminal_else
-
-def get_before_and_after_reload():
-    """The 'lexeme_start_p' restricts the amount of data which is load into the
-    buffer upon reload--if the lexeme needs to be maintained. If the lexeme
-    does not need to be maintained, then the whole buffer can be refilled.
-    
-    For this, the 'lexeme_start_p' is set to the input pointer. 
-    
-    EXCEPTION: Variable character sizes. There, the 'lexeme_start_p' is used
-    to mark the begin of the current letter. However, letters are short, so 
-    the drawback is tiny.
-
-    RETURN: [0] on_before_reload
-            [1] on_after_reload
-    """
-    if not Setup.variable_character_sizes_f():
-        return [], []
-
-    return [ LexemeStartToReferenceP(Lng.INPUT_P())], \
-           [ InputPToLexemeStartP() ]
 

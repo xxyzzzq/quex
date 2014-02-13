@@ -35,6 +35,12 @@ class CounterSetupLineColumn(object):
         if CountCmdMap is None: self.count_command_map = []
         else:                   self.count_command_map = CountCmdMap
 
+    def covers_range(self, Begin, End):
+        all_set = NumberSet()
+        for character_set, info in self.count_command_map.get_map():
+            all_set.unite_with(character_set)
+        return all_set.covers_range(Begin, End)
+
     def __get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes
         what increment in line and column numbers. However, only those characters
@@ -176,8 +182,8 @@ def CounterSetupLineColumn_Default():
         count_command_map = CountCmdMap()
         count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
         count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
-        count_command_map.add(None,                 "space",   1, SourceRef_VOID) # "\else"
-        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit())
+        count_command_map.add(None,                 "space",   1, SourceRef_VOID)         # Define: "\else"
+        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit()) # Apply: "\else"
 
         _CounterSetupLineColumn_Default = CounterSetupLineColumn(count_command_map)
 
@@ -233,6 +239,8 @@ class CountCmdFactory:
         self.__map                  = CMap
         self.column_count_per_chunk = ColumnNPerChunk
         self.input_p_name           = InputPName
+
+        self.__prepare_before_and_after_reload()
 
     def requires_reference_p(self):
         return self.column_count_per_chunk is not None
@@ -317,35 +325,35 @@ class CountCmdFactory:
         return ColumnCountReferencePDeltaAdd(self.input_p_name, 
                                              self.column_count_per_chunk)
 
-    def get_on_before_reload(self):
+    def __prepare_before_and_after_reload(self):
         """BEFORE RELOAD:
-                                                         input_p
-                                                         |
-              [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-                                          |
-                                          reference_p
+                                                           input_p
+                                                           |
+                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+                                            |
+                                            reference_p
              
-                   column_n += (input_p - reference_p) * C
+                     column_n += (input_p - reference_p) * C
 
               where C = self.column_count_per_chunk.
+
+           AFTER RELOAD:
+
+                 input_p
+                 |
+                [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+                 |
+                 reference_p
         """
-        if self.column_count_per_chunk is None: return []
-
-        return [ ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                               self.column_count_per_chunk) ]
-
-    def get_on_after_reload(self):
-        """AFTER RELOAD:
-
-             input_p
-             |
-            [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-             |
-             reference_p
-        """
-        if self.column_count_per_chunk is None: return []
-
-        return [ ColumnCountReferencePSet(self.input_p_name) ]
-
-
+        if self.column_count_per_chunk is None: 
+            self.on_before_reload = []
+            self.on_after_reload  = []
+        else:
+            self.on_before_reload = [
+                ColumnCountReferencePDeltaAdd(self.input_p_name, 
+                                              self.column_count_per_chunk) 
+            ]
+            self.on_after_reload  = [
+                ColumnCountReferencePSet(self.input_p_name) 
+            ]
 

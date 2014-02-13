@@ -17,7 +17,6 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.interval_handling               import Interval
-from   quex.engine.generator.base                  import do_loop
 import quex.engine.generator.languages.core        as     languages
 import quex.engine.analyzer.door_id_address_label  as     address
 from   quex.engine.analyzer.door_id_address_label  import dial_db
@@ -111,7 +110,7 @@ def prepare(tm):
 
 def get_transition_function(tm, Codec):
     if codec != "UTF8":
-        tm_txt = LoopGenerator.code_action_map_plain(tm)
+        tm_txt = terminal_map.do(tm)
         assert len(tm_txt) != 0
 
         header = \
@@ -127,6 +126,7 @@ def get_transition_function(tm, Codec):
 
     else:
         Setup.buffer_codec_transformation_info = "utf8-state-split"
+
         tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
         label  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
         tm_txt.append("%s return (int)-1;\n" % label)
