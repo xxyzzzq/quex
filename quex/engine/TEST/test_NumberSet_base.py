@@ -73,6 +73,15 @@ def do(Title, func, PlotF=True):
         for interval in A6.get_intervals():
             Y.cut_interval(interval)
         print Y.gnuplot_string(0)
+    elif Title == "ADD_INTERVAL":
+        X = deepcopy(A6)
+        for interval in B6.get_intervals():
+            X.add_interval(interval)
+        print X.gnuplot_string(1)
+        Y = deepcopy(B6)
+        for interval in A6.get_intervals():
+            Y.add_interval(interval)
+        print Y.gnuplot_string(0)
     elif Title == "CLEAN":
         X = deepcopy(A6)
         for interval in B6.get_intervals():

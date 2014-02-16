@@ -50,17 +50,18 @@ def get(counter_db, Name):
 
     door_id_return = dial_db.new_door_id()
     code, \
-    door_id_else = generator.do_loop(counter_db, 
-                                     DoorIdExit      = door_id_return,
-                                     LexemeEndCheckF = True)
+    door_id_beyond = generator.do_loop(counter_db, 
+                                       DoorIdExit      = door_id_return,
+                                       LexemeEndCheckF = True)
 
-    implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, door_id_else) 
+    implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, 
+                             door_id_beyond) 
 
     DefaultCounterFunctionDB.enter(counter_db, function_name)
 
     return function_name, implementation
 
-def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdElse):
+def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
     
 
     txt = [  \
@@ -92,7 +93,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdElse):
         IfDoorIdReferencedCode(door_id_failure,
         [
             "%s\n" % Lng.LABEL(door_id_failure),
-            "    %s\n" % Lng.GOTO(DoorIdElse),
+            "    %s\n" % Lng.GOTO(DoorIdBeyond),
         ])
     )
     txt.append(

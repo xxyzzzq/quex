@@ -1,11 +1,18 @@
-from   quex.input.regular_expression.construct  import Pattern
+from   quex.input.regular_expression.construct         import Pattern
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
+from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.parallelize           as     parallelize
-from   quex.engine.tools                        import all_isinstance, \
-                                                       all_true, \
-                                                       none_is_None, \
-                                                       typed
-from   itertools   import ifilter
+import quex.engine.state_machine.transformation        as     transformation
+from   quex.engine.analyzer.commands                   import InputPDecrement, \
+                                                              LexemeStartToReferenceP, \
+                                                              InputPToLexemeStartP
+from   quex.engine.tools                               import all_isinstance, \
+                                                              all_true, \
+                                                              none_is_None, \
+                                                              typed
+from   quex.blackboard import setup as Setup, \
+                              Lng
+from   itertools       import ifilter
 
 class EngineStateMachineSet:
     def __init__(self, PatternList): 

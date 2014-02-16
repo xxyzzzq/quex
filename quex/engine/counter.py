@@ -21,6 +21,7 @@ from   quex.blackboard import E_CharacterCountType, \
                               setup as Setup, \
                               Lng
 from   collections import namedtuple
+from   itertools   import izip
 
 CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "parameter", "character_set"))
 
@@ -35,11 +36,27 @@ class CounterSetupLineColumn(object):
         if CountCmdMap is None: self.count_command_map = []
         else:                   self.count_command_map = CountCmdMap
 
-    def covers_range(self, Begin, End):
-        all_set = NumberSet()
+    def is_equal(self, Other):
+        self_map  = self.count_command_map.get_map()
+        other_map = Other.count_command_map.get_map()
+        if len(self_map) != len(other_map):
+            return False
+        for selfi, otheri in izip(self_map, other_map):
+            self_character_set = selfi[0]
+            self_info          = selfi[1]
+            other_character_set = otheri[0]
+            other_info          = otheri[1]
+            if not self_character_set.is_equal(other_character_set):
+                return False
+            elif self_info != other_info:
+                return False
+        return True
+
+    def covered_character_set(self):
+        result = NumberSet()
         for character_set, info in self.count_command_map.get_map():
-            all_set.unite_with(character_set)
-        return all_set.covers_range(Begin, End)
+            result.unite_with(character_set)
+        return result
 
     def __get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes

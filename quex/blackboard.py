@@ -25,7 +25,6 @@ from quex.engine.misc.file_in        import get_current_line_info_number
 from quex.input.setup                import QuexSetup, SETUP_INFO
 from copy                            import deepcopy
 
-
 #------------------------------------------------------------------------------
 # setup: All information of the user's desired setup.
 #------------------------------------------------------------------------------
@@ -418,15 +417,13 @@ class DefaultCounterFunctionDB:
     """
     __db = []
     @staticmethod
-    def get_function_name(CounterDB):
-        """Returns name of function which already implemented the 'CounterDB'.
+    def get_function_name(CounterDb):
+        """Returns name of function which already implemented the 'CounterDb'.
         Otherwise, it returns 'None' if no such function exists.
         """
         for counter_db, function_name in DefaultCounterFunctionDB.__db:
-            if   counter_db.special != CounterDB.special: continue
-            elif counter_db.newline != CounterDB.newline: continue
-            elif counter_db.grid    != CounterDB.grid:    continue
-            return function_name
+            if counter_db.is_equal(CounterDb): 
+                return function_name
         return None
 
     @staticmethod

@@ -3,6 +3,7 @@ from   quex.engine.misc.file_in                        import error_msg
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
+from   quex.engine.generator.code.core                 import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               IfDoorIdReferencedCode, \
                                                               get_plain_strings, \
@@ -18,7 +19,8 @@ import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.analyzer.commands                   import CommandList
+from   quex.engine.analyzer.commands                   import CommandList, \
+                                                              GotoDoorId
 from   quex.engine.analyzer.state.core                 import ReloadState
 from   quex.engine.analyzer.state.drop_out             import DropOutGotoDoorId
 from   quex.engine.analyzer.state.entry_action         import TransitionAction
@@ -30,6 +32,7 @@ import quex.output.cpp.counter_for_pattern             as     counter_for_patter
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
                                                               none_is_None, \
+                                                              print_callstack, \
                                                               typed
 from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
@@ -147,27 +150,35 @@ def do_reload_procedure(TheAnalyzer):
     variable_db.require("target_state_else_index")  # upon reload failure
     variable_db.require("target_state_index")       # upon reload success
 
-    # Number of different entries in the position register map
-    # Position registers
+    require_position_registers(TheAnalyzer)
+
+    return reload_state_coder.do(TheAnalyzer.reload_state)
+
+def require_position_registers(TheAnalyzer):
+    """Require an array to store input positions. This has later to be 
+    implemented as 'variables'. Position registers are exclusively used
+    for post-context restore. No other engine than FORWARD would require
+    those.
+    """
+    if not TheAnalyzer.engine_type.is_FORWARD(): 
+        return
+
     if TheAnalyzer.position_register_map is None:
         position_register_n = 0
     else:
         position_register_n = len(set(TheAnalyzer.position_register_map.itervalues()))
 
-    if position_register_n == 0:
-        if not Setup.buffer_based_analyzis_f:
-            # Not 'buffer-only-mode' => reload requires at least dummy parameters.
-            variable_db.require_array("position", ElementN = 0,
-                                      Initial = "(void*)0x0")
-            variable_db.require("PositionRegisterN", 
-                                Initial = "(size_t)%i" % position_register_n)
+    if position_register_n != 0:
+        initial_array  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}"
     else:
-        variable_db.require_array("position", ElementN = position_register_n,
-                                  Initial  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}")
-        variable_db.require("PositionRegisterN", 
-                            Initial = "(size_t)%i" % position_register_n)
+        # Implement a dummy array (except that there is no reload)
+        if Setup.buffer_based_analyzis_f: return
+        initial_array = "(void*)0"
 
-    return reload_state_coder.do(TheAnalyzer.reload_state)
+    variable_db.require_array("position", ElementN = position_register_n,
+                              Initial = initial_array)
+    variable_db.require("PositionRegisterN", 
+                        Initial = "(size_t)%i" % position_register_n)
 
 def do_state_router():
     routed_address_set = dial_db.routed_address_set()
@@ -208,8 +219,6 @@ def do_state_machine(sm, EngineType):
     return txt, analyzer
 
 def do_analyzer(analyzer): 
-    
-
     state_machine_code = state_machine_coder.do(analyzer)
     Lng.REPLACE_INDENT(state_machine_code)
     # Variable to store the current input
@@ -233,7 +242,9 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
              do this if required.
     """
     assert ReloadF or ReloadStateExtern is None
-    assert CounterDb.covers_range(0, Setup.get_character_value_limit())
+    assert CounterDb.covered_character_set().covers_range(0, Setup.get_character_value_limit()), \
+           "CounterDb covers %s\nbut, not all of [0, %s]" \
+           % (CounterDb.covered_character_set(), Setup.get_character_value_limit())
 
     def prepare_entry_and_reentry(analyzer, on_begin):
         """Prepare the entry and re-entry doors into the initial state
@@ -297,13 +308,12 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     beyond_set = CharacterSet.inverse().mask(0, Setup.get_character_value_limit())
     incidence_id_map.append((beyond_set, beyond_iid))
 
-    cssm = CharacterStateMachineSet(incidence_id_map)
+    cssm = CharacterSetStateMachine(incidence_id_map)
 
     analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
     door_id_reentry = prepare_entry_and_reentry(analyzer, cssm.on_begin) 
-    code_on_putback = CodeTerminal([Lng.COMMAND(cmd) for cmd in ccsm.on_putback])
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
@@ -317,7 +327,9 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     terminal_list   = ccfactory.get_terminal_list(Lng.INPUT_P(), 
                                                   DoorIdOk          = door_id_reentry, 
                                                   DoorIdOnLexemeEnd = door_id_on_lexeme_end)
-    terminal_beyond = Terminal(code_on_putback, "<BEYOND>") # Put last considered character back
+    on_beyond       = cssm.on_putback + [ GotoDoorId(DoorIdExit) ]
+    code_on_beyond  = CodeTerminal([Lng.COMMAND(cmd) for cmd in on_beyond])
+    terminal_beyond = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
     terminal_beyond.set_incidence_id(beyond_iid)
     terminal_list.append(terminal_beyond)
 
@@ -331,7 +343,7 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     if reference_p_f:
         variable_db.require("reference_p")
 
-    return txt, DoorID.incidence(terminal_else.incidence_id())
+    return txt, DoorID.incidence(terminal_beyond.incidence_id())
 
 _increment_actions_for_utf8 = [
      1, "if     ( ((*iterator) & 0x80) == 0 ) { iterator += 1; } /* 1byte character */\n",
