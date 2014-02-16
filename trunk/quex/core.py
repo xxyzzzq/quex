@@ -121,7 +121,7 @@ def analyzer_functions_get(ModeDB):
     BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
     inheritance_info_str = ""
-    analyzer_code        = []
+    code_analyzer        = []
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -139,7 +139,15 @@ def analyzer_functions_get(ModeDB):
         # -- some modes only define event handlers that are inherited
         if len(mode.pattern_list) == 0: continue
 
-        analyzer_code.extend(cpp_generator.do(mode, mode_name_list))
+        txt_analyzer = cpp_generator.do(mode, mode_name_list)
+
+        txt_counter = []
+        if mode.default_character_counter_required_f:
+            dial_db.clear()
+            txt_counter = cpp_generator.do_default_counter(mode.name, mode.counter_db)
+
+        code_analyzer.extend(txt_counter)
+        code_analyzer.extend(txt_analyzer)
 
         if Setup.comment_mode_patterns_f:
             inheritance_info_str += mode.get_documentation()
@@ -149,7 +157,7 @@ def analyzer_functions_get(ModeDB):
         comment = Lng.ML_COMMENT("BEGIN: MODE PATTERNS\n" + \
                                  inheritance_info_str     + \
                                  "\nEND: MODE PATTERNS")
-        analyzer_code.append(comment)
+        code_analyzer.append(comment)
 
     if not Setup.token_class_only_f:
         determine_start_mode(blackboard.mode_db)
@@ -158,7 +166,7 @@ def analyzer_functions_get(ModeDB):
     consistency_check.do(blackboard.mode_db)
 
     # generate frame for analyser code
-    return cpp_generator.frame_this("".join(analyzer_code)), blackboard.mode_db
+    return cpp_generator.frame_this("".join(code_analyzer)), blackboard.mode_db
 
 def do_plot():
     mode_description_db = quex_file_parser.do(Setup.input_mode_files)

@@ -21,7 +21,10 @@ def the_difference(Comment, A, B, ViceVersaF=True):
             print "#  A                 = " + repr(A)
             print "#  B                 = " + repr(interval)
             X = deepcopy(A)
-            X.cut_interval(interval)
+            safe = Interval(interval.begin, interval.end)
+            X.cut_interval(safe)
+            safe.begin = 7777
+            safe.end   = 0000
             print "#  A.cut_interval(B) = " + repr(X) 
 
     print "#\n# " + Comment + "_" * (80 - len(Comment))

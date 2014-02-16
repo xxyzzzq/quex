@@ -16,15 +16,23 @@ import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
-from   quex.engine.interval_handling               import Interval
-import quex.engine.generator.languages.core        as     languages
-import quex.engine.analyzer.door_id_address_label  as     address
-from   quex.engine.analyzer.door_id_address_label  import dial_db
-import quex.engine.generator.state.transition.core as     transition_block
-from   quex.engine.analyzer.transition_map         import TransitionMap   
-from   quex.blackboard                             import setup as Setup, E_MapImplementationType, E_IncidenceIDs, Lng
+from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
+import quex.engine.analyzer.engine_supply_factory         as     engine
+from   quex.engine.interval_handling                      import Interval, NumberSet
+import quex.engine.generator.languages.core               as     languages
+from   quex.engine.generator.base                         import do_analyzer
+from   quex.engine.analyzer.door_id_address_label         import DoorID
+import quex.engine.analyzer.core                          as     analyzer_generator
+from   quex.engine.analyzer.door_id_address_label         import dial_db
+import quex.engine.generator.state.transition.core        as     transition_block
+from   quex.engine.analyzer.transition_map                import TransitionMap   
+from   quex.blackboard                                    import setup as Setup, \
+                                                                 E_MapImplementationType, \
+                                                                 E_IncidenceIDs, \
+                                                                 Lng
+from   collections import defaultdict
 
-Lng = languages.db["C"]              
+Setup.language_db = languages.db["C++"]
 
 dial_db.clear()
 
@@ -103,103 +111,91 @@ elif choice == "C":
 
 def prepare(tm):
     tm.sort()
-    target_state_index_list = sorted(list(set(long(i) for interval, i in tm)))
+    tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE)
 
-    tm.fill_gaps(-1)
-    return TransitionMap.from_iterable(tm, lambda i: ["return %i;\n" % i])
+    iid_db = defaultdict(NumberSet)
+    for interval, iid in tm:
+        iid_db[iid].add_interval(interval)
+    iid_map = [ (character_set, iid) for iid, character_set in iid_db.iteritems() ]
+    return iid_map
 
-def get_transition_function(tm, Codec):
-    if codec != "UTF8":
-        tm_txt = terminal_map.do(tm)
-        assert len(tm_txt) != 0
 
-        header = \
-            "#define __quex_debug_state(X) /* empty */\n" \
-            "int transition(int input) {\n" 
-
-        transition_txt = \
-            "output = transition(input);"
-
-        variable_txt = \
-            "int32_t        input    = -1;\n" \
-            "int32_t        output   = -1;\n"
-
-    else:
+def get_transition_function(iid_map, Codec):
+    if Codec == "UTF8":
         Setup.buffer_codec_transformation_info = "utf8-state-split"
+    else:
+        Setup.buffer_codec_transformation_info = None
 
-        tm_txt = LoopGenerator.code_action_state_machine(tm, None, None)
-        label  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
-        tm_txt.append("%s return (int)-1;\n" % label)
-        tm_txt = Lng.GET_PLAIN_STRINGS(tm_txt)
-        LoopGenerator.replace_iterator_name(tm_txt, "input_p", E_MapImplementationType.STATE_MACHINE)
+    cssm     = CharacterSetStateMachine(iid_map)
+    analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD)
+    tm_txt   = do_analyzer(analyzer)
+    tm_txt   = Lng.GET_PLAIN_STRINGS(tm_txt)
+    tm_txt.append("\n")
+    label    = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
 
-        header = \
-            "#define __QUEX_OPTION_PLAIN_C\n"                                    \
-            "#define QUEX_NAMESPACE_MAIN_OPEN\n"                                \
-            "#define QUEX_NAMESPACE_MAIN_CLOSE\n"                                \
-            "#define QUEX_CONVERTER_CHAR_DEFi(X, Y) convert_ ## X ## _to_ ## Y\n" \
-            "#define QUEX_CONVERTER_CHAR_DEF(X, Y)  QUEX_CONVERTER_CHAR_DEFi(X, Y)\n" \
-            "#define QUEX_CONVERTER_CHAR(X, Y)      QUEX_CONVERTER_CHAR_DEFi(X, Y)\n" \
-            "#define QUEX_CONVERTER_STRING_DEFi(X, Y) convertstring_ ## X ## _to_ ## Y\n" \
-            "#define QUEX_CONVERTER_STRING_DEF(X, Y)  QUEX_CONVERTER_STRING_DEFi(X, Y)\n" \
-            "#define QUEX_CONVERTER_STRING(X, Y)      QUEX_CONVERTER_STRING_DEFi(X, Y)\n" \
-            "#include <quex/code_base/converter_helper/from-utf32.i>\n"          \
-            "int transition(uint8_t* input_p) {\n"                               \
-            "    uint8_t input = (uint8_t)-1;\n"
-        
-        transition_txt = \
-            "utf32_p = &input;\n"                          \
-            "utf8_p  = &utf8_array[0];\n"                 \
-            "convert_utf32_to_utf8(&utf32_p, &utf8_p);\n" \
-            "output  = transition(&utf8_array[0]);"
+    for character_set, iid in iid_map:
+        tm_txt.append("%s return (int)%s;\n" % (Lng.LABEL(DoorID.incidence(iid)), iid))
+    tm_txt.append("%s return (int)-1;\n" % Lng.LABEL(DoorID.drop_out(-1)))
 
-        variable_txt = \
-            "uint32_t        input         = 0;\n" \
-            "const uint32_t* utf32_p       = (void*)0;\n" \
-            "uint8_t         utf8_array[8] = {};\n" \
-            "uint8_t*        utf8_p        = (void*)0;\n" \
-            "int32_t         output        = -1;\n"
-
-
-    # reload   = "%s: return (int)-1;\n" % address.get_label("$reload", -1)
-    drop_out = "%s return (int)-1;\n" % Lng.LABEL(DoorID.drop_out(-1))
-
-    txt = []
-    txt.extend(header)
-    txt.extend(tm_txt)
-    # txt.append(reload)
-    txt.append(drop_out)
-    txt.append("\n}\n")
-
-    return txt, transition_txt, variable_txt
+    return "".join(tm_txt)
 
 main_template = """
 /* From '.begin' the target map targets to '.target' until the next '.begin' is
  * reached.                                                                  */
-typedef struct { int begin; int target; } entry_t;
-
 #include <inttypes.h> 
 #include <stdio.h>
+#define QUEX_TYPE_CHARACTER              $$QUEX_TYPE_CHARACTER$$
+#define __QUEX_OPTION_PLAIN_C
+#define QUEX_NAMESPACE_MAIN_OPEN
+#define QUEX_NAMESPACE_MAIN_CLOSE
+#define QUEX_CONVERTER_CHAR_DEFi(X, Y)   convert_ ## X ## _to_ ## Y
+#define QUEX_CONVERTER_CHAR_DEF(X, Y)    QUEX_CONVERTER_CHAR_DEFi(X, Y)
+#define QUEX_CONVERTER_CHAR(X, Y)        QUEX_CONVERTER_CHAR_DEFi(X, Y)
+#define QUEX_CONVERTER_STRING_DEFi(X, Y) convertstring_ ## X ## _to_ ## Y
+#define QUEX_CONVERTER_STRING_DEF(X, Y)  QUEX_CONVERTER_STRING_DEFi(X, Y)
+#define QUEX_CONVERTER_STRING(X, Y)      QUEX_CONVERTER_STRING_DEFi(X, Y)
+#include <quex/code_base/converter_helper/from-utf32.i>
+
+typedef struct {
+    struct {
+        QUEX_TYPE_CHARACTER*  _input_p;
+    } buffer;
+} MiniAnalyzer;
+
+int transition(QUEX_TYPE_CHARACTER* buffer);
+
+typedef struct { 
+    uint32_t begin; 
+    int      target; 
+} entry_t;
+
 int
 main(int argc, char** argv) {
     const entry_t db[]      = {
 $$ENTRY_LIST$$
     };
-    const entry_t* db_last  = &db[sizeof(db)/sizeof(entry_t) - 1];
-    const entry_t* iterator = &db[0];
-$$VARIABLES$$
-    int            target   = -1;
+    const entry_t*       db_last  = &db[sizeof(db)/sizeof(entry_t) - 1];
+    const entry_t*       iterator = &db[0];
+    const entry_t*       next     = (void*)0;
+
+    int                  output          = -1;
+    int                  output_expected = -1;
+    uint32_t             input;
+    QUEX_TYPE_CHARACTER  buffer[8];
     
     printf("No output is good output!\\n");
-    for(iterator=&db[0]; iterator != db_last; ) {
-        input  = iterator->begin;
-        target = iterator->target;
-        ++iterator;
-        for(; input != iterator->begin; ++input) {
-$$TRANSITION$$
-            if( output != target ) {
+    for(iterator=&db[0]; iterator != db_last; iterator = next) {
+        input           = iterator->begin;
+        output_expected = iterator->target;
+        next            = iterator + 1;
+        for(input  = iterator->begin; input != next->begin; ++input) {
+            $$PREPARE_INPUT$$
+
+            output = transition(&buffer[0]);
+
+            if( output != output_expected ) {
                 printf("input: 0x%06X; output: %i; expected: %i;   ERROR\\n",
-                       (int)input, (int)output, (int)target);
+                       (int)input, (int)output, (int)output_expected);
                 return 0;
             }
         }
@@ -208,28 +204,61 @@ $$TRANSITION$$
     printf("Characters: %i\\n", (int)input);
     printf("Oll Korrekt\\n");
 }
+
+int 
+transition(QUEX_TYPE_CHARACTER* buffer)
+{
+    MiniAnalyzer         self;
+    MiniAnalyzer*        me = &self;
+    QUEX_TYPE_CHARACTER  input = 0;
+
+    me->buffer._input_p = buffer;
+
+    $$TRANSITION$$
+}
+
 """
-def get_main_function(tm0, VariableTxt, TranstionTxt):
+def get_main_function(tm0, TranstionTxt, Codec):
     def indent(Txt, N):
         return (" " * N) + (Txt.replace("\n", "\n" + (" " * N)))
+
+    if Codec == "UTF8": qtc_str = "uint8_t"
+    else:               qtc_str = "uint32_t"
+
+    input_preperation = get_input_preparation(codec)
 
     entry_list = [ (0 if interval.begin < 0 else interval.begin, target) for interval, target in tm0 ]
     entry_list.append((tm0[-1][0].begin, -1))
     entry_list.append((0x1FFFF, -1))
-    expected_array = [ "        { 0x%06X, %i },\n" % (begin, target) for begin, target in entry_list ]
+    expected_array = [ "        { 0x%06X, %s },\n" % (begin, target) for begin, target in entry_list ]
 
     txt = main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
-    txt = txt.replace("$$VARIABLES$$", indent(VariableTxt, 4))
+    txt = txt.replace("$$QUEX_TYPE_CHARACTER$$", qtc_str)
     txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 12))
+    txt = txt.replace("$$PREPARE_INPUT$$", input_preperation)
+
+    txt = txt.replace("MATCH_FAILURE", "((int)-1)")
     return txt
 
-tm           = prepare(tm0)
-function_txt, \
-transition_txt, \
-variable_txt = get_transition_function(tm, codec)
-main_txt     = get_main_function(tm0, variable_txt, transition_txt)
+def get_input_preparation(Codec):
+    if Codec == "UTF8":
+        txt = [
+            "{\n"
+            "    QUEX_TYPE_CHARACTER* buffer_p = &buffer[0];\n"
+            "    const uint32_t*      input_p = &input;\n"
+            "    convert_utf32_to_utf8(&input_p, &buffer_p);\n"
+            "}\n"
+        ]
+    else:
+        txt = [
+            "buffer[0] = input;\n"
+        ]
+    return "".join("        %s" % line for line in txt)
 
-txt = function_txt + [ main_txt ]
+iid_map           = prepare(tm0)
+transition_txt    = get_transition_function(iid_map, codec)
+txt               = get_main_function(tm0, transition_txt, codec)
+
 Lng.REPLACE_INDENT(txt)
 
 fh = open("test.c", "wb")

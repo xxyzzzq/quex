@@ -12,16 +12,16 @@ from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
 from   quex.engine.generator.code.core             import CodeTerminal
 import quex.engine.generator.languages.variable_db as     variable_db
-from   quex.engine.generator.languages.core    import db
+from   quex.engine.generator.languages.core        import db
 from   quex.engine.generator.languages.variable_db import VariableDB
-import quex.engine.generator.state_router      as     state_router_generator
-from   quex.engine.misc.string_handling import blue_print
-from   quex.engine.tools                       import all_isinstance
-from   quex.engine.counter                     import CounterSetupLineColumn_Default
-from   quex.input.files.mode                   import PatternActionInfo, IncidenceDB
+import quex.engine.generator.state_router          as     state_router_generator
+from   quex.engine.misc.string_handling            import blue_print
+from   quex.engine.tools                           import all_isinstance
+from   quex.engine.counter                         import CounterSetupLineColumn_Default
+from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
-import quex.output.cpp.core                    as     cpp_generator
+import quex.output.cpp.core                        as     cpp_generator
 
 from   quex.exception  import RegularExpressionException
 #

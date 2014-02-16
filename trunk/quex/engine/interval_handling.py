@@ -17,13 +17,14 @@
 
 # import quex.engine.generator.languages.core as languages
 import quex.engine.utf8 as utf8
+from   quex.engine.tools import r_enumerate, \
+                                typed, \
+                                print_callstack
 
 import sys
 from   copy      import copy
 from   itertools import izip, islice
 
-from   quex.engine.tools import r_enumerate, \
-                                typed
 
 class Interval(object):
     """Representing an interval with a minimum and a maximum border. Implements
@@ -377,21 +378,24 @@ class NumberSet(object):
         if len(x) != 0  and x[-1].end == Value: x[-1].end = Value + 1
         else:                                   x.append(Interval(Value))
 
-    def add_interval(self, NewInterval):
+    def add_interval(self, X):
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because
-        only one interval is checked against.!"""
-        if NewInterval.begin == NewInterval.end: return
+        only one interval is checked against.!
+        
+        IDEA: Return the position of the last insertion, so that this
+              function could take it as a hint!
+        """
+        if X.begin == X.end: 
+            return
         
         # (1) determine if begin overlaps with the new interval
-        if len(self.__intervals) == 0 or NewInterval.begin > self.__intervals[-1].end:
-            self.__intervals.append(NewInterval)
+        L = len(self.__intervals)
+        if L == 0 or X.begin > self.__intervals[-1].end:
+            self.__intervals.append(Interval(X.begin, X.end))
             return
 
-        X = NewInterval
-        i = -1
-        for y in self.__intervals:
-            i += 1
+        for i, y in enumerate(self.__intervals):
             # possible cases:
             #  (1) [=== X ===]         [=== y ===]             
             #  
@@ -416,37 +420,27 @@ class NumberSet(object):
             if X.begin > y.end: 
                 continue                              # filter (8)
             elif X.end < y.begin: 
-                self.__intervals.insert(i, X) 
-                return                                # filter (1)
+                self.__intervals.insert(i, Interval(X.begin, X.end)) 
+                return                                # filter (1)         --> insert before 'y'
             else:
-                touch_begin = min(X.begin, y.begin) 
+                begin = min(X.begin, y.begin)
+                end   = max(X.end,   y.end)
                 break
 
-        toucher_list    = [ ]
-        insertion_index = i
-        for y in self.__intervals[i:]:
-            if X.end < y.begin: touch_end = X.end; break
-            toucher_list.append(i)
-            if X.end <= y.end: touch_end = y.end; break
-            i += 1
-        else:
-            touch_end = X.end
+        # 'y' intersects with 'X', y is going to 'eat'
+        # delete all intervals which are covered by 'X'
+        if i + 1 < L:
+            for k in xrange(i+1, L):
+                z = self.__intervals[k]
+                if X.end < z.begin: break
+                end = max(end, z.end)
+            else:
+                k = L 
+            # 'X' does touch 'z', i.e. '__intervals[k]'
+            del self.__intervals[i+1:k] # delete the overlapped intervals
 
-        # (2) combine all intervals that intersect with the new one
-        combination = Interval(touch_begin, touch_end)
-
-        # (3) build new list of intervals
-        #     (all overlaps are deleted, i.e. not added because they are
-        #      replaced by the union with the NewInterval)
-        # NOTE: The indices need to be adapted, since if for example
-        #       interval '3' was an overlapper, and so '5' then if
-        #       '3' is deleted, '5' comes at position '5'.
-        offset = -1
-        for i in toucher_list:
-            offset += 1
-            del self.__intervals[i - offset]
-
-        self.__intervals.insert(insertion_index, combination)
+        y.begin = begin  # let 'y' take the new values
+        y.end   = end
 
     def contains(self, Number):
         """True  => if Number in NumberSet
@@ -491,7 +485,8 @@ class NumberSet(object):
     def is_equal(self, Other):
         """Assume: All intervals are sorted and adjacent intervals are combined.
         """
-        if len(self.__intervals) != len(Other.__intervals): return False
+        if len(self.__intervals) != len(Other.__intervals): 
+            return False
         for interval, other in izip(self.__intervals, Other.__intervals):
             if   interval.begin != other.begin: return False
             elif interval.end   != other.end:   return False
@@ -558,47 +553,38 @@ class NumberSet(object):
             self.add_interval(Other)
             return
 
+        elif len(Other.__intervals) == 0:
+            return
+
+        elif len(self.__intervals) == 0:
+            self.__intervals = [
+                copy(other) for other in Other.__intervals
+            ]
+            return
+
+        elif Other.__intervals[0].begin > self.__intervals[-1].end:
+            self.__intervals.extend(
+                copy(other) for other in Other.__intervals
+            )
+            return
+
+        elif Other.__intervals[-1].end < self.__intervals[0].begin:
+            new_intervals = [ copy(other) for other in Other.__intervals ]
+            new_intervals.extend(self.__intervals)
+            self.__intervals = new_intervals
+            return
+
         # simply add all intervals to one single set
         for interval in Other.__intervals:
             self.add_interval(interval)
-
-        #        if len(self.__intervals) == 0:
-        #            if Other_type == Interval:  
-        #                self.__intervals = [ copy(Other) ]
-        #            else:
-        #                self.__intervals = Other.__clone_intervals()
-        #        else:
-        #            if Other_type == Interval:  
-        #                if self.__intervals[-1].end < Other.begin:
-        #                    self.__intervals.append(copy(Other))
-        #                elif self.__intervals[0].begin > Other.end:
-        #                    self.__intervals.insert(0, copy(Other))
-        #                else:
-        #                    self.add_interval(Other)
-        #
-        #            elif len(Other.__intervals) != 0:
-        #                if self.__intervals[-1].end < Other.__intervals[0].begin:
-        #                    self.__intervals.extend(Other.__clone_intervals())
-        #                elif self.__intervals[0].begin > Other.__intervals[-1].end:
-        #                    self.__intervals[0:0] = Other.__clone_intervals()
-        #                else:
-        #                    for interval in Other.__intervals:
-        #                        self.add_interval(interval)
+            # IDEA: hint = self.add_interval(interval, hint)
 
     def union(self, Other):
-        Other_type = Other.__class__
-        assert Other_type == Interval or Other_type == NumberSet, \
+        assert Other.__class__ in (Interval, NumberSet), \
                "Error, argument of type %s" % Other.__class__.__name__
 
         clone = self.clone() 
-
-        if Other_type == Interval: 
-            clone.add_interval(Other)
-            return clone
-
-        # simply add all intervals to one single set
-        for interval in Other.__intervals:
-            clone.add_interval(interval)
+        clone.unite_with(Other)
 
         return clone            
 
@@ -748,7 +734,19 @@ class NumberSet(object):
     def covers_range(self, Begin, End):
         """Begin = first element in range to include.
            End   = first element after the range to include.
+
+                begin                 end
+                  |                    |
+           [ ][ ][x][x][x][x][x][x][x][ ][ ][ ][ ][ ]
+                    '-------------'
+                     |              |
+                   Begin           End   
+
+           RETURNS: True, if self covers from Begin to End all characters.
+                    False, if not.
         """
+        Begin = max(Begin, -sys.maxint)
+        End   = min(End, sys.maxint)
         if   len(self.__intervals) != 1:        return False
         elif self.__intervals[0].begin > Begin: return False
         elif self.__intervals[0].end < End:     return False

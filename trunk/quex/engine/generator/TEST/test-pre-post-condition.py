@@ -26,5 +26,4 @@ pattern_action_pair_list = [
 ]
 test_str = "x  hello xxxbonjour hello xx  world xx world hello xxx x x"
 
-
 generator_test.do(pattern_action_pair_list, test_str, {}, choice)    

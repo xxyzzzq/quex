@@ -20,8 +20,7 @@ from   quex.blackboard                                    import setup as Setup,
 def do(Mode, ModeNameList):
     """RETURNS: The analyzer code for a mode defined in 'Mode'.
     """
-    # (*) Initialize address handling
-    variable_db.init()  # because constructor creates some addresses.
+    variable_db.init() 
 
     function_body,       \
     variable_definitions = do_core(Mode.pattern_list, 
@@ -31,15 +30,7 @@ def do(Mode, ModeNameList):
     function_txt = wrap_up(Mode.name, function_body, variable_definitions, 
                            ModeNameList)
 
-    # (*) Generate the counter first!
-    #     (It may implement a state machine with labels and addresses
-    #      which are not relevant for the main analyzer function.)
-    counter_txt = []
-    if Mode.default_character_counter_required_f:
-        variable_db.init()  # because constructor creates some addresses.
-        counter_txt = do_default_counter(Mode.name, Mode.counter_db)
-
-    return counter_txt + function_txt
+    return function_txt
 
 @typed(PatternList=[Pattern], TerminalDb={(E_IncidenceIDs, long): Terminal})
 def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
@@ -126,6 +117,8 @@ def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
 
 @typed(ModeName=(str,unicode), CounterDb=CounterSetupLineColumn)
 def do_default_counter(ModeName, CounterDb):
+    variable_db.init()
+
     # May be, the default counter is the same as for another mode. In that
     # case call the default counter of the other mode with the same one and
     # only macro.

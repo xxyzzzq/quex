@@ -1,4 +1,4 @@
-<history date="Mon Jan 20 18:54:17 2014" element-n="327">
+<history date="Sat Feb 15 22:47:23 2014" element-n="328">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -951,5 +951,8 @@
     </day>
     <day year="2013" month="04" day="18">
         <crc-error time="17:16:12" application="test-NumberSet-transform-cp037.py" choice="1" database-crc="-1588085269" real-crc="-1798408710"/>
+    </day>
+    <day year="2014" month="02" day="15">
+        <crc-error time="12:55:39" application="test-NumberSet-add_interval.py" choice="" database-crc="-1429013624" real-crc="161038093"/>
     </day>
 </history>
