@@ -281,18 +281,17 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
 
         return entry.get(tid_reentry).door_id
 
-    def prepare_reload(analyzer, ccfactory, ccsm): 
+    def prepare_reload(analyzer, ccfactory, cssm, ReloadStateExtern): 
         on_before_reload = CommandList.from_iterable(
               ccfactory.on_before_reload
-            + ccsm.on_before_reload
+            + cssm.on_before_reload
         )
         on_after_reload  = CommandList.from_iterable(
               ccfactory.on_after_reload
-            + ccsm.on_after_reload
+            + cssm.on_after_reload
         )
 
-        analyzer_generator.prepare_reload(analyzer, ReloadStateExtern,
-                                          on_before_reload, on_after_reload)
+        analyzer_generator.prepare_reload(analyzer, on_before_reload, on_after_reload)
 
     if CharacterSet is None:
         CharacterSet = NumberSet_All()
@@ -320,7 +319,7 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
 
     # -- Analyzer: Prepare Reload
     if ReloadF:
-        prepare_reload(analyzer, ccfactory, ReloadStateExtern)
+        prepare_reload(analyzer, ccfactory, cssm, ReloadStateExtern)
 
     # -- The terminals 
     #

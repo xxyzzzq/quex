@@ -118,8 +118,11 @@ def get(ThePattern, ShiftF=True):
         # Following assert results from entry check against 'VOID'
         assert counter.grid_step_size_by_lexeme_length != E_Count.VOID
 
-        if counter.grid_step_n == E_Count.VOID: grid_step_n = "LexemeL"
-        else:                                   grid_step_n = counter.grid_step_n
+        if counter.grid_step_n == E_Count.VOID: 
+            grid_step_n = "LexemeL"
+        else:                                   
+            assert counter.grid_step_n != 0
+            grid_step_n = counter.grid_step_n
 
         if len(txt) != 0:
             txt.append(0)

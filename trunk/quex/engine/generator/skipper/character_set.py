@@ -74,14 +74,13 @@ def do(Data, TheAnalyzer):
         reload_state = TheAnalyzer.reload_state
 
         
-    result = generator.do_loop(counter_db, 
-                               AfterExitDoorId   = DoorID.continue_without_on_after_match(),
-                               CharacterSet      = character_set,
-                               CheckLexemeEndF   = False,
-                               ReloadF           = reload_f,
-                               ReloadStateExtern = reload_state, 
-                               EngineType        = engine.FORWARD,
-                               MaintainLexemeF   = False)
+    result, \
+    door_id_beyond = generator.do_loop(counter_db, 
+                                       DoorIdExit        = DoorID.continue_without_on_after_match(),
+                                       CharacterSet      = character_set,
+                                       LexemeEndCheckF   = False,
+                                       ReloadF           = reload_f,
+                                       ReloadStateExtern = reload_state) 
 
     assert isinstance(result, list)
     return result

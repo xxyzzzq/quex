@@ -1,6 +1,7 @@
 from   quex.input.files.parser_data.counter       import CountCmdMap
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.generator.code.base            import SourceRef_VOID
+from   quex.engine.generator.code.base            import SourceRef_VOID, \
+                                                         SourceRef
 from   quex.engine.generator.code.core            import CodeTerminal
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.tools                          import return_None
@@ -17,6 +18,7 @@ from   quex.engine.analyzer.commands              import CommandList, \
                                                          GotoDoorIdIfInputPNotEqualPointer
 import quex.engine.state_machine.transformation   as     transformation
 
+from   quex.engine.tools import typed
 from   quex.blackboard import E_CharacterCountType, \
                               setup as Setup, \
                               Lng
@@ -29,12 +31,13 @@ class CounterSetupLineColumn(object):
     __slots__ = ("sr",                 # Source Reference
                  "count_command_map")  # Column Number Increment --> CharacterSet
 
-    def __init__(self, CountCmdMap=None, SourceReference=SourceRef_VOID):
+    @typed(TheCountCmdMap=CountCmdMap, SourceReference=SourceRef)
+    def __init__(self, TheCountCmdMap=None, SourceReference=SourceRef_VOID):
         """Generate a counter db from a line column counter setup."""
+        assert CountCmdMap is not None
 
-        self.sr = SourceReference
-        if CountCmdMap is None: self.count_command_map = []
-        else:                   self.count_command_map = CountCmdMap
+        self.sr                = SourceReference
+        self.count_command_map = TheCountCmdMap
 
     def is_equal(self, Other):
         self_map  = self.count_command_map.get_map()
@@ -288,7 +291,7 @@ class CountCmdFactory:
                               '---------------'
         """
         cl = self._command(CC_Type, Parameter) 
-        cl.append(GotoDoorId(DoorIdOk))
+        cl.append(GotoDoorId(self.door_id_ok))
         return cl
 
     def _do_with_lexeme_end_check(self, CC_Type, Parameter):
