@@ -170,7 +170,8 @@ def do(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
         # determined now, independently of the 'counter.do()'.
         Count.grid_step_size_by_lexeme_length <<= _get_grid_step_size_by_lexeme_length(SM, CounterDB)
 
-    return CountInfo(counter.result, CodecTrafoInfo, SM)
+    result = CountInfo(counter.result, CodecTrafoInfo, SM)
+    return result
 
 class CharacterCountTracer(TreeWalker):
     """________________________________________________________________________

@@ -81,6 +81,8 @@ from   operator    import attrgetter
 from   copy        import deepcopy, copy
 import types
 
+from   quex.engine.tools import print_callstack
+
 
 E_R = Enum("AcceptanceRegister",
            "Buffer",
@@ -454,9 +456,11 @@ def ColumnCountAdd(Value):
     return _cmd(E_Cmd.ColumnCountAdd, Value)
 
 def ColumnCountGridAdd(GridSize):
+    print_callstack()
     return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
+    print_callstack()
     return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, PointerName,ColumnNPerChunk)
 
 def LineCountAdd(Value):

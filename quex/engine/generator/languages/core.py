@@ -109,7 +109,8 @@ class Lng_Cpp(dict):
     def _get_log2_if_power_of_2(self, X):
         if not isinstance(X, (int, long)):
             return None
-        log2 = log(X)/log(2)
+
+        log2 = log(X, 2)
         if not log2.is_integer(): return None
         return log2
             
@@ -430,6 +431,7 @@ class Lng_Cpp(dict):
         For 'GridWidth' as a power of '2' there is a slightly more
         efficient solution.
         """
+        assert GridWidth > 0
 
         grid_with_str = self.VALUE_STRING(GridWidth)
         log2          = self._get_log2_if_power_of_2(GridWidth)

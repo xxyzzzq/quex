@@ -638,22 +638,22 @@ class Mode:
         if SkipSetupList is None or len(SkipSetupList) == 0:
             return None
 
-        iterable               = SkipSetupList.__iter__()
-        pattern, character_set = iterable.next()
-        pattern_str            = pattern.pattern_string()
-        source_reference       = pattern.sr
+        iterable           = SkipSetupList.__iter__()
+        pattern, total_set = iterable.next()
+        pattern_str        = pattern.pattern_string()
+        source_reference   = pattern.sr
         # Multiple skippers from different modes are combined into one pattern.
         # This means, that we cannot say exactly where a 'skip' was defined 
         # if it intersects with another pattern.
         for ipattern, icharacter_set in iterable:
-            character_set.unite_with(icharacter_set)
+            total_set.unite_with(icharacter_set)
             pattern_str += "|" + ipattern.pattern_string()
 
         # The column/line number count actions for the characters in the 
-        # character_set may differ. Thus, derive a separate set of characters
+        # total_set may differ. Thus, derive a separate set of characters
         # for each same count action, i.e.
         #
-        #          map:  count action --> subset of character_set
+        #          map:  count action --> subset of total_set
         # 
         # When the first character is matched, then its terminal 'TERMINAL_x*'
         # is entered, i.e the count action for the first character is performed
@@ -675,7 +675,7 @@ class Mode:
 
         data = { 
             "counter_db":    CounterDb, 
-            "character_set": character_set,
+            "character_set": total_set,
         }
         # The terminal is not related to a pattern, because it is entered
         # from the sub_terminals. Each sub_terminal relates to a sub character
@@ -688,19 +688,19 @@ class Mode:
         # Counting actions are added to the terminal automatically by the
         # terminal_factory. The only thing that remains for each sub-terminal:
         # 'goto skipper'.
-        dummy, \
-        count_command_map = CounterDb.get_count_command_map(character_set)
+        ccfactory        = CounterDb.get_factory(total_set, Lng.INPUT_P())
+        incidence_id_map = ccfactory.get_incidence_id_map()
 
-        for cliid, cmd_info in ccd.count_command_map.iteritems():
-            priority         = PatternPriority(MHI, cliid)
-            pattern          = Pattern.from_character_set(cmd_info.trigger_set)
+        for character_set, incidence_id in incidence_id_map:
+            priority         = PatternPriority(MHI, incidence_id)
+            pattern          = Pattern.from_character_set(character_set)
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
             # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
             code             = CodeTerminal([ goto_terminal_str ])
             sub_terminal     = terminal_factory.do(E_TerminalType.MATCH_PATTERN, 
                                                    code, pattern)
-            sub_terminal.set_name("Entry to 'skip': %s" % cmd_info.trigger_set.get_string("hex"))
+            sub_terminal.set_name("Entry to 'skip': %s" % character_set.get_string("hex"))
             ppt_list.append(PPT(priority, pattern, sub_terminal))
 
         return terminal

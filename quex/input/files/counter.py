@@ -3,7 +3,7 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation, \
                                                          extract_trigger_set
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.generator.code.base            import LocalizedParameter
+from   quex.engine.generator.code.base            import LocalizedParameter, SourceRef
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.counter                        import CounterSetupIndentation, \
@@ -17,12 +17,13 @@ from   quex.engine.misc.file_in                   import get_current_line_info_n
                                                          verify_word_in_list, \
                                                          read_integer
 
+from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(fh))
     return CounterSetupLineColumn(result)
 
-def parse_indentation(fh):
+def parse_indentation(fh, IndentationSetupF):
     result = __parse(fh, ParserDataIndentation(fh))
     return CounterSetupIndentation(result)
 
@@ -45,7 +46,9 @@ def __parse_definition_head(fh, result):
                         "Unrecognized specifier '%s'." % identifier, fh)
     skip_whitespace(fh)
 
-def __parse(fh, result):
+    return pattern, identifier
+
+def __parse(fh, result, IndentationSetupF=False):
     """Parses pattern definitions of the form:
    
           [ \t]                                       => grid 4;
@@ -92,6 +95,7 @@ def __parse(fh, result):
                 result.specify_suppressor(pattern, sr)
 
         elif identifier == "newline":
+            value = read_value_specifier(fh, identifier)
             result.specify(identifier, pattern, value, sr)
 
         else:
