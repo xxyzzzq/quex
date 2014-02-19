@@ -259,6 +259,8 @@ class NotificationDB:
     warning_repeated_token_not_yet_defined           = 8
     warning_token_id_prefix_appears_in_token_id_name = 9
     warning_codec_error_with_non_unicode             = 10
+    warning_counter_setup_without_newline            = 11
+    warning_counter_setup_without_else               = 12
 
 DEPRECATED = { 
   "XX_input_pattern_file": 

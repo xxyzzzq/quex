@@ -28,9 +28,9 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    # descr = indentation.parse(sh, IndentationSetupF=False)
+    # descr = counter.parse_line_column_counter(sh)
     try:    
-        descr = counter.parse_indentation(sh, IndentationSetupF=False)
+        descr = counter.parse_line_column_counter(sh)
         pass
 
     except EndOfStreamException:

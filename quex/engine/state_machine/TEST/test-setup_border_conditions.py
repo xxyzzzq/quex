@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
+from   quex.engine.generator.code.base              import SourceRef_VOID
 import quex.engine.state_machine.setup_post_context as setup_post_context
 import quex.engine.state_machine.setup_pre_context as setup_pre_context 
 # import quex.engine.state_machine.setup_border_conditions as setup_border_conditions 
@@ -34,7 +35,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     print " -- begin of line  = ", BOF_F
     print " -- end of line    = ", EOF_F
 
-    ipsb_sm                = setup_post_context.do(result, sm_post, EOF_F, -1, -1)
+    ipsb_sm                = setup_post_context.do(result, sm_post, EOF_F, SourceRef_VOID)
     inverse_pre_context_sm = setup_pre_context.do(result, sm_pre, BOF_F)
     #
     # print "EXPRESSION = ", result

@@ -95,7 +95,7 @@ def __parse(fh, result, IndentationSetupF=False):
                 result.specify_suppressor(pattern, sr)
 
         elif identifier == "newline":
-            value = read_value_specifier(fh, identifier)
+            value = read_value_specifier(fh, identifier, 1)
             result.specify(identifier, pattern, value, sr)
 
         else:
@@ -106,7 +106,7 @@ def __parse(fh, result, IndentationSetupF=False):
 
     # Assig the 'else' command to all the remaining places in the character map.
     if not IndentationSetupF:
-        result.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit())
+        result.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), result.sr)
 
     result.consistency_check(fh)
     return result

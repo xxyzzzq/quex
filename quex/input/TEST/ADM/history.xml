@@ -1,4 +1,4 @@
-<history date="Sun Feb 16 12:37:29 2014" element-n="368">
+<history date="Wed Feb 19 22:51:40 2014" element-n="369">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -1008,5 +1008,8 @@
     </day>
     <day year="2013" month="01" day="01">
         <crc-error time="10:48:01" application="test-query-character-set-by-expression.py" choice="" database-crc="-1557359517" real-crc="139565825"/>
+    </day>
+    <day year="2014" month="02" day="19">
+        <crc-error time="21:43:12" application="counter_setup.py" choice="basic" database-crc="-1057606974" real-crc="24757665"/>
     </day>
 </history>
