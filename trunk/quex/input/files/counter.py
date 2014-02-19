@@ -21,7 +21,7 @@ from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(fh))
-    return CounterSetupLineColumn(result)
+    return CounterSetupLineColumn(result.count_command_map)
 
 def parse_indentation(fh, IndentationSetupF):
     result = __parse(fh, ParserDataIndentation(fh))

@@ -15,7 +15,7 @@ spec_txt = """
 
 fh = StringIO(spec_txt)
 fh.name    = "<string>"
-counter_db = counter.parse_line_column_counter(fh, IndentationSetupF=False)
+counter_db = counter.parse_line_column_counter(fh)
 
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Codec Engine"
