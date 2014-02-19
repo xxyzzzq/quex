@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.engine.generator.code.base              import SourceRef_VOID
 import quex.engine.state_machine.setup_post_context as setup_post_context
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
@@ -15,7 +16,7 @@ if "--hwut-info" in sys.argv:
 def test(sm, post_sm):    
     print "EXPRESSION = ", sm
     print "POST CONDITION = ", post_sm
-    return_sm = setup_post_context.do(sm, post_sm, False, -1, -1)
+    return_sm = setup_post_context.do(sm, post_sm, False, SourceRef_VOID)
     print "APPENDED = ", sm
     sm = nfa_to_dfa.do(sm)
     print "DFA = ", sm

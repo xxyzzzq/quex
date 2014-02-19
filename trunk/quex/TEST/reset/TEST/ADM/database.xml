@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.42" date="Sun Feb 16 10:39:11 2014">
+<test-database execution-time-sec="0.44" date="Wed Feb 19 08:29:36 2014">
     <last-used-diff-display-program name=""/>
     <test title="Normal Reset" make-dependent="True" time-sum-sec="0.09"> 
         <application file-name="lexer-x" info-request-time="1381662240L" vanished="False"/>
@@ -18,7 +18,7 @@
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.08"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.09"> 
             <application file-name="codec-lexer" info-request-time="1381662240L" vanished="False"/>
             <make-procedure success="True" time_sec="2.411422"/>
             <choice-list number="11" same_result="True">
@@ -52,7 +52,7 @@
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.07"> 
+        <test title="Plain" make-dependent="True" time-sum-sec="0.09"> 
             <application file-name="lexer" info-request-time="1381662240L" vanished="False"/>
             <make-procedure success="True" time_sec="2.132639"/>
             <choice-list number="11" same_result="True">
@@ -69,7 +69,7 @@
                <choice name="136" result="OK" time_sec="0.01" crc="759753114"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.09"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="iconv-lexer" info-request-time="1381662240L" vanished="False"/>
             <make-procedure success="True" time_sec="2.375582"/>
             <choice-list number="11" same_result="True">

@@ -1,6 +1,6 @@
-<test-database execution-time-sec="44.45" date="Sun Feb 16 12:37:07 2014">
+<test-database execution-time-sec="44.47" date="Wed Feb 19 08:29:50 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Complementary State Machines" time-sum-sec="1.89"> 
+    <test title="Complementary State Machines" time-sum-sec="1.88"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="Sequence" result="OK" time_sec="0.18" crc="-2135734804"/>
@@ -10,7 +10,7 @@
            <choice name="Misc" result="OK" time_sec="0.80" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="22.44"> 
+    <test title="Algebraic Relations" time-sum-sec="22.45"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1387873736L" vanished="False"/>
         <choice-list number="3" same_result="False">
            <choice name="unary" result="OK" time_sec="4.35" crc="1858791790"/>
@@ -81,7 +81,7 @@
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="2.86"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="2.87"> 
             <application file-name="test-complement_end.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.34" crc="-1892553389"/>
@@ -94,7 +94,7 @@
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="1.79"> 
+        <test title="Cut P so that it does not start with Q." time-sum-sec="1.80"> 
             <application file-name="test-cut_begin.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="0" result="OK" time_sec="0.36" crc="916878987"/>

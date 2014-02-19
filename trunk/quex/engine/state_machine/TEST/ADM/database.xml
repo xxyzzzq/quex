@@ -1,4 +1,4 @@
-<test-database execution-time-sec="20.59" date="Wed Feb 19 07:37:19 2014">
+<test-database execution-time-sec="21.20" date="Wed Feb 19 08:29:50 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -124,10 +124,10 @@
                <choice name="UTF16" result="OK" time_sec="0.33" crc="-416803910"/>
             </choice-list>
         </test>
-        <test title="Newlines" time-sum-sec="0.17"> 
-            <application file-name="test-count_newline_n.py" info-request-time="1390979824L" vanished="False"/>
+        <test title="Newlines" time-sum-sec="0.89"> 
+            <application file-name="test-count_newline_n.py" info-request-time="1392794453L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="-970502174"/>
+               <choice name="" result="OK" time_sec="0.89" crc="-970502174"/>
             </choice-list>
         </test>
         <test title="Characters" time-sum-sec="1.37"> 
@@ -213,10 +213,10 @@
                <choice name="" result="OK" time_sec="0.09" crc="-417504280"/>
             </choice-list>
         </test>
-        <test title="Append Post Condition" time-sum-sec="0.14"> 
-            <application file-name="test-setup_post_condition.py" info-request-time="1387873736L" vanished="False"/>
+        <test title="Append Post Condition" time-sum-sec="0.07"> 
+            <application file-name="test-setup_post_condition.py" info-request-time="1392794544L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.14" crc="-2109087540"/>
+               <choice name="" result="OK" time_sec="0.07" crc="-2109087540"/>
             </choice-list>
         </test>
         <test title="Sequence" time-sum-sec="0.07"> 
@@ -225,10 +225,10 @@
                <choice name="" result="OK" time_sec="0.07" crc="-162885828"/>
             </choice-list>
         </test>
-        <test title="Append Post Condition" time-sum-sec="0.14"> 
-            <application file-name="test-setup_border_conditions.py" info-request-time="1387873736L" vanished="False"/>
+        <test title="Append Post Condition" time-sum-sec="0.10"> 
+            <application file-name="test-setup_border_conditions.py" info-request-time="1392794589L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.14" crc="-1717267691"/>
+               <choice name="" result="OK" time_sec="0.10" crc="-1717267691"/>
             </choice-list>
         </test>
     </group>

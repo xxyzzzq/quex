@@ -22,8 +22,9 @@ from   quex.engine.tools import typed
 from   quex.blackboard import E_CharacterCountType, \
                               setup as Setup, \
                               Lng
-from   collections import namedtuple
+from   collections import namedtuple, defaultdict
 from   itertools   import izip
+from   operator    import itemgetter
 
 CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "parameter", "character_set"))
 
@@ -118,6 +119,27 @@ class CounterSetupLineColumn(object):
         ]
 
         return CountCmdFactory(cmap, ColumnNPerChunk, InputPName) 
+
+    @staticmethod
+    def _db_to_text(title, CountCmdInfoList):
+        txt = "%s:\n" % title
+        for character_set, info in sorted(CountCmdInfoList, key=lambda x: x[0].minimum()):
+            if type(info.value) in [str, unicode]:
+                txt += "    %s by %s\n" % (info.value, character_set.get_utf8_string())
+            else:
+                txt += "    %3i by %s\n" % (info.value, character_set.get_utf8_string())
+        return txt
+
+    def __str__(self):
+        db_by_name = defaultdict(list)
+        for character_set, info in self.count_command_map.get_map():
+            db_by_name[info.identifier].append((character_set, info))
+
+        txt = [
+            CounterSetupLineColumn._db_to_text(name, count_command_info_list)
+            for name, count_command_info_list in sorted(db_by_name.iteritems(), key=itemgetter(0))
+        ]
+        return "".join(txt)
 
 class CounterSetupIndentation(object):
     __slots__ = ("sr",                     # Source Reference

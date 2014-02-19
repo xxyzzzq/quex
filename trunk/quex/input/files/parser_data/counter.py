@@ -3,6 +3,7 @@ from quex.engine.interval_handling   import NumberSet
 from quex.engine.tools               import typed
 from quex.blackboard                 import E_CharacterCountType
 from quex.engine.misc.file_in        import error_msg
+from quex.input.setup                import NotificationDB
 
 from collections import namedtuple
 
@@ -79,15 +80,20 @@ class CountCmdMap:
         for character_set, before in self.__map:
             if not character_set.has_intersection(CharSet):                         continue
             elif (not ConsiderBadF) and before.cc_type == E_CharacterCountType.BAD: continue
-            _error_set_intersection(Name, TypeName, Before, sr)
+            _error_set_intersection(Name, TypeName, before, sr)
 
-    def assign_else_count_command(self, GlobalMin, GlobalMax):
+    def assign_else_count_command(self, GlobalMin, GlobalMax, SourceReference):
         remaining_set = self.__get_remaining_set()
         remaining_set.cut_lesser(GlobalMin)
         remaining_set.cut_greater_or_equal(GlobalMax)
 
-        if self.__else is None: else_cmd = CountCmdDef("space", E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
-        else:                   else_cmd = self.__else
+        if self.__else is None: 
+            else_cmd = CountCmdDef("space", E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
+            error_msg("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
+                      DontExitF=True, WarningF=True, 
+                      SuppressCode=NotificationDB.warning_counter_setup_without_else)
+        else:                   
+            else_cmd = self.__else
         
         if not remaining_set.is_empty():
             self.__map.append((remaining_set, else_cmd))
@@ -126,7 +132,7 @@ class CountCmdMap:
             if min_info is None or info.value < min_info.value:
                 min_info = info
 
-        if column_n_f:
+        if column_n_f or info.value == 1:
             return
 
         # Are all grid values a multiple of the minimum?
@@ -159,7 +165,7 @@ class CountCmdMap:
                 # space counts are not homogeneous
                 return
 
-        if grid_f:
+        if grid_f or common.value == 1:
             return
             
         error_msg("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
@@ -167,6 +173,16 @@ class CountCmdMap:
                   "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
                   "of 1 are the fastest to compute.", 
                   common.sr, DontExitF=True)
+
+    def check_newline_defined(self, SourceReference):
+        for character_set, info in self.__map:
+            if info.cc_type == E_CharacterCountType.LINE: 
+                return
+
+        error_msg("Counter setup does not define newline.", SourceReference, 
+                  DontExitF=True, WarningF=True, 
+                  SuppressCode=NotificationDB.warning_counter_setup_without_newline)
+
 
 class Base:
     def __init__(self, sr, Name, IdentifierList):
@@ -198,30 +214,11 @@ class Base:
     def consistency_check(self, fh):
         self.count_command_map.check_grid_values_integer_multiples()
         self.count_command_map.check_homogenous_space_counts()
-
-    @staticmethod
-    def _db_to_text(title, db):
-        txt = "%s:\n" % title
-        for count, character_set in sorted(db.iteritems()):
-            if type(count) in [str, unicode]:
-                txt += "    %s by %s\n" % (count, character_set.get().get_utf8_string())
-            else:
-                txt += "    %3i by %s\n" % (count, character_set.get().get_utf8_string())
-        return txt
-
-    def __repr__(self):
-        txt  = Base._db_to_text("Spaces", self.space_db)
-        txt += Base._db_to_text("Grids", self.grid_db)
-        return txt
+        self.count_command_map.check_newline_defined(self.sr)
 
 class ParserDataLineColumn(Base):
     def __init__(self, fh=-1):
         Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
-
-    def __repr__(self):
-        txt  = Base.__repr__(self)
-        txt += Base._db_to_text("Newlines", self.newline_db)
-        return txt
 
 class ParserDataIndentation(Base):
     def __init__(self, fh=-1):
@@ -273,7 +270,7 @@ class ParserDataIndentation(Base):
 
 def _error_set_intersection(Name, TypeName, Before, sr):
     def type_name(Parameter):
-        if Parameter.get().__class__ == NumberSet: return "character set"
+        if Parameter.value.__class__ == NumberSet: return "character set"
         else:                                      return "ending characters"
 
     note_f = False
@@ -282,7 +279,7 @@ def _error_set_intersection(Name, TypeName, Before, sr):
 
     error_msg("The %s defined in '%s' intersects" % (TypeName, Name),
               sr, DontExitF=True, WarningF=False)
-    error_msg("with %s defined '%s' at this place." % (type_name(Before), Before.name), 
+    error_msg("with %s defined '%s' at this place." % (type_name(Before), Before.identifier), 
               Before.sr, DontExitF=note_f, WarningF=False)
 
     if note_f:
