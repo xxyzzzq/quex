@@ -2,6 +2,7 @@ from quex.engine.generator.code.base import SourceRef, SourceRef_VOID
 from quex.engine.interval_handling   import NumberSet
 from quex.engine.tools               import typed
 from quex.blackboard                 import E_CharacterCountType
+from quex.engine.misc.file_in        import error_msg
 
 from collections import namedtuple
 
@@ -74,7 +75,6 @@ class CountCmdMap:
                db[E_CharacterCountType.GRID], \
                db[E_CharacterCountType.LINE]
 
-
     def check_intersection(self, Name, TypeName, CharSet, sr, ConsiderBadF=True):
         for character_set, before in self.__map:
             if not character_set.has_intersection(CharSet):                         continue
@@ -86,7 +86,7 @@ class CountCmdMap:
         remaining_set.cut_lesser(GlobalMin)
         remaining_set.cut_greater_or_equal(GlobalMax)
 
-        if self.__else is None: else_cmd = ("space", 1, SourceRef_VOID)
+        if self.__else is None: else_cmd = CountCmdDef("space", E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
         else:                   else_cmd = self.__else
         
         if not remaining_set.is_empty():
@@ -106,45 +106,67 @@ class CountCmdMap:
             result.unite_with(character_set)
         return result.inverse()
 
-    def check_grid_values_integer_multiples(GridDB):
+    def check_grid_values_integer_multiples(self):
         """If there are no spaces and the grid is on a homogeneous scale,
            => then the grid can be transformed into 'easy-to-compute' spaces.
         """
-        # If there is one single variable grid value, then no assumptions can be made
-        for value in GridDB.iterkeys():
-            if type(value) in [str, unicode]: 
+        grid_value_list = []
+        min_info        = None
+        column_n_f      = False
+        for character_set, info in self.__map:
+            if info.cc_type != E_CharacterCountType.GRID: 
+                if info.cc_type == E_CharacterCountType.COLUMN: 
+                    column_n_f = True
+                continue
+            elif type(info.value) in (str, unicode): 
+                # If there is one single 'variable' grid value, 
+                # then no assumptions can be made.
                 return
+            grid_value_list.append(info.value)
+            if min_info is None or info.value < min_info.value:
+                min_info = info
 
-        grid_value_list = sorted(GridDB.keys())
-        min_grid_value  = min(grid_value_list)
-        # Are all grid values a multiple of the minimum?
-        if len(filter(lambda x: x % min_grid_value == 0, grid_value_list)) != len(grid_value_list):
+        if column_n_f:
             return
 
-        grid_def = GridDB[min_grid_value]
-        error_msg("%s setup does not contain spaces, only grids (tabulators). All grid\n" \
-                  % self.name + \
-                  "widths are multiples of %i. The grid setup %s\n" \
-                  % (min_grid_value, repr(sorted(grid_value_list))[1:-1]) + \
-                  "is equivalent to a setup with space counts %s.\n" \
-                  % repr(map(lambda x: x / min_grid_value, sorted(grid_value_list)))[1:-1] + \
-                  "Space counts are faster to compute.", 
-                  grid_def.file_name, grid_def.line_n, DontExitF=True)
+        # Are all grid values a multiple of the minimum?
+        if len(filter(lambda x: x % min_info.value == 0, grid_value_list)) != len(grid_value_list):
+            return
 
-    def check_homogenous_space_counts(SpaceDB):
-        # If there is one single space count depending on a variable, then no assumptions can be made
-        for value in SpaceDB.keys():
-            if type(value) in [str, unicode]: 
+        error_msg("Setup does not contain spaces, only grids (tabulators). All grid\n" \
+                  "widths are multiples of %i. The grid setup %s\n" \
+                  % (min_info.value, repr(sorted(grid_value_list))[1:-1]) + \
+                  "is equivalent to a setup with space counts %s.\n" \
+                  % repr(map(lambda x: x / min_info.value, sorted(grid_value_list)))[1:-1] + \
+                  "Space counts are faster to compute.", 
+                  min_info.sr, DontExitF=True)
+
+    def check_homogenous_space_counts(self):
+        common = None
+        grid_f = False
+        for character_set, info in self.__map:
+            if info.cc_type != E_CharacterCountType.COLUMN: 
+                if info.cc_type == E_CharacterCountType.GRID: 
+                    grid_f = True
+                continue
+            elif type(info.value) in (str, unicode): 
+                # If there is one single 'variable' grid value, 
+                # then no assumptions can be made.
+                return
+            elif common is None:
+                common = info
+            elif common.value != info.value:
+                # space counts are not homogeneous
                 return
 
-        # If all space values are the same, then they can be replaced by '1' spaces
-        if len(SpaceDB) == 1 and SpaceDB.keys()[0] != 1:
-            space_count, space_def = SpaceDB.items()[0]
-            error_msg("%s does not contain a grid but only homogeneous space counts of %i.\n" \
-                      % (self.name, space_count) + \
-                      "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
-                      "of 1 are the fastest to compute.", 
-                      space_def.file_name, space_def.line_n, DontExitF=True)
+        if grid_f:
+            return
+            
+        error_msg("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
+                  % common.value + \
+                  "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
+                  "of 1 are the fastest to compute.", 
+                  common.sr, DontExitF=True)
 
 class Base:
     def __init__(self, sr, Name, IdentifierList):
@@ -174,14 +196,8 @@ class Base:
         return self.__containing_mode_name
 
     def consistency_check(self, fh):
-        # Are the required elements present for indentation handling?
-        assert len(self.space_db) != 0 or len(self.grid_db) != 0
-
-        if len(self.space_db) == 0:
-            self.count_command_map.check_grid_values_integer_multiples(self.grid_db)
-                
-        elif len(self.grid_db) == 0:
-            self.count_command_map.check_homogenous_space_counts(self.space_db)
+        self.count_command_map.check_grid_values_integer_multiples()
+        self.count_command_map.check_homogenous_space_counts()
 
     @staticmethod
     def _db_to_text(title, db):
