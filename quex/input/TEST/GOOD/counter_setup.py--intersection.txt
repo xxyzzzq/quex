@@ -4,8 +4,8 @@
 [cde] => grid  4;>
 ::
 
-test_string:2:error: Character set specification 'grid' intersects
-test_string:1:error: with definition for 'space' at this place.
+test_string:2:error: The character set defined in 'grid' intersects
+test_string:1:error: with 'space' at this place.
 Exception!
 
 (2)
@@ -14,8 +14,8 @@ Exception!
 [cde] => newline;>
 ::
 
-test_string:2:error: Character set specification 'newline' intersects
-test_string:1:error: with definition for 'space' at this place.
+test_string:2:error: The character set defined in 'newline' intersects
+test_string:1:error: with 'space' at this place.
 Exception!
 
 (3)
@@ -24,8 +24,8 @@ Exception!
 [cde] => space 1;>
 ::
 
-test_string:2:error: Character set specification 'space' intersects
-test_string:1:error: with definition for 'grid' at this place.
+test_string:2:error: The character set defined in 'space' intersects
+test_string:1:error: with 'grid' at this place.
 Exception!
 
 (4)
@@ -34,8 +34,8 @@ Exception!
 [cde] => newline;>
 ::
 
-test_string:2:error: Character set specification 'newline' intersects
-test_string:1:error: with definition for 'grid' at this place.
+test_string:2:error: The character set defined in 'newline' intersects
+test_string:1:error: with 'grid' at this place.
 Exception!
 
 (5)

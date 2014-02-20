@@ -45,10 +45,12 @@ a => newline;
 c => space;>
 ::
 
-Spaces:
-      1 by [-oo, '`'], ['b', oo]
-Grids:
-Newlines:
+test_string:2:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:2:warning: ('--suppress 12' to avoid this message)
+newline:
       1 by 'a'
+space:
+      1 by [\0, '`'], 'b', ['d', oo]
+      1 by 'c'
 
 
