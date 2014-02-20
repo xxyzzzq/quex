@@ -60,9 +60,9 @@ if "basic" in sys.argv:
     test("x        => newline; [\\n]    => space 2;>")
 
 elif "twice" in sys.argv:
-    test("[\\v\\a] => space 10;\n[\\t] => space 10; \\default => space 66;>")
-    test("[\\v\\a] => grid 10;\n[\\t] => grid 10; \\default => space 66;>")
-    test("[\\v\\a] => newline;\n[\\t] => newline; \\default => space 66;>")
+    test("[\\v\\a] => space 10;\n[\\t] => space 10; \\else => space 66;>")
+    test("[\\v\\a] => grid 10;\n[\\t] => grid 10; \\else => space 66;>")
+    test("[\\v\\a] => newline;\n[\\t] => newline; \\else => space 66;>")
 
 elif "intersection" in sys.argv:
     test("[abc] => space 10;\n[cde] => grid  4;>")
