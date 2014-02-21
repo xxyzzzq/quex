@@ -28,9 +28,9 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    # descr = indentation.parse(sh, IndentationSetupF=True)
+    descr = counter.parse_indentation(sh)
     try:    
-        descr = counter.parse_indentation(sh, IndentationSetupF=True)
+        descr = counter.parse_indentation(sh)
         pass
 
     except EndOfStreamException:
@@ -41,6 +41,8 @@ def test(Text):
 
     if descr is not None: print descr
     print
+
+test("[\\v\\a] => grid 4;>")
 
 if "basic" in sys.argv:
 

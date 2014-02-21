@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.34" date="Thu Feb 20 08:39:00 2014">
+<test-database execution-time-sec="14.60" date="Thu Feb 20 19:12:17 2014">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.49"> 
         <application file-name="indentation_setup.py" info-request-time="1390979753L" vanished="False"/>
@@ -21,14 +21,14 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.15" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.43"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.69"> 
         <application file-name="counter_setup.py" info-request-time="1392881729L" vanished="False"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="OK" time_sec="0.11" crc="-1274507077"/>
+           <choice name="basic" result="OK" time_sec="0.12" crc="-1274507077"/>
            <choice name="twice" result="OK" time_sec="0.10" crc="2119180795"/>
            <choice name="intersection" result="FAIL" time_sec="0.11" crc="1418893281"/>
-           <choice name="intersection-2" result="OK" time_sec="0.11" crc="-520694213"/>
-           <choice name="non-numeric" result="OK" time_sec="0.00" crc="-702001974"/>
+           <choice name="intersection-2" result="OK" time_sec="0.18" crc="-520694213"/>
+           <choice name="non-numeric" result="OK" time_sec="0.18" crc="-702001974"/>
         </choice-list>
     </test>
     <group name="Quex Queries">

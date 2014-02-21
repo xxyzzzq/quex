@@ -14,7 +14,7 @@ test_string:1:error: End of file reached while parsing 'indentation' section.
 
 (4) |[\v\a] => trid|
 
-test_string:1:error: Unrecognized indentation specifier 'trid'.
+test_string:1:error: Unrecognized specifier 'trid'.
 test_string:1:error: Did you mean 'grid'?
 Exception!
 
