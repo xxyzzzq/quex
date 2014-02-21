@@ -3,7 +3,7 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation, \
                                                          extract_trigger_set
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.generator.code.base            import LocalizedParameter, SourceRef
+from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.counter                        import CounterSetupIndentation, \
@@ -21,10 +21,26 @@ from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(fh))
+
+    # Assign the 'else' command to all the remaining places in the character map.
+    result.count_command_map.assign_else_count_command(0, 
+                                                       Setup.get_character_value_limit(), 
+                                                       result.sr)
+    result.consistency_check(fh)
     return CounterSetupLineColumn(result.count_command_map)
 
-def parse_indentation(fh, IndentationSetupF):
+def parse_indentation(fh):
     result = __parse(fh, ParserDataIndentation(fh))
+
+    # Define newline, if it is not defined yet.
+    result.sm_newline_defaultize()
+
+    # Assign the 'else' command to all the remaining places in the character map.
+    result.count_command_map.assign_else_count_command(0, 
+                                                       Setup.get_character_value_limit(), 
+                                                       result.sr)
+    result.consistency_check(fh)
+    
     return CounterSetupIndentation(result)
 
 def __parse_definition_head(fh, result):
@@ -104,11 +120,6 @@ def __parse(fh, result, IndentationSetupF=False):
         if not check(fh, ";"):
             error_msg("Missing ';' after '%s' specification." % identifier, fh)
 
-    # Assig the 'else' command to all the remaining places in the character map.
-    if not IndentationSetupF:
-        result.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), result.sr)
-
-    result.consistency_check(fh)
     return result
 
 def read_value_specifier(fh, Keyword, Default=None):

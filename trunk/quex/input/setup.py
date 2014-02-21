@@ -261,6 +261,8 @@ class NotificationDB:
     warning_codec_error_with_non_unicode             = 10
     warning_counter_setup_without_newline            = 11
     warning_counter_setup_without_else               = 12
+    warning_default_newline_0A_impossible            = 13
+    warning_default_newline_0D_impossible            = 14
 
 DEPRECATED = { 
   "XX_input_pattern_file": 

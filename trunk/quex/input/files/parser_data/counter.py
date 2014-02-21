@@ -1,4 +1,6 @@
-from quex.engine.generator.code.base import SourceRef, SourceRef_VOID
+from quex.engine.generator.code.base import LocalizedParameter, \
+                                            SourceRef, \
+                                            SourceRef_VOID
 from quex.engine.interval_handling   import NumberSet
 from quex.engine.tools               import typed
 from quex.blackboard                 import E_CharacterCountType
@@ -25,11 +27,16 @@ class CountCmdMap:
         return self.__map
 
     def add(self, CharSet, Identifier, Value, sr):
+        """CharSet = None => Define the '\else' character set which is resolved
+                             after everything has been defined.
+        """
         cc_type = {
-            "space":   E_CharacterCountType.COLUMN,
-            "grid":    E_CharacterCountType.GRID,
-            "newline": E_CharacterCountType.LINE,
-            "bad":     E_CharacterCountType.BAD,
+            "space":                 E_CharacterCountType.COLUMN,
+            "grid":                  E_CharacterCountType.GRID,
+            "newline":               E_CharacterCountType.LINE,
+            "sm_newline":            E_CharacterCountType.SM_NEWLINE,
+            "sm_newline_suppressor": E_CharacterCountType.SM_NEWLINE_SUPPRESSOR,
+            "bad":                   E_CharacterCountType.BAD,
         }[Identifier]
 
         if CharSet is None:
@@ -76,16 +83,28 @@ class CountCmdMap:
                db[E_CharacterCountType.GRID], \
                db[E_CharacterCountType.LINE]
 
-    def check_intersection(self, Name, TypeName, CharSet, sr, ConsiderBadF=True):
+    def find_occupier(self, CharSet, IgnoredCcTypes=(,)):
+        """Find a command that occupies the given CharSet, at least partly.
+           RETURN: None, if no such occupier exists.
+        """
         for character_set, before in self.__map:
-            if not character_set.has_intersection(CharSet):                         continue
-            elif (not ConsiderBadF) and before.cc_type == E_CharacterCountType.BAD: continue
-            _error_set_intersection(Name, TypeName, before, sr)
+            if   before.cc_type in IgnoredCcTypes:            continue
+            elif not character_set.has_intersection(CharSet): continue
+            return before
+
+    def check_intersection(self, Name, TypeName, CharSet, sr, ConsiderBadF=True):
+        interferer = self.find_occupier(self, CharSet, ConsiderBadF)
+        if interferer is not None:
+            _error_set_intersection(Name, TypeName, interferer, sr)
+
+    def get_remaining_set(self, GlobalMin, GlobalMax):
+        result = self.__get_remaining_set()
+        result.cut_lesser(GlobalMin)
+        result.cut_greater_or_equal(GlobalMax)
+        return result
 
     def assign_else_count_command(self, GlobalMin, GlobalMax, SourceReference):
-        remaining_set = self.__get_remaining_set()
-        remaining_set.cut_lesser(GlobalMin)
-        remaining_set.cut_greater_or_equal(GlobalMax)
+        remaining_set = self.get_remaining_set(GlobalMin, GlobalMax)
 
         if self.__else is None: 
             else_cmd = CountCmdDef("space", E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
@@ -107,8 +126,12 @@ class CountCmdMap:
             i -= 1
 
     def __get_remaining_set(self):
-        result = NumberSet()
-        for character_set, dummy in self.__map:
+        ignored = (E_CharacterCountType.BAD, 
+                   E_CharacterCountType.SM_NEWLINE, 
+                   E_CharacterCountType.SM_NEWLINE_SUPPRESSOR)
+        result  = NumberSet()
+        for character_set, info in self.__map:
+            if info.cc_type in ignored: continue
             result.unite_with(character_set)
         return result.inverse()
 
@@ -183,7 +206,6 @@ class CountCmdMap:
                   DontExitF=True, WarningF=True, 
                   SuppressCode=NotificationDB.warning_counter_setup_without_newline)
 
-
 class Base:
     def __init__(self, sr, Name, IdentifierList):
         self.sr   = sr
@@ -222,33 +244,72 @@ class ParserDataLineColumn(Base):
 
 class ParserDataIndentation(Base):
     def __init__(self, fh=-1):
-        self.bad_character_set     = LocalizedParameter("bad",        NumberSet())
-        self.sm_newline            = LocalizedParameter("newline",    None)
-        self.sm_newline_suppressor = LocalizedParameter("suppressor", None)
+        self.bad_character_set     = None
+        self.sm_newline            = None
+        self.sm_newline_suppressor = None
 
         Base.__init__(self, fh, "Indentation counter", ("space", "grid", "newline", "suppressor", "bad"))
 
     @typed(sr=SourceRef)
     def specify_newline(self, Pattern, sr):
-        if self.newline.get() is None: 
-            _error_defined_before(self.newline)
-        ending_char_set = Setting.get_ending_character_set()
-        self.count_command_map.check_intersection("newline", "ending characters", ending_char_set, sr, 
-                                                  ConsiderBadF=False)
-        self.sm_newline.set(Pattern.sm, sr, Pattern.pattern_string())
-        self.count_command_map.add(ending_char_set, self.bad_character_set)
+        _error_if_defined_before(self.newline)
+        begining_char_set = Setting.get_beginning_character_set()
+        ending_char_set   = Setting.get_ending_character_set()
 
-    def specify_suppressor(self, Pattern, SM, sr):
-        if self.sm_newline_suppressor.get() is None: 
-            _error_defined_before(self.sm_newline_suppressor)
+        self.count_command_map.add(begining_char_set, "sm newline begin", None, sr)
+        self.count_command_map.add(ending_char_set, "sm newline end", None, sr)
 
-        # Newline suppressors are totally free. 
-        # -- They can contain newlines indentation count characters etc.
-        # -- They are not subject to intersection check.
-        #
-        # NOT: "occupied_map.check("bad", CharSet, sr)"                      !!
-        self.sm_newline_suppressor.set(Pattern.sm, sr, Pattern.pattern_string())
-        # NOT: "occupied_map.add(CharSet, self.bad_character_set)"           !!
+        self.sm_newline_suppressor = CountCmdDef("sm newline", 
+                                                 E_CharacterCountType.SM_NEWLINE, 
+                                                 Pattern.sm, sr)
+
+    @typed(sr=SourceRef)
+    def specify_suppressor(self, Pattern, sr):
+        _error_if_defined_before(self.sm_newline_suppressor)
+
+        begining_char_set = Setting.get_ending_character_set()
+        self.count_command_map.add(begining_char_set, "sm newline supressor begin", None, sr)
+
+        self.sm_newline_suppressor = CountCmdDef("sm newline suppressor", 
+                                                 E_CharacterCountType.SM_NEWLINE_SUPPRESSOR, 
+                                                 Pattern.sm, sr)
+
+    def sm_newline_defaultize(self):
+        """Default newline: '(\n)|(\r\n)'
+        """
+        if self.sm_newline is not None:
+            return
+
+        newline = ord('\n')
+        retour  = ord('\r')
+
+        before  = self.count_command_map.get_command(newline)
+        if before is not None:
+            error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                      "The '\\n' option is not possible, since it has been occupied by '%s'." % Before.identifier,
+                      Before.sr, DontExitF=True, 
+                      SuppressCode=NotificationDB.warning_default_newline_0A_impossible)
+
+        before  = self.count_command_map.get_command(retour)
+        if before is not None:
+            error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                      "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." % Before.identifier,
+                      Before.sr, DontExitF=True, 
+                      SuppressCode=NotificationDB.warning_default_newline_0D_impossible)
+
+        newline_set = NumberSet(newline)
+        retour_set  = NumberSet(retour)
+        end_idx     = None
+        sm          = StateMachine()
+        if not all_set.contains(newline):
+            end_idx = sm.add_transition(sm.init_state_index, newline_set, AcceptanceF=True)
+            all_set.unite_with(newline_set)
+
+        if not all_set.contains(retour):
+            all_set.unite_with(retour_set)
+            mid_idx = sm.add_transition(sm.init_state_index, retour_set, AcceptanceF=False)
+            sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
+        return sm
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -269,24 +330,23 @@ class ParserDataIndentation(Base):
         return txt
 
 def _error_set_intersection(Name, TypeName, Before, sr):
-    def type_name(Parameter):
-        if Parameter.value.__class__ == NumberSet: return "character set"
-        else:                                      return "ending characters"
-
     note_f = False
-    if TypeName != "character set" or type_name(Before) != "character set":
+    if TypeName != "character set" or Before.identifier == "newline":
         note_f = True
 
     error_msg("The %s defined in '%s' intersects" % (TypeName, Name),
               sr, DontExitF=True, WarningF=False)
-    error_msg("with %s defined '%s' at this place." % (type_name(Before), Before.identifier), 
+    error_msg("with '%s' at this place." % Before.identifier, 
               Before.sr, DontExitF=note_f, WarningF=False)
 
     if note_f:
         error_msg("Note, for example, 'newline' cannot end with a character which is subject\n"
                   "to indentation counting (i.e. 'space' or 'grid').", sr)
 
-def _error_defined_before(Before, sr):
+def _error_if_defined_before(Before, sr):
+    if Before is None:
+        return
+
     error_msg("'%s' has been defined before;" % Before.name, sr, 
               DontExitF=True, WarningF=False)
     error_msg("at this place.", Before.file_name, Before.line_n)

@@ -143,17 +143,16 @@ class CounterSetupLineColumn(object):
 
 class CounterSetupIndentation(object):
     __slots__ = ("sr",                     # Source Reference
-                 "column",                 # Column N per Char --> CharacterSet
-                 "grid",                   # Grid Step Size    --> CharacterSet
+                 "count_command_map",      # Column N per Char --> CharacterSet
+                                           # Grid Step Size    --> CharacterSet
                  "sm_newline",             # State machine detecting 'newline'
                  "sm_newline_suppressor",  # State machine detecting 'newline suppressor'
                  "bad_character_set")      # Set of characters which shall not appear in indentation
     def __init__(self, IndSetup, SourceReference=SourceRef_VOID):
         self.sr                    = SourceReference
-        self.column                = _adapt(IndSetup.space_db)
-        self.grid                  = _adapt(IndSetup.grid_db)
-        self.sm_newline            = IndSetup.newline_state_machine
-        self.sm_newline_suppressor = IndSetup.newline_suppressor_state_machine
+        self.count_command_map     = IndSetup.count_command_map
+        self.sm_newline            = IndSetup.sm_newline
+        self.sm_newline_suppressor = IndSetup.sm_newline_suppressor
         self.bad_character_set     = IndSetup.bad_character_set.get()
 
         self.defaultize()
@@ -186,35 +185,7 @@ class CounterSetupIndentation(object):
         all_set = _get_all_character_set(self.column, self.grid)
         all_set.unite_with(self.bad_character_set)
 
-        self.column, \
-        self.grid   = _defaultize_column_and_grid(self.column, self.grid, all_set)
-
-        if len(self.column) == 0 and len(self.grid) == 0:
-            error_msg("No space or grid defined for indentation counting. Default\n"
-                      "values ' ' and '\\t' could not be used since they are specified as 'bad'.",
-                      self.sr)
-
         self.sm_newline = self.defaultize_sm_newline(all_set)
-
-    def defaultize_sm_newline(self, all_set):
-        if self.sm_newline is not None:
-            return self.sm_newline
-
-        newline     = ord('\n')
-        retour      = ord('\r')
-        newline_set = NumberSet(newline)
-        retour_set  = NumberSet(retour)
-        end_idx     = None
-        sm          = StateMachine()
-        if not all_set.contains(newline):
-            end_idx = sm.add_transition(sm.init_state_index, newline_set, AcceptanceF=True)
-            all_set.unite_with(newline_set)
-
-        if not all_set.contains(retour):
-            all_set.unite_with(retour_set)
-            mid_idx = sm.add_transition(sm.init_state_index, retour_set, AcceptanceF=False)
-            sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
-        return sm
 
 _CounterSetupLineColumn_Default = None
 def CounterSetupLineColumn_Default():
