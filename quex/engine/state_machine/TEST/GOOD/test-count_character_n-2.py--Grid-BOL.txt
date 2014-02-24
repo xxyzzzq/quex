@@ -1,3 +1,5 @@
+<string>:5:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+<string>:5:warning: ('--suppress 12' to avoid this message)
 expr. = ^xxxxx2
 info  = {
     line_n_increment                    = 0;

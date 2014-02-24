@@ -98,7 +98,14 @@ E_Count = Enum("VIRGIN",
                "NONE",
                "_DEBUG_Count")
 
-E_CharacterCountType = Enum("COLUMN", "LINE", "GRID", "BAD", "_DEBUG_CharacterCountType")
+E_CharacterCountType = Enum("COLUMN", 
+                            "LINE", 
+                            "GRID", 
+                            "BEGIN_NEWLINE_SUPPRESSOR",
+                            "BEGIN_NEWLINE",
+                            "END_NEWLINE",
+                            "BAD", 
+                            "_DEBUG_CharacterCountType")
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")
 

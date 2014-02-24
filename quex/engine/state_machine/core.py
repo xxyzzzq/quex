@@ -949,6 +949,11 @@ class StateMachine(object):
 
         return target_map.itervalues().next()
 
+    def get_beginning_character_set(self):
+        """Return the character set union of all triggers in the init state.
+        """
+        return self.get_init_state().target_map.get_trigger_set_union()
+
     def get_ending_character_set(self):
         """Returns the union of all characters that trigger to an acceptance
            state in the given state machine. This is to detect whether the

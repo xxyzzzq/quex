@@ -56,11 +56,11 @@ class CounterSetupLineColumn(object):
                 return False
         return True
 
-    def covered_character_set(self):
-        result = NumberSet()
+    def covers(self, Min, Max):
+        result = NumberSet.from_union()
         for character_set, info in self.count_command_map.get_map():
             result.unite_with(character_set)
-        return result
+        return result.covers_range(Min, Max)
 
     def __get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes
@@ -195,8 +195,9 @@ def CounterSetupLineColumn_Default():
         count_command_map = CountCmdMap()
         count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
         count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
-        count_command_map.add(None,                 "space",   1, SourceRef_VOID)         # Define: "\else"
-        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit()) # Apply: "\else"
+        count_command_map.define_else("space",   1, SourceRef_VOID)                       # Define: "\else"
+        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
+                                                    SourceRef_VOID) 
 
         _CounterSetupLineColumn_Default = CounterSetupLineColumn(count_command_map)
 

@@ -95,27 +95,25 @@ def __parse(fh, result, IndentationSetupF=False):
         if identifier == "space":
             value = read_value_specifier(fh, identifier, 1)
             result.specify(identifier, pattern, value, sr)
-
         elif identifier == "grid":
             value = read_value_specifier(fh, identifier)
             result.check_grid_specification(value, sr)
             result.specify(identifier, pattern, value, sr)
-
-        elif identifier == "bad":
-            result.specify(identifier, pattern, -1, sr)
-
         elif IndentationSetupF:
-            if identifier == "newline":
+            if identifier == "bad":
+                result.specify_bad(pattern, sr)
+            elif identifier == "newline":
                 result.specify_newline(pattern, sr)
             elif identifier == "suppressor":
                 result.specify_suppressor(pattern, sr)
-
-        elif identifier == "newline":
-            value = read_value_specifier(fh, identifier, 1)
-            result.specify(identifier, pattern, value, sr)
-
+            else:
+                assert False, "Unreachable code reached."
         else:
-            assert False, "Unreachable code reached."
+            if identifier == "newline":
+                value = read_value_specifier(fh, identifier, 1)
+                result.specify(identifier, pattern, value, sr)
+            else:
+                assert False, "Unreachable code reached."
 
         if not check(fh, ";"):
             error_msg("Missing ';' after '%s' specification." % identifier, fh)

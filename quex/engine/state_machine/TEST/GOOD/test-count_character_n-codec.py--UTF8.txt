@@ -1,3 +1,5 @@
+<string>:4:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+<string>:4:warning: ('--suppress 12' to avoid this message)
 expr. = [\U000004-\U00007F]+
 info  = {
     line_n_increment                    = 0;

@@ -242,9 +242,6 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
              do this if required.
     """
     assert ReloadF or ReloadStateExtern is None
-    assert CounterDb.covered_character_set().covers_range(0, Setup.get_character_value_limit()), \
-           "CounterDb covers %s\nbut, not all of [0, %s]" \
-           % (CounterDb.covered_character_set(), Setup.get_character_value_limit())
 
     def prepare_entry_and_reentry(analyzer, on_begin):
         """Prepare the entry and re-entry doors into the initial state

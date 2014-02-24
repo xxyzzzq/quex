@@ -1,3 +1,7 @@
+<string>:255:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+<string>:255:warning: ('--suppress 12' to avoid this message)
+<string>:255:warning: Counter setup does not define newline.
+<string>:255:warning: ('--suppress 11' to avoid this message)
 expr. = [0-9]+
 info  = {
     line_n_increment                    = 0;
