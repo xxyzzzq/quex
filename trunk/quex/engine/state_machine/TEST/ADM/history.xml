@@ -1,4 +1,4 @@
-<history date="Fri Feb 21 08:11:28 2014" element-n="674">
+<history date="Mon Feb 24 08:43:16 2014" element-n="684">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1432,5 +1432,17 @@
     </day>
     <day year="2013" month="02" day="25">
         <crc-error time="00:28:06" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" database-crc="-39876061" real-crc="-1119671943"/>
+    </day>
+    <day year="2014" month="02" day="24">
+        <crc-error time="07:26:36" application="test-count_character_n.py" choice="Normal" database-crc="1986366330" real-crc="-1703858061"/>
+        <crc-error time="07:26:50" application="test-count_character_n.py" choice="BeginOfLine" database-crc="1838627259" real-crc="-594570225"/>
+        <crc-error time="07:28:17" application="test-count_character_n-2.py" choice="Same" database-crc="-1378825115" real-crc="-1936277586"/>
+        <crc-error time="07:28:25" application="test-count_character_n-2.py" choice="Different" database-crc="1289561924" real-crc="-1874310975"/>
+        <crc-error time="07:28:34" application="test-count_character_n-2.py" choice="TwoSet" database-crc="-27545710" real-crc="1962459444"/>
+        <crc-error time="07:28:40" application="test-count_character_n-2.py" choice="Grid" database-crc="-1442649373" real-crc="1550733766"/>
+        <crc-error time="07:28:47" application="test-count_character_n-2.py" choice="Grid-BOL" database-crc="-1098307570" real-crc="1028185515"/>
+        <crc-error time="07:29:50" application="test-count_character_n-codec.py" choice="UTF8" database-crc="-334576016" real-crc="-1889211979"/>
+        <crc-error time="07:29:56" application="test-count_character_n-codec.py" choice="UTF16" database-crc="-416803910" real-crc="-1671207496"/>
+        <crc-error time="07:30:02" application="test-count_newline_n.py" choice="" database-crc="-970502174" real-crc="1533923099"/>
     </day>
 </history>

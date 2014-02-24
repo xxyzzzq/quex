@@ -126,7 +126,6 @@ class TargetMap:
         result = NumberSet()
         for trigger_set in self.__db.values():
             result.unite_with(trigger_set)
-
         return result
 
     def get_drop_out_trigger_set_union(self):
