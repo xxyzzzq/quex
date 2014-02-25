@@ -32,7 +32,6 @@ import quex.output.cpp.counter_for_pattern             as     counter_for_patter
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
                                                               none_is_None, \
-                                                              print_callstack, \
                                                               typed
 from   quex.blackboard import E_IncidenceIDs, \
                               E_StateIndices, \
@@ -243,7 +242,7 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     """
     assert ReloadF or ReloadStateExtern is None
 
-    def prepare_entry_and_reentry(analyzer, on_begin):
+    def prepare_entry_and_reentry(analyzer, ccfactory, cssm):
         """Prepare the entry and re-entry doors into the initial state
         of the loop-implementing initial state.
 
@@ -263,17 +262,17 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
                     the loop.
         """
         # Entry into state machine
-        entry = analyzer.init_state().entry
+        entry            = analyzer.init_state().entry
         init_state_index = analyzer.init_state_index
             
         # OnEntry
-        ta_on_entry = entry.get_action(init_state_index, E_StateIndices.NONE)
+        ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
         ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                           on_begin)
+                                                           ccfactory.on_begin + cssm.on_begin)
 
         # OnReEntry
         tid_reentry = entry.enter(init_state_index, index.get(), 
-                                  TransitionAction(CommandList.from_iterable(on_begin)))
+                                  TransitionAction(CommandList.from_iterable(cssm.on_begin)))
         entry.categorize(init_state_index)
 
         return entry.get(tid_reentry).door_id
@@ -304,12 +303,13 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     beyond_set = CharacterSet.inverse().mask(0, Setup.get_character_value_limit())
     incidence_id_map.append((beyond_set, beyond_iid))
 
+    # Build a state machine based on (character set, incidence_id) pairs.
     cssm = CharacterSetStateMachine(incidence_id_map)
 
     analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
-    door_id_reentry = prepare_entry_and_reentry(analyzer, cssm.on_begin) 
+    door_id_reentry = prepare_entry_and_reentry(analyzer, ccfactory, cssm) 
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
@@ -338,7 +338,9 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
 
     if reference_p_f:
         variable_db.require("reference_p")
-
+    if Setup.variable_character_sizes_f():
+        variable_db.require("character_begin_p")
+    
     return txt, DoorID.incidence(terminal_beyond.incidence_id())
 
 _increment_actions_for_utf8 = [

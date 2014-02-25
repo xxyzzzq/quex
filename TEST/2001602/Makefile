@@ -46,10 +46,10 @@ lex_codec:
 		../lexer.cpp                     \
 		-ggdb                            \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64    \
-        -DQUEX_OPTION_DEBUG_SHOW \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED  \
 		-o $@
+#-DQUEX_OPTION_DEBUG_SHOW 
 
 clean:
 	rm -rf $(X)-*

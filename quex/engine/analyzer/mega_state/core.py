@@ -70,8 +70,7 @@ from quex.engine.analyzer.transition_map     import TransitionMap
 from quex.engine.interval_handling           import Interval
 from quex.blackboard                         import E_StateIndices
 
-from quex.engine.tools import print_callstack, \
-                              TypedDict
+from quex.engine.tools import TypedDict
 
 from copy import copy
 
@@ -160,10 +159,6 @@ class MegaState_Entry(Entry):
            This shall only be the case for originaly recursive transitions, 
            see 'action_db_update()'.
         """
-        ##print "#transition_reassignment_db_construct:", RelatedMegaStateIndex
-        ##print "#transition_reassignment_candidate_list:", self.transition_reassignment_candidate_list
-        ## print "#door_id_replacement_db id:", id(self)
-        ## print_callstack()
         assert self.__transition_reassignment_db is None
 
 

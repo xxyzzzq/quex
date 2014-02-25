@@ -12,6 +12,7 @@ from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP
 
 from   quex.blackboard import Lng, \
+                              setup as Setup, \
                               DefaultCounterFunctionDB, \
                               E_MapImplementationType, \
                               E_IncidenceIDs
@@ -65,7 +66,6 @@ def get(CounterDb, Name):
 
 def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
     
-
     txt = [  \
           "#ifdef __QUEX_OPTION_COUNTER\n" \
         + "static void\n" \
@@ -107,8 +107,6 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
        + "}\n" \
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )
-
-
 
     return "".join(Lng.GET_PLAIN_STRINGS(txt))
 

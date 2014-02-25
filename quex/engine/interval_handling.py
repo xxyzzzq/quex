@@ -18,8 +18,7 @@
 # import quex.engine.generator.languages.core as languages
 import quex.engine.utf8 as utf8
 from   quex.engine.tools import r_enumerate, \
-                                typed, \
-                                print_callstack
+                                typed
 
 import sys
 from   copy      import copy

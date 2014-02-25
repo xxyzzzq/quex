@@ -5,7 +5,9 @@ import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.transformation        as     transformation
 from   quex.engine.analyzer.commands                   import InputPDecrement, \
                                                               LexemeStartToReferenceP, \
-                                                              InputPToLexemeStartP
+                                                              InputPToLexemeStartP, \
+                                                              CharacterBeginPToInputP, \
+                                                              InputPToCharacterBeginP
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
                                                               none_is_None, \
@@ -89,7 +91,7 @@ class CharacterSetStateMachine:
 
     def __prepare_begin_and_putback(self):
         """If we deal with variable character sizes, the begin of the letter is stored
-        in 'lexeme_start_p'. To reset the input pointer 'input_p = lexeme_start_p' 
+        in 'character_begin_p'. To reset the input pointer 'input_p = character_begin_p' 
         is applied.
         """
         if not Setup.variable_character_sizes_f():
@@ -101,8 +103,8 @@ class CharacterSetStateMachine:
             # 1 character == variable number of chunks
             # => store begin of character in 'lexeme_start_p'
             # => rest to last character: 'input_p = lexeme_start_p'
-            self.on_begin   = [ LexemeStartToReferenceP(Lng.INPUT_P()) ]
-            self.on_putback = [ InputPToLexemeStartP() ]
+            self.on_begin   = [ CharacterBeginPToInputP() ]
+            self.on_putback = [ InputPToCharacterBeginP() ]
 
     def __prepare_before_and_after_reload(self):
         """The 'lexeme_start_p' restricts the amount of data which is load into the
