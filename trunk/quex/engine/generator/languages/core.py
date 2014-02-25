@@ -134,16 +134,13 @@ class Lng_Cpp(dict):
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
     def LEXEME_START_P(self):                      return "me->buffer._lexeme_start_p"
     def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
-    def CHARACTER_BEGIN_P_SET(self):               return "character_begin_p = me->buffer._input_p;\n"
+    def CHARACTER_BEGIN_P(self):                   return "character_begin_p"
     def INPUT_P(self):                             return "me->buffer._input_p"
     def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
     def INPUT_P_DECREMENT(self):                   return "--(me->buffer._input_p);"
     def INPUT_P_ADD(self, Offset):                 return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
     def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._input_p = me->buffer._lexeme_start_p;"
-    def INPUT_P_TO_CHARACTER_BEGIN_P(self):        return "me->buffer._input_p = character_begin_p;"
     def INPUT_P_TO_TEXT_END(self):                 return "me->buffer._input_p = (me->buffer._end_of_file_p != (void*)0) ? me->buffer._end_of_file_p : me->buffer._memory._back;"
-    def LEXEME_START_TO_CHARACTER_BEGIN_P(self):   return "me->buffer._lexeme_start_p = character_begin_p;"
-    def CHARACTER_BEGIN_P_TO_LEXEME_START_P(self): return "character_begin_p = me->buffer._lexeme_start_p;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
         if Offset == 0: return "*(me->buffer._input_p)"
         else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
@@ -269,7 +266,7 @@ class Lng_Cpp(dict):
             return self.GOTO(Cmd.content.door_id)
 
         elif Cmd.id == E_Cmd.GotoDoorIdIfInputPNotEqualPointer:
-            return "if( %s != %s ) %s;\n" % (self.INPUT_P(), Cmd.content.pointer_name, self.GOTO(Cmd.content.door_id))
+            return "if( %s != %s ) %s\n" % (self.INPUT_P(), Cmd.content.pointer_name, self.GOTO(Cmd.content.door_id))
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
@@ -281,7 +278,8 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
             txt = [] 
-            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk)
+            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk, 
+                                        SubtractOneF=True)
             txt.extend(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                       Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS")) 
             self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
@@ -349,6 +347,12 @@ class Lng_Cpp(dict):
 
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
+
+        elif Cmd.id == E_Cmd.CharacterBeginPToInputP:
+            return "    %s = %s;\n" % (self.CHARACTER_BEGIN_P(), self.INPUT_P())
+
+        elif Cmd.id == E_Cmd.InputPToCharacterBeginP:
+            return "    %s = %s;\n" % (self.INPUT_P(), self.CHARACTER_BEGIN_P())
 
         elif Cmd.id == E_Cmd.LexemeStartToReferenceP:
             return "    %s\n" % self.LEXEME_START_SET(Cmd.content.pointer_name)
@@ -484,8 +488,10 @@ class Lng_Cpp(dict):
         else:
             return "%s" % NameOrValue
 
-    def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk): # , SubtractOneF=False):
-        delta_str = "(%s - reference_p)" % IteratorName         
+    def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk, SubtractOneF=False):
+        if SubtractOneF: minus_one = " - 1"
+        else:            minus_one = ""
+        delta_str = "(%s - reference_p%s)" % (IteratorName, minus_one)
         txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
                    % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk))
 

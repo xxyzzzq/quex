@@ -124,9 +124,6 @@ class DialDB(object):
         self.clear()
 
     def clear(self):
-        ## print_callstack()
-        ## print "#DialDB.clear()"
-
         # Database: [DoorID] [Address] [Label] 
         # 
         # The database is represented by a dictionary that maps:

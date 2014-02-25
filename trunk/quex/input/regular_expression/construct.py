@@ -11,7 +11,7 @@ import quex.engine.state_machine.algorithm.beautifier  as beautifier
 import quex.engine.state_machine.algebra.reverse      as reverse
 from   quex.engine.misc.file_in  import error_msg
 #                                                         
-from   quex.engine.tools         import typed, print_callstack
+from   quex.engine.tools         import typed
 from   quex.engine.generator.code.base import SourceRef
 from   quex.blackboard           import setup     as Setup, deprecated
 import sys
@@ -201,7 +201,6 @@ class Pattern(object):
         # Make sure that a pattern is never transformed twice
         assert self.__alarm_transformed_f == False
         self.__alarm_transformed_f = True
-        # print_callstack()
 
         # Transformation MUST be called before any pre-context or bipd
         # is mounted.

@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine    as     core
-import quex.input.files.counter                as     counter
+import quex.input.files.counter                as     counter_parser
 from   quex.engine.counter                     import CounterSetupLineColumn_Default
 from   quex.engine.interval_handling           import NumberSet, Interval
 import quex.engine.generator.languages.core    as     languages
@@ -102,7 +102,7 @@ if counter_db is None:
     spec_txt += ">"
     fh = StringIO(spec_txt)
     fh.name = "<string>"
-    counter_db = counter.parse_line_column_counter(fh, IndentationSetupF=False)
+    counter_db = counter_parser.parse_line_column_counter(fh)
 
 # (*) Execute the Test ________________________________________________________
 
@@ -110,7 +110,7 @@ if counter_db is None:
 counter_function_name, counter_str = counter.get(counter_db, "TEST_MODE")
 counter_str = counter_str.replace("static void", "void")
 
-print counter_str
+print "##" + counter_str.replace("\n", "\n##")
 print "_____________________________________________________________________________"
 sys.stdout.flush()
 
@@ -128,8 +128,8 @@ compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c " \
               + " -DDEF_COUNTER_FUNCTION='%s' "             % counter_function_name \
               + " -DDEF_FILE_NAME='\"./data/example.%s\"' " % file_extension        \
               + " -DDEF_CHARACTER_TYPE=%s "                 % buffer_element_type \
-              + " -o test"
-              # + " -DDEF_DEBUG_TRACE " 
+              + " -o test" \
+              + " -DDEF_DEBUG_TRACE " 
 
 print "## %s" % compile_str            
 os.system(compile_str)

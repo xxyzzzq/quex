@@ -81,9 +81,6 @@ from   operator    import attrgetter
 from   copy        import deepcopy, copy
 import types
 
-from   quex.engine.tools import print_callstack
-
-
 E_R = Enum("AcceptanceRegister",
            "Buffer",
            "Indentation",
@@ -91,6 +88,7 @@ E_R = Enum("AcceptanceRegister",
            "Input",
            "InputP",
            "LexemeStartP",
+           "CharacterBeginP",  # -> dynamic size codecs
            "Line",
            "PathIterator",
            "PreContextFlags",
@@ -316,6 +314,9 @@ def __configure():
     c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id", "pointer_name"),
                                               (E_R.ThreadOfControl,r), (E_R.InputP,r), (E_R.Pointer,r,"pointer_name"))
     #
+    c(E_Cmd.InputPToCharacterBeginP,          None, (E_R.InputP,w),          (E_R.CharacterBeginP, r))
+    c(E_Cmd.CharacterBeginPToInputP,          None, (E_R.CharacterBeginP,w), (E_R.InputP, r))
+    #
     c(E_Cmd.InputPToLexemeStartP,             None, (E_R.InputP,w), (E_R.LexemeStartP, r))
     c(E_Cmd.StoreInputPosition,               ("pre_context_id", "position_register", "offset"),
                                               (E_R.InputP,r), 
@@ -437,6 +438,12 @@ def InputPDecrement():
 def InputPDereference():
     return _cmd(E_Cmd.InputPDereference)
 
+def CharacterBeginPToInputP():
+    return _cmd(E_Cmd.CharacterBeginPToInputP)
+
+def InputPToCharacterBeginP():
+    return _cmd(E_Cmd.InputPToCharacterBeginP)
+
 def InputPToLexemeStartP():
     return _cmd(E_Cmd.InputPToLexemeStartP)
 
@@ -456,11 +463,9 @@ def ColumnCountAdd(Value):
     return _cmd(E_Cmd.ColumnCountAdd, Value)
 
 def ColumnCountGridAdd(GridSize):
-    print_callstack()
     return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    print_callstack()
     return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, PointerName,ColumnNPerChunk)
 
 def LineCountAdd(Value):

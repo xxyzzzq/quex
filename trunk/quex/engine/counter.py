@@ -57,7 +57,7 @@ class CounterSetupLineColumn(object):
         return True
 
     def covers(self, Min, Max):
-        result = NumberSet.from_union()
+        result = NumberSet()
         for character_set, info in self.count_command_map.get_map():
             result.unite_with(character_set)
         return result.covers_range(Min, Max)
@@ -84,7 +84,7 @@ class CounterSetupLineColumn(object):
             elif column_incr_per_character is None:       
                 column_incr_per_character = info.value
                 number_set                = character_set
-            elif gccolumn_incr_per_character == info.value: 
+            elif column_incr_per_character == info.value: 
                 number_set.unite_with(character_set)
             else:
                 return None
@@ -254,7 +254,9 @@ class CountCmdFactory:
         self.column_count_per_chunk = ColumnNPerChunk
         self.input_p_name           = InputPName
 
-        self.__prepare_before_and_after_reload()
+        self.on_begin,         \
+        self.on_before_reload, \
+        self.on_after_reload   = self.__prepare()
 
     def requires_reference_p(self):
         return self.column_count_per_chunk is not None
@@ -339,7 +341,7 @@ class CountCmdFactory:
         return ColumnCountReferencePDeltaAdd(self.input_p_name, 
                                              self.column_count_per_chunk)
 
-    def __prepare_before_and_after_reload(self):
+    def __prepare(self):
         """BEFORE RELOAD:
                                                            input_p
                                                            |
@@ -360,14 +362,17 @@ class CountCmdFactory:
                  reference_p
         """
         if self.column_count_per_chunk is None: 
-            self.on_before_reload = []
-            self.on_after_reload  = []
-        else:
-            self.on_before_reload = [
-                ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                              self.column_count_per_chunk) 
-            ]
-            self.on_after_reload  = [
-                ColumnCountReferencePSet(self.input_p_name) 
-            ]
+            return [], [], []
+
+        on_begin = [
+            ColumnCountReferencePSet(self.input_p_name) 
+        ]
+        on_before_reload = [
+            ColumnCountReferencePDeltaAdd(self.input_p_name, 
+                                          self.column_count_per_chunk) 
+        ]
+        on_after_reload  = [
+            ColumnCountReferencePSet(self.input_p_name) 
+        ]
+        return on_begin, on_before_reload, on_after_reload
 
