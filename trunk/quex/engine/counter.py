@@ -16,7 +16,6 @@ from   quex.engine.analyzer.commands              import CommandList, \
                                                          LineCountAddWithReferenceP, \
                                                          GotoDoorId, \
                                                          GotoDoorIdIfInputPNotEqualPointer
-import quex.engine.state_machine.transformation   as     transformation
 
 from   quex.engine.tools import typed
 from   quex.blackboard import E_CharacterCountType, \
@@ -46,8 +45,8 @@ class CounterSetupLineColumn(object):
         if len(self_map) != len(other_map):
             return False
         for selfi, otheri in izip(self_map, other_map):
-            self_character_set = selfi[0]
-            self_info          = selfi[1]
+            self_character_set  = selfi[0]
+            self_info           = selfi[1]
             other_character_set = otheri[0]
             other_info          = otheri[1]
             if not self_character_set.is_equal(other_character_set):
@@ -62,84 +61,15 @@ class CounterSetupLineColumn(object):
             result.unite_with(character_set)
         return result.covers_range(Min, Max)
 
-    def __get_column_number_per_chunk(self, CharacterSet):
-        """Considers the counter database which tells what character causes
-        what increment in line and column numbers. However, only those characters
-        are considered which appear in the CharacterSet. 
-
-        'CharacterSet' is None: All characters considered.
-
-        If the column character handling column number increment always
-        add the same value the return value is not None. Else, it is.
-
-        RETURNS: None -- If there is no distinct column increment 
-                 >= 0 -- The increment of column number for every character
-                         from CharacterSet.
-        """
-        column_incr_per_character = None
-        number_set                = None
-        for character_set, info in self.count_command_map.get_map():
-            if info.cc_type != E_CharacterCountType.COLUMN: 
-                continue
-            elif column_incr_per_character is None:       
-                column_incr_per_character = info.value
-                number_set                = character_set
-            elif column_incr_per_character == info.value: 
-                number_set.unite_with(character_set)
-            else:
-                return None
-
-        # HERE: There is only ONE 'column_n_increment' command. It appears on
-        # the character set 'number_set'. If the character set is represented
-        # by the same number of chunks, than the column number per chunk is
-        # found.
-        if not Setup.variable_character_sizes_f():
-            return column_incr_per_character
-
-        chunk_n_per_character = \
-            transformation.homogeneous_chunk_n_per_character(number_set, 
-                                              Setup.buffer_codec_transformation_info)
-        if chunk_n_per_character  is None:
-            return None
-        else:
-            return float(column_incr_per_character) / chunk_n_per_character
-
     def get_factory(self, CharacterSet, InputPName):
-        ColumnNPerChunk = self.__get_column_number_per_chunk(CharacterSet)
-
-        def pruned_iterable(CountCmdMap, CharacterSet):
-            for character_set, info in self.count_command_map.get_map():
-                if not character_set.has_intersection(CharacterSet):
-                    continue
-                yield character_set.intersection(CharacterSet), info
+        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
 
         cmap = [
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
-            for intersection, info in pruned_iterable(self.count_command_map, CharacterSet)
+            for intersection, info in self.count_command_map.pruned_iterable(CharacterSet)
         ]
 
         return CountCmdFactory(cmap, ColumnNPerChunk, InputPName) 
-
-    @staticmethod
-    def _db_to_text(title, CountCmdInfoList):
-        txt = "%s:\n" % title
-        for character_set, info in sorted(CountCmdInfoList, key=lambda x: x[0].minimum()):
-            if type(info.value) in [str, unicode]:
-                txt += "    %s by %s\n" % (info.value, character_set.get_utf8_string())
-            else:
-                txt += "    %3i by %s\n" % (info.value, character_set.get_utf8_string())
-        return txt
-
-    def __str__(self):
-        db_by_name = defaultdict(list)
-        for character_set, info in self.count_command_map.get_map():
-            db_by_name[info.identifier].append((character_set, info))
-
-        txt = [
-            CounterSetupLineColumn._db_to_text(name, count_command_info_list)
-            for name, count_command_info_list in sorted(db_by_name.iteritems(), key=itemgetter(0))
-        ]
-        return "".join(txt)
 
 class CounterSetupIndentation(object):
     __slots__ = ("sr",                     # Source Reference
@@ -203,9 +133,6 @@ def CounterSetupLineColumn_Default():
 
     return _CounterSetupLineColumn_Default
 
-def _adapt(db):
-    return dict((count, parameter.get()) for count, parameter in db.iteritems())
-
 def _get_all_character_set(*DbList):
     result = NumberSet()
     for db in DbList:
@@ -218,35 +145,6 @@ def _is_admissible(db, DefaultChar, AllCharSet, Bad):
     elif Bad is not None and Bad.contains(DefaultChar): return False
     elif AllCharSet.contains(DefaultChar):              return False
     else:                                               return True
-
-def _defaultize_if_admissible(db, Count, DefaultChar, all_set, Bad=None):
-    """'all_set' is adpated, for further investigations.
-    """
-    if len(db) != 0:
-        return
-    elif _is_admissible(db, DefaultChar, all_set, Bad):
-        default_set = NumberSet(DefaultChar)
-        all_set.unite_with(default_set)         # ADAPT 'all_set'
-        return { Count: default_set } 
-    else:
-        return {}
-
-def _defaultize_column_and_grid(column, grid, all_set, Bad=None):
-    """Note, that 'all_set' is adapted if default values are inserted.
-    """
-    if len(grid) == 0:
-        # Define the 'grid' step on tabulator, if it is not covered by some
-        # other parameter.
-        grid = _defaultize_if_admissible(grid, 4, ord('\t'), all_set, Bad)
-    
-    remaining_set = all_set.inverse()
-    if Bad is not None: 
-        remaining_set.subtract(Bad)
-
-    if not remaining_set.is_empty():
-        column = { 1: remaining_set.inverse() }
-
-    return column, grid
 
 class CountCmdFactory:
     def __init__(self, CMap, ColumnNPerChunk, InputPName):

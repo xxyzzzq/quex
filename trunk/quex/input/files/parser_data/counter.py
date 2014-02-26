@@ -1,12 +1,15 @@
 # (C) Frank-Rene Schaefer
-from quex.engine.generator.code.base import LocalizedParameter, \
-                                            SourceRef, \
-                                            SourceRef_VOID
-from quex.engine.interval_handling   import NumberSet
-from quex.engine.tools               import typed
-from quex.blackboard                 import E_CharacterCountType
-from quex.engine.misc.file_in        import error_msg
-from quex.input.setup                import NotificationDB
+from   quex.engine.generator.code.base import LocalizedParameter, \
+                                              SourceRef, \
+                                              SourceRef_VOID
+from   quex.engine.interval_handling   import NumberSet
+from   quex.engine.tools               import typed
+from   quex.blackboard                 import E_CharacterCountType
+from   quex.engine.misc.file_in        import error_msg
+from   quex.input.setup                import NotificationDB
+import quex.engine.state_machine.transformation   as     transformation
+
+from quex.blackboard import setup as Setup
 
 from collections import namedtuple
 
@@ -155,6 +158,53 @@ class CountCmdMap(object):
         if not remaining_set.is_empty():
             self.__map.append((remaining_set, else_cmd))
 
+    def pruned_iterable(self, CharacterSet):
+        for character_set, info in self.__map:
+            if character_set.has_intersection(CharacterSet):
+                yield character_set, info
+
+    def get_column_number_per_chunk(self, CharacterSet):
+        """Considers the counter database which tells what character causes
+        what increment in line and column numbers. However, only those characters
+        are considered which appear in the CharacterSet. 
+
+        'CharacterSet' is None: All characters considered.
+
+        If the column character handling column number increment always
+        add the same value the return value is not None. Else, it is.
+
+        RETURNS: None -- If there is no distinct column increment 
+                 >= 0 -- The increment of column number for every character
+                         from CharacterSet.
+        """
+        column_incr_per_character = None
+        number_set                = None
+        for character_set, info in self.pruned_iterable(CharacterSet):
+            if info.cc_type != E_CharacterCountType.COLUMN: 
+                continue
+            elif column_incr_per_character is None:       
+                column_incr_per_character = info.value
+                number_set                = character_set
+            elif column_incr_per_character == info.value: 
+                number_set.unite_with(character_set)
+            else:
+                return None
+
+        # HERE: There is only ONE 'column_n_increment' command. It appears on
+        # the character set 'number_set'. If the character set is represented
+        # by the same number of chunks, than the column number per chunk is
+        # found.
+        if not Setup.variable_character_sizes_f():
+            return column_incr_per_character
+
+        chunk_n_per_character = \
+            transformation.homogeneous_chunk_n_per_character(number_set, 
+                                              Setup.buffer_codec_transformation_info)
+        if chunk_n_per_character  is None:
+            return None
+        else:
+            return float(column_incr_per_character) / chunk_n_per_character
+
     def __find_occupier(self, CharSet, Tolerated):
         """Find a command that occupies the given CharSet, at least partly.
            RETURN: None, if no such occupier exists.
@@ -245,6 +295,26 @@ class CountCmdMap(object):
         error_msg("Counter setup does not define newline.", SourceReference, 
                   DontExitF=True, WarningF=True, 
                   SuppressCode=NotificationDB.warning_counter_setup_without_newline)
+
+    def __str__(self):
+        def _db_to_text(title, CountCmdInfoList):
+            txt = "%s:\n" % title
+            for character_set, info in sorted(CountCmdInfoList, key=lambda x: x[0].minimum()):
+                if type(info.value) in [str, unicode]:
+                    txt += "    %s by %s\n" % (info.value, character_set.get_utf8_string())
+                else:
+                    txt += "    %3i by %s\n" % (info.value, character_set.get_utf8_string())
+            return txt
+
+        db_by_name = defaultdict(list)
+        for character_set, info in self.__map:
+            db_by_name[info.identifier].append((character_set, info))
+
+        txt = [
+            _db_to_text(name, count_command_info_list)
+            for name, count_command_info_list in sorted(db_by_name.iteritems(), key=itemgetter(0))
+        ]
+        return "".join(txt)
 
 class Base:
     def __init__(self, sr, Name, IdentifierList):
