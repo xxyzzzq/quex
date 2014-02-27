@@ -1,5 +1,5 @@
 from   quex.engine.misc.file_in                     import get_current_line_info_number
-from   quex.engine.counter                          import CounterSetupLineColumn
+from   quex.input.files.parser_data.counter         import ParserDataLineColumn
 from   quex.engine.interval_handling                import UnicodeInterval, Interval
 from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.utf16_state_split  import ForbiddenRange
@@ -105,7 +105,7 @@ class Pattern(object):
     def set_incidence_id(self, Id):
         self.__sm.set_id(Id)
 
-    @typed(CsLC=CounterSetupLineColumn)
+    @typed(CsLC=ParserDataLineColumn)
     def prepare_count_info(self, CsLC, CodecTrafoInfo):                
         """Perform line/column counting on the core pattern, i.e. the pattern
         which is not concerned with the post context. The counting happens 

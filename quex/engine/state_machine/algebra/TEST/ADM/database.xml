@@ -1,4 +1,4 @@
-<test-database execution-time-sec="50.44" date="Mon Feb 24 22:17:33 2014">
+<test-database execution-time-sec="50.43" date="Wed Feb 26 18:17:39 2014">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="2.18"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
@@ -35,7 +35,7 @@
            <choice name="" result="OK" time_sec="0.99" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Intersection" time-sum-sec="3.37"> 
+    <test title="Intersection" time-sum-sec="3.36"> 
         <application file-name="test-intersection.py" info-request-time="1387873736L" vanished="False"/>
         <choice-list number="6" same_result="False">
            <choice name="0" result="OK" time_sec="0.23" crc="440123606"/>

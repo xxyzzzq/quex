@@ -20,7 +20,7 @@ function perform_test() {
     echo "_____________________________________________________________________"
     echo "ARGUMENT_LIST: $argument_list"
     echo
-    quex -i simple.qx -o EasyLexer $argument_list # --debug-exception
+    quex -i simple.qx -o EasyLexer $argument_list --debug-exception
     if [ -e EasyLexer-configuration ]; then
         awk ' /QUEX_TYPE_CHARACTER/ && /define/ && !/SETTING/ ' EasyLexer-configuration \
             >& tmp.txt

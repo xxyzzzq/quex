@@ -1,17 +1,18 @@
 # (C) Frank-Rene Schaefer
-from   quex.engine.generator.code.base import LocalizedParameter, \
-                                              SourceRef, \
-                                              SourceRef_VOID
-from   quex.engine.interval_handling   import NumberSet
-from   quex.engine.tools               import typed
-from   quex.blackboard                 import E_CharacterCountType
-from   quex.engine.misc.file_in        import error_msg
-from   quex.input.setup                import NotificationDB
+from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.counter                        import CountCmdFactory
+from   quex.engine.generator.code.base            import LocalizedParameter, \
+                                                         SourceRef, \
+                                                         SourceRef_VOID
+from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.tools                          import typed
+from   quex.blackboard                            import E_CharacterCountType
+from   quex.engine.misc.file_in                   import error_msg
+from   quex.input.setup                           import NotificationDB
 import quex.engine.state_machine.transformation   as     transformation
 
-from quex.blackboard import setup as Setup
-
-from collections import namedtuple
+from   quex.blackboard import setup as Setup
+from   collections     import namedtuple
 
 cc_type_db = {
     "space":                     E_CharacterCountType.COLUMN,
@@ -27,6 +28,8 @@ cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 
 
 CountCmdMapEntry = namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))
+CountInfo        = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
+
 
 class CountCmdMap(object):
     """Association of character sets with triggered count commands.
@@ -317,10 +320,11 @@ class CountCmdMap(object):
         return "".join(txt)
 
 class Base:
-    def __init__(self, sr, Name, IdentifierList):
+    def __init__(self, sr, Name, IdentifierList, TheCountCmdMap=None):
         self.sr   = sr
         self.name = Name
-        self.count_command_map      = CountCmdMap()
+        if TheCountCmdMap is None: self.count_command_map = CountCmdMap()
+        else:                      self.count_command_map = TheCountCmdMap
         self.identifier_list        = IdentifierList
         self.__containing_mode_name = ""
 
@@ -360,8 +364,19 @@ class ParserDataLineColumn(Base):
     an instance of CountCmdMap.
     ____________________________________________________________________________
     """
-    def __init__(self, fh=-1):
-        Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"))
+    def __init__(self, fh=-1, TheCountCmdMap=None):
+        Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
+
+    @typed(CharacterSet=NumberSet)
+    def get_factory(self, CharacterSet, InputPName):
+        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
+
+        cmap = [
+            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
+            for intersection, info in self.count_command_map.pruned_iterable(CharacterSet)
+        ]
+
+        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
 
 class ParserDataIndentation(Base):
     """Indentation counter specification.
@@ -543,4 +558,20 @@ def extract_trigger_set(sr, Keyword, Pattern):
     transition_map = Pattern.sm.get_init_state().target_map.get_map()
     assert len(transition_map) == 1
     return transition_map.values()[0]
+
+_CounterSetupLineColumn_Default = None
+def CounterSetupLineColumn_Default():
+    global _CounterSetupLineColumn_Default
+
+    if _CounterSetupLineColumn_Default is None:
+        count_command_map = CountCmdMap()
+        count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
+        count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
+        count_command_map.define_else("space",   1, SourceRef_VOID)                       # Define: "\else"
+        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
+                                                    SourceRef_VOID) 
+
+        _CounterSetupLineColumn_Default = ParserDataLineColumn(count_command_map)
+
+    return _CounterSetupLineColumn_Default
 

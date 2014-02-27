@@ -9,6 +9,7 @@ from   quex.input.files.mode                    import determine_start_mode, Mod
 import quex.input.files.consistency_check       as     consistency_check
 #
 from   quex.engine.analyzer.door_id_address_label  import dial_db
+from   quex.engine.interval_handling               import NumberSet_All
 #
 import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker
@@ -144,7 +145,8 @@ def analyzer_functions_get(ModeDB):
         txt_counter = []
         if mode.default_character_counter_required_f:
             dial_db.clear()
-            txt_counter = cpp_generator.do_default_counter(mode.name, mode.counter_db)
+            ccfactory   = mode.counter_db.get_factory(NumberSet_All(), Lng.INPUT_P())
+            txt_counter = cpp_generator.do_default_counter(mode.name, ccfactory)
 
         code_analyzer.extend(txt_counter)
         code_analyzer.extend(txt_analyzer)

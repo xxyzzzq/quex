@@ -6,7 +6,7 @@ from   quex.engine.analyzer.terminal.core                 import Terminal
 from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.generator.base                         as     generator
 from   quex.engine.state_machine.engine_state_machine_set import EngineStateMachineSet
-from   quex.engine.counter                                import CounterSetupLineColumn
+from   quex.engine.counter                                import CountCmdFactory
 from   quex.engine.tools                                  import all_isinstance, \
                                                                  typed
 import quex.output.cpp.counter                            as     counter
@@ -115,15 +115,15 @@ def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
 
     return [ txt_header ] + txt_analyzer
 
-@typed(ModeName=(str,unicode), CounterDb=CounterSetupLineColumn)
-def do_default_counter(ModeName, CounterDb):
+@typed(ModeName=(str,unicode), CCFactory=CountCmdFactory)
+def do_default_counter(ModeName, CCFactory):
     variable_db.init()
 
     # May be, the default counter is the same as for another mode. In that
     # case call the default counter of the other mode with the same one and
     # only macro.
     default_character_counter_function_name,   \
-    default_character_counter_function_code  = counter.get(CounterDb, ModeName)
+    default_character_counter_function_code  = counter.get(CCFactory, ModeName)
 
     txt = [ Lng.DEFAULT_COUNTER_PROLOG(default_character_counter_function_name) ]
 

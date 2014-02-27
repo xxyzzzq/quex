@@ -231,8 +231,8 @@ def do_terminals(TerminalList, TheAnalyzer):
 def do_reentry_preparation(PreContextSmIdList, OnAfterMatchCode):
     return Lng.REENTRY_PREPARATION(PreContextSmIdList, OnAfterMatchCode)
 
-@typed(CharacterSet=(None, NumberSet), ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
-def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None):
+@typed(ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
+def do_loop(CCFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -242,7 +242,7 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     """
     assert ReloadF or ReloadStateExtern is None
 
-    def prepare_entry_and_reentry(analyzer, ccfactory, cssm):
+    def prepare_entry_and_reentry(analyzer, CCFactory, cssm):
         """Prepare the entry and re-entry doors into the initial state
         of the loop-implementing initial state.
 
@@ -268,7 +268,7 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
         # OnEntry
         ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
         ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                           ccfactory.on_begin + cssm.on_begin)
+                                                           CCFactory.on_begin + cssm.on_begin)
 
         # OnReEntry
         tid_reentry = entry.enter(init_state_index, index.get(), 
@@ -277,30 +277,28 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
 
         return entry.get(tid_reentry).door_id
 
-    def prepare_reload(analyzer, ccfactory, cssm, ReloadStateExtern): 
+    def prepare_reload(analyzer, CCFactory, cssm, ReloadStateExtern): 
         on_before_reload = CommandList.from_iterable(
-              ccfactory.on_before_reload
+              CCFactory.on_before_reload
             + cssm.on_before_reload
         )
         on_after_reload  = CommandList.from_iterable(
-              ccfactory.on_after_reload
+              CCFactory.on_after_reload
             + cssm.on_after_reload
         )
 
         analyzer_generator.prepare_reload(analyzer, on_before_reload, on_after_reload)
 
-    if CharacterSet is None:
-        CharacterSet = NumberSet_All()
+    CharacterSet = CCFactory.character_set
+    beyond_set   = CharacterSet.inverse().mask(0, Setup.get_character_value_limit())
 
     # (*) Construct State Machine and Terminals _______________________________
     #
     # -- The state machine / analyzer
-    ccfactory        = CounterDb.get_factory(CharacterSet, Lng.INPUT_P())
-    incidence_id_map = ccfactory.get_incidence_id_map()
-    reference_p_f    = ccfactory.requires_reference_p()
+    incidence_id_map = CCFactory.get_incidence_id_map()
+    reference_p_f    = CCFactory.requires_reference_p()
 
     beyond_iid = dial_db.new_incidence_id()
-    beyond_set = CharacterSet.inverse().mask(0, Setup.get_character_value_limit())
     incidence_id_map.append((beyond_set, beyond_iid))
 
     # Build a state machine based on (character set, incidence_id) pairs.
@@ -309,18 +307,18 @@ def do_loop(CounterDb, DoorIdExit, CharacterSet=None, LexemeEndCheckF=False, Rel
     analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
-    door_id_reentry = prepare_entry_and_reentry(analyzer, ccfactory, cssm) 
+    door_id_reentry = prepare_entry_and_reentry(analyzer, CCFactory, cssm) 
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
     # -- Analyzer: Prepare Reload
     if ReloadF:
-        prepare_reload(analyzer, ccfactory, cssm, ReloadStateExtern)
+        prepare_reload(analyzer, CCFactory, cssm, ReloadStateExtern)
 
     # -- The terminals 
     #
-    terminal_list   = ccfactory.get_terminal_list(Lng.INPUT_P(), 
+    terminal_list   = CCFactory.get_terminal_list(Lng.INPUT_P(), 
                                                   DoorIdOk          = door_id_reentry, 
                                                   DoorIdOnLexemeEnd = door_id_on_lexeme_end)
     on_beyond       = cssm.on_putback + [ GotoDoorId(DoorIdExit) ]
