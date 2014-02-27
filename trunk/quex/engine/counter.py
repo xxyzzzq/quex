@@ -1,4 +1,4 @@
-from   quex.input.files.parser_data.counter       import CountCmdMap
+from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.generator.code.base            import SourceRef_VOID, \
                                                          SourceRef
@@ -25,51 +25,7 @@ from   collections import namedtuple, defaultdict
 from   itertools   import izip
 from   operator    import itemgetter
 
-CountInfo = namedtuple("CountInfo", ("incidence_id", "cc_type", "parameter", "character_set"))
-
-class CounterSetupLineColumn(object):
-    __slots__ = ("sr",                 # Source Reference
-                 "count_command_map")  # Column Number Increment --> CharacterSet
-
-    @typed(TheCountCmdMap=CountCmdMap, SourceReference=SourceRef)
-    def __init__(self, TheCountCmdMap=None, SourceReference=SourceRef_VOID):
-        """Generate a counter db from a line column counter setup."""
-        assert CountCmdMap is not None
-
-        self.sr                = SourceReference
-        self.count_command_map = TheCountCmdMap
-
-    def is_equal(self, Other):
-        self_map  = self.count_command_map.get_map()
-        other_map = Other.count_command_map.get_map()
-        if len(self_map) != len(other_map):
-            return False
-        for selfi, otheri in izip(self_map, other_map):
-            self_character_set  = selfi[0]
-            self_info           = selfi[1]
-            other_character_set = otheri[0]
-            other_info          = otheri[1]
-            if not self_character_set.is_equal(other_character_set):
-                return False
-            elif self_info != other_info:
-                return False
-        return True
-
-    def covers(self, Min, Max):
-        result = NumberSet()
-        for character_set, info in self.count_command_map.get_map():
-            result.unite_with(character_set)
-        return result.covers_range(Min, Max)
-
-    def get_factory(self, CharacterSet, InputPName):
-        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
-
-        cmap = [
-            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
-            for intersection, info in self.count_command_map.pruned_iterable(CharacterSet)
-        ]
-
-        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName) 
+import sys
 
 class CounterSetupIndentation(object):
     __slots__ = ("sr",                     # Source Reference
@@ -117,22 +73,6 @@ class CounterSetupIndentation(object):
 
         self.sm_newline = self.defaultize_sm_newline(all_set)
 
-_CounterSetupLineColumn_Default = None
-def CounterSetupLineColumn_Default():
-    global _CounterSetupLineColumn_Default
-
-    if _CounterSetupLineColumn_Default is None:
-        count_command_map = CountCmdMap()
-        count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
-        count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
-        count_command_map.define_else("space",   1, SourceRef_VOID)                       # Define: "\else"
-        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
-                                                    SourceRef_VOID) 
-
-        _CounterSetupLineColumn_Default = CounterSetupLineColumn(count_command_map)
-
-    return _CounterSetupLineColumn_Default
-
 def _get_all_character_set(*DbList):
     result = NumberSet()
     for db in DbList:
@@ -147,14 +87,32 @@ def _is_admissible(db, DefaultChar, AllCharSet, Bad):
     else:                                               return True
 
 class CountCmdFactory:
-    def __init__(self, CMap, ColumnNPerChunk, InputPName):
+    def __init__(self, CMap, ColumnNPerChunk, InputPName, CharacterSet):
         self.__map                  = CMap
         self.column_count_per_chunk = ColumnNPerChunk
         self.input_p_name           = InputPName
+        self.character_set          = CharacterSet
 
         self.on_begin,         \
         self.on_before_reload, \
         self.on_after_reload   = self.__prepare()
+
+    def is_equal(self, Other):
+        if len(self.__map) != len(Other.__map):
+            return False
+        for x, y in izip(self.__map, Other.__map):
+            if not x.character_set.is_equal(y.character_set):
+                return False
+            elif x.parameter != y.parameter:
+                return False
+        return True
+
+    def covers(self, Min, Max):
+        result = NumberSet()
+
+        for info in self.__map:
+            result.unite_with(info.character_set)
+        return result.covers_range(Min, Max)
 
     def requires_reference_p(self):
         return self.column_count_per_chunk is not None

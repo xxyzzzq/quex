@@ -1,7 +1,7 @@
-<test-database execution-time-sec="32.03" date="Mon Feb 24 22:09:23 2014">
+<test-database execution-time-sec="32.06" date="Wed Feb 26 18:17:29 2014">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="11.76"> 
+        <test title="C++" time-sum-sec="11.77"> 
             <application file-name="test-cpp.sh" info-request-time="1381662239L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="plain" result="OK" time_sec="0.86" crc="1735895320"/>
@@ -35,7 +35,7 @@
                <choice name="customized-token-class" result="NO GOOD FILE" time_sec="0.75" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="11.01"> 
+        <test title="C" time-sum-sec="11.02"> 
             <application file-name="test-c.sh" info-request-time="1381662239L" vanished="False"/>
             <choice-list number="12" same_result="True">
                <choice name="plain" result="OK" time_sec="0.77" crc="-21726970"/>

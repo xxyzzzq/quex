@@ -3,7 +3,8 @@ from   quex.engine.analyzer.state.core            import Processor
 import quex.engine.generator.base                 as     generator
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.blackboard                            import setup as Setup
+from   quex.blackboard                            import setup as Setup, \
+                                                         Lng
 
 def do(Data, TheAnalyzer):
     """Fast implementation of character set skipping machine.
@@ -75,9 +76,8 @@ def do(Data, TheAnalyzer):
 
         
     result, \
-    door_id_beyond = generator.do_loop(counter_db, 
+    door_id_beyond = generator.do_loop(counter_db.get_factory(character_set, Lng.INPUT_P()), 
                                        DoorIdExit        = DoorID.continue_without_on_after_match(),
-                                       CharacterSet      = character_set,
                                        LexemeEndCheckF   = False,
                                        ReloadF           = reload_f,
                                        ReloadStateExtern = reload_state) 

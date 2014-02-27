@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.54" date="Mon Feb 24 22:08:16 2014">
+<test-database execution-time-sec="0.54" date="Wed Feb 26 18:17:20 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1393276091L" vanished="False"/>
@@ -25,7 +25,7 @@
                <choice name="error" result="OK" time_sec="0.18" crc="-1605736885"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.24"> 
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.25"> 
             <application file-name="transition.sh" info-request-time="1393276095L" vanished="False"/>
             <make-procedure success="True" time_sec="1.337317"/>
             <choice-list number="4" same_result="False">

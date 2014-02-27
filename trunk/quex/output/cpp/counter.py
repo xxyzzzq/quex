@@ -10,6 +10,8 @@ from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            IfDoorIdReferencedCode
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            InputPToLexemeStartP
+from   quex.engine.counter                          import CountCmdFactory
+from   quex.engine.tools                            import typed
 
 from   quex.blackboard import Lng, \
                               setup as Setup, \
@@ -17,17 +19,18 @@ from   quex.blackboard import Lng, \
                               E_MapImplementationType, \
                               E_IncidenceIDs
 
-def get(CounterDb, Name):
+@typed(CCFactory=CountCmdFactory)
+def get(CCFactory, Name):
     """Implement the default counter for a given Counter Database. 
 
     In case the line and column number increment cannot be determined before-
     hand, a something must be there that can count according to the rules given
-    in 'CounterDb'. This function generates the code for a general counter
+    in 'CCFactory'. This function generates the code for a general counter
     function which counts line and column number increments starting from the
     begin of a lexeme to its end.
 
     The implementation of the default counter is a direct function of the
-    'CounterDb', i.e. the database telling how characters influence the
+    'CCFactory', i.e. the database telling how characters influence the
     line and column number counting. 
     
     Multiple modes may have the same character counting behavior. If so, 
@@ -43,9 +46,9 @@ def get(CounterDb, Name):
                                        by the 'function name'.
     ---------------------------------------------------------------------------
     """
-    assert CounterDb.covers(0, Setup.get_character_value_limit())
+    # assert CCFactory.covers(0, Setup.get_character_value_limit())
 
-    function_name = DefaultCounterFunctionDB.get_function_name(CounterDb)
+    function_name = DefaultCounterFunctionDB.get_function_name(CCFactory)
     if function_name is not None:
         return function_name, None # Implementation has been done before.
 
@@ -53,14 +56,14 @@ def get(CounterDb, Name):
 
     door_id_return = dial_db.new_door_id()
     code, \
-    door_id_beyond = generator.do_loop(CounterDb, 
+    door_id_beyond = generator.do_loop(CCFactory, 
                                        DoorIdExit      = door_id_return,
                                        LexemeEndCheckF = True)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, 
                              door_id_beyond) 
 
-    DefaultCounterFunctionDB.enter(CounterDb, function_name)
+    DefaultCounterFunctionDB.enter(CCFactory, function_name)
 
     return function_name, implementation
 

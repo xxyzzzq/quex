@@ -82,9 +82,6 @@ def get(ThePattern, ShiftF=True):
     #     Those rules are defined in 'get_increment()' as shown below.
     #
     def get_increment(txt, Increment, IncrementByLexemeLength, HelpStr):
-        if len(txt) != 0:
-            txt.append(0)
-
         if IncrementByLexemeLength == 0 or Increment == 0:
             return 
         elif Increment != E_Count.VOID:
@@ -118,17 +115,17 @@ def get(ThePattern, ShiftF=True):
         # Following assert results from entry check against 'VOID'
         assert counter.grid_step_size_by_lexeme_length != E_Count.VOID
 
-        if counter.grid_step_n == E_Count.VOID: 
+        if   counter.grid_step_n == E_Count.VOID: 
             grid_step_n = "LexemeL"
-        else:                                   
-            assert counter.grid_step_n != 0
+        elif counter.grid_step_n != 0:
             grid_step_n = counter.grid_step_n
+        else:
+            grid_step_n = None
 
-        if len(txt) != 0:
-            txt.append(0)
-        txt.extend(Lng.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                        counter.grid_step_size_by_lexeme_length, 
-                                        grid_step_n, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
-        txt.append("\n")
+        if grid_step_n is not None:
+            txt.extend(Lng.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                                            counter.grid_step_size_by_lexeme_length, 
+                                            grid_step_n, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+            txt.append("\n")
 
     return False, txt

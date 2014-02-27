@@ -2,12 +2,10 @@ import quex.input.regular_expression.core         as     regular_expression
 from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation, \
                                                          extract_trigger_set
-from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.counter                        import CounterSetupIndentation, \
-                                                         CounterSetupLineColumn
+from   quex.engine.counter                        import CounterSetupIndentation
 from   quex.engine.misc.file_in                   import get_current_line_info_number, \
                                                          error_msg, \
                                                          check, \
@@ -27,7 +25,7 @@ def parse_line_column_counter(fh):
                                                        Setup.get_character_value_limit(), 
                                                        result.sr)
     result.consistency_check(fh)
-    return CounterSetupLineColumn(result.count_command_map)
+    return result
 
 def parse_indentation(fh):
     result = __parse(fh, ParserDataIndentation(fh))

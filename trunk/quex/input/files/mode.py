@@ -7,7 +7,6 @@ from   quex.input.files.mode_option                    import OptionDB, \
                                                               SkipRangeData
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
-from   quex.engine.counter                             import CounterSetupLineColumn
 from   quex.engine.analyzer.door_id_address_label      import DoorID, dial_db
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
