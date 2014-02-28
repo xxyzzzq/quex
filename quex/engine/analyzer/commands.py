@@ -378,6 +378,7 @@ def is_branching(CmdId):
 
 def get_register_access_iterable(Cmd):
     global __access_db
+    print "#Cmd:", Cmd
     for register_id, info in __access_db[Cmd.id].iteritems():
         right, specifier = info
         if specifier is not None:
