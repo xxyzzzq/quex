@@ -687,10 +687,9 @@ class Mode:
         # Counting actions are added to the terminal automatically by the
         # terminal_factory. The only thing that remains for each sub-terminal:
         # 'goto skipper'.
-        ccfactory        = CounterDb.get_factory(total_set, Lng.INPUT_P())
-        incidence_id_map = ccfactory.get_incidence_id_map()
+        ccfactory = CounterDb.get_factory(total_set, Lng.INPUT_P())
 
-        for character_set, incidence_id in incidence_id_map:
+        for character_set, incidence_id in ccfactory.get_incidence_id_map():
             priority         = PatternPriority(MHI, incidence_id)
             pattern          = Pattern.from_character_set(character_set)
             pattern.prepare_count_info(CounterDb, 

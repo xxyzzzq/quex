@@ -12,7 +12,7 @@ from   quex.input.setup                           import NotificationDB
 import quex.engine.state_machine.transformation   as     transformation
 
 from   quex.blackboard import setup as Setup
-from   collections     import namedtuple
+from   collections     import namedtuple, defaultdict
 
 cc_type_db = {
     "space":                     E_CharacterCountType.COLUMN,
@@ -164,19 +164,15 @@ class CountCmdMap(object):
     def pruned_iterable(self, CharacterSet):
         for character_set, info in self.__map:
             if character_set.has_intersection(CharacterSet):
-                yield character_set, info
+                yield character_set.intersection(CharacterSet), info
 
+    @typed(CharacterSet=NumberSet)
     def get_column_number_per_chunk(self, CharacterSet):
         """Considers the counter database which tells what character causes
         what increment in line and column numbers. However, only those characters
         are considered which appear in the CharacterSet. 
 
-        'CharacterSet' is None: All characters considered.
-
-        If the column character handling column number increment always
-        add the same value the return value is not None. Else, it is.
-
-        RETURNS: None -- If there is no distinct column increment 
+        RETURNS: None -- If there is NO distinct column increment.
                  >= 0 -- The increment of column number for every character
                          from CharacterSet.
         """
@@ -192,6 +188,9 @@ class CountCmdMap(object):
                 number_set.unite_with(character_set)
             else:
                 return None
+
+        if column_incr_per_character is None:
+            return None                       # TODO: return 0
 
         # HERE: There is only ONE 'column_n_increment' command. It appears on
         # the character set 'number_set'. If the character set is represented
@@ -571,7 +570,7 @@ def CounterSetupLineColumn_Default():
         count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
                                                     SourceRef_VOID) 
 
-        _CounterSetupLineColumn_Default = ParserDataLineColumn(count_command_map)
+        _CounterSetupLineColumn_Default = ParserDataLineColumn(-1, count_command_map)
 
     return _CounterSetupLineColumn_Default
 
