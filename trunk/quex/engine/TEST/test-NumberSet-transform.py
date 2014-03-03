@@ -24,6 +24,7 @@ def verify(A, TrafoInfo):
                     offset = x - source_begin
                     y      = target_begin + offset
                     result.add_interval(Interval(y))
+    result.assert_consistency()
     return result
 
 def test(Comment, A, TrafoInfo):
@@ -33,6 +34,7 @@ def test(Comment, A, TrafoInfo):
     print "#  A       = " + repr(x)
     print "#  Trafo   = " + repr(TrafoInfo)
     x.transform(TrafoInfo)
+    x.assert_consistency()
     print "#  Result  = " + repr(x)
     result = verify(A, TrafoInfo)
     print "#  Verify  = " + repr(result)

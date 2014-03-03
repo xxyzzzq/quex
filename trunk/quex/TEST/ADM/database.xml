@@ -1,15 +1,15 @@
-<test-database execution-time-sec="10.79" date="Wed Feb 26 18:17:20 2014">
+<test-database execution-time-sec="10.81" date="Mon Mar  3 09:49:24 2014">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.56"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.55"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.56" crc="1069820642"/>
+           <choice name="" result="OK" time_sec="0.55" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.03"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.05"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1381662239L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.03" crc="-581721676"/>
+           <choice name="" result="FAIL" time_sec="0.05" crc="-581721676"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.02"> 
@@ -18,10 +18,10 @@
            <choice name="" result="OK" time_sec="0.02" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="9.27"> 
+    <test title="Code Check with pyflakes" time-sum-sec="9.41"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="9.27" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="9.41" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.06"> 
@@ -37,19 +37,19 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="0.58"> 
+        <test title="Include Guards for C/C++" time-sum-sec="0.47"> 
             <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="convention" result="OK" time_sec="0.30" crc="706574512"/>
-               <choice name="undefinition" result="OK" time_sec="0.28" crc="1307575207"/>
+               <choice name="convention" result="OK" time_sec="0.25" crc="706574512"/>
+               <choice name="undefinition" result="OK" time_sec="0.22" crc="1307575207"/>
             </choice-list>
         </test>
     </group>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.19"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.16"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.19" crc="-865470313"/>
+               <choice name="" result="OK" time_sec="0.16" crc="-865470313"/>
             </choice-list>
         </test>
     </group>

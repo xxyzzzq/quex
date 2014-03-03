@@ -5,7 +5,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 from quex.engine.interval_handling import Interval
 
 if "--hwut-info" in sys.argv:
-    print "NumberSet: Cut Interval"
+    print "NumberSet: Interval comparison"
     print "CHOICES: normal, special"
     sys.exit(0)
 

@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.state.core            import Processor
 
-import quex.engine.generator.base                 as     generator
+import quex.engine.generator.loop                 as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.blackboard                            import setup as Setup, \
@@ -76,11 +76,12 @@ def do(Data, TheAnalyzer):
 
         
     result, \
-    door_id_beyond = generator.do_loop(counter_db.get_factory(character_set, Lng.INPUT_P()), 
-                                       DoorIdExit        = DoorID.continue_without_on_after_match(),
-                                       LexemeEndCheckF   = False,
-                                       ReloadF           = reload_f,
-                                       ReloadStateExtern = reload_state) 
+    door_id_beyond = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 
+                             DoorIdExit        = DoorID.continue_without_on_after_match(),
+                             LexemeEndCheckF   = False,
+                             LexemeMaintainedF = False,
+                             ReloadF           = reload_f,
+                             ReloadStateExtern = reload_state) 
 
     assert isinstance(result, list)
     return result

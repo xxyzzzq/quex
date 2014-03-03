@@ -10,8 +10,12 @@ def the_union(Comment, A, B):
     print "#\n#" + Comment
     print "#  A          = " + repr(A)
     print "#  B          = " + repr(B)
-    print "#  union(A,B) = " + repr(A.union(B))
-    print "#  union(B,A) = " + repr(B.union(A))
+    result = A.union(B)
+    result.assert_consistency()
+    print "#  union(A,B) = " + repr(result)
+    result = B.union(A)
+    result.assert_consistency()
+    print "#  union(B,A) = " + repr(result)
 
 
 test_NumberSet_base.do("UNION", the_union)

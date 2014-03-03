@@ -539,10 +539,6 @@ class NumberSet(object):
         """This value gives some information about the 'complexity' of the number set."""
         return len(self.__intervals)
 
-    def get_intervals(self, PromiseToTreatWellF=False):
-        if PromiseToTreatWellF: return self.__intervals
-        else:                   return self.__clone_intervals()
-
     def unite_with(self, Other):
         Other_type = Other.__class__
         # assert Other_type == Interval or Other_type == NumberSet, \
@@ -963,6 +959,19 @@ class NumberSet(object):
     def __cmp__(self, Other):
         assert False, "No comparisons defined for class NumberSet"
 
+    def get_intervals(self, PromiseToTreatWellF=False):
+        if PromiseToTreatWellF: return self.__intervals
+        else:                   return self.__clone_intervals()
+
+    def get_number_list(self):
+        """RETURNS: -- List of all numbers which are contained in the number set. 
+                    -- None, if one border is 'sys.maxint'. The list would be too big.
+        """
+        result = []
+        for interval in self.__intervals:
+            result.extend(xrange(interval.begin, interval.end))
+        return result
+
     def get_the_only_element(self):
         if   len(self.__intervals) != 1: return None
         x = self.__intervals[0]
@@ -990,6 +999,16 @@ class NumberSet(object):
             txt += interval.gnuplot_string(y_coordinate)
             txt += "\n"
         return txt
+
+    def assert_consistency(self):
+        """Checks whether all intervals are lined up propperly. That is, they
+        do not touch and they are sorted from low to high.
+        """
+        if len(self.__intervals) < 2:
+            return
+        prev = self.__intervals[0]
+        for interval in self.__intervals[1:]:
+            assert x.begin > prev.end
 
 # Range of code points that are covered by Unicode
 def UnicodeInterval():

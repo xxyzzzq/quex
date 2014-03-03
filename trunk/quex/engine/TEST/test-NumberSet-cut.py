@@ -20,7 +20,9 @@ def test(Border, List):
     print "Border:              %s" % Border
     print "NumberSet:           %s" % x
     x.cut_lesser(Border)
+    x.assert_consistency()
     y.cut_greater_or_equal(Border)
+    x.assert_consistency()
     print "cut_lesser           --> %s" % x
     print "cut_greater_or_equal --> %s" % y
     print "______________________________________"

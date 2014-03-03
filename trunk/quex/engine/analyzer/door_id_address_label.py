@@ -123,6 +123,14 @@ class DialDB(object):
     def __init__(self):
         self.clear()
 
+    def __debug_address_generation(self, DoorId, Address, *SuspectAdrList):
+        """Prints the callstack if an address of SuspectAdrList is generated.
+        """
+        if Address not in SuspectAdrList:
+            return
+        print "#DoorID %s <-> Address %s" % (DoorId, Address)
+        print_callstack()
+
     def clear(self):
         # Database: [DoorID] [Address] [Label] 
         # 
@@ -191,14 +199,6 @@ class DialDB(object):
         sub_db = self.__door_id_db.get(StateIndex)
         if sub_db is None: return -1
         return max(sub_db.iterkeys()) # There must be at least one element!
-
-    def __debug_address_generation(self, DoorId, Address, *SuspectAdrList):
-        """Prints the callstack if an address of SuspectAdrList is generated.
-        """
-        if Address not in SuspectAdrList:
-            return
-        print "#DoorID %s <-> Address %s" % (DoorId, Address)
-        print_callstack()
 
     def register_door_id(self, DoorId):
         self.__address_i += 1

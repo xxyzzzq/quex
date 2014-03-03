@@ -264,6 +264,13 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
 RegisterAccessRight = namedtuple("AccessRight", ("write_f", "read_f"))
 
 def __configure():
+    """Configure the database for commands.
+            
+    cost_db:      CommandId --> computational cost.
+    content_db:   CommandId --> related registers
+    access_db:    CommandId --> access types of the command (read/write)
+    brancher_set: set of commands which may cause jumps/gotos.
+    """
     cost_db      = {}
     content_db   = {}
     access_db    = {}    # map: register_id --> RegisterAccessRight
@@ -372,20 +379,30 @@ __brancher_set, \
 _cost_db       = __configure()
 
 def is_branching(CmdId):
+    """RETURNS: True  -- if the command given by CmdId is 'branching' i.e. 
+                         if it might cause jumps/gotos.
+                False -- if the command does never cause a jump.
+    """
     global __brancher_set
     return CmdId in __brancher_set
 
-
 def get_register_access_iterable(Cmd):
+    """For each command there are rights associated with registers. For example
+    a command that writes into register 'X' associates 'write-access' with X.
+
+    RETURNS: An iterable over pairs (register_id, access right) meaning that the
+             command accesses the register with the given access type/right.
+    """
     global __access_db
-    print "#Cmd:", Cmd
     for register_id, info in __access_db[Cmd.id].iteritems():
         right, specifier = info
         if specifier is not None:
-            register_id = "%s:%i" % (specifier, Cmd._asdict()[specifier])
+            register_id = "%s:%s" % (specifier, Cmd.content._asdict()[specifier])
         yield register_id, right
 
 def get_register_access_db(Cmd):
+    """RETURNS: map: register_id --> access right(s)
+    """
     return dict( 
         (register_id, right)
         for register_id, right in get_register_access_iterable(Cmd)

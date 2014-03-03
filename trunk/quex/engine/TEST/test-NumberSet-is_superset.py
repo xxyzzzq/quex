@@ -18,6 +18,9 @@ def prepare(A_list, B_list):
         A.add_interval(Interval(begin, end))
     for begin, end in B_list:
         B.add_interval(Interval(begin, end))
+
+    A.assert_consistency()
+    B.assert_consistency()
     return A, B
 
 def test(Comment, A_list, B_list):

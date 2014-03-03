@@ -94,6 +94,7 @@ class CountCmdFactory:
         self.character_set          = CharacterSet
 
         self.on_begin,         \
+        self.on_end,           \
         self.on_before_reload, \
         self.on_after_reload   = self.__prepare()
 
@@ -218,10 +219,14 @@ class CountCmdFactory:
                  reference_p
         """
         if self.column_count_per_chunk is None: 
-            return [], [], []
+            return [], [], [], []
 
         on_begin = [
             ColumnCountReferencePSet(self.input_p_name) 
+        ]
+        on_end = [
+            ColumnCountReferencePDeltaAdd(self.input_p_name, 
+                                          self.column_count_per_chunk) 
         ]
         on_before_reload = [
             ColumnCountReferencePDeltaAdd(self.input_p_name, 
@@ -230,5 +235,5 @@ class CountCmdFactory:
         on_after_reload  = [
             ColumnCountReferencePSet(self.input_p_name) 
         ]
-        return on_begin, on_before_reload, on_after_reload
+        return on_begin, on_end, on_before_reload, on_after_reload
 
