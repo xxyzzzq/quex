@@ -1,6 +1,10 @@
 ## (2) compiling generated engine code and test
 g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp:229:1: warning: label ‘_21’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp: At global scope:
 ## IGNORED: ./tmp.cpp:34:1: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 ## (*) running the test
 (*) test string: 
@@ -42,6 +46,10 @@ end
 ## (2) compiling generated engine code and test
 g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp:229:1: warning: label ‘_21’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp: At global scope:
 ## IGNORED: ./tmp.cpp:34:1: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 ## (*) running the test
 (*) test string: 
@@ -71,6 +79,10 @@ end
 ## (2) compiling generated engine code and test
 g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
+## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
+## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp:229:1: warning: label ‘_21’ defined but not used [-Wunused-label]
+## IGNORED: ./tmp.cpp: At global scope:
 ## IGNORED: ./tmp.cpp:34:1: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 ## (*) running the test
 (*) test string: 

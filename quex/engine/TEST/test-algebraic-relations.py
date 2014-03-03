@@ -12,7 +12,9 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 def inv(A):     
-    return A.inverse()
+    result = A.inverse()
+    result.assert_consistency()
+    return result
 
 def uni(*A):    
     result   = A[0].clone()
@@ -22,6 +24,7 @@ def uni(*A):
         result_x = result_x.union(a)
 
     assert result.is_equal(result_x)
+    result.assert_consistency()
     return result
 
 def itsct(*A):  
@@ -32,6 +35,7 @@ def itsct(*A):
         result_x = result_x.intersection(a)
 
     assert result.is_equal(result_x)
+    result.assert_consistency()
     return result
 
 def diff(A, B): 
@@ -40,10 +44,12 @@ def diff(A, B):
     result_x.subtract(B)
 
     assert result.is_equal(result_x)
+    result.assert_consistency()
     return result
 
 def symdiff(A, B): 
     result   = A.symmetric_difference(B)
+    result.assert_consistency()
     return result
 
 protocol = []

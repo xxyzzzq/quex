@@ -39,13 +39,13 @@ def do(Data, TheAnalyzer):
 
 def new_skipper(TheAnalyzer):
     """JUST A PROPOSAL"""
-    result = generator.do_loop(counter_db, 
-                               AfterExitDoorId   = door_id_first_match,
-                               CharacterSet      = NumberSet(ClosingSequence[0]).inverse(),
-                               CheckLexemeEndF   = False,
-                               ReloadF           = True,
-                               ReloadStateExtern = TheAnalyzer.reload_state, 
-                               MaintainLexemeF   = False)
+    result = loop.do(counter_db, 
+                     AfterExitDoorId   = door_id_first_match,
+                     CharacterSet      = NumberSet(ClosingSequence[0]).inverse(),
+                     CheckLexemeEndF   = False,
+                     ReloadF           = True,
+                     ReloadStateExtern = TheAnalyzer.reload_state, 
+                     MaintainLexemeF   = False)
 
     result.append(
         dial_db.get_label_by_door_id(door_id_matched_sequence_0)

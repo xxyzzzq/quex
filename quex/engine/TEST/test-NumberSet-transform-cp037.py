@@ -25,6 +25,7 @@ if "1" in sys.argv:
         x = NumberSet(UC)
         y = x.clone()
         x.transform(trafo_cp037)
+        x.assert_consistency()
         print "0x%02X --> 0x%s" % (UC, x.get_string(Option="hex"))
 
     for letter in xrange(-2, 258):
@@ -35,20 +36,24 @@ elif "all" in sys.argv:
     x = NumberSet(Interval(0, 0x100))
     y = x.clone()
     x.transform(trafo_cp037)
+    x.assert_consistency()
     print "0x%s --> 0x%s" % (y, x.get_string(Option="hex"))
 
 elif "some" in sys.argv:
     x = NumberSet(Interval(0, 0x32))
     y = x.clone()
     x.transform(trafo_cp037)
+    x.assert_consistency()
     print "0x%s --> 0x%s" % (y, x.get_string(Option="hex"))
 
     x = NumberSet(Interval(0x42, 0x80))
     y = x.clone()
     x.transform(trafo_cp037)
+    x.assert_consistency()
     print "0x%s --> 0x%s" % (y, x.get_string(Option="hex"))
 
     x = NumberSet(Interval(0xA0, 0xFF))
     y = x.clone()
     x.transform(trafo_cp037)
+    x.assert_consistency()
     print "0x%s --> 0x%s" % (y, x.get_string(Option="hex"))

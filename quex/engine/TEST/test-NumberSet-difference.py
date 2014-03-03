@@ -14,8 +14,12 @@ def the_difference(Comment, A, B):
     print "#\n#" + Comment
     print "#  A          = " + repr(A)
     print "#  B          = " + repr(B)
-    print "#  difference(A,B) = " + repr(A.difference(B))
-    print "#  difference(B,A) = " + repr(B.difference(A))
+    result = A.difference(B)
+    result.assert_consistency()
+    print "#  difference(A,B) = " + repr(result)
+    result = B.difference(A)
+    result.assert_consistency()
+    print "#  difference(B,A) = " + repr(result)
 
 test_NumberSet_base.do("DIFFERENCE", the_difference)    
 

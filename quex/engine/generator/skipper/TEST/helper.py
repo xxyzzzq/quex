@@ -7,48 +7,55 @@ import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.generator.code.base             import CodeFragment
+from   quex.engine.generator.base                  import do_state_router
 from   quex.engine.state_machine.core              import StateMachine
-from   quex.engine.counter                         import CounterSetupLineColumn_Default
+from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
+from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
 from   quex.input.regular_expression.construct     import Pattern
 
-def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
-
-    end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
-
-    dial_db.clear()
-    variable_db.variable_db.init()
-    data = { 
-        "character_set":        TriggerSet, 
-        "counter_db":           CounterSetupLineColumn_Default()),
-        "require_label_SKIP_f": False, 
-    }
-    skipper_code = character_set_skipper.do(data, Analyzer)
-
-    marker_char_list = []
-    if InitialSkipF:
-        for interval in TriggerSet.get_intervals():
-            for char_code in range(interval.begin, interval.end):
-                marker_char_list.append(char_code)
-
-    return create_customized_analyzer_function(Language, TestStr, skipper_code,
-                                               QuexBufferSize, CommentTestStrF=False, 
-                                               ShowPositionF=False, EndStr=end_str,
-                                               MarkerCharList=marker_char_list, 
-                                               LocalVariableDB=deepcopy(variable_db.variable_db.get()), 
-                                               ReloadF=True, 
-                                               OnePassOnlyF=OnePassOnlyF)
-
-def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=1024, 
-                              CommentTestStrF=False, ShowPositionF=False):
-    assert QuexBufferSize >= len(CloserSequence) + 2
-
+def __prepare(Language):
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
     dial_db.clear()
     variable_db.variable_db.init()
+
+    return end_str
+
+def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
+
+    end_str = __prepare(Language)
+
+    data = { 
+        "character_set":        TriggerSet, 
+        "counter_db":           CounterSetupLineColumn_Default(),
+        "require_label_SKIP_f": False, 
+    }
+    class something:
+        pass
+    Analyzer = something()
+    Analyzer.reload_state = None
+    skipper_code = character_set_skipper.do(data, Analyzer)
+
+    if InitialSkipF: marker_char_list = TriggerSet.get_number_list()
+    else:            marker_char_list = []
+
+    return create_customized_analyzer_function(Language, TestStr, skipper_code,
+                                               QuexBufferSize, 
+                                               CommentTestStrF = False, 
+                                               ShowPositionF   = False, 
+                                               EndStr          = end_str,
+                                               MarkerCharList  = marker_char_list, 
+                                               LocalVariableDB = deepcopy(variable_db.variable_db.get()), 
+                                               ReloadF         = True, 
+                                               OnePassOnlyF    = OnePassOnlyF)
+
+def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=1024, 
+                              CommentTestStrF=False, ShowPositionF=False):
+    assert QuexBufferSize >= len(CloserSequence) + 2
+
+    end_str = __prepare(Language)
 
     data = { 
         "closer_sequence":                 CloserSequence, 
@@ -69,12 +76,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
                                      QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
     assert QuexBufferSize >= len(CloserSequence) + 2
 
-    end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
-
-    __Setup_init_language_database(Language)
-    dial_db.clear()
-    variable_db.variable_db.init()
+    end_str = __prepare(Language)
 
     data = { 
         "opener_sequence":                 OpenerSequence, 
@@ -99,20 +101,48 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
                                         TokenQueueF=False, ReloadF=False, OnePassOnlyF=False):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
-                                      IndentationSupportF=IndentationSupportF, 
-                                      TokenQueueF=TokenQueueF,  QuexBufferFallbackN=0)
-    txt += my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, EngineSourceCode, 
-                                        EndStr, LocalVariableDB, ReloadF, OnePassOnlyF)
+                                      IndentationSupportF = IndentationSupportF, 
+                                      TokenQueueF         = TokenQueueF,  
+                                      QuexBufferFallbackN = 0)
+
+    state_router_txt = do_state_router()
+    EngineSourceCode.extend(state_router_txt)
+    txt += my_own_mr_unit_test_function(EngineSourceCode, EndStr, LocalVariableDB, 
+                                        ReloadF, OnePassOnlyF)
+
+    txt += skip_irrelevant_character_function(MarkerCharList)
+
+    txt += show_next_character_function(ShowPositionF)
+
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
 
-def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndStr, 
+def my_own_mr_unit_test_function(SourceCode, EndStr, 
                                  LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True):
     
-    if ShowPositionF: show_position_str = "1"
-    else:             show_position_str = "0"
+    if type(SourceCode) == list:
+        plain_code = "".join(Lng.GET_PLAIN_STRINGS(SourceCode))
 
+    label_failure  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
+    label_eos      = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
+    label_reentry  = dial_db.get_label_by_door_id(DoorID.global_reentry())
+    label_reentry2 = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
+
+    return blue_print(customized_unit_test_function_txt,
+                      [
+                       
+                       ("$$LOCAL_VARIABLES$$",        Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB))),
+                       ("$$SOURCE_CODE$$",            plain_code),
+                       ("$$TERMINAL_END_OF_STREAM$$", label_eos),
+                       ("$$TERMINAL_FAILURE$$",       label_failure),
+                       ("$$REENTRY$$",                label_reentry),
+                       ("$$REENTRY2$$",               label_reentry2),
+                       ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),
+                       ("$$QUEX_LABEL_STATE_ROUTER$$", dial_db.get_label_by_door_id(DoorID.global_state_router())),
+                       ("$$END_STR$$",                EndStr)])
+
+def skip_irrelevant_character_function(MarkerCharList):
     ml_txt = ""
     if len(MarkerCharList) != 0:
         for character in MarkerCharList:
@@ -120,46 +150,59 @@ def my_own_mr_unit_test_function(ShowPositionF, MarkerCharList, SourceCode, EndS
     else:
         ml_txt += "    break;\n"
 
-    if type(SourceCode) == list:
-        plain_code = Lng.GET_PLAIN_STRINGS(SourceCode)
-        #if len(plain_code) >= 3304: 
-        #    print "#3304:", plain_code[3303:3305]
-        SourceCode = "".join(plain_code)
+    return skip_irrelevant_characters_function_txt.replace("$$MARKER_LIST$$", ml_txt)
 
-    reload_str = ""
-    if ReloadF: 
-        txt = []
-        for x in Lng.RELOAD():
-            txt.extend(x.code)
-        # Ensure that '__RELOAD_FORWARD' and '__RELOAD_BACKWARD' is referenced
-        routed_address_set = dial_db.get_address_set_subject_to_routing()
-        routed_address_set.add(address.get_address("$terminal-EOF", U=True))
-        routed_state_info_list = state_router_generator.get_info(routed_address_set)
-        txt.extend(address.get_plain_strings([state_router_generator.do(routed_state_info_list)]))
-        txt.append("    goto __RELOAD_FORWARD;  /* Unit test: avoid unreferenced label. */\n")
-        txt.append("    goto __RELOAD_BACKWARD; /* Unit test: avoid unreferenced label. */\n")
-        reload_str = "".join(txt)
-        variable_db.enter(LocalVariableDB, "target_state_else_index")
-        variable_db.enter(LocalVariableDB, "target_state_index")
+def show_next_character_function(ShowPositionF):
+    if ShowPositionF: show_position_str = "1"
+    else:             show_position_str = "0"
 
-    reload_str += "    if( 0 ) goto %s;                /* Unit test: avoid unreferenced label. */\n" \
-                  % address.get_label("$terminal-FAILURE")
+    return show_next_character_function_txt.replace("$$SHOW_POSITION$$", show_position_str)
 
-    return blue_print(customized_unit_test_function_txt,
-                      [("$$MARKER_LIST$$",            ml_txt),
-                       ("$$SHOW_POSITION$$",          show_position_str),
-                       ("$$LOCAL_VARIABLES$$",        Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB))),
-                       ("$$MARK_LEXEME_START$$",      Lng.LEXEME_START_SET()),
-                       ("$$SOURCE_CODE$$",            SourceCode),
-                       ("$$INPUT_P_DEREFERENCE$$",    Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE())),
-                       ("$$TERMINAL_END_OF_STREAM$$", address.get_label("$terminal-EOF")),
-                       ("$$TERMINAL_FAILURE$$",       address.get_label("$terminal-FAILURE")),
-                       ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),
-                       ("$$RELOAD$$",                 reload_str),
-                       ("$$END_STR$$",                EndStr)])
 
 customized_unit_test_function_txt = """
-bool
+static bool show_next_character(QUEX_NAME(Buffer)* buffer);
+static bool skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me);
+
+__QUEX_TYPE_ANALYZER_RETURN_VALUE 
+QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER* me)
+{
+#   define  engine (me)
+#   define  self   (*me)
+#   define QUEX_LABEL_STATE_ROUTER $$QUEX_LABEL_STATE_ROUTER$$ 
+#   ifndef QUEX_TYPE_CHARACTER_POSITION
+#      define QUEX_TYPE_CHARACTER_POSITION (QUEX_TYPE_CHARACTER*)
+#   endif
+$$LOCAL_VARIABLES$$
+
+ENTRY:
+    if( skip_irrelevant_characters(me) == false ) {
+        goto $$TERMINAL_END_OF_STREAM$$;
+    }
+    QUEX_NAME(Counter_reset)(&me->counter);
+
+/*__BEGIN_________________________________________________________________________________*/
+$$SOURCE_CODE$$
+/*__END___________________________________________________________________________________*/
+
+$$REENTRY$$:
+$$REENTRY2$$:
+    /* Originally, the reentry preparation does not increment or do anything to _input_p
+     * Here, we use the chance to print the position where the skipper ended.
+     * If we are at the border and there is still stuff to load, then load it so we can
+     * see what the next character is coming in.                                          */
+    QUEX_NAME(Counter_print_this)(&self.counter);
+    if( ! show_next_character(&me->buffer) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
+    goto ENTRY;
+
+$$TERMINAL_FAILURE$$:
+$$TERMINAL_END_OF_STREAM$$:
+$$END_STR$$
+#undef engine
+}
+"""
+
+show_next_character_function_txt = """
+static bool
 show_next_character(QUEX_NAME(Buffer)* buffer) 
 {
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
@@ -184,50 +227,28 @@ show_next_character(QUEX_NAME(Buffer)* buffer)
     }
     return true;
 }
+"""
 
-__QUEX_TYPE_ANALYZER_RETURN_VALUE 
-QUEX_NAME(Mr_UnitTest_analyzer_function)(QUEX_TYPE_ANALYZER* me)
+skip_irrelevant_characters_function_txt = """
+
+static bool
+skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
 {
-#   define  engine (me)
-#   define  self   (*me)
     QUEX_TYPE_CHARACTER   input = 0x0;
-#   define  position          ((void*)0x0)
-#   define  PositionRegisterN 0
-$$LOCAL_VARIABLES$$
 
-ENTRY:
-    /* Skip irrelevant characters */
     while(1 + 1 == 2) { 
-        $$INPUT_P_DEREFERENCE$$
+        input = *(me->buffer._input_p);
 $$MARKER_LIST$$
         if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
-            $$MARK_LEXEME_START$$
+            me->buffer._lexeme_start_p = me->buffer._input_p;
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-                goto $$TERMINAL_END_OF_STREAM$$;
+                return false;
             }
             QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
         }
         ++(me->buffer._input_p);
     }
-    QUEX_NAME(Counter_reset)(&me->counter);
-/*________________________________________________________________________________________*/
-$$SOURCE_CODE$$
-/*________________________________________________________________________________________*/
-$$RELOAD$$
-
-__REENTRY:
-    /* Originally, the reentry preparation does not increment or do anything to _input_p
-     * Here, we use the chance to print the position where the skipper ended.
-     * If we are at the border and there is still stuff to load, then load it so we can
-     * see what the next character is coming in.                                          */
-    QUEX_NAME(Counter_print_this)(&self.counter);
-    if( ! show_next_character(&me->buffer) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
-    goto ENTRY;
-
-$$TERMINAL_FAILURE$$:
-$$TERMINAL_END_OF_STREAM$$:
-$$END_STR$$
-#undef engine
+    return true;
 }
 """
 

@@ -2,7 +2,7 @@
 (C) 2012-2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-import quex.engine.generator.base                   as     generator
+import quex.engine.generator.loop                   as     loop
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
@@ -56,9 +56,9 @@ def get(CCFactory, Name):
 
     door_id_return = dial_db.new_door_id()
     code, \
-    door_id_beyond = generator.do_loop(CCFactory, 
-                                       DoorIdExit      = door_id_return,
-                                       LexemeEndCheckF = True)
+    door_id_beyond = loop.do(CCFactory, 
+                             DoorIdExit      = door_id_return,
+                             LexemeEndCheckF = True)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, 
                              door_id_beyond) 

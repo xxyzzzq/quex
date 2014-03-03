@@ -29,7 +29,9 @@ def verify(A, TrafoInfo):
                     y      = target_begin + offset
                     result.quick_append_interval(Interval(y))
 
+    result.assert_consistency()
     result.clean()
+    result.assert_consistency()
     return result
 
 def create_random_interval_list(ContinuousF):
@@ -68,6 +70,7 @@ def test(Comment, A, TrafoInfo):
     ## print "#  A       = " + repr(x)
     ## print "#  Trafo   = " + repr(TrafoInfo)
     x.transform(TrafoInfo)
+    x.assert_consistency()
     ## print "#  Result  = " + repr(x)
     result = verify(A, TrafoInfo)
     ## print "#  Verify  = " + repr(result)

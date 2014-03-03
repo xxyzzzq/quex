@@ -23,6 +23,7 @@ def the_difference(Comment, A, B, ViceVersaF=True):
             X = deepcopy(A)
             safe = Interval(interval.begin, interval.end)
             X.cut_interval(safe)
+            X.assert_consistency()
             safe.begin = 7777
             safe.end   = 0000
             print "#  A.cut_interval(B) = " + repr(X) 

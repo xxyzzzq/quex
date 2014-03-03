@@ -18,7 +18,9 @@ def test(NSet):
     print "# > plot \"tmp\" w l"
     
     print NSet.gnuplot_string(1)
-    print NSet.inverse().gnuplot_string(0)
+    result = NSet.inverse()
+    result.assert_consistency()
+    print result.gnuplot_string(0)
 
 if "1" in sys.argv:
     test(NumberSet([Interval(10,20),   Interval(21,30),

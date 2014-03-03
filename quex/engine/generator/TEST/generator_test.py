@@ -17,7 +17,7 @@ from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.state_router          as     state_router_generator
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import all_isinstance
-from   quex.engine.counter                         import CounterSetupLineColumn_Default
+from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
 from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
 from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
@@ -312,7 +312,9 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
 
     return txt
 
-def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0, IndentationSupportF=False, TokenQueueF=False):
+def create_common_declarations(Language, QuexBufferSize, TestStr, 
+                               QuexBufferFallbackN=-1, BufferLimitCode=0, 
+                               IndentationSupportF=False, TokenQueueF=False):
     # Determine the 'fallback' region size in the buffer
     if QuexBufferFallbackN == -1: 
         QuexBufferFallbackN = QuexBufferSize - 3

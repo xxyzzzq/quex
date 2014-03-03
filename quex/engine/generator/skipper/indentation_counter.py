@@ -5,6 +5,7 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.commands                import CommandList, \
                                                            LexemeStartToReferenceP
 from   quex.engine.analyzer.door_id_address_label   import dial_db
+import quex.engine.generator.loop                   as     loop
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
@@ -63,14 +64,14 @@ def do(Data, Mode=None):
         reload_f     = True
         reload_state = TheAnalyzer.reload_state
 
-    result = generator.do_loop(counter_db, 
-                               AfterExitDoorId   = DoorID.continue_without_on_after_match(),
-                               CharacterSet      = character_set,
-                               CheckLexemeEndF   = False,
-                               ReloadF           = reload_f,
-                               ReloadStateExtern = reload_state, 
-                               EngineType        = engine.FORWARD,
-                               MaintainLexemeF   = False)
+    result = loop.do(counter_db, 
+                     AfterExitDoorId   = DoorID.continue_without_on_after_match(),
+                     CharacterSet      = character_set,
+                     CheckLexemeEndF   = False,
+                     ReloadF           = reload_f,
+                     ReloadStateExtern = reload_state, 
+                     EngineType        = engine.FORWARD,
+                     MaintainLexemeF   = False)
     assert isinstance(result, list)
 
     Mode = None

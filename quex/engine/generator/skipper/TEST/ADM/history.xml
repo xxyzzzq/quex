@@ -1,4 +1,4 @@
-<history date="Wed Feb 26 18:17:37 2014" element-n="127">
+<history date="Mon Mar  3 09:50:02 2014" element-n="131">
     <day year="2012" month="04" day="29">
         <history-init time="04:47:15"/>
         <crc-error time="19:51:20" application="test-skip-trigger-set.py" choice="ANSI-C-PlainMemory" database-crc="1490947051" real-crc="600307805"/>
@@ -141,5 +141,11 @@
         <crc-error time="18:59:52" application="test-skip.py" choice="ANSI-C" database-crc="-925469555" real-crc="982389702"/>
         <crc-error time="18:59:54" application="test-skip.py" choice="Cpp" database-crc="-925469555" real-crc="982389702"/>
         <crc-error time="18:59:56" application="test-skip.py" choice="Cpp_StrangeStream" database-crc="-925469555" real-crc="982389702"/>
+    </day>
+    <day year="2014" month="03" day="03">
+        <crc-error time="07:45:20" application="test-skip.py" choice="Cpp" database-crc="982389702" real-crc="-2098256826"/>
+        <crc-error time="07:45:29" application="test-skip.py" choice="ANSI-C-PlainMemory" database-crc="982389702" real-crc="-2098256826"/>
+        <crc-error time="07:45:31" application="test-skip.py" choice="ANSI-C" database-crc="982389702" real-crc="-2098256826"/>
+        <crc-error time="07:45:35" application="test-skip.py" choice="Cpp_StrangeStream" database-crc="982389702" real-crc="-2098256826"/>
     </day>
 </history>
