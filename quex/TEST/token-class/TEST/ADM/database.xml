@@ -1,8 +1,8 @@
-<test-database execution-time-sec="0.77" date="Mon Mar  3 09:49:42 2014">
+<test-database execution-time-sec="0.77" date="Tue Mar  4 08:27:17 2014">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1393835609L" vanished="False"/>
-        <make-procedure success="True" time_sec="2.030873"/>
+        <make-procedure success="False" time_sec="2.030873"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="1902503654"/>
         </choice-list>
@@ -18,7 +18,7 @@
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="simple.exe" info-request-time="1393835611L" vanished="False"/>
-        <make-procedure success="True" time_sec="2.067347"/>
+        <make-procedure success="False" time_sec="2.067347"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="120585915"/>
         </choice-list>

@@ -6,7 +6,8 @@ from   quex.engine.generator.code.core            import CodeTerminal
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.tools                          import return_None
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.analyzer.commands              import CommandList, \
+from   quex.engine.analyzer.commands              import E_R, \
+                                                         Assign, \
                                                          ColumnCountAdd, \
                                                          ColumnCountGridAdd, \
                                                          ColumnCountReferencePDeltaAdd, \
@@ -96,7 +97,7 @@ class CountCmdFactory:
         self.on_begin,         \
         self.on_end,           \
         self.on_before_reload, \
-        self.on_after_reload   = self.__prepare()
+        self.on_after_reload   = CountCmdFactory.__prepare(ColumnNPerChunk)
 
     def is_equal(self, Other):
         if len(self.__map) != len(Other.__map):
@@ -162,7 +163,7 @@ class CountCmdFactory:
 
         cl = self._command(CC_Type, Parameter)
         cl.append(
-            GotoDoorIdIfInputPNotEqualPointer(self.door_id_ok, "LexemeEnd"),
+            GotoDoorIdIfInputPNotEqualPointer(self.door_id_ok, E_R.LexemeEnd),
         )
 
         check_cmd = self._command_on_lexeme_end(CC_Type, Parameter)
@@ -186,7 +187,7 @@ class CountCmdFactory:
                 E_CharacterCountType.COLUMN: return_None,
                 E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP,
                 E_CharacterCountType.LINE:   LineCountAddWithReferenceP,
-            }[CC_Type](Parameter, self.input_p_name, self.column_count_per_chunk)
+            }[CC_Type](Parameter, E_R.InputP, self.column_count_per_chunk)
 
         if cmd is None: return []
         else:           return [ cmd ]
@@ -195,10 +196,10 @@ class CountCmdFactory:
         if   self.column_count_per_chunk is None:    return None
         elif CC_Type != E_CharacterCountType.COLUMN: return None
 
-        return ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                             self.column_count_per_chunk)
+        return ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk)
 
-    def __prepare(self):
+    @staticmethod
+    def __prepare(ColumnNPerChunk):
         """BEFORE RELOAD:
                                                            input_p
                                                            |
@@ -208,7 +209,7 @@ class CountCmdFactory:
              
                      column_n += (input_p - reference_p) * C
 
-              where C = self.column_count_per_chunk.
+              where C = ColumnNPerChunk
 
            AFTER RELOAD:
 
@@ -218,22 +219,27 @@ class CountCmdFactory:
                  |
                  reference_p
         """
-        if self.column_count_per_chunk is None: 
+        if ColumnNPerChunk is None: 
             return [], [], [], []
 
         on_begin = [
-            ColumnCountReferencePSet(self.input_p_name) 
-        ]
-        on_end = [
-            ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                          self.column_count_per_chunk) 
-        ]
-        on_before_reload = [
-            ColumnCountReferencePDeltaAdd(self.input_p_name, 
-                                          self.column_count_per_chunk) 
+            ColumnCountReferencePSet(E_R.InputP) 
         ]
         on_after_reload  = [
-            ColumnCountReferencePSet(self.input_p_name) 
+            ColumnCountReferencePSet(E_R.InputP) 
         ]
+        on_end = [
+            ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk) 
+        ]
+        on_before_reload = [
+            ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk) 
+        ]
+        if Setup.variable_character_sizes_f():
+            on_before_reload.append(
+                Assign(E_R.LexemeStartP, E_R.CharacterBeginP)
+            )
+            on_after_reload.append(
+                Assign(E_R.CharacterBeginP, E_R.LexemeStartP)
+            )
         return on_begin, on_end, on_before_reload, on_after_reload
 

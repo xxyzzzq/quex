@@ -614,7 +614,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller)* me = buffer->filler;
 #       ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
         uint8_t               utf8_encoded_str[512]; 
-        static char           message[1024];
+        char                  message[1024];
         const size_t          MessageSize = (size_t)1024;
         uint8_t*              WEnd        = 0x0;
         uint8_t*              witerator   = 0x0; 

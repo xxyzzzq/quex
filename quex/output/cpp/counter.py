@@ -8,8 +8,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID, \
                                                            IfDoorIdReferencedCode
-from   quex.engine.analyzer.commands                import CommandList, \
-                                                           InputPToLexemeStartP
+from   quex.engine.analyzer.commands                import CommandList
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.tools                            import typed
 

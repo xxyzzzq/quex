@@ -3,11 +3,9 @@ import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.transformation        as     transformation
-from   quex.engine.analyzer.commands                   import InputPDecrement, \
-                                                              LexemeStartToReferenceP, \
-                                                              InputPToLexemeStartP, \
-                                                              CharacterBeginPToInputP, \
-                                                              InputPToCharacterBeginP
+from   quex.engine.analyzer.commands                   import E_R, \
+                                                              InputPDecrement, \
+                                                              Assign
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
                                                               none_is_None, \
@@ -103,8 +101,8 @@ class CharacterSetStateMachine:
             # 1 character == variable number of chunks
             # => store begin of character in 'lexeme_start_p'
             # => rest to last character: 'input_p = lexeme_start_p'
-            self.on_begin   = [ CharacterBeginPToInputP() ]
-            self.on_putback = [ InputPToCharacterBeginP() ]
+            self.on_begin   = [ Assign(E_R.CharacterBeginP, E_R.InputP) ]
+            self.on_putback = [ Assign(E_R.InputP, E_R.CharacterBeginP) ]
 
     def __prepare_before_and_after_reload(self):
         """The 'lexeme_start_p' restricts the amount of data which is load into the
@@ -124,8 +122,8 @@ class CharacterSetStateMachine:
             self.on_before_reload = []
             self.on_after_reload  = []
         else:
-            self.on_before_reload = [ LexemeStartToReferenceP(Lng.INPUT_P())]
-            self.on_after_reload  = [ InputPToLexemeStartP() ]
+            self.on_before_reload = [ Assign(E_R.InputP, E_R.LexemeStartP) ]
+            self.on_after_reload  = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
 
     def __prepare(self, IncidenceIdMap):
         sm = StateMachine()

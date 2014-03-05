@@ -5,8 +5,7 @@ from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.commands              import InputPDecrement, \
                                                          InputPToLexemeStartP, \
-                                                         GotoDoorId, \
-                                                         LexemeStartToReferenceP
+                                                         GotoDoorId
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.generator.code.core            import CodeTerminal
 
@@ -96,9 +95,9 @@ def do(IncidenceIdMap, ReloadF, DoorIdExit):
         terminal_else = None
     else:
         if Setup.variable_character_sizes_f():
-            on_entry   = [ LexemeStartToReferenceP(Lng.INPUT_P()) ]
-            on_reentry = [ LexemeStartToReferenceP(Lng.INPUT_P()) ]
-            on_else    = [ InputPToLexemeStartP() ]
+            on_entry   = [ Assign(E_R.InputP, E_R.LexemeStartP) ]
+            on_reentry = [ Assign(E_R.InputP, E_R.LexemeStartP) ]
+            on_else    = [ Assign(E_R.LexemeStartP, E_R.InputP) ]
         else:
             on_entry   = []
             on_reentry = []

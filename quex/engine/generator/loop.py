@@ -7,9 +7,10 @@ from   quex.engine.state_machine.engine_state_machine_set import CharacterSetSta
 from   quex.engine.analyzer.state.drop_out             import DropOutGotoDoorId
 import quex.engine.analyzer.core                       as     analyzer_generator
 import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.engine.analyzer.commands                   import CommandList, \
-                                                              GotoDoorId, \
-                                                              LexemeStartToReferenceP
+from   quex.engine.analyzer.commands                   import E_R, \
+                                                              CommandList, \
+                                                              Assign, \
+                                                              GotoDoorId
 import quex.engine.state_machine.index                 as     index
 from   quex.engine.tools                               import typed
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
@@ -159,7 +160,7 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
 def _prepare_reload(analyzer, CcFactory, CsSm, LexemeMaintainedF, ReloadStateExtern): 
     on_before_reload = []
     if not LexemeMaintainedF:
-        on_before_reload.append(LexemeStartToReferenceP(Lng.INPUT_P()))
+        on_before_reload.append(Assign(E_R.InputP, E_R.LexemeStartP))
     on_before_reload.extend(CcFactory.on_before_reload)
     on_before_reload.extend(CsSm.on_before_reload)
 
