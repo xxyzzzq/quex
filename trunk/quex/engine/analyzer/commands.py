@@ -279,30 +279,24 @@ def __configure():
     #                    # 1 + 2 = READ/WRITE
     brancher_set = set() # set of ids of branching/goto-ing commands.
 
-    def get_register_access_info(Info):
-        register_id            = Info[0]
-        rights                 = Info[1]
-        register_access_rights = RegisterAccessRight(rights & r, rights & w)
-        if len(Info) == 2:
-            return (register_id, (register_access_rights, None))
-        elif len(Info) == 3:
-            specifier = Info[2]
-            return (register_id, (register_access_rights, Info[2]))
-        else:
-            assert False
+    class RegisterAccessDB(dict):
+        def __init__(self, RegisterAccessInfoList):
+            for info in RegisterAccessInfoList:
+                register_id = info[0]
+                rights      = info[1]
+                if len(info) == 3: 
+                    sub_id_reference = info[2]
+                    register_id = (register_id, sub_id_reference)
+                self[register_id] = RegisterAccessRight(rights & r, rights & w)
 
     def c(CmdId, ParameterList, *RegisterAccessInfoList):
         # -- access to related 'registers'
-        access_db[CmdId] = dict(
-            get_register_access_info(info) for info in RegisterAccessInfoList
-        )
+        access_db[CmdId] = RegisterAccessDB(RegisterAccessInfoList)
+
         # -- parameters that specify the command
-        if type(ParameterList) != tuple:
-            content_db[CmdId] = ParameterList # Constructor
-        elif len(ParameterList) == 0:
-            content_db[CmdId] = None
-        else:
-            content_db[CmdId] = namedtuple("%s_content" % CmdId, ParameterList)
+        if type(ParameterList) != tuple: content_db[CmdId] = ParameterList # Constructor
+        elif len(ParameterList) == 0:    content_db[CmdId] = None
+        else:                            content_db[CmdId] = namedtuple("%s_content" % CmdId, ParameterList)
         
         # -- computational cost of the command
         cost_db[CmdId] = 1
@@ -313,29 +307,23 @@ def __configure():
 
     c(E_Cmd.Accepter,                         AccepterContent, 
                                               (E_R.PreContextFlags,r), (E_R.AcceptanceRegister,w))
+    c(E_Cmd.Assign,                           ("target", "source"), 
+                                              (0,w),     (1,r))
     c(E_Cmd.PreContextOK,                     ("pre_context_id",), 
                                               (E_R.PreContextFlags,w))
     #
-    c(E_Cmd.GotoDoorId,                       ("door_id",), 
-                                              (E_R.ThreadOfControl,r))
-    c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id", "pointer_name"),
-                                              (E_R.ThreadOfControl,r), (E_R.InputP,r), (E_R.Pointer,r,"pointer_name"))
+    c(E_Cmd.GotoDoorId,                        ("door_id",), 
+                                               (E_R.ThreadOfControl,r))
+    c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id",                              "pointer"),
+                                               (E_R.ThreadOfControl,r), (E_R.InputP,r), (1,r))
     #
-    c(E_Cmd.InputPToCharacterBeginP,          None, (E_R.InputP,w),          (E_R.CharacterBeginP, r))
-    c(E_Cmd.CharacterBeginPToInputP,          None, (E_R.CharacterBeginP,w), (E_R.InputP, r))
-    #
-    c(E_Cmd.InputPToLexemeStartP,             None, (E_R.InputP,w), (E_R.LexemeStartP, r))
-    c(E_Cmd.StoreInputPosition,               ("pre_context_id", "position_register", "offset"),
-                                              (E_R.InputP,r), 
-                                              (E_R.PreContextFlags,r),
-                                              (E_R.PositionRegister,w,"position_register"))
+    c(E_Cmd.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
+                                              (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
     c(E_Cmd.InputPDecrement,                  None, (E_R.InputP,r+w))
     c(E_Cmd.InputPIncrement,                  None, (E_R.InputP,r+w))
     c(E_Cmd.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
     #
-    c(E_Cmd.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r),   (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
-    c(E_Cmd.LexemeStartToReferenceP,          ("pointer_name",), 
-                                              (E_R.LexemeStartP,r+w), (E_R.Pointer,r,"pointer_name"))
+    c(E_Cmd.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r), (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
     #
     c(E_Cmd.IndentationAdd,                   ("value",),
                                               (E_R.Indentation,r+w))
@@ -352,16 +340,16 @@ def __configure():
                                               (E_R.Column,r+w))
     c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
                                               (E_R.Column,r+w))
-    c(E_Cmd.ColumnCountReferencePSet,         ("pointer_name", "offset"),
-                                              (E_R.ReferenceP,w))
-    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer_name", "column_n_per_chunk"),
-                                              (E_R.Column,r+w), (E_R.ReferenceP,r))
-    c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer_name", "column_n_per_chunk"),
-                                              (E_R.Column,r+w), (E_R.ReferenceP,r+w))
+    c(E_Cmd.ColumnCountReferencePSet,         ("pointer", "offset"),
+                                              (0,r), (E_R.ReferenceP,w))
+    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk"),
+                                              (E_R.Column,r+w), (0,r), (E_R.ReferenceP,r))
+    c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer", "column_n_per_chunk"),
+                                              (E_R.Column,r+w), (1,r), (E_R.ReferenceP,r+w))
     c(E_Cmd.LineCountAdd,                     ("value",),
                                               (E_R.Line,r+w))
-    c(E_Cmd.LineCountAddWithReferenceP,       ("value", "pointer_name", "column_n_per_chunk"),
-                                              (E_R.Line,r+w), (E_R.ReferenceP,r+w))
+    c(E_Cmd.LineCountAddWithReferenceP,       ("value", "pointer", "column_n_per_chunk"),
+                                              (E_R.Line,r+w), (1,r), (E_R.ReferenceP,r+w))
     #
     c(E_Cmd.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
                                               (E_R.PathIterator,w))
@@ -394,11 +382,15 @@ def get_register_access_iterable(Cmd):
              command accesses the register with the given access type/right.
     """
     global __access_db
-    for register_id, info in __access_db[Cmd.id].iteritems():
-        right, specifier = info
-        if specifier is not None:
-            register_id = "%s:%s" % (specifier, Cmd.content._asdict()[specifier])
-        yield register_id, right
+    for register_id, rights in __access_db[Cmd.id].iteritems():
+        if isinstance(register_id, int):
+            register_id = Cmd.content[register_id] # register_id == Argument number which contains E_R
+        elif type(register_id) == tuple:
+            main_id          = register_id[0]      # register_id[0] --> in E_R
+            sub_reference_id = register_id[1]      # register_id[1] --> Argument number containing sub-id
+            sub_id           = Cmd.content[reference_id]
+            register_id = "%s:%s" % (main_id, sub_id)
+        yield register_id, rights
 
 def get_register_access_db(Cmd):
     """RETURNS: map: register_id --> access right(s)
@@ -456,26 +448,14 @@ def InputPDecrement():
 def InputPDereference():
     return _cmd(E_Cmd.InputPDereference)
 
-def CharacterBeginPToInputP():
-    return _cmd(E_Cmd.CharacterBeginPToInputP)
-
-def InputPToCharacterBeginP():
-    return _cmd(E_Cmd.InputPToCharacterBeginP)
-
-def InputPToLexemeStartP():
-    return _cmd(E_Cmd.InputPToLexemeStartP)
-
-def LexemeStartToReferenceP(PointerName):
-    return _cmd(E_Cmd.LexemeStartToReferenceP, PointerName)
-
 def LexemeResetTerminatingZero():
     return _cmd(E_Cmd.LexemeResetTerminatingZero)
 
-def ColumnCountReferencePSet(PointerName, Offset=0):
-    return _cmd(E_Cmd.ColumnCountReferencePSet, PointerName, Offset)
+def ColumnCountReferencePSet(Pointer, Offset=0):
+    return _cmd(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
 
-def ColumnCountReferencePDeltaAdd(PointerName, ColumnNPerChunk):
-    return _cmd(E_Cmd.ColumnCountReferencePDeltaAdd, PointerName, ColumnNPerChunk)
+def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk):
+    return _cmd(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk)
 
 def ColumnCountAdd(Value):
     return _cmd(E_Cmd.ColumnCountAdd, Value)
@@ -483,8 +463,8 @@ def ColumnCountAdd(Value):
 def ColumnCountGridAdd(GridSize):
     return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
-def ColumnCountGridAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, PointerName,ColumnNPerChunk)
+def ColumnCountGridAddWithReferenceP(Value, Pointer, ColumnNPerChunk):
+    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, Pointer,ColumnNPerChunk)
 
 def LineCountAdd(Value):
     return _cmd(E_Cmd.LineCountAdd, Value)
@@ -495,8 +475,11 @@ def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
 def GotoDoorId(DoorId):
     return _cmd(E_Cmd.GotoDoorId, DoorId)
 
-def GotoDoorIdIfInputPNotEqualPointer(DoorId, PointerName):
-    return _cmd(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, PointerName)
+def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
+    return _cmd(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
+
+def Assign(TargetRegister, SourceRegister):
+    return _cmd(E_Cmd.Assign, TargetRegister, SourceRegister)
 
 def Accepter():
     return _cmd(E_Cmd.Accepter)

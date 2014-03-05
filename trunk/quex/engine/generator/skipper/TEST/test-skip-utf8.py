@@ -44,13 +44,13 @@ def core(Executable, BufferSize, TestStr):
     #os.system("ls test.txt -l")
     run_this("./%s test.txt %i" % (Executable, BufferSize))
     #sys.exit()
-    os.remove("test.txt")
+    #os.remove("test.txt")
 
 exe_name, tmp_file = make(trigger_set, BS)
 
-core(exe_name, BS, "語")
+#core(exe_name, BS, "語")
 core(exe_name, BS, "سά")
-core(exe_name, BS, "نض語")
-core(exe_name, BS, "بحض-")
-core(exe_name, BS, "ةنشر\n")
+#core(exe_name, BS, "نض語")
+#core(exe_name, BS, "بحض-")
+#core(exe_name, BS, "ةنشر\n")
 

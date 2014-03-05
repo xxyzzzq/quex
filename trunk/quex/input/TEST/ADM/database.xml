@@ -1,6 +1,6 @@
-<test-database execution-time-sec="14.45" date="Mon Mar  3 09:50:08 2014">
+<test-database execution-time-sec="14.44" date="Tue Mar  4 08:27:19 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.92"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.91"> 
         <application file-name="indentation_setup.py" info-request-time="1392920307L" vanished="False"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="FAIL" time_sec="0.19" crc="-1913863679"/>
@@ -59,7 +59,7 @@
         </test>
     </group>
     <group name="token_type">
-        <test title="Union Members" time-sum-sec="0.56"> 
+        <test title="Union Members" time-sum-sec="0.55"> 
             <application file-name="token_type-3.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="9" same_result="False">
                <choice name="None" result="OK" time_sec="0.06" crc="-1625875659"/>
@@ -95,7 +95,7 @@
                <choice name="6" result="FAIL" time_sec="0.06" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" time-sum-sec="0.80"> 
+        <test title="Buildt-In Members" time-sum-sec="0.81"> 
             <application file-name="token_type-1.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="8" same_result="False">
                <choice name="None" result="OK" time_sec="0.07" crc="865997258"/>
@@ -108,7 +108,7 @@
                <choice name="Error-2" result="FAIL" time_sec="0.14" crc="2076320285"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" time-sum-sec="0.38"> 
+        <test title="Distinct Members" time-sum-sec="0.37"> 
             <application file-name="token_type-2.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="None" result="OK" time_sec="0.06" crc="-1459557591"/>

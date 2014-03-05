@@ -2,8 +2,7 @@ import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
-from   quex.engine.analyzer.commands                import CommandList, \
-                                                           LexemeStartToReferenceP
+from   quex.engine.analyzer.commands                import CommandList
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 import quex.engine.generator.loop                   as     loop
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
@@ -321,7 +320,7 @@ def __get_transition_block(IndentationSetup, CounterAdr):
     transition_map.fill_gaps(DoorID.drop_out(CounterAdr))
 
     reload_cl = CommandList()
-    reload_cl.append(LexemeStartToReferenceP("reference_p"))
+    reload_cl.append(Assign(E_R.ReferenceP, E_R.LexemeStartP))
     reload_cl.append(PrepareAfterReload_InitState(state)) # This causes 'Terminal End-of-File' upon reload failure.
     analyzer.reload_state.add_state(CounterState, reload_cl)
 

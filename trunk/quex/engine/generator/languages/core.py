@@ -15,6 +15,7 @@
 import quex.engine.generator.languages.cpp               as     cpp
 from   quex.engine.generator.code.base                   import SourceRef
 from   quex.engine.analyzer.state.core                   import AnalyzerState
+from   quex.engine.analyzer.commands                     import E_R
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
@@ -233,6 +234,12 @@ class Lng_Cpp(dict):
     def CLASS_MEMBER_DEFINITION(self, TypeStr, MaxTypeNameL, VariableName):
         return "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName)
 
+    def REGISTER_NAME(self, Register):
+        return {
+            E_R.InputP:       "(me->buffer._input_p)",
+            E_R.LexemeStartP: "(me->buffer._lexeme_start_p)",
+        }[Register]
+
     def COMMAND(self, Cmd):
         if Cmd.id == E_Cmd.Accepter:
             else_str = ""
@@ -249,8 +256,10 @@ class Lng_Cpp(dict):
                 else_str = "else "
             return "".join(txt)
 
+        elif Cmd.id == E_Cmd.Assign:
+            return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
         elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
-            pointer_name = Cmd.content.pointer_name
+            pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
             offset       = Cmd.content.offset
             if offset != 0:
                 return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (pointer_name, offset) 
@@ -258,7 +267,7 @@ class Lng_Cpp(dict):
                 return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % pointer_name 
 
         elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
-            delta_str = "(%s - reference_p)" % Cmd.content.pointer_name         
+            delta_str = "(%s - reference_p)" % self.REGISTER_NAME(Cmd.content.pointer)
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
                    % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk) 
 
@@ -266,7 +275,9 @@ class Lng_Cpp(dict):
             return self.GOTO(Cmd.content.door_id)
 
         elif Cmd.id == E_Cmd.GotoDoorIdIfInputPNotEqualPointer:
-            return "if( %s != %s ) %s\n" % (self.INPUT_P(), Cmd.content.pointer_name, self.GOTO(Cmd.content.door_id))
+            return "if( %s != %s ) %s\n" % (self.INPUT_P(), 
+                                            self.REGISTER_NAME(Cmd.content.pointer), 
+                                            self.GOTO(Cmd.content.door_id))
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
@@ -278,11 +289,12 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
             txt = [] 
-            self.REFERENCE_P_COLUMN_ADD(txt, Cmd.content.pointer_name, Cmd.content.column_n_per_chunk, 
+            self.REFERENCE_P_COLUMN_ADD(txt, self.REGISTER_NAME(Cmd.content.pointer), 
+                                        Cmd.content.column_n_per_chunk, 
                                         SubtractOneF=True)
             txt.extend(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
                                       Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS")) 
-            self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            self.REFERENCE_P_RESET(txt, self.REGISTER_NAME(Cmd.content.pointer)) 
             return "".join(txt)
 
         elif Cmd.id == E_Cmd.LineCountAdd:
@@ -300,7 +312,7 @@ class Lng_Cpp(dict):
             if Cmd.content.value != 0:
                 txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
             txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
-            self.REFERENCE_P_RESET(txt, Cmd.content.pointer_name) 
+            self.REFERENCE_P_RESET(txt, self.REGISTER_NAME(Cmd.content.pointer)) 
             return "".join(txt)
 
         elif Cmd.id == E_Cmd.StoreInputPosition:
@@ -348,23 +360,11 @@ class Lng_Cpp(dict):
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
 
-        elif Cmd.id == E_Cmd.CharacterBeginPToInputP:
-            return "    %s = %s;\n" % (self.CHARACTER_BEGIN_P(), self.INPUT_P())
-
-        elif Cmd.id == E_Cmd.InputPToCharacterBeginP:
-            return "    %s = %s;\n" % (self.INPUT_P(), self.CHARACTER_BEGIN_P())
-
-        elif Cmd.id == E_Cmd.LexemeStartToReferenceP:
-            return "    %s\n" % self.LEXEME_START_SET(Cmd.content.pointer_name)
-
         elif Cmd.id == E_Cmd.LexemeResetTerminatingZero:
             return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
 
         elif Cmd.id == E_Cmd.InputPDereference:
             return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
-
-        elif Cmd.id == E_Cmd.InputPToLexemeStartP:
-            return "    %s\n" % self.INPUT_P_TO_LEXEME_START()
 
         elif Cmd.id == E_Cmd.InputPIncrement:
             return "    %s\n" % self.INPUT_P_INCREMENT()
@@ -379,7 +379,7 @@ class Lng_Cpp(dict):
         #    return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
         #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:
-            assert False, "Unknown Entry Action"
+            assert False, "Unknown command '%s'" % Cmd.id
 
     def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
         text = [
