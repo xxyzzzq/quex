@@ -236,8 +236,10 @@ class Lng_Cpp(dict):
 
     def REGISTER_NAME(self, Register):
         return {
-            E_R.InputP:       "(me->buffer._input_p)",
-            E_R.LexemeStartP: "(me->buffer._lexeme_start_p)",
+            E_R.InputP:          "(me->buffer._input_p)",
+            E_R.LexemeStartP:    "(me->buffer._lexeme_start_p)",
+            E_R.CharacterBeginP: "character_begin_p",
+            E_R.ReferenceP:      "reference_p",
         }[Register]
 
     def COMMAND(self, Cmd):

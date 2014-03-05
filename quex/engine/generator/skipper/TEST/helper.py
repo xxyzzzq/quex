@@ -234,7 +234,7 @@ skip_irrelevant_characters_function_txt = """
 static bool
 skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
 {
-    QUEX_TYPE_CHARACTER   input = 0x0;
+    QUEX_TYPE_CHARACTER   input;
 
     while(1 + 1 == 2) { 
         input = *(me->buffer._input_p);
