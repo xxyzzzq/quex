@@ -122,8 +122,8 @@ class CharacterSetStateMachine:
             self.on_before_reload = []
             self.on_after_reload  = []
         else:
-            self.on_before_reload = [ Assign(E_R.InputP, E_R.LexemeStartP) ]
-            self.on_after_reload  = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
+            self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
+            self.on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]
 
     def __prepare(self, IncidenceIdMap):
         sm = StateMachine()

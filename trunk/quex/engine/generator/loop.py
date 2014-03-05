@@ -160,7 +160,7 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
 def _prepare_reload(analyzer, CcFactory, CsSm, LexemeMaintainedF, ReloadStateExtern): 
     on_before_reload = []
     if not LexemeMaintainedF:
-        on_before_reload.append(Assign(E_R.InputP, E_R.LexemeStartP))
+        on_before_reload.append(Assign(E_R.LexemeStartP, E_R.InputP))
     on_before_reload.extend(CcFactory.on_before_reload)
     on_before_reload.extend(CsSm.on_before_reload)
 
