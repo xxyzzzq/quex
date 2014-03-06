@@ -234,12 +234,5 @@ class CountCmdFactory:
         on_before_reload = [
             ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk) 
         ]
-        if Setup.variable_character_sizes_f():
-            on_before_reload.append(
-                Assign(E_R.LexemeStartP, E_R.CharacterBeginP)
-            )
-            on_after_reload.append(
-                Assign(E_R.CharacterBeginP, E_R.LexemeStartP)
-            )
         return on_begin, on_end, on_before_reload, on_after_reload
 

@@ -61,7 +61,8 @@ class EngineStateMachineSet:
 
 
 class CharacterSetStateMachine:
-    def __init__(self, IncidenceIdMap):
+    @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
+    def __init__(self, IncidenceIdMap, MaintainLexemeF):
         """Brief: Generates a state machine that implements the transition
         to terminals upon the input falling into a number set. 
             
@@ -77,12 +78,17 @@ class CharacterSetStateMachine:
         If Setup.buffer_codec_transformation_info is defined the state machine
         is transformed accordingly.
 
+        MaintainLexemeF == True => The lexeme_start_p is maintained. This restricts
+                                   the amount of content which can be loaded into 
+                                   the buffer.
+
         ARGUMENTS:
 
         IncidenceIdMap: List of tuples (NumberSet, IncidenceId) 
 
         """
         self.sm = self.__prepare(IncidenceIdMap)
+        self.maintain_lexeme_f = MaintainLexemeF
 
         self.__prepare_begin_and_putback()
         self.__prepare_before_and_after_reload()
@@ -118,9 +124,15 @@ class CharacterSetStateMachine:
         RETURN: [0] on_before_reload
                 [1] on_after_reload
         """
-        if not Setup.variable_character_sizes_f():
-            self.on_before_reload = []
-            self.on_after_reload  = []
+        if Setup.variable_character_sizes_f():
+            if not self.maintain_lexeme_f:
+                self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
+                self.on_after_reload  = [ Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
+            else:
+                assert False
+                # Here, the character begin p needs to be adapted to what has been reloaded.
+                self.on_before_reload = [ ] # LexemeBegin is enough.
+                self.on_after_reload  = [ ]
         else:
             self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
             self.on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]

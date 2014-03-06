@@ -17,7 +17,8 @@ from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               dial_db
 from   quex.blackboard import E_StateIndices, \
                               setup as Setup, \
-                              Lng
+                              Lng, \
+                              E_Cmd
 
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
@@ -83,7 +84,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     incidence_id_map.append((beyond_set, beyond_iid))
 
     # Build a state machine based on (character set, incidence_id) pairs.
-    cssm = CharacterSetStateMachine(incidence_id_map)
+    cssm = CharacterSetStateMachine(incidence_id_map, LexemeMaintainedF)
 
     analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
@@ -95,7 +96,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
 
     # -- Analyzer: Prepare Reload
     if ReloadF:
-        _prepare_reload(analyzer, CcFactory, cssm, LexemeMaintainedF, ReloadStateExtern)
+        _prepare_reload(analyzer, CcFactory, cssm, ReloadStateExtern)
 
     # -- The terminals 
     #
@@ -157,16 +158,18 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
 
     return entry.get(tid_reentry).door_id
 
-def _prepare_reload(analyzer, CcFactory, CsSm, LexemeMaintainedF, ReloadStateExtern): 
-    on_before_reload = []
-    if not LexemeMaintainedF:
-        on_before_reload.append(Assign(E_R.LexemeStartP, E_R.InputP))
-    on_before_reload.extend(CcFactory.on_before_reload)
-    on_before_reload.extend(CsSm.on_before_reload)
-
+def _prepare_reload(analyzer, CcFactory, CsSm, ReloadStateExtern): 
+        
     on_before_reload = CommandList.from_iterable(
-        on_before_reload
+           CcFactory.on_before_reload
+         + CsSm.on_before_reload
     )
+    def debuggey(Name, Cl):
+        print "#Nam:", Name
+        for cmd in Cl:
+            print "#  ", str(cmd)
+    debuggey("CcFactor", CcFactory.on_after_reload)
+    debuggey("CcSm", CsSm.on_after_reload)
     on_after_reload  = CommandList.from_iterable(
           CcFactory.on_after_reload
         + CsSm.on_after_reload

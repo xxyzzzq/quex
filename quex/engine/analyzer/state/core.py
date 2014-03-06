@@ -132,14 +132,15 @@ class AnalyzerState(Processor):
 
         # (1) Door for RELOAD SUCCESS
         #
-        if TheAnalyzer.engine_type.is_FORWARD(): first_cmd = InputPIncrement()
-        else:                                    first_cmd = InputPDecrement()
-        after_cl = CommandList(first_cmd, InputPDereference())
-
+        after_cl = []
         if AfterReloadCmdList is not None:
-            after_cl = after_cl.concatinate(AfterReloadCmdList)
+            after_cl.extend(AfterReloadCmdList)
 
-        on_success_ta = TransitionAction(after_cl)
+        if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(InputPIncrement())
+        else:                                    after_cl.append(InputPDecrement())
+        after_cl.append(InputPDereference())
+
+        on_success_ta = TransitionAction(CommandList.from_iterable(after_cl))
         self.entry.enter(self.index, reload_state.index, on_success_ta)
         self.entry.categorize(self.index) # Categorize => DoorID is available.
         on_success_door_id = self.entry.get_door_id(self.index, reload_state.index)
