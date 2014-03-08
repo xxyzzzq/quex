@@ -260,6 +260,7 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.Assign:
             return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
+
         elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
             pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
             offset       = Cmd.content.offset

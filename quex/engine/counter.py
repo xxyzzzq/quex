@@ -222,17 +222,18 @@ class CountCmdFactory:
         if ColumnNPerChunk is None: 
             return [], [], [], []
 
-        on_begin = [
-            ColumnCountReferencePSet(E_R.InputP) 
-        ]
-        on_after_reload  = [
-            ColumnCountReferencePSet(E_R.InputP) 
-        ]
-        on_end = [
-            ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk) 
-        ]
-        on_before_reload = [
-            ColumnCountReferencePDeltaAdd(E_R.InputP, ColumnNPerChunk) 
-        ]
+
+        # When there is more than one chunk possibly involved, then it is
+        # possible that reload happens in between one character. I such cases
+        # the 'input_p' cannot be used as reference for delta-add. Here,
+        # we must rely on the 'character begin_p'.
+        if Setup.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
+        else:                                  pointer = E_R.InputP
+
+        on_begin         = [ ColumnCountReferencePSet(pointer) ]
+        on_after_reload  = [ ColumnCountReferencePSet(pointer) ]
+        on_end           = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk) ]
+        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk) ]
+
         return on_begin, on_end, on_before_reload, on_after_reload
 

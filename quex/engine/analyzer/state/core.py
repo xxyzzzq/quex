@@ -133,12 +133,11 @@ class AnalyzerState(Processor):
         # (1) Door for RELOAD SUCCESS
         #
         after_cl = []
-        if AfterReloadCmdList is not None:
-            after_cl.extend(AfterReloadCmdList)
-
         if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(InputPIncrement())
         else:                                    after_cl.append(InputPDecrement())
         after_cl.append(InputPDereference())
+        if AfterReloadCmdList is not None:
+            after_cl.extend(AfterReloadCmdList)
 
         on_success_ta = TransitionAction(CommandList.from_iterable(after_cl))
         self.entry.enter(self.index, reload_state.index, on_success_ta)

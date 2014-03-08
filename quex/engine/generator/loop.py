@@ -84,26 +84,26 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     incidence_id_map.append((beyond_set, beyond_iid))
 
     # Build a state machine based on (character set, incidence_id) pairs.
-    cssm = CharacterSetStateMachine(incidence_id_map, LexemeMaintainedF)
+    CsSm = CharacterSetStateMachine(incidence_id_map, LexemeMaintainedF)
 
-    analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD, ReloadStateExtern)
+    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadStateExtern)
     analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
 
-    door_id_reentry = _prepare_entry_and_reentry(analyzer, CcFactory, cssm) 
+    door_id_reentry = _prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
     # -- Analyzer: Prepare Reload
     if ReloadF:
-        _prepare_reload(analyzer, CcFactory, cssm, ReloadStateExtern)
+        _prepare_reload(analyzer, CcFactory, CsSm, ReloadStateExtern)
 
     # -- The terminals 
     #
     terminal_list   = CcFactory.get_terminal_list(Lng.INPUT_P(), 
                                                   DoorIdOk          = door_id_reentry, 
                                                   DoorIdOnLexemeEnd = door_id_on_lexeme_end)
-    on_beyond       = cssm.on_putback + CcFactory.on_end + [ GotoDoorId(DoorIdExit) ]
+    on_beyond       = CsSm.on_putback + CcFactory.on_end + [ GotoDoorId(DoorIdExit) ]
     code_on_beyond  = CodeTerminal([Lng.COMMAND(cmd) for cmd in on_beyond])
     terminal_beyond = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
     terminal_beyond.set_incidence_id(beyond_iid)
@@ -123,7 +123,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     
     return txt, DoorID.incidence(terminal_beyond.incidence_id())
 
-def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
+def _prepare_entry_and_reentry(analyzer, CcFactory, CsSm):
     """Prepare the entry and re-entry doors into the initial state
     of the loop-implementing initial state.
 
@@ -149,11 +149,11 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
     # OnEntry
     ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
     ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                       CcFactory.on_begin + cssm.on_begin)
+                                                       CsSm.on_begin + CcFactory.on_begin)
 
     # OnReEntry
     tid_reentry = entry.enter(init_state_index, index.get(), 
-                              TransitionAction(CommandList.from_iterable(cssm.on_begin)))
+                              TransitionAction(CommandList.from_iterable(CsSm.on_begin)))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id
@@ -161,18 +161,18 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, cssm):
 def _prepare_reload(analyzer, CcFactory, CsSm, ReloadStateExtern): 
         
     on_before_reload = CommandList.from_iterable(
-           CcFactory.on_before_reload
-         + CsSm.on_before_reload
+           CsSm.on_before_reload
+         + CcFactory.on_before_reload
     )
-    def debuggey(Name, Cl):
-        print "#Nam:", Name
-        for cmd in Cl:
-            print "#  ", str(cmd)
-    debuggey("CcFactor", CcFactory.on_after_reload)
-    debuggey("CcSm", CsSm.on_after_reload)
+#    def debuggey(Name, Cl):
+#        print "#Nam:", Name
+#        for cmd in Cl:
+#            print "#  ", str(cmd)
+#    debuggey("CcFactor", CcFactory.on_after_reload)
+#    debuggey("CcSm", CsSm.on_after_reload)
     on_after_reload  = CommandList.from_iterable(
-          CcFactory.on_after_reload
-        + CsSm.on_after_reload
+          CsSm.on_after_reload
+        + CcFactory.on_after_reload
     )
 
     analyzer_generator.prepare_reload(analyzer, on_before_reload, on_after_reload)
