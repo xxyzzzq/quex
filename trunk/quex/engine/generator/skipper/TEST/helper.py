@@ -235,6 +235,7 @@ static bool
 skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
 {
     QUEX_TYPE_CHARACTER   input;
+    (void)input;
 
     while(1 + 1 == 2) { 
         input = *(me->buffer._input_p);
