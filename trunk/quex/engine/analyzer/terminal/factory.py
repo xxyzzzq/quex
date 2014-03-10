@@ -67,6 +67,7 @@ class TerminalFactory:
             E_TerminalType.MATCH_PATTERN: self.do_match_pattern,
             E_TerminalType.MATCH_FAILURE: self.do_match_failure,
             E_TerminalType.END_OF_STREAM: self.do_end_of_stream,
+            E_TerminalType.END_OF_STREAM: self.do_end_of_stream,
             E_TerminalType.PLAIN:         self.do_plain,
         }[TerminalType](Code, ThePattern)
 
@@ -131,6 +132,31 @@ class TerminalFactory:
                             LexemeTerminatingZeroF = terminating_zero_f)
         name = TerminalFactory.name_pattern_match_terminal(ThePattern.pattern_string())
         return Terminal(code, name)
+
+    def do_skip_range_open(self, Code, Closer, NestedF=False):
+        txt_entry = Lng.DEFINE("Delimiter", '"%s"', Closer.replace('\\"', '\\\\"'))
+        txt_exit  = Lng.UNDEFINE("Delimiter")
+        if NestedF:
+            txt_entry += Lng.DEFINE("Counter", 'counter')
+            txt_exit  += Lng.UNDEFINE("Counter")
+
+        txt = [
+            txt_entry,
+            Lng.SOURCE_REFERENCE_BEGIN(Code.sr),
+            pretty_code(Code.get_code()),
+            "\n%s" % Lng.SOURCE_REFERENCE_END(),
+            Lng.GOTO(DoorID.incidence()),
+            txt_exit
+        ]
+
+        code = CodeTerminal(text, 
+                            SourceReference        = Code.sr,
+                            PureCode               = Code.get_pure_code(),
+                            LexemeRelevanceF       = False,
+                            LexemeBeginF           = False,
+                            LexemeTerminatingZeroF = False)
+        
+        return Terminal(code, "ON SKIP RANGE OPEN")
 
     def do_match_failure(self, Code, ThePattern):
         """No pattern in the mode has matched. Line and column numbers are 

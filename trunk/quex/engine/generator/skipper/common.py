@@ -62,7 +62,7 @@ def get_character_sequence(Sequence):
 
     return txt, comment_txt
 
-def get_on_skip_range_open(Mode, CloserSequence):
+def get_on_skip_range_open(ModeName, OnSkipRangeOpen, CloserSequence):
     """For unit tests 'Mode' may actually be a string, so that we do not
        have to generate a whole mode just to get the 'on_skip_range_open' 
        code fragment.
@@ -70,11 +70,8 @@ def get_on_skip_range_open(Mode, CloserSequence):
     if Mode is None: return ""
 
     txt = ""
-    if type(Mode) in [str, unicode]:
-        txt += Mode
-
-    elif not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
-        txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % Mode.name + \
+    if not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
+        txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
                '                "End of file occurred before closing skip range delimiter!\\n"' + \
                '                "The \'on_skip_range_open\' handler has not been specified.");'
     else:

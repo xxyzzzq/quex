@@ -36,13 +36,12 @@ def core(Executable, BufferSize, TestStr):
     fh.write(TestStr)
     fh.close()
     run_this("./%s test.txt %i" % (Executable, BufferSize))
-    os.remove("test.txt")
+    #os.remove("test.txt")
 
 exe_name, tmp_file = make("ANSI-C-from-file", map(ord, SEP), BS)
 
 core(exe_name, BS, 
      "abcdefg" + SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP + "ok")
-
 core(exe_name, BS, 
      SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP)
 

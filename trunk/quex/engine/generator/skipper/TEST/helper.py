@@ -5,6 +5,7 @@ import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
 from   quex.engine.generator.TEST.generator_test   import *
+from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.generator.code.base             import CodeFragment
 from   quex.engine.generator.base                  import do_state_router
@@ -13,15 +14,27 @@ from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
 from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
 from   quex.input.regular_expression.construct     import Pattern
 
+class something:
+    pass
+Analyzer = something()
+Analyzer.reload_state = None
+
 def __prepare(Language):
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
     __Setup_init_language_database(Language)
     dial_db.clear()
-    variable_db.variable_db.init()
+    variable_db.init()
 
     return end_str
+
+def __require_variables():
+    variable_db.require("input")  
+    variable_db.require("target_state_else_index")  # upon reload failure
+    variable_db.require("target_state_index")       # upon reload success
+    variable_db.require_array("position", ElementN = 0, Initial = "(void*)0")
+    variable_db.require("PositionRegisterN", Initial = "(size_t)0")
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024, InitialSkipF=True, OnePassOnlyF=False):
 
@@ -32,10 +45,6 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
         "counter_db":           CounterSetupLineColumn_Default(),
         "require_label_SKIP_f": False, 
     }
-    class something:
-        pass
-    Analyzer = something()
-    Analyzer.reload_state = None
     skipper_code = character_set_skipper.do(data, Analyzer)
 
     if InitialSkipF: marker_char_list = TriggerSet.get_number_list()
@@ -47,7 +56,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
                                                ShowPositionF   = False, 
                                                EndStr          = end_str,
                                                MarkerCharList  = marker_char_list, 
-                                               LocalVariableDB = deepcopy(variable_db.variable_db.get()), 
+                                               LocalVariableDB = deepcopy(variable_db.get()), 
                                                ReloadF         = True, 
                                                OnePassOnlyF    = OnePassOnlyF)
 
@@ -57,20 +66,24 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
 
     end_str = __prepare(Language)
 
-    data = { 
-        "closer_sequence":                 CloserSequence, 
-        "closer_pattern":                  Pattern(StateMachine.from_sequence(CloserSequence)),
-    }
-    event_db = {
-        "on_skip_range_open": [ CodeFragment(end_str) ],
-    }
-    mode = get_mode_object("RangeSkipper", EventDB=event_db)
+    door_id_on_skip_range_open = dial_db.new_door_id()
 
-    skipper_code = range_skipper.do(data, mode)
+    data = { 
+        "closer_sequence":            CloserSequence, 
+        "closer_pattern":             Pattern(StateMachine.from_sequence(CloserSequence)),
+        "mode_name":                  "MrUnitTest",
+        "door_id_on_skip_range_open": door_id_on_skip_range_open,
+        "door_id_after":              DoorID.continue_without_on_after_match(),
+    }
+
+    skipper_code = range_skipper.do(data, Analyzer)
+    __require_variables()
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                               MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.variable_db.get())) 
+                                               MarkerCharList  = [], 
+                                               LocalVariableDB = deepcopy(variable_db.get()),
+                                               DoorIdOnSkipRangeOpen=door_id_on_skip_range_open) 
 
 def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSequence, 
                                      QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
@@ -78,27 +91,30 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
 
     end_str = __prepare(Language)
 
+    door_id_on_skip_range_open = dial_db.new_door_id()
     data = { 
-        "opener_sequence":                 OpenerSequence, 
-        "closer_sequence":                 CloserSequence, 
-        "closer_pattern":                  Pattern(StateMachine.from_sequence(CloserSequence)),
+        "opener_sequence":            OpenerSequence, 
+        "closer_sequence":            CloserSequence, 
+        "closer_pattern":             Pattern(StateMachine.from_sequence(CloserSequence)),
+        "mode_name":                  "MrUnitTest",
+        "door_id_on_skip_range_open": door_id_on_skip_range_open,
+        "door_id_after":              DoorID.continue_without_on_after_match(),
     }
-    event_db = {
-        "on_skip_range_open": [ CodeFragment(end_str) ],
-    }
-    mode = get_mode_object("RangeSkipper", EventDB=event_db)
 
-    skipper_code = nested_range_skipper.do(data, mode)
+    skipper_code = nested_range_skipper.do(data, Analyzer)
+    __require_variables()
 
     return create_customized_analyzer_function(Language, TestStr, skipper_code,
                                                QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
-                                               MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.variable_db.get())) 
+                                               MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.get()), 
+                                               DoorIdOnSkipRangeOpen=door_id_on_skip_range_open) 
 
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, 
                                         EndStr, MarkerCharList,
                                         LocalVariableDB, IndentationSupportF=False, 
-                                        TokenQueueF=False, ReloadF=False, OnePassOnlyF=False):
+                                        TokenQueueF=False, ReloadF=False, OnePassOnlyF=False, 
+                                        DoorIdOnSkipRangeOpen=None):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
                                       IndentationSupportF = IndentationSupportF, 
@@ -108,7 +124,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     state_router_txt = do_state_router()
     EngineSourceCode.extend(state_router_txt)
     txt += my_own_mr_unit_test_function(EngineSourceCode, EndStr, LocalVariableDB, 
-                                        ReloadF, OnePassOnlyF)
+                                        ReloadF, OnePassOnlyF, DoorIdOnSkipRangeOpen)
 
     txt += skip_irrelevant_character_function(MarkerCharList)
 
@@ -119,7 +135,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     return txt
 
 def my_own_mr_unit_test_function(SourceCode, EndStr, 
-                                 LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True):
+                                 LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True, DoorIdOnSkipRangeOpen=None):
     
     if type(SourceCode) == list:
         plain_code = "".join(Lng.GET_PLAIN_STRINGS(SourceCode))
@@ -128,6 +144,11 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
     label_eos      = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
     label_reentry  = dial_db.get_label_by_door_id(DoorID.global_reentry())
     label_reentry2 = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
+    if DoorIdOnSkipRangeOpen is not None:
+        label_sro = dial_db.get_label_by_door_id(DoorIdOnSkipRangeOpen)
+    else:
+        label_sro = dial_db.get_label_by_door_id(dial_db.new_door_id())
+
 
     return blue_print(customized_unit_test_function_txt,
                       [
@@ -138,6 +159,7 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
                        ("$$TERMINAL_FAILURE$$",       label_failure),
                        ("$$REENTRY$$",                label_reentry),
                        ("$$REENTRY2$$",               label_reentry2),
+                       ("$$SKIP_RANGE_OPEN$$",        label_sro),
                        ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),
                        ("$$QUEX_LABEL_STATE_ROUTER$$", dial_db.get_label_by_door_id(DoorID.global_state_router())),
                        ("$$END_STR$$",                EndStr)])
@@ -157,7 +179,6 @@ def show_next_character_function(ShowPositionF):
     else:             show_position_str = "0"
 
     return show_next_character_function_txt.replace("$$SHOW_POSITION$$", show_position_str)
-
 
 customized_unit_test_function_txt = """
 static bool show_next_character(QUEX_NAME(Buffer)* buffer);
@@ -196,8 +217,18 @@ $$REENTRY2$$:
 
 $$TERMINAL_FAILURE$$:
 $$TERMINAL_END_OF_STREAM$$:
+$$SKIP_RANGE_OPEN$$:
 $$END_STR$$
 #undef engine
+
+    if( 0 ) {
+        /* Avoit undefined label warnings: */
+        goto $$TERMINAL_FAILURE$$;
+        goto $$TERMINAL_END_OF_STREAM$$;
+        goto $$SKIP_RANGE_OPEN$$;
+        goto $$REENTRY$$;
+        goto $$REENTRY2$$;
+    }
 }
 """
 

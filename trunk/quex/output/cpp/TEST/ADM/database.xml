@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.77" date="Tue Mar  4 08:27:19 2014">
+<test-database execution-time-sec="4.71" date="Mon Mar 10 08:54:36 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.10"> 
         <application file-name="test-token_class.py" info-request-time="1389328242L" vanished="False"/>
@@ -7,19 +7,19 @@
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="2.09"> 
+        <test title="Default Implementation" time-sum-sec="2.03"> 
             <application file-name="default_counter.py" info-request-time="1393279572L" vanished="False"/>
             <choice-list number="12" same_result="False">
                <choice name="Default-UCS" result="FAIL" time_sec="0.17" crc="465702767"/>
-               <choice name="Default2-UCS" result="FAIL" time_sec="0.19" crc="2055988416"/>
+               <choice name="Default2-UCS" result="FAIL" time_sec="0.17" crc="2055988416"/>
                <choice name="Wild-UCS" result="FAIL" time_sec="0.17" crc="722265215"/>
                <choice name="Default-UTF8" result="FAIL" time_sec="0.17" crc="952987760"/>
                <choice name="Default2-UTF8" result="FAIL" time_sec="0.18" crc="-670177127"/>
                <choice name="Wild-UTF8" result="FAIL" time_sec="0.17" crc="-794179234"/>
                <choice name="Default-UTF16" result="FAIL" time_sec="0.17" crc="-160513910"/>
-               <choice name="Default2-UTF16" result="FAIL" time_sec="0.18" crc="-362062174"/>
+               <choice name="Default2-UTF16" result="FAIL" time_sec="0.17" crc="-362062174"/>
                <choice name="Wild-UTF16" result="FAIL" time_sec="0.17" crc="1380808290"/>
-               <choice name="Default-cp037" result="FAIL" time_sec="0.18" crc="-1809986843"/>
+               <choice name="Default-cp037" result="FAIL" time_sec="0.17" crc="-1809986843"/>
                <choice name="Default2-cp037" result="FAIL" time_sec="0.17" crc="2051257047"/>
                <choice name="Wild-cp037" result="FAIL" time_sec="0.17" crc="-552071182"/>
             </choice-list>

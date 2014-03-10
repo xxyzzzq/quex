@@ -14,11 +14,13 @@ from   quex.blackboard                              import setup as Setup, \
 
 def do(Data, TheAnalyzer):
 
-    OpeningSequence = Data["opener_sequence"]
-    ClosingSequence = Data["closer_sequence"]
-    Mode            = Data["mode"]
+    OpeningSequence       = Data["opener_sequence"]
+    ClosingSequence       = Data["closer_sequence"]
+    ModeName              = Data["mode_name"]
+    DoorIdOnSkipRangeOpen = Data["door_id_on_skip_range_open"]
+    DoorIdAfter           = Data["door_id_after"]
 
-    return get_skipper(OpeningSequence, ClosingSequence, Mode=Mode) 
+    return get_skipper(OpeningSequence, ClosingSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter) 
 
 #def new_skipper():
 #    #ClosingSequence = transform()
@@ -145,11 +147,11 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     $$INPUT_P_TO_LEXEME_START$$
-    $$ON_SKIP_RANGE_OPEN$$
+    $$GOTO_ON_SKIP_RANGE_OPEN$$
 """
 
 @typed(OpenerSequence=[int], CloserSequence=[int])
-def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTerminalID=None, OnSkipRangeOpenStr=""):
+def get_skipper(OpenerSequence, CloserSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
     assert len(OpenerSequence) >= 1
     assert len(CloserSequence) >= 1
     assert OpenerSequence != CloserSequence
@@ -161,19 +163,6 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
     opener_length = len(OpenerSequence)
     closer_str, closer_comment_str = get_character_sequence(CloserSequence)
     closer_length = len(CloserSequence)
-
-    if not Mode.match_indentation_counter_newline_pattern(CloserSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.continue_without_on_after_match())
-    else:
-        # If there is indentation counting involved, then the counter's terminal id must
-        # be determined at this place.
-        # If the ending delimiter is a subset of what the 'newline' pattern triggers 
-        # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
-
-
-    if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
-    else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, CloserSequence)
 
     variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
     # variable_db.enter(local_variable_db, "text_end")
@@ -210,14 +199,14 @@ def get_skipper(OpenerSequence, CloserSequence, Mode=None, IndentationCounterTer
                    ["$$ENDIF$$",                          Lng.END_IF()],
                    ["$$ENTRY$$",                          Lng.LABEL(skipper_door_id)],
                    ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
-                   ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
+                   ["$$GOTO_AFTER_END_OF_SKIPPING$$",     Lng.GOTO(DoorIdAfter)], 
                    ["$$GOTO_RELOAD$$",                    Lng.GOTO(reload_door_id)],
                    ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                    # When things were skipped, no change to acceptance flags or modes has
                    # happend. One can jump immediately to the start without re-entry preparation.
                    ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
                    ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
-                   ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
+                   ["$$GOTO_ON_SKIP_RANGE_OPEN$$",        Lng.GOTO(DoorIdOnSkipRangeOpen)],
                    #
                    ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
                    ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop()],

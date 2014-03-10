@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.18" date="Tue Mar  4 08:27:18 2014">
+<test-database execution-time-sec="3.18" date="Mon Mar 10 08:54:22 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="select" time-sum-sec="1.31"> 
@@ -46,7 +46,7 @@
                <choice name="1" result="OK" time_sec="0.10" crc="-1878001229"/>
                <choice name="2" result="OK" time_sec="0.11" crc="-150044201"/>
                <choice name="3" result="OK" time_sec="0.11" crc="448772152"/>
-               <choice name="4a" result="FAIL" time_sec="0.17" crc="1498129678"/>
+               <choice name="4a" result="FAIL" time_sec="0.18" crc="1498129678"/>
                <choice name="4b" result="FAIL" time_sec="0.17" crc="-1525341046"/>
             </choice-list>
         </test>

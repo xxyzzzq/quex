@@ -103,23 +103,32 @@
                                                      goto QUEX_LABEL_STATE_ROUTER;
 #endif
 
+/* DELETE QUEX_GOTO_RELOAD' when safe */
 #define    QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \
-              do { target_state_index      = QUEX_LABEL(ON_SUCCESS); \
-                   target_state_else_index = QUEX_LABEL(ON_FAIL);    \
-                   goto RELOAD_LABEL; } while (0)
-
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_ERROR_EXIT(Msg) \
-           do { throw std::runtime_error(Msg); } while(0)
-#else
-#   define QUEX_ERROR_EXIT(Msg) \
-           do { __QUEX_STD_fprintf(stderr, "%s", Msg); exit(-1); } while(0)
-#endif
-
-#if defined(QUEX_OPTION_DEBUG_SHOW)
+              do { \
+              __QUEX_STD_fprintf(stderr, "%s:%i:\tUSE of QUEX_GOTO_RELOAD -- SUPPOSED TO BE SUPERFLUOUS", __FILE__, __LINE__); \
+              target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+              target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+              goto RELOAD_LABEL; } while (0)
 
 #   define __QUEX_PRINT_SOURCE_POSITION()                             \
            __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { \
+               __QUEX_PRINT_SOURCE_POSITION(); \
+               throw std::runtime_error(Msg); \
+           } while(0)
+#else
+#   define QUEX_ERROR_EXIT(Msg) \
+           do { \
+               __QUEX_PRINT_SOURCE_POSITION(); \
+               __QUEX_STD_fprintf(stderr, "%s", Msg); exit(-1); \
+           } while(0)
+#endif
+
+#if defined(QUEX_OPTION_DEBUG_SHOW)
 
 #   define __quex_debug(Str)                                        \
            __QUEX_PRINT_SOURCE_POSITION();                          \

@@ -82,31 +82,32 @@ class CodeFragment(object):
     def is_whitespace(self):        return not self.__check_code(lambda x: len(x.strip()) != 0)
 
     def get_code(self):
-        """Returns a list of strings and/or integers that are the 'core code'. 
-        Integers represent indentation levels.
-
-        This function may be overwritten by a derived class. As a result there
-        might be possile annotations.
+        """RETURNS: List of text elements. 
+        
+        May contain annotations to the code made by the derived class. 
         """
         return self.__code
 
     def get_pure_code(self):
-        """Pure code as stored in the list without any annotation of the derived
-        class.
+        """RETURNS: List of text elements. 
+
+        The returned code is free from any annotations.
         """
         return self.__code
 
     def get_text(self):
-        """Rely on the possibly overwritten '.get_code()' function to get the
-        code to make a text. This may contain annotations of the derived class.
+        """RETURNS: Text
+
+        May contain annotations to the code may by the derived class.
         """
         code = self.get_code()
         assert all_isinstance(code, (str, unicode))
         return "".join(code)
 
     def get_pure_text(self):
-        """Rely on the 'self.__code' member. This avoids any annotation of the
-        derived class. 
+        """RETURNS: Text
+
+        The returned text is free from any annotations.
         """
         assert all_isinstance(self.__code, (str, unicode))
         return "".join(self.__code)
