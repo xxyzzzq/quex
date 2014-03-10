@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.70" date="Tue Mar  4 08:27:17 2014">
+<test-database execution-time-sec="0.70" date="Mon Mar 10 08:53:59 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1393835546L" vanished="False"/>
@@ -19,7 +19,7 @@
             <application file-name="transition-x.sh" info-request-time="1393835547L" vanished="False"/>
             <make-procedure success="False" time_sec="1.347358"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.02" crc="140187343"/>
+               <choice name="1" result="MAKE FAILED" time_sec="0.02" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
                <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
                <choice name="error" result="OK" time_sec="0.35" crc="-1605736885"/>
@@ -29,7 +29,7 @@
             <application file-name="transition.sh" info-request-time="1393835549L" vanished="False"/>
             <make-procedure success="False" time_sec="1.289397"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.02" crc="140187343"/>
+               <choice name="1" result="MAKE FAILED" time_sec="0.02" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
                <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
                <choice name="error" result="OK" time_sec="0.18" crc="609096275"/>

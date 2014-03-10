@@ -449,11 +449,14 @@ in the incidence handler definition. The list of incidence handlers is the follo
 
 .. data:: on_skip_range_open
 
-   Implicit Arguments: ``Delimiter``
+   Implicit Arguments: ``Delimiter`` [``Counter``]
 
-   If a range skipper was specified, then it is possible that an end of stream
-   occurs without that the skipped range is actually terminated by the closing 
-   delimiter, for example
+   A range skipper skips until it find the closing delimiter. The event handler 
+   ``on_skip_range_open`` handles the event that end of stream is reached before
+   the closing delimiter. In case of a plain range skipper, the argument ``Delimiter``
+   provides the string of the delimiter. For a nested range skipper the ``Counter``
+   argument notifies additionally about the nesting level, i.e. the number of
+   missing closing delimiters. Example:
 
        .. code-block:: cpp
 
@@ -470,8 +473,8 @@ in the incidence handler definition. The list of incidence handlers is the follo
 
 
    where the closing ``*/`` is not present in the file, then the incidence
-   handler is called on the incidence of end of file. The parameter ``Delimiter`` 
-   contains the string of the missing delimiter. 
+   handler is called on the incidence of end of file. The argument ``Delimiter`` 
+   contains the string ``*/``.
       
 There are incidence handlers which are concerned with indentation detection, in
 case that the user wants to build indentation based languages. They are 

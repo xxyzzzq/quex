@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.24" date="Tue Mar  4 08:27:17 2014">
+<test-database execution-time-sec="0.24" date="Mon Mar 10 08:53:58 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token identifier definition and orthography." time-sum-sec="0.24"> 
         <application file-name="token_identifier.sh" info-request-time="1381662240L" vanished="False"/>

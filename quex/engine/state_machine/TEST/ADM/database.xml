@@ -1,4 +1,4 @@
-<test-database execution-time-sec="19.84" date="Tue Mar  4 08:27:19 2014">
+<test-database execution-time-sec="19.82" date="Mon Mar 10 08:54:30 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -137,12 +137,12 @@
                <choice name="BeginOfLine" result="OK" time_sec="0.73" crc="-594570225"/>
             </choice-list>
         </test>
-        <test title="Characters of different horizontal sizes." time-sum-sec="0.87"> 
+        <test title="Characters of different horizontal sizes." time-sum-sec="0.85"> 
             <application file-name="test-count_character_n-2.py" info-request-time="1390979614L" vanished="False"/>
             <choice-list number="5" same_result="False">
-               <choice name="Same" result="FAIL" time_sec="0.18" crc="-1936277586"/>
+               <choice name="Same" result="FAIL" time_sec="0.17" crc="-1936277586"/>
                <choice name="Different" result="FAIL" time_sec="0.17" crc="-1874310975"/>
-               <choice name="TwoSet" result="FAIL" time_sec="0.18" crc="1962459444"/>
+               <choice name="TwoSet" result="FAIL" time_sec="0.17" crc="1962459444"/>
                <choice name="Grid" result="FAIL" time_sec="0.17" crc="1550733766"/>
                <choice name="Grid-BOL" result="FAIL" time_sec="0.17" crc="1028185515"/>
             </choice-list>

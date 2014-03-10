@@ -31,37 +31,12 @@ def do(Data, TheAnalyzer):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
-    ClosingSequence = Data["closer_sequence"]
-    ClosingPattern  = Data["closer_pattern"]
-    Mode            = Data["mode"]
+    ClosingSequence       = Data["closer_sequence"]
+    ModeName              = Data["mode_name"]
+    DoorIdOnSkipRangeOpen = Data["door_id_on_skip_range_open"]
+    DoorIdAfter           = Data["door_id_after"]
 
-    return get_skipper(ClosingSequence, ClosingPattern, Mode) 
-
-def new_skipper(TheAnalyzer):
-    """JUST A PROPOSAL"""
-    result = loop.do(counter_db, 
-                     AfterExitDoorId   = door_id_first_match,
-                     CharacterSet      = NumberSet(ClosingSequence[0]).inverse(),
-                     CheckLexemeEndF   = False,
-                     ReloadF           = True,
-                     ReloadStateExtern = TheAnalyzer.reload_state, 
-                     MaintainLexemeF   = False)
-
-    result.append(
-        dial_db.get_label_by_door_id(door_id_matched_sequence_0)
-    )
-    for character in ClosingSequence[1:]:
-        result.extend([
-            Lng.IF_INPUT("!=", character),
-                Lng.IF_INPUT("==", Setup.buffer_limit_code),
-                    Lng.GOTO(door_id_reload_state),
-                Lng.ELSE(),
-                    Lng.GOTO(DoorId.continue_without_on_after_match()),
-                Lng.ENDIF(),
-            Lng.ENDIF(),
-        ])
-
-        
+    return get_skipper(ClosingSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter) 
 
 #def new_skipper(counter_db, ClosingSequence):
 #    #closing_sequence    = transformation.do_sequence(ClosingSequence)
@@ -188,7 +163,7 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
      *         => goto to drop-out handling
      *
      *   (2) Else:                      
-     *         First character of delimit reached. 
+     *         First character of delimiter reached. 
      *         => For the verification of the tail of the delimiter it is 
      *            essential that it is loaded completely into the buffer. 
      *            For this, it must be required:
@@ -258,22 +233,11 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     $$INPUT_P_TO_LEXEME_START$$
-    $$ON_SKIP_RANGE_OPEN$$
-"""
-
-"""
-    while( 1 + 1 == 2 ) {
-        input = *(me->buffer._input_p);
-        /* Step through terminating delimiter. */
-        $$TERMINAL_SEQUENCE$$
-        }
-    }
-$$UPON_RELOAD_DONE_LABEL$$:
-    me->buffer._input_p = me->buffer.lexeme_start_p;
+    $$GOTO_ON_SKIP_RANGE_OPEN$$;
 """
 
 @typed(EndSequence=[int])
-def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
+def get_skipper(EndSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
     assert len(EndSequence) >= 1
 
     global template_str
@@ -294,30 +258,15 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     # Determine the check for the tail of the delimiter
     delimiter_remainder_test_str = ""
     if len(EndSequence) != 1: 
-        txt = ""
-        i = 0
-        for letter in EndSequence[1:]:
-            i += 1
-            txt += "    %s\n"    % Lng.ASSIGN("input", Lng.INPUT_P_DEREFERENCE(i-1))
-            txt += "    %s"      % Lng.IF_INPUT("!=", "Skipper$$SKIPPER_INDEX$$[%i]" % i)
-            txt += "         %s" % Lng.GOTO(skipper_door_id)
-            txt += "    %s"      % Lng.END_IF()
+        txt = "".join(
+            "    %s" % Lng.IF_GOTO(Lng.INPUT_P_DEREFERENCE(i-1), "!=", 
+                                   "Skipper$$SKIPPER_INDEX$$[%i]" % i,
+                                   skipper_door_id, i == 1)
+            for i, letter in enumerate(EndSequence[1:], start=1)
+        )
         delimiter_remainder_test_str = txt
 
-    if not Mode.match_indentation_counter_newline_pattern(EndSequence):
-        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.continue_without_on_after_match())
-
-    else:
-        # If there is indentation counting involved, then the counter's terminal id must
-        # be determined at this place.
-        # If the ending delimiter is a subset of what the 'newline' pattern triggers 
-        # in indentation counting => move on to the indentation counter.
-        goto_after_end_of_skipping_str = Lng.GOTO(DoorID.incidence(IncidenceID.INDENTATION_HANDLER))
-
-    if OnSkipRangeOpenStr != "": on_skip_range_open_str = OnSkipRangeOpenStr
-    else:                        on_skip_range_open_str = get_on_skip_range_open(Mode, EndSequence)
-
-    reload_door_id = dial_db.new_door_id()
+    door_id_reload = dial_db.new_door_id()
 
     # The main part
     code_str = blue_print(template_str,
@@ -329,24 +278,27 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$",     Lng.IF_INPUT("==", "Skipper$$SKIPPER_INDEX$$[0]")],
                            ["$$ENDIF$$",                          Lng.END_IF()],
                            ["$$ENTRY$$",                          dial_db.get_label_by_door_id(skipper_door_id)],
-                           ["$$RELOAD$$",                         dial_db.get_label_by_door_id(reload_door_id)],
+                           ["$$RELOAD$$",                         dial_db.get_label_by_door_id(door_id_reload)],
                            ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
                            ["$$INPUT_P_TO_LEXEME_START$$",        Lng.INPUT_P_TO_LEXEME_START()],
                            # When things were skipped, no change to acceptance flags or modes has
                            # happend. One can jump immediately to the start without re-entry preparation.
-                           ["$$GOTO_AFTER_END_OF_SKIPPING$$",     goto_after_end_of_skipping_str], 
+                           ["$$GOTO_AFTER_END_OF_SKIPPING$$",     Lng.GOTO(DoorIdAfter)], 
                            ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
-                           ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open_str],
+                           ["$$GOTO_ON_SKIP_RANGE_OPEN$$",        Lng.GOTO(DoorIdOnSkipRangeOpen)],
                           ])
 
     # Line and column number counting
     code_str, reference_p_f = __lc_counting_replacements(code_str, EndSequence)
 
+    on_before_reload = [
+    ]
+
     # The finishing touch
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
-                           ["$$GOTO_RELOAD$$",   Lng.GOTO(reload_door_id)]])
+                           ["$$GOTO_RELOAD$$",   Lng.GOTO(door_id_reload)]])
 
     if reference_p_f:
         variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
@@ -354,6 +306,8 @@ def get_skipper(EndSequence, CloserPattern, Mode=None, OnSkipRangeOpenStr=""):
     variable_db.require_array("Skipper%i", Initial="{ %s }" % delimiter_str, ElementN=delimiter_length, Index=skipper_index)
     variable_db.require("Skipper%iL", "%i" % delimiter_length, Index=skipper_index)
     variable_db.require("text_end")
+
+    variable_db.require("input") 
 
     return [ code_str ]
 
@@ -374,9 +328,6 @@ def __lc_counting_replacements(code_str, EndSequence):
 
        NOTE: On reload we do count the column numbers and reset the column_p.
     """
-    
-
-
     def get_character_n_after_last_newline(Sequence):
         tmp = copy(Sequence)
         tmp.reverse()

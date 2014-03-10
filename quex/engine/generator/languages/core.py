@@ -143,8 +143,9 @@ class Lng_Cpp(dict):
     def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._input_p = me->buffer._lexeme_start_p;"
     def INPUT_P_TO_TEXT_END(self):                 return "me->buffer._input_p = (me->buffer._end_of_file_p != (void*)0) ? me->buffer._end_of_file_p : me->buffer._memory._back;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
-        if Offset == 0: return "*(me->buffer._input_p)"
-        else:           return "QUEX_NAME(Buffer_input_get_offset)(&me->buffer, %i)" % Offset
+        if Offset == 0:  return "*(me->buffer._input_p)"
+        elif Offset > 0: return "*(me->buffer._input_p + %i)" % Offset
+        else:            return "*(me->buffer._input_p - %i)" % - Offset
     def LEXEME_TERMINATING_ZERO_SET(self, RequiredF):
         if not RequiredF: return ""
         return "QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
@@ -162,6 +163,12 @@ class Lng_Cpp(dict):
         # content is loaded. Not so easy; must be carefully approached.
         return "    %s\n" % self.ASSIGN("me->buffer._character_before_lexeme_start", 
                                         self.INPUT_P_DEREFERENCE(-1))
+
+    def DEFINE(self, NAME, VALUE):
+        return "#define %s %s\n"
+
+    def UNDEFINE(self, NAME):
+        return "#undef %s\n"
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
         """Return a code fragment that returns a source reference pragma. If 
@@ -520,11 +527,37 @@ class Lng_Cpp(dict):
     def UNREACHABLE_END(self):
         return "}"
 
-    def IF(self, LValue, Operator, RValue, FirstF=True):
+    def ON_SKIP_RANGE_OPEN(self, Mode, CloserSequence):
+        txt = ""
+        if not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
+            txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
+                   '                "End of file occurred before closing skip range delimiter!\\n"' + \
+                   '                "The \'on_skip_range_open\' handler has not been specified.");'
+        else:
+            closer_string = ""
+            for letter in CloserSequence:
+                closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
+
+            txt  = "#define Closer \"%s\"\n" % closer_string
+            txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_text()
+            txt += "#undef  Closer\n"
+            txt += "RETURN;\n"
+
+        return txt
+
+    def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False):
         if isinstance(RValue, (str,unicode)): test = "%s %s %s"   % (LValue, Operator, RValue)
         else:                                 test = "%s %s 0x%X" % (LValue, Operator, RValue)
-        if FirstF: return "if( %s ) {\n"        % test
-        else:      return "\n} else if( %s ) {\n" % test
+        if not SimpleF:
+            if FirstF: return "if( %s ) {\n"          % test
+            else:      return "\n} else if( %s ) {\n" % test
+        else:
+            if FirstF: return "if( %s ) "      % test
+            else:      return "else if( %s ) " % test
+
+    def IF_GOTO(self, LValue, Condition, RValue, DoorId, FirstF=True):
+        return "%s %s\n" % (self.IF(LValue, Condition, RValue, FirstF, True), self.GOTO(DoorId))
+                
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)

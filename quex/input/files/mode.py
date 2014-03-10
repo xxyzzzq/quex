@@ -261,26 +261,36 @@ class IncidenceDB(dict):
             if code is not None:
                 result[incidence_id] = CodeFragment(code)
 
-        if E_IncidenceIDs.MATCH_FAILURE not in result:
-            # BaseModeSequence[-1] is the mode itself
-            mode_name = BaseModeSequence[-1].name
-            result[E_IncidenceIDs.MATCH_FAILURE] = CodeFragment([
-                  "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % mode_name
-                + "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
-                + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
-            ])
-        if E_IncidenceIDs.END_OF_STREAM not in result:
-            result[E_IncidenceIDs.END_OF_STREAM] = CodeFragment([
-                "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-                "RETURN;\n"
-            ])
-
         return result
 
     def __setitem__(self, Key, Value):
         if Key == E_IncidenceIDs.INDENTATION_HANDLER:
             blackboard.required_support_indentation_count_set()
         dict.__setitem__(self, Key, Value)
+
+    @staticmethod
+    def __default_code_fragment(TerminalType, ModeName):
+        
+        if TerminalType == E_TerminalType.MATCH_FAILURE:
+            return CodeFragment([
+                  "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % ModeName \
+                + "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
+                + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+            ])
+
+        elif TerminalType == E_TerminalType.END_OF_STREAM:
+            return CodeFragment([
+                "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
+                "RETURN;\n"
+            ])
+
+        elif TerminalType == E_TerminalType.SKIP_RANGE_OPEN:
+            return CodeFragment([
+               'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
+               '                "End of file occurred before closing skip range delimiter!\\n"' + \
+               '                "The \'on_skip_range_open\' handler has not been specified.");'
+            ])
+        assert False
 
     @typed(factory=TerminalFactory)
     def extract_terminal_db(self, factory):
@@ -290,19 +300,21 @@ class IncidenceDB(dict):
                              ...
         """
         terminal_type_db = {
-            E_IncidenceIDs.MATCH_FAILURE: E_TerminalType.MATCH_FAILURE,
-            E_IncidenceIDs.END_OF_STREAM: E_TerminalType.END_OF_STREAM,
+            E_IncidenceIDs.MATCH_FAILURE:   E_TerminalType.MATCH_FAILURE,
+            E_IncidenceIDs.END_OF_STREAM:   E_TerminalType.END_OF_STREAM,
+            E_IncidenceIDs.SKIP_RANGE_OPEN: E_TerminalType.SKIP_RANGE_OPEN
         }
         mandatory_list = [
             E_IncidenceIDs.MATCH_FAILURE, 
-            E_IncidenceIDs.END_OF_STREAM
+            E_IncidenceIDs.END_OF_STREAM,
+            E_IncidenceIDs.SKIP_RANGE_OPEN
         ]
 
         result = {}
         for incidence_id in mandatory_list:
             if incidence_id in self: continue
             terminal_type = terminal_type_db[incidence_id]
-            result[incidence_id] = Lng.DEFAULT_CODE_FRAGMENT(terminal_type)
+            result[incidence_id] = IncidenceDB.__default_code_fragment(terminal_type)
 
         for incidence_id, code_fragment in self.iteritems():
             if incidence_id not in terminal_type_db: continue
@@ -314,7 +326,6 @@ class IncidenceDB(dict):
             result[incidence_id] = terminal
 
         return result
-
 
     def get_CodeTerminal(self, IncidenceId):
         if IncidenceId not in self:
@@ -555,21 +566,31 @@ class Mode:
         ppt_list = self.__pattern_action_pairs_collect(BaseModeSequence, 
                                                        terminal_factory, CounterDb)
 
+        extra_terminal_list = []
         # (*) Collect pattern recognizers and several 'incidence detectors' in 
         #     state machine lists. When the state machines accept this triggers
         #     an incidence which is associated with an entry in the incidence_db.
-        skip_terminal = self.__prepare_skip(ppt_list, 
-                                            OptionsDb.value_sequence("skip"), 
-                                            CounterDb,
-                                            MHI=-4, 
-                                            terminal_factory=terminal_factory)
+        skip_terminal, \
+        new_ppt_list   = self.__prepare_skip(OptionsDb.value_sequence("skip"), 
+                                             CounterDb, MHI=-4, 
+                                             terminal_factory=terminal_factory)
+        extra_terminal_list.append(skip_terminal)
+        ppt_list.extend(new_ppt_list)
 
-        self.__prepare_skip_range(ppt_list, 
-                                  OptionsDb.value_sequence("skip_range"), 
-                                  MHI=-3, terminal_factory=terminal_factory, CounterDb=CounterDb)
-        self.__prepare_skip_nested_range(ppt_list, 
-                                         OptionsDb.value_sequence("skip_nested_range"), 
-                                         MHI=-3, terminal_factory=terminal_factory, CounterDb=CounterDb)
+        # osro_list = 'on skip range open' handlers
+        osro_list,   \
+        new_ppt_list = self.__prepare_skip_range(OptionsDb.value_sequence("skip_range"), 
+                                                 MHI=-3, terminal_factory=terminal_factory, 
+                                                 CounterDb=CounterDb)
+        extra_terminal_list.extend(osro_list)
+        ppt_list.extend(new_ppt_list)
+
+        osro_list,   \
+        new_ppt_list = self.__prepare_skip_nested_range(OptionsDb.value_sequence("skip_nested_range"), 
+                                                        MHI=-3, terminal_factory=terminal_factory, 
+                                                        CounterDb=CounterDb)
+        extra_terminal_list.extend(osro_list)
+        ppt_list.extend(new_ppt_list)
 
         self.__prepare_indentation_counter(ppt_list, 
                                            OptionsDb.value("indentation"), 
@@ -583,7 +604,7 @@ class Mode:
         #     ALSO: Assigns incidence ids according to position on list!
         terminal_db  = self.__prepare_terminals(ppt_list, 
                                                 IncidenceDb, 
-                                                skip_terminal, 
+                                                extra_terminal_list, 
                                                 terminal_factory)
 
         # (*) pattern list  <-- ppc list 
@@ -592,7 +613,7 @@ class Mode:
 
         return pattern_list, terminal_db, terminal_factory.required_default_counter_f
 
-    def __prepare_terminals(self, PPT_List, IncidenceDb, SkipTerminal, terminal_factory):
+    def __prepare_terminals(self, PPT_List, IncidenceDb, ExtraTerminalList, terminal_factory):
         """Prepare terminal states for all pattern matches and other terminals,
         such as 'end of stream' or 'failure'. If code is to be generated in a
         delayed fashion, then this may happen as a consequence to the call
@@ -627,12 +648,12 @@ class Mode:
             IncidenceDb.extract_terminal_db(terminal_factory)
         )
 
-        if SkipTerminal is not None:
-            result[SkipTerminal.incidence_id()] = SkipTerminal
+        for terminal in ExtraTerminalList:
+            result[terminal.incidence_id()] = terminal
 
         return result
 
-    def __prepare_skip(self, ppt_list, SkipSetupList, CounterDb, MHI, terminal_factory):
+    def __prepare_skip(self, SkipSetupList, CounterDb, MHI, terminal_factory):
         """MHI = Mode hierarchie index."""
         if SkipSetupList is None or len(SkipSetupList) == 0:
             return None
@@ -689,6 +710,7 @@ class Mode:
         # 'goto skipper'.
         ccfactory = CounterDb.get_factory(total_set, Lng.INPUT_P())
 
+        new_ppt_list = []
         for character_set, incidence_id in ccfactory.get_incidence_id_map():
             priority         = PatternPriority(MHI, incidence_id)
             pattern          = Pattern.from_character_set(character_set)
@@ -699,40 +721,72 @@ class Mode:
             sub_terminal     = terminal_factory.do(E_TerminalType.MATCH_PATTERN, 
                                                    code, pattern)
             sub_terminal.set_name("Entry to 'skip': %s" % character_set.get_string("hex"))
-            ppt_list.append(PPT(priority, pattern, sub_terminal))
+            new_ppt_list.append(PPT(priority, pattern, sub_terminal))
 
-        return terminal
+        return terminal, new_ppt_list
 
-    def __prepare_skip_range(self, ppt_list, SkipRangeSetupList, MHI, terminal_factory, CounterDb):
+    def __prepare_skip_range(self, SkipRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(ppt_list, MHI, SkipRangeSetupList,  
-                                       skip_range.do, "skip range", terminal_factory, CounterDb)
+        self.__prepare_skip_range_core(SkipRangeSetupList, MHI,
+                                       skip_range.do, terminal_factory, CounterDb,
+                                       NestedF=False)
 
-    def __prepare_skip_nested_range(self, ppt_list, SkipNestedRangeSetupList, MHI, terminal_factory, CounterDb):
+    def __prepare_skip_nested_range(self, SkipNestedRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(ppt_list, MHI, SkipNestedRangeSetupList, 
-                                       skip_nested_range.do, "skip nested range", terminal_factory, CounterDb)
+        self.__prepare_skip_range_core(SkipNestedRangeSetupList, MHI,
+                                       skip_nested_range.do, terminal_factory, CounterDb, 
+                                       NestedF=True)
 
     @typed(CodeGeneratorFunction=types.FunctionType)
-    def __prepare_skip_range_core(self, ppt_list, MHI, SrSetup, CodeGeneratorFunction, SkipperName,
-                                  terminal_factory, CounterDb):
-        """MHI = Mode hierarchie index."""
+    def __prepare_skip_range_core(self, SrSetup, MHI, CodeGeneratorFunction, SkipperName,
+                                  terminal_factory, CounterDb, NestedF):
+        """MHI = Mode hierarchie index.
+        
+        RETURNS: list of terminals for 'on_skip_range_open' handlers.
+        """
 
-        if SrSetup is None or len(SrSetup) == 0:
-            return
+        if SrSetup is None or len(SrSetup) == 0: return [], []
 
+        if NestedF: skipper_name = "skip nested range"
+        else:       skipper_name = "skip range"
+
+        terminal_osro_list = []
+        new_ppt_list       = []
         for i, data in enumerate(SrSetup):
             assert isinstance(data, SkipRangeData)
-            my_data         = deepcopy(data)
-            my_data["mode"] = self
 
+            # -- door_id_after: Where to go after the closing character sequence matched:
+            #     + Normally: To the begin of the analyzer. Start again.
+            #     + End(Sequence) == newline of indentation counter.
+            #       => goto indentation counter.
+            if self.match_indentation_counter_newline_pattern(EndSequence):
+                door_id_after = DoorID.continue_without_on_after_match()
+            else:
+                door_id_after = DoorID.incidence(IncidenceID.INDENTATION_HANDLER)
+
+            # -- on_skip_range_open
+            terminal_osro = terminal_factory.do_skip_range_open(
+                                             on_skip_range_open,
+                                             data["closer_pattern"].pattern_string(),
+                                             NestedF)
+            terminal_osro_list.append(terminal_osro)
+
+            # -- data for code generation
+            my_data = deepcopy(data)
+            my_data["mode_name"]                  = self.name
+            my_data["door_id_on_skip_range_open"] = DoorID.incidence(terminal_osro.incidence_id())
+            my_data["door_id_after"]              = door_id_after
+
+            # -- terminal and code generator
             priority     = PatternPriority(MHI, i)
             pattern      = deepcopy(my_data["opener_pattern"])
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
-            terminal     = terminal_factory.do_generator(pattern, CodeGeneratorFunction, 
-                                                         my_data, SkipperName)
-            ppt_list.append(PPT(priority, pattern, terminal))
+            terminal = terminal_factory.do_generator(pattern, CodeGeneratorFunction, 
+                                                     my_data, skipper_name)
+            new_ppt_list.append(PPT(priority, pattern, terminal))
+
+        return terminal_osro_list, new_ppt_list
 
     def __prepare_indentation_counter(self, ppt_list, ISetup, MHI, terminal_factory, CounterDb):
         """Prepare indentation counter. An indentation counter is implemented by the 

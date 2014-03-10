@@ -1,12 +1,12 @@
-<test-database execution-time-sec="168.65" date="Tue Mar  4 08:27:17 2014">
+<test-database execution-time-sec="113.95" date="Mon Mar 10 08:53:37 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.18"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.19"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
         <choice-list number="13" same_result="False">
            <choice name="000" result="OK" time_sec="0.01" crc="-4803007"/>
-           <choice name="001" result="FAIL" time_sec="0.01" crc="151857720"/>
-           <choice name="002" result="FAIL" time_sec="0.01" crc="1797868308"/>
-           <choice name="003" result="FAIL" time_sec="0.02" crc="-1882985958"/>
+           <choice name="001" result="FAIL" time_sec="0.02" crc="151857720"/>
+           <choice name="002" result="FAIL" time_sec="0.02" crc="1797868308"/>
+           <choice name="003" result="FAIL" time_sec="0.01" crc="-1882985958"/>
            <choice name="005" result="FAIL" time_sec="0.02" crc="1834819860"/>
            <choice name="006" result="OK" time_sec="0.01" crc="1184240632"/>
            <choice name="007" result="OK" time_sec="0.01" crc="-1232588069"/>
@@ -37,11 +37,11 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="0.80"> 
+        <test title="Indentation Based Scopes" time-sum-sec="1.03"> 
             <application file-name="002.sh" info-request-time="1381662250L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.39" crc="29925504"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.41" crc="29925504"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="0.63" crc="29925504"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.40" crc="29925504"/>
             </choice-list>
         </test>
     </group>
@@ -105,11 +105,11 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="0.77"> 
+        <test title="Miscellaneous Features" time-sum-sec="0.95"> 
             <application file-name="007.sh" info-request-time="1381662250L" vanished="False"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.38" crc="-1744057875"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.39" crc="-1744057875"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="0.52" crc="-1744057875"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.42" crc="-1744057875"/>
             </choice-list>
         </test>
     </group>
@@ -138,29 +138,29 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="61.10"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="12.55"> 
             <application file-name="010.sh" info-request-time="1381662250L" vanished="False"/>
             <choice-list number="9" same_result="False">
-               <choice name="copy" result="FAIL" time_sec="2.49" crc="595815643"/>
-               <choice name="fill" result="FAIL" time_sec="2.11" crc="595815643"/>
+               <choice name="copy" result="FAIL" time_sec="0.45" crc="595815643"/>
+               <choice name="fill" result="FAIL" time_sec="0.44" crc="595815643"/>
                <choice name="point" result="OK" time_sec="2.11" crc="861795188"/>
                <choice name="copy-ez" result="OK" time_sec="2.16" crc="-812025512"/>
                <choice name="fill-ez" result="OK" time_sec="2.17" crc="-812025512"/>
-               <choice name="copy-conversion" result="FAIL" time_sec="16.01" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="FAIL" time_sec="15.94" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="FAIL" time_sec="15.83" crc="-470382527"/>
+               <choice name="copy-conversion" result="FAIL" time_sec="1.05" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="FAIL" time_sec="0.92" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="FAIL" time_sec="0.97" crc="-470382527"/>
                <choice name="re-point" result="OK" time_sec="2.28" crc="1228316465"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.91"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="1.35"> 
             <application file-name="011.sh" info-request-time="1381662250L" vanished="False"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="1.84" crc="1096578666"/>
-               <choice name="utf8" result="FAIL" time_sec="2.36" crc="1096578666"/>
-               <choice name="utf16-be" result="FAIL" time_sec="1.86" crc="1096578666"/>
-               <choice name="utf16-le" result="FAIL" time_sec="1.85" crc="1096578666"/>
+               <choice name="iso8859-7" result="FAIL" time_sec="0.34" crc="1096578666"/>
+               <choice name="utf8" result="FAIL" time_sec="0.35" crc="1096578666"/>
+               <choice name="utf16-be" result="FAIL" time_sec="0.32" crc="1096578666"/>
+               <choice name="utf16-le" result="FAIL" time_sec="0.33" crc="1096578666"/>
             </choice-list>
         </test>
     </group>
