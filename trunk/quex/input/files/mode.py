@@ -293,7 +293,7 @@ class IncidenceDB(dict):
         assert False
 
     @typed(factory=TerminalFactory)
-    def extract_terminal_db(self, factory):
+    def extract_terminal_db(self, factory, ModeName):
         """SpecialTerminals: END_OF_STREAM
                              FAILURE
                              CODEC_ERROR
@@ -314,7 +314,7 @@ class IncidenceDB(dict):
         for incidence_id in mandatory_list:
             if incidence_id in self: continue
             terminal_type = terminal_type_db[incidence_id]
-            result[incidence_id] = IncidenceDB.__default_code_fragment(terminal_type)
+            result[incidence_id] = IncidenceDB.__default_code_fragment(terminal_type, ModeName)
 
         for incidence_id, code_fragment in self.iteritems():
             if incidence_id not in terminal_type_db: continue
@@ -574,23 +574,26 @@ class Mode:
         new_ppt_list   = self.__prepare_skip(OptionsDb.value_sequence("skip"), 
                                              CounterDb, MHI=-4, 
                                              terminal_factory=terminal_factory)
-        extra_terminal_list.append(skip_terminal)
-        ppt_list.extend(new_ppt_list)
+        if skip_terminal is not None:
+            extra_terminal_list.append(skip_terminal)
+            ppt_list.extend(new_ppt_list)
 
         # osro_list = 'on skip range open' handlers
         osro_list,   \
         new_ppt_list = self.__prepare_skip_range(OptionsDb.value_sequence("skip_range"), 
                                                  MHI=-3, terminal_factory=terminal_factory, 
                                                  CounterDb=CounterDb)
-        extra_terminal_list.extend(osro_list)
-        ppt_list.extend(new_ppt_list)
+        if osro_list is not None:
+            extra_terminal_list.extend(osro_list)
+            ppt_list.extend(new_ppt_list)
 
         osro_list,   \
         new_ppt_list = self.__prepare_skip_nested_range(OptionsDb.value_sequence("skip_nested_range"), 
                                                         MHI=-3, terminal_factory=terminal_factory, 
                                                         CounterDb=CounterDb)
-        extra_terminal_list.extend(osro_list)
-        ppt_list.extend(new_ppt_list)
+        if osro_list is not None:
+            extra_terminal_list.extend(osro_list)
+            ppt_list.extend(new_ppt_list)
 
         self.__prepare_indentation_counter(ppt_list, 
                                            OptionsDb.value("indentation"), 
@@ -645,7 +648,7 @@ class Mode:
         # Some incidences have their own terminal
         # THEIR INCIDENCE ID REMAINS FIXED!
         result.update(
-            IncidenceDb.extract_terminal_db(terminal_factory)
+            IncidenceDb.extract_terminal_db(terminal_factory, self.name)
         )
 
         for terminal in ExtraTerminalList:
@@ -656,7 +659,7 @@ class Mode:
     def __prepare_skip(self, SkipSetupList, CounterDb, MHI, terminal_factory):
         """MHI = Mode hierarchie index."""
         if SkipSetupList is None or len(SkipSetupList) == 0:
-            return None
+            return None, None
 
         iterable           = SkipSetupList.__iter__()
         pattern, total_set = iterable.next()
@@ -727,25 +730,26 @@ class Mode:
 
     def __prepare_skip_range(self, SkipRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(SkipRangeSetupList, MHI,
-                                       skip_range.do, terminal_factory, CounterDb,
-                                       NestedF=False)
+        return self.__prepare_skip_range_core(SkipRangeSetupList, MHI,
+                                              skip_range.do, terminal_factory, CounterDb,
+                                              NestedF=False)
 
     def __prepare_skip_nested_range(self, SkipNestedRangeSetupList, MHI, terminal_factory, CounterDb):
         """MHI = Mode hierarchie index."""
-        self.__prepare_skip_range_core(SkipNestedRangeSetupList, MHI,
-                                       skip_nested_range.do, terminal_factory, CounterDb, 
-                                       NestedF=True)
+        return self.__prepare_skip_range_core(SkipNestedRangeSetupList, MHI,
+                                              skip_nested_range.do, terminal_factory, CounterDb, 
+                                              NestedF=True)
 
     @typed(CodeGeneratorFunction=types.FunctionType)
-    def __prepare_skip_range_core(self, SrSetup, MHI, CodeGeneratorFunction, SkipperName,
+    def __prepare_skip_range_core(self, SrSetup, MHI, CodeGeneratorFunction,
                                   terminal_factory, CounterDb, NestedF):
         """MHI = Mode hierarchie index.
         
         RETURNS: list of terminals for 'on_skip_range_open' handlers.
         """
 
-        if SrSetup is None or len(SrSetup) == 0: return [], []
+        if SrSetup is None or len(SrSetup) == 0: 
+            return None, None
 
         if NestedF: skipper_name = "skip nested range"
         else:       skipper_name = "skip range"
@@ -776,10 +780,11 @@ class Mode:
             my_data["mode_name"]                  = self.name
             my_data["door_id_on_skip_range_open"] = DoorID.incidence(terminal_osro.incidence_id())
             my_data["door_id_after"]              = door_id_after
+            my_data["counter_db"]                 = CounterDb
 
             # -- terminal and code generator
-            priority     = PatternPriority(MHI, i)
-            pattern      = deepcopy(my_data["opener_pattern"])
+            priority = PatternPriority(MHI, i)
+            pattern  = deepcopy(my_data["opener_pattern"])
             pattern.prepare_count_info(CounterDb, 
                                        Setup.buffer_codec_transformation_info)
             terminal = terminal_factory.do_generator(pattern, CodeGeneratorFunction, 

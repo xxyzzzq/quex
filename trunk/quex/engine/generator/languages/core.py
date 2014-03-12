@@ -545,15 +545,28 @@ class Lng_Cpp(dict):
 
         return txt
 
+    def IF_MULTI_OR(self, LOR_List):
+        L = len(LOR_List)
+        for i, info in enumerate(LOR_List): 
+            lvalue, operator, rvalue = info
+            if i == 0: 
+                decision.append("if(   (%s %s %s)" % (lvalue, operator, rvalue))
+            else:
+                decision.append("   || (%s %s %s)" % (lvalue, operator, rvalue))
+            if i != L - 1:
+                decision.append("\n")
+        decision.append(" ) {\n")
+
     def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False):
-        if isinstance(RValue, (str,unicode)): test = "%s %s %s"   % (LValue, Operator, RValue)
-        else:                                 test = "%s %s 0x%X" % (LValue, Operator, RValue)
+        if isinstance(RValue, (str,unicode)): decision = "%s %s %s"   % (LValue, Operator, RValue)
+        else:                                 decision = "%s %s 0x%X" % (LValue, Operator, RValue)
         if not SimpleF:
-            if FirstF: return "if( %s ) {\n"          % test
-            else:      return "\n} else if( %s ) {\n" % test
+            if FirstF: return "if( %s ) {\n"          % decision
+            else:      return "\n} else if( %s ) {\n" % decision
         else:
-            if FirstF: return "if( %s ) "      % test
-            else:      return "else if( %s ) " % test
+            if FirstF: return "if( %s ) "      % decision
+            else:      return "else if( %s ) " % decision
+
 
     def IF_GOTO(self, LValue, Condition, RValue, DoorId, FirstF=True):
         return "%s %s\n" % (self.IF(LValue, Condition, RValue, FirstF, True), self.GOTO(DoorId))
