@@ -88,6 +88,7 @@ E_R = Enum("AcceptanceRegister",
            "Input",
            "InputP",
            "LexemeStartP",
+           "LexemeEnd",
            "CharacterBeginP",  # -> dynamic size codecs
            "Line",
            "PathIterator",

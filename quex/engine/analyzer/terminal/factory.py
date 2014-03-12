@@ -133,10 +133,12 @@ class TerminalFactory:
         name = TerminalFactory.name_pattern_match_terminal(ThePattern.pattern_string())
         return Terminal(code, name)
 
-    def do_skip_range_open(self, Code, Closer, NestedF=False):
-        txt_entry = Lng.DEFINE("Delimiter", '"%s"', Closer.replace('\\"', '\\\\"'))
-        txt_exit  = Lng.UNDEFINE("Delimiter")
-        if NestedF:
+    def do_skip_range_open(self, Code, CloserPattern):
+        if CloserPattern is not None:
+            txt_entry = Lng.DEFINE("Delimiter", '"%s"', CloserPattern.pattern_string())
+            txt_exit  = Lng.UNDEFINE("Delimiter")
+
+        if Code.side_info["nested_f"]:
             txt_entry += Lng.DEFINE("Counter", 'counter')
             txt_exit  += Lng.UNDEFINE("Counter")
 
