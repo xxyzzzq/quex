@@ -247,6 +247,7 @@ class Lng_Cpp(dict):
             E_R.LexemeStartP:    "(me->buffer._lexeme_start_p)",
             E_R.CharacterBeginP: "character_begin_p",
             E_R.ReferenceP:      "reference_p",
+            E_R.LexemeEnd:       "LexemeEnd",
         }[Register]
 
     def COMMAND(self, Cmd):
