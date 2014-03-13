@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.71" date="Mon Mar 10 08:54:36 2014">
+<test-database execution-time-sec="4.74" date="Wed Mar 12 22:28:00 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.10"> 
         <application file-name="test-token_class.py" info-request-time="1389328242L" vanished="False"/>
@@ -7,14 +7,14 @@
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="2.03"> 
+        <test title="Default Implementation" time-sum-sec="2.07"> 
             <application file-name="default_counter.py" info-request-time="1393279572L" vanished="False"/>
             <choice-list number="12" same_result="False">
-               <choice name="Default-UCS" result="FAIL" time_sec="0.17" crc="465702767"/>
-               <choice name="Default2-UCS" result="FAIL" time_sec="0.17" crc="2055988416"/>
+               <choice name="Default-UCS" result="FAIL" time_sec="0.18" crc="465702767"/>
+               <choice name="Default2-UCS" result="FAIL" time_sec="0.18" crc="2055988416"/>
                <choice name="Wild-UCS" result="FAIL" time_sec="0.17" crc="722265215"/>
                <choice name="Default-UTF8" result="FAIL" time_sec="0.17" crc="952987760"/>
-               <choice name="Default2-UTF8" result="FAIL" time_sec="0.18" crc="-670177127"/>
+               <choice name="Default2-UTF8" result="FAIL" time_sec="0.17" crc="-670177127"/>
                <choice name="Wild-UTF8" result="FAIL" time_sec="0.17" crc="-794179234"/>
                <choice name="Default-UTF16" result="FAIL" time_sec="0.17" crc="-160513910"/>
                <choice name="Default2-UTF16" result="FAIL" time_sec="0.17" crc="-362062174"/>
@@ -34,12 +34,12 @@
                <choice name="3" result="OK" time_sec="0.09" crc="1282397399"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.38"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.37"> 
             <application file-name="test-converter.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.10" crc="700229258"/>
+               <choice name="1" result="OK" time_sec="0.09" crc="700229258"/>
                <choice name="2" result="OK" time_sec="0.09" crc="-1075785192"/>
-               <choice name="3" result="OK" time_sec="0.10" crc="-1324094235"/>
+               <choice name="3" result="OK" time_sec="0.09" crc="-1324094235"/>
                <choice name="4" result="OK" time_sec="0.09" crc="-489839902"/>
             </choice-list>
         </test>
@@ -47,8 +47,8 @@
             <application file-name="test-converter-C.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="cp737" result="OK" time_sec="0.48" crc="1246986017"/>
-               <choice name="cp866" result="OK" time_sec="0.46" crc="822098519"/>
-               <choice name="cp1256" result="OK" time_sec="0.47" crc="1051252697"/>
+               <choice name="cp866" result="OK" time_sec="0.47" crc="822098519"/>
+               <choice name="cp1256" result="OK" time_sec="0.46" crc="1051252697"/>
                <choice name="cp037" result="OK" time_sec="0.51" crc="1056223298"/>
             </choice-list>
         </test>

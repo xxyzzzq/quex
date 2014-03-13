@@ -243,7 +243,8 @@ class IncidenceDB(dict):
     terminal_type_db = {
         E_IncidenceIDs.MATCH_FAILURE:   E_TerminalType.MATCH_FAILURE,
         E_IncidenceIDs.END_OF_STREAM:   E_TerminalType.END_OF_STREAM,
-        E_IncidenceIDs.SKIP_RANGE_OPEN: E_TerminalType.SKIP_RANGE_OPEN
+        # NOT: E_IncidenceIDs.SKIP_RANGE_OPEN: E_TerminalType.SKIP_RANGE_OPEN
+        # Otherwise, it would try to make terminals for that in 'extract_terminal_db()'
     }
     mandatory_list = [
         E_IncidenceIDs.MATCH_FAILURE, 
@@ -280,8 +281,7 @@ class IncidenceDB(dict):
         mode_name = BaseModeSequence[-1].name
         for incidence_id in IncidenceDB.mandatory_list:
             if incidence_id in result: continue
-            terminal_type = IncidenceDB.terminal_type_db[incidence_id]
-            result[incidence_id] = IncidenceDB.__default_code_fragment(terminal_type, mode_name)
+            result[incidence_id] = IncidenceDB.__default_code_fragment(incidence_id, mode_name)
 
         return result
 
@@ -291,25 +291,25 @@ class IncidenceDB(dict):
         dict.__setitem__(self, Key, Value)
 
     @staticmethod
-    def __default_code_fragment(TerminalType, ModeName):
+    def __default_code_fragment(IncidenceId, ModeName):
         
-        if TerminalType == E_TerminalType.MATCH_FAILURE:
+        if IncidenceId == E_IncidenceIDs.MATCH_FAILURE:
             return CodeFragment([
                   "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % ModeName \
                 + "                \"    No 'on_failure' section provided for this mode.\\n\"\n"
                 + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
             ])
 
-        elif TerminalType == E_TerminalType.END_OF_STREAM:
+        elif IncidenceId == E_IncidenceIDs.END_OF_STREAM:
             return CodeFragment([
                 "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-                "RETURN;\n"
+                "%s\n" % Lng.PURE_RETURN()
             ])
 
-        elif TerminalType == E_TerminalType.SKIP_RANGE_OPEN:
+        elif IncidenceId == E_IncidenceIDs.SKIP_RANGE_OPEN:
             return CodeFragment([
                'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
-               '                "End of file occurred before closing skip range delimiter!\\n"' + \
+               '                "End of file occurred before closing skip range delimiter!\\n"\n' + \
                '                "The \'on_skip_range_open\' handler has not been specified.");'
             ])
         assert False
@@ -764,8 +764,6 @@ class Mode:
         if NestedF: skipper_name = "skip nested range"
         else:       skipper_name = "skip range"
 
-        on_skip_range_open
-
         terminal_osro_list = []
         new_ppt_list       = []
         for i, data in enumerate(SrSetup):
@@ -776,23 +774,16 @@ class Mode:
             #     + End(Sequence) == newline of indentation counter.
             #       => goto indentation counter.
             if self.match_indentation_counter_newline_pattern(data["closer_sequence"]):
-                door_id_after = DoorID.continue_without_on_after_match()
-            else:
                 door_id_after = DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)
-
-            # -- on_skip_range_open
-            terminal_osro = terminal_factory.do_skip_range_open(
-                                             OnSkipRangeOpen,
-                                             data["closer_pattern"].pattern_string(),
-                                             NestedF)
-            terminal_osro_list.append(terminal_osro)
+            else:
+                door_id_after = DoorID.continue_without_on_after_match()
 
             # -- data for code generation
             my_data = deepcopy(data)
-            my_data["mode_name"]                  = self.name
-            my_data["door_id_on_skip_range_open"] = DoorID.incidence(terminal_osro.incidence_id())
-            my_data["door_id_after"]              = door_id_after
-            my_data["counter_db"]                 = CounterDb
+            my_data["mode_name"]          = self.name
+            my_data["on_skip_range_open"] = OnSkipRangeOpen
+            my_data["door_id_after"]      = door_id_after
+            my_data["counter_db"]         = CounterDb
 
             # -- terminal and code generator
             priority = PatternPriority(MHI, i)

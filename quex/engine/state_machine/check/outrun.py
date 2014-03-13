@@ -43,7 +43,7 @@ def do(High, Low):
     #         False -- if all paths from acceptance states in High are 
     #                  also in Low.
 
-    # RETURN: 
+    # RETURNS: 
     #
     # True    If there were acceptance states in High that would be reached
     #         by paths that also are feasible in Low; And if Low then 

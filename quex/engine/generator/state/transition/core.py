@@ -170,12 +170,12 @@ def __get_bisection(txt, TriggerMap):
     LowBegin  = lower[0][0].begin
 
     def is_only_drop_out(X):
-        """RETURN: True, if all intervals (actually n==1) in X only transit 
+        """RETURNS: True, if all intervals (actually n==1) in X only transit 
                    to DROP_OUT."""
         return len(X) == 1 and X[0][1].drop_out_f()
 
     def is_single_character(X):
-        """RETURN: True, if interval of X transits on a single character."""
+        """RETURNS: True, if interval of X transits on a single character."""
         return len(X) == 1 and X[0][0].size() == 1
 
     def get_if_statement(InverseF=False):

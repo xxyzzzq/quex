@@ -121,8 +121,8 @@ class CharacterSetStateMachine:
         to mark the begin of the current letter. However, letters are short, so 
         the drawback is tiny.
 
-        RETURN: [0] on_before_reload
-                [1] on_after_reload
+        RETURNS: [0] on_before_reload
+                 [1] on_after_reload
         """
         if Setup.variable_character_sizes_f():
             if not self.maintain_lexeme_f:

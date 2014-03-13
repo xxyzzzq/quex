@@ -69,11 +69,11 @@ def create_range_skipper_code(Language, TestStr, CloserSequence, QuexBufferSize=
     door_id_on_skip_range_open = dial_db.new_door_id()
 
     data = { 
-        "closer_sequence":            CloserSequence, 
-        "closer_pattern":             Pattern(StateMachine.from_sequence(CloserSequence)),
-        "mode_name":                  "MrUnitTest",
-        "door_id_on_skip_range_open": door_id_on_skip_range_open,
-        "door_id_after":              DoorID.continue_without_on_after_match(),
+        "closer_sequence":    CloserSequence, 
+        "closer_pattern":     Pattern(StateMachine.from_sequence(CloserSequence)),
+        "mode_name":          "MrUnitTest",
+        "on_skip_range_open": CodeFragment([end_str]),
+        "door_id_after":      DoorID.continue_without_on_after_match(),
     }
 
     skipper_code = range_skipper.do(data, Analyzer)
@@ -93,12 +93,12 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
 
     door_id_on_skip_range_open = dial_db.new_door_id()
     data = { 
-        "opener_sequence":            OpenerSequence, 
-        "closer_sequence":            CloserSequence, 
-        "closer_pattern":             Pattern(StateMachine.from_sequence(CloserSequence)),
-        "mode_name":                  "MrUnitTest",
-        "door_id_on_skip_range_open": door_id_on_skip_range_open,
-        "door_id_after":              DoorID.continue_without_on_after_match(),
+        "opener_sequence":    OpenerSequence, 
+        "closer_sequence":    CloserSequence, 
+        "closer_pattern":     Pattern(StateMachine.from_sequence(CloserSequence)),
+        "mode_name":          "MrUnitTest",
+        "on_skip_range_open": CodeFragment([end_str]),
+        "door_id_after":      DoorID.continue_without_on_after_match(),
     }
 
     skipper_code = nested_range_skipper.do(data, Analyzer)
@@ -132,6 +132,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
 
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
+    txt = txt.replace(Lng.SOURCE_REFERENCE_END(), "")
     return txt
 
 def my_own_mr_unit_test_function(SourceCode, EndStr, 
