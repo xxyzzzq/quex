@@ -44,7 +44,7 @@ class TargetMap:
     def is_DFA_compliant(self):
         """Checks if the current state transitions are DFA compliant, i.e. it
            investigates if trigger sets pointing to different targets intersect.
-           RETURN:  True  => OK
+           RETURNS:  True  => OK
                     False => Same triggers point to different target. This cannot
                              be part of a deterministic finite automaton (DFA).
         """

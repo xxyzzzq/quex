@@ -20,12 +20,12 @@ class Tester:
 
     def do(self, A, B):
         result1 = self.__operation_1(A, B)
-        result1.assert_consistency()
         result2 = self.__operation_2(A, B)
-        result2.assert_consistency()
         if type(result1) == bool:
             if result1 == result2: return True
         else:
+            result1.assert_consistency()
+            result2.assert_consistency()
             if result1.is_equal(result2): return True
                 
         print "Error: %s vs. %s" % (self.name1, self.name2)

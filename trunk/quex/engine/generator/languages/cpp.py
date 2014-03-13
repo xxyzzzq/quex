@@ -329,7 +329,7 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
         "\n%s\n"  % Lng.LABEL(DoorID.return_with_on_after_match()), 
         Lng.COMMENT("RETURN -- after executing 'on_after_match' code."),
         on_after_match_str,
-        "    __QUEX_PURE_RETURN;\n\n",
+        "    %s\n\n" % Lng.PURE_RETURN,
         #
         "\n%s\n" % Lng.LABEL(DoorID.continue_with_on_after_match()), 
         Lng.COMMENT("CONTINUE -- after executing 'on_after_match' code."),

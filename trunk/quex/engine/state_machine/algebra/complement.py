@@ -15,7 +15,7 @@ from   copy import deepcopy
 import sys
 
 def do(SM):
-    """RETURN: A state machines that matches anything which is 
+    """RETURNS: A state machines that matches anything which is 
                not matched by SM.
 
        Idea: The paths along SM do not guide to acceptance states,

@@ -5,6 +5,8 @@ from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
 import quex.engine.state_machine.index             as     index
 from   quex.engine.tools                           import typed
+from   quex.engine.misc.string_handling            import safe_string, \
+                                                          pretty_code
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
@@ -133,33 +135,6 @@ class TerminalFactory:
         name = TerminalFactory.name_pattern_match_terminal(ThePattern.pattern_string())
         return Terminal(code, name)
 
-    def do_skip_range_open(self, Code, CloserPattern):
-        if CloserPattern is not None:
-            txt_entry = Lng.DEFINE("Delimiter", '"%s"', CloserPattern.pattern_string())
-            txt_exit  = Lng.UNDEFINE("Delimiter")
-
-        if Code.side_info["nested_f"]:
-            txt_entry += Lng.DEFINE("Counter", 'counter')
-            txt_exit  += Lng.UNDEFINE("Counter")
-
-        txt = [
-            txt_entry,
-            Lng.SOURCE_REFERENCE_BEGIN(Code.sr),
-            pretty_code(Code.get_code()),
-            "\n%s" % Lng.SOURCE_REFERENCE_END(),
-            Lng.GOTO(DoorID.incidence()),
-            txt_exit
-        ]
-
-        code = CodeTerminal(text, 
-                            SourceReference        = Code.sr,
-                            PureCode               = Code.get_pure_code(),
-                            LexemeRelevanceF       = False,
-                            LexemeBeginF           = False,
-                            LexemeTerminatingZeroF = False)
-        
-        return Terminal(code, "ON SKIP RANGE OPEN")
-
     def do_match_failure(self, Code, ThePattern):
         """No pattern in the mode has matched. Line and column numbers are 
         still counted. But, no 'on_match' or 'on_after_match' action is 
@@ -254,52 +229,5 @@ class TerminalFactory:
 
     @staticmethod
     def name_pattern_match_terminal(PatternString):
-        def safe(Letter):
-            if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
-            else:                                                   return Letter 
-
-        return "".join(safe(x) for x in PatternString)
-
-def pretty_code(Code, Base=4):
-    """-- Delete empty lines at the beginning
-       -- Delete empty lines at the end
-       -- Strip whitespace after last non-whitespace
-       -- Propper Indendation based on Indentation Counts
-
-       Base = Min. Indentation
-    """
-    class Info:
-        def __init__(self, IndentationN, Content):
-            self.indentation = IndentationN
-            self.content     = Content
-    info_list           = []
-    no_real_line_yet_f  = True
-    indentation_set     = set()
-    for element in Code:
-        for line in element.split("\n"):
-            line = line.rstrip() # Remove trailing whitespace
-            if len(line) == 0 and no_real_line_yet_f: continue
-            else:                                     no_real_line_yet_f = False
-
-            content     = line.lstrip()
-            if len(content) != 0 and content[0] == "#": indentation = 0
-            else:                                       indentation = len(line) - len(content) + Base
-            info_list.append(Info(indentation, content))
-            indentation_set.add(indentation)
-
-    # Discretize indentation levels
-    indentation_list = list(indentation_set)
-    indentation_list.sort()
-
-    # Collect the result
-    result              = []
-    # Reverse so that trailing empty lines are deleted
-    no_real_line_yet_f  = True
-    for info in reversed(info_list):
-        if len(info.content) == 0 and no_real_line_yet_f: continue
-        else:                                             no_real_line_yet_f = False
-        indentation_level = indentation_list.index(info.indentation)
-        result.append("%s%s\n" % ("    " * indentation_level, info.content))
-
-    return "".join(reversed(result))
+        return safe_string(PatternString)
 

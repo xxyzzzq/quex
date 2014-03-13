@@ -19,8 +19,6 @@ from   quex.blackboard                             import E_StateIndices, \
                                                           E_IncidenceIDs
 from   copy                                        import copy
 
-OnBufferLimitCode = "<<__dummy__OnBufferLimitCode__>>" 
-OnBackToLoopStart = "<<__dummy__OnBackToLoopStart__>>" 
 
 def do(Data, TheAnalyzer):
     """
@@ -31,98 +29,13 @@ def do(Data, TheAnalyzer):
         ---( 1 )--+--->------( 2 )--+-->-------( 3 )--+-->-------- ... ---> RESTART
                   inp == c[0]       inp == c[1]       inp == c[2]
     """
-    ClosingSequence       = Data["closer_sequence"]
-    ModeName              = Data["mode_name"]
-    DoorIdOnSkipRangeOpen = Data["door_id_on_skip_range_open"]
-    DoorIdAfter           = Data["door_id_after"]
+    CloserSequence = Data["closer_sequence"]
+    CloserPattern   = Data["closer_pattern"]
+    ModeName        = Data["mode_name"]
+    OnSkipRangeOpen = Data["on_skip_range_open"]
+    DoorIdAfter     = Data["door_id_after"]
 
-    return get_skipper(ClosingSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter) 
-
-#def new_skipper(counter_db, ClosingSequence):
-#    #closing_sequence    = transformation.do_sequence(ClosingSequence)
-#    #action_count_on_end = count_db.get_count_action_for_sequence(ClosingSequence)
-#
-#    # Prepare the 'main' loop
-#    character_set = NumberSet(ClosingSequence[0])
-#    character_set.invert()
-#
-#    #txt = "/* Assert sizeof(buffer) >= len(ClosingSequence) + 2 */\n"
-#
-#    #index = 0
-#    #label_loop_entry      = get_label("$entry", index.get(), U=True) 
-#    #label_loop_entry      = get_label("$entry", index.get(), U=True) 
-#    label_skip_range_open = get_label("$entry", index.get(), U=True) 
-#
-#    on_before_reload, on_after_reload = reload_fragments()
-#
-#    lg = LoopGenerator(counter_db,
-#             IteratorName   = "me->buffer._input_p",
-#             OnContinue     = [ 1, "continue;" ],
-#             OnExit         = [ 1, "goto %s;" % end_sequence_label ],
-#             CharacterSet   = character_set, 
-#             ReloadF        = True,
-#             OnBeforeReload = on_before_reload,
-#             OnAfterReload  = on_after_reload)
-#
-#    lg.do()
-#
-#    end_sequence_txt = get_end_sequence(lg.reload_adr)
-#
-#    return __frame(lg.implementation_type, lg.loop_txt, lg.entry_action, lg.exit_action)
-    pass
-
-#def new_end_sequence(EndSequenceLabel, ClosingSequence):
-#    txt.append("%s:\n" % EndSequenceLabel)
-#
-#    # Ensure that enough space is in the buffer to test for the delimiter sequence.
-#    # An appropriate ASSERT/TEST should be implemented in the constructor of the analyzer!
-#    # I.e. (__quex_assert(buffer_size >= closing delimiter length)).
-#    ensure_sufficient_buffer_content(txt, len(ClosingSequence))
-#
-#    txt.append(Lng.INPUT_P_TO_CHARACTER_BEGIN_P())
-#    first_f = True
-#    while chunk in ClosingSequence[:-1]:
-#        txt.append(Lng.IF_INPUT("!=", "0x%X" % chunk, First=first_f))
-#        txt.append(Lng.INPUT_P_TO_CHARACTER_BEGIN_P())
-#        txt.extend([1, "continue;\n"])
-#        txt.append(Lng.END_IF())
-#        first_f = False
-#
-#    txt.extend(ActionOnClosingDelimiter)
-#
-#    # Possibly continue to indentation counter
-#    if necessary_to_indentation_counter:
-#        txt.extend(goto_indentation_counter)
-#
-#    return txt
-
-
-#def reload_fragments(txt):
-#    """It must be safe to assume that there is no Buffer Limit Code from the
-#    current input position until the ClosingSequence has been checked. For
-#    this, it is checked whether there is enough space in the buffer. If 
-#    not a reload is initiated. If it is not possible to reload enough bytes,
-#    then the closing sequence cannot appear and an error may be communicated."""
-#
-#    #  -- 'buffer_reload_forward()' ensures that lexeme start remains 
-#    #     inside the buffer. Here, the lexeme is unimportant. Set it to 
-#    #     'input_p' to maximize the content to be loaded.    
-#    #  -- 'buffer_reload_forward()' requires 'input_p' to stand on buffer 
-#    #     border or 'end of file pointer'. When reloading to ensure enough 
-#    #     content for the delimiter, then this may not be the case. Force 
-#    #     it, and after reload recover 'input_p' from the lexeme start.  */
-#    before_reload = [ 
-#        Lng.LEXEME_START_SET(),
-#        Lng.INPUT_P_TO_TEXT_END(),
-#    ]
-#    # Normally, after reload 'input_p' needs to be incremented. However,
-#    # after recovering from lexeme start pointer, this is not necessary.*/
-#    after_reload = [
-#        Lng.INPUT_P_TO_LEXEME_START(),
-#    ]
-#
-#    return before_reload, after_reload
-
+    return get_skipper(CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter) 
 
 template_str = """
     $$DELIMITER_COMMENT$$
@@ -233,11 +146,11 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     $$INPUT_P_TO_LEXEME_START$$
-    $$GOTO_ON_SKIP_RANGE_OPEN$$;
+    $$ON_SKIP_RANGE_OPEN$$;
 """
 
 @typed(EndSequence=[int])
-def get_skipper(EndSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
+def get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter):
     assert len(EndSequence) >= 1
 
     global template_str
@@ -267,6 +180,7 @@ def get_skipper(EndSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
         delimiter_remainder_test_str = txt
 
     door_id_reload = dial_db.new_door_id()
+    on_skip_range_open = get_on_skip_range_open(OnSkipRangeOpen, CloserPattern)
 
     # The main part
     code_str = blue_print(template_str,
@@ -286,7 +200,7 @@ def get_skipper(EndSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
                            ["$$GOTO_AFTER_END_OF_SKIPPING$$",     Lng.GOTO(DoorIdAfter)], 
                            ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
                            ["$$DELIMITER_REMAINDER_TEST$$",       delimiter_remainder_test_str],
-                           ["$$GOTO_ON_SKIP_RANGE_OPEN$$",        Lng.GOTO(DoorIdOnSkipRangeOpen)],
+                           ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open],
                           ])
 
     # Line and column number counting
@@ -418,7 +332,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
     # Column and line number count for closing delimiter
     run_time_counting_required_f, counter_txt = \
             counter_for_pattern.get(UnicodeEndSequencePattern, ShiftF=False)
-    # The Closing Delimiter must be a string. As such it has a pre-determined size.
+    # The Closer Delimiter must be a string. As such it has a pre-determined size.
     assert not run_time_counting_required_f 
 
     # Column and line number count for 'normal' character.
@@ -485,7 +399,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 #
 #def core_loop():
 #    blc_set              = NumberSet(Setup.buffer_limit_code)
-#    first_exit_set       = NumberSet(TransformedClosingSequence[0])
+#    first_exit_set       = NumberSet(TransformedCloserSequence[0])
 #    complemtary_core_set = first_exit_set.union(first_exit_set)
 #    core_set             = complemtary_core_set.inverse()
 #
@@ -497,13 +411,11 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 #    action_db.append((complementary_skip_set, [OnBackToLoopStart]))
 
 #def exit_sequence():
-#    sequence = transformation.do_sequence(ClosingSequence)
+#    sequence = transformation.do_sequence(CloserSequence)
 #    counter  = counter.do_pattern(CloserPattern)
 #
 #    for x in sequence:
 #        txt.append("if( ++input_p != 0x%02X ) goto __SKIP_RANGE;\n" % x)
 #    txt.extend(counter.do_pattern(counter))
 #    txt.append(goto_restart)
-
-    
 

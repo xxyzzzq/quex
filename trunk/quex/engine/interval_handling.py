@@ -1007,8 +1007,9 @@ class NumberSet(object):
         if len(self.__intervals) < 2:
             return
         prev = self.__intervals[0]
-        for interval in self.__intervals[1:]:
+        for x in self.__intervals[1:]:
             assert x.begin > prev.end
+            prev = x
 
 # Range of code points that are covered by Unicode
 def UnicodeInterval():

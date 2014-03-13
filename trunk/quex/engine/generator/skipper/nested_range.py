@@ -14,22 +14,23 @@ from   quex.blackboard                              import setup as Setup, \
 
 def do(Data, TheAnalyzer):
 
-    OpeningSequence       = Data["opener_sequence"]
-    ClosingSequence       = Data["closer_sequence"]
-    ModeName              = Data["mode_name"]
-    DoorIdOnSkipRangeOpen = Data["door_id_on_skip_range_open"]
-    DoorIdAfter           = Data["door_id_after"]
+    OpeningSequence = Data["opener_sequence"]
+    CloserSequence  = Data["closer_sequence"]
+    CloserPattern   = Data["closer_pattern"]
+    ModeName        = Data["mode_name"]
+    OnSkipRangeOpen = Data["on_skip_range_open"]
+    DoorIdAfter     = Data["door_id_after"]
 
-    return get_skipper(OpeningSequence, ClosingSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter) 
+    return get_skipper(OpeningSequence, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter) 
 
 #def new_skipper():
-#    #ClosingSequence = transform()
+#    #CloserSequence = transform()
 #    #OpeningSequence = transform()
-#    character_set   = NumberSet(ClosingSequence[0])
+#    character_set   = NumberSet(CloserSequence[0])
 #    character_set.add(OpeningSequence[0])
 #    character_set.invert()
 #
-#    txt = "/* Assert sizeof(buffer) >= len(ClosingSequence) + 2 */\n"
+#    txt = "/* Assert sizeof(buffer) >= len(CloserSequence) + 2 */\n"
 #
 #    end_sequence_check_adr = index.get()
 #    end_sequence_label     = get_label("$entry", end_sequence_check_adr, U=True) 
@@ -44,7 +45,7 @@ def do(Data, TheAnalyzer):
 #                             CharacterSet = character_set, 
 #                             ReloadF      = True)
 #
-#    end_sequence_txt = get_end_sequence(OpeningSequence, ClosingSequence)
+#    end_sequence_txt = get_end_sequence(OpeningSequence, CloserSequence)
 
 #def new_end_sequence():
 #    txt.append("%s:\n" % EndSequenceLabel)
@@ -52,7 +53,7 @@ def do(Data, TheAnalyzer):
 #    txt.append("/* If fail --> skipped until end of file. */\n")
 #    txt.append(Lng.CHARACTER_BEGIN_P_SET())
 #
-#    common_sequence = common(OpeningSequence, ClosingSequence)
+#    common_sequence = common(OpeningSequence, CloserSequence)
 #    for chunk in common_sequence:
 #        pass # Code if(chunk)
 #
@@ -60,7 +61,7 @@ def do(Data, TheAnalyzer):
 #    for chunk in common_sequence:
 #        pass # Code if(chunk)
 #
-#    # 'if i == ClosingSequence[i]' --> continue with closing sequence
+#    # 'if i == CloserSequence[i]' --> continue with closing sequence
 
 template_str = """
     Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
@@ -147,11 +148,11 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
     /* Here, either the loading failed or it is not enough space to carry a closing delimiter */
     $$INPUT_P_TO_LEXEME_START$$
-    $$GOTO_ON_SKIP_RANGE_OPEN$$
+    $$ON_SKIP_RANGE_OPEN$$
 """
 
 @typed(OpenerSequence=[int], CloserSequence=[int])
-def get_skipper(OpenerSequence, CloserSequence, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
+def get_skipper(OpenerSequence, CloserSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAfter):
     assert len(OpenerSequence) >= 1
     assert len(CloserSequence) >= 1
     assert OpenerSequence != CloserSequence
@@ -186,7 +187,8 @@ def get_skipper(OpenerSequence, CloserSequence, ModeName, DoorIdOnSkipRangeOpen,
         end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
                         "                                    - reference_p));\n" 
 
-    reload_door_id = dial_db.new_door_id()
+    reload_door_id     = dial_db.new_door_id()
+    on_skip_range_open = get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=True)
 
     code_str = blue_print(template_str, [
                    ["$$SKIPPER_INDEX$$",   __nice(skipper_index)],
@@ -206,7 +208,7 @@ def get_skipper(OpenerSequence, CloserSequence, ModeName, DoorIdOnSkipRangeOpen,
                    # happend. One can jump immediately to the start without re-entry preparation.
                    ["$$GOTO_ENTRY$$",                     Lng.GOTO(skipper_door_id)],
                    ["$$MARK_LEXEME_START$$",              Lng.LEXEME_START_SET()],
-                   ["$$GOTO_ON_SKIP_RANGE_OPEN$$",        Lng.GOTO(DoorIdOnSkipRangeOpen)],
+                   ["$$ON_SKIP_RANGE_OPEN$$",             on_skip_range_open],
                    #
                    ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", reference_p_def],
                    ["$$LC_COUNT_IN_LOOP$$",                     line_column_counter_in_loop()],

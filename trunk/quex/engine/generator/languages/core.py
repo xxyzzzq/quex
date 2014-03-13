@@ -121,8 +121,7 @@ class Lng_Cpp(dict):
         try:             return self[Attr] 
         except KeyError: raise AttributeError
 
-    RETURN                  = "return;"
-    RETURN_MACRO            = "RETURN;"
+    PURE_RETURN             = "__QUEX_PURE_RETURN;"
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
 
@@ -165,10 +164,10 @@ class Lng_Cpp(dict):
                                         self.INPUT_P_DEREFERENCE(-1))
 
     def DEFINE(self, NAME, VALUE):
-        return "#define %s %s\n"
+        return "#define %s %s\n" % (NAME, VALUE)
 
     def UNDEFINE(self, NAME):
-        return "#undef %s\n"
+        return "\n#undef %s\n" % NAME
 
     def SOURCE_REFERENCE_BEGIN(self, SourceReference):
         """Return a code fragment that returns a source reference pragma. If 
@@ -528,24 +527,6 @@ class Lng_Cpp(dict):
     def UNREACHABLE_END(self):
         return "}"
 
-    def ON_SKIP_RANGE_OPEN(self, Mode, CloserSequence):
-        txt = ""
-        if not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
-            txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
-                   '                "End of file occurred before closing skip range delimiter!\\n"' + \
-                   '                "The \'on_skip_range_open\' handler has not been specified.");'
-        else:
-            closer_string = ""
-            for letter in CloserSequence:
-                closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
-
-            txt  = "#define Closer \"%s\"\n" % closer_string
-            txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_text()
-            txt += "#undef  Closer\n"
-            txt += "RETURN;\n"
-
-        return txt
-
     def IF_MULTI_OR(self, LOR_List):
         L = len(LOR_List)
         for i, info in enumerate(LOR_List): 
@@ -553,7 +534,7 @@ class Lng_Cpp(dict):
             if i == 0: 
                 decision.append("if(   (%s %s %s)" % (lvalue, operator, rvalue))
             else:
-                decision.append("   || (%s %s %s)" % (lvalue, operator, rvalue))
+                decision.append("\n   || (%s %s %s)" % (lvalue, operator, rvalue))
             if i != L - 1:
                 decision.append("\n")
         decision.append(" ) {\n")

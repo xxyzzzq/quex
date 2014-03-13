@@ -77,3 +77,54 @@ def tex_safe(Str):
         Str.replace(letter, "\\" + letter)
 
     return Str
+
+def safe_string(String):
+    def get(Letter):
+        if Letter in ['\\', '"', '\n', '\t', '\r', '\a', '\v']: return "\\" + Letter
+        else:                                                   return Letter 
+
+    return "".join(get(letter) for letter in String)
+
+def pretty_code(Code, Base=4):
+    """-- Delete empty lines at the beginning
+       -- Delete empty lines at the end
+       -- Strip whitespace after last non-whitespace
+       -- Propper Indendation based on Indentation Counts
+
+       Base = Min. Indentation
+    """
+    class Info:
+        def __init__(self, IndentationN, Content):
+            self.indentation = IndentationN
+            self.content     = Content
+    info_list           = []
+    no_real_line_yet_f  = True
+    indentation_set     = set()
+    for element in Code:
+        for line in element.split("\n"):
+            line = line.rstrip() # Remove trailing whitespace
+            if len(line) == 0 and no_real_line_yet_f: continue
+            else:                                     no_real_line_yet_f = False
+
+            content     = line.lstrip()
+            if len(content) != 0 and content[0] == "#": indentation = 0
+            else:                                       indentation = len(line) - len(content) + Base
+            info_list.append(Info(indentation, content))
+            indentation_set.add(indentation)
+
+    # Discretize indentation levels
+    indentation_list = list(indentation_set)
+    indentation_list.sort()
+
+    # Collect the result
+    result              = []
+    # Reverse so that trailing empty lines are deleted
+    no_real_line_yet_f  = True
+    for info in reversed(info_list):
+        if len(info.content) == 0 and no_real_line_yet_f: continue
+        else:                                             no_real_line_yet_f = False
+        indentation_level = indentation_list.index(info.indentation)
+        result.append("%s%s\n" % ("    " * indentation_level, info.content))
+
+    return "".join(reversed(result))
+

@@ -1,8 +1,12 @@
-import quex.engine.utf8                   as utf8
-from   quex.engine.interval_handling      import NumberSet
-from   quex.engine.misc.file_in           import error_msg
-from   quex.blackboard                    import E_IncidenceIDs, \
-                                                 setup as Setup
+import quex.engine.utf8                            as utf8
+from   quex.engine.interval_handling               import NumberSet
+from   quex.engine.misc.file_in                    import error_msg
+from   quex.engine.analyzer.door_id_address_label  import DoorID
+from   quex.engine.misc.string_handling            import safe_string, \
+                                                          pretty_code
+from   quex.blackboard                             import E_IncidenceIDs, \
+                                                          setup as Setup, \
+                                                          Lng
 
 __line_counter_in_loop = """
     __QUEX_IF_COUNT_LINES_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 
@@ -53,6 +57,29 @@ def get_newline_in_codec(TrafoInfo):
     tmp.transform(TrafoInfo)
     return tmp.get_the_only_element() # Returns 'None' if there is none
 
+def get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=False):
+    if len(OnSkipRangeOpen.get_code()) == 0:
+        return "%s\n" % Lng.PURE_RETURN
+
+    txt_entry = Lng.DEFINE("Delimiter", 
+                           '"%s"' % safe_string(CloserPattern.pattern_string()))
+    txt_exit  = Lng.UNDEFINE("Delimiter")
+    if NestedF:
+        txt_entry += Lng.DEFINE("Counter", 'counter')
+        txt_exit  += Lng.UNDEFINE("Counter")
+    else:
+        txt_entry += Lng.DEFINE("Counter", '0')
+        txt_exit  += Lng.UNDEFINE("Counter")
+
+    return "".join([
+        txt_entry,
+        Lng.SOURCE_REFERENCE_BEGIN(OnSkipRangeOpen.sr),
+        pretty_code(OnSkipRangeOpen.get_code()),
+        "\n%s" % Lng.SOURCE_REFERENCE_END(),
+        "%s\n" % Lng.PURE_RETURN,
+        txt_exit
+    ])
+
 def get_character_sequence(Sequence):
     txt         = ""
     comment_txt = ""
@@ -61,29 +88,5 @@ def get_character_sequence(Sequence):
         txt += "0x%X, " % letter
 
     return txt, comment_txt
-
-def get_on_skip_range_open(ModeName, OnSkipRangeOpen, CloserSequence):
-    """For unit tests 'Mode' may actually be a string, so that we do not
-       have to generate a whole mode just to get the 'on_skip_range_open' 
-       code fragment.
-    """
-    if Mode is None: return ""
-
-    txt = ""
-    if not Mode.incidence_db.has_key(E_IncidenceIDs.SKIP_RANGE_OPEN):
-        txt += 'QUEX_ERROR_EXIT("\\nLexical analyzer mode \'%s\':\\n"\n' % ModeName + \
-               '                "End of file occurred before closing skip range delimiter!\\n"' + \
-               '                "The \'on_skip_range_open\' handler has not been specified.");'
-    else:
-        closer_string = ""
-        for letter in CloserSequence:
-            closer_string += utf8.unicode_to_pretty_utf8(letter).replace("'", "")
-
-        txt  = "#define Closer \"%s\"\n" % closer_string
-        txt += Mode.incidence_db[E_IncidenceIDs.SKIP_RANGE_OPEN].get_text()
-        txt += "#undef  Closer\n"
-        txt += "RETURN;\n"
-
-    return txt
 
 
