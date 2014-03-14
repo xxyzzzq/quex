@@ -5,14 +5,14 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine    as     core
 import quex.input.files.counter                as     counter_parser
-from   quex.engine.counter                     import CounterSetupLineColumn_Default
-from   quex.engine.interval_handling           import NumberSet, Interval
+from   quex.input.files.parser_data.counter    import CounterSetupLineColumn_Default
+from   quex.engine.interval_handling           import NumberSet, Interval, NumberSet_All
 import quex.engine.generator.languages.core    as     languages
 import quex.engine.codec_db.core               as     codec_db
 import quex.output.cpp.counter                 as     counter
 from   StringIO                                import StringIO
 
-from   quex.blackboard                         import setup as Setup
+from   quex.blackboard                         import setup as Setup, Lng
 from   itertools                               import chain
 from   os                                      import system
 
@@ -107,7 +107,7 @@ if counter_db is None:
 # (*) Execute the Test ________________________________________________________
 
 # (*) Get Couter Code
-counter_function_name, counter_str = counter.get(counter_db, "TEST_MODE")
+counter_function_name, counter_str = counter.get(counter_db.get_factory(NumberSet_All(), Lng.INPUT_P()), "TEST_MODE")
 counter_str = counter_str.replace("static void", "void")
 
 print "##" + counter_str.replace("\n", "\n##")
@@ -122,14 +122,17 @@ file_extension = codec.lower()
 if codec == "UCS":   file_extension = "utf32le"
 if codec == "UTF16": file_extension = "utf16le"
 
+# file_name = "./data/mini.%s" % file_extension
+file_name = "./data/example.%s" % file_extension
+
 os.system("rm -f test")
-compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c " \
-              + " -D__QUEX_OPTION_COUNTER" \
-              + " -DDEF_COUNTER_FUNCTION='%s' "             % counter_function_name \
-              + " -DDEF_FILE_NAME='\"./data/example.%s\"' " % file_extension        \
-              + " -DDEF_CHARACTER_TYPE=%s "                 % buffer_element_type \
-              + " -o test" \
-              + " -DDEF_DEBUG_TRACE " 
+compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c "     \
+              + " -D__QUEX_OPTION_COUNTER"                              \
+              + " -DDEF_COUNTER_FUNCTION='%s' " % counter_function_name \
+              + " -DDEF_FILE_NAME='\"%s\"' "    % file_name             \
+              + " -DDEF_CHARACTER_TYPE=%s "     % buffer_element_type   \
+              + " -o test" 
+              # + " -DDEF_DEBUG_TRACE " 
 
 print "## %s" % compile_str            
 os.system(compile_str)

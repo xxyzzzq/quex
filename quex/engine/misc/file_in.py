@@ -14,15 +14,15 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 ################################################################################
-from   copy    import copy
-from   string  import split
+from   copy     import copy
+from   string   import split
 from   StringIO import StringIO
 import codecs
 import os
 import sys
 
-import quex.engine.misc.similarity  as similarity
-#from   quex.blackboard              import setup as Setup
+import quex.engine.misc.similarity  as     similarity
+#from  quex.blackboard              import setup as Setup
 
 __reference_to_setup = None
 def specify_setup_object(TheSetup):
@@ -515,7 +515,7 @@ def get_line_number_at_position(fh, Pos):
     # at position 'position' at the end of the read. That means, we are where
     # we started.
     passed_text = fh.read(Pos)
-    return passed_text.count("\n")
+    return passed_text.count("\n") + 1
 
 def clean_up():
     # -- delete temporary files
@@ -644,7 +644,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
             line_n   = fh.line_n
             Filename = fh.file_name
         elif type(fh) == str:
-            line_n = LineN
+            line_n   = LineN
             Filename = fh 
         else:
             if fh is not None:
@@ -652,16 +652,17 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
                 if hasattr(fh, "name"): Filename = fh.name
                 else:                   Filename = "command line"
             else:
-                line_n = -1
+                line_n   = -1
                 Filename = ""
+
         if PlainMessageF:
             prefix = "message"
         elif NoteF:
-            prefix = "%s:%i:note" % (Filename, line_n + 1)   
+            prefix = "%s:%i:note" % (Filename, line_n)   
         elif DontExitF and WarningF: 
-            prefix = "%s:%i:warning" % (Filename, line_n + 1)   
+            prefix = "%s:%i:warning" % (Filename, line_n)   
         else:
-            prefix = "%s:%i:error" % (Filename, line_n + 1)   
+            prefix = "%s:%i:error" % (Filename, line_n)   
         
     if len(ErrMsg) != 0:
         for line in split(ErrMsg, "\n"):

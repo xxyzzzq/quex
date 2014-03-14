@@ -45,8 +45,8 @@ a => newline;
 c => space;>
 ::
 
-test_string:2:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
-test_string:2:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
 newline:
       1 by 'a'
 space:

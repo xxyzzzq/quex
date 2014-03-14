@@ -1,4 +1,4 @@
-<history date="Wed Mar 12 22:27:51 2014" element-n="372">
+<history date="Fri Mar 14 07:02:22 2014" element-n="385">
     <day year="2008" month="02" day="10">
         <history-init time="09:58:16"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
@@ -1018,5 +1018,20 @@
     </day>
     <day year="2014" month="02" day="24">
         <crc-error time="21:17:44" application="indentation_setup.py" choice="basic" database-crc="-1200417786" real-crc="-1913863679"/>
+    </day>
+    <day year="2014" month="03" day="13">
+        <crc-error time="21:20:51" application="token_type-2.py" choice="Twice" database-crc="1610656116" real-crc="-18987449"/>
+        <crc-error time="21:21:10" application="token_type-3.py" choice="Twice" database-crc="1610656116" real-crc="-18987449"/>
+        <crc-error time="21:21:49" application="token_type-3.py" choice="Twice-2" database-crc="1768785304" real-crc="-751748195"/>
+        <crc-error time="21:23:43" application="token_type-4.py" choice="Constructor" database-crc="-300396885" real-crc="963533973"/>
+        <crc-error time="21:43:08" application="token_type-4.py" choice="Destructor" database-crc="-185289580" real-crc="595764906"/>
+        <crc-error time="21:47:56" application="token_type-4.py" choice="Constructor-2" database-crc="-43917463" real-crc="706202967"/>
+        <crc-error time="21:48:19" application="token_type-4.py" choice="Constructor-1" database-crc="-2092341595" real-crc="-653879346"/>
+        <crc-error time="21:48:26" application="token_type-4.py" choice="Copy" database-crc="330406118" real-crc="-993555752"/>
+        <crc-error time="22:34:48" application="token_type-4.py" choice="Constructor-1" database-crc="-653879346" real-crc="-2092341595"/>
+        <crc-error time="22:38:11" application="counter_setup.py" choice="basic" database-crc="-1274507077" real-crc="1884688964"/>
+        <crc-error time="22:38:38" application="counter_setup.py" choice="twice" database-crc="2119180795" real-crc="1601138060"/>
+        <crc-error time="22:38:58" application="counter_setup.py" choice="intersection-2" database-crc="-520694213" real-crc="1668066904"/>
+        <crc-error time="22:44:06" application="counter_setup.py" choice="intersection" database-crc="1418893281" real-crc="-1216047975"/>
     </day>
 </history>

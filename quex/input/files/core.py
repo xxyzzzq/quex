@@ -19,7 +19,6 @@ from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   check, \
                                                   error_msg, \
                                                   error_eof, \
-                                                  get_current_line_info_number, \
                                                   open_file_or_die, \
                                                   os, \
                                                   parse_identifier_assignment, \
@@ -159,8 +158,8 @@ def parse_section(fh):
             else:
                 error_msg("Section 'token_type' has been defined twice.", fh, DontExitF=True)
                 error_msg("Previously defined here.",
-                          blackboard.token_type_definition.file_name_of_token_type_definition,
-                          blackboard.token_type_definition.line_n_of_token_type_definition)
+                          blackboard.token_type_definition.sr.file_name,
+                          blackboard.token_type_definition.sr.line_n)
             return
 
         elif word == "mode":
@@ -296,7 +295,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
 
         if not NamesOnlyF:
             blackboard.token_id_db[candidate] = \
-                 TokenInfo(candidate, numeric_value, Filename=fh.name, LineN=get_current_line_info_number(fh))
+                 TokenInfo(candidate, numeric_value, SourceRef.from_FileHandle(fh))
 
     if NamesOnlyF:
         return sorted(list(result))

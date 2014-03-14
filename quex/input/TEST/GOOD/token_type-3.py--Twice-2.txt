@@ -10,5 +10,5 @@ IN:
 
 OUT:
 
-string:5:warning: Token type member name 'name' defined twice.
-string:2:error: Previously defined here.
+string:6:warning: Token type member name 'name' defined twice.
+string:3:error: Previously defined here.

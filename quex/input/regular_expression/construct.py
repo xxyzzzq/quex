@@ -1,4 +1,3 @@
-from   quex.engine.misc.file_in                     import get_current_line_info_number
 from   quex.input.files.parser_data.counter         import ParserDataLineColumn
 from   quex.engine.interval_handling                import UnicodeInterval, Interval
 from   quex.engine.state_machine.core               import StateMachine

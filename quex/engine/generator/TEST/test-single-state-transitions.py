@@ -126,7 +126,7 @@ def get_transition_function(iid_map, Codec):
     else:
         Setup.buffer_codec_transformation_info = None
 
-    cssm     = CharacterSetStateMachine(iid_map)
+    cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD)
     tm_txt   = do_analyzer(analyzer)
     tm_txt   = Lng.GET_PLAIN_STRINGS(tm_txt)

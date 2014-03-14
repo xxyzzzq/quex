@@ -34,7 +34,7 @@ def parse(fh, CodeFragmentName,
 
     word = fh.read(2)
     if len(word) >= 1 and word[0] == "{":
-        fh.seek(-1, 1) # unput the second character
+        if len(word) > 1: fh.seek(-1, 1) # unput the second character
         return __parse_normal(fh, CodeFragmentName)
 
     elif AllowBriefTokenSenderF and word == "=>":
@@ -47,9 +47,6 @@ def parse(fh, CodeFragmentName,
         error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
 
 def __parse_normal(fh, code_fragment_name):
-    
-
-    line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
     return CodeUser(code, SourceRef.from_FileHandle(fh))
 
@@ -68,7 +65,6 @@ def __parse_brief_token_sender(fh, ContinueF):
     
     
     position = fh.tell()
-    line_n   = get_current_line_info_number(fh) + 1
     try: 
         skip_whitespace(fh)
         position = fh.tell()
@@ -198,7 +194,8 @@ def __create_token_sender_by_character_code(fh, CharacterCode):
     prefix_less_token_name = "UCS_0x%06X" % CharacterCode
     token_id_str           = "0x%06X" % CharacterCode 
     blackboard.token_id_db["--" + prefix_less_token_name] = \
-            TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
+            TokenInfo(prefix_less_token_name, CharacterCode, None, 
+                      SourceRef.from_FileHandle(fh)) 
     return "self_send(%s);\n" % token_id_str
 
 def token_id_db_verify_or_enter_token_id(fh, TokenName):
@@ -226,7 +223,8 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
 
         # Enter the implicit token id definition in the database
         blackboard.token_id_db[prefix_less_TokenName] = \
-                TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
+                TokenInfo(prefix_less_TokenName, None, None, 
+                          SourceRef.from_FileHandle(fh)) 
 
 def __create_token_sender_by_token_name(fh, TokenName):
     assert type(TokenName) in [str, unicode]

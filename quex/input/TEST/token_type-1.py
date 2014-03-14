@@ -4,13 +4,15 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.blackboard         
-quex.blackboard.setup.token_class_take_text_check_f = False
-quex.blackboard.setup.output_token_class_file = ""
-quex.blackboard.setup.token_class_name_space = ""
-quex.blackboard.setup.token_class_name = "Token"
-
 from quex.input.files.token_type import *
 from StringIO import StringIO
+import quex.engine.generator.languages.core as     languages
+quex.blackboard.setup.language_db = languages.db["C++"]
+
+quex.blackboard.setup.token_class_take_text_check_f = False
+quex.blackboard.setup.output_token_class_file = ""
+quex.blackboard.setup.token_class_name_space  = ""
+quex.blackboard.setup.token_class_name        = "Token"
 
 if "--hwut-info" in sys.argv:
     print "token_type: Buildt-In Members;"

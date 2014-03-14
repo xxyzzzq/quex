@@ -379,6 +379,7 @@ class Analyzer:
 
         # (*) Acceptance Checker
         accept_sequence = self.__trace_db[StateIndex].uniform_acceptance_sequence()
+        print "#SAcc:", StateIndex, accept_sequence
         if accept_sequence is not None:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
@@ -549,7 +550,6 @@ class Analyzer:
                                                  PreContextID     = pre_context_id, 
                                                  PositionRegister = acceptance_id, 
                                                  Offset           = 0)
-
 
     def is_init_state_forward(self, StateIndex):
         return StateIndex == self.init_state_index and self.engine_type.is_FORWARD()     
