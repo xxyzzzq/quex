@@ -5,6 +5,8 @@ from   quex.engine.misc.file_in  import get_file_content_or_die, \
                                         get_include_guard_extension, \
                                         error_msg
 
+from   quex.engine.generator.code.base  import SourceRef, \
+                                               SourceRef_VOID
 from   quex.engine.misc.string_handling import blue_print
 from   quex.input.setup                 import NotificationDB
 from   quex.blackboard                  import setup as Setup, \
@@ -178,7 +180,7 @@ def parse_token_id_file(ForeignTokenIdFile, CommentDelimiterList):
             #       identifier is defined in the user's header. We do not care.
             prefix_less_token_name = cut_token_id_prefix(token_name)
             token_id_db[prefix_less_token_name] = \
-                        TokenInfo(prefix_less_token_name, None, None, file_name, line_n) 
+                        TokenInfo(prefix_less_token_name, None, None, SourceRef(file_name, line_n)) 
         
         # (*) find "#include" statements
         #     'set' ensures that each entry is unique
@@ -265,13 +267,12 @@ def prepare_default_standard_token_ids():
         token_id_db[name] = TokenInfo(name, ID=__get_free_token_id())
 
 class TokenInfo:
-    def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
+    def __init__(self, Name, ID, TypeName=None, SourceReference=SourceRef_VOID):
         self.name         = Name
         self.number       = ID
         self.related_type = TypeName
-        self.file_name    = Filename
-        self.line_n       = LineN
         self.id           = None
+        self.sr           = SourceReference
 
 file_str = \
 """/* -*- C++ -*- vim: set syntax=cpp:

@@ -54,11 +54,9 @@ def do(SM_A, SM_B):
     cutter.do((SM_A.init_state_index, SM_B.init_state_index, None))
 
     # Delete orphaned and hopeless states in result
-    #print "#result:before:", cutter.result.get_string(NormalizeF=False)
     cutter.result.clean_up()
 
     # Get propper state indices for result
-    #print "#result:", cutter.result
     return beautifier.do(cutter.result)
 
 class WalkAlong(TreeWalker):

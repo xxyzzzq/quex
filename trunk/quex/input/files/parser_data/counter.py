@@ -13,6 +13,7 @@ import quex.engine.state_machine.transformation   as     transformation
 
 from   quex.blackboard import setup as Setup
 from   collections     import namedtuple, defaultdict
+from   operator        import itemgetter
 
 cc_type_db = {
     "space":                     E_CharacterCountType.COLUMN,
@@ -133,7 +134,7 @@ class CountCmdMap(object):
         interferer = self.__find_occupier(CharSet, Tolerated=intersection_tolerated)
         if interferer is None:
             return
-        _error_set_intersection(Name, CcType, interferer, sr)
+        _error_set_intersection(CcType, interferer, sr)
 
     def get_remaining_set(self, GlobalMin, GlobalMax):
         """Return the set of characters which are not associated with count commands.
@@ -310,7 +311,8 @@ class CountCmdMap(object):
 
         db_by_name = defaultdict(list)
         for character_set, info in self.__map:
-            db_by_name[info.identifier].append((character_set, info))
+            name = cc_type_name_db[info.cc_type]
+            db_by_name[name].append((character_set, info))
 
         txt = [
             _db_to_text(name, count_command_info_list)
@@ -319,6 +321,7 @@ class CountCmdMap(object):
         return "".join(txt)
 
 class Base:
+    @typed(sr=SourceRef)
     def __init__(self, sr, Name, IdentifierList, TheCountCmdMap=None):
         self.sr   = sr
         self.name = Name
@@ -355,7 +358,6 @@ class Base:
     def containing_mode_name(self):
         return self.__containing_mode_name
 
-
 class ParserDataLineColumn(Base):
     """Line/column number count specification.
     ___________________________________________________________________________
@@ -363,11 +365,14 @@ class ParserDataLineColumn(Base):
     an instance of CountCmdMap.
     ____________________________________________________________________________
     """
-    def __init__(self, fh=-1, TheCountCmdMap=None):
-        Base.__init__(self, fh, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
+    @typed(sr=SourceRef)
+    def __init__(self, sr, TheCountCmdMap=None):
+        Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
 
     @typed(CharacterSet=NumberSet)
     def get_factory(self, CharacterSet, InputPName):
+        """User NumberSet_All() if all characters shall be used.
+        """
         ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
 
         cmap = [
@@ -401,12 +406,13 @@ class ParserDataIndentation(Base):
     specified as 'newline suppressor'.
     ____________________________________________________________________________
     """
-    def __init__(self, fh=-1):
+    @typed(sr=SourceRef)
+    def __init__(self, sr):
         self.bad_character_set          = None
         self.pattern_newline            = None
         self.pattern_newline_suppressor = None
 
-        Base.__init__(self, fh, "Indentation counter", ("space", "grid", "newline", "suppressor", "bad"))
+        Base.__init__(self, sr, "Indentation counter", ("space", "grid", "newline", "suppressor", "bad"))
 
     @typed(sr=SourceRef)
     def specify_bad(self, Pattern, sr):
@@ -493,10 +499,13 @@ class ParserDataIndentation(Base):
 
         return txt
 
-def _error_set_intersection(Name, CcType, Before, sr):
+def _error_set_intersection(CcType, Before, sr):
     global cc_type_name_db
 
-    cc_type_name = cc_type_name_db[CcType]
+    note_f = False
+    if    CcType         == E_CharacterCountType.END_NEWLINE \
+       or Before.cc_type == E_CharacterCountType.END_NEWLINE:
+        note_f = True
 
     prefix = {
         E_CharacterCountType.COLUMN:                   "",
@@ -570,7 +579,8 @@ def CounterSetupLineColumn_Default():
         count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
                                                     SourceRef_VOID) 
 
-        _CounterSetupLineColumn_Default = ParserDataLineColumn(-1, count_command_map)
+        _CounterSetupLineColumn_Default = ParserDataLineColumn(SourceRef_VOID, 
+                                                               count_command_map)
 
     return _CounterSetupLineColumn_Default
 

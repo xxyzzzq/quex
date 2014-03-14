@@ -1,7 +1,6 @@
 from   quex.engine.misc.file_in        import EndOfStreamException, \
                                               skip_whitespace, \
                                               check_or_die, \
-                                              get_current_line_info_number, \
                                               error_msg, \
                                               error_eof, \
                                               read_identifier, \
@@ -11,7 +10,8 @@ from   quex.engine.misc.file_in        import EndOfStreamException, \
                                               read_until_letter
 from   quex.engine.generator.code.core import CodeUser, \
                                               CodeUser_NULL
-from   quex.engine.generator.code.base import SourceRef
+from   quex.engine.generator.code.base import SourceRef, \
+                                              SourceRef_VOID
 import quex.input.files.code_fragment  as     code_fragment
 from   quex.blackboard                 import setup as Setup, \
                                               Lng
@@ -89,15 +89,15 @@ class TokenTypeDescriptorCore:
         if self.token_contains_token_id_f == False:
             txt += "           (token id not part of token object)\n"
         txt += "namespace: '%s'\n" % repr(self.name_space)[1:-1]
-        txt += "type(token_id)      = %s\n" % self.token_id_type.get_pure_code()
-        txt += "type(column_number) = %s\n" % self.column_number_type.get_pure_code()
-        txt += "type(line_number)   = %s\n" % self.line_number_type.get_pure_code()
+        txt += "type(token_id)      = %s\n" % self.token_id_type.get_text()
+        txt += "type(column_number) = %s\n" % self.column_number_type.get_text()
+        txt += "type(line_number)   = %s\n" % self.line_number_type.get_text()
 
         txt += "distinct members {\n"
         # '0' to make sure, that it works on an empty sequence too.
         L = self.distinct_members_type_name_length_max()
         for name, type_code in self.distinct_db.items():
-            txt += "    %s%s %s\n" % (type_code.get_pure_code(), " " * (L - len(type_code.get_pure_code())), name)
+            txt += "    %s%s %s\n" % (type_code.get_text(), " " * (L - len(type_code.get_text())), name)
         txt += "}\n"
         txt += "union members {\n"
 
@@ -108,36 +108,42 @@ class TokenTypeDescriptorCore:
                 txt += "    {\n"
                 for sub_name, sub_type in type_descr.items():
                     txt += "        %s%s %s\n" % \
-                           (sub_type.get_pure_code(), 
-                            " " * (L - len(sub_type.get_pure_code())-4), 
+                           (sub_type.get_text(), 
+                            " " * (L - len(sub_type.get_text())-4), 
                             sub_name)
                 txt += "    }\n"
             else:
                 txt += "    %s%s %s\n" % \
-                       (type_descr.get_pure_code(), 
-                        " " * (L - len(type_descr.get_pure_code())), 
+                       (type_descr.get_text(), 
+                        " " * (L - len(type_descr.get_text())), 
                         name)
         txt += "}\n"
 
         # constructor / copy / destructor
+        def sr_frame(Code):
+            stxt  = Lng.SOURCE_REFERENCE_BEGIN(Code.sr)
+            stxt += Code.get_text()
+            stxt += Lng.SOURCE_REFERENCE_END()
+            return stxt
+
         if not self.constructor.is_whitespace():
             txt += "constructor {\n"
-            txt += self.constructor.get_text()
+            txt += sr_frame(self.constructor)
             txt += "}"
         
         if self.copy is not None:
             txt += "copy {\n"
-            txt += self.copy.get_text()
+            txt += sr_frame(self.copy)
             txt += "}"
 
         if not self.destructor.is_whitespace():
             txt += "destructor {\n"
-            txt += self.destructor.get_text()
+            txt += sr_frame(self.destructor)
             txt += "}"
 
         if not self.body.is_whitespace():
             txt += "body {\n"
-            txt += self.body.get_text()
+            txt += sr_frame(self.body)
             txt += "}"
 
         return txt
@@ -147,20 +153,19 @@ class TokenTypeDescriptorCore:
 
 class TokenTypeDescriptor(TokenTypeDescriptorCore):
     """The final product."""
-    def __init__(self, Core, FileNameOfDefinition="", LineNOfDefinition=-1):
+    def __init__(self, Core, SourceReference=SourceRef_VOID):
         assert isinstance(Core, TokenTypeDescriptorCore)
         TokenTypeDescriptorCore.__init__(self, Core)
 
-        self.file_name_of_token_type_definition = FileNameOfDefinition
-        self.line_n_of_token_type_definition    = LineNOfDefinition
+        self.sr = SourceReference 
 
         # (*) Max length of variables etc. for pretty printing
         max_length = 0
         for type_descr in self.union_db.values():
             if type(type_descr) == dict:
-                length = 4 + max([0] + map(lambda x: len(x.get_pure_code()), type_descr.values()))
+                length = 4 + max([0] + map(lambda x: len(x.get_text()), type_descr.values()))
             else:
-                length = len(type_descr.get_pure_code())
+                length = len(type_descr.get_text())
             if length > max_length: max_length = length
         self.__union_members_type_name_length_max = max_length
 
@@ -175,7 +180,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
 
         # 
         self.__distinct_members_type_name_length_max = \
-               max([0] + map(lambda x: len(x.get_pure_text()), self.distinct_db.values()))
+               max([0] + map(lambda x: len(x.get_text()), self.distinct_db.values()))
         self.__distinct_members_variable_name_length_max = \
                max([0] + map(lambda x: len(x), self.distinct_db.keys()))
         self.__type_name_length_max = \
@@ -241,16 +246,10 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         # Is 'take_text' section defined
         if self.take_text is not None: return
 
-        error_msg(_warning_msg, 
-                  self.file_name_of_token_type_definition,
-                  self.line_n_of_token_type_definition,
-                  DontExitF=True)
+        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True)
 
         if Setup.string_accumulator_f == True:
-            error_msg(_warning_msg2, 
-                      self.file_name_of_token_type_definition,
-                      self.line_n_of_token_type_definition,
-                      DontExitF=True)
+            error_msg(_warning_msg2, self.sr.file_name, self.sr.line_n, DontExitF=True)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
@@ -268,7 +267,7 @@ def parse(fh):
 
     already_defined_list = []
     position             = fh.tell()
-    begin_line_n         = get_current_line_info_number(fh)
+    sr_begin             = SourceRef.from_FileHandle(fh)
     result               = True
     while result == True:
         try: 
@@ -283,7 +282,7 @@ def parse(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
-    result = TokenTypeDescriptor(descriptor, fh.name, begin_line_n)
+    result = TokenTypeDescriptor(descriptor, sr_begin)
     if     len(result.get_member_db()) == 0       \
        and result.class_name == "Token"           \
        and result.token_id_type.sr.is_void()      \
@@ -488,7 +487,6 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
     """
     position = fh.tell()
 
-    line_n   = get_current_line_info_number(fh)
     skip_whitespace(fh)
     name_str = read_identifier(fh)
     if name_str == "":
@@ -528,7 +526,7 @@ def __validate_definition(TheCodeFragment, NameStr,
         if    TheCodeFragment.contains_string(Lng.Match_string) \
            or TheCodeFragment.contains_string(Lng.Match_vector) \
            or TheCodeFragment.contains_string(Lng.Match_map):
-            type_str = TheCodeFragment.get_pure_code()
+            type_str = TheCodeFragment.get_text()
             error_msg("Numeric type required.\n" + \
                       "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, FileName, LineN)
     else:

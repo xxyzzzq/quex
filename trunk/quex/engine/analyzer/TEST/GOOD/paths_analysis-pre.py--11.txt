@@ -64,12 +64,12 @@ State 3:
     Checker:
         accept = last_acceptance
     Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 1: pos -= 2;  goto Pattern1;
         case 2: pos = position[PostContext_2] ; goto Pattern2;
         case 3: goto Pattern3;
         case 4: goto Pattern4;
         case 5: goto Pattern5;
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 4:
@@ -157,12 +157,12 @@ State 3:
     Checker:
         accept = last_acceptance
     Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
         case 1: pos -= 2;  goto Pattern1;
         case 2: pos = position[PostContext_0] ; goto Pattern2;
         case 3: goto Pattern3;
         case 4: goto Pattern4;
         case 5: goto Pattern5;
+        case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 5:

@@ -655,7 +655,6 @@ class NumberSet(object):
                 if begin != end: result.append(Interval(begin, end))
 
         self.__intervals = result
-        ## print "#result: self:", self
 
     def intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet

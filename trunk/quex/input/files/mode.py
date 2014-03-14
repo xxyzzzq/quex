@@ -34,7 +34,6 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               check_or_die, \
                                                               error_msg, \
                                                               error_eof, \
-                                                              get_current_line_info_number, \
                                                               read_identifier, \
                                                               read_until_letter, \
                                                               read_until_whitespace, \
@@ -181,11 +180,11 @@ class ModeDescription:
                  "reprioritization_info_list",
                  "deletion_info_list")
 
-    def __init__(self, Name, Filename, LineN):
+    def __init__(self, Name, SourceReference):
         # Register ModeDescription at the mode database
         blackboard.mode_description_db[Name] = self
         self.name  = Name
-        self.sr    = SourceRef(Filename, LineN)
+        self.sr    = SourceReference
 
         self.derived_from_list          = []
 
@@ -303,7 +302,7 @@ class IncidenceDB(dict):
         elif IncidenceId == E_IncidenceIDs.END_OF_STREAM:
             return CodeFragment([
                 "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-                "%s\n" % Lng.PURE_RETURN()
+                "%s\n" % Lng.PURE_RETURN
             ])
 
         elif IncidenceId == E_IncidenceIDs.SKIP_RANGE_OPEN:
@@ -1123,7 +1122,7 @@ def parse(fh):
     mode_name = read_identifier(fh, OnMissingStr="Missing identifier at beginning of mode definition.")
 
     # NOTE: constructor does register this mode in the mode_db
-    new_mode  = ModeDescription(mode_name, fh.name, get_current_line_info_number(fh))
+    new_mode  = ModeDescription(mode_name, SourceRef.from_FileHandle(fh))
 
     # (*) inherited modes / option_db
     skip_whitespace(fh)

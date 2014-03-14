@@ -21,7 +21,6 @@
 #_______________________________________________________________________________
 from quex.engine.misc.enum           import Enum
 from quex.engine.generator.code.base import CodeFragment_NULL
-from quex.engine.misc.file_in        import get_current_line_info_number
 from quex.input.setup                import QuexSetup, SETUP_INFO
 from copy                            import deepcopy
 

@@ -28,7 +28,7 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n", "mode_name
         if Fh != -1:
             if not hasattr(Fh, "name"): file_name = "<nameless stream>"
             else:                       file_name = Fh.name
-            line_n = get_current_line_info_number(Fh)
+            line_n = get_current_line_info_number(Fh) 
         else:
             file_name = "<command line>"
             line_n    = -1
@@ -131,7 +131,7 @@ class LocalizedParameter:
         self.__value   = Value
         if fh == -1:
             self.file_name = "<string>"
-            self.line_n    = 0
+            self.line_n    = 1
         else:
             self.file_name = fh.name
             self.line_n    = get_current_line_info_number(fh)

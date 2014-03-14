@@ -27,5 +27,5 @@ sm                 = sm.normalized_clone()
 
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)
-help.test(sm, engine.BACKWARD_INPUT_POSITION)
+help.test(sm, engine.Class_BACKWARD_INPUT_POSITION(0))
 

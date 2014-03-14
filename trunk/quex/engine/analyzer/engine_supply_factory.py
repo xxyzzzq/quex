@@ -110,3 +110,4 @@ FORWARD                 = Class_FORWARD()
 CHARACTER_COUNTER       = Class_CHARACTER_COUNTER()
 BACKWARD_PRE_CONTEXT    = Class_BACKWARD_PRE_CONTEXT()
 # NOT: BACKWARD_INPUT_POSITION = Class_BACKWARD_INPUT_POSITION() --> Each one is different
+#                                use Class_BACKWARD_INPUT_POSITION(x)

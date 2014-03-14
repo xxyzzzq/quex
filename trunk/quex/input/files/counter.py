@@ -6,8 +6,7 @@ from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.counter                        import CounterSetupIndentation
-from   quex.engine.misc.file_in                   import get_current_line_info_number, \
-                                                         error_msg, \
+from   quex.engine.misc.file_in                   import error_msg, \
                                                          check, \
                                                          check_or_die, \
                                                          skip_whitespace, \
@@ -18,7 +17,7 @@ from   quex.engine.misc.file_in                   import get_current_line_info_n
 from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
-    result = __parse(fh, ParserDataLineColumn(fh))
+    result = __parse(fh, ParserDataLineColumn(SourceRef.from_FileHandle(fh)))
 
     # Assign the 'else' command to all the remaining places in the character map.
     result.count_command_map.assign_else_count_command(0, 
@@ -28,7 +27,7 @@ def parse_line_column_counter(fh):
     return result
 
 def parse_indentation(fh):
-    result = __parse(fh, ParserDataIndentation(fh))
+    result = __parse(fh, ParserDataIndentation(SourceRef.from_FileHandle(fh)))
 
     # Define newline, if it is not defined yet.
     result.sm_newline_defaultize()
