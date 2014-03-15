@@ -1,4 +1,4 @@
-<test-database execution-time-sec="43.08" date="Fri Mar 14 07:02:21 2014">
+<test-database execution-time-sec="43.08" date="Sat Mar 15 11:07:54 2014">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="1.85"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>

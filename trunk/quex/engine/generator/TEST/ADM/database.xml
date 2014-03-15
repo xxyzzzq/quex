@@ -1,4 +1,4 @@
-<test-database execution-time-sec="264.48" date="Fri Mar 14 07:21:52 2014">
+<test-database execution-time-sec="264.49" date="Sat Mar 15 11:07:47 2014">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.15"> 
         <application file-name="test-mode-changes.py" info-request-time="1387873735L" vanished="False"/>
@@ -348,7 +348,7 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="82.60"> 
+        <test title="Transition Code Generation" time-sum-sec="82.61"> 
             <application file-name="test-single-state-transitions.py" info-request-time="1394778024L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="A" result="OK" time_sec="0.26" crc="287456115"/>

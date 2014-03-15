@@ -1,4 +1,4 @@
-<test-database execution-time-sec="19.30" date="Fri Mar 14 07:02:21 2014">
+<test-database execution-time-sec="19.51" date="Sat Mar 15 11:07:54 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -117,34 +117,34 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Codec Engine" time-sum-sec="0.67"> 
+        <test title="Codec Engine" time-sum-sec="0.70"> 
             <application file-name="test-count_character_n-codec.py" info-request-time="1392791830L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="UTF8" result="FAIL" time_sec="0.34" crc="-1889211979"/>
-               <choice name="UTF16" result="FAIL" time_sec="0.33" crc="-1671207496"/>
+               <choice name="UTF8" result="FAIL" time_sec="0.36" crc="-1889211979"/>
+               <choice name="UTF16" result="FAIL" time_sec="0.34" crc="-1671207496"/>
             </choice-list>
         </test>
-        <test title="Newlines" time-sum-sec="0.89"> 
+        <test title="Newlines" time-sum-sec="0.96"> 
             <application file-name="test-count_newline_n.py" info-request-time="1392794453L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.89" crc="1533923099"/>
+               <choice name="" result="FAIL" time_sec="0.96" crc="1533923099"/>
             </choice-list>
         </test>
-        <test title="Characters" time-sum-sec="1.37"> 
+        <test title="Characters" time-sum-sec="1.41"> 
             <application file-name="test-count_character_n.py" info-request-time="1390979655L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="Normal" result="FAIL" time_sec="0.68" crc="-1703858061"/>
-               <choice name="BeginOfLine" result="FAIL" time_sec="0.69" crc="-594570225"/>
+               <choice name="Normal" result="FAIL" time_sec="0.71" crc="-1703858061"/>
+               <choice name="BeginOfLine" result="FAIL" time_sec="0.70" crc="-594570225"/>
             </choice-list>
         </test>
-        <test title="Characters of different horizontal sizes." time-sum-sec="0.86"> 
+        <test title="Characters of different horizontal sizes." time-sum-sec="0.93"> 
             <application file-name="test-count_character_n-2.py" info-request-time="1390979614L" vanished="False"/>
             <choice-list number="5" same_result="False">
-               <choice name="Same" result="FAIL" time_sec="0.17" crc="-1936277586"/>
-               <choice name="Different" result="FAIL" time_sec="0.17" crc="-1874310975"/>
-               <choice name="TwoSet" result="FAIL" time_sec="0.17" crc="1962459444"/>
-               <choice name="Grid" result="FAIL" time_sec="0.17" crc="1550733766"/>
-               <choice name="Grid-BOL" result="FAIL" time_sec="0.17" crc="1028185515"/>
+               <choice name="Same" result="FAIL" time_sec="0.18" crc="-1936277586"/>
+               <choice name="Different" result="FAIL" time_sec="0.20" crc="-1874310975"/>
+               <choice name="TwoSet" result="FAIL" time_sec="0.18" crc="1962459444"/>
+               <choice name="Grid" result="FAIL" time_sec="0.18" crc="1550733766"/>
+               <choice name="Grid-BOL" result="FAIL" time_sec="0.19" crc="1028185515"/>
             </choice-list>
         </test>
     </group>
@@ -239,6 +239,12 @@
                <choice name="" result="OK" time_sec="0.07" crc="-77063234"/>
             </choice-list>
         </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
+            </choice-list>
+        </test>
         <test title="Cloning" time-sum-sec="0.06"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="1" same_result="False">
@@ -249,12 +255,6 @@
             <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.06" crc="638605976"/>
-            </choice-list>
-        </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.10"> 

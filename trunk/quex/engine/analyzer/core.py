@@ -379,7 +379,6 @@ class Analyzer:
 
         # (*) Acceptance Checker
         accept_sequence = self.__trace_db[StateIndex].uniform_acceptance_sequence()
-        print "#SAcc:", StateIndex, accept_sequence
         if accept_sequence is not None:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
