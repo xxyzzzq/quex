@@ -1,4 +1,4 @@
-<test-database execution-time-sec="45.57" date="Fri Mar 14 07:02:09 2014">
+<test-database execution-time-sec="45.93" date="Sat Mar 15 11:07:42 2014">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.10"> 
@@ -66,6 +66,13 @@
                <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
+        <test title="Algebraic Relations" time-sum-sec="4.01"> 
+            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
+            <choice-list number="2" same_result="False">
+               <choice name="unary" result="OK" time_sec="0.12" crc="1792904643"/>
+               <choice name="binary" result="OK" time_sec="3.89" crc="983993768"/>
+            </choice-list>
+        </test>
         <test title="Cut" time-sum-sec="0.40"> 
             <application file-name="test-NumberSet-cut.py" info-request-time="1393744121L" vanished="False"/>
             <choice-list number="7" same_result="False">
@@ -76,25 +83,6 @@
                <choice name="1b" result="OK" time_sec="0.06" crc="1415502275"/>
                <choice name="2b" result="OK" time_sec="0.05" crc="1842878511"/>
                <choice name="3b" result="OK" time_sec="0.06" crc="-1227968480"/>
-            </choice-list>
-        </test>
-        <test title="Algebraic Relations" time-sum-sec="4.01"> 
-            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
-            <choice-list number="2" same_result="False">
-               <choice name="unary" result="OK" time_sec="0.12" crc="1792904643"/>
-               <choice name="binary" result="OK" time_sec="3.89" crc="983993768"/>
-            </choice-list>
-        </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="7.88"> 
-            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
-            <choice-list number="7" same_result="False">
-               <choice name="10" result="FAIL" time_sec="0.13" crc="1378888075"/>
-               <choice name="1000" result="FAIL" time_sec="0.66" crc="-646722016"/>
-               <choice name="2000" result="FAIL" time_sec="2.12" crc="1205044615"/>
-               <choice name="3000" result="FAIL" time_sec="4.39" crc="843858714"/>
-               <choice name="100" result="FAIL" time_sec="0.14" crc="-2005431878"/>
-               <choice name="250" result="FAIL" time_sec="0.17" crc="1443580919"/>
-               <choice name="500" result="FAIL" time_sec="0.28" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Interval comparison" time-sum-sec="0.10"> 
@@ -108,6 +96,18 @@
             <application file-name="test-NumberSet-add_interval.py" info-request-time="1393744095L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="161038093"/>
+            </choice-list>
+        </test>
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="8.24"> 
+            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
+            <choice-list number="7" same_result="False">
+               <choice name="10" result="FAIL" time_sec="0.14" crc="1378888075"/>
+               <choice name="1000" result="FAIL" time_sec="0.66" crc="-646722016"/>
+               <choice name="2000" result="FAIL" time_sec="2.09" crc="1205044615"/>
+               <choice name="3000" result="FAIL" time_sec="4.68" crc="843858714"/>
+               <choice name="100" result="FAIL" time_sec="0.18" crc="-2005431878"/>
+               <choice name="250" result="FAIL" time_sec="0.19" crc="1443580919"/>
+               <choice name="500" result="FAIL" time_sec="0.31" crc="-352222672"/>
             </choice-list>
         </test>
     </group>

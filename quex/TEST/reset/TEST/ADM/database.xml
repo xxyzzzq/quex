@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.33" date="Fri Mar 14 07:01:29 2014">
+<test-database execution-time-sec="0.29" date="Sat Mar 15 11:07:33 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.04"> 
+    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.01"> 
         <application file-name="lexer-x" info-request-time="1394776887L" vanished="False"/>
         <make-procedure success="True" time_sec="1.937268"/>
         <choice-list number="11" same_result="True">
@@ -52,7 +52,7 @@
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.06"> 
+        <test title="Plain" make-dependent="True" time-sum-sec="0.05"> 
             <application file-name="lexer" info-request-time="1394776889L" vanished="False"/>
             <make-procedure success="True" time_sec="1.927536"/>
             <choice-list number="11" same_result="True">
