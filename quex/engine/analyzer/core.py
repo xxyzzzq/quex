@@ -42,12 +42,12 @@ from   quex.engine.analyzer.state.drop_out        import DropOut
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
                                                          TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands              import InputPDereference, \
+from   quex.engine.analyzer.commands.core              import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \
                                                          PreContextOK
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
-from   quex.engine.analyzer.commands              import CommandList
+from   quex.engine.analyzer.commands.core              import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker

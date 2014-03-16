@@ -8,7 +8,7 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.state.entry_action      import TransitionID
 from   quex.engine.analyzer.door_id_address_label   import DoorID, \
                                                            DoorID_Scheme
-from   quex.engine.analyzer.commands                import TemplateStateKeySet
+from   quex.engine.analyzer.commands.core                import TemplateStateKeySet
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                       import Interval
 from   quex.engine.tools                            import UniformObject

@@ -1,7 +1,7 @@
 # (C) 2010-2013 Frank-Rene Schaefer
 from   quex.engine.analyzer.transition_map      import TransitionMap   
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.analyzer.commands            import PathIteratorSet
+from   quex.engine.analyzer.commands.core            import PathIteratorSet
 from   quex.engine.analyzer.mega_state.core     import MegaState, \
                                                        TargetByStateKey, \
                                                        StateKeyIndexDB, \

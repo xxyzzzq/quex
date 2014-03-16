@@ -7,7 +7,7 @@ from   quex.engine.analyzer.mega_state.core                 import MegaState
 import quex.engine.analyzer.mega_state.template.core        as     templates 
 from   quex.engine.analyzer.mega_state.template.state       import TargetByStateKey, TemplateState, PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
-import quex.engine.generator.state.entry_door_tree          as     entry_door_tree
+import quex.engine.analyzer.commands.tree          as     entry_door_tree
 from   quex.engine.state_machine.core                       import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
 

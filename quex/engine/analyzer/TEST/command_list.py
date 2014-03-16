@@ -4,9 +4,9 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.commands import *
 from   quex.blackboard               import E_Cmd
-import quex.engine.analyzer.command_list_shared_tail as command_list_shared_tail
+from   quex.engine.analyzer.commands.core import *
+import quex.engine.analyzer.commands.shared_tail as command_list_shared_tail
 
 from   collections import defaultdict
 from   copy import deepcopy
@@ -15,8 +15,6 @@ if "--hwut-info" in sys.argv:
     print "CommandList: get_shared_tail;"
     print "CHOICES:     2-1, no-common, all-common, misc;"
     sys.exit()
-
-sys.exit() # The whole test must be written again!
 
 def print_cl(name, CL):
     print "#%s:" % name
@@ -150,8 +148,8 @@ if "2-1" in sys.argv:
     for shared_cmd_id in E_Cmd:
         if shared_cmd_id == E_Cmd._DEBUG_Commands: continue
         for other_cmd_id in E_Cmd:
-            if other_cmd_id == E_Cmd._DEBUG_Commands: continue
-            elif other_cmd_id == shared_cmd_id:            continue
+            if   other_cmd_id == E_Cmd._DEBUG_Commands: continue
+            elif other_cmd_id == shared_cmd_id:         continue
 
             # print "#______________________________________________________"
             test([shared_cmd_id, other_cmd_id], [shared_cmd_id])

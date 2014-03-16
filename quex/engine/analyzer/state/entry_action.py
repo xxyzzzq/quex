@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.commands import CommandList
+from   quex.engine.analyzer.commands.core import CommandList
 
 from   quex.blackboard import setup as Setup, \
                               E_StateIndices, \

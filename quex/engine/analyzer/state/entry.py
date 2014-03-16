@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.commands              import Accepter, StoreInputPosition
+from   quex.engine.analyzer.commands.core              import Accepter, StoreInputPosition
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.tools                          import TypedDict

@@ -131,6 +131,14 @@ class DialDB(object):
         print "#DoorID %s <-> Address %s" % (DoorId, Address)
         print_callstack()
 
+    def __debug_address_usage(self, Address, *SuspectAdrList):
+        """Prints the callstack if an address of SuspectAdrList is generated.
+        """
+        if Address not in SuspectAdrList:
+            return
+        print "#Used %s" % Address
+        print_callstack()
+
     def clear(self):
         # Database: [DoorID] [Address] [Label] 
         # 
@@ -204,7 +212,8 @@ class DialDB(object):
         self.__address_i += 1
         address_label_pair   = AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
 
-        ## self.__debug_address_generation(DoorId, self.__address_i, 390, 479, 480, 385, 481, 416)
+        if False: # True/False activates debug messages
+            self.__debug_address_generation(DoorId, self.__address_i, 18)
 
         self.__d2la[DoorId] = address_label_pair
 
@@ -282,6 +291,8 @@ class DialDB(object):
 
     def mark_address_as_gotoed(self, Address):
         self.__gotoed_address_set.add(Address)
+        if False: # True/False switches debug output
+             self.__debug_address_usage(Address, 18)
 
     def mark_label_as_gotoed(self, Label):
         self.mark_address_as_gotoed(self.get_address_by_label(Label))
