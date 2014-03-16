@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.commands              import repr_acceptance_id, repr_pre_context_id, repr_positioning
+from   quex.engine.analyzer.commands.core              import repr_acceptance_id, repr_pre_context_id, repr_positioning
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.tools                          import typed
 from   quex.blackboard                            import E_PreContextIDs, E_IncidenceIDs, E_TransitionN

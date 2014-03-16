@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
-from   quex.engine.analyzer.commands           import PreContextOK
+from   quex.engine.analyzer.commands.core           import PreContextOK
 from   quex.engine.analyzer.state.drop_out     import DropOutIndifferent, \
                                                       DropOutBackwardInputPositionDetection
 from   quex.blackboard  import E_InputActions

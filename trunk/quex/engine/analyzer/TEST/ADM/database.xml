@@ -1,4 +1,4 @@
-<test-database execution-time-sec="17.92" date="Sat Mar 15 11:07:43 2014">
+<test-database execution-time-sec="17.88" date="Sun Mar 16 08:11:17 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>
@@ -46,11 +46,11 @@
         </choice-list>
     </test>
     <group name="CommandList">
-        <test title="get_shared_tail" time-sum-sec="0.35"> 
+        <test title="get_shared_tail" time-sum-sec="0.30"> 
             <application file-name="command_list.py" info-request-time="1390549561L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="2-1" result="FAIL" time_sec="0.09" crc="-1625264217"/>
-               <choice name="no-common" result="FAIL" time_sec="0.09" crc="1030601643"/>
+               <choice name="2-1" result="FAIL" time_sec="0.08" crc="-1625264217"/>
+               <choice name="no-common" result="FAIL" time_sec="0.08" crc="1030601643"/>
                <choice name="all-common" result="FAIL" time_sec="0.08" crc="-2109520621"/>
                <choice name="misc" result="FAIL" time_sec="0.08" crc="90052942"/>
             </choice-list>
@@ -228,12 +228,28 @@
                <choice name="3-diff" result="OK" time_sec="0.09" crc="78032644"/>
             </choice-list>
         </test>
+        <test title="set" time-sum-sec="0.40"> 
+            <application file-name="transition_map_tools.py" info-request-time="1387873736L" vanished="False"/>
+            <choice-list number="5" same_result="False">
+               <choice name="Normal" result="OK" time_sec="0.08" crc="-22334169"/>
+               <choice name="Apart" result="OK" time_sec="0.08" crc="442968172"/>
+               <choice name="AbsorbA" result="OK" time_sec="0.08" crc="54034854"/>
+               <choice name="AbsorbB" result="OK" time_sec="0.08" crc="825164361"/>
+               <choice name="AbsorbC" result="OK" time_sec="0.08" crc="1438611652"/>
+            </choice-list>
+        </test>
         <test title="prune" time-sum-sec="0.55"> 
             <application file-name="transition_map_tools-prune.py" info-request-time="1387873736L" vanished="False"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.11" crc="-2106415539"/>
                <choice name="2" result="OK" time_sec="0.28" crc="184295023"/>
                <choice name="3" result="OK" time_sec="0.16" crc="1418772995"/>
+            </choice-list>
+        </test>
+        <test title="TransitionMap.izip" time-sum-sec="0.08"> 
+            <application file-name="transition_map_tools-zipped_iterable.py" info-request-time="1387873736L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="833975462"/>
             </choice-list>
         </test>
         <test title="fill_gaps" time-sum-sec="0.42"> 
@@ -244,22 +260,6 @@
                <choice name="2-diff" result="OK" time_sec="0.08" crc="-502064113"/>
                <choice name="3-same" result="OK" time_sec="0.08" crc="-1278972709"/>
                <choice name="3-diff" result="OK" time_sec="0.09" crc="1193266311"/>
-            </choice-list>
-        </test>
-        <test title="TransitionMap.izip" time-sum-sec="0.08"> 
-            <application file-name="transition_map_tools-zipped_iterable.py" info-request-time="1387873736L" vanished="False"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="833975462"/>
-            </choice-list>
-        </test>
-        <test title="set" time-sum-sec="0.40"> 
-            <application file-name="transition_map_tools.py" info-request-time="1387873736L" vanished="False"/>
-            <choice-list number="5" same_result="False">
-               <choice name="Normal" result="OK" time_sec="0.08" crc="-22334169"/>
-               <choice name="Apart" result="OK" time_sec="0.08" crc="442968172"/>
-               <choice name="AbsorbA" result="OK" time_sec="0.08" crc="54034854"/>
-               <choice name="AbsorbB" result="OK" time_sec="0.08" crc="825164361"/>
-               <choice name="AbsorbC" result="OK" time_sec="0.08" crc="1438611652"/>
             </choice-list>
         </test>
     </group>

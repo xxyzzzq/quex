@@ -127,6 +127,8 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __hash__(self):      
         return self.my_hash
 
+    def __repr__(self):
+        assert False
     def __str__(self):
         name_str = str(self.id)
         if self.content is None:
@@ -135,11 +137,8 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             x = self.content
             txt = ""
             if x.pre_context_id != E_PreContextIDs.NONE:
-                txt = "if '%s': " % repr_pre_context_id(x.pre_context_id)
-            if x.offset == 0:
-                txt += "%s = input_p;\n" % repr_position_register(x.position_register)
-            else:
-                txt += "%s = input_p - %i;\n" % (repr_position_register(x.position_register), x.offset)
+                txt = "pre(%s) --> " % x.pre_context_id
+            txt += "store[%s] = input_p - %i;\n" % (x.position_register, x.offset)
             return txt
         elif self.id == E_Cmd.Accepter:
             return str(self.content)
@@ -212,7 +211,7 @@ class AccepterContent:
         if len(self.__list) != len(Other.__list):       return False
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
-            elif x.acceptance_id     != y.acceptance_id:      return False
+            elif x.acceptance_id  != y.acceptance_id:      return False
         return True
 
     def __iter__(self):
@@ -221,12 +220,11 @@ class AccepterContent:
 
     def __str__(self):
         def to_string(X, FirstF):
+            acc_id_str = "accept(%s)" % X.acceptance_id
             if X.pre_context_id == E_PreContextIDs.NONE:
-                return "last_acceptance = %s" % repr_acceptance_id(X.acceptance_id)
-            elif FirstF:
-                return "if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.acceptance_id))
-            else:
-                return "else if %s:  last_acceptance = %s" % (repr_pre_context_id(element.pre_context_id), repr_acceptance_id(element.acceptance_id))
+                return acc_id_str
+            pre_id_str = "pre(%s)" % element.pre_context_id
+            return "%s --> %s" % (pre_id_str,  acc_id_str)
 
         return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
 
@@ -389,7 +387,7 @@ def get_register_access_iterable(Cmd):
         elif type(register_id) == tuple:
             main_id          = register_id[0]      # register_id[0] --> in E_R
             sub_reference_id = register_id[1]      # register_id[1] --> Argument number containing sub-id
-            sub_id           = Cmd.content[reference_id]
+            sub_id           = Cmd.content[sub_reference_id]
             register_id = "%s:%s" % (main_id, sub_id)
         yield register_id, rights
 
