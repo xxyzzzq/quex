@@ -41,7 +41,8 @@ def print_callstack(BaseNameF=False):
                 name = file_name
                 i += 1
             else:
-                base_name = os.path.basename(x[0])
+                # base_name = os.path.basename(x[0])
+                base_name = " " * len(os.path.basename(x[0]))
                 name = " " * (len(file_name) - len(base_name)) + base_name
             prev_file_name = file_name
             

@@ -6,7 +6,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling        import NumberSet, Interval
 import quex.input.regular_expression.engine as     core
 import quex.input.files.counter             as     counter
-from   quex.engine.counter                  import CounterSetupLineColumn
 from   StringIO                             import StringIO
 
 spec_txt = """

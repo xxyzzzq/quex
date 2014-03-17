@@ -3,7 +3,7 @@ import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.transformation        as     transformation
-from   quex.engine.analyzer.commands                   import E_R, \
+from   quex.engine.analyzer.commands.core                   import E_R, \
                                                               InputPDecrement, \
                                                               Assign
 from   quex.engine.tools                               import all_isinstance, \

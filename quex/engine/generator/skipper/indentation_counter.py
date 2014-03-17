@@ -2,7 +2,7 @@ import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
-from   quex.engine.analyzer.commands                import CommandList
+from   quex.engine.analyzer.commands.core           import CommandList
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 import quex.engine.generator.loop                   as     loop
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode

@@ -3,7 +3,7 @@ from   quex.engine.analyzer.door_id_address_label        import dial_db, \
                                                                 IfDoorIdReferencedLabel, \
                                                                 DoorID
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-import quex.engine.generator.state.entry_door_tree       as     entry_door_tree
+import quex.engine.analyzer.commands.tree       as     entry_door_tree
 from   quex.engine.tools                                 import none_is_None
 
 from quex.blackboard import Lng, \

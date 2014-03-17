@@ -152,5 +152,7 @@ _1:
     __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
    return;
 #  undef self
+    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */
+    goto _31;
 }
 #endif /* __QUEX_OPTION_COUNTER */

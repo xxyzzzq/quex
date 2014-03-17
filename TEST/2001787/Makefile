@@ -1,5 +1,7 @@
 X = Simple
 
+# -DQUEX_OPTION_DEBUG_SHOW 
+
 lexer-iconv: Simple.cpp
 	@g++ -I./ -I$(QUEX_PATH) \
 		Simple.cpp                    \

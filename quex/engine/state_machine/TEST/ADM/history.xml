@@ -1,4 +1,4 @@
-<history date="Sat Mar 15 11:07:54 2014" element-n="684">
+<history date="Sun Mar 16 22:19:52 2014" element-n="694">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -1444,5 +1444,17 @@
         <crc-error time="07:29:50" application="test-count_character_n-codec.py" choice="UTF8" database-crc="-334576016" real-crc="-1889211979"/>
         <crc-error time="07:29:56" application="test-count_character_n-codec.py" choice="UTF16" database-crc="-416803910" real-crc="-1671207496"/>
         <crc-error time="07:30:02" application="test-count_newline_n.py" choice="" database-crc="-970502174" real-crc="1533923099"/>
+    </day>
+    <day year="2014" month="03" day="16">
+        <crc-error time="06:11:04" application="test-count_character_n.py" choice="Normal" database-crc="-1703858061" real-crc="-2026451792"/>
+        <crc-error time="06:11:14" application="test-count_character_n.py" choice="BeginOfLine" database-crc="-594570225" real-crc="268888540"/>
+        <crc-error time="06:12:34" application="test-count_character_n-2.py" choice="Same" database-crc="-1936277586" real-crc="-1783483834"/>
+        <crc-error time="06:12:45" application="test-count_character_n-2.py" choice="Different" database-crc="-1874310975" real-crc="1776912196"/>
+        <crc-error time="06:12:51" application="test-count_character_n-2.py" choice="TwoSet" database-crc="1962459444" real-crc="2125534529"/>
+        <crc-error time="06:12:57" application="test-count_character_n-2.py" choice="Grid" database-crc="1550733766" real-crc="-1984945814"/>
+        <crc-error time="06:13:03" application="test-count_character_n-2.py" choice="Grid-BOL" database-crc="1028185515" real-crc="225620116"/>
+        <crc-error time="06:13:19" application="test-count_character_n-codec.py" choice="UTF8" database-crc="-1889211979" real-crc="-1386448566"/>
+        <crc-error time="06:13:23" application="test-count_character_n-codec.py" choice="UTF16" database-crc="-1671207496" real-crc="1678539783"/>
+        <crc-error time="06:13:30" application="test-count_newline_n.py" choice="" database-crc="1533923099" real-crc="-263815900"/>
     </day>
 </history>

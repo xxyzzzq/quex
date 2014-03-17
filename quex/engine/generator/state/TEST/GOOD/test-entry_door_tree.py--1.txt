@@ -1,8 +1,8 @@
-[0:1]: (0<-0) (0<-1) (0<-2) 
+[0:0]: (0<-0) (0<-1) (0<-2) 
     pre(1) --> accept(10)
     pre(2) --> accept(20)
-parent: [0]
+parent: [EMPTY]
 
-[0:0]: 
+[0:EMPTY]: 
 parent: [None]
 
