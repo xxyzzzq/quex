@@ -1,0 +1,32 @@
+<test-database execution-time-sec="2.61" date="Mon Mar 17 08:42:07 2014">
+    <last-used-diff-display-program name=""/>
+    <test title="Build Tree of Entry Door Commands" time-sum-sec="2.01"> 
+        <application file-name="test-tree.py" info-request-time="1395041207L" vanished="False"/>
+        <choice-list number="13" same_result="False">
+           <choice name="1" result="FAIL" time_sec="0.16" crc="None"/>
+           <choice name="2" result="FAIL" time_sec="0.16" crc="None"/>
+           <choice name="3" result="FAIL" time_sec="0.16" crc="None"/>
+           <choice name="4" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="5" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="6" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="7" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="8" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="9" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="10" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="11" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="set_state_key" result="FAIL" time_sec="0.15" crc="None"/>
+           <choice name="set_path_iterator" result="FAIL" time_sec="0.15" crc="None"/>
+        </choice-list>
+    </test>
+    <group name="CommandList">
+        <test title="get_shared_tail" time-sum-sec="0.60"> 
+            <application file-name="command_list.py" info-request-time="1395041028L" vanished="False"/>
+            <choice-list number="4" same_result="False">
+               <choice name="2-1" result="FAIL" time_sec="0.15" crc="None"/>
+               <choice name="no-common" result="FAIL" time_sec="0.15" crc="None"/>
+               <choice name="all-common" result="FAIL" time_sec="0.16" crc="None"/>
+               <choice name="misc" result="FAIL" time_sec="0.15" crc="None"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
