@@ -70,13 +70,12 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 from   quex.engine.misc.enum import Enum
+from   quex.engine.tools     import typed
 from   quex.blackboard       import E_Cmd, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \
                                     E_IncidenceIDs, \
                                     E_PostContextIDs
-
-import quex.engine.analyzer.commands.database as db
 
 from   collections import namedtuple
 from   operator    import attrgetter
@@ -111,10 +110,10 @@ E_R = Enum("AcceptanceRegister",
 #______________________________________________________________________________
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __new__(self, Id, *ParameterList):
-        global __content_db
+        global _content_db
         # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
         #       then return pointer to object in database.
-        content_type = __content_db[Id]
+        content_type = _content_db[Id]
         if content_type is None:
             # No content
             content = None
@@ -130,8 +129,8 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
             elif L == 4: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2], ParameterList[3])
 
-        Hash = hash(Id) ^ hash(Content)
-        return super(Command, self).__new__(self, Id, Content, Hash)
+        hash_value = hash(Id) ^ hash(content)
+        return super(Command, self).__new__(self, Id, content, hash_value)
 
     def clone(self):         
         """Cloning should be unnecessary, since objects are constant!
@@ -164,7 +163,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             if x.offset == 0:
                 txt += "%s = input_p;\n" % pos_str
             else:
-                txt += "%s = input_p - %i;\n" % (rpos_str, x.offset)
+                txt += "%s = input_p - %i;\n" % (pos_str, x.offset)
             return txt
 
         elif self.id == E_Cmd.Accepter:
@@ -282,12 +281,6 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
     @property
     def write_f(self): return self.access == E_InputPAccess.WRITE
 
-#______________________________________________________________________________
-# 1        -> Read
-# 2        -> Write
-# 1+2 == 3 -> Read/Write
-RegisterAccessRight = namedtuple("AccessRight", ("write_f", "read_f"))
-
 def __configure():
     """Configure the database for commands.
             
@@ -296,11 +289,27 @@ def __configure():
     access_db:    CommandId --> access types of the command (read/write)
     brancher_set: set of commands which may cause jumps/gotos.
     """
-    db.cost_db      = {}
-    db.content_db   = {}
-    db.access_db    = {}    # map: register_id --> RegisterAccessRight
+    cost_db    = {}
+    content_db = {}
+    access_db  = {}    # map: register_id --> RegisterAccessRight
+    #______________________________________________________________________________
+    # 1        -> Read
+    # 2        -> Write
+    # 1+2 == 3 -> Read/Write
     r = 1                # READ
     w = 2                # WRITE
+    RegisterAccessRight = namedtuple("AccessRight", ("write_f", "read_f"))
+
+    class RegisterAccessDB(dict):
+        def __init__(self, RegisterAccessInfoList):
+            for info in RegisterAccessInfoList:
+                register_id = info[0]
+                rights      = info[1]
+                if len(info) == 3: 
+                    sub_id_reference = info[2]
+                    register_id = (register_id, sub_id_reference)
+                self[register_id] = RegisterAccessRight(rights & w, rights & r)
+
     #                    # 1 + 2 = READ/WRITE
     brancher_set = set() # set of ids of branching/goto-ing commands.
 
@@ -317,7 +326,9 @@ def __configure():
         cost_db[CmdId] = 1
 
         # -- determine whether command is subject to 'goto/branching'
+        print "#CmdId: %s" % CmdId
         for register_id in (info[0] for info in RegisterAccessInfoList):
+            print "#register_id: %s" % register_id
             if register_id == E_R.ThreadOfControl: brancher_set.add(CmdId)
 
     c(E_Cmd.Accepter,                         AccepterContent, 
@@ -376,18 +387,21 @@ def __configure():
 
     return access_db, content_db, brancher_set, cost_db
 
-__access_db,    \
-__content_db,   \
-__brancher_set, \
+_access_db,    \
+_content_db,   \
+_brancher_set, \
 _cost_db       = __configure()
+
+print "#brancher_set: ", _brancher_set
 
 def is_branching(CmdId):
     """RETURNS: True  -- if the command given by CmdId is 'branching' i.e. 
                          if it might cause jumps/gotos.
                 False -- if the command does never cause a jump.
     """
-    global __brancher_set
-    return CmdId in __brancher_set
+    global _brancher_set
+    assert CmdId in E_Cmd
+    return CmdId in _brancher_set
 
 def get_register_access_iterable(Cmd):
     """For each command there are rights associated with registers. For example
@@ -396,8 +410,8 @@ def get_register_access_iterable(Cmd):
     RETURNS: An iterable over pairs (register_id, access right) meaning that the
              command accesses the register with the given access type/right.
     """
-    global __access_db
-    for register_id, rights in __access_db[Cmd.id].iteritems():
+    global _access_db
+    for register_id, rights in _access_db[Cmd.id].iteritems():
         if isinstance(register_id, int):
             register_id = Cmd.content[register_id] # register_id == Argument number which contains E_R
         elif type(register_id) == tuple:
@@ -426,9 +440,6 @@ def TemplateStateKeySet(StateKey):
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
     return Command(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
-
-def PathIteratorIncrement():
-    return Command(E_Cmd.PathIteratorIncrement)
 
 def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
     return Command(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)

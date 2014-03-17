@@ -333,7 +333,7 @@ class Lng_Cpp(dict):
                        % (Cmd.content.position_register, Cmd.content.position_register)
             else:
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
-                       % (Cmd.content.position_register, Cmd.content.offset, Cmd.content.offset)
+                       % (Cmd.content.position_register, Cmd.content.offset, Cmd.content.position_register, Cmd.content.offset)
 
         elif Cmd.id == E_Cmd.PreContextOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
@@ -355,10 +355,6 @@ class Lng_Cpp(dict):
                   + "    __quex_debug(\"path_iterator = (Pathwalker: %i, Path: %i, Offset: %i)\\n\");\n" \
                   % (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
             return txt
-
-        #elif Cmd.id == E_Cmd.PathIteratorIncrement:
-        # return  "    (++path_iterator);\n" \
-        #          + "    __quex_debug(\"++path_iterator\");\n" 
 
         elif   Cmd.id == E_Cmd.PrepareAfterReload:
             on_success_door_id = Cmd.content.on_success_door_id 
