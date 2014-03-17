@@ -165,7 +165,7 @@ class PathWalkerState(MegaState):
               outside remain the same! This way, any external transition map
               may remain the same.
         """
-        # Entries along the path: PathIteratorIncrement
+        # Entries along the path: PathIterator Increment
         #                         ... but this is handled better by the code generator.
         # Entries from outside:   PathIteratorSet
         for path_id, step_list in enumerate(self.__path_list):
