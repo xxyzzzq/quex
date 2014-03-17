@@ -76,6 +76,8 @@ from   quex.blackboard       import E_Cmd, \
                                     E_IncidenceIDs, \
                                     E_PostContextIDs
 
+import quex.engine.analyzer.commands.database as db
+
 from   collections import namedtuple
 from   operator    import attrgetter
 from   copy        import deepcopy, copy
@@ -108,21 +110,39 @@ E_R = Enum("AcceptanceRegister",
 #     the command further.
 #______________________________________________________________________________
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
-    def __new__(self, Id, Content, Hash=None):
-        if Hash is None: Hash = hash(Id) ^ hash(Content)
+    def __new__(self, Id, *ParameterList):
+        global __content_db
+        # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
+        #       then return pointer to object in database.
+        content_type = __content_db[Id]
+        if content_type is None:
+            # No content
+            content = None
+        elif isinstance(content_type, types.ClassType):
+            # Use 'real' constructor
+            content = content_type() 
+        else:
+            # A tuple that describes the usage of the 'namedtuple' constructor.
+            L = len(ParameterList)
+            assert L != 0
+            if   L == 1: content = content_type(ParameterList[0])
+            elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
+            elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
+            elif L == 4: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2], ParameterList[3])
+
+        Hash = hash(Id) ^ hash(Content)
         return super(Command, self).__new__(self, Id, Content, Hash)
 
     def clone(self):         
+        """Cloning should be unnecessary, since objects are constant!
+        """
         if self.content is None:
             content = None
         elif hasattr(self.content, "clone"): 
             content = self.content.clone()
         else:
             content = deepcopy(self.content)
-        return Command(self.id, content, self.my_hash)
-
-    def get_pretty_string(self):
-        assert False, "Use self.__str__() instead!"
+        return super(Command, self).__new__(self, Id, Content, self.my_hash)
 
     def __hash__(self):      
         return self.my_hash
@@ -263,13 +283,6 @@ class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_ty
     def write_f(self): return self.access == E_InputPAccess.WRITE
 
 #______________________________________________________________________________
-# CommandFactory: Produces Command-s. It contains a database which maps from 
-#     command identifiers to CommandInfo-s. And, it contains the '.do()' 
-#     function which produces Command-s.
-#
-# For a sleeker look, dedicated function are provided below which all implement
-# a call to 'CommandFactory.do()' in a briefer way.
-#______________________________________________________________________________
 # 1        -> Read
 # 2        -> Write
 # 1+2 == 3 -> Read/Write
@@ -283,23 +296,13 @@ def __configure():
     access_db:    CommandId --> access types of the command (read/write)
     brancher_set: set of commands which may cause jumps/gotos.
     """
-    cost_db      = {}
-    content_db   = {}
-    access_db    = {}    # map: register_id --> RegisterAccessRight
+    db.cost_db      = {}
+    db.content_db   = {}
+    db.access_db    = {}    # map: register_id --> RegisterAccessRight
     r = 1                # READ
     w = 2                # WRITE
     #                    # 1 + 2 = READ/WRITE
     brancher_set = set() # set of ids of branching/goto-ing commands.
-
-    class RegisterAccessDB(dict):
-        def __init__(self, RegisterAccessInfoList):
-            for info in RegisterAccessInfoList:
-                register_id = info[0]
-                rights      = info[1]
-                if len(info) == 3: 
-                    sub_id_reference = info[2]
-                    register_id = (register_id, sub_id_reference)
-                self[register_id] = RegisterAccessRight(rights & r, rights & w)
 
     def c(CmdId, ParameterList, *RegisterAccessInfoList):
         # -- access to related 'registers'
@@ -412,89 +415,68 @@ def get_register_access_db(Cmd):
         for register_id, right in get_register_access_iterable(Cmd)
     )
 
-def _cmd(Id, *ParameterList):
-    global __content_db
-    # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
-    #       then return pointer to object in database.
-    content_type = __content_db[Id]
-    if content_type is None:
-        # No content
-        content = None
-    elif isinstance(content_type, types.ClassType):
-        # Use 'real' constructor
-        content = content_type() 
-    else:
-        # A tuple that describes the usage of the 'namedtuple' constructor.
-        L = len(ParameterList)
-        assert L != 0
-        if   L == 1: content = content_type(ParameterList[0])
-        elif L == 2: content = content_type(ParameterList[0], ParameterList[1])
-        elif L == 3: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2])
-
-    return Command(Id, content)
-
 def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return _cmd(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
+    return Command(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
 
 def PreContextOK(PreContextID):
-    return _cmd(E_Cmd.PreContextOK, PreContextID)
+    return Command(E_Cmd.PreContextOK, PreContextID)
 
 def TemplateStateKeySet(StateKey):
-    return _cmd(E_Cmd.TemplateStateKeySet, StateKey)
+    return Command(E_Cmd.TemplateStateKeySet, StateKey)
 
 def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return _cmd(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
+    return Command(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
 
 def PathIteratorIncrement():
-    return _cmd(E_Cmd.PathIteratorIncrement)
+    return Command(E_Cmd.PathIteratorIncrement)
 
 def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
-    return _cmd(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
+    return Command(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
 
 def InputPIncrement():
-    return _cmd(E_Cmd.InputPIncrement)
+    return Command(E_Cmd.InputPIncrement)
 
 def InputPDecrement():
-    return _cmd(E_Cmd.InputPDecrement)
+    return Command(E_Cmd.InputPDecrement)
 
 def InputPDereference():
-    return _cmd(E_Cmd.InputPDereference)
+    return Command(E_Cmd.InputPDereference)
 
 def LexemeResetTerminatingZero():
-    return _cmd(E_Cmd.LexemeResetTerminatingZero)
+    return Command(E_Cmd.LexemeResetTerminatingZero)
 
 def ColumnCountReferencePSet(Pointer, Offset=0):
-    return _cmd(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
+    return Command(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
 
 def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk):
-    return _cmd(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk)
+    return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk)
 
 def ColumnCountAdd(Value):
-    return _cmd(E_Cmd.ColumnCountAdd, Value)
+    return Command(E_Cmd.ColumnCountAdd, Value)
 
 def ColumnCountGridAdd(GridSize):
-    return _cmd(E_Cmd.ColumnCountGridAdd, (GridSize,))
+    return Command(E_Cmd.ColumnCountGridAdd, (GridSize,))
 
 def ColumnCountGridAddWithReferenceP(Value, Pointer, ColumnNPerChunk):
-    return _cmd(E_Cmd.ColumnCountGridAddWithReferenceP, Value, Pointer,ColumnNPerChunk)
+    return Command(E_Cmd.ColumnCountGridAddWithReferenceP, Value, Pointer,ColumnNPerChunk)
 
 def LineCountAdd(Value):
-    return _cmd(E_Cmd.LineCountAdd, Value)
+    return Command(E_Cmd.LineCountAdd, Value)
 
 def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return _cmd(E_Cmd.LineCountAddWithReferenceP, Value, PointerName, ColumnNPerChunk)
+    return Command(E_Cmd.LineCountAddWithReferenceP, Value, PointerName, ColumnNPerChunk)
 
 def GotoDoorId(DoorId):
-    return _cmd(E_Cmd.GotoDoorId, DoorId)
+    return Command(E_Cmd.GotoDoorId, DoorId)
 
 def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
-    return _cmd(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
+    return Command(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
 
 def Assign(TargetRegister, SourceRegister):
-    return _cmd(E_Cmd.Assign, TargetRegister, SourceRegister)
+    return Command(E_Cmd.Assign, TargetRegister, SourceRegister)
 
 def Accepter():
-    return _cmd(E_Cmd.Accepter)
+    return Command(E_Cmd.Accepter)
 
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
