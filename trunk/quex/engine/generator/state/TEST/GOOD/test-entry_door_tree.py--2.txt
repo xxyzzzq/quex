@@ -1,13 +1,13 @@
-[0:1]: (0<-0) 
+[0:0]: (0<-0) 
     pre(2) --> accept(20)
     pre(1) --> accept(10)
-parent: [0]
+parent: [EMPTY]
 
-[0:2]: (0<-1) 
+[0:1]: (0<-1) 
     pre(1) --> accept(10)
     pre(2) --> accept(20)
-parent: [0]
+parent: [EMPTY]
 
-[0:0]: 
+[0:EMPTY]: 
 parent: [None]
 

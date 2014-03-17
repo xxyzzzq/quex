@@ -11,7 +11,7 @@ iso8859-7-lexer: iso8859-7-lexer.c
 		 --codec iso8859_7   \
 		 --token-id-prefix TKN_ \
 		 -o ISO8859_7_Lex    \
-		 --language C
+		 --language C --debug-exception
 	gcc -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
 		-Wall              \
 		-I$(QUEX_PATH) -I. \

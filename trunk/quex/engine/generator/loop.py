@@ -7,7 +7,7 @@ from   quex.engine.state_machine.engine_state_machine_set import CharacterSetSta
 from   quex.engine.analyzer.state.drop_out             import DropOutGotoDoorId
 import quex.engine.analyzer.core                       as     analyzer_generator
 import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.engine.analyzer.commands                   import E_R, \
+from   quex.engine.analyzer.commands.core                   import E_R, \
                                                               CommandList, \
                                                               Assign, \
                                                               GotoDoorId

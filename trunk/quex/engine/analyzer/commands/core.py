@@ -129,24 +129,33 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
 
     def __repr__(self):
         assert False
+
     def __str__(self):
         name_str = str(self.id)
         if self.content is None:
             return "%s" % name_str
+
         elif self.id == E_Cmd.StoreInputPosition:
             x = self.content
             txt = ""
             if x.pre_context_id != E_PreContextIDs.NONE:
-                txt = "pre(%s) --> " % x.pre_context_id
-            txt += "store[%s] = input_p - %i;\n" % (x.position_register, x.offset)
+                txt = "if '%s': " % repr_pre_context_id(x.pre_context_id)
+            pos_str = repr_position_register(x.position_register)
+            if x.offset == 0:
+                txt += "%s = input_p;\n" % pos_str
+            else:
+                txt += "%s = input_p - %i;\n" % (rpos_str, x.offset)
             return txt
+
         elif self.id == E_Cmd.Accepter:
             return str(self.content)
+
         elif self.id == E_Cmd.PreContextOK:
             return "pre-context-fulfilled = %s;\n" % self.content.pre_context_id
+
         else:
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
-            return "%s: { %s }" % (name_str, content_str)
+            return "%s: { %s }" % (name_str, content_str)   
 
 #______________________________________________________________________________
 #
@@ -220,11 +229,15 @@ class AccepterContent:
 
     def __str__(self):
         def to_string(X, FirstF):
-            acc_id_str = "accept(%s)" % X.acceptance_id
+            acc_str = "last_acceptance = %s" % repr_acceptance_id(X.acceptance_id)
             if X.pre_context_id == E_PreContextIDs.NONE:
-                return acc_id_str
-            pre_id_str = "pre(%s)" % element.pre_context_id
-            return "%s --> %s" % (pre_id_str,  acc_id_str)
+                return acc_str
+
+            cond_str = "%s" % repr_pre_context_id(element.pre_context_id)
+            if FirstF:
+                return "if %s:  %s" % (cond_str, acc_str)
+            else:
+                return "else if %s:  %s" % (cond_str, acc_str)
 
         return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
 

@@ -8,7 +8,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID, \
                                                            IfDoorIdReferencedCode
-from   quex.engine.analyzer.commands                import CommandList
+from   quex.engine.analyzer.commands.core                import CommandList
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.tools                            import typed
 
@@ -106,6 +106,11 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
          % IteratorName \
        + "   return;\n" \
        + "#  undef self\n" \
+       # If there is no MATCH_FAILURE, then DoorIdBeyond is still referenced as 'gotoed',
+       # but MATCH_FAILURE is never implemented, later on, because its DoorId is not 
+       # referenced.
+       + "    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */\n" \
+       + "    %s\n" % Lng.GOTO(DoorIdBeyond) \
        + "}\n" \
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )

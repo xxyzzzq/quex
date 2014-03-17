@@ -15,7 +15,7 @@
 import quex.engine.generator.languages.cpp               as     cpp
 from   quex.engine.generator.code.base                   import SourceRef
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.analyzer.commands                     import E_R
+from   quex.engine.analyzer.commands.core                     import E_R
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \

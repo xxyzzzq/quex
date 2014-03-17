@@ -10,7 +10,7 @@ from   quex.input.files.mode_option                    import OptionDB, \
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
-from   quex.engine.analyzer.commands                   import ColumnCountAdd, \
+from   quex.engine.analyzer.commands.core                   import ColumnCountAdd, \
                                                               GotoDoorId
 from   quex.engine.generator.code.core                 import CodeTerminal, \
                                                               CodeUser

@@ -4,9 +4,10 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.engine.analyzer.commands.core               import *
 from   quex.engine.analyzer.state.entry            import *
 from   quex.engine.analyzer.state.entry_action     import *
-import quex.engine.generator.state.entry_door_tree as     entry_door_tree
+import quex.engine.analyzer.commands.tree as     entry_door_tree
 
 from   collections import namedtuple
 from   copy import copy
@@ -19,8 +20,8 @@ if "--hwut-info" in sys.argv:
 
 choice = sys.argv[1]
 
-A1   = [AccepterElement(x, y) for x, y in [(1, 10), (2, 20)]]
-A2   = [AccepterElement(x, y) for x, y in [(2, 20), (1, 10)]]
+A1   = [(x, y) for x, y in [(1, 10), (2, 20)]]
+A2   = [(x, y) for x, y in [(2, 20), (1, 10)]]
 S000 = StoreInputPosition(0, 0, 0) # 1
 S001 = StoreInputPosition(0, 0, 1) # 2
 S002 = StoreInputPosition(0, 0, 2) # 3
@@ -41,18 +42,26 @@ def make_action_db(DoorDb):
 
 def test(ActionDB):
     state_index = 0
-    entry = Entry(long(state_index), [long(x) for x in ActionDB.keys()])
+    entry = Entry() # long(state_index), [long(x) for x in ActionDB.keys()])
     for from_state_index, action_list in ActionDB.iteritems():
         for element in action_list:
             tid = TransitionID(state_index, from_state_index, 0)
+
+            ta = entry.get(tid)
+            if ta is None:
+                ta = TransitionAction()
+                entry.enter(state_index, from_state_index, ta)
+              
             if isinstance(element, list):
-                accepter = entry_action.Accepter(element)
-                entry.get(tid).command_list.accepter = accepter
+                for pre_context_id, acceptance_id in element:
+                    ta.command_list.access_accepter().content.add(pre_context_id, 
+                                                                  acceptance_id)
             else:
-                storer = entry_action.StoreInputPosition(element.pre_context_id, 
-                                                         element.position_register, 
-                                                         element.offset)
-                entry.get(tid).command_list.misc.add(storer)
+                x      = element.content
+                storer = StoreInputPosition(x.pre_context_id, 
+                                            x.position_register, 
+                                            x.offset)
+                ta.command_list.append(storer)
 
     entry.categorize(state_index)
     door_tree_root = entry_door_tree.do(state_index, entry)
@@ -151,7 +160,7 @@ elif "10" in sys.argv:
         print "(0<-%i):" % i
         txt = []
         for action in action_list:
-            txt.append("    %s\n" % repr(action).replace("\n", ""))
+            txt.append("    %s\n" % str(action).replace("\n", ""))
         txt.sort()
         print "".join(txt)
         action_db[i] = action_list

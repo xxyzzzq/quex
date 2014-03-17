@@ -21,6 +21,7 @@ from   quex.blackboard import setup as Setup, \
                               Lng, \
                               E_IncidenceIDs, \
                               E_TerminalType
+from   quex.engine.misc.file_in import error_msg
 import types
 from   copy        import deepcopy
 from   collections import namedtuple
