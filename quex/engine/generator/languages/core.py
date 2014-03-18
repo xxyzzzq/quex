@@ -108,12 +108,13 @@ class Lng_Cpp(dict):
         return self.__analyzer
 
     def _get_log2_if_power_of_2(self, X):
+        assert type(X) != tuple
         if not isinstance(X, (int, long)):
             return None
 
         log2 = log(X, 2)
         if not log2.is_integer(): return None
-        return log2
+        return int(log2)
             
     def __getattr__(self, Attr): 
         # Thanks to Rami Al-Rfou' who mentioned that this is the only thing to 
@@ -449,18 +450,22 @@ class Lng_Cpp(dict):
             # For k = a potentials of 2, the expression 'x - x % k' can be written as: x & ~mask(log2) !
             # Thus: x = x - x % k + k = x & mask + k
             mask = (1 << int(log2)) - 1
-            cut_str = "%s &= ~ ((%s)0x%X)" \
-                      % (VariableName, TypeName, mask)
+            if mask != 0: cut_str = "%s &= ~ ((%s)0x%X)" % (VariableName, TypeName, mask)
+            else:         cut_str = ""
         else:
-            cut_str = "%s -= (%s %% (%s))" \
-                      % (VariableName, VariableName, grid_with_str)
+            cut_str = "%s -= (%s %% (%s))" % (VariableName, VariableName, grid_with_str)
 
         add_str = "%s += %s" % (VariableName, self.MULTIPLY_WITH(grid_with_str, StepN))
 
+        result = []
         if IfMacro is None: 
-            return [ "%s;\n" % cut_str, "%s;\n" % add_str ]
+            if cut_str: result.append("%s;" % cut_str)
+            result.append("%s;\n" % add_str)
         else:               
-            return [ "%s(%s);\n" % (IfMacro, cut_str), "%s(%s);\n" % (IfMacro, add_str) ]
+            if cut_str: result.append("%s(%s);\n" % (IfMacro, cut_str))
+            result.append("%s(%s);\n" % (IfMacro, add_str))
+
+        return result
 
     def MULTIPLY_WITH(self, FactorStr, NameOrValue):
         if isinstance(NameOrValue, (str, unicode)):
