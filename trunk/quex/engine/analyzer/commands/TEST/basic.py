@@ -21,7 +21,6 @@ Setup.language_db = db[Setup.language]
 
 if "--hwut-info" in sys.argv:
     print "CommandList: Basic;"
-    print "CHOICES:     2-1, no-common, all-common, misc;"
     sys.exit()
 
 
@@ -30,7 +29,8 @@ def test(Cmd):
     global missing_set
     # safeguard against double occurence
     if Cmd.id in missing_set: missing_set.remove(Cmd.id)
-    print "Command:      %s" % Cmd.id
+    print "%s" % Cmd.id
+    print "   <%s>" % str(Cmd).replace("\n", "")
     print "   Registers:   ", 
     for register, right in sorted(get_register_access_db(Cmd).items()):
         txt = ""
@@ -38,7 +38,8 @@ def test(Cmd):
         if right.read_f:  txt += "r"
         print "%s(%s), " % (register, txt),
     print
-    print "   IsBranching: ", is_branching(Cmd.id)
+    if is_branching(Cmd.id):
+        print "   IsBranching: True"
     print "   Cost:        ", _cost_db[Cmd.id]
     print "   C-code: {"
     for line in Lng.COMMAND(Cmd).split("\n"):
@@ -68,9 +69,19 @@ test(LexemeResetTerminatingZero())
 test(ColumnCountReferencePSet(E_R.CharacterBeginP, 1000))
 test(ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555))
 test(ColumnCountAdd(1))
+test(ColumnCountGridAdd(1))
+test(ColumnCountGridAdd(2))
+test(ColumnCountGridAdd(3))
 test(ColumnCountGridAdd(4))
-test(ColumnCountGridAddWithReferenceP(1, E_R.CharacterBeginP, 5555))
+test(ColumnCountGridAdd(5))
+test(ColumnCountGridAddWithReferenceP(1, E_R.CharacterBeginP, 5551))
+test(ColumnCountGridAddWithReferenceP(2, E_R.CharacterBeginP, 5552))
+test(ColumnCountGridAddWithReferenceP(3, E_R.CharacterBeginP, 5553))
+test(ColumnCountGridAddWithReferenceP(4, E_R.CharacterBeginP, 5554))
+test(ColumnCountGridAddWithReferenceP(5, E_R.CharacterBeginP, 5555))
 test(LineCountAdd(1))
+print "## The column number is set to 1 at the newline."
+print "## So, no the delta add 'column += (p - reference_p) * c' is not necessary."
 test(LineCountAddWithReferenceP(1, E_R.CharacterBeginP, 5555))
 test(GotoDoorId(DoorID(33,44)))
 test(GotoDoorIdIfInputPNotEqualPointer(DoorID(33,44), E_R.CharacterBeginP))

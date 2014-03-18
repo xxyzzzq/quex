@@ -326,9 +326,7 @@ def __configure():
         cost_db[CmdId] = 1
 
         # -- determine whether command is subject to 'goto/branching'
-        print "#CmdId: %s" % CmdId
         for register_id in (info[0] for info in RegisterAccessInfoList):
-            print "#register_id: %s" % register_id
             if register_id == E_R.ThreadOfControl: brancher_set.add(CmdId)
 
     c(E_Cmd.Accepter,                         AccepterContent, 
@@ -391,8 +389,6 @@ _access_db,    \
 _content_db,   \
 _brancher_set, \
 _cost_db       = __configure()
-
-print "#brancher_set: ", _brancher_set
 
 def is_branching(CmdId):
     """RETURNS: True  -- if the command given by CmdId is 'branching' i.e. 
@@ -466,7 +462,7 @@ def ColumnCountAdd(Value):
     return Command(E_Cmd.ColumnCountAdd, Value)
 
 def ColumnCountGridAdd(GridSize):
-    return Command(E_Cmd.ColumnCountGridAdd, (GridSize,))
+    return Command(E_Cmd.ColumnCountGridAdd, GridSize)
 
 def ColumnCountGridAddWithReferenceP(Value, Pointer, ColumnNPerChunk):
     return Command(E_Cmd.ColumnCountGridAddWithReferenceP, Value, Pointer,ColumnNPerChunk)
