@@ -4,9 +4,9 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard               import E_Cmd
-from   quex.engine.analyzer.commands.core import *
-import quex.engine.analyzer.commands.shared_tail as command_list_shared_tail
+from   quex.blackboard                           import E_Cmd
+from   quex.engine.analyzer.commands.core        import *
+import quex.engine.analyzer.commands.shared_tail as     command_list_shared_tail
 
 from   collections import defaultdict
 from   copy import deepcopy
@@ -72,11 +72,11 @@ def judge(Result, CommonCmd, CommonIsFirstF, OtherCmd):
 count_db = defaultdict(int)
 def call(Name, Iterable0, Iterable1):
     global count_db
-    cl0      = CommandList.from_iterable(Iterable0)
-    cl1      = CommandList.from_iterable(Iterable1)
+    cl0 = CommandList.from_iterable(Iterable0)
+    cl1 = CommandList.from_iterable(Iterable1)
     # print "#cl0:", cl0
     # print "#cl1:", cl1
-    result   = command_list_shared_tail.get(cl0, cl1)
+    result = command_list_shared_tail.get(cl0, cl1)
     count_db[Name] += 1
     # print_cl("This", cl0)
     # print_cl("That", cl1)
@@ -145,16 +145,19 @@ class Cursor:
         return list0, list1
 
 if "2-1" in sys.argv:
-    for shared_cmd_id in E_Cmd:
-        if shared_cmd_id == E_Cmd._DEBUG_Commands: continue
-        for other_cmd_id in E_Cmd:
-            if   other_cmd_id == E_Cmd._DEBUG_Commands: continue
-            elif other_cmd_id == shared_cmd_id:         continue
+    def iterable():
+        for id0 in E_Cmd:
+            if id0 == E_Cmd._DEBUG_Commands: continue
+            for id1 in E_Cmd:
+                if   id1 == E_Cmd._DEBUG_Commands: continue
+                elif id0 == id1:                   continue
+                yield id0, id1
 
-            # print "#______________________________________________________"
-            test([shared_cmd_id, other_cmd_id], [shared_cmd_id])
-            # print "#_____________________"
-            test([other_cmd_id, shared_cmd_id], [shared_cmd_id])
+    for shared_cmd_id, other_cmd_id in iterable():
+        # print "#______________________________________________________"
+        test([shared_cmd_id, other_cmd_id], [shared_cmd_id])
+        # print "#_____________________"
+        test([other_cmd_id, shared_cmd_id], [shared_cmd_id])
 
 elif "no-common" in sys.argv:
     cursor = Cursor()

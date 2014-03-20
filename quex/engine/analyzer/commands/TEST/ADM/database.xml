@@ -1,10 +1,18 @@
-<test-database execution-time-sec="0.00" date="Tue Mar 18 08:32:54 2014">
+<test-database execution-time-sec="0.11" date="Thu Mar 20 07:03:03 2014">
     <last-used-diff-display-program name=""/>
-    <group name="CommandList">
-        <test title="Basic" time-sum-sec="0.00"> 
-            <application file-name="basic.py" info-request-time="1395127168L" vanished="False"/>
+    <group name="Command">
+        <test title="is_switchable" time-sum-sec="0.00"> 
+            <application file-name="is_switchable.py" info-request-time="1395295276L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="NONE" time_sec="0.00" crc="1740039273"/>
+               <choice name="" result="OK" time_sec="0.00" crc="11144888"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="CommandList">
+        <test title="Basic" time-sum-sec="0.11"> 
+            <application file-name="basic.py" info-request-time="1395259955L" vanished="False"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.11" crc="1248621088"/>
             </choice-list>
         </test>
     </group>

@@ -42,35 +42,8 @@ def can_be_moved_to_tail(CL, i):
     """
     cmd_i = CL[i]
     for cmd in CL[i+1:]:
-        if not is_switchable(cmd_i, cmd): 
+        if not commands.is_switchable(cmd_i, cmd): 
             return False
-    return True
-
-def is_switchable(A, B):
-    """Determines whether the command A and command B can be switched
-    in a sequence of commands. This is NOT possible if:
-       -- A and B read/write to the same register. 
-          Two reads to the same register are no problem.
-       -- One of the commands is goto-ing, i.e. branching.
-    """
-    if commands.is_branching(A.id) or commands.is_branching(B.id): 
-        return False
-
-    a_access_iterable = commands.get_register_access_iterable(A)
-    b_access_db       = commands.get_register_access_db(B)
-    for register_a_id, access_a in a_access_iterable:
-        access_b = b_access_db.get(register_a_id)
-        if access_b is None:
-            # Register from command A is not found in command B
-            # => no restriction from this register.
-            continue
-        elif access_a.write_f or access_b.write_f:
-            # Command A or Command B write to the same register.
-            # => No switch possible
-            return False
-        else:
-            continue
-
     return True
 
 def get(CL0_orig, CL1_orig):
@@ -94,89 +67,4 @@ def get(CL0_orig, CL1_orig):
         k -= 1
 
     return tail
-
-def OLD_get_shared_tail(This, That):
-    """DEFINITION 'shared tail':
-    
-    ! A 'shared tail' is a list of commands. For each command of a        !
-    ! shared tail, it holds that:                                         !
-    !                                                                     !
-    !  -- it appears in 'This' and 'That'.                                !
-    !  -- if it is a 'WRITE', there is no related 'READ' or 'WRITE'       !
-    !     command in This or That coming after the shared command.        !
-    !  -- if it is a 'READ', there no related 'WRITE' command in          !
-    !     This or That coming after the shared command.                   !
-
-    The second and third condition is essential, so that the shared tail
-    can be implemented from a joining point between 'This' and 'That'.
-    Consider
-
-        This:                               That:
-        * position = input_p # READ         * position = input_p;
-        * ++input_p          # WRITE        * input = *input_p;
-        * input = *input_p;                      
-
-    The 'position = input_p' cannot appear after '++input_p'. Let input_p
-    be 'x' at the entry of This and That. This and That, both result in
-    'position = x'. Then a combination, however, without second and third 
-    condition results in
-
-        This:                           That:
-        * ++input_p;         # READ     * input = *input_p;
-        * input = *input_p;                /
-                      \                   /
-                       \                 /
-                      * position = input_p;   # WRITE (Error for This)
-
-    which in the case of 'This' results in 'position = x + 1' (ERROR).
-    """
-    def is_related_to_unshared_write(CmdI, CmdList, SharedISet):
-        for i in xrange(CmdI+1, len(CmdList)):
-            cmd = CmdList[i]
-            if CommandFactory.db[cmd.id].write_f and i not in SharedISet: 
-                return True
-        return False
-
-    def is_related_to_unshared_read_write(CmdI, CmdList, SharedISet):
-        for i in xrange(CmdI+1, len(CmdList)):
-            cmd = CmdList[i]
-            if (CommandFactory.db[cmd.id].write_f or CommandFactory.db[cmd.id].read_f) and i not in SharedISet: 
-                return True
-        return False
-
-    shared_list = []
-    done_k      = set() # The same command cannot be shared twice
-    for i, cmd_a in enumerate(This):
-        for k, cmd_b in enumerate(That):
-            if   k in done_k:    continue
-            elif cmd_a != cmd_b: continue
-            shared_list.append((cmd_a, i, k))
-            done_k.add(k) # Command 'k' has been shared. Prevent sharing twice.
-            break         # Command 'i' hass been shared, continue with next 'i'.
-
-    change_f = True
-    while change_f:
-        change_f     = False
-        shared_i_set = set(x[1] for x in shared_list)
-        shared_k_set = set(x[2] for x in shared_list)
-        i            = len(shared_list) - 1
-        while i >= 0:
-            candidate, this_i, that_k = shared_list[i]
-            if     CommandFactory.db[candidate.id].write_f \
-               and (   is_related_to_unshared_read_write(this_i, This, shared_i_set) \
-                    or is_related_to_unshared_read_write(that_k, That, shared_k_set)):
-                del shared_list[i]
-                change_f = True
-            if     CommandFactory.db[candidate.id].read_f \
-               and (   is_related_to_unshared_write(this_i, This, shared_i_set) \
-                    or is_related_to_unshared_write(that_k, That, shared_k_set)):
-                del shared_list[i]
-                change_f = True
-            else:
-                pass
-            i -= 1
-            print "#i", i
-        print "#change_f", change_f
-
-    return CommandList.from_iterable(cmd for cmd, i, k in shared_list) 
 

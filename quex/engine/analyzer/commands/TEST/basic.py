@@ -1,14 +1,28 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
+#
+# Iterating over all existing commands and examining what the commands
+# actually do. That is, 
+#
+#    -- what registers they access. 
+#    -- If they acces the registers read or write, 
+#    -- if they 'branch', 
+#    -- how much the involved computational cost is.
+#    -- Their C representation
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.commands.core import *
-from   quex.engine.analyzer.commands.core import _cost_db
-from   quex.engine.analyzer.door_id_address_label   import DoorID
-import quex.engine.analyzer.commands.shared_tail as command_list_shared_tail
-from   quex.engine.generator.languages.core        import db
+from   quex.engine.analyzer.commands.core         import *
+from   quex.engine.analyzer.commands.core         import _cost_db, \
+                                                         _brancher_set
+from   quex.engine.analyzer.commands.TEST.helper  import example_db
+from   quex.engine.analyzer.door_id_address_label import DoorID
+import quex.engine.analyzer.commands.shared_tail  as command_list_shared_tail
+from   quex.engine.generator.languages.core       import db
 
 from   quex.blackboard               import E_Cmd, \
                                             setup as Setup, \
@@ -20,7 +34,7 @@ from   copy import deepcopy
 Setup.language_db = db[Setup.language]
 
 if "--hwut-info" in sys.argv:
-    print "CommandList: Basic;"
+    print "Command: Basic;"
     sys.exit()
 
 
@@ -38,12 +52,12 @@ def test(Cmd):
         if right.read_f:  txt += "r"
         print "%s(%s), " % (register, txt),
     print
-    if is_branching(Cmd.id):
+    if Cmd.id in _brancher_set: 
         print "   IsBranching: True"
     print "   Cost:        ", _cost_db[Cmd.id]
     print "   C-code: {"
     for line in Lng.COMMAND(Cmd).split("\n"):
-        print "    %s" % line
+        print "       %s" % line
     print "   }\n"
 
 def after_math():
@@ -56,36 +70,10 @@ def after_math():
     for cmd_id in missing_set:
         print "Missing: %s -- no test implemented" % cmd_id
 
-test(StoreInputPosition(4711, 7777, 0))
-test(StoreInputPosition(4711, 7777, 1000))
-test(PreContextOK(4711))
-test(TemplateStateKeySet(66))
-test(PathIteratorSet(11, 22, 1000))
-test(PrepareAfterReload(DoorID(33, 44), DoorID(55, 66)))
-test(InputPIncrement())
-test(InputPDecrement())
-test(InputPDereference())
-test(LexemeResetTerminatingZero())
-test(ColumnCountReferencePSet(E_R.CharacterBeginP, 1000))
-test(ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555))
-test(ColumnCountAdd(1))
-test(ColumnCountGridAdd(1))
-test(ColumnCountGridAdd(2))
-test(ColumnCountGridAdd(3))
-test(ColumnCountGridAdd(4))
-test(ColumnCountGridAdd(5))
-test(ColumnCountGridAddWithReferenceP(1, E_R.CharacterBeginP, 5551))
-test(ColumnCountGridAddWithReferenceP(2, E_R.CharacterBeginP, 5552))
-test(ColumnCountGridAddWithReferenceP(3, E_R.CharacterBeginP, 5553))
-test(ColumnCountGridAddWithReferenceP(4, E_R.CharacterBeginP, 5554))
-test(ColumnCountGridAddWithReferenceP(5, E_R.CharacterBeginP, 5555))
-test(LineCountAdd(1))
-print "## The column number is set to 1 at the newline."
-print "## So, no the delta add 'column += (p - reference_p) * c' is not necessary."
-test(LineCountAddWithReferenceP(1, E_R.CharacterBeginP, 5555))
-test(GotoDoorId(DoorID(33,44)))
-test(GotoDoorIdIfInputPNotEqualPointer(DoorID(33,44), E_R.CharacterBeginP))
-test(Assign(E_R.InputP, E_R.LexemeStartP))
-test(Accepter())
+for cmd_id in sorted(E_Cmd, key=lambda x: "%s" % x):
+    if cmd_id not in example_db:
+        continue
+    for cmd in example_db[cmd_id]:
+        test(cmd)
 
 after_math()

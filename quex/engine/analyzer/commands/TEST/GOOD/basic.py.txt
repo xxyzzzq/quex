@@ -1,0 +1,291 @@
+Accepter
+   <if PreContext_55:  last_acceptance = Pattern66>
+   Registers:    AcceptanceRegister(w),  PreContextFlags(r), 
+   Cost:         1
+   C-code: {
+        if( pre_context_55_fulfilled_f ) { last_acceptance = 66; __quex_debug("last_acceptance = 66\n"); }
+    
+   }
+
+Assign
+   <Assign: { target=InputP, source=LexemeStartP,  }>
+   Registers:    InputP(w),  LexemeStartP(r), 
+   Cost:         1
+   C-code: {
+        (me->buffer._input_p) = (me->buffer._lexeme_start_p);
+    
+   }
+
+ColumnCountAdd
+   <ColumnCountAdd: { value=1,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
+    
+   }
+
+ColumnCountGridAdd
+   <ColumnCountGridAdd: { grid_size=1,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+    
+   }
+
+ColumnCountGridAdd
+   <ColumnCountGridAdd: { grid_size=2,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x1));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 2);
+    
+   }
+
+ColumnCountGridAdd
+   <ColumnCountGridAdd: { grid_size=3,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (3)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3);
+    
+   }
+
+ColumnCountGridAdd
+   <ColumnCountGridAdd: { grid_size=4,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+    
+   }
+
+ColumnCountGridAdd
+   <ColumnCountGridAdd: { grid_size=5,  }>
+   Registers:    Column(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (5)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 5);
+    
+   }
+
+ColumnCountGridAddWithReferenceP
+   <ColumnCountGridAddWithReferenceP: { grid_size=1, pointer=CharacterBeginP, column_n_per_chunk=5551,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p - 1) * 5551));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+ColumnCountGridAddWithReferenceP
+   <ColumnCountGridAddWithReferenceP: { grid_size=2, pointer=CharacterBeginP, column_n_per_chunk=5552,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p - 1) * 5552));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x1));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 2);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+ColumnCountGridAddWithReferenceP
+   <ColumnCountGridAddWithReferenceP: { grid_size=3, pointer=CharacterBeginP, column_n_per_chunk=5553,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p - 1) * 5553));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (3)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+ColumnCountGridAddWithReferenceP
+   <ColumnCountGridAddWithReferenceP: { grid_size=4, pointer=CharacterBeginP, column_n_per_chunk=5554,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p - 1) * 5554));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+ColumnCountGridAddWithReferenceP
+   <ColumnCountGridAddWithReferenceP: { grid_size=5, pointer=CharacterBeginP, column_n_per_chunk=5555,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p - 1) * 5555));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (5)));
+    __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 5);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+ColumnCountReferencePDeltaAdd
+   <ColumnCountReferencePDeltaAdd: { pointer=CharacterBeginP, column_n_per_chunk=5555,  }>
+   Registers:    Column(wr),  CharacterBeginP(r),  ReferenceP(r), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p) * 5555));
+    
+   }
+
+ColumnCountReferencePSet
+   <ColumnCountReferencePSet: { pointer=CharacterBeginP, offset=1000,  }>
+   Registers:    CharacterBeginP(r),  ReferenceP(w), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p + 1000);
+    
+   }
+
+GotoDoorId
+   <GotoDoorId: { door_id=DoorID(s=33, d=44),  }>
+   Registers:    ThreadOfControl(r), 
+   IsBranching: True
+   Cost:         1
+   C-code: {
+    goto _1;
+   }
+
+GotoDoorIdIfInputPNotEqualPointer
+   <GotoDoorIdIfInputPNotEqualPointer: { door_id=DoorID(s=33, d=44), pointer=CharacterBeginP,  }>
+   Registers:    InputP(r),  CharacterBeginP(r),  ThreadOfControl(r), 
+   IsBranching: True
+   Cost:         1
+   C-code: {
+    if( me->buffer._input_p != character_begin_p ) goto _1;
+    
+   }
+
+InputPDecrement
+   <InputPDecrement>
+   Registers:    InputP(wr), 
+   Cost:         1
+   C-code: {
+        --(me->buffer._input_p);
+    
+   }
+
+InputPDereference
+   <InputPDereference>
+   Registers:    Input(w),  InputP(r), 
+   Cost:         1
+   C-code: {
+        input = *(me->buffer._input_p);
+    
+   }
+
+InputPIncrement
+   <InputPIncrement>
+   Registers:    InputP(wr), 
+   Cost:         1
+   C-code: {
+        ++(me->buffer._input_p);
+    
+   }
+
+LexemeResetTerminatingZero
+   <LexemeResetTerminatingZero>
+   Registers:    Buffer(w),  Input(w),  InputP(r),  LexemeStartP(r), 
+   Cost:         1
+   C-code: {
+        QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);
+    
+   }
+
+LineCountAdd
+   <LineCountAdd: { value=1,  }>
+   Registers:    Line(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+    __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+    
+   }
+
+LineCountAddWithReferenceP
+   <LineCountAddWithReferenceP: { value=1, pointer=CharacterBeginP, column_n_per_chunk=5555,  }>
+   Registers:    CharacterBeginP(r),  Line(wr),  ReferenceP(wr), 
+   Cost:         1
+   C-code: {
+    __QUEX_IF_COUNT_LINES_ADD((size_t)1);
+    __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+    __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p);
+    
+   }
+
+PathIteratorSet
+   <PathIteratorSet: { path_walker_id=11, path_id=22, offset=1000,  }>
+   Registers:    PathIterator(w), 
+   Cost:         1
+   C-code: {
+        path_iterator  = path_walker_11_path_22 + 1000;
+        __quex_debug("path_iterator = (Pathwalker: 11, Path: 22, Offset: 1000)\n");
+    
+   }
+
+PreContextOK
+   <pre-context-fulfilled = 4711;>
+   Registers:    PreContextFlags(w), 
+   Cost:         1
+   C-code: {
+        pre_context_4711_fulfilled_f = 1;
+        __quex_debug("pre_context_4711_fulfilled_f = true\n");
+    
+   }
+
+PrepareAfterReload
+   <PrepareAfterReload: { on_success_door_id=DoorID(s=33, d=44), on_failure_door_id=DoorID(s=55, d=66),  }>
+   Registers:    TargetStateElseIndex(w),  TargetStateIndex(w), 
+   Cost:         1
+   C-code: {
+        target_state_index = QUEX_LABEL(1); target_state_else_index = QUEX_LABEL(2);
+    
+   }
+
+StoreInputPosition
+   <if 'PreContext_4711': position[PostContext_7777]  = input_p;>
+   Registers:    InputP(r),  PreContextFlags(r),  PositionRegister:7777(w), 
+   Cost:         1
+   C-code: {
+        position[7777] = me->buffer._input_p; __quex_debug("position[7777] = input_p;\n");
+    
+   }
+
+StoreInputPosition
+   <if 'PreContext_4711': position[PostContext_7777]  = input_p - 1000;>
+   Registers:    InputP(r),  PreContextFlags(r),  PositionRegister:7777(w), 
+   Cost:         1
+   C-code: {
+        position[7777] = me->buffer._input_p - 1000; __quex_debug("position[7777] = input_p - 1000;\n");
+    
+   }
+
+TemplateStateKeySet
+   <TemplateStateKeySet: { state_key=66,  }>
+   Registers:    TemplateStateKey(w), 
+   Cost:         1
+   C-code: {
+        state_key = 66;
+        __quex_debug("state_key = 66\n");
+    
+   }
+
+Missing: IndentationAdd -- no test implemented
+Missing: IndentationGridAdd -- no test implemented
+Missing: IndentationGridAddWithReferenceP -- no test implemented
+Missing: IndentationReferencePDeltaAdd -- no test implemented
+Missing: IndentationReferencePSet -- no test implemented
