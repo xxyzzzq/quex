@@ -235,11 +235,13 @@ class AccepterContent:
         return xor_sum
 
     def __eq__(self, Other):
-        if not isinstance(Other, AccepterContent):             return False
-        if len(self.__list) != len(Other.__list):       return False
+        if   not isinstance(Other, AccepterContent):    return False
+        elif len(self.__list) != len(Other.__list):     return False
+
         for x, y in zip(self.__list, Other.__list):
             if   x.pre_context_id != y.pre_context_id:  return False
-            elif x.acceptance_id  != y.acceptance_id:      return False
+            elif x.acceptance_id  != y.acceptance_id:   return False
+
         return True
 
     def __iter__(self):
@@ -399,6 +401,47 @@ def is_branching(CmdId):
     assert CmdId in E_Cmd
     return CmdId in _brancher_set
 
+def is_switchable(A, B):
+    """Determines whether the command A and command B can be switched
+    in a sequence of commands. This is NOT possible if:
+
+       -- A and B read/write to the same register. 
+          Two reads to the same register are no problem.
+
+       -- One of the commands is goto-ing, i.e. branching.
+    """
+    global _brancher_set
+    if A.id in _brancher_set or B.id in _brancher_set:
+        return False
+
+    a_access_iterable = get_register_access_iterable(A)
+    b_access_db       = get_register_access_db(B)
+    for register_id, access_a in a_access_iterable:
+        access_b = b_access_db.get(register_id)
+        if access_b is None:
+            # Register from command A is not found in command B
+            # => no restriction from this register.
+            continue
+        elif access_a.write_f or access_b.write_f:
+            # => at least one writes.
+            # Also:
+            #   access_b not None => B accesses register_id (read, write, or both)
+            #   access_a not None => A accesses register_id (read, write, or both)
+            # 
+            # => Possible cases here:
+            #
+            #     (A w,  B w), (A w,  B r), (A w,  B rw)
+            #     (A r,  B w), (A r,  B r), (A r,  B rw)
+            #     (A rw, B w), (A rw, B r), (A rw, B rw)
+            #
+            # In all those cases A and B depend on the order that they are executed.
+            # => No switch possible
+            return False
+        else:
+            continue
+
+    return True
+
 def get_register_access_iterable(Cmd):
     """For each command there are rights associated with registers. For example
     a command that writes into register 'X' associates 'write-access' with X.
@@ -407,6 +450,7 @@ def get_register_access_iterable(Cmd):
              command accesses the register with the given access type/right.
     """
     global _access_db
+
     for register_id, rights in _access_db[Cmd.id].iteritems():
         if isinstance(register_id, int):
             register_id = Cmd.content[register_id] # register_id == Argument number which contains E_R

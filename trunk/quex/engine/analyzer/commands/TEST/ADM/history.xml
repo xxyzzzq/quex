@@ -1,4 +1,4 @@
-<history date="Tue Mar 18 08:32:54 2014" element-n="4">
+<history date="Thu Mar 20 07:03:03 2014" element-n="12">
     <day year="2014" month="03" day="17">
         <history-init time="07:33:43"/>
     </day>
@@ -6,5 +6,13 @@
         <crc-error time="07:24:57" application="basic.py" choice="" database-crc="-2097266280" real-crc="-1231981158"/>
         <crc-error time="07:30:39" application="basic.py" choice="" database-crc="-1231981158" real-crc="-383267264"/>
         <crc-error time="07:32:54" application="basic.py" choice="" database-crc="-383267264" real-crc="1740039273"/>
+        <crc-error time="20:47:30" application="basic.py" choice="" database-crc="1740039273" real-crc="568746274"/>
+        <crc-error time="20:48:49" application="basic.py" choice="" database-crc="568746274" real-crc="153592283"/>
+        <crc-error time="23:15:37" application="basic.py" choice="" database-crc="153592283" real-crc="-160370743"/>
+        <crc-error time="23:16:57" application="basic.py" choice="" database-crc="-160370743" real-crc="7185101"/>
+        <crc-error time="23:18:28" application="basic.py" choice="" database-crc="7185101" real-crc="-672082526"/>
+        <crc-error time="23:19:49" application="basic.py" choice="" database-crc="-672082526" real-crc="1161125811"/>
+        <crc-error time="23:21:32" application="basic.py" choice="" database-crc="1161125811" real-crc="-1236772570"/>
+        <crc-error time="23:22:00" application="basic.py" choice="" database-crc="-1236772570" real-crc="1248621088"/>
     </day>
 </history>
