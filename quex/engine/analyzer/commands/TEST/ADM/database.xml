@@ -1,10 +1,22 @@
-<test-database execution-time-sec="0.11" date="Thu Mar 20 07:03:03 2014">
+<test-database execution-time-sec="0.11" date="Fri Mar 21 23:21:49 2014">
     <last-used-diff-display-program name=""/>
     <group name="Command">
         <test title="is_switchable" time-sum-sec="0.00"> 
             <application file-name="is_switchable.py" info-request-time="1395295276L" vanished="False"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="11144888"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Command.shared_tail">
+        <test title="find_last_common" time-sum-sec="0.00"> 
+            <application file-name="find_last_common.py" info-request-time="1395439905L" vanished="False"/>
+            <choice-list number="5" same_result="False">
+               <choice name="EqualOp" result="OK" time_sec="0.00" crc="699489179"/>
+               <choice name="no-common" result="OK" time_sec="0.00" crc="1012475222"/>
+               <choice name="1-common" result="OK" time_sec="0.00" crc="-947965317"/>
+               <choice name="2-common" result="OK" time_sec="0.00" crc="317705286"/>
+               <choice name="3-common" result="OK" time_sec="0.00" crc="-849194493"/>
             </choice-list>
         </test>
     </group>
