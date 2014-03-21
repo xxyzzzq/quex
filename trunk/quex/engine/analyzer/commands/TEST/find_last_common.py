@@ -29,7 +29,7 @@ from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "Command.shared_tail: find_last_common;"
-    print "CHOICES: EqualOp, no-common, 1-common, 2-common, 3-common;"
+    print "CHOICES: EqualOp, no-common, 1-common, 2-common, 3-common, start-indices;"
     sys.exit()
 
 def generator():
@@ -173,24 +173,34 @@ elif "3-common" in sys.argv:
     test(3, 5, 3)
 
 elif "start-indices":
-    #                0     1  2  3  4  5  6  7  8  9  10  11
-    selection0 = [   0,    0, 1, 0, 2, 3, 4, 0, 0, 0,  5,  0]
-    last0      = [None, None, 2, 2, 4, 5, 6, 6, 6, 6, 10, 10]
-    selection1 = [   1,    0, 1, 1, 0, 0, 0, 0, 1, 0,  0,  1]
-    last1      = [   0,    0, 2, 3, 3, 3, 3, 3, 8, 8,  8, 11]
+    #              0  1  2  3  4  5  6  7  8  9 10 11
+    selection0 = [ 0, 0, 1, 0, 2, 3, 4, 0, 0, 0, 5, 0]
+    selection1 = [ 1, 0, 2, 3, 0, 0, 0, 0, 4, 0, 0, 5]
+
+    # db[x] = y means: last command at position 'x' was 'y' 
+    last0_db   = [-1,-1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 5 ]
+    last1_db   = [ 1, 1, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5 ]
     setup()
     shared_i = 0
     cl0 = [ get(flag) for flag in selection0 ]
     shared_i = 0
     cl1 = [ get(flag) for flag in selection1 ]
 
+    count_i = 0
     for i in xrange(len(selection0)-1, -1, -1):
         for k in xrange(len(selection1)-1, -1, -1):
+            count_i += 1
             last_i, last_k = find_last_common(cl0, cl1, i, k)
-            print_cl("cl0", cl0)
-            print_cl("cl1", cl1)
-            assert last_i == last0[i], "i: %i; last common: %i; expected: %i;" % (i, last_i, last0[i])
-            assert last_k == last1[k], "i: %i; last common: %i; expected: %i;" % (k, last_k, last1[k])
+            # print_cl("cl0", cl0)
+            # print_cl("cl1", cl1)
+            last_common = min(last0_db[i], last1_db[k])
+            if last_common == -1:
+                assert last_i is None and last_k is None
+            else:
+                expected_last_i = selection0.index(last_common)
+                expected_last_k = selection1.index(last_common)
+                assert last_i == expected_last_i, "i: %i; last common: %i; expected: %i;" % (i, last_i, expected_last_i)
+                assert last_k == expected_last_k, "i: %i; last common: %i; expected: %i;" % (k, last_k, expected_last_k)
 
-    print "Oll Korrekt!" # Otherwise, asserts would have thrown us out!
+    print "%i Oll Korrekt!" % count_i # Otherwise, asserts would have thrown us out!
 
