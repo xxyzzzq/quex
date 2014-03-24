@@ -20,7 +20,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.blackboard                            import E_Cmd
 from   quex.engine.analyzer.commands.core         import *
 from   quex.engine.analyzer.commands.shared_tail  import find_last_common
-from   quex.engine.analyzer.commands.TEST.helper  import example_db
+from   quex.engine.analyzer.commands.TEST.helper  import *
 from   quex.engine.analyzer.door_id_address_label import DoorID
 
 from   collections import defaultdict
@@ -32,15 +32,6 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: EqualOp, no-common, 1-common, 2-common, 3-common, start-indices;"
     sys.exit()
 
-def generator():
-    """Iterable over all commands from the example_db.
-    """
-    index = 0
-    for example_list in example_db.itervalues():
-        for example in example_list:
-            index += 1
-            yield index, example
-
 shared_list     = []
 non_shared_list = []
 non_shared_i    = 0
@@ -50,23 +41,9 @@ def setup():
     global non_shared_list
     global non_shared_i
 
-    del shared_list[:]
-    del non_shared_list[:]
+    shared_list, non_shared_list = get_two_lists(FirstSize=6)
     non_shared_i = 0
-
-    selectable = generator()
-
-    # 1st five --> The shared commands.
-    for i, cmd in selectable:
-        if i > 5: break
-        shared_list.append(cmd)
-
-    # Remaining --> The non-shared commands.
-    non_shared_list.append(cmd)
-    for i, cmd in selectable:
-        non_shared_list.append(cmd)
-
-    shared_i = 0
+    shared_i     = 0
 
 def get(Flag):
     global shared_i 

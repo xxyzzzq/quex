@@ -56,3 +56,50 @@ accepter = Accepter()
 accepter.content.add(55L, 66L)
 accepter_list.append(accepter)
 example_db[E_Cmd.Accepter] = accepter_list
+
+def generator():
+    """Iterable over all commands from the example_db.
+    """
+    index = 0
+    for example_list in example_db.itervalues():
+        for example in example_list:
+            index += 1
+            yield index, example
+
+def get_two_lists(FirstSize):
+    selectable = generator()
+
+    first_list = []
+    for i, cmd in selectable:
+        if i == FirstSize: break
+        first_list.append(cmd)
+
+    second_list = [ cmd ]
+    for i, cmd in selectable:
+        second_list.append(cmd)
+
+    return first_list, second_list
+
+def rw_generator(N):
+    """Iterable over all commands from the example_db.
+    """
+    for write_n in xrange(N):
+        base = ["R"] + [" "] * (N - write_n - 1) + ["W"] * write_n
+        for setting in set(permutations(base, N)):
+            yield setting 
+
+def rw_get(Flag):
+    if   Flag == "R": return Assign(E_R.InputP,       E_R.LexemeStartP)
+    elif Flag == "W": return Assign(E_R.LexemeStartP, E_R.InputP)
+    else:             return Assign(E_R.Column,       E_R.CharacterBeginP)
+
+def string_cl(Name, Cl):
+    if len(Cl) == 0:
+        return "    %s: <empty>" % Name
+    txt = "    %s: [0] %s" % (Name, Cl[0])
+    for i, cmd in enumerate(Cl[1:]):
+        txt += "       [%i] %s" % (i+1, cmd)
+    return txt
+
+def print_cl(Name, Cl):
+    print string_cl(Name, CL)
