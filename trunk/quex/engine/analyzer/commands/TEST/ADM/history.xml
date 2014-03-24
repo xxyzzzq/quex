@@ -1,4 +1,4 @@
-<history date="Sat Mar 22 00:01:02 2014" element-n="12">
+<history date="Mon Mar 24 08:45:36 2014" element-n="15">
     <day year="2014" month="03" day="17">
         <history-init time="07:33:43"/>
     </day>
@@ -14,5 +14,10 @@
         <crc-error time="23:19:49" application="basic.py" choice="" database-crc="-672082526" real-crc="1161125811"/>
         <crc-error time="23:21:32" application="basic.py" choice="" database-crc="1161125811" real-crc="-1236772570"/>
         <crc-error time="23:22:00" application="basic.py" choice="" database-crc="-1236772570" real-crc="1248621088"/>
+    </day>
+    <day year="2014" month="03" day="24">
+        <crc-error time="07:44:16" application="test-shared_tail.py" choice="one-or-none" database-crc="398286522" real-crc="-823665271"/>
+        <crc-error time="07:44:59" application="test-shared_tail.py" choice="one-or-none" database-crc="-823665271" real-crc="-146152837"/>
+        <crc-error time="07:45:36" application="test-shared_tail.py" choice="one-or-none" database-crc="-146152837" real-crc="-45263776"/>
     </day>
 </history>
