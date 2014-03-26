@@ -8,6 +8,7 @@ from   quex.blackboard import E_Cmd, \
                               setup as Setup, \
                               Lng
 
+from   itertools   import permutations
 from   collections import defaultdict
 from   copy        import deepcopy
 
@@ -96,10 +97,10 @@ def rw_get(Flag):
 def string_cl(Name, Cl):
     if len(Cl) == 0:
         return "    %s: <empty>" % Name
-    txt = "    %s: [0] %s" % (Name, Cl[0])
+    txt = "    %s: [0] %s\n" % (Name, Cl[0])
     for i, cmd in enumerate(Cl[1:]):
-        txt += "       [%i] %s" % (i+1, cmd)
+        txt += "       [%i] %s\n" % (i+1, cmd)
     return txt
 
 def print_cl(Name, Cl):
-    print string_cl(Name, CL)
+    print string_cl(Name, Cl)

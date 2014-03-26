@@ -9,7 +9,7 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-       Assign: { target=Line, source=Column,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
 }
 tail(B, A): {
@@ -18,9 +18,9 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-   <0> Assign: { target=Line, source=Column,  }
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
-   <0> Assign: { target=Line, source=Column,  }
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
 }
 tail(B, A): {
     1 x same
@@ -28,7 +28,7 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-       Assign: { target=Line, source=Column,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
        Assign: { target=CharacterBeginP, source=LexemeEnd,  }
 }
@@ -38,7 +38,7 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-       Assign: { target=Line, source=Column,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
        if PreContext_55:  last_acceptance = Pattern66
        Assign: { target=InputP, source=LexemeStartP,  }
@@ -49,10 +49,10 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-   <0> Assign: { target=Line, source=Column,  }
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
        if PreContext_55:  last_acceptance = Pattern66
-   <0> Assign: { target=Line, source=Column,  }
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
        Assign: { target=InputP, source=LexemeStartP,  }
 }
 tail(B, A): {
@@ -61,7 +61,7 @@ tail(B, A): {
 
 ________________________________________________________________________________
 tail(A, B): {
-       Assign: { target=Line, source=Column,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
    - - - - - - 
        if PreContext_55:  last_acceptance = Pattern66
        Assign: { target=CharacterBeginP, source=LexemeEnd,  }
@@ -74,7 +74,7 @@ tail(B, A): {
 ________________________________________________________________________________
 tail(A, B): {
        ColumnCountAdd: { value=1,  }
-       Assign: { target=Line, source=Column,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
        ColumnCountGridAdd: { grid_size=1,  }
    - - - - - - 
        if PreContext_55:  last_acceptance = Pattern66
@@ -85,3 +85,29 @@ tail(B, A): {
 }
 
 ________________________________________________________________________________
+tail(A, B): {
+       ColumnCountAdd: { value=1,  }
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
+       ColumnCountGridAdd: { grid_size=1,  }
+   - - - - - - 
+       if PreContext_55:  last_acceptance = Pattern66
+   <0> Assign: { target=CharacterBeginP, source=Input,  }
+       Assign: { target=InputP, source=LexemeStartP,  }
+}
+tail(B, A): {
+    1 x same
+}
+
+________________________________________________________________________________
+tail(A, B): {
+       ColumnCountAdd: { value=1,  }
+       Assign: { target=CharacterBeginP, source=Input,  }
+       ColumnCountGridAdd: { grid_size=1,  }
+   - - - - - - 
+       if PreContext_55:  last_acceptance = Pattern66
+       Assign: { target=CharacterBeginP, source=LexemeEnd,  }
+       Assign: { target=InputP, source=LexemeStartP,  }
+}
+tail(B, A): {
+    0 x same
+}
