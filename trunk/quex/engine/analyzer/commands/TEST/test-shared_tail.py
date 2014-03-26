@@ -34,7 +34,7 @@ from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "Command.shared_tail: find_last_common;"
-    print "CHOICES: one-or-none;"
+    print "CHOICES: one-or-none, two, two-bad, multiple;"
     sys.exit()
 
 A = Assign(E_R.CharacterBeginP, E_R.Input)
@@ -81,7 +81,7 @@ def test(Cl0, Cl1):
     print "    %s x same" % count_n
     print "}"
 
-if False:
+if "one-or-none" in sys.argv:
     test([], [])
     test([ A ], [])
     test([ A ], [ A ])
@@ -90,8 +90,37 @@ if False:
     test([ A ], [ x[0], A, x[1] ])
     test([ A ], [ x[0], B, x[1] ])
     test([ x[2], A, x[3] ], [ x[0], x[1] ])
-test([ x[2], A, x[3] ], [ x[0], A, x[1] ])
-if False:
+    test([ x[2], A, x[3] ], [ x[0], A, x[1] ])
     test([ x[2], A, x[3] ], [ x[0], B, x[1] ])
-# test([ A, x[0], A, B ], [ x[1], A, B ])
+elif "two" in sys.argv:
+    test([ A, B ], [ A, B ])
+    test([ A, B ], [ A, B, x[0] ])
+    test([ A, B ], [ A, x[0], B ])
+    test([ A, B ], [ x[0], A, B ])
+    test([ A, B ], [ x[0], A, x[1], B, x[2] ])
+
+elif "two-bad" in sys.argv:
+    test([ B, A ], [ A, B ])
+    test([ B, A ], [ A, B, x[0] ])
+    test([ B, A ], [ A, x[0], B ])
+    test([ B, A ], [ x[0], A, B ])
+    test([ B, A ], [ x[0], A, x[1], B, x[2] ])
+
+elif "multiple" in sys.argv:
+    A = Assign(E_R.Line,            E_R.Input)
+    B = Assign(E_R.Column,          E_R.LexemeEnd)
+    C = Assign(E_R.CharacterBeginP, E_R.CharacterBeginP)
+
+    test([ A, A, B ],    [ A ])
+    test([ A, A, B ],    [ A, B ])
+    test([ A, A, B, B ], [ A, B ])
+    test([ A, A, B, B ], [ A, B, B ])
+    test([ A, A, B ],    [ A, x[0] ])
+    test([ A, A, B ],    [ A, x[0], B ])
+    test([ A, A, B, B ], [ A, x[0], B ])
+    test([ A, A, B, B ], [ A, x[0], B, B ])
+    test([ A, x[1], A, x[2], B, x[1] ],    [ A, x[0] ])
+    test([ A, x[1], A, x[2], B, x[1] ],    [ A, x[0], B ])
+    test([ A, x[1], A, x[2], B, x[1], B ], [ A, x[0], B ])
+    test([ A, x[1], A, x[2], B, x[1], B ], [ A, x[0], B, B ])
 

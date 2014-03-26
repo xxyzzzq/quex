@@ -27,10 +27,9 @@
 #
 # (*) CommandList:
 #
-#     A class which represents a sequence of Command-s. There is one special
-#     function in this class 'command_list_shared_tail_get(Other)' which allows to find
-#     find shared Command-s in 'self' and 'Other' so that each CommandList
-#     can do its own Command-s followed by the shared tail. 
+#     A class which represents a sequence of Command-s. 
+
+#     'command.shared_tail.get(A, B)' find shared Command-s in 'A' and 'B'.
 #
 #     This 'shared tail' is used for the 'door tree construction'. That is, 
 #     upon entry into a state the CommandList-s may different dependent on
@@ -146,8 +145,8 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __hash__(self):      
         return self.my_hash
 
-    def __repr__(self):
-        assert False
+    #def __repr__(self):
+    #    assert False
 
     def __str__(self):
         name_str = str(self.id)
@@ -161,16 +160,16 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
                 txt = "if '%s': " % repr_pre_context_id(x.pre_context_id)
             pos_str = repr_position_register(x.position_register)
             if x.offset == 0:
-                txt += "%s = input_p;\n" % pos_str
+                txt += "%s = input_p;" % pos_str
             else:
-                txt += "%s = input_p - %i;\n" % (pos_str, x.offset)
+                txt += "%s = input_p - %i;" % (pos_str, x.offset)
             return txt
 
         elif self.id == E_Cmd.Accepter:
             return str(self.content)
 
         elif self.id == E_Cmd.PreContextOK:
-            return "pre-context-fulfilled = %s;\n" % self.content.pre_context_id
+            return "pre-context-fulfilled = %s;" % self.content.pre_context_id
 
         else:
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
@@ -254,13 +253,15 @@ class AccepterContent:
             if X.pre_context_id == E_PreContextIDs.NONE:
                 return acc_str
 
-            cond_str = "%s" % repr_pre_context_id(element.pre_context_id)
+            cond_str = "%s" % repr_pre_context_id(X.pre_context_id)
             if FirstF:
                 return "if %s:  %s" % (cond_str, acc_str)
             else:
                 return "else if %s:  %s" % (cond_str, acc_str)
 
-        return "".join(["%s\n" % to_string(element, i==0) for i, element in enumerate(self.__list)])
+        last_i = len(self.__list) - 1
+        return "".join("%s%s" % (to_string(element, i==0), "\n" if i != last_i else "") 
+                       for i, element in enumerate(self.__list))
 
 #______________________________________________________________________________
 # CommandInfo: Information about a command. CommandInfo-s provide information
