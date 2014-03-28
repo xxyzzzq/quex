@@ -1,0 +1,20 @@
+________________________________________________________________________________
+SharedTailDB:
+
+    .state_index:    4711;
+    .root (door_id): DoorID(s=4711, d=0);
+    .door_db.keys(): ;
+    .shared_tails: {
+      }
+    }
+    
+________________________________________________________________________________
+SharedTailDB:
+
+    .state_index:    4711;
+    .root (door_id): DoorID(s=4711, d=0);
+    .door_db.keys(): DoorID(s=0, d=1), ;
+    .shared_tails: {
+      }
+    }
+    
