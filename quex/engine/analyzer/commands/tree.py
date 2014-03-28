@@ -76,34 +76,13 @@ _______________________________________________________________________________
 
 FUNCTIONS:
 
-    init(): -- Generates the initial CandidateList
-
-            -- Builds the initial tail-matrix.
-
-    enter_matrix(Door):
-            -- Computes shared tail with any other Door and registers the
-               result in the matrix.
-
-    pop_best()
-             -- gets the best candidate
-
-    new_door(Combination)
-
-             -- Implements the shared commands in a node and associates
-                it with a new DoorID.
-
-             -- connects the related doors to the new node as child
-
-
-    do(): -- Does the optimization.
-
-
-
+    do(): -- Does the optimization. Returns the root door. Iterate over
+             tree by each node's child_set.
            
 (C) Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 from   quex.engine.analyzer.commands.core         import CommandList
 import quex.engine.analyzer.commands.shared_tail  as     shared_tail
 
@@ -111,64 +90,14 @@ from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
 from quex.engine.tools import pair_combinations
 
-from collections      import defaultdict
+from collections      import defaultdict, namedtuple
 from itertools        import islice
 from operator         import attrgetter
 
-class Door(named_tuple("Door", ("door_id", "command_list", "parent", "child_set"))):
+Door = namedtuple("Door", ("door_id", "command_list", "parent", "child_set"))
 
-    def get_string(self, ActionDB=None, OnlyFromStateIndexF=False):
-        """ActionDB can be received, for example from the 'entry' object.
-           If it is 'None', then no transition-id information is printed.
-        """
-        def door_id_to_transition_id_list(DoorId, ActionDB):
-            if ActionDB is None:
-                return None
-            return [
-                transition_id for transition_id, action in ActionDB.iteritems()
-                              if action.door_id == DoorId
-            ]
 
-        txt = []
-        if self.child_set is not None:
-            def sort_key(X, ActionDB):
-                return (door_id_to_transition_id_list(X.door_id, ActionDB), X)
-                    
-            for child in sorted(self.child_set, key=lambda x: sort_key(x, ActionDB)):
-                txt.append("%s\n" % child.get_string(ActionDB))
-
-        if self.door_id is not None: 
-            txt.append("[%s:%s]: " % (self.door_id.state_index, self.door_id.door_index))
-        else:                        
-            txt.append("[None]: ")
-
-        if ActionDB is not None:
-            transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
-           
-            for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
-                if OnlyFromStateIndexF:
-                    txt.append("(%s) " % transition_id.source_state_index)
-                else:
-                    txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
-
-        if self.command_list is not None:
-            txt.append("\n")
-            for cmd in self.command_list:
-                cmd_str = str(cmd)
-                cmd_str = "    " + cmd_str.replace("\n", "\n    ") + "\n"
-                txt.append(cmd_str)
-            if len(txt[-1]) == 0 or txt[-1][-1] != "\n":
-                txt.append("\n")
-        else:
-            txt.append("\n")
-
-        if self.parent is None: txt.append("    parent: [None]\n")
-        else:                   txt.append("    parent: [%s:%s]\n" % \
-                                           (str(self.parent.door_id.state_index), 
-                                            str(self.parent.door_id.door_index)))
-        return "".join(txt)
-
-class SharedTailCandidateSet:
+class SharedTailCandidateSet(object):
     """A SharedTailCandidateSet is 1:1 associated with a shared tail command list.
     It contains the DoorID-s of doors that share the tail and what indices would
     have to be cut out of the door's command list if the shared tail was to be 
@@ -179,6 +108,7 @@ class SharedTailCandidateSet:
     The shared tail which is related to the SharedTailCandidateSet is NOT stored here.
     It is stored inside the SharedTailDB as a key.
     """
+    __slots__ = ("cut_db", "tail_length")
     def __init__(self, TailLength):
         self.cut_db = {}
         self.tail_length = TailLength
@@ -196,6 +126,16 @@ class SharedTailCandidateSet:
 
     def value(self):
         return len(self.cut_db) * self.tail_length
+
+    def __str__(self):
+        txt = [ 
+            "    .tail_length: %i;\n" % self.tail_length,
+            "    .cut_db: {\n",
+        ]
+        for door_id, cut_indices in self.cut_db.iteritems():
+            txt.append("        %s -> { %s }\n" % (str(door_id), "".join("%i, " % i for i in cut_indices_str)))
+        txt.append("    }\n")
+        return "".join(txt)
 
 
 class SharedTailDB:
@@ -237,14 +177,14 @@ class SharedTailDB:
 
     def __init__(self, StateIndex, DoorId_CommandList_Iterable):
         self.state_index = StateIndex
-        self.root        = Door(dial_db.new_door_id(StateIndex))
+        self.root        = Door(dial_db.new_door_id(StateIndex), [], None, set())
 
         # map: Shared Tail --> SharedTailCandidateSet
         self.db      = {}
         self.door_db = {}
         for door_id, command_list in DoorId_CommandList_Iterable:
-            door = Door(new_door_id, command_list, self.root, set())
-            self.enter(door_id, door)
+            door = Door(door_id, command_list, self.root, set())
+            self._enter(door_id, door)
 
     def pop_best(self):
         """RETURNS: The best candidate for a shared tail extraction. This is, 
@@ -344,29 +284,47 @@ class SharedTailDB:
         """
 
         for door_id, door in self.door_db.iteritems():
-            shared_tail,   \
+            tail,   \
             x_cut_indices, y_cut_indices = shared_tail.get(NewDoor.command_list, 
                                                            door.command_list)
-            if shared_tail is None: continue
+            if tail is None: continue
 
-            self._register_shared_tail(shared_tail, NewDoorId, door_id, 
+            self._register_shared_tail(tail, NewDoorId, door_id, 
                                        x_cut_indices, y_cut_indices)
 
-        self.door_db[DoorId] = NewDoor
+        self.door_db[NewDoorId] = NewDoor
 
     def _register_shared_tail(self, SharedTail, DoorId_A, DoorId_B, CutIndicesA, CutIndicesB):
         """If (x0, x1, ...  xN) is a shared tail, then (x1, ... xN) is also 
            a shared tail. Add all tails to the database.
         """
-        shared_tail = SharedTail
-        for i in xrange(len(shared_tail)):
-            entry = self.db.get(shared_tail)
+        tail = SharedTail
+        for i in xrange(len(tail)):
+            entry = self.db.get(tail)
             if entry is None:
-                entry = SharedTailCandidateSet(len(shared_tail))
-                self.db[shared_tail] = entry
+                entry = SharedTailCandidateSet(len(tail))
+                self.db[tail] = entry
             entry.add(DoorId_A, CutIndicesA[i:])
             entry.add(DoorId_B, CutIndicesB[i:])
-            shared_tail = shared_tail[1:]
+            tail = tail[1:]
+
+    def get_string(self, CommandAliasDb):
+        txt = [
+            ".state_index:    %i;\n" % self.state_index,
+            ".root (door_id): %s;\n" % str(self.root.door_id),
+            ".door_db.keys(): %s;\n" % "".join("%s, " % str(door_id) for door_id in self.door_db.iterkeys()),
+            ".shared_tails: {\n"
+        ]
+        
+        for shared_tail, candidate_set in self.db.iteritems():
+            txt.append("  (%s) -> {\n" % "".join("%s;" % CommandAliasDb[cmd] for cmd in shared_tail))
+            txt.append(str(candidate_set))
+        txt.append("  }\n")
+
+        # map: Shared Tail --> SharedTailCandidateSet
+        self.db      = {}
+        txt.append("}\n")
+        return "".join(txt)
 
 
 def do(StateIndex, DoorId_CommandList_Iterable):
@@ -386,4 +344,55 @@ def do(StateIndex, DoorId_CommandList_Iterable):
         pass
 
     return shared_tail_db.root
+
+def get_string(DoorTreeRoot):
+    """ActionDB can be received, for example from the 'entry' object.
+       If it is 'None', then no transition-id information is printed.
+    """
+    def door_id_to_transition_id_list(DoorId, ActionDB):
+        if ActionDB is None:
+            return None
+        return [
+            transition_id for transition_id, action in ActionDB.iteritems()
+                          if action.door_id == DoorId
+        ]
+
+    txt = []
+    if self.child_set is not None:
+        def sort_key(X, ActionDB):
+            return (door_id_to_transition_id_list(X.door_id, ActionDB), X)
+                
+        for child in sorted(self.child_set, key=lambda x: sort_key(x, ActionDB)):
+            txt.append("%s\n" % child.get_string(ActionDB))
+
+    if self.door_id is not None: 
+        txt.append("[%s:%s]: " % (self.door_id.state_index, self.door_id.door_index))
+    else:                        
+        txt.append("[None]: ")
+
+    if ActionDB is not None:
+        transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
+       
+        for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
+            if OnlyFromStateIndexF:
+                txt.append("(%s) " % transition_id.source_state_index)
+            else:
+                txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
+
+    if self.command_list is not None:
+        txt.append("\n")
+        for cmd in self.command_list:
+            cmd_str = str(cmd)
+            cmd_str = "    " + cmd_str.replace("\n", "\n    ") + "\n"
+            txt.append(cmd_str)
+        if len(txt[-1]) == 0 or txt[-1][-1] != "\n":
+            txt.append("\n")
+    else:
+        txt.append("\n")
+
+    if self.parent is None: txt.append("    parent: [None]\n")
+    else:                   txt.append("    parent: [%s:%s]\n" % \
+                                       (str(self.parent.door_id.state_index), 
+                                        str(self.parent.door_id.door_index)))
+    return "".join(txt)
 

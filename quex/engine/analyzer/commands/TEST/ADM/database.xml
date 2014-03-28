@@ -1,6 +1,6 @@
-<test-database execution-time-sec="3.29" date="Mon Mar 24 22:10:24 2014">
+<test-database execution-time-sec="3.25" date="Fri Mar 28 08:43:11 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Build Tree of Entry Door Commands" time-sum-sec="1.35"> 
+    <test title="Build Tree of Entry Door Commands" time-sum-sec="1.32"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="False"/>
         <choice-list number="13" same_result="False">
            <choice name="1" result="FAIL" time_sec="0.09" crc="None"/>
@@ -18,6 +18,17 @@
            <choice name="set_path_iterator" result="FAIL" time_sec="0.15" crc="None"/>
         </choice-list>
     </test>
+    <test title="SharedTailDB" time-sum-sec="0.00"> 
+        <application file-name="test-SharedTailDB.py" info-request-time="1395992503L" vanished="False"/>
+        <choice-list number="6" same_result="False">
+           <choice name="init" result="OK" time_sec="0.00" crc="1910378027"/>
+           <choice name="pop_best" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="_find_best" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="_remove" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="_new_node" result="NONE" time_sec="0.00" crc="None"/>
+           <choice name="_enter" result="NONE" time_sec="0.00" crc="None"/>
+        </choice-list>
+    </test>
     <group name="Command">
         <test title="Basic" time-sum-sec="0.09"> 
             <application file-name="basic.py" info-request-time="1395293270L" vanished="False"/>
@@ -33,7 +44,7 @@
         </test>
     </group>
     <group name="Command.shared_tail">
-        <test title="find_last_common" time-sum-sec="0.39"> 
+        <test title="find_last_common" time-sum-sec="0.38"> 
             <application file-name="test-shared_tail.py" info-request-time="1395682152L" vanished="False"/>
             <choice-list number="4" same_result="False">
                <choice name="one-or-none" result="OK" time_sec="0.09" crc="143644372"/>
@@ -49,7 +60,7 @@
                <choice name="with-exceptions" result="OK" time_sec="0.09" crc="-1859076765"/>
             </choice-list>
         </test>
-        <test title="find_last_common" time-sum-sec="0.58"> 
+        <test title="find_last_common" time-sum-sec="0.59"> 
             <application file-name="find_last_common.py" info-request-time="1395559476L" vanished="False"/>
             <choice-list number="6" same_result="False">
                <choice name="EqualOp" result="OK" time_sec="0.10" crc="699489179"/>
