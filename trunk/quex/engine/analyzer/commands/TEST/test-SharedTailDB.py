@@ -44,12 +44,31 @@ alias_db = dict(
 
 def test_init(DidCl_Iterable):
     dial_db.clear()
-    stdb = SharedTailDB(4711, DidCl_Iterable)
+    stdb = SharedTailDB(4711L, DidCl_Iterable)
 
     print "_" * 80
     print "SharedTailDB:" 
     print
     print "    " + stdb.get_string(alias_db).replace("\n", "\n    ")
 
-test_init([])
-test_init([(DoorID(0, 1), [generator().next()])])
+if "init" in sys.argv:
+    iterable = alias_db.iterkeys()
+    A = iterable.next()
+    B = iterable.next()
+    C = iterable.next()
+    test_init([])
+    test_init([
+        (DoorID(0, 1), [A])
+    ])
+    test_init([
+        (DoorID(0, 1), [A]), 
+        (DoorID(0, 2), [A])
+    ])
+    test_init([
+        (DoorID(0, 1), [A]), 
+        (DoorID(0, 2), [B])
+    ])
+    test_init([
+        (DoorID(0, 1), [A, C]), 
+        (DoorID(0, 2), [B, C])
+    ])

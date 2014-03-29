@@ -43,42 +43,42 @@ C = Assign(E_R.CharacterBeginP, E_R.Line)
 
 x = [ remaining for i, remaining in generator() if remaining not in (A, B, C) ]
 
-def print_tail_vs_cmd_list(Tail, CmdList, P):
+def print_tail_vs_cmd_list(CutList, CmdList):
     t = 0
     for i, cmd in enumerate(CmdList):
-        if t < len(Tail) and Tail[t][P] == i: label = "<%i>" % t; t += 1
-        else:                                 label = "   "
+        if i in CutList: label = "<%i>" % t; t += 1
+        else:            label = "   "
         print "   %s %s" % (label, str(cmd))
 
 def test(Cl0, Cl1):
-    tail = shared_tail.get(Cl0, Cl1)
-    if tail is None: tail = []
-    itail = shared_tail.get(Cl1, Cl0)
-    if itail is None: itail = []
-
+    result, x_cut_list, y_cut_list = shared_tail.get(Cl0, Cl1)
+    if result is None: result = (); x_cut_list = y_cut_list = []
+    assert len(x_cut_list) == len(y_cut_list) == len(result)
+    assert result == tuple(Cl0[i] for i in reversed(x_cut_list))
+    assert result == tuple(Cl1[k] for k in reversed(y_cut_list))
     print
     print "_" * 80
     print "tail(A, B): {"
-    print_tail_vs_cmd_list(tail, Cl0, 0)
+    print_tail_vs_cmd_list(x_cut_list, Cl0)
     print "   - - - - - - "
-    print_tail_vs_cmd_list(tail, Cl1, 1)
+    print_tail_vs_cmd_list(y_cut_list, Cl1)
     print "}"
 
-    print "tail(B, A): {"
-    count_n = 0
-    for x, y in izip(tail, itail):
-        i0, k0 = x
-        i1, k1 = y
-        if i1 != k0 or k1 != i0:
-            # Print error case
-            print_tail_vs_cmd_list(itail, Cl0, 1)
-            print "   - - - - - - "
-            print_tail_vs_cmd_list(itail, Cl1, 0)
-        assert i1 == k0
-        assert k1 == i0
-        count_n += 1
+    iresult, ix_cut_list, iy_cut_list = shared_tail.get(Cl1, Cl0)
+    if iresult is None: iresult = (); ix_cut_list = iy_cut_list = []
+    assert len(ix_cut_list) == len(iy_cut_list) == len(result)
+    assert iresult == tuple(Cl1[i] for i in reversed(ix_cut_list))
+    assert iresult == tuple(Cl0[k] for k in reversed(iy_cut_list))
+    assert result == iresult
 
-    print "    %s x same" % count_n
+    print "tail(B, A): {"
+    if ix_cut_list != y_cut_list or iy_cut_list != x_cut_list:
+        # Print error case
+        print_tail_vs_cmd_list(ix_cut_list, Cl0)
+        print "   - - - - - - "
+        print_tail_vs_cmd_list(iy_cut_list, Cl1)
+
+    print "    %s x same" % len(result)
     print "}"
 
 if "one-or-none" in sys.argv:

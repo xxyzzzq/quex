@@ -113,36 +113,38 @@ def get(CL0, CL1):
     allow to be overstepped. The advantage of separation is that C, B, A
     needs to be implemented only once.
 
-    RETURNS: [(i, k)] -- A list of tuples with two elements 'i' and 'k'. 
-                         Each tuple represents a shared command which is
-                         located at position 'i' in CL0 and at position 
-                         'k' in CL1.
-             None     -- if there are no commands which can be shared 
-                         at the tail.
+    RETURNS: 
+        
+    [0] The list of commands which can be shared as a tuple.
+        None, else.
+    [1] The list of indices of 'tail commands' CL0. Those are to be 
+        cut from CL0, if the commands shall really be move to the 
+        tail.
+    [2] List of indices of 'tail commands' in CL1.
     """
     i = len(CL0) - 1
     k = len(CL1) - 1
     # Set of indices of commands which have been determined to be
     #   -- common and
     #   -- moveable to the tail
-    tailees_0 = set()  # Indices from CL0 which can be moved to tail
-    tailees_1 = set()  # Indices from CL1 which can be moved to tail
+    i_moved_to_tail = []  # Indices from CL0 which can be moved to tail
+    k_moved_to_tail = []  # Indices from CL1 which can be moved to tail
     # the tail
     tail   = None
     while i >= 0  and k >= 0:
         i, k = find_last_common(CL0, CL1, i, k)
-        if   i is None:                                   break
-        elif not can_be_moved_to_tail(CL0, i, tailees_0): break
-        elif not can_be_moved_to_tail(CL1, k, tailees_1): break
-        tailees_0.add(i)
-        tailees_1.add(k)
-        if tail is None: tail = [ (i, k) ]
-        else:            tail.append((i, k))
+        if   i is None:                                         break
+        elif not can_be_moved_to_tail(CL0, i, i_moved_to_tail): break
+        elif not can_be_moved_to_tail(CL1, k, k_moved_to_tail): break
+        i_moved_to_tail.append(i)
+        k_moved_to_tail.append(k)
         
         i -= 1  # CL0[i] == CL1[k] has been considered.
         k -= 1  # => continue with 'i-1', 'k-1'
 
-    if tail is None: return None
-    tail.reverse()
-    return tail
+    if len(i_moved_to_tail) == 0: 
+        return None, None, None
+    else:
+        return tuple(CL0[i] for i in reversed(i_moved_to_tail)), \
+               i_moved_to_tail, k_moved_to_tail
 
