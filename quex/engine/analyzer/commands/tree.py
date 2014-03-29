@@ -88,7 +88,7 @@ import quex.engine.analyzer.commands.shared_tail  as     shared_tail
 
 from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
-from quex.engine.tools import pair_combinations
+from quex.engine.tools import pair_combinations, typed
 
 from collections      import defaultdict, namedtuple
 from itertools        import islice
@@ -124,6 +124,20 @@ class SharedTailCandidateSet(object):
             return
         self.cut_db[DoorId] = CutIndexList
 
+    def door_id_iterable(self):
+        return self.cut_db.iterkeys()
+
+    def remove_door_id(self, DoorId):
+        """Deletes the DoorId from the list of sharing DoorID-s.
+
+        RETURNS: True  -- if there are still more than 1 sharer.
+                          (1 sharer has none to share with).
+                 False -- If there are less than 2 sharers. The 
+                          candidate can now be dropped.
+        """
+        if DoorId in self.cut_db: del self.cut_db[DoorId]
+        return len(self.cut_db) > 1
+
     def value(self):
         return len(self.cut_db) * self.tail_length
 
@@ -133,7 +147,7 @@ class SharedTailCandidateSet(object):
             "    .cut_db: {\n",
         ]
         for door_id, cut_indices in self.cut_db.iteritems():
-            txt.append("        %s -> { %s }\n" % (str(door_id), "".join("%i, " % i for i in cut_indices_str)))
+            txt.append("        %s -> { %s }\n" % (str(door_id), "".join("%i, " % i for i in cut_indices)))
         txt.append("    }\n")
         return "".join(txt)
 
@@ -162,12 +176,12 @@ class SharedTailDB:
         .state_index = Index of the state for which the procedure operates.
                        This is required for the generation of new DoorID-s.
 
-        .door_db     = Dictionary containing all Door-s which are opt to 
+        ._door_db     = Dictionary containing all Door-s which are opt to 
                        share a command list tail.
 
                          map:    DoorID --> Door
 
-        .db          = Dictionary holding information about what shared
+        ._tail_db          = Dictionary holding information about what shared
                        tail (as a tuple) is shared by what Door-s.
 
                          map:    shared tail --> SharedTailCandidateSet
@@ -175,27 +189,48 @@ class SharedTailDB:
     """
     __slots__ = ("state_index", "door_id_set", "db")
 
-    def __init__(self, StateIndex, DoorId_CommandList_Iterable):
+    @typed(StateIndex=long, DoorId_CommandList=[tuple])
+    def __init__(self, StateIndex, DoorId_CommandList):
         self.state_index = StateIndex
-        self.root        = Door(dial_db.new_door_id(StateIndex), [], None, set())
+        self.root = Door(dial_db.new_door_id(StateIndex), 
+                         [],                                                 # command list
+                         None,                                               # parent
+                         set(door_id for door_id, cl in DoorId_CommandList)) # child_set
 
         # map: Shared Tail --> SharedTailCandidateSet
-        self.db      = {}
-        self.door_db = {}
-        for door_id, command_list in DoorId_CommandList_Iterable:
+        self._tail_db = {}
+        self._door_db = {}
+
+        # Doors which cannot extract a tail are dropped from consideration. 
+        # (See discussion at end [DROP_NON_SHARER])
+        # BUT: First the WHOLE SET of Door-s must be considered! 
+        # If a Door shares from the beginning => into 'good_set'.
+        # Else, look into _tail_db if it finally shared something. 
+        good_set = set()
+
+        for door_id, command_list in DoorId_CommandList:
             door = Door(door_id, command_list, self.root, set())
-            self._enter(door_id, door)
+            if self._tail_db_enter(door_id, door): 
+                good_set.add(door_id)
+            self._door_db[door_id] = door
+
+        # Drop non-sharing Door-s. 
+        # (See [DROP_NON_SHARER])
+        for door_id in self._door_db.keys():
+            if   door_id in good_set:                continue
+            elif self._tail_db_has_door_id(door_id): continue
+            del self._door_db[door_id]
 
     def pop_best(self):
         """RETURNS: The best candidate for a shared tail extraction. This is, 
                     obviously the candidate with the longest, most shared tail.
         """
-        if len(self.db) == 0:
+        if len(self._tail_db) == 0:
             return None
 
         best_tail, best_candidate = self._find_best()
         for door_id in best_candidate.cut_db.iterkeys():
-            self._remove_door_references(door_id)
+            self._remove(door_id)
         self._new_node(best_tail, best_candidate)
 
     def _find_best(self):
@@ -205,7 +240,7 @@ class SharedTailDB:
         best_value     = -1
         best_candidate = None
         best_tail      = tail
-        for tail, candidate in self.db.iteritems():
+        for tail, candidate in self._tail_db.iteritems():
             value = candidate.value()
             if value <= best_value: continue
             best_value     = value
@@ -220,22 +255,23 @@ class SharedTailDB:
         combinations.
         """
         trash = None
-        for tail, candidate in self.db.iteritems():
-            if candidate.remove_door_reference(DoorId) == True: continue
+        for tail, candidate in self._tail_db.iteritems():
+            if candidate.remove_door_id(DoorId) == True: continue
             # candidate is now empty --> no shared tail
-            if trash is None: trash = [ tail ]
-            else:             trash.append(tail)
+            elif trash is None: trash = [ tail ]
+            else:               trash.append(tail)
 
         for tail in trash:
-            del self.db[tail]
+            del self._tail_db[tail]
 
-        del self.door_db[door_id]
+        del self._door_db[door_id]
 
     def _new_node(self, Tail, Candidate):
         """A Tail has been identified as being shared and is now to be extracted
         from the sharing doors. Example: 'Y, Z' is a shared tail of doord 1 and 2:
         
-                        Door 1:  [ X, Y, Z ] --------.
+                        Door 1:  [ X, Y, Z ] ---------.
+                                                      |
                         Door 2:  [ U, V, Y, Z ] ------+
                         ...                            +----> root
                         Door N:  [ P, Q, Z ] ---------'
@@ -243,7 +279,8 @@ class SharedTailDB:
         The 'Y, Z' is extracted into a new door, and door 1 and 2 need to goto the
         new door after the end of their pruned tail.
 
-                        Door 1:  [ X ] -------.   new Door 
+                        Door 1:  [ X ] --------.  new Door 
+                                               |
                         Door 2:  [ U, V ] -----+--[ Y, Z ]--.
                         ...                                  +----> root
                         Door N:  [ P, Q, Z ] ---------------'
@@ -252,13 +289,24 @@ class SharedTailDB:
                    (2) Prune the command lists of the sharing doors.
                    (3) Set their 'parent' to the new node's DoorID.
                    (4) Enter new node with (DoorID, Tail) into the door database.
+
+        RESULT: The new Door
+               
+                       Door 0:  ------.
+                       Door 1:  ----. |
+                        ...          ++-->[ new Door ]----> root
+                       Door 2:  ----'
+               
+                .child_set = all sharing doors (Door 0, Door 1, ...)
+                .parent    = root (which is ALWAYS the parent of nodes subject 
+                             to investigation).
         """
         new_door_id = dial_db.new_door_id(self.state_index)
-        # All new Door-s relate to '.root'
+        child_set   = set(Canditate.door_id_iterable())
         new_door    = Door(new_door_id, CommandList, self.root, child_set)
 
         for door_id, cut_index_list in Candidate.cut_db.iteritems():
-            door = self.door_db[door_id]
+            door = self._door_db[door_id]
             for index in reversed(cut_index_list):
                 del door.command_list[index]
 
@@ -274,56 +322,69 @@ class SharedTailDB:
 
         self.root.child_set.add(new_door)
 
-        child_set = set(Canditate.iterkeys())
 
-        self._enter(new_door_id, new_door)
+        if self._tail_db_enter(new_door_id, new_door):
+            # A new Door that does not share anything does not have to be 
+            # considered. See discussion at end of file [DROP_NON_SHARER].
+            self._door_db[NewDoorId] = NewDoor
 
-    def _enter(self, NewDoorId, NewDoor):
-        """(1) Determine the shared tail with any other available door.
+    def _tail_db_enter(self, NewDoorId, NewDoor):
+        """(1) Determine the shared tail with any other available Door.
            (2) Enter the new Door in door_db.
+
+        RETURNS: True  -- If the Door was able to extract at least one shared tail.
+                 False -- If not.
         """
 
-        for door_id, door in self.door_db.iteritems():
+        shared_f = False
+        for door_id, door in self._door_db.iteritems():
             tail,   \
             x_cut_indices, y_cut_indices = shared_tail.get(NewDoor.command_list, 
                                                            door.command_list)
             if tail is None: continue
+            shared_f = True
 
-            self._register_shared_tail(tail, NewDoorId, door_id, 
-                                       x_cut_indices, y_cut_indices)
+            self._tail_db_register(tail, NewDoorId, door_id, 
+                                    x_cut_indices, y_cut_indices)
 
-        self.door_db[NewDoorId] = NewDoor
+        return shared_f
 
-    def _register_shared_tail(self, SharedTail, DoorId_A, DoorId_B, CutIndicesA, CutIndicesB):
+    def _tail_db_register(self, SharedTail, DoorId_A, DoorId_B, CutIndicesA, CutIndicesB):
         """If (x0, x1, ...  xN) is a shared tail, then (x1, ... xN) is also 
            a shared tail. Add all tails to the database.
         """
         tail = SharedTail
         for i in xrange(len(tail)):
-            entry = self.db.get(tail)
+            entry = self._tail_db.get(tail)
             if entry is None:
                 entry = SharedTailCandidateSet(len(tail))
-                self.db[tail] = entry
+                self._tail_db[tail] = entry
             entry.add(DoorId_A, CutIndicesA[i:])
             entry.add(DoorId_B, CutIndicesB[i:])
             tail = tail[1:]
+
+    def _tail_db_has_door_id(self, DoorId):
+        """RETURNS: True  -- if any shared tail candidate contains the DoorId
+                             as a sharer.
+                    False -- if no candidate contains the DoorId as sharer.
+        """
+        for candidate in self._tail_db.itervalues():
+            if DoorId in candidate.cut_db: return True
+        return False
 
     def get_string(self, CommandAliasDb):
         txt = [
             ".state_index:    %i;\n" % self.state_index,
             ".root (door_id): %s;\n" % str(self.root.door_id),
-            ".door_db.keys(): %s;\n" % "".join("%s, " % str(door_id) for door_id in self.door_db.iterkeys()),
+            ".door_db.keys(): %s;\n" % "".join("%s, " % str(door_id) for door_id in self._door_db.iterkeys()),
             ".shared_tails: {\n"
         ]
         
-        for shared_tail, candidate_set in self.db.iteritems():
-            txt.append("  (%s) -> {\n" % "".join("%s;" % CommandAliasDb[cmd] for cmd in shared_tail))
+        for shared_tail, candidate_set in self._tail_db.iteritems():
+            txt.append("  (%s) -> {\n" % ("".join("%s " % CommandAliasDb[cmd] for cmd in shared_tail)).strip())
             txt.append(str(candidate_set))
         txt.append("  }\n")
 
-        # map: Shared Tail --> SharedTailCandidateSet
-        self.db      = {}
-        txt.append("}\n")
         return "".join(txt)
 
 
@@ -395,4 +456,64 @@ def get_string(DoorTreeRoot):
                                        (str(self.parent.door_id.state_index), 
                                         str(self.parent.door_id.door_index)))
     return "".join(txt)
+
+"""[DROP_NON_SHARER]___________________________________________________________
+
+SCENARIO:
+
+   A Door has been identified as not having an extractable shared tail with any
+   other Door. 
+   
+QUESTION:
+    
+   Can there be a possibility later for the Door to extract a shared tail?
+
+CASES:
+
+   (0) Door does not share any command with another door.
+       => IMPOSSIBLE to share later.
+
+   (1) Door has a command A = Cl[i] in common with another Door, but it cannot 
+       be moved to the tail, because there is a command X = Cl[k] with k > i 
+       that has interferring register access.
+
+            The Door's command list: [ ... A ... X ... ]
+            The Counterpart:         [ ... A ... ]
+
+       -- If X could be shared by anyone then it would appear in the shared tail.
+          => This is not our scenario as described above.
+
+       => X is not shared by anyone and will remain blocking the 'move to tail'.
+       => IMPOSSIBLE to share later.
+
+   (2) Door shares a command A but the counter part has a blocking command that
+       hinders it from moving A to the tail. The counterpart needs to find a third 
+       Door with whom it could share 'X'.
+
+            Door:        [ ... A ... ] ----------.
+                                                 |
+            Counterpart: [ ... A ... X ... ] ----+----> root
+                                                 |
+            Third:       [ ... X ... ] ----------'
+
+       Then, however, the Door could not share a tail anymore with the counter
+       part. CLEARLY: If Door cannot jump to [ X ... ] otherwise it would 
+       execute a command list which is different from its original.
+      
+            Door:        [ ... A ... ] ---------------------.
+                                                            |
+            Counterpart: [ ... A ... ] ---+---[ X ... ] ----+----> root
+                                          |
+            Third:       [ ... X ... ] ---'
+
+       => IMPOSSIBLE to share later.
+
+CONCLUSION:
+
+    If after the initialization process has completed, a Door has shown not
+    to be able to extract a shared tail with any other Door, then this Door
+    is not able to share later. It can be dropped from consideration of the
+    shared-tail finder algorithm.
+_______________________________________________________________________________
+"""
 

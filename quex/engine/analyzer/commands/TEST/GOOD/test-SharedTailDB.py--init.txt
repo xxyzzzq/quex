@@ -6,15 +6,52 @@ SharedTailDB:
     .door_db.keys(): ;
     .shared_tails: {
       }
-    }
     
 ________________________________________________________________________________
 SharedTailDB:
 
     .state_index:    4711;
     .root (door_id): DoorID(s=4711, d=0);
-    .door_db.keys(): DoorID(s=0, d=1), ;
+    .door_db.keys(): ;
     .shared_tails: {
       }
-    }
+    
+________________________________________________________________________________
+SharedTailDB:
+
+    .state_index:    4711;
+    .root (door_id): DoorID(s=4711, d=0);
+    .door_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (c1) -> {
+        .tail_length: 1;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 0,  }
+            DoorID(s=0, d=2) -> { 0,  }
+        }
+      }
+    
+________________________________________________________________________________
+SharedTailDB:
+
+    .state_index:    4711;
+    .root (door_id): DoorID(s=4711, d=0);
+    .door_db.keys(): ;
+    .shared_tails: {
+      }
+    
+________________________________________________________________________________
+SharedTailDB:
+
+    .state_index:    4711;
+    .root (door_id): DoorID(s=4711, d=0);
+    .door_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (c2) -> {
+        .tail_length: 1;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 1,  }
+            DoorID(s=0, d=2) -> { 1,  }
+        }
+      }
     
