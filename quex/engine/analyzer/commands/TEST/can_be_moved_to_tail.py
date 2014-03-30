@@ -61,7 +61,8 @@ def test(Setting, ExceptionSet=set()):
     if len(ExceptionSet) != 0: txt += " w/o %s " % list(ExceptionSet)
     if len(cl): i = Setting.index("R")
     else:       i = 0
-    txt += " %s" % can_be_moved_to_tail(cl, i, ExceptionSet)
+    L = len(cl)
+    txt += " %s" % can_be_moved_to_tail(cl, i, L, ExceptionSet)
 
     print txt
 

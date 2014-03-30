@@ -1,4 +1,4 @@
-<history date="Sat Mar 29 08:43:19 2014" element-n="19">
+<history date="Sun Mar 30 23:21:02 2014" element-n="26">
     <day year="2014" month="03" day="17">
         <history-init time="07:33:43"/>
     </day>
@@ -27,5 +27,14 @@
     </day>
     <day year="2014" month="03" day="29">
         <crc-error time="07:30:21" application="test-SharedTailDB.py" choice="init" database-crc="78221492" real-crc="1620769160"/>
+    </day>
+    <day year="2014" month="03" day="30">
+        <crc-error time="07:32:29" application="test-SharedTailDB.py" choice="pop_best" database-crc="223730725" real-crc="-1222303747"/>
+        <crc-error time="07:38:59" application="test-SharedTailDB.py" choice="pop_best" database-crc="-1222303747" real-crc="954091221"/>
+        <crc-error time="07:44:30" application="test-SharedTailDB.py" choice="pop_best" database-crc="954091221" real-crc="-1780682139"/>
+        <crc-error time="07:44:54" application="test-SharedTailDB.py" choice="init" database-crc="-384763632" real-crc="-313386529"/>
+        <crc-error time="07:45:53" application="test-SharedTailDB.py" choice="init" database-crc="-313386529" real-crc="-1090881306"/>
+        <crc-error time="07:58:47" application="test-SharedTailDB.py" choice="init" database-crc="-1090881306" real-crc="641929993"/>
+        <crc-error time="08:01:55" application="test-SharedTailDB.py" choice="init" database-crc="641929993" real-crc="-478902965"/>
     </day>
 </history>

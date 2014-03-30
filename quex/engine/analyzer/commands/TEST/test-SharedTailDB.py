@@ -35,40 +35,125 @@ from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "SharedTailDB;"
-    print "CHOICES: init, pop_best, _find_best, _remove, _new_node, _enter;"
+    print "CHOICES: init, pop_best;"
     sys.exit()
 
-alias_db = dict(
-    (cmd, "c%X" % i) for i, cmd in generator()
-)
+# Generate a set of totally independent commands
+# Here, they are assigned manually, to avoid that changes to E_R might
+# might produce commands that block the 'move to tail'.
+A = Assign(E_R.AcceptanceRegister, E_R.Buffer)
+B = Assign(E_R.Indentation, E_R.Column)
+C = Assign(E_R.Input, E_R.InputP)
+D = Assign(E_R.LexemeStartP, E_R.LexemeEnd)
+E = Assign(E_R.CharacterBeginP, E_R.Line)
+F = Assign(E_R.PathIterator, E_R.PreContextFlags)
+G = Assign(E_R.ReferenceP, E_R.PositionRegister)
+
+alias_db = { A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", }
 
 def test_init(DidCl_Iterable):
     dial_db.clear()
     stdb = SharedTailDB(4711L, DidCl_Iterable)
 
     print "_" * 80
+    print
+    print "Setup:"
+    for door_id, command_list in DidCl_Iterable:
+        print "    %s: [%s]" % (str(door_id), ("".join("%s " % alias_db[cmd] for cmd in command_list)).strip())
+    print
     print "SharedTailDB:" 
     print
     print "    " + stdb.get_string(alias_db).replace("\n", "\n    ")
 
-if "init" in sys.argv:
-    iterable = alias_db.iterkeys()
-    A = iterable.next()
-    B = iterable.next()
-    C = iterable.next()
-    test_init([])
-    test_init([
-        (DoorID(0, 1), [A])
-    ])
-    test_init([
+def test_pop(DidCl_Iterable):
+    dial_db.clear()
+    stdb = SharedTailDB(4711L, DidCl_Iterable)
+
+    print "_" * 80
+    print
+    print "Setup:"
+    for door_id, command_list in DidCl_Iterable:
+        print "    %s: [%s]" % (str(door_id), ("".join("%s " % alias_db[cmd] for cmd in command_list)).strip())
+
+    print
+    print "___ Initial ___"
+    print
+    print "".join(stdb.get_tree_text(alias_db))
+
+    i = 0
+    while stdb.pop_best():
+        i += 1
+        print "___ Step %i ____" % i
+        print
+        print "".join(stdb.get_tree_text(alias_db))
+
+        
+setup_list = [
+    [],
+    [
+        (DoorID(0, 1), [A]),
+    ],
+    [
         (DoorID(0, 1), [A]), 
-        (DoorID(0, 2), [A])
-    ])
-    test_init([
+        (DoorID(0, 2), [A]),
+    ],
+    [
         (DoorID(0, 1), [A]), 
-        (DoorID(0, 2), [B])
-    ])
-    test_init([
+        (DoorID(0, 2), [B]),
+    ],
+    [
         (DoorID(0, 1), [A, C]), 
-        (DoorID(0, 2), [B, C])
-    ])
+        (DoorID(0, 2), [A, C]),
+    ],
+    [
+        (DoorID(0, 1), [A, C]), 
+        (DoorID(0, 2), [B, C]),
+    ],
+    [
+        (DoorID(0, 1), [C, A]), 
+        (DoorID(0, 2), [C, B]),
+    ],
+    [
+        (DoorID(0, 1), [A, C]), 
+        (DoorID(0, 2), [C, B]),
+    ],
+    [
+        (DoorID(0, 1), [A, C]), 
+        (DoorID(0, 2), [C, A]),
+    ],
+    [
+        (DoorID(0, 1), [A, C]), 
+        (DoorID(0, 2), [B, C]),
+        (DoorID(0, 3), [D, C]), 
+        (DoorID(0, 4), [E, C]),
+    ],
+    [
+        (DoorID(0, 1), [A, C, F]), 
+        (DoorID(0, 2), [B, C, F]),
+        (DoorID(0, 3), [D, G, F]), 
+        (DoorID(0, 4), [E, G, F]),
+    ],
+    [
+        (DoorID(0, 1), [A, C, F]), 
+        (DoorID(0, 2), [B, F, C]),
+        (DoorID(0, 3), [F, D, G]), 
+        (DoorID(0, 4), [G, F, E]),
+    ],
+]
+
+if "init" in sys.argv:
+    test_init(setup_list[8])
+    #for door_id_command_list in setup_list:
+    #    test_init(door_id_command_list)
+
+elif "pop_best":
+    for door_id_command_list in setup_list:
+         test_pop(door_id_command_list)
+
+elif "large_init" in sys.argv:
+    door_id_command_list = []
+    for i in xrange(20):
+        door_id      = DoorID(0, i)
+        command_list = random_command_list(500, Seed=0)
+        door_id_command_list.append((door_id, command_list))
+    test_init(door_id_command_list)
