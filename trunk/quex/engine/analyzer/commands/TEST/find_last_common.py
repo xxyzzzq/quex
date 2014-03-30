@@ -74,7 +74,7 @@ def test(CmdN0, CmdN1, CommonN=0):
         cl1 = [ get(0) for i in xrange(CmdN1) ]
         print_cl("A", cl0)
         print_cl("B", cl1)
-        print "    last common at: %s" % str(find_last_common(cl0, cl1, len(cl0)-1, len(cl1)-1))
+        print "    last common at: %s" % str(find_last_common(cl0, set(), cl1, set()))
         print
     else:
         info0 = [0] * (CmdN0 - CommonN) + [1] * CommonN
@@ -88,7 +88,7 @@ def test(CmdN0, CmdN1, CommonN=0):
                 cl1 = [ get(flag) for flag in selection1 ]
                 print_cl("A", cl0)
                 print_cl("B", cl1)
-                print "    last common at: %s" % str(find_last_common(cl0, cl1, len(cl0)-1, len(cl1)-1))
+                print "    last common at: %s" % str(find_last_common(cl0, set(), cl1, set()))
                 print
 
 if "EqualOp" in sys.argv:

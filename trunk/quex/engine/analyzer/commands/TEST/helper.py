@@ -11,6 +11,7 @@ from   quex.blackboard import E_Cmd, \
 from   itertools   import permutations
 from   collections import defaultdict
 from   copy        import deepcopy
+from   random      import shuffle
 
 
 example_db = {
@@ -66,6 +67,18 @@ def generator():
         for example in example_list:
             index += 1
             yield index, example
+
+def generator_n(N, Begin=0):
+    index = -1
+    while 1 + 1 == 2:
+        for i, cmd in generator():
+            index += 1
+            if   index < Begin:      continue
+            elif index == N + Begin: return
+            yield cmd
+
+def random_command_list(N, Seed):
+    return [ cmd for cmd in generator_n(N, Seed) ]
 
 def get_two_lists(FirstSize):
     selectable = generator()
