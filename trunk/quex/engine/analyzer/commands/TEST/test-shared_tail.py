@@ -55,8 +55,8 @@ def test(Cl0, Cl1):
     result, x_cut_list, y_cut_list = shared_tail.get(Cl0, Cl1)
     if result is None: result = (); x_cut_list = y_cut_list = []
     assert len(x_cut_list) == len(y_cut_list) == len(result)
-    assert result == tuple(Cl0[i] for i in reversed(x_cut_list))
-    assert result == tuple(Cl1[k] for k in reversed(y_cut_list))
+    assert set(result) == set(Cl0[i] for i in reversed(x_cut_list))
+    assert set(result) == set(Cl1[k] for k in reversed(y_cut_list))
     print
     print "_" * 80
     print "tail(A, B): {"
@@ -68,9 +68,9 @@ def test(Cl0, Cl1):
     iresult, ix_cut_list, iy_cut_list = shared_tail.get(Cl1, Cl0)
     if iresult is None: iresult = (); ix_cut_list = iy_cut_list = []
     assert len(ix_cut_list) == len(iy_cut_list) == len(result)
-    assert iresult == tuple(Cl1[i] for i in reversed(ix_cut_list))
-    assert iresult == tuple(Cl0[k] for k in reversed(iy_cut_list))
-    assert result == iresult
+    assert set(iresult) == set(Cl1[i] for i in reversed(ix_cut_list))
+    assert set(iresult) == set(Cl0[k] for k in reversed(iy_cut_list))
+    assert set(result) == set(iresult)
 
     print "tail(B, A): {"
     if ix_cut_list != y_cut_list or iy_cut_list != x_cut_list:
