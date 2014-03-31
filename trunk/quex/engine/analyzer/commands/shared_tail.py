@@ -50,8 +50,8 @@ def find_last_common(CL0, DoneSet0, CL1, DoneSet1):
     RETURNS: [0], [1]    Indices of last common command.
              None, None  If no common command is found.
     """
-    for i, cmd_i in reversed([(i, cmd) for i, cmd in enumerate(CL0) if i not in DoneSet0]):
-        for k, cmd_k in reversed([(k, cmd) for k, cmd in enumerate(CL1) if k not in DoneSet1]):
+    for i, cmd_i in reversed([(p, cmd) for p, cmd in enumerate(CL0) if p not in DoneSet0]):
+        for k, cmd_k in reversed([(q, cmd) for q, cmd in enumerate(CL1) if q not in DoneSet1]):
             if cmd_i == cmd_k: 
                 return i, k
     return None, None
