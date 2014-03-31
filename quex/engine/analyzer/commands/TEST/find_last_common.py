@@ -160,16 +160,18 @@ elif "start-indices":
     setup()
     shared_i = 0
     cl0 = [ get(flag) for flag in selection0 ]
+    L0  = len(cl0)
     shared_i = 0
     cl1 = [ get(flag) for flag in selection1 ]
+    L1  = len(cl1)
 
     count_i = 0
     for i in xrange(len(selection0)-1, -1, -1):
         for k in xrange(len(selection1)-1, -1, -1):
             count_i += 1
-            last_i, last_k = find_last_common(cl0, cl1, i, k)
-            # print_cl("cl0", cl0)
-            # print_cl("cl1", cl1)
+            last_i, last_k = find_last_common(cl0, set(range(i+1,L0)), cl1, set(range(k+1,L1)))
+            #print_cl("cl0", cl0)
+            #print_cl("cl1", cl1)
             last_common = min(last0_db[i], last1_db[k])
             if last_common == -1:
                 assert last_i is None and last_k is None
