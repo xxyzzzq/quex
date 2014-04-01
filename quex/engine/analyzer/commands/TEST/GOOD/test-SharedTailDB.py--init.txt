@@ -1,4 +1,3 @@
-#Last register: <generator object register at 0xb7388acc>
 ________________________________________________________________________________
 
 Setup:
@@ -62,6 +61,26 @@ ________________________________________________________________________________
 
 Setup:
     DoorID(s=0, d=1): [A C]
+    DoorID(s=0, d=2): [A C]
+
+SharedTailDB:
+
+    .state_index:    4711;
+    .root:           door_id: DoorID(s=4711, d=0); child_n: 2
+    .candidate_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (A C) -> {
+        .tail_length: 2;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 1, 0,  }
+            DoorID(s=0, d=2) -> { 1, 0,  }
+        }
+      }
+    
+________________________________________________________________________________
+
+Setup:
+    DoorID(s=0, d=1): [A C]
     DoorID(s=0, d=2): [B C]
 
 SharedTailDB:
@@ -75,6 +94,66 @@ SharedTailDB:
         .cut_db: {
             DoorID(s=0, d=1) -> { 1,  }
             DoorID(s=0, d=2) -> { 1,  }
+        }
+      }
+    
+________________________________________________________________________________
+
+Setup:
+    DoorID(s=0, d=1): [C A]
+    DoorID(s=0, d=2): [C B]
+
+SharedTailDB:
+
+    .state_index:    4711;
+    .root:           door_id: DoorID(s=4711, d=0); child_n: 2
+    .candidate_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (C) -> {
+        .tail_length: 1;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 0,  }
+            DoorID(s=0, d=2) -> { 0,  }
+        }
+      }
+    
+________________________________________________________________________________
+
+Setup:
+    DoorID(s=0, d=1): [A C]
+    DoorID(s=0, d=2): [C B]
+
+SharedTailDB:
+
+    .state_index:    4711;
+    .root:           door_id: DoorID(s=4711, d=0); child_n: 2
+    .candidate_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (C) -> {
+        .tail_length: 1;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 1,  }
+            DoorID(s=0, d=2) -> { 0,  }
+        }
+      }
+    
+________________________________________________________________________________
+
+Setup:
+    DoorID(s=0, d=1): [A C]
+    DoorID(s=0, d=2): [C A]
+
+SharedTailDB:
+
+    .state_index:    4711;
+    .root:           door_id: DoorID(s=4711, d=0); child_n: 2
+    .candidate_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=2), ;
+    .shared_tails: {
+      (C A) -> {
+        .tail_length: 2;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 1, 0,  }
+            DoorID(s=0, d=2) -> { 1, 0,  }
         }
       }
     
@@ -147,12 +226,30 @@ Setup:
     DoorID(s=0, d=4): [G F E]
 
 SharedTailDB:
-        .tail_length: 1;
+
     .state_index:    4711;
     .root:           door_id: DoorID(s=4711, d=0); child_n: 4
     .candidate_db.keys(): DoorID(s=0, d=1), DoorID(s=0, d=3), DoorID(s=0, d=2), DoorID(s=0, d=4), ;
     .shared_tails: {
-            DoorID(s=0, d=4) -> { 2,  }
+      (F) -> {
+        .tail_length: 1;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 2,  }
+            DoorID(s=0, d=3) -> { 0,  }
+            DoorID(s=0, d=2) -> { 1,  }
+            DoorID(s=0, d=4) -> { 1,  }
+        }
+      (F C) -> {
+        .tail_length: 2;
+        .cut_db: {
+            DoorID(s=0, d=1) -> { 2, 1,  }
+            DoorID(s=0, d=2) -> { 2, 1,  }
+        }
+      (G F) -> {
+        .tail_length: 2;
+        .cut_db: {
+            DoorID(s=0, d=3) -> { 2, 0,  }
+            DoorID(s=0, d=4) -> { 1, 0,  }
         }
       }
     

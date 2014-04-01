@@ -142,9 +142,9 @@ setup_list = [
 ]
 
 if "init" in sys.argv:
-    test_init(setup_list[8])
-    #for door_id_command_list in setup_list:
-    #    test_init(door_id_command_list)
+    # test_init(setup_list[8])
+    for door_id_command_list in setup_list:
+        test_init(door_id_command_list)
 
 elif "pop_best":
     for door_id_command_list in setup_list:
