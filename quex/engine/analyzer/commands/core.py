@@ -145,9 +145,6 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __hash__(self):      
         return self.my_hash
 
-    #def __repr__(self):
-    #    assert False
-
     def __str__(self):
         name_str = str(self.id)
         if self.content is None:
@@ -175,27 +172,27 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
             return "%s: { %s }" % (name_str, content_str)   
 
-#______________________________________________________________________________
-#
-# AccepterContent(virtually Command): A list of conditional pattern acceptance 
-#     actions. It corresponds to a sequence of if-else statements such as 
-#
-#       [0]  if   pre_condition_4711_f: acceptance = Pattern32
-#       [1]  elif pre_condition_512_f:  acceptance = Pattern21
-#       [2]  else:                      acceptance = Pattern56
-# 
-# AccepterContentElement: An element in the sorted list of test/accept commands. 
-#     It contains the 'pre_context_id' of the condition to be checked and the 
-#     'acceptance_id' to be accepted if the condition is true.
-#______________________________________________________________________________
 AccepterContentElement = namedtuple("AccepterContentElement", ("pre_context_id", "acceptance_id"))
+
 class AccepterContent:
-    def __init__(self, PathTraceList=None):
+    """_________________________________________________________________________
+
+    AccepterContent: A list of conditional pattern acceptance actions. It 
+          corresponds to a sequence of if-else statements such as 
+
+          [0]  if   pre_condition_4711_f: acceptance = Pattern32
+          [1]  elif pre_condition_512_f:  acceptance = Pattern21
+          [2]  else:                      acceptance = Pattern56
+    
+    AccepterContentElement: An element in the sorted list of test/accept
+    commands.  It contains the 'pre_context_id' of the condition to be checked
+    and the 'acceptance_id' to be accepted if the condition is true.
+    ___________________________________________________________________________
+    """
+
+    def __init__(self):
         Command.__init__(self)
-        if PathTraceList is None: 
-            self.__list = []
-        else:
-            self.__list = [ AccepterContentElement(x.pre_context_id, x.acceptance_id) for x in PathTraceList ]
+        self.__list = []
 
     def clone(self):
         result = AccepterContent()
@@ -586,17 +583,12 @@ class CommandList(list):
         """Gets the accepter from the command list. If there is no accepter
         yet, then it creates one and adds it to the list.
         """
-        accepter = None
         for cmd in self:
-            if cmd.id == E_Cmd.Accepter:
-                accepter = cmd
-                break
+            if cmd.id == E_Cmd.Accepter: return cmd.content
 
-        if accepter is None:
-            accepter = Accepter()
-            self.append(accepter)
-        
-        return accepter
+        accepter = Accepter()
+        self.append(accepter)
+        return accepter.content
 
     def replace_position_registers(self, PositionRegisterMap):
         """Replace for any position register indices 'x' and 'y' given by

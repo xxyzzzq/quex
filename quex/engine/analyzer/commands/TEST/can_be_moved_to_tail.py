@@ -41,7 +41,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                            import E_Cmd
 from   quex.engine.analyzer.commands.core         import *
-from   quex.engine.analyzer.commands.shared_tail  import can_be_moved_to_tail
+from   quex.engine.analyzer.commands.shared_tail  import r_can_be_moved_to_tail
 from   quex.engine.analyzer.commands.TEST.helper  import *
 from   quex.engine.analyzer.door_id_address_label import DoorID
 
@@ -58,11 +58,20 @@ def test(Setting, ExceptionSet=set()):
     cl = [ rw_get(flag) for flag in Setting ]
 
     txt  = "   Setting: [%s]" % "".join(Setting)
-    if len(ExceptionSet) != 0: txt += " w/o %s " % list(ExceptionSet)
+    if len(ExceptionSet) != 0: 
+        txt += " w/o %s " % list(ExceptionSet)
+
     if len(cl): i = Setting.index("R")
     else:       i = 0
     L = len(cl)
-    txt += " %s" % can_be_moved_to_tail(cl, i, L, ExceptionSet)
+    if L == 0: 
+         print "len(cl) == 0 is not allowed."
+         return
+
+    cl_r           = list(reversed(cl))
+    i_r            = L - 1 - i
+    ExceptionSet_r = set(L - 1 - i for i in ExceptionSet)
+    txt += " %s" % r_can_be_moved_to_tail(cl_r, i_r, ExceptionSet_r)
 
     print txt
 
