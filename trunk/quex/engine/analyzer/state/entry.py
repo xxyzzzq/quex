@@ -170,7 +170,7 @@ class Entry(object):
         """
         for ta in self.__db.itervalues():
             # Catch the accepter, if there is already one, if not create one.
-            ta.command_list.access_accepter().content.add(PreContextID, AcceptanceID)
+            ta.command_list.access_accepter().add(PreContextID, AcceptanceID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
         """Add 'store input position' to specific door. See 'StoreInputPosition'

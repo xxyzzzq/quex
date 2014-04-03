@@ -32,33 +32,33 @@ import quex.engine.analyzer.commands.core as commands
 from   itertools import islice
 from   copy import copy
 
-def find_last_common(CL0, DoneSet0, CL1, DoneSet1):
-    """Finds the last common command in CL0[:StartI], CL1[:StartK].
-    That is, it searches for the last command before StartI in CL0
-    and before StartK in CL1. Example:
+def r_find_last_common(CL0_r, DoneSet0, CL1_r, DoneSet1):
+    """CL0_r, CL1_r -- reversed versions of the command lists CL1 and CL0.
 
            i:  0 1 2 3 4 5 6 7 8           k:  0 1 2 3 4 5 6     
               .-.-.-.-.-.-.-.-.-.             .-.-.-.-.-.-.-.
               |g|B|i|j|k|l|A|m|o|             |a|b|c|B|A|e|f|
               '-'-'-'-'-'-'-'-'-'             '-'-'-'-'-'-'-'
                      
-    If i=8 and k=6, then the last common command is 'A'. Thus the
-    indices of the last common command would be: (6, 4).
-    If i=5 and k=6, then the last common command id 'B' and the
-    result is (1, 3).
+    If i=8 and k=6, then the last common command is 'A'. Thus the indices of
+    the last common command would be: (6, 4).  If i=5 and k=6, then the last
+    common command id 'B' and the result is (1, 3).
                      
     RETURNS: [0], [1]    Indices of last common command.
              None, None  If no common command is found.
     """
-    for i, cmd_i in reversed([(p, cmd) for p, cmd in enumerate(CL0) if p not in DoneSet0]):
-        for k, cmd_k in reversed([(q, cmd) for q, cmd in enumerate(CL1) if q not in DoneSet1]):
-            if cmd_i == cmd_k: 
-                return i, k
+    for i, cmd_i in enumerate(CL0_r):
+        if i in DoneSet0: continue
+        for k, cmd_k in enumerate(CL1_r):
+            if k in DoneSet1:    continue
+            elif cmd_i == cmd_k: return i, k
     return None, None
 
-def can_be_moved_to_tail(CL, i, L, DoneSet):
+def r_can_be_moved_to_tail(CL_r, i, DoneSet):
     """Consider list of commands 'CL' and determine whether the command at 
-    position 'i' can be moved to the very last position.
+    position 'i' can be moved to the very last position. The command list 
+    CL is specified as CL_r, which is the reverse of CL. 'i' is the position
+    in the reverse.
 
     The 'DoneSet' is the list of indices that do not need to be considered.
     In practical, DoneSet contains indices of commands which have been 
@@ -80,14 +80,18 @@ def can_be_moved_to_tail(CL, i, L, DoneSet):
     A would only need to step over 1, 2, 3, 4, and 5, but not over B and C.
     Thus B and C would be the DoneSet.
     """
-    if   i >  L - 1: return False  # There is no command
-    elif i == L - 1: return True   # It is already at the tail
+    if i == 0: return True   # It IS already at THE tail
+    assert i > 0
 
-    cmd_i = CL[i]
-    for k in xrange(i+1, L):
-        if k in DoneSet:                          continue
-        elif not commands.is_switchable(CL[k], cmd_i): return False
-    return True
+    cmd_i = CL_r[i]
+    p     = - 1 # Faster than enumerate(CL_r) ...
+    for cmd in CL_r:
+        p += 1
+        if   p == i:                                     return True
+        elif p in DoneSet:                               continue
+        elif not commands.is_switchable(CL_r[p], cmd_i): return False
+
+    assert False # unreachable
 
 def get(CL0, CL1):
     """Determines a 'tail of shared commands' between the command lists
@@ -120,28 +124,32 @@ def get(CL0, CL1):
     [2] List of indices of 'tail commands' in CL1.
     """
     Li = len(CL0)
-    i  = Li - 1
+    if Li == 0: return None, None, None
     Lk = len(CL1)
-    k  = Lk - 1
+    if Lk == 0: return None, None, None
+    CL0_r = list(reversed(CL0))
+    CL1_r = list(reversed(CL1))
+
     # Set of indices of commands which have been determined to be
     #   -- common and
     #   -- moveable to the tail
     i_moved_to_tail = set()  # Indices from CL0 which can be moved to tail
     k_moved_to_tail = set()  # Indices from CL1 which can be moved to tail
-    while i >= 0  and k >= 0:
-        i, k = find_last_common(CL0, i_moved_to_tail, CL1, k_moved_to_tail)
-        if   i is None:                                             break
-        elif not can_be_moved_to_tail(CL0, i, Li, i_moved_to_tail): break
-        elif not can_be_moved_to_tail(CL1, k, Lk, k_moved_to_tail): break
+    while 1 + 1 == 2:
+        i, k = r_find_last_common(CL0_r, i_moved_to_tail, CL1_r, k_moved_to_tail)
+        
+        if i is None:                                               break
+        elif not r_can_be_moved_to_tail(CL0_r, i, i_moved_to_tail): break
+        elif not r_can_be_moved_to_tail(CL1_r, k, k_moved_to_tail): break
         i_moved_to_tail.add(i)
         k_moved_to_tail.add(k)
 
     if len(i_moved_to_tail) == 0: 
         return None, None, None
     else:
-        i_cut_list = sorted(list(i_moved_to_tail)) # 'small' first
-        tail = tuple(CL0[i] for i in i_cut_list)   # 'small' first
-        i_cut_list.sort(reverse=True)                            # 'great' first
-        k_cut_list = sorted(list(k_moved_to_tail), reverse=True) # 'great' first
+        i_cut_list = sorted([Li-1-i for i in i_moved_to_tail])               # 'small' first
+        tail = tuple(CL0[i] for i in i_cut_list)                             # 'small' first
+        i_cut_list.sort(reverse=True)                                        # 'great' first
+        k_cut_list = sorted([Lk-1-k for k in k_moved_to_tail], reverse=True) # 'great' first
         return tail, i_cut_list, k_cut_list
 

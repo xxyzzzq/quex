@@ -363,9 +363,6 @@ class SharedTailDB:
             tail,   \
             x_cut_indices, y_cut_indices = shared_tail.get(NewDoor.command_list, 
                                                            door.command_list)
-            print "#NewDoor.command_list", NewDoor.command_list
-            print "#door.command_list", door.command_list
-            print "#tail", tail
             if tail is None: continue
             shared_f = True
 

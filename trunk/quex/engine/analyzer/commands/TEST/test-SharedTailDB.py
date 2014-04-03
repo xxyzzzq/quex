@@ -146,7 +146,7 @@ if "init" in sys.argv:
     for door_id_command_list in setup_list:
         test_init(door_id_command_list)
 
-elif "pop_best":
+elif "pop_best" in sys.argv:
     for door_id_command_list in setup_list:
          test_pop(door_id_command_list)
 

@@ -19,7 +19,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                            import E_Cmd
 from   quex.engine.analyzer.commands.core         import *
-from   quex.engine.analyzer.commands.shared_tail  import find_last_common
+from   quex.engine.analyzer.commands.shared_tail  import r_find_last_common
 from   quex.engine.analyzer.commands.TEST.helper  import *
 from   quex.engine.analyzer.door_id_address_label import DoorID
 
@@ -64,6 +64,13 @@ def print_cl(Name, Cl):
     for i, cmd in enumerate(Cl[1:]):
         print "       [%i] %s" % (i+1, cmd)
 
+def call(cl0, cl1, Done0, Done1):
+    DoneSet0_r = set(len(cl0) - 1 - i for i in Done0)
+    DoneSet1_r = set(len(cl1) - 1 - i for i in Done1)
+    result = r_find_last_common(list(reversed(cl0)), DoneSet0_r, list(reversed(cl1)), DoneSet1_r)
+    if result[0] is None: return None, None
+    else:                 return (len(cl0) - 1 - result[0], len(cl1) - 1 - result[1])
+
 def test(CmdN0, CmdN1, CommonN=0):
     global shared_i
     print
@@ -74,7 +81,7 @@ def test(CmdN0, CmdN1, CommonN=0):
         cl1 = [ get(0) for i in xrange(CmdN1) ]
         print_cl("A", cl0)
         print_cl("B", cl1)
-        print "    last common at: %s" % str(find_last_common(cl0, set(), cl1, set()))
+        print "    last common at: %s" % str(call(cl0, cl1, set(), set()))
         print
     else:
         info0 = [0] * (CmdN0 - CommonN) + [1] * CommonN
@@ -88,7 +95,7 @@ def test(CmdN0, CmdN1, CommonN=0):
                 cl1 = [ get(flag) for flag in selection1 ]
                 print_cl("A", cl0)
                 print_cl("B", cl1)
-                print "    last common at: %s" % str(find_last_common(cl0, set(), cl1, set()))
+                print "    last common at: %s" % str(call(cl0, cl1, set(), set()))
                 print
 
 if "EqualOp" in sys.argv:
@@ -169,7 +176,7 @@ elif "start-indices":
     for i in xrange(len(selection0)-1, -1, -1):
         for k in xrange(len(selection1)-1, -1, -1):
             count_i += 1
-            last_i, last_k = find_last_common(cl0, set(range(i+1,L0)), cl1, set(range(k+1,L1)))
+            last_i, last_k = call(cl0, cl1, set(range(i+1,L0)), set(range(k+1,L1)))
             #print_cl("cl0", cl0)
             #print_cl("cl1", cl1)
             last_common = min(last0_db[i], last1_db[k])
