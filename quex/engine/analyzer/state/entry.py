@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.commands.core              import Accepter, StoreInputPosition
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
-from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 from   quex.engine.tools                          import TypedDict
 from   quex.blackboard                            import setup as Setup, \
                                                          E_IncidenceIDs, \
@@ -271,7 +271,7 @@ class Entry(object):
 
             if new_door_id is not None: return new_door_id
 
-            return self.new_DoorID(StateIndex)
+            return dial_db.new_door_id(StateIndex)
 
         def sort_key(X):
             return (X[0].target_state_index, X[0].source_state_index, X[0].trigger_id)
@@ -287,11 +287,6 @@ class Entry(object):
     @property 
     def largest_used_door_sub_index(self):
         return self.__largest_used_door_sub_index
-
-    def new_DoorID(self, StateIndex):
-        result = DoorID(StateIndex, self.__largest_used_door_sub_index)
-        self.__largest_used_door_sub_index += 1
-        return result
 
     def has_transitions_to_door_id(self, DoorId):
         for action in self.__db.itervalues():

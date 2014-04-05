@@ -59,7 +59,7 @@ def test_init(DidCl_Iterable):
     print
     print "Setup:"
     for door_id, command_list in DidCl_Iterable:
-        print "    %s: [%s]" % (str(door_id), ("".join("%s " % alias_db[cmd] for cmd in command_list)).strip())
+         print "    %s: [%s]" % (str(door_id), ("".join("%s " % alias_db[cmd] for cmd in command_list)).strip())
     print
     print "SharedTailDB:" 
     print
@@ -152,8 +152,8 @@ elif "pop_best" in sys.argv:
 
 elif "large_init" in sys.argv:
     door_id_command_list = []
-    for i in xrange(20):
+    for i in xrange(200):
         door_id      = DoorID(0, i)
-        command_list = random_command_list(500, Seed=0)
+        command_list = random_command_list(5, Seed=0)
         door_id_command_list.append((door_id, command_list))
     test_init(door_id_command_list)

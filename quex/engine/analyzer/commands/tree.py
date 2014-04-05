@@ -85,13 +85,33 @@ _______________________________________________________________________________
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 import quex.engine.analyzer.commands.shared_tail  as     shared_tail
 
+from quex.engine.tools import pair_combinations, typed, TypedDict
 from quex.blackboard  import E_StateIndices, \
                              E_DoorIdIndex
-from quex.engine.tools import pair_combinations, typed
 
 from collections      import defaultdict, namedtuple
 from itertools        import islice
 from operator         import attrgetter
+
+class CommandTree:
+    def __init__(self, StateIndex, DoorId_CommandList_Iterable):
+        """StateIndex -- Index of state for which one operates.
+                         (needed for new DoorID generation)
+           
+           DoorId_CommandList_Iterable -- Iterable over pairs of 
+
+                         (DoorID, command lists)
+
+        NOTE: The command lists are MODIFIED during the process of finding
+              a command tree!
+        """
+        shared_tail_db = SharedTailDB(StateIndex, DoorId_CommandList_Iterable)
+
+        while shared_tail_db.pop_best():
+            pass
+
+        self.root    = shared_tail_db.root
+        self.door_db = shared_tail_db.door_db
 
 class Door(object):
     __slots__ = ("door_id", "command_list", "parent", "child_set")
@@ -198,13 +218,13 @@ class SharedTailDB:
     """
     __slots__ = ("state_index", "door_id_set", "db")
 
-    @typed(StateIndex=long, DoorId_CommandList=[tuple])
+    @typed(DoorId_CommandList=[tuple])
     def __init__(self, StateIndex, DoorId_CommandList):
         self.state_index = StateIndex
         root_child_set   = set(door_id for door_id, cl in DoorId_CommandList) 
         self.root        = Door(dial_db.new_door_id(StateIndex), [], None,
                                 root_child_set)
-        self.door_db     = {}   # map: DoorID --> Door 
+        self.door_db     = TypedDict(DoorID, Door) # {}   # map: DoorID --> Door 
         #                       #  ... with ALL Door-s related to the 'problem'
 
         # map: Shared Tail --> SharedTailCandidateSet
@@ -424,24 +444,6 @@ class SharedTailDB:
         ])
         return txt
     
-
-def do(StateIndex, DoorId_CommandList_Iterable):
-    """StateIndex -- Index of state for which one operates.
-                     (needed for new DoorID generation)
-       
-       DoorId_CommandList_Iterable -- Iterable over pairs of 
-
-                     (DoorID, command lists)
-
-    NOTE: The command lists are MODIFIED during the process of finding
-          a command tree!
-    """
-    shared_tail_db = SharedTailDB(StateIndex, DoorId_CommandList_Iterable)
-
-    while shared_tail_db.pop_best():
-        pass
-
-    return shared_tail_db.root
 
 def get_string(DoorTreeRoot):
     """ActionDB can be received, for example from the 'entry' object.

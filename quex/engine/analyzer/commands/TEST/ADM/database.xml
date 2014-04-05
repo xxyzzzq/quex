@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.38" date="Thu Apr  3 08:56:01 2014">
+<test-database execution-time-sec="5.19" date="Fri Apr  4 23:48:32 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -18,53 +18,53 @@
            <choice name="set_path_iterator" result="FAIL" time_sec="0.17" crc="None"/>
         </choice-list>
     </test>
-    <test title="SharedTailDB" time-sum-sec="0.37"> 
-        <application file-name="test-SharedTailDB.py" info-request-time="1396508153L" vanished="False"/>
+    <test title="SharedTailDB" time-sum-sec="0.27"> 
+        <application file-name="test-SharedTailDB.py" info-request-time="1396616916L" vanished="False"/>
         <choice-list number="2" same_result="False">
-           <choice name="init" result="OK" time_sec="0.13" crc="-1551608524"/>
-           <choice name="pop_best" result="OK" time_sec="0.24" crc="1703559877"/>
+           <choice name="init" result="OK" time_sec="0.17" crc="-1551608524"/>
+           <choice name="pop_best" result="OK" time_sec="0.11" crc="1703559877"/>
         </choice-list>
     </test>
     <group name="Command">
-        <test title="Basic" time-sum-sec="0.35"> 
+        <test title="Basic" time-sum-sec="0.11"> 
             <application file-name="basic.py" info-request-time="1395293270L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.35" crc="1248621088"/>
+               <choice name="" result="OK" time_sec="0.11" crc="1248621088"/>
             </choice-list>
         </test>
-        <test title="is_switchable" time-sum-sec="0.39"> 
+        <test title="is_switchable" time-sum-sec="0.11"> 
             <application file-name="is_switchable.py" info-request-time="1395295276L" vanished="False"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.39" crc="11144888"/>
+               <choice name="" result="OK" time_sec="0.11" crc="11144888"/>
             </choice-list>
         </test>
     </group>
     <group name="Command.shared_tail">
-        <test title="find_last_common" time-sum-sec="0.94"> 
+        <test title="find_last_common" time-sum-sec="0.40"> 
             <application file-name="test-shared_tail.py" info-request-time="1396301676L" vanished="False"/>
             <choice-list number="4" same_result="False">
-               <choice name="one-or-none" result="OK" time_sec="0.34" crc="143644372"/>
-               <choice name="two" result="OK" time_sec="0.18" crc="1319739870"/>
-               <choice name="two-bad" result="OK" time_sec="0.19" crc="629224636"/>
-               <choice name="multiple" result="OK" time_sec="0.23" crc="-1427481276"/>
+               <choice name="one-or-none" result="OK" time_sec="0.10" crc="143644372"/>
+               <choice name="two" result="OK" time_sec="0.10" crc="1319739870"/>
+               <choice name="two-bad" result="OK" time_sec="0.10" crc="629224636"/>
+               <choice name="multiple" result="OK" time_sec="0.10" crc="-1427481276"/>
             </choice-list>
         </test>
-        <test title="can_be_moved_to_tail" time-sum-sec="0.44"> 
+        <test title="can_be_moved_to_tail" time-sum-sec="0.20"> 
             <application file-name="can_be_moved_to_tail.py" info-request-time="1396507070L" vanished="False"/>
             <choice-list number="2" same_result="False">
-               <choice name="no-exceptions" result="OK" time_sec="0.25" crc="433423739"/>
-               <choice name="with-exceptions" result="OK" time_sec="0.19" crc="-1859076765"/>
+               <choice name="no-exceptions" result="OK" time_sec="0.11" crc="433423739"/>
+               <choice name="with-exceptions" result="OK" time_sec="0.10" crc="-1859076765"/>
             </choice-list>
         </test>
-        <test title="find_last_common" time-sum-sec="1.63"> 
+        <test title="find_last_common" time-sum-sec="0.84"> 
             <application file-name="find_last_common.py" info-request-time="1396506164L" vanished="False"/>
             <choice-list number="6" same_result="False">
-               <choice name="EqualOp" result="OK" time_sec="0.21" crc="699489179"/>
-               <choice name="no-common" result="OK" time_sec="0.49" crc="1012475222"/>
-               <choice name="1-common" result="OK" time_sec="0.26" crc="-947965317"/>
-               <choice name="2-common" result="OK" time_sec="0.29" crc="317705286"/>
-               <choice name="3-common" result="OK" time_sec="0.21" crc="-849194493"/>
-               <choice name="start-indices" result="OK" time_sec="0.16" crc="-1857179644"/>
+               <choice name="EqualOp" result="OK" time_sec="0.32" crc="699489179"/>
+               <choice name="no-common" result="OK" time_sec="0.11" crc="1012475222"/>
+               <choice name="1-common" result="OK" time_sec="0.11" crc="-947965317"/>
+               <choice name="2-common" result="OK" time_sec="0.10" crc="317705286"/>
+               <choice name="3-common" result="OK" time_sec="0.10" crc="-849194493"/>
+               <choice name="start-indices" result="OK" time_sec="0.10" crc="-1857179644"/>
             </choice-list>
         </test>
     </group>

@@ -3,7 +3,7 @@ from   quex.engine.analyzer.door_id_address_label        import dial_db, \
                                                                 IfDoorIdReferencedLabel, \
                                                                 DoorID
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-import quex.engine.analyzer.commands.tree       as     entry_door_tree
+from   quex.engine.analyzer.commands.tree                import CommandTree
 from   quex.engine.tools                                 import none_is_None
 
 from quex.blackboard import Lng, \
@@ -12,32 +12,40 @@ from quex.blackboard import Lng, \
 
 from operator import attrgetter
 
+def build_CommandTree(TheState):
+    door_id_command_list = [
+        (ta.door_id, ta.command_list) 
+        for ta in TheState.entry.itervalues()
+    ]
+    return CommandTree(TheState.index, door_id_command_list)
+
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
-    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
+    cmd_tree = build_CommandTree(TheState)
+
     if not TheAnalyzer.is_init_state_forward(TheState.index):
         pre_txt = []
         if TheState.index != TheAnalyzer.init_state_index:
             pre_txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
-        do_node(pre_txt, TheState.entry, door_tree_root)
+        do_node(pre_txt, cmd_tree, TheState.entry, cmd_tree.root)
         post_txt = []
     else:
-        pre_txt, done_set = do_state_machine_entry(door_tree_root, TheState, TheAnalyzer)
+        pre_txt, done_set = do_state_machine_entry(cmd_tree, TheState, TheAnalyzer)
         post_txt = [ "\n\n    %s\n" % Lng.UNREACHABLE ]
-        post_txt.extend(do_post(door_tree_root, TheState, done_set))
+        post_txt.extend(do_post(cmd_tree, TheState, done_set))
             
     pre_txt.append("    ")
     Lng.STATE_DEBUG_INFO(pre_txt, TheState, TheAnalyzer)
     return pre_txt, post_txt
 
 def do_core(txt, TheState):
-    door_tree_root = entry_door_tree.do(TheState.index, TheState.entry)
-    do_node(txt, TheState.entry, door_tree_root, LastChildF=False)
+    cmd_tree = build_CommandTree(TheState)
+    do_node(txt, cmd_tree, TheState.entry, cmd_tree.root, LastChildF=False)
 
-def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
+def do_state_machine_entry(cmd_tree, TheState, TheAnalyzer):
     action  = TheAnalyzer.get_action_at_state_machine_entry()
     assert action is not None
     door_id = action.door_id
-    node    = entry_door_tree.find(door_tree_root, door_id)
+    node    = cmd_tree.door_db[door_id]
     assert node is not None
 
     done_door_id_set = set()
@@ -49,19 +57,20 @@ def do_state_machine_entry(door_tree_root, TheState, TheAnalyzer):
     txt.append(IfDoorIdReferencedLabel(DoorID.transition_block(TheState.index)))
     return txt, done_door_id_set
 
-def do_post(door_tree_root, TheState, DoneDoorIdSet):
+def do_post(cmd_tree, TheState, DoneDoorIdSet):
     txt = []
-    do_node(txt, TheState.entry, door_tree_root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
+    do_node(txt, cmd_tree, TheState.entry, cmd_tree.root, LastChildF=False, DoneDoorIdSet=DoneDoorIdSet)
     return txt
 
-def do_node(txt, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
+def do_node(txt, cmd_tree, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None):
     """Recursive function: '__dive' -- Marked, TODO: implement by TreeWalker.
     """
     
     if Node.child_set is not None:
         LastI = len(Node.child_set) - 1
-        for i, child in enumerate(sorted(Node.child_set, key=attrgetter("door_id"))):
-            do_node(txt, ActionDb, child, LastChildF=(i==LastI), DoneDoorIdSet=DoneDoorIdSet)
+        for i, door_id in enumerate(sorted(Node.child_set)):
+            door = cmd_tree.door_db[door_id]
+            do_node(txt, cmd_tree, ActionDb, door, LastChildF=(i==LastI), DoneDoorIdSet=DoneDoorIdSet)
     
     if DoneDoorIdSet is None or Node.door_id not in DoneDoorIdSet:
         # Careful: "GotoParentF = not LastChildF" because of 'DoneDoorIdSet'
