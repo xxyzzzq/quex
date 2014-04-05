@@ -204,9 +204,13 @@ class DialDB(object):
         """RETURN: The greatest door sub index for a given StateIndex. 
                    '-1' if not index has been used yet.
         """
+        result = - 1
         sub_db = self.__door_id_db.get(StateIndex)
-        if sub_db is None: return -1
-        return max(sub_db.iterkeys()) # There must be at least one element!
+        if sub_db is None: return result
+
+        for dsi in (x for x in sub_db.iterkeys() if isinstance(x, (int, long))):
+            if dsi > result: result = dsi
+        return result
 
     def register_door_id(self, DoorId):
         self.__address_i += 1

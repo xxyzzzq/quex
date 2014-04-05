@@ -1,4 +1,5 @@
 from   quex.engine.state_machine.core          import State
+from   quex.engine.analyzer.door_id_address_label  import dial_db
 import quex.engine.state_machine.index         as     state_index
 from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
@@ -232,7 +233,7 @@ class ReloadState(Processor):
         # No two transitions can have the same DoorID!
         # => it is safe to assign a new DoorID withouth .categorize()
         ta         = TransitionAction(before_cl)
-        ta.door_id = self.entry.new_DoorID(self.index)
+        ta.door_id = dial_db.new_door_id(self.index)
 
         assert not self.entry.has_transition(self.index, StateIndex) # Cannot be in there twice!
         self.entry.enter(self.index, StateIndex, ta)
