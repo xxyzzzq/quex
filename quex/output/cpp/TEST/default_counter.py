@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+#
+# PURPOSE: Testing the basic character counting functionality in ASCII. 
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -131,8 +133,8 @@ compile_str =   "gcc -Wall -I. -ggdb ./data/check.c ./data/test.c "     \
               + " -DDEF_COUNTER_FUNCTION='%s' " % counter_function_name \
               + " -DDEF_FILE_NAME='\"%s\"' "    % file_name             \
               + " -DDEF_CHARACTER_TYPE=%s "     % buffer_element_type   \
-              + " -o test" 
-              # + " -DDEF_DEBUG_TRACE " 
+              + " -o test" \
+              + " -DDEF_DEBUG_TRACE " 
 
 print "## %s" % compile_str            
 os.system(compile_str)
