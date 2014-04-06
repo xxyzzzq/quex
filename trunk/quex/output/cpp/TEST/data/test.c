@@ -6,6 +6,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
 {
 #   define self (*me)
     QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
+    QUEX_TYPE_CHARACTER_POSITION   reference_p                    = (QUEX_TYPE_CHARACTER_POSITION)0x0;
     (void)me;
     __QUEX_IF_COUNT_SHIFT_VALUES();
     /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
@@ -14,145 +15,113 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
     __quex_assert(LexemeBegin <= LexemeEnd);
     if(LexemeBegin == LexemeEnd) return;
     me->buffer._input_p = LexemeBegin;
- /* (34 from NONE) */
+ /* (2 from NONE) */
     input = *(me->buffer._input_p);
+__QUEX_IF_COUNT_COLUMNS(reference_p = (me->buffer._input_p));
 
-_10:
+_8:
 
     __quex_debug("Init State\n");
-    __quex_debug_state(34);
-    if( input < 0x6F ) {
-        if( input == 0x6E ) {
-            goto _5;
-        
-} else if( input >= 0x4D ) {
-            goto _7;
-        
-} else if( input == 0x4C ) {
-            goto _3;
-        } else {
-            goto _7;
-        
-}
+    __quex_debug_state(2);
+    if( input >= 0xB ) {
+        goto _5;
+    
+} else if( input == 0xA ) {
+        goto _3;
+    
+} else if( input == 0x9 ) {
+        goto _4;
     } else {
-        if( input == 0x6F ) {
-            goto _6;
-        
-} else if( input < 0x7E ) {
-            goto _7;
-        
-} else if( input == 0x7E ) {
-            goto _4;
-        
-} else if( input < 0x100 ) {
-            goto _7;
-        } else {
-
-        
-}
+        goto _5;
     
 }
 
-    __quex_debug_drop_out(34);
+    __quex_debug_drop_out(2);
 goto _1;
 
 
     __quex_assert_no_passage();
-_9: /* (34 from 45) */
-    goto _10;
+_7: /* (2 from 7) */
+    goto _8;
 
 
 
     __quex_assert_no_passage();
-_3: /* (35 from 34) */
+_3: /* (3 from 2) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
-    goto _12;
+    goto _11;
 
-_12:
+_11:
 
-    __quex_debug_state(35);
-    __quex_debug_drop_out(35);
-goto _14;
+    __quex_debug_state(3);
+    __quex_debug_drop_out(3);
+goto _13;
 
     __quex_assert_no_passage();
-_4: /* (36 from 34) */
+_4: /* (4 from 2) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
-    goto _15;
+    goto _14;
 
-_15:
+_14:
 
-    __quex_debug_state(36);
-    __quex_debug_drop_out(36);
-goto _17;
+    __quex_debug_state(4);
+    __quex_debug_drop_out(4);
+goto _16;
 
     __quex_assert_no_passage();
-_5: /* (37 from 34) */
+_5: /* (5 from 2) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
-    goto _18;
+    goto _17;
 
-_18:
+_17:
 
-    __quex_debug_state(37);
-    __quex_debug_drop_out(37);
-goto _20;
+    __quex_debug_state(5);
+    __quex_debug_drop_out(5);
+goto _19;
 
     __quex_assert_no_passage();
-_6: /* (38 from 34) */
+ /* (6 from 2) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
-    goto _21;
+    goto _20;
 
-_21:
+_20:
 
-    __quex_debug_state(38);
-    __quex_debug_drop_out(38);
-goto _23;
-
-    __quex_assert_no_passage();
-_7: /* (43 from 34) */
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
-    goto _24;
-
-_24:
-
-    __quex_debug_state(43);
-    __quex_debug_drop_out(43);
-goto _26;
+    __quex_debug_state(6);
+    __quex_debug_drop_out(6);
+goto _22;
     /* (*) Terminal states _______________________________________________________
      *
      * States that implement actions of the 'winner patterns.                     */
-_14: __quex_debug("* TERMINAL \n");
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)0);
-if( me->buffer._input_p != LexemeEnd ) goto _9;
+_13: __quex_debug("* TERMINAL \n");
+__QUEX_IF_COUNT_LINES_ADD((size_t)1);
+__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
+__QUEX_IF_COUNT_COLUMNS(reference_p = (me->buffer._input_p));
+if( me->buffer._input_p != LexemeEnd ) goto _7;
 goto _1;
-_17: __quex_debug("* TERMINAL \n");
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-if( me->buffer._input_p != LexemeEnd ) goto _9;
+_16: __quex_debug("* TERMINAL \n");
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((me->buffer._input_p) - reference_p - 1)));
+__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
+__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
+__QUEX_IF_COUNT_COLUMNS(reference_p = (me->buffer._input_p));
+if( me->buffer._input_p != LexemeEnd ) goto _7;
 goto _1;
-_20: __quex_debug("* TERMINAL \n");
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
-if( me->buffer._input_p != LexemeEnd ) goto _9;
+_19: __quex_debug("* TERMINAL \n");
+if( me->buffer._input_p != LexemeEnd ) goto _7;
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((me->buffer._input_p) - reference_p)));
 goto _1;
-_23: __quex_debug("* TERMINAL \n");
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
-if( me->buffer._input_p != LexemeEnd ) goto _9;
-goto _1;
-_26: __quex_debug("* TERMINAL \n");
-__QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-if( me->buffer._input_p != LexemeEnd ) goto _9;
-goto _1;
-_31: __quex_debug("* TERMINAL <BEYOND>\n");
+_22: __quex_debug("* TERMINAL <BEYOND>\n");
     --(me->buffer._input_p);
+__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(((me->buffer._input_p) - reference_p)));
 goto _1;
 _1:
     __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
    return;
 #  undef self
     /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */
-    goto _31;
+    goto _22;
 }
 #endif /* __QUEX_OPTION_COUNTER */
