@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.26" date="Mon Apr  7 08:51:42 2014">
+<test-database execution-time-sec="7.93" date="Tue Apr  8 09:06:06 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.12"> 
         <application file-name="test-token_class.py" info-request-time="1389328242L" vanished="False"/>
@@ -26,12 +26,12 @@
                <choice name="Wild-cp037" result="FAIL" time_sec="0.27" crc="-552071182"/>
             </choice-list>
         </test>
-        <test title="Default Implementation" time-sum-sec="0.00"> 
-            <application file-name="test-counter.py" info-request-time="1396768643L" vanished="False"/>
+        <test title="Default Implementation" time-sum-sec="0.67"> 
+            <application file-name="test-counter.py" info-request-time="1396940755L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <choice-list number="2" same_result="False">
-               <choice name="Basic" result="OK" time_sec="0.00" crc="71976663"/>
-               <choice name="All" result="NONE" time_sec="0.00" crc="None"/>
+            <choice-list number="2" same_result="True">
+               <choice name="ASCII" result="OK" time_sec="0.34" crc="0"/>
+               <choice name="ASCII-wo-ReferenceP" result="OK" time_sec="0.33" crc="0"/>
             </choice-list>
         </test>
     </group>
