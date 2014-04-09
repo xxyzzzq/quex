@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # PURPOSE: ASCII - codec. Testing the basic character counting functionality.
 #
@@ -27,6 +28,7 @@ import quex.output.cpp.counter                 as     counter
 from   quex.blackboard                         import setup as Setup, Lng
 from   itertools                               import chain
 from   os                                      import system
+import codecs
 import subprocess
 from   StringIO                                import StringIO
 
@@ -37,7 +39,7 @@ if "--hwut-info" in sys.argv:
     # Information for HWUT
     #
     print "Character Counter: Default Implementation"
-    print "CHOICES: ASCII, ASCII-wo-ReferenceP;"  
+    print "CHOICES: ASCII, ASCII-wo-ReferenceP, UTF16, UTF16-wo-ReferenceP, UTF32, UTF32-wo-ReferenceP;"  
     print "SAME;"
     sys.exit(0)
 
@@ -72,12 +74,27 @@ test_list = [
     "\t\n\tm",
 ]
 
-def prepare_test_input_file(TestStr):
-    fh = open("./data/input.txt", "wb")
+def prepare_test_input_file(TestStr, Codec):
+    fh = codecs.open("./data/input.txt", "wb", Codec.lower())
     fh.write(TestStr)
     fh.close()
 
-def get_test_application(counter_db, ReferenceP):
+    content = open("./data/input.txt", "rb").read()
+    L  = len(content)
+    Lt = len(TestStr)
+    if   Codec is None:               assert L == Lt,     "%s <-> %s" % (L, Lt)
+    elif L != 0 and Codec == "UTF16": assert L == Lt * 2, "%s <-> %s" % (L, Lt*2) 
+    elif L != 0 and Codec == "UTF32": assert L == Lt * 4, "%s <-> %s" % (L, Lt*4) 
+
+def get_test_application(counter_db, ReferenceP, CT):
+    if   codec == "utf_32_le" or codec == "ascii":  
+        Setup.buffer_codec_transformation_info = None
+    elif codec == "UTF8": 
+        Setup.buffer_codec_transformation_info = "utf8-state-split"
+    elif codec == "utf_16_le":
+        Setup.buffer_codec_transformation_info = "utf16-state-split"
+    else:                 
+        Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(codec)
     # (*) Generate Code 
     counter_function_name, \
     counter_str            = counter.get(counter_db.get_factory(NumberSet_All(), Lng.INPUT_P()), 
@@ -104,29 +121,25 @@ def get_test_application(counter_db, ReferenceP):
                   + " -D__QUEX_OPTION_COUNTER"                              \
                   + " -DDEF_COUNTER_FUNCTION='%s' " % counter_function_name \
                   + " -DDEF_FILE_NAME='\"data/input.txt\"' "                \
-                  + " -DDEF_CHARACTER_TYPE=uint8_t "                        \
+                  + " -DDEF_CHARACTER_TYPE=%s " % CT                        \
                   + " -o test" 
                   # + " -DDEF_DEBUG_TRACE " 
 
     print "## %s" % compile_str            
     os.system(compile_str)
 
-def run():
+def run(Codec):
     for i, test_str in enumerate(test_list):
-        prepare_test_input_file(test_str)
+        prepare_test_input_file(test_str, Codec)
         print "-------------------------------------------------"
         print "(%2i) Test String: [%s]" % (i, test_str.replace("\t", "\\t").replace("\n", "\\n"))
         print
         sys.stdout.flush()
         subprocess.call("./test")
 
-
-if "ASCII" in sys.argv:
-    counter_db  = None
-    # Basic: With Reference Pointer Counting
-    counter_db  = CounterSetupLineColumn_Default()
-    reference_p = True
-else:
+def counter_db_wo_reference_p():
+    """RETURNS: A counter_db that makes it impossible to use a reference pointer.
+    """
     # Reference counter is not possible, since we have two space types
     spec_txt = """
        [\\x0A] => newline 1;
@@ -135,10 +148,52 @@ else:
        \else   => space   1;>
     """
     fh = StringIO(spec_txt)
-    fh.name = "<string>"
-    counter_db = counter_parser.parse_line_column_counter(fh)
-    reference_p = False
+    fh.name        = "<string>"
+    return counter_parser.parse_line_column_counter(fh)
 
-get_test_application(counter_db, reference_p)
-run()
+if "ASCII" in sys.argv:
+    # Basic: With Reference Pointer Counting
+    counter_db     = CounterSetupLineColumn_Default()
+    reference_p    = True
+    codec          = "ascii"
+    character_type = "uint8_t"
+
+elif "ASCII-wo-ReferenceP" in sys.argv:
+    counter_db     = counter_db_wo_reference_p()
+    reference_p    = False
+    codec          = "ascii"
+    character_type = "uint8_t"
+
+elif "UTF16" in sys.argv:
+    counter_db     = CounterSetupLineColumn_Default()
+    # UTF16 is a dynamic length codec and cannot be setup with reference pointer
+    reference_p    = False
+    codec          = "utf_16_le"
+    character_type = "uint16_t"
+
+elif "UTF16-wo-ReferenceP" in sys.argv:
+    counter_db     = counter_db_wo_reference_p()
+    reference_p    = False
+    codec          = "utf_16_le"
+    character_type = "uint16_t"
+
+elif "UTF32" in sys.argv:
+    # Basic: With Reference Pointer Counting
+    counter_db     = CounterSetupLineColumn_Default()
+    reference_p    = True
+    codec          = "utf_32_le"
+    character_type = "uint32_t"
+
+elif "UTF32-wo-ReferenceP" in sys.argv:
+    counter_db     = counter_db_wo_reference_p()
+    reference_p    = False
+    codec          = "utf_32_le"
+    character_type = "uint32_t"
+
+if "xxx" in sys.argv:
+    test_list = ["a"] # make any special definition 
+
+
+get_test_application(counter_db, reference_p, character_type)
+run(codec)
     
