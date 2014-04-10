@@ -1,4 +1,4 @@
-<test-database execution-time-sec="9.43" date="Wed Apr  9 21:18:47 2014">
+<test-database execution-time-sec="14.64" date="Fri Apr 11 00:31:04 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.12"> 
         <application file-name="test-token_class.py" info-request-time="1389328242L" vanished="False"/>
@@ -26,16 +26,28 @@
                <choice name="Wild-cp037" result="FAIL" time_sec="0.27" crc="-552071182"/>
             </choice-list>
         </test>
-        <test title="Default Implementation" time-sum-sec="2.17"> 
-            <application file-name="test-counter.py" info-request-time="1397071089L" vanished="False"/>
+        <test title="Default Implementation" time-sum-sec="7.38"> 
+            <application file-name="test-counter.py" info-request-time="1397168978L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <choice-list number="6" same_result="True">
-               <choice name="ASCII" result="OK" time_sec="0.36" crc="0"/>
-               <choice name="ASCII-wo-ReferenceP" result="OK" time_sec="0.36" crc="0"/>
-               <choice name="UTF32" result="OK" time_sec="0.36" crc="1827653056"/>
-               <choice name="UTF32-wo-ReferenceP" result="OK" time_sec="0.36" crc="1827653056"/>
-               <choice name="UTF16" result="OK" time_sec="0.37" crc="-652593613"/>
-               <choice name="UTF16-wo-ReferenceP" result="OK" time_sec="0.37" crc="-652593613"/>
+            <choice-list number="18" same_result="True">
+               <choice name="ascii-1" result="OK" time_sec="0.36" crc="619081608"/>
+               <choice name="ascii-1-wo-ReferenceP" result="OK" time_sec="0.36" crc="619081608"/>
+               <choice name="utf_16_le-1" result="OK" time_sec="0.46" crc="-105504916"/>
+               <choice name="utf_16_le-1-wo-ReferenceP" result="OK" time_sec="0.38" crc="-105504916"/>
+               <choice name="utf_16_le-2" result="OK" time_sec="0.39" crc="-105504916"/>
+               <choice name="utf_16_le-2-wo-ReferenceP" result="OK" time_sec="0.37" crc="-105504916"/>
+               <choice name="utf_32_le-1" result="OK" time_sec="0.38" crc="1279519903"/>
+               <choice name="utf_32_le-1-wo-ReferenceP" result="OK" time_sec="0.36" crc="1279519903"/>
+               <choice name="cp737-1" result="OK" time_sec="0.38" crc="619081608"/>
+               <choice name="cp737-1-wo-ReferenceP" result="OK" time_sec="0.37" crc="619081608"/>
+               <choice name="utf_8-1" result="OK" time_sec="0.43" crc="619081608"/>
+               <choice name="utf_8-1-wo-ReferenceP" result="OK" time_sec="0.44" crc="619081608"/>
+               <choice name="utf_8-2" result="OK" time_sec="0.45" crc="619081608"/>
+               <choice name="utf_8-2-wo-ReferenceP" result="OK" time_sec="0.42" crc="619081608"/>
+               <choice name="utf_8-3" result="FAIL" time_sec="0.44" crc="None"/>
+               <choice name="utf_8-3-wo-ReferenceP" result="FAIL" time_sec="0.45" crc="None"/>
+               <choice name="utf_8-4" result="OK" time_sec="0.42" crc="619081608"/>
+               <choice name="utf_8-4-wo-ReferenceP" result="OK" time_sec="0.50" crc="619081608"/>
             </choice-list>
         </test>
     </group>
