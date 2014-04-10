@@ -80,22 +80,22 @@ line_n:    1;
 column_n:  1;
 line_n:    2;
 -------------------------------------------------
-(16) Test String: [e\n]
+(16) Test String: [a\n]
 
 column_n:  1;
 line_n:    2;
 -------------------------------------------------
-(17) Test String: [\nf]
+(17) Test String: [\na]
 
 column_n:  2;
 line_n:    2;
 -------------------------------------------------
-(18) Test String: [e\ng]
+(18) Test String: [b\nb]
 
 column_n:  2;
 line_n:    2;
 -------------------------------------------------
-(19) Test String: [h\ni]
+(19) Test String: [c\nc]
 
 column_n:  2;
 line_n:    2;
@@ -120,22 +120,22 @@ line_n:    2;
 column_n:  5;
 line_n:    2;
 -------------------------------------------------
-(24) Test String: [\t\nj]
+(24) Test String: [\t\na]
 
 column_n:  2;
 line_n:    2;
 -------------------------------------------------
-(25) Test String: [\n\tk]
+(25) Test String: [\n\tb]
 
 column_n:  6;
 line_n:    2;
 -------------------------------------------------
-(26) Test String: [\t\n\tl]
+(26) Test String: [\t\n\tc]
 
 column_n:  6;
 line_n:    2;
 -------------------------------------------------
-(27) Test String: [\t\n\tm]
+(27) Test String: [\t\n\td]
 
 column_n:  6;
 line_n:    2;

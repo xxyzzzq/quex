@@ -39,7 +39,16 @@ if "--hwut-info" in sys.argv:
     # Information for HWUT
     #
     print "Character Counter: Default Implementation"
-    print "CHOICES: ASCII, ASCII-wo-ReferenceP, UTF16, UTF16-wo-ReferenceP, UTF32, UTF32-wo-ReferenceP;"  
+    print "CHOICES: " \
+          "ascii-1, ascii-1-wo-ReferenceP, " \
+          "utf_16_le-1, utf_16_le-1-wo-ReferenceP, " \
+          "utf_16_le-2, utf_16_le-2-wo-ReferenceP, " \
+          "utf_32_le-1, utf_32_le-1-wo-ReferenceP, " \
+          "cp737-1, cp737-1-wo-ReferenceP, " \
+          "utf_8-1, utf_8-1-wo-ReferenceP, "   \
+          "utf_8-2, utf_8-2-wo-ReferenceP, "   \
+          "utf_8-3, utf_8-3-wo-ReferenceP, "   \
+          "utf_8-4, utf_8-4-wo-ReferenceP;"  
     print "SAME;"
     sys.exit(0)
 
@@ -60,36 +69,58 @@ test_list = [
     "abc\ta",
     "abcd\ta",
     "\n",
-    "e\n",
-    "\nf",
-    "e\ng",
-    "h\ni",
+    "a\n",
+    "\na",
+    "b\nb",
+    "c\nc",
     "\t\n",
     "\n\t",
     "\t\n\t",
     "\t\n\t",
-    "\t\nj",
-    "\n\tk",
-    "\t\n\tl",
-    "\t\n\tm",
+    "\t\na",
+    "\n\tb",
+    "\t\n\tc",
+    "\t\n\td",
 ]
 
-def prepare_test_input_file(TestStr, Codec):
-    fh = codecs.open("./data/input.txt", "wb", Codec.lower())
-    fh.write(TestStr)
-    fh.close()
+def prepare_test_input_file(TestStr, Codec, ChunkN):
 
-    content = open("./data/input.txt", "rb").read()
-    L  = len(content)
-    Lt = len(TestStr)
-    if   Codec is None:               assert L == Lt,     "%s <-> %s" % (L, Lt)
-    elif L != 0 and Codec == "UTF16": assert L == Lt * 2, "%s <-> %s" % (L, Lt*2) 
-    elif L != 0 and Codec == "UTF32": assert L == Lt * 4, "%s <-> %s" % (L, Lt*4) 
+    db = {}
+    if Codec == "utf_8":
+        chunk_size = 1 # [byte]
+        if   ChunkN == 1: pass
+        elif ChunkN == 2: db = { "a": u"ا",  "b": u"ب",  "c": u"ت",  "d": u"ى" }     # 2 byte letters
+        elif ChunkN == 3: db = { "a": u"ठ",  "b": u"मु",  "c": u"ख",  "d": u"पृ" }     # 3 byte letters
+        elif ChunkN == 4: db = { "a": u"化", "b": u"术", "c": u"与", "d": u"文" } # 4 byte letters
+    elif Codec == "utf_16_le":
+        chunk_size = 2 # [byte]
+        if   ChunkN == 1: pass
+        elif ChunkN == 2: db = { "a": u"化", "b": u"术", "c": u"与", "d": u"文" } # 2 word letters
+    elif Codec == "utf_32_le":
+        chunk_size = 4 # [byte]
+    else:
+        chunk_size = 1 # [byte]
+
+    test_str = u""
+    chunk_n  = 0
+    for letter in TestStr:
+        if letter in db: test_str += db[letter]; chunk_n += ChunkN
+        else:            test_str += letter;     chunk_n += 1
+
+    fh = codecs.open("./data/input.txt", "wb", Codec.lower())
+    fh.write(test_str)
+    fh.close()
+    fh = open("./data/input.txt", "rb")
+    content = fh.read()
+    #print "#TestStr:", ["%x" % ord(x) for x in TestStr]
+    #print "#content:", ["%x" % ord(x) for x in content]
+    #assert len(content) == chunk_n * chunk_size, "%s <-> %s" % (len(content), chunk_n * chunk_size)
+    fh.close()
 
 def get_test_application(counter_db, ReferenceP, CT):
     if   codec == "utf_32_le" or codec == "ascii":  
         Setup.buffer_codec_transformation_info = None
-    elif codec == "UTF8": 
+    elif codec == "utf_8": 
         Setup.buffer_codec_transformation_info = "utf8-state-split"
     elif codec == "utf_16_le":
         Setup.buffer_codec_transformation_info = "utf16-state-split"
@@ -128,9 +159,9 @@ def get_test_application(counter_db, ReferenceP, CT):
     print "## %s" % compile_str            
     os.system(compile_str)
 
-def run(Codec):
+def run(Codec, ChunkN):
     for i, test_str in enumerate(test_list):
-        prepare_test_input_file(test_str, Codec)
+        prepare_test_input_file(test_str, Codec, ChunkN)
         print "-------------------------------------------------"
         print "(%2i) Test String: [%s]" % (i, test_str.replace("\t", "\\t").replace("\n", "\\n"))
         print
@@ -151,49 +182,29 @@ def counter_db_wo_reference_p():
     fh.name        = "<string>"
     return counter_parser.parse_line_column_counter(fh)
 
-if "ASCII" in sys.argv:
-    # Basic: With Reference Pointer Counting
-    counter_db     = CounterSetupLineColumn_Default()
-    reference_p    = True
-    codec          = "ascii"
-    character_type = "uint8_t"
+fields  = sys.argv[1].split("-")
+codec   = fields[0]
+chunk_n = int(fields[1])
+without_reference_p_f = sys.argv[1].find("wo-ReferenceP")
 
-elif "ASCII-wo-ReferenceP" in sys.argv:
-    counter_db     = counter_db_wo_reference_p()
-    reference_p    = False
-    codec          = "ascii"
-    character_type = "uint8_t"
+if without_reference_p_f:
+    counter_db  = counter_db_wo_reference_p()
+    reference_p = False
+else:
+    counter_db = CounterSetupLineColumn_Default()
+    # UTF16 and UTF8 are dynamic length codecs. reference pointer based 
+    # is impossible.
+    if codec in ("utf_8", "utf_16_le"): reference_p = False
+    else:                               reference_p = True
 
-elif "UTF16" in sys.argv:
-    counter_db     = CounterSetupLineColumn_Default()
-    # UTF16 is a dynamic length codec and cannot be setup with reference pointer
-    reference_p    = False
-    codec          = "utf_16_le"
-    character_type = "uint16_t"
-
-elif "UTF16-wo-ReferenceP" in sys.argv:
-    counter_db     = counter_db_wo_reference_p()
-    reference_p    = False
-    codec          = "utf_16_le"
-    character_type = "uint16_t"
-
-elif "UTF32" in sys.argv:
-    # Basic: With Reference Pointer Counting
-    counter_db     = CounterSetupLineColumn_Default()
-    reference_p    = True
-    codec          = "utf_32_le"
-    character_type = "uint32_t"
-
-elif "UTF32-wo-ReferenceP" in sys.argv:
-    counter_db     = counter_db_wo_reference_p()
-    reference_p    = False
-    codec          = "utf_32_le"
-    character_type = "uint32_t"
-
-if "xxx" in sys.argv:
-    test_list = ["a"] # make any special definition 
-
+character_type = {
+    "ascii":      "uint8_t",
+    "utf_8":      "uint8_t",
+    "utf_16_le":  "uint16_t",
+    "utf_32_le":  "uint32_t",
+    "cp737":      "uint8_t",
+}[codec]
 
 get_test_application(counter_db, reference_p, character_type)
-run(codec)
+run(codec, chunk_n)
     
