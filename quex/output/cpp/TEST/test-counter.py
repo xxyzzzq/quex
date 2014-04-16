@@ -1,17 +1,34 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# PURPOSE: ASCII - codec. Testing the basic character counting functionality.
+# PURPOSE: 
 #
-# -- With and withour reference-pointer counting (column_n += (input_p - reference_p)
+# Test character counting functionality for different codecs. The set of codecs
+# include constant and dynamic character size codecs. For all codecs the
+# 'collaboration' with grid and line number counting is tested.
 #
-# -- Spaces, Lines, and Grids.
+# Codecs: ASCII, UTF8, UTF16, UTF32, CP737
 # 
-# -- *:               Dedicated Scenerios of Spaces, Grids, and Lines
-#    *-wo-ReferenceP: Testing the reactions to all characters of the codec.       
+# Counter Databases: (1) Default, where a reference pointer counting can be 
+#                        implemented.
+#                    (2) A dedicated counter database where no reference 
+#                        counter implementation is possible.
 #
-# -- All tests use exactly the same input, so that the 'SAME' label for hwut 
-#    tests can be applied.
+# For codecs with variable character sizes, the second number in the choice
+# defines the number of chunks to be used for a letter. For example, 'utf_8-3'
+# means that letters are used that consist of three bytes.
+#
+# Test cases are created from a 'test_list' (see variable below). For 'higher'
+# codecs (UTF8, ...) the letters 'a', 'b', 'c' ... are sometimes replaced by
+# letters from higher unicode code pages. For example, when three bytes are
+# to be setup, letters from 0x800 to 0xFFFF are used for utf8. 
+#
+# The usage of a reference pointer in the generated code is verified at
+# this point [RP]. 
+#
+# The setup of characters of the desired size is verified at this point [CS].
+#
+# (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 import sys
 import os
@@ -89,13 +106,13 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
     if Codec == "utf_8":
         chunk_size = 1 # [byte]
         if   ChunkN == 1: pass
-        elif ChunkN == 2: db = { "a": u"ا",  "b": u"ب",  "c": u"ت",  "d": u"ى" }     # 2 byte letters
-        elif ChunkN == 3: db = { "a": u"ठ",  "b": u"मु",  "c": u"ख",  "d": u"पृ" }     # 3 byte letters
-        elif ChunkN == 4: db = { "a": u"化", "b": u"术", "c": u"与", "d": u"文" } # 4 byte letters
+        elif ChunkN == 2: db = { "a": u"ا",  "b": u"ب",  "c": u"ت",  "d": u"ى" }  # 2 byte letters
+        elif ChunkN == 3: db = { "a": u"",  "b": u"",  "c": u"",  "d": u"" }  # 3 byte letters
+        elif ChunkN == 4: db = { "a": u"𐅃", "b": u"𐅄", "c": u"𐅅", "d": u"𐅆" }     # 4 word letters
     elif Codec == "utf_16_le":
         chunk_size = 2 # [byte]
         if   ChunkN == 1: pass
-        elif ChunkN == 2: db = { "a": u"化", "b": u"术", "c": u"与", "d": u"文" } # 2 word letters
+        elif ChunkN == 2: db = { "a": u"𐅃", "b": u"𐅄", "c": u"𐅅", "d": u"𐅆" } # 2 word letters
     elif Codec == "utf_32_le":
         chunk_size = 4 # [byte]
     else:
@@ -112,9 +129,8 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
     fh.close()
     fh = open("./data/input.txt", "rb")
     content = fh.read()
-    #print "#TestStr:", ["%x" % ord(x) for x in TestStr]
-    #print "#content:", ["%x" % ord(x) for x in content]
-    #assert len(content) == chunk_n * chunk_size, "%s <-> %s" % (len(content), chunk_n * chunk_size)
+    # [CS] Verify the setup of the specified character size.
+    assert len(content) == chunk_n * chunk_size, "%s <-> %s" % (len(content), chunk_n * chunk_size)
     fh.close()
 
 def get_test_application(counter_db, ReferenceP, CT):
@@ -139,6 +155,8 @@ def get_test_application(counter_db, ReferenceP, CT):
             found_f = True
             break
 
+    # [RP] Verify that a reference pointer has been used or not used according 
+    #      to what was specified.
     if ReferenceP:
         assert found_f, "Counter has not been setup using a reference pointer."
     else:

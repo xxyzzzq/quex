@@ -85,13 +85,15 @@ class TargetByStateKey(object):
     def from_transition(TransitionId, DoorId):
         result = TargetByStateKey()
         result.__scheme          = (TargetByStateKey_Element(TransitionId, DoorId),)
+        result.__scheme_id       = None
         result.__uniform_door_id = DoorId
         return result
 
     @staticmethod
     def from_2_TargetByStateKeys(A, B):
         result = TargetByStateKey()
-        result.__scheme = A.__scheme + B.__scheme
+        result.__scheme    = A.__scheme + B.__scheme
+        result.__scheme_id = None
 
         if A.__uniform_door_id == B.__uniform_door_id: 
             result.__uniform_door_id = A.__uniform_door_id
@@ -102,7 +104,8 @@ class TargetByStateKey(object):
     @staticmethod
     def from_scheme(SchemeAsList):
         result = TargetByStateKey()
-        result.__scheme = tuple(SchemeAsList)
+        result.__scheme    = tuple(SchemeAsList)
+        result.__scheme_id = None
         result.__uniform_door_id = UniformObject.from_iterable(SchemeAsList).content
         assert result.__uniform_door_id is None or isinstance(result.__uniform_door_id, DoorID)
         return result

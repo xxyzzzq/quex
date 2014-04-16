@@ -1,7 +1,10 @@
 # (C) 2010-2012 Frank-Rene Schaefer
-from   quex.engine.analyzer.mega_state.template.state     import TemplateState, PseudoTemplateState
+from   quex.engine.analyzer.mega_state.template.state     import TemplateState, \
+                                                                 PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate import TemplateStateCandidate
+
 from   quex.blackboard import E_Compression
+
 from   itertools       import ifilter, islice
 from   operator        import attrgetter
 
@@ -97,7 +100,6 @@ def do(TheAnalyzer, MinGain, CompressionType, AvailableStateIndexList):
     The measurement of the gain value happens inside a TemplateStateCandidate. 
     It is a function of the similarity of the states. In particular the entries, 
     the drop_outs, and the transition map is considered. 
-
     ___________________________________________________________________________
     """
     assert CompressionType in (E_Compression.TEMPLATE, E_Compression.TEMPLATE_UNIFORM)
@@ -194,7 +196,7 @@ class CandidateList(list):
         self.sort(key=attrgetter("gain")) # 'best' must be at end
 
     def update(self, TheElectDB, NewElect):
-        """Adapt the __candidate_list to include candidates of combinations with
+        """Adapt the CandidateList to include candidates of combinations with
            the NewElect.
         """
         assert isinstance(NewElect, TemplateState)
@@ -241,7 +243,7 @@ class CandidateList(list):
 
         If no combination has a "gain >= self.__min_gain", then None is
         returned. This is ensured, by not letting any entry enter the
-        __candidate_list, where 'gain < self.__min_gain'.
+        CandidateList, where 'gain < self.__min_gain'.
 
         RETURNS: TemplateStateCandidate if combination of states with the 
                                         greatest gain. 
@@ -270,7 +272,7 @@ class CandidateList(list):
         return best
 
     def __delete_references(self, I, K):
-        """Delete all related entries in the '__candidate_list' that relate to
+        """Delete all related entries in the 'CandidateList' that relate to
         states I and K. This function is used after the decision has been made
         that I and K are combined into a TemplateState. None of them can be
         combined with another state anymore.

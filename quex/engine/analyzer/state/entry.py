@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.commands.core              import Accepter, StoreInputPosition
+from   quex.engine.analyzer.commands.core              import Accepter, StoreInputPosition, Command
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 from   quex.engine.tools                          import TypedDict
@@ -282,8 +282,6 @@ class Entry(object):
 
         assert self.check_consistency()
 
-        return
-
     @property 
     def largest_used_door_sub_index(self):
         return self.__largest_used_door_sub_index
@@ -307,6 +305,15 @@ class Entry(object):
                 check_db[action.door_id] = action.command_list
             elif cmp_command_list != action.command_list:
                 return False
+
+        # Some commands shall never occur more than once in a command list:
+        # --> Command.unique_set
+        for transition_action in self.__db.itervalues():
+            unique_found_set = set()
+            for cmd in transition_action.command_list:
+                if   cmd.id not in Command.unique_set: continue
+                elif cmd.id in unique_found_set:       return False
+                unique_found_set.add(cmd.id)
         return True
 
     def get_string(self):
@@ -391,17 +398,16 @@ class Entry(object):
             sk_txt = get_set_template_state_keys(ssk_command_list)
             pi_txt = get_set_path_iterator_keys(spi_command_list)
             content = "".join(a_txt + s_txt + p_txt + sk_txt + pi_txt)
-            if len(content) == 0:
-                # Simply new line
-                content = "\n"
-            elif content.count("\n") == 1:
+            content = content.strip()
+            if content.count("\n") == 0:
                 # Append to same line
                 content = " " + content
             else:
                 # Indent properly
-                content = "\n        " + content[:-1].replace("\n", "\n        ") + content[-1]
-            result.append(content)
+                content = "\n        " + content.replace("\n", "\n        ") 
+            result.append("%s\n" % content)
 
         if len(result) == 0: return ""
+        #return "-X--\n%s\n-X--" % "".join(result)
         return "".join(result)
 

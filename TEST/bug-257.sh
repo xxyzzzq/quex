@@ -2,6 +2,7 @@
 bug=257
 if [[ $1 == "--hwut-info" ]]; then
     echo "enmarabrams: $bug Hang-up on recursive --foreign-token-id-file"
+    echo "HAPPY: ^include_me.h:[0-9]+:;"
     exit
 fi
 

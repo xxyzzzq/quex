@@ -108,9 +108,9 @@ class TransitionMap(list):
     def relate_to_DoorIDs(self, TheAnalyzer, StateIndex, door_id_provider=None):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
 
-        door_id_provider(Analyzer, ToStateIndex, FromStateIndex) -- optionally provides
-         DoorID for a given transition 'FromStateIndex --> ToStateIndex'. This may be
-         used for 'bending' transitions.
+        door_id_provider(Analyzer, ToStateIndex, FromStateIndex) 
+        --> optionally provides a DoorID for a given transition 'FromStateIndex 
+            to ToStateIndex'. This may be used for 'bending' transitions.
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
@@ -128,12 +128,18 @@ class TransitionMap(list):
                 te = TheAnalyzer.state_db[Target].entry
 
             door_id = te.get_door_id(StateIndex=Target, FromStateIndex=StateIndex)
-            assert door_id is not None, "No DoorID for { from: %s to: %s }i\nentry: %s" % (StateIndex, Target, [tid for tid, ta in ts.entry.iteritems()])
+            assert door_id is not None, \
+                    "State %s: No DoorID for { from: %s to: %s }\nentry: %s" % \
+                    (Target, StateIndex, Target, [tid for tid, ta in te.iteritems()])
             return door_id
         
         return self.__class__.from_iterable(self, relate)
 
     def relate_to_TargetByStateKeys(self, StateIndex):
+        """ASSUME: The transition map targets DoorID-s. 
+        
+        Then the internal DoorID-s are translated into TargetByStateKey objects.
+        """
         def relate(TargetDoorId):
             if TargetDoorId.drop_out_f():
                 transition_id = TransitionID(E_StateIndices.DROP_OUT, StateIndex, TriggerId=0)

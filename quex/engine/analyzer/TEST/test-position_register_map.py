@@ -82,7 +82,7 @@ print sm.get_string(OriginalStatesF=False)
 # For DEBUG purposes: specify 'DRAW' on command line (in sys.argv)
 help.if_DRAW_in_sys_argv(sm)
 
-analyzer = core.Analyzer(sm, engine.FORWARD)
+analyzer = core.Analyzer.from_state_machine(sm, engine.FORWARD)
 
 print "Positioning Info __________________________________"
 position_register_map.print_this(analyzer)

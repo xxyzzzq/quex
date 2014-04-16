@@ -36,7 +36,6 @@ class TransitionCodeFactory:
 
     @classmethod
     def do(cls, Target):
-        
 
         if   isinstance(Target, TransitionCode): 
             return Target

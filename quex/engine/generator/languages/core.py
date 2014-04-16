@@ -455,13 +455,15 @@ class Lng_Cpp(dict):
         else:
             cut_str = "%s -= (%s %% (%s))" % (VariableName, VariableName, grid_with_str)
 
-        add_str = "%s += %s" % (VariableName, self.MULTIPLY_WITH(grid_with_str, StepN))
+        add_str = "%s += %s + 1" % (VariableName, self.MULTIPLY_WITH(grid_with_str, StepN))
 
         result = []
         if IfMacro is None: 
+            result.append("%s -= 1;\n" % VariableName)
             if cut_str: result.append("%s;" % cut_str)
             result.append("%s;\n" % add_str)
         else:               
+            result.append("%s(%s -= 1);\n" % (IfMacro, VariableName))
             if cut_str: result.append("%s(%s);\n" % (IfMacro, cut_str))
             result.append("%s(%s);\n" % (IfMacro, add_str))
 

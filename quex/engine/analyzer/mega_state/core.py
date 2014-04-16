@@ -60,15 +60,17 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.analyzer.state.core         import AnalyzerState
-from quex.engine.analyzer.mega_state.target  import TargetByStateKey
-from quex.engine.analyzer.state.entry        import Entry
-from quex.engine.analyzer.state.drop_out     import DropOut, \
-                                                    DropOutBackwardInputPositionDetection
+from quex.engine.analyzer.commands.core         import Command
+from quex.engine.analyzer.state.core            import AnalyzerState
+from quex.engine.analyzer.mega_state.target     import TargetByStateKey
+from quex.engine.analyzer.state.entry           import Entry
+from quex.engine.analyzer.state.drop_out        import DropOut, \
+                                                       DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.door_id_address_label import DoorID
-from quex.engine.analyzer.transition_map     import TransitionMap
-from quex.engine.interval_handling           import Interval
-from quex.blackboard                         import E_StateIndices
+from quex.engine.analyzer.transition_map        import TransitionMap
+from quex.engine.interval_handling              import Interval
+from quex.blackboard                            import E_StateIndices, \
+                                                       E_Cmd
 
 from quex.engine.tools import TypedDict
 
@@ -109,7 +111,7 @@ class MegaState_Entry(Entry):
         return self.__transition_reassignment_db
 
     def action_db_update(self, From, To, FromOutsideCmd, FromInsideCmd):
-        """MegaStates may add 'set-state-key-commands' to the CommandLists of
+        """MegaState-s may add 'set-state-key-commands' to the CommandLists of
         the state entries. 
         
         For any state which is implemented in a MegaState and which is entered
@@ -122,7 +124,7 @@ class MegaState_Entry(Entry):
         
         For any transition if
 
-               .source_state_index == From and .target_state_index == To
+            .source_state_index == From and .target_state_index == To
 
         then this transition happens without leaving the MegaState. It happens
         'inside'. For any action associate with a TransitionID
@@ -134,6 +136,15 @@ class MegaState_Entry(Entry):
         DoorIDs inside the MegaState are subject to reconfiguration. They are
         listed in 'transition_reassignment_candidate_list'.
         """
+        def enter(command_list, cmd):
+            if cmd is None: 
+                return
+            elif cmd.id in Command.unique_set:
+                for i, other in enumerate(command_list):
+                    if cmd.id != other.id: continue
+                    command_list[i] = cmd
+                    return
+            command_list.append(cmd)
 
         for transition_id, action in self.iteritems():
 
@@ -149,8 +160,7 @@ class MegaState_Entry(Entry):
                 # Later we will try to unify all entries from inside.
                 self.transition_reassignment_candidate_list.append((From, transition_id))
 
-            if cmd is not None:
-                action.command_list.append(cmd)
+            enter(action.command_list, cmd)
 
         return
 
@@ -160,7 +170,6 @@ class MegaState_Entry(Entry):
            see 'action_db_update()'.
         """
         assert self.__transition_reassignment_db is None
-
 
         # All CommandList-s which are subject to DoorID reassignment are set to
         # 'None'. Then 'self.categorize()' can determine new DoorID-s.
@@ -177,7 +186,7 @@ class MegaState_Entry(Entry):
             assert action is not None
             self.__transition_reassignment_db[transition_id] = action.door_id 
 
-        ##print "#transition_reassignment_db:", self.__transition_reassignment_db
+        #print "#transition_reassignment_db:", self.__transition_reassignment_db
         return
 
 class StateKeyIndexDB(dict):

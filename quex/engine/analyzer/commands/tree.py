@@ -1,4 +1,4 @@
-"""The 'Door Tree' ____________________________________________________________    
+"""The 'Command Tree' __________________________________________________________
 
 DEFINITION: 
     
@@ -86,8 +86,8 @@ from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 import quex.engine.analyzer.commands.shared_tail  as     shared_tail
 
 from quex.engine.tools import pair_combinations, typed, TypedDict
-from quex.blackboard  import E_StateIndices, \
-                             E_DoorIdIndex
+from quex.blackboard   import E_StateIndices, \
+                              E_DoorIdIndex
 
 from collections      import defaultdict, namedtuple
 from itertools        import islice
@@ -110,8 +110,33 @@ class CommandTree:
         while shared_tail_db.pop_best():
             pass
 
+        self.shared_tail_db = shared_tail_db
         self.root    = shared_tail_db.root
         self.door_db = shared_tail_db.door_db
+
+    @staticmethod
+    def from_AnalyzerState(TheState):
+        door_id_command_list = [
+            (ta.door_id, ta.command_list) 
+            for ta in TheState.entry.itervalues()
+        ]
+        return CommandTree(TheState.index, door_id_command_list)
+
+    def get_string(self, CommandAliasDb=None):
+        def cmd_iterable(DoorDb):
+            for door in self.door_db.itervalues():
+                for cmd in door.command_list:
+                    yield cmd
+
+        if CommandAliasDb is None:
+            CommandAliasDb = {}
+            i              = 0
+            for cmd in cmd_iterable(self.door_db):
+                if cmd in CommandAliasDb: continue
+                CommandAliasDb[cmd] = "%X" % i
+                i += 1
+
+        return self.shared_tail_db.get_string(CommandAliasDb)
 
 class Door(object):
     __slots__ = ("door_id", "command_list", "parent", "child_set")
