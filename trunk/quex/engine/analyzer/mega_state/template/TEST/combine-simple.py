@@ -1,4 +1,38 @@
 #! /usr/bin/env python
+#
+# PURPOSE:
+# 
+# This file performs four examplatory tests of state combination:
+#
+#    (1)  AnalyzerState + AnalyzerState -> TemplateState
+#    (2)  AnalyzerState + AnalyzerState -> TemplateState
+#    (3)  TemplateState + TemplateState -> TemplateState
+#    (4)  TemplateState + AnalyzerState -> TemplateState
+#
+# As a starting point a list of five states is generated. All states only 
+# transit one transition on the number '10' to a target state. Depending on the
+# CHOICE the target states are
+#
+#   'plain'         -- state '1'.
+#   'recursive'     -- the states themselves. 
+#   'distinguished' -- some states '1000 + i'.
+#     
+# This test executes the combinations mentioned in (1) to (4) and prints
+# the resulting TemplateStates. 
+#
+# Process: (1) AnalyzerState-s from transition maps.
+#          (2) PseudoTemplateState-s from AnalyzerState-s.
+#          (3) TemplateStateCandidate from two PseudoTemplateState-s.
+#          (4) TemplateState from TemplateStateCandidate
+#
+# The template combination process operates solely on 'template states'. 
+# Thus, AnalyzerState-s need to be first translated into PseudoTemplateState.
+# A TemplateStateCandidate references two states to be combined. The 
+# TemplateState constructor takes a TemplateStateCandidate to when constructing
+# a new template state.
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -15,49 +49,31 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: plain, recursive, distinguished;"
     sys.exit(0)
 
-def print_tm(TM):
-    for interval, target in TM:
-        if   isinstance(target, (int, long)) \
-           or isinstance(target, TargetByStateKey) and not target.drop_out_f:
-            print "(%s, %s), " % (interval, repr(target).replace("TargetByStateKey", "MST")),
-        else:
-            print "%s " % repr(target).replace("TargetByStateKey", "MST"),
-    print
-
 if "plain" in sys.argv:
-    TM = [ 
-           (Interval(10, 11), 1L),
-         ]
-
-    state_index_list = [ index.get() for i in range(5)]
-    analyzer = setup_AnalyzerStates([(state_index_list[0], TM), 
-                                     (state_index_list[1], TM), 
-                                     (state_index_list[2], TM), 
-                                     (state_index_list[3], TM), 
-                                     (state_index_list[4], TM)])
+    def transition_map_for_state(i):
+        return [ (Interval(10), 100L) ]
 
 elif "recursive" in sys.argv:
-    setup_list = []
-    for i in xrange(5):
-        state_index = index.get()
-        tm = [(Interval(10, 11), state_index)] 
-        setup_list.append((state_index, tm))
-
-    state_list, analyzer = setup_AnalyzerStates(setup_list)
+    def transition_map_for_state(i):
+        return [ (Interval(10), long(i)) ]
 
 elif "distinguished" in sys.argv:
-    setup_list = []
-    for i in xrange(5):
-        state_index = index.get()
-        tm = [(Interval(10, 11), 1000 + 1000 * state_index)] 
-        setup_list.append((state_index, tm))
+    def transition_map_for_state(i):
+        return [ (Interval(10), long(1000 + i)) ]
 
-    state_list, analyzer = setup_AnalyzerStates(setup_list)
+# AnalyzerState-s: The base.
+analyzer = get_Analyzer( 
+    [(long(i), transition_map_for_state(long(i))) for i in xrange(5)]
+)
 
-state_list = [ analyzer.state_db[i] for i in state_index_list ]
+s = [ analyzer.state_db[i] for i in xrange(5) ]
 
-t01       = test_combination(state_list[0], state_list[1], analyzer, StateA_Name="0",              StateB_Name="1", DrawF=True, FinalizeF=False)
-t23       = test_combination(state_list[2], state_list[3], analyzer, StateA_Name="2",              StateB_Name="3", DrawF=True, FinalizeF=False)
-t_01_23   = test_combination(t01,           t23,           analyzer, StateA_Name="%i" % t01.index, StateB_Name="%i" % t23.index, DrawF=True, FinalizeF=False)
-t_01_23_4 = test_combination(state_list[4], t_01_23,       analyzer, StateA_Name="4",              StateB_Name="%i" % t01.index, DrawF=True, FinalizeF=True)
+# (1) Analyzer + Analyzer -> Template
+t01     = combine(analyzer, s[0], s[1], "0", "1")
+# (2) Analyzer + Analyzer -> Template
+t23     = combine(analyzer, s[2], s[3], "2", "3")
+# (3) Template + Template -> Analyzer
+t0123   = combine(analyzer, t01, t23, "t(01)", "t(23)")
+# (4) Template + Analyzer -> Analyzer
+t0123_4 = combine(analyzer, t0123, s[4], "t(0123)", "4") 
 

@@ -35,7 +35,7 @@ def test(TriggerMapList):
 
     ## print "##sm:", sm
     # Backward analyzers do not consider so much entry and drop-out ...
-    analyzer = Analyzer(sm, engine.BACKWARD_PRE_CONTEXT)
+    analyzer = Analyzer.from_state_machine(sm, engine.BACKWARD_PRE_CONTEXT)
     for state in analyzer.state_db.itervalues():
         state.entry.categorize()
 

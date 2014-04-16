@@ -22,9 +22,9 @@ def test(TriggerMapA, StateN_A, TriggerMapB, StateN_B, DrawF=True):
 
     print
     print "(Straight)---------------------------------------"
-    test_combination(state_a, state_b, analyzer, "A", "B", DrawF)
+    combine(analyzer, state_a, state_b, "A", "B", DrawF)
     print "(Vice Versa)-------------------------------------"
-    test_combination(state_b, state_a, analyzer, "A", "B", DrawF)
+    combine(analyzer, state_b, state_a, "A", "B", DrawF)
 
 tm0 = [ 
         (Interval(-sys.maxint, 20), (100L, 200L, 300L)),
