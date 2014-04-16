@@ -369,8 +369,8 @@ def __warn_on_double_definition():
 
     def find_meaningful_location(TokenList):
         for token in TokenList:
-            if len(token.file_name) != 0:
-                return token.file_name, token.line_n
+            if len(token.sr.file_name) != 0:
+                return token.sr.file_name, token.sr.line_n
         return None, None
     
     if len(clash_db) != 0:

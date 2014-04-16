@@ -7,7 +7,7 @@ from   quex.blackboard                                   import E_Compression
 def find_core(sm, SelectF=False):
     print sm.get_graphviz_string(NormalizeF=False)
     print
-    analyzer = Analyzer(sm, engine.FORWARD)
+    analyzer = Analyzer.from_state_machine(sm, engine.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.categorize(state.index)
     for state in analyzer.state_db.itervalues():

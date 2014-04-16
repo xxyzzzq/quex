@@ -15,9 +15,19 @@ from   itertools import chain
 class TemplateStateCandidate(object):
     """________________________________________________________________________
     
-    A TemplateStateCandidate determines a tentative template combination of two
-    states (where each one of them may already be a TemplateState).  It sets up
-    a TemplateState and determines the 'gain of combination'.
+    Contains information about a possible combination of two states into 
+    a single template state. It computes:
+
+        -- entry gain: That is the gain which results from have the state
+                       entries implemented in a single state. This gain 
+                       results from command lists appearring in both states.
+                       Instead of being implemented twice, they are 
+                       implemented once.
+
+        -- drop-out gain: Like 'entry gain' respectively for drop outs.
+
+        -- transition map gain: The gain from combining the state's tran-
+                                sition map.
 
     The 'Cost' class is used to describe gain/cost as a multi-attribute
     measure. The member '.total()' determines a scalar value by means of a

@@ -4,6 +4,7 @@ if [[ $1 == "--hwut-info" ]]; then
     echo "attardi: $bug RE Problem with inverted whitespace"
     echo "CHOICES: iconv, icu;"
     echo "SAME;"
+    echo "HAPPY: cpp:[0-9]+:;"
     exit
 fi
 

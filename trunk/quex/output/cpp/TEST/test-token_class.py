@@ -23,6 +23,7 @@ quex.blackboard.token_type_definition = Something()
 
 if "--hwut-info" in sys.argv:
     print "Token Class Template"
+    print "HAPPY: line [0-9]+;"
     sys.exit(0)
 
 def test(Txt):

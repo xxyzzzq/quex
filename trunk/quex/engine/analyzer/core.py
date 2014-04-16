@@ -66,7 +66,7 @@ from   operator         import attrgetter
 def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None):
 
     # Generate Analyzer from StateMachine
-    analyzer = Analyzer(SM, EngineType, ReloadStateExtern)
+    analyzer = Analyzer.from_state_machine(SM, EngineType, ReloadStateExtern)
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
@@ -102,66 +102,73 @@ class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
        effective code generation.
     """
-    def __init__(self, SM, EngineType, ReloadStateExtern=None):
+    def __init__(self, EngineType):
+        self.__engine_type = EngineType
+        self.__state_db    = {}
+
+    @classmethod
+    def from_state_machine(cls, SM, EngineType, ReloadStateExtern=None):
         """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
+        result = cls(EngineType)
         assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
         assert isinstance(SM, StateMachine)
 
-        self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        self.__init_state_index = SM.init_state_index
-        self.__state_machine_id = SM.get_id()
-        self.__engine_type      = EngineType
+        result.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
+        result.__init_state_index = SM.init_state_index
+        result.__state_machine_id = SM.get_id()
 
         # (*) From/To Databases
         #
         #     from_db:  state_index --> states from which it is entered.
         #     to_db:    state_index --> states which it enters
         #
-        self.__from_db, self.__to_db = SM.get_from_to_db()
+        result.__from_db, result.__to_db = SM.get_from_to_db()
 
         # (*) PathTrace database, Successor database
-        self.__trace_db,       \
-        self.__path_element_db = track_analysis.do(SM, self.__to_db)
+        result.__trace_db,       \
+        result.__path_element_db = track_analysis.do(SM, result.__to_db)
 
         # (*) Prepare AnalyzerState Objects
-        self.__state_db = dict([
-            (state_index, self.prepare_state(SM.states[state_index], state_index))
-            for state_index in self.__trace_db.iterkeys()]
+        result.__state_db.update([
+            (state_index, result.prepare_state(SM.states[state_index], state_index))
+            for state_index in result.__trace_db.iterkeys()]
         )
 
         if ReloadStateExtern is None:
-            self.reload_state          = ReloadState(EngineType=self.__engine_type)
-            self.reload_state_extern_f = False
+            result.reload_state          = ReloadState(EngineType=result.__engine_type)
+            result.reload_state_extern_f = False
         else:
-            self.reload_state          = ReloadStateExtern
-            self.reload_state_extern_f = True
+            result.reload_state          = ReloadStateExtern
+            result.reload_state_extern_f = True
 
-        self.__mega_state_list          = []
-        self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
+        result.__mega_state_list          = []
+        result.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
 
         if not EngineType.requires_detailed_track_analysis():
-            self.__position_register_map = None
-            return
+            result.__position_register_map = None
+            return result
         else:
             # (*) Drop Out Behavior
             #     The PathTrace objects tell what to do at drop_out. From this, the
             #     required entry actions of states can be derived.
-            self.__require_acceptance_storage_db = defaultdict(list)
-            self.__require_position_storage_db   = defaultdict(list)
-            for state_index, trace_list in self.__trace_db.iteritems():
-                self.__state_db[state_index].drop_out = self.configure_drop_out(state_index)
+            result.__require_acceptance_storage_db = defaultdict(list)
+            result.__require_position_storage_db   = defaultdict(list)
+            for state_index, trace_list in result.__trace_db.iteritems():
+                result.__state_db[state_index].drop_out = result.configure_drop_out(state_index)
 
             # (*) Entry Behavior
             #     Implement the required entry actions.
-            self.configure_entries(SM)
+            result.configure_entries(SM)
 
             if EngineType.requires_position_register_map():
                 # (*) Position Register Map (Used in 'optimizer.py')
-                self.__position_register_map = position_register_map.do(self)
+                result.__position_register_map = position_register_map.do(result)
             else:
-                self.__position_register_map = None
+                result.__position_register_map = None
+
+        return result
 
     def add_mega_states(self, MegaStateList):
         """Add MegaState-s into the analyzer and remove the states which are 

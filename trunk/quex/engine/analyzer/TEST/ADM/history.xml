@@ -1,4 +1,4 @@
-<history date="Mon Mar 17 08:19:54 2014" element-n="1094">
+<history date="Sat Apr  5 10:49:21 2014" element-n="1095">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -1268,5 +1268,8 @@
     <day year="2014" month="03" day="14">
         <crc-error time="06:04:22" application="paths_analysis-pre-post.py" choice="7" database-crc="1739609112" real-crc="1504436441"/>
         <crc-error time="06:04:56" application="paths_analysis-pre.py" choice="11" database-crc="-1349161013" real-crc="408349639"/>
+    </day>
+    <day year="2014" month="04" day="05">
+        <crc-error time="08:33:19" application="paths_analysis-pre.py" choice="7" database-crc="1071636588" real-crc="2050565048"/>
     </day>
 </history>

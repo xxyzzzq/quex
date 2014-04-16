@@ -102,12 +102,16 @@ E_R = Enum("AcceptanceRegister",
            "ThreadOfControl")
 
 
-#______________________________________________________________________________
-# Command: Information about an operation to be executed. It consists mainly
-#     of a command identifier (from E_Cmd) and the content which specifies
-#     the command further.
-#______________________________________________________________________________
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
+    """_________________________________________________________________________
+    Information about an operation to be executed. It consists mainly of a 
+    command identifier (from E_Cmd) and the content which specifies the command 
+    further.
+    ____________________________________________________________________________
+    """
+    # Commands which shall appear only once in a command list:
+    unique_set = (E_Cmd.TemplateStateKeySet, E_Cmd.PathIteratorSet)
+
     def __new__(self, Id, *ParameterList):
         global _content_db
         # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
@@ -140,7 +144,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content = self.content.clone()
         else:
             content = deepcopy(self.content)
-        return super(Command, self).__new__(self, Id, Content, self.my_hash)
+        return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash)
 
     def __hash__(self):      
         return self.my_hash

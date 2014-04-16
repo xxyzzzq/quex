@@ -12,15 +12,8 @@ from quex.blackboard import Lng, \
 
 from operator import attrgetter
 
-def build_CommandTree(TheState):
-    door_id_command_list = [
-        (ta.door_id, ta.command_list) 
-        for ta in TheState.entry.itervalues()
-    ]
-    return CommandTree(TheState.index, door_id_command_list)
-
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
-    cmd_tree = build_CommandTree(TheState)
+    cmd_tree = CommandTree.from_AnalyzerState(TheState)
 
     if not TheAnalyzer.is_init_state_forward(TheState.index):
         pre_txt = []
@@ -38,7 +31,7 @@ def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     return pre_txt, post_txt
 
 def do_core(txt, TheState):
-    cmd_tree = build_CommandTree(TheState)
+    cmd_tree = CommandTree.from_AnalyzerState(TheState)
     do_node(txt, cmd_tree, TheState.entry, cmd_tree.root, LastChildF=False)
 
 def do_state_machine_entry(cmd_tree, TheState, TheAnalyzer):

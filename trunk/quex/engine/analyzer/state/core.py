@@ -56,7 +56,7 @@ class AnalyzerState(Processor):
     @typed(StateIndex=(int,long), TheTransitionMap=(None, TransitionMap))
     def __init__(self, StateIndex, TheTransitionMap):
         # Empty transition maps are reported as 'None'
-        Processor.__init__(self, StateIndex)
+        Processor.__init__(self, StateIndex, Entry())
         self.drop_out                          = None
         self.map_target_index_to_character_set = None
         self.transition_map                    = TheTransitionMap
@@ -69,8 +69,6 @@ class AnalyzerState(Processor):
 
         x = AnalyzerState(StateIndex, TransitionMap.from_TargetMap(SM_State.target_map))
 
-        # (*) Entry Action
-        x.entry    = Entry()
         # (*) Drop Out
         x.drop_out = EngineType.create_DropOut(SM_State)
 

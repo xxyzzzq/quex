@@ -36,15 +36,15 @@ class TemplateState(MegaState):
         ski_db = StateKeyIndexDB(StateA.state_index_sequence() + StateB.state_index_sequence())
         MegaState.__init__(self, index.get(), transition_map, ski_db)
 
-        self.uniform_DropOut           = UniformObject.from_iterable([
+        self.uniform_DropOut           = UniformObject.from_iterable((
                                                        StateA.uniform_DropOut,
-                                                       StateB.uniform_DropOut])
-        self.uniform_entry_CommandList = UniformObject.from_iterable([
+                                                       StateB.uniform_DropOut))
+        self.uniform_entry_CommandList = UniformObject.from_iterable((
                                                        StateA.uniform_entry_CommandList,
-                                                       StateA.uniform_entry_CommandList])
+                                                       StateB.uniform_entry_CommandList))
 
         self.__target_scheme_n = target_scheme_n
-        self.__engine_type = None # StateA.engine_type
+        self.__engine_type     = None # StateA.engine_type
 
         MegaState.bad_company_set(self, StateA.bad_company().union(StateB.bad_company()))
 
@@ -91,7 +91,6 @@ class TemplateState(MegaState):
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         pass
-
 
 class PseudoTemplateState(MegaState): 
     """________________________________________________________________________

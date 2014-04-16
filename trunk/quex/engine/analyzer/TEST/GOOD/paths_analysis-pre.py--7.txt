@@ -27,7 +27,7 @@ State 0:
 
 State 1:
   .entry:
-    .from 0:
+    .from 0: 
   .drop_out:
     if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -43,7 +43,7 @@ State 2:
 
 State 3:
   .entry:
-    .from 2:
+    .from 2: 
     .from 5: if 'BeginOfLine': position[PostContext_1]  = input_p;
   .drop_out:
     if BeginOfLine: pos = position[PostContext_1] ; goto Pattern1;
@@ -52,14 +52,14 @@ State 3:
 
 State 4:
   .entry:
-    .from 3:
+    .from 3: 
   .drop_out:
      goto Pattern2;
 
 
 State 5:
   .entry:
-    .from 0:
+    .from 0: 
   .drop_out:
     if BeginOfLine:  goto Pattern1;
     pos = lexeme_start_p + 1;  goto Failure;
@@ -100,7 +100,7 @@ State 2:
 
 State 3:
   .entry:
-    .from 2:
+    .from 2: 
     .from 5: if 'BeginOfLine': position[PostContext_0]  = input_p;
   .drop_out:
     if BeginOfLine: pos = position[PostContext_0] ; goto Pattern1;
