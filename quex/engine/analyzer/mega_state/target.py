@@ -3,20 +3,12 @@ from quex.engine.analyzer.state.entry_action    import TransitionID
 from quex.engine.tools                          import UniformObject
 from quex.blackboard                            import E_StateIndices
 
-from collections import namedtuple
+from   collections import namedtuple
+import types
 
 TargetByStateKey_DROP_OUT_hash = hash(E_StateIndices.DROP_OUT)
 
 TargetByStateKey_Element = namedtuple("TargetByStateKey_Element_tuple", ("transition_id", "door_id"))
-
-class TargetByStateKey_db(dict):
-    def __init__(self):
-        dict.clear(self)
-
-    def init(self):
-        """Initializes: '__object_db' which keeps track of generated TargetByStateKey-s."""
-        dict.clear(self)
-
 
 class TargetByStateKey(object):
     """________________________________________________________________________
@@ -47,19 +39,6 @@ class TargetByStateKey(object):
     TransitionID can be translated into a DoorID by the target state's entry
     database 'action_db[TransitionId].door_id'.
     
-    TRACKING SCHEMES: _________________________________________________________
-
-    There might be multiple intervals following the same target scheme. This class
-    keeps track of the schemes by means of the '.object_db'. Before handling 
-    a transition map the function
-
-              TargetByStateKey.object_db.init()
-
-    initializes the .object_db. An independent copy of the .object_db can be
-    obtained by
-
-              my_copy = TargetByStateKey.object_db.disconnect()
-
     FINALIZATION: _____________________________________________________________
 
     Once the whole state configuration and the states' entry doors are
@@ -79,7 +58,6 @@ class TargetByStateKey(object):
           'TargetByStateKey_DROP_OUT'. This saves memory.
     """
     __slots__ = ("__scheme", "__uniform_door_id", "__scheme_id")
-    object_db = TargetByStateKey_db()
 
     @staticmethod
     def from_transition(TransitionId, DoorId):
@@ -90,24 +68,39 @@ class TargetByStateKey(object):
         return result
 
     @staticmethod
-    def from_2_TargetByStateKeys(A, B):
+    def from_2_TargetByStateKeys(A, B, scheme_pair_db):
+        """Generates a TargetByStateKey as a combination of two TargetByStateKey-s
+        'A' and 'B'. The generation may rely on a 'scheme_pair_db' which:
+            (1) Helps to avoid double generation of TargetByStateKey-s for the
+                same combination.
+            (2) Lets determine the number of different schemes in the 
+                transition map, later.
+        """
         result = TargetByStateKey()
-        result.__scheme    = A.__scheme + B.__scheme
-        result.__scheme_id = None
-
-        if A.__uniform_door_id == B.__uniform_door_id: 
-            result.__uniform_door_id = A.__uniform_door_id
+        if scheme_pair_db is not None:
+            key    = (A.__scheme, B.__scheme)
+            scheme = scheme_pair_db.get(key)
+            if scheme is None:
+                scheme = A.__scheme + B.__scheme
+                scheme_pair_db[key] = scheme
         else:
-            result.__uniform_door_id = None
+            scheme = A.__scheme + B.__scheme
+
+        result.__scheme          = scheme
+        result.__scheme_id       = None # This is done later
+        result.__uniform_door_id = UniformObject.from_2(A.__uniform_door_id, 
+                                                        B.__uniform_door_id).content
+        assert isinstance(result.__uniform_door_id, (types.NoneType, DoorID))
         return result
 
     @staticmethod
     def from_scheme(SchemeAsList):
         result = TargetByStateKey()
-        result.__scheme    = tuple(SchemeAsList)
-        result.__scheme_id = None
+        result.__scheme          = tuple(SchemeAsList)
+        result.__scheme_id       = None
         result.__uniform_door_id = UniformObject.from_iterable(SchemeAsList).content
-        assert result.__uniform_door_id is None or isinstance(result.__uniform_door_id, DoorID)
+
+        assert isinstance(result.__uniform_door_id, (types.NoneType, DoorID))
         return result
 
     @staticmethod

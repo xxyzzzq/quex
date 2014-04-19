@@ -1,4 +1,4 @@
-<history date="Wed Apr 16 08:26:05 2014" element-n="84">
+<history date="Fri Apr 18 04:47:13 2014" element-n="90">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -108,5 +108,15 @@
         <crc-error time="05:11:40" application="combine-simple.py" choice="plain" database-crc="951932943" real-crc="-1936121256"/>
         <crc-error time="05:14:30" application="combine-simple.py" choice="distinguished" database-crc="1057638771" real-crc="1951953792"/>
         <crc-error time="06:26:05" application="combine-maps-2.py" choice="1" database-crc="15509166" real-crc="813714795"/>
+    </day>
+    <day year="2014" month="04" day="17">
+        <crc-error time="04:49:03" application="combine-maps-2.py" choice="2" database-crc="799955905" real-crc="-1615454940"/>
+    </day>
+    <day year="2014" month="04" day="18">
+        <crc-error time="02:45:03" application="best_matching_pair.py" choice="0" database-crc="488206684" real-crc="-70851933"/>
+        <crc-error time="02:45:34" application="best_matching_pair.py" choice="1" database-crc="-2131708322" real-crc="-470078879"/>
+        <crc-error time="02:45:51" application="best_matching_pair.py" choice="2" database-crc="228632361" real-crc="596279651"/>
+        <crc-error time="02:46:21" application="best_matching_pair.py" choice="3" database-crc="1541910571" real-crc="1460960682"/>
+        <crc-error time="02:47:05" application="best_matching_pair.py" choice="recursive" database-crc="-206740455" real-crc="1950094314"/>
     </day>
 </history>

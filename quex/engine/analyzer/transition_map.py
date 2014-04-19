@@ -389,17 +389,14 @@ class TransitionMap(list):
             interval = self[i][0]
             target   = self[i][1]
 
-
-            if interval.begin < prev_end:
-                print "#i:", i
-                print "#tm:", self.get_string()
-                print "#int,target:", interval, target
-                print "#prev_end, prev_target:", prev_end, prev_target
             assert interval.begin != interval.end
-            assert interval.begin >= prev_end
+            assert interval.begin >= prev_end, \
+                   "tm: %s\n" % self.get_string() + \
+                   "i: %i\n" % i + \
+                   "int,target: %s, %s\n" % (interval, target) + \
+                   "prev_end, prev_target: %s, %s\n" % (prev_end, prev_target)
 
             if prev_end == interval.begin: 
-                ##print "#A"
                 if prev_target == target:
                     # (*) Combine two intervals which have the same target
                     self[i-1][0].end = interval.end

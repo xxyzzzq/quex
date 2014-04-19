@@ -4,12 +4,16 @@ from   quex.engine.analyzer.transition_map                  import TransitionMap
 from   quex.engine.analyzer.state.core                      import AnalyzerState
 from   quex.engine.analyzer.state.drop_out                  import DropOutIndifferent
 from   quex.engine.analyzer.state.entry                     import Entry
-from   quex.engine.analyzer.state.entry_action              import TransitionAction
+from   quex.engine.analyzer.state.entry_action              import TransitionAction, \
+                                                                   TransitionID
 from   quex.engine.analyzer.door_id_address_label           import DoorID
 import quex.engine.analyzer.engine_supply_factory           as     engine
 from   quex.engine.analyzer.mega_state.core                 import MegaState
 import quex.engine.analyzer.mega_state.template.core        as     templates 
-from   quex.engine.analyzer.mega_state.template.state       import TargetByStateKey, TemplateState, PseudoTemplateState
+from   quex.engine.analyzer.mega_state.target               import TargetByStateKey, \
+                                                                   TargetByStateKey_Element
+from   quex.engine.analyzer.mega_state.template.state       import TemplateState, \
+                                                                   PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 from   quex.engine.analyzer.commands.tree                   import CommandTree
 from   quex.engine.state_machine.core                       import State
@@ -56,7 +60,8 @@ def get_Analyzer(StatesDescription):
     """
     # Use 'BACKWARD_PRE_CONTEXT' so that the drop-out objects are created
     # without larger analysis.
-    analyzer = Analyzer(engine.BACKWARD_PRE_CONTEXT)
+    init_state_index = 7777L
+    analyzer = Analyzer(engine.BACKWARD_PRE_CONTEXT, init_state_index)
     all_state_index_set = set()
     for state_index, transition_map in StatesDescription:
         assert isinstance(state_index, long)
@@ -66,7 +71,6 @@ def get_Analyzer(StatesDescription):
         analyzer.state_db[state_index] = get_AnalyzerState(state_index, tm)
         all_state_index_set.update(x[1] for x in transition_map)
 
-    init_state_index = 7777L
     # 'Dummy' transitions from init state to all
     analyzer.state_db[init_state_index] = get_AnalyzerState_Init(init_state_index, 
                                                                  [ x[0] for x in StatesDescription ])
@@ -90,6 +94,24 @@ def get_Analyzer(StatesDescription):
     analyzer.prepare_DoorIDs()
 
     return analyzer
+
+def get_TargetByStateKey_Element(TargetStateIndex):
+    transition_id = TransitionID(TargetStateIndex, 0, 0)
+    door_id       = DoorID(TargetStateIndex, 0)
+    return TargetByStateKey_Element(transition_id, door_id)
+
+def get_TargetByStateKey(TargetStateIndexList):
+    scheme = [
+        get_TargetByStateKey_Element(target_state_index)
+        for target_state_index in TargetStateIndexList
+    ]
+    return TargetByStateKey.from_scheme(scheme)
+
+def get_TransitionMap_with_TargetByStateKeys(TM_brief):
+    return TransitionMap.from_iterable(
+        (interval, get_TargetByStateKey(target_state_index_list))
+        for interval, target_state_index_list in TM_brief
+    )
 
 def setup_TemplateState(analyzer, StateIndexList):
     assert len(StateIndexList) > 1
@@ -115,8 +137,14 @@ def configure_States(TriggerMapA, StateN_A, TriggerMapB, StateN_B):
             result.append((interval, specification[Index]))
         return result
 
-    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapA, i)) for i, state_index in enumerate(StateListA)])
-    state_setup.extend([ (index.get(), extract_transition_map(TriggerMapB, i)) for i, state_index in enumerate(StateListB)])
+    state_setup.extend([ 
+        (index.get(), extract_transition_map(TriggerMapA, i)) 
+        for i, state_index in enumerate(StateListA)
+    ])
+    state_setup.extend([ 
+        (index.get(), extract_transition_map(TriggerMapB, i)) 
+        for i, state_index in enumerate(StateListB)
+    ])
 
     analyzer = get_Analyzer(state_setup)
     if StateN_A == 1: state_a = analyzer.state_db[StateListA[0]] # Normal AnalyzerState
@@ -157,7 +185,7 @@ def print_combination_result(combined, A, B, A_name, B_name):
     print "\n"
 
 
-def print_tm(TM, StateIndexList):
+def print_tm(TM, StateIndexList, OnlyStateIndexF=False):
     tm_str = [("  [INTERVAL]", "[SCHEME_ID]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
     for interval, target in TM:
         interval_str = "  " + repr(interval).replace("%i" % sys.maxint, "oo").replace("%i" % (sys.maxint-1), "oo")
@@ -167,6 +195,9 @@ def print_tm(TM, StateIndexList):
         target_str   = target_str.replace("DoorID", "")
         target_str   = target_str.replace("([", "")
         target_str   = target_str.replace("])", "")
+        if OnlyStateIndexF:
+            target_str = target_str.replace(", d=0", "")
+            target_str = target_str.replace("s=", "")
         tm_str.append((interval_str, "%s" % target.scheme_id, target_str))
 
     L0 = max(len(x[0]) for x in tm_str)
