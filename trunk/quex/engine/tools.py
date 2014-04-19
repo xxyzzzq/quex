@@ -75,6 +75,12 @@ class UniformObject(object):
             result <<= x
         return result
 
+    @staticmethod
+    def from_2(A, B, EqualCmp=lambda x,y: x==y):
+        result = UniformObject(EqualCmp, Initial=A)
+        result <<= B
+        return result
+
     def clone(self):
         result = UniformObject(self._equal)
         result._content = self._content

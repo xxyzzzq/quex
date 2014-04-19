@@ -102,21 +102,21 @@ class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for
        effective code generation.
     """
-    def __init__(self, EngineType):
-        self.__engine_type = EngineType
-        self.__state_db    = {}
+    def __init__(self, EngineType, InitStateIndex):
+        self.__engine_type      = EngineType
+        self.__init_state_index = InitStateIndex
+        self.__state_db         = {}
 
     @classmethod
     def from_state_machine(cls, SM, EngineType, ReloadStateExtern=None):
         """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
-        result = cls(EngineType)
+        result = cls(EngineType, SM.init_state_index)
         assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
         assert isinstance(SM, StateMachine)
 
         result.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        result.__init_state_index = SM.init_state_index
         result.__state_machine_id = SM.get_id()
 
         # (*) From/To Databases

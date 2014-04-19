@@ -28,11 +28,6 @@ class TemplateStateCandidate(object):
 
         -- transition map gain: The gain from combining the state's tran-
                                 sition map.
-
-    The 'Cost' class is used to describe gain/cost as a multi-attribute
-    measure. The member '.total()' determines a scalar value by means of a
-    heuristics.
-
     ___________________________________________________________________________
     """
     __slots__ = ("__gain", "__state_a", "__state_b")
@@ -40,11 +35,17 @@ class TemplateStateCandidate(object):
     def __init__(self, StateA, StateB):
         entry_gain          = _compute_entry_gain(StateA.entry, StateB.entry)
         drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
-        transition_map_gain = _transition_map_gain(StateA, StateB)
 
-        self.__gain         = entry_gain + drop_out_gain + transition_map_gain
-        self.__state_a      = StateA
-        self.__state_b      = StateB
+        transition_map_gain = _transition_map_gain(StateA.transition_map_gain,
+                                                   len(StateA.implemented_state_index_set()),
+                                                   StateA.target_scheme_n,
+                                                   StateB.transition_map_gain,
+                                                   len(StateB.implemented_state_index_set()),
+                                                   StateB.target_scheme_n)
+
+        self.__gain    = entry_gain + drop_out_gain + transition_map_gain
+        self.__state_a = StateA
+        self.__state_b = StateB
 
     @property 
     def gain(self):    return self.__gain
@@ -53,42 +54,6 @@ class TemplateStateCandidate(object):
     @property
     def state_b(self): return self.__state_b
 
-class Cost:
-    """We start of with a multi-attribute cost, that is then translated into a
-       scalar value through function 'total()'.
-    """
-    def __init__(self, AssignmentN=0, ComparisonN=0, JumpN=0, ByteN=0):
-        self.__assignment_n = AssignmentN
-        self.__comparison_n = ComparisonN
-        self.__jump_n       = JumpN
-        self.__byte_n       = ByteN
-
-    def __add__(self, Other):
-        assert isinstance(Other, Cost)
-        return Cost(AssignmentN = self.__assignment_n + Other.__assignment_n,
-                    ComparisonN = self.__comparison_n + Other.__comparison_n,
-                    JumpN       = self.__jump_n       + Other.__jump_n,
-                    ByteN       = self.__byte_n       + Other.__byte_n)
-
-    def __sub__(self, Other):
-        assert isinstance(Other, Cost)
-        return Cost(AssignmentN = self.__assignment_n - Other.__assignment_n,
-                    ComparisonN = self.__comparison_n - Other.__comparison_n,
-                    JumpN       = self.__jump_n       - Other.__jump_n,
-                    ByteN       = self.__byte_n       - Other.__byte_n)
-
-    def total(self):
-        """The following is only a heuristic with no claim to be perfect.  It
-        is able to distinguish between the good and the bad cases.  But, it may
-        fail to distinguish properly between cases that are close to each other
-        in quality. So, no too much to worry about.
-        """
-        result  = self.__byte_n
-        result += self.__assignment_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
-        result += self.__comparison_n * 12 # Bytes (= 4 bytes command + 4 bytes address + 4 bytes value) 
-        result += self.__jump_n       * 8  # Bytes (= 4 bytes command + 4 bytes address)
-        return result
-               
 def _compute_entry_gain(A, B):
     """Computes 'gain' with respect to entry actions, if two states are
     combined.
@@ -105,7 +70,7 @@ def _compute_entry_gain(A, B):
     # (2) Compute combined cost
     Combined_cl_set = A_unique_cl_set  # reuse 'A_unique_cl_set'
     Combined_cl_set.update(B_unique_cl_set)
-    return Cost(AssignmentN = A_size + B_size - len(Combined_cl_set)).total()
+    return A_size + B_size - len(Combined_cl_set)
     
 def _compute_drop_out_gain(A, B):
     """Computes 'gain' with respect to drop-out actions, if two states are
@@ -142,12 +107,12 @@ def _drop_out_cost(X, StateIndexN):
     if   isinstance(X, DropOutIndifferent):
         # Drop outs in pre-context checks all simply transit to the begin 
         # of the forward analyzer. No difference.
-        return Cost(0, 0, 0).total()
+        return 0
 
     elif isinstance(X, DropOutBackwardInputPositionDetection):
         # Drop outs of backward input position handling either do not
         # happen or terminate input position detection.
-        return Cost(0, 0, 0).total()
+        return 0
 
     assert isinstance(X, DropOut)
     # One Acceptance Check implies:
@@ -177,30 +142,25 @@ def _drop_out_cost(X, StateIndexN):
     cmp_n  += Lt
     goto_n += Lt  
 
-    return Cost(AssignmentN = assignment_n, 
-                ComparisonN = cmp_n, 
-                JumpN       = goto_n).total() * StateIndexN
+    return assignment_ns + cmp_n,  + goto_n 
 
-def _transition_map_gain(StateA, StateB):
-    """Estimate the gain that can be achieved by combining two transition
+def _transition_map_gain(ATm, AStateN, ASchemeN, BTm, BStateN, BSchemeN):
+    """*Tm      -- transition map.
+       *StateN  -- number of implemented states.
+       *SchemeN -- number of different target schemes in transition map.
+    
+       Estimate the gain that can be achieved by combining two transition
        maps into a signle one.
     
     """
-    a_cost        = _transition_cost_single(StateA)
-    b_cost        = _transition_cost_single(StateB)
-    combined_cost = _transition_cost_combined(StateA, StateB)
+    # Costs of each single transition maps
+    a_cost = __transition_map_cost(AStateN, len(ATm), ASchemeN)
+    b_cost = __transition_map_cost(BStateN, len(BTm), BSchemeN)
 
-    return ((a_cost + b_cost) - combined_cost).total()
+    # Cost of the combined transition map
+    combined_cost = _transition_cost_combined(ATm, BTm, AStateN + BStateN)
 
-def _transition_cost_single(State):
-    """Computes the storage consumption of a transition map.
-    """
-    if hasattr(State, "target_scheme_n"): scheme_n = State.target_scheme_n
-    else:                                 scheme_n = 0
-
-    return __transition_cost(InvolvedStateN = len(State.implemented_state_index_set()), 
-                             IntervalN      = len(State.transition_map),
-                             SchemeN        = scheme_n)
+    return ((a_cost + b_cost) - combined_cost)
     
 def update_scheme_set(scheme_set, TA, TB):
     """This function is used to count the number of different schemes in a
@@ -209,6 +169,9 @@ def update_scheme_set(scheme_set, TA, TB):
 
     NOTE: The use of 'hash' has the potential to miss a non-equal occurrence.
           The value is only for metrics. So its no great deal.
+
+    RETURNS: True  -- if size remains the same
+             False -- if size increases (scheme was new)
     """
     assert isinstance(TA, TargetByStateKey) 
     assert isinstance(TB, TargetByStateKey) 
@@ -216,36 +179,63 @@ def update_scheme_set(scheme_set, TA, TB):
     # The 'common drop_out case' is covered by 'uniform_door_id'
     if TA.uniform_door_id is not None:
         if TA.uniform_door_id == TB.uniform_door_id:
-            return 
+            return False
 
     my_hash = 0x5A5A5A5A
     for x in chain(TA.iterable_door_id_scheme(), TB.iterable_door_id_scheme()):
-        my_hash ^= hash(x)
+        my_hash += hash(x) % 1299827  # Use a huge prime number for deterministic randomization
+    size_before = len(scheme_set)
     scheme_set.add(my_hash)
+    return size_before == len(scheme_set)
 
-def _transition_cost_combined(StateA, StateB):
+def _transition_cost_combined(TM_A, TM_B, ImplementedStateN):
     """Computes the storage consumption of a transition map.
     """
-    involved_state_n =  len(StateA.implemented_state_index_set()) \
-                      + len(StateB.implemented_state_index_set())
-    TM_A = StateA.transition_map
-    TM_B = StateB.transition_map
-
     # Count the number of unique schemes and the total interval number
-    interval_n = 0
-    scheme_set = set()
+    scheme_set       = set()
+    uniform_target_n = 0
+    interval_n       = 0
     for begin, end, a_target, b_target in TransitionMap.izip(TM_A, TM_B):
         interval_n += 1
-        update_scheme_set(scheme_set, a_target, b_target)
+        if     a_target.uniform_door_id is not None \
+           and a_target.uniform_door_id == a_target.uniform_door_id:
+            uniform_target_n += 1
+        else:
+            update_scheme_set(scheme_set, a_target, b_target)
 
+    # The number of different schemes:
     scheme_n = len(scheme_set)
 
-    return __transition_cost(involved_state_n, interval_n, scheme_n)
+    return __transition_map_cost(ImplementedStateN, interval_n, scheme_n)
 
-def __transition_cost(InvolvedStateN, IntervalN, SchemeN):
-    border_n = IntervalN - 1
-    jump_n   = IntervalN * 2  # because: if 'jump', else 'jump'
-    cmp_n    = border_n
-    byte_n   = SchemeN * InvolvedStateN * 4  # assume 4 bytes per entry in scheme
-    return Cost(ComparisonN=cmp_n, JumpN=jump_n, ByteN=byte_n)
+def __transition_map_cost(ImplementedStateN, IntervalN, SchemeN):
+    """ImplementedStateN -- Number of states which are implemeted in the scheme.
+       IntervalN         -- Number of intervals in the transition map.
+       SchemeN           -- Number of DIFFERENT schemes in the transition map.
+    
+    Find a number which is proportional to the 'cost' of the transition
+    map. Example:
+
+         interval 1 --> [1, 3, 5, 1]
+         interval 2 --> drop_out
+         interval 3 --> [1, 3, 5, 1]
+         interval 4 --> 5
+         interval 5 --> [1, 3, 5, 1]
+         interval 6 --> [2, 1, 1, 2]
+
+     This transition map has 5 borders and 5 targets. Let the cost
+     of a border as well as the cost for a single target be '1'.
+     The additional cost for a required scheme is chosen to be 
+     'number of scheme elements' which is the number of implemented
+     states. Schemes that are the same are counted as 1.
+    """
+    #print "#ImplementedStateN", ImplementedStateN
+    #print "#IntervalN", IntervalN
+    #print "#SchemeN", SchemeN
+
+    cost_border  = IntervalN - 1
+    target_n     = IntervalN
+    cost_targets = target_n + SchemeN * ImplementedStateN
+
+    return cost_border + cost_targets
 

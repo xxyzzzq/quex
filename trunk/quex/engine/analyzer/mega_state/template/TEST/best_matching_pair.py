@@ -19,37 +19,38 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: 0, 1, 2, 3, recursive;"
     sys.exit(0)
 
+def my_setup(TriggerMapList):
+    def adapt(Info):
+        trigger, target_state = Info
+        return (Interval(trigger), target_state)
+    
+    def adapt_tm(tm):
+        return [ adapt(x) for x in tm ]
+
+    setup_list = [
+        (long(i), adapt_tm(tm))
+        for i, tm in enumerate(TriggerMapList)
+    ]
+    return get_Analyzer(setup_list), \
+           [state_index for state_index, trigger_map in setup_list]
+
 def test(TriggerMapList):
-    sm = StateMachine()
+    analyzer, \
+    state_index_list = my_setup(TriggerMapList) 
 
-    # The init state cannot be combined, create some dummy after init
-    state_index = sm.add_transition(sm.init_state_index, Interval(32))
+    elect_db         = templates.ElectDB(analyzer, state_index_list)
+    candidate_list   = templates.CandidateList(elect_db, False, 0)
 
-    for trigger_map in TriggerMapList:
-        for info in trigger_map:
-            if len(info) == 3:
-                sm.add_transition(state_index, Interval(info[0], info[1]), info[2])
-            else:
-                sm.add_transition(state_index, Interval(info[0]), info[1])
-        state_index += 1
-
-    ## print "##sm:", sm
-    # Backward analyzers do not consider so much entry and drop-out ...
-    analyzer = Analyzer.from_state_machine(sm, engine.BACKWARD_PRE_CONTEXT)
-    for state in analyzer.state_db.itervalues():
-        state.entry.categorize()
-
-    elect_db       = templates.ElectDB(analyzer.state_db, analyzer.state_db.keys())
-    candidate_list = templates.CandidateList(elect_db, False, 33)
-
-    print "Gain Matrix"
+    print "Gain Matrix (%i elements)" % len(candidate_list)
     print "State0  State1 Gain"
     for element in candidate_list:
         print "%i      %i      %i" % (element.state_a.index, element.state_b.index, element.gain)
+    print
 
     elect = candidate_list.pop_best()
     print "Best matching pair: ",
-    if elect is None: print "None"
+    if elect is None: 
+        print "None"
     else:            
         best = TemplateState(elect)
         print str(tuple(best.state_index_sequence())).replace("L", "")

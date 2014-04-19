@@ -15,17 +15,16 @@ from   quex.engine.tools                            import UniformObject
 
 from   quex.blackboard import E_StateIndices
 
-#______________________________________________________________________________
-#
-# TemplateState:
-#
-# implements multiple similar AnalyzerState-s in one single state. Its
-# transition map, its entry and drop-out sections function based on a
-# 'state_key'. That is, when a 'state_key' of an implemented AnalyzerState is
-# set, the transition map, the entry and drop-out sections act the same as the
-# correspondent sections in the original AnalyzerState.
-#______________________________________________________________________________
 class TemplateState(MegaState):
+    """_________________________________________________________________________
+
+     Implements multiple AnalyzerState-s in one single state. Its transition
+     map, its entry and drop-out sections function are based on a 'state_key'. 
+     That is, when a 'state_key' of an implemented AnalyzerState is set, the
+     transition map, the entry and drop-out sections act the same as the
+     correspondent sections in the original AnalyzerState.
+    ____________________________________________________________________________
+    """
     def __init__(self, Candidate):
         StateA = Candidate.state_a
         StateB = Candidate.state_b
@@ -125,6 +124,10 @@ class PseudoTemplateState(MegaState):
         self.uniform_DropOut = UniformObject(Represented_AnalyzerState.drop_out)
 
         self._finalize_absorb_Entry_DropOut_from_state(Represented_AnalyzerState)
+
+    @property
+    def target_scheme_n(self):  
+        return 0
 
     def _finalize_transition_map(self):
         pass # Nothing to be done
@@ -255,18 +258,14 @@ def combine_maps(TransitionMap_A, TransitionMap_B):
     TransitionMap_A.assert_adjacency(TotalRangeF=True)
     TransitionMap_B.assert_adjacency(TotalRangeF=True)
 
-    TargetByStateKey.object_db.init() # Initialize the tracking of generated TargetByStateKey-s
-
+    scheme_pair_db = {}
     result = TransitionMap.from_iterable(
-        ((Interval(begin, end), TargetByStateKey.from_2_TargetByStateKeys(a_target, b_target)))
+        ((Interval(begin, end), 
+         TargetByStateKey.from_2_TargetByStateKeys(a_target, b_target, scheme_pair_db)))
         for begin, end, a_target, b_target in TransitionMap.izip(TransitionMap_A, TransitionMap_B)
     )
 
     # Number of different target schemes:
-    scheme_n = 0
-    for key, value in TargetByStateKey.object_db.iteritems():
-        if value.uniform_door_id is None: continue
-        scheme_n += 1
-
+    scheme_n = len(scheme_pair_db)
     return result, scheme_n
 
