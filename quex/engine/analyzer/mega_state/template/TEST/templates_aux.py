@@ -184,7 +184,6 @@ def print_combination_result(combined, A, B, A_name, B_name):
     print_metric(combined.transition_map)
     print "\n"
 
-
 def print_tm(TM, StateIndexList, OnlyStateIndexF=False):
     tm_str = [("  [INTERVAL]", "[SCHEME_ID]", "[TARGET/STATE %s]" % [int(x) for x in StateIndexList])]
     for interval, target in TM:

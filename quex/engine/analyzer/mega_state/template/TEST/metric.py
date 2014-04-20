@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# PURPOSE: 
+# PURPOSE: Measure gain of combining transition maps.
 #
 # In a template state, two transition maps are combined into one. The new 
 # combination has a certain 'cost'. A gain is the difference between the 
@@ -44,7 +44,7 @@ from   quex.blackboard  import E_StateIndices
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Templates: Target Idx Combination Metric"
-    print "CHOICES: 1, 2, 2b, 3, 4, recursive;"
+    print "CHOICES: 1, 2, 2b, 3, 3b, 4, recursive;"
     sys.exit(0)
 
 def handle_tm(Name, Tm, ImplementedStateIndexList, SchemeN):
@@ -56,28 +56,65 @@ def handle_tm(Name, Tm, ImplementedStateIndexList, SchemeN):
     return cost
 
 def determine_scheme_n(TM):
+    """Determine the number of different target schemes in the given 
+    transiton map. From the length of the schemes, the numbe of 
+    implemented states can be derived. Do this too.
+
+    RETURN: [0] Number of different schemes in the transition map
+            [1] Number of implemented states.
+    """
     scheme_set = set()
+    implemented_state_n = 0
     for interval, target in TM:
-        scheme_set.add(tuple(target.iterable_door_id_scheme()))
-    return len(scheme_set)
+        scheme = tuple(target.iterable_door_id_scheme())
+        scheme_set.add(scheme)
+        if len(scheme) > implemented_state_n: implemented_state_n = len(scheme)
+
+    return len(scheme_set), implemented_state_n
 
 def test_combine_maps(A, B):
-    A_scheme_n = determine_scheme_n(A)
-    B_scheme_n = determine_scheme_n(B)
-    cost_A = handle_tm("A", A, [1,2,3], A_scheme_n)
-    cost_B = handle_tm("B", B, [4,5,6], B_scheme_n)
+    """Receives two transition maps 'A' and 'B'. First, the number of 
+    differing target schemes as well as the number of implemented states
+    is determined. These parameters are required for the transition map's
+    cost estimation.
+    """
+    # (*) Basic Preparation:
+    # -- number of differring target schemes.
+    # -- number of implemented states.
+    A_scheme_n, A_implemented_state_n = determine_scheme_n(A)
+    B_scheme_n, B_implemented_state_n = determine_scheme_n(B)
+    result_implemented_state_n =   A_implemented_state_n \
+                                 + B_implemented_state_n
 
+    A_implemented_state_index_list = range(A_implemented_state_n)
+    B_implemented_state_index_list = range(A_implemented_state_n, 
+                                           result_implemented_state_n)
+    result_implemented_state_index_list =   A_implemented_state_index_list \
+                                          + B_implemented_state_index_list
+
+    # (*) Cost of individual transition maps
+    #
+    cost_A = handle_tm("A", A, A_implemented_state_index_list, A_scheme_n)
+    cost_B = handle_tm("B", B, B_implemented_state_index_list, B_scheme_n)
+
+    # (*) Estimate cost of combination
+    cost_result_est = _transition_cost_combined(A, B, result_implemented_state_n)
+
+    # (*) Combine two maps
     result, scheme_n = combine_maps(A, B)
+
+    # (*) Real cost of combined maps.
     print
-    cost_result_est = _transition_cost_combined(A, B, ImplementedStateN=6)
-    cost_result     = handle_tm("result", result, [1,2,3,4,5,6], scheme_n)
+    cost_result     = handle_tm("result", result, result_implemented_state_index_list, 
+                                scheme_n)
     print "cost(result, estimated):", cost_result_est
     assert cost_result == cost_result_est
     print 
 
-    gain = (cost_A + cost_B - cost_result)
-    gain_est = _transition_map_gain(ATm=A, AStateN=3, ASchemeN=A_scheme_n,
-                                        BTm=B, BStateN=3, BSchemeN=B_scheme_n)
+    # (*) Gain = Cost of individual maps - Cost of combined map
+    gain     = (cost_A + cost_B - cost_result)
+    gain_est = _transition_map_gain(A, A_implemented_state_n, A_scheme_n,
+                                    B, A_implemented_state_n, B_scheme_n)
     print "=> gain:           ", gain
     print "=> gain(estimated):", gain_est
     assert gain == gain_est
@@ -123,17 +160,26 @@ elif "2b" in sys.argv:
 
 elif "3" in sys.argv:
     tm1 = [ 
-        # (Interval(-sys.maxint, 5),  [20L, 21L]),
-        # (Interval(5, 15),           [30L, 31L]),
-        # (Interval(20, 25),          [40L, 41L]),
-        # (Interval(25, 30),          [50L, 51L]),
-        # (Interval(35, sys.maxint),  [10L, 20L]),
         (Interval(-sys.maxint, 5),  [20L, 21L]),
         (Interval(5, 20),           [30L, 31L]),
         (Interval(20, 25),          [40L, 41L]),
         (Interval(25, 35),          [50L, 51L]),
         (Interval(35, sys.maxint),  [10L, 20L]),
     ]
+
+elif "3b" in sys.argv:
+    tm0 = [ 
+        (Interval(-sys.maxint, 5), [10L, 11L]),
+        (Interval(5, 20),           [20L, 21L]),
+        (Interval(20, sys.maxint),  [10L, 11L]),
+    ]
+    tm1 = [ 
+        (Interval(-sys.maxint, 5),  [20L, 21L]),
+        (Interval(5, 20),           [30L, 31L]),
+        (Interval(20, 25),          [20L, 21L]),
+        (Interval(25, sys.maxint),  [20L, 21L]),
+    ]
+
 
 elif "4" in sys.argv:
     tm0 = [ 
