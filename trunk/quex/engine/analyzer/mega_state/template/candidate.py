@@ -36,10 +36,10 @@ class TemplateStateCandidate(object):
         entry_gain          = _compute_entry_gain(StateA.entry, StateB.entry)
         drop_out_gain       = _compute_drop_out_gain(StateA.drop_out, StateB.drop_out)
 
-        transition_map_gain = _transition_map_gain(StateA.transition_map_gain,
+        transition_map_gain = _transition_map_gain(StateA.transition_map,
                                                    len(StateA.implemented_state_index_set()),
                                                    StateA.target_scheme_n,
-                                                   StateB.transition_map_gain,
+                                                   StateB.transition_map,
                                                    len(StateB.implemented_state_index_set()),
                                                    StateB.target_scheme_n)
 
@@ -182,8 +182,12 @@ def update_scheme_set(scheme_set, TA, TB):
             return False
 
     my_hash = 0x5A5A5A5A
-    for x in chain(TA.iterable_door_id_scheme(), TB.iterable_door_id_scheme()):
-        my_hash += hash(x) % 1299827  # Use a huge prime number for deterministic randomization
+    prime   = 1299827  # Use a huge prime number for deterministic randomization
+    for i, x in enumerate(chain(TA.iterable_door_id_scheme(), 
+                                TB.iterable_door_id_scheme())):
+        my_hash ^= hash(x) * i
+        my_hash ^= prime
+
     size_before = len(scheme_set)
     scheme_set.add(my_hash)
     return size_before == len(scheme_set)
