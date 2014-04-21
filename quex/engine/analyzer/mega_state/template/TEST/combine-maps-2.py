@@ -1,4 +1,9 @@
 #! /usr/bin/env python
+#
+# NOTE: Recursion is not considered during measurement. See note in README.txt.
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
