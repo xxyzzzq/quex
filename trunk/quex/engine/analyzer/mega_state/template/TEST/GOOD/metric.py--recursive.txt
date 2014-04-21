@@ -1,37 +1,45 @@
 
 (Straight)---------------------------------------
+A:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1]]
+  [-oo, 9]   None        (0), (1)
+  [10, oo]   None        (20), (21)
+cost(A): 7
+B:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [2, 3]]
+  [-oo, oo]  None        (2), (3)
+cost(B): 3
 
-StateA: [0L, 1L]
-  [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 9]     MST:scheme((10, 11))
-  [10, oo]     MST:scheme((20, 21))
-StateB: [2L, 3L]
-  [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:scheme((2, 3))
+result:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]   None        (0), (1), (2), (3)
+  [10, oo]   None        (20), (21), (2), (3)
+cost(result): 11
+cost(result, estimated): 11
 
-Result
-  [INTERVAL]   [TARGET/STATE [0, 1, 2, 3]]
-  [-oo, 9]     MST:scheme((10, 11, 2, 3))
-  [10, oo]     MST:scheme((20, 21, 2, 3))
-BorderN        = 1
-Target Schemes = (10, 11, 2, 3), (20, 21, 2, 3)
-
+=> gain:            -1
+=> gain(estimated): -1
+[OK]
 
 (Vice Versa)-------------------------------------
+A:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1]]
+  [-oo, oo]  None        (2), (3)
+cost(A): 3
+B:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [2, 3]]
+  [-oo, 9]   None        (0), (1)
+  [10, oo]   None        (20), (21)
+cost(B): 7
 
-StateA: [2L, 3L]
-  [INTERVAL]   [TARGET/STATE [2, 3]]
-  [-oo, oo]    MST:scheme((2, 3))
-StateB: [0L, 1L]
-  [INTERVAL]   [TARGET/STATE [0, 1]]
-  [-oo, 9]     MST:scheme((10, 11))
-  [10, oo]     MST:scheme((20, 21))
+result:
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]   None        (2), (3), (0), (1)
+  [10, oo]   None        (2), (3), (20), (21)
+cost(result): 11
+cost(result, estimated): 11
 
-Result
-  [INTERVAL]   [TARGET/STATE [2, 3, 0, 1]]
-  [-oo, 9]     MST:scheme((2, 3, 10, 11))
-  [10, oo]     MST:scheme((2, 3, 20, 21))
-BorderN        = 1
-Target Schemes = (2, 3, 10, 11), (2, 3, 20, 21)
-
+=> gain:            -1
+=> gain(estimated): -1
+[OK]
 

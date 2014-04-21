@@ -31,6 +31,8 @@
 # TemplateState constructor takes a TemplateStateCandidate to when constructing
 # a new template state.
 #
+# NOTE: Recursion is not considered during measurement. See note in README.txt.
+#
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 import sys

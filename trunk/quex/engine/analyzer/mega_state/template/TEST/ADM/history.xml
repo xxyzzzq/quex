@@ -1,4 +1,4 @@
-<history date="Sun Apr 20 12:14:32 2014" element-n="104">
+<history date="Mon Apr 21 09:20:37 2014" element-n="106">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -134,5 +134,9 @@
         <crc-error time="10:13:56" application="best_matching_pair.py" choice="3" database-crc="1460960682" real-crc="-436647206"/>
         <crc-error time="10:14:00" application="best_matching_pair.py" choice="recursive" database-crc="1950094314" real-crc="961507194"/>
         <crc-error time="10:14:27" application="metric.py" choice="2b" database-crc="1030623470" real-crc="-1393103537"/>
+    </day>
+    <day year="2014" month="04" day="21">
+        <crc-error time="06:31:41" application="combine-simple.py" choice="recursive" database-crc="342614412" real-crc="1077674044"/>
+        <crc-error time="07:20:16" application="metric.py" choice="recursive" database-crc="-616495450" real-crc="-1922550798"/>
     </day>
 </history>

@@ -25,6 +25,8 @@
 #
 # Real values and estimated values must be the same.
 #
+# NOTE: Recursion is not considered during measurement. See note in README.txt.
+#
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 import sys
@@ -191,6 +193,11 @@ elif "4" in sys.argv:
     ]
 
 elif "recursive" in sys.argv:
+    tm0 = [ 
+        (Interval(-sys.maxint, 10), [0L, 1L]),
+        (Interval(10, sys.maxint),  [20L, 21L]),
+    ]
+
     tm1 = [ 
         (Interval(-sys.maxint, sys.maxint), (2L, 3L)),
     ]
