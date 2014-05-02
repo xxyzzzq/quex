@@ -303,7 +303,7 @@ class IncidenceDB(dict):
         if code_fragment is None: return ""
         else:                     return "".join(code_fragment.get_code())
 
-    def default_indentation_handler(self):
+    def default_indentation_handler_f(self):
         return not (   self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
                     or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
                     or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \

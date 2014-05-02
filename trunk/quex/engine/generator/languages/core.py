@@ -149,10 +149,9 @@ class Lng_Cpp(dict):
     def LEXEME_TERMINATING_ZERO_SET(self, RequiredF):
         if not RequiredF: return ""
         return "QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
-    def INDENTATION_HANDLER_CALL(self, IndentationSupportF, DefaultF, ModeName):
-        if   not IndentationSupportF: return ""
-        elif DefaultF:                prefix = ""
-        else:                         prefix = ModeName + "_" 
+    def INDENTATION_HANDLER_CALL(self, DefaultF, ModeName):
+        if DefaultF: prefix = ""
+        else:        prefix = "%s_" % ModeName
         return "    QUEX_NAME(%son_indentation)(me, /*Indentation*/0, LexemeNull);\n" % prefix
     def STORE_LAST_CHARACTER(self, BeginOfLineSupportF):
         if not BeginOfLineSupportF: return ""
@@ -289,6 +288,11 @@ class Lng_Cpp(dict):
             return "if( %s != %s ) %s\n" % (self.INPUT_P(), 
                                             self.REGISTER_NAME(Cmd.content.pointer), 
                                             self.GOTO(Cmd.content.door_id))
+
+        elif Cmd.id == E_Cmd.IndentationHandlerCall:
+            # If mode_specific is None => General default indentation handler.
+            # else:                    => specific indentation handler.
+            return self.INDENTATION_HANDLER_CALL(Cmd.content.default_f, Cmd.content.mode_name)
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 

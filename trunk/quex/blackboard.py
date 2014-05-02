@@ -142,7 +142,6 @@ E_IncidenceIDs = Enum(
     "SKIP_NESTED_RANGE", 
     "SKIP_RANGE", 
     "SKIP_RANGE_OPEN",
-    "SUPPRESSED_INDENTATION_NEWLINE",
     "VOID",
     "_DEBUG_Events")
 
@@ -166,7 +165,6 @@ E_IncidenceIDs_Subset_Terminals = [
     E_IncidenceIDs.SKIP_NESTED_RANGE, 
     E_IncidenceIDs.SKIP_RANGE, 
     E_IncidenceIDs.SKIP_RANGE_OPEN,
-    E_IncidenceIDs.SUPPRESSED_INDENTATION_NEWLINE,
 ]
 
 E_IncidenceIDs_Subset_Special = [
@@ -212,6 +210,7 @@ E_Cmd = Enum("Accepter",
              "IndentationGridAddWithReferenceP",
              "IndentationReferencePDeltaAdd",
              "IndentationReferencePSet",
+             "IndentationHandlerCall",
              "InputPDecrement",
              "InputPDereference",
              "InputPIncrement",

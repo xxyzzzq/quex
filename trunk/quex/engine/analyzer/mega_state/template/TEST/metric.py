@@ -33,10 +33,10 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.analyzer.mega_state.template.state              import combine_maps
-from   quex.engine.analyzer.mega_state.template.candidate          import __transition_map_cost, \
-                                                                          _transition_map_gain, \
-                                                                          _transition_cost_combined
+from   quex.engine.analyzer.mega_state.template.state               import combine_maps
+import quex.engine.analyzer.mega_state.template.gain_transition_map as     gain_transition_map
+from   quex.engine.analyzer.mega_state.template.gain_transition_map import __transition_map_cost, \
+                                                                           _transition_cost_combined
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 from   quex.engine.interval_handling import *
 
@@ -115,8 +115,8 @@ def test_combine_maps(A, B):
 
     # (*) Gain = Cost of individual maps - Cost of combined map
     gain     = (cost_A + cost_B - cost_result)
-    gain_est = _transition_map_gain(A, A_implemented_state_n, A_scheme_n,
-                                    B, A_implemented_state_n, B_scheme_n)
+    gain_est = gain_transition_map.do(A, A_implemented_state_n, A_scheme_n,
+                                      B, A_implemented_state_n, B_scheme_n)
     print "=> gain:           ", gain
     print "=> gain(estimated):", gain_est
     assert gain == gain_est

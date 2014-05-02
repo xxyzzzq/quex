@@ -27,7 +27,8 @@ def parse_line_column_counter(fh):
     return result
 
 def parse_indentation(fh):
-    result = __parse(fh, ParserDataIndentation(SourceRef.from_FileHandle(fh)))
+    result = __parse(fh, ParserDataIndentation(SourceRef.from_FileHandle(fh)), 
+                     IndentationSetupF=True)
 
     # Define newline, if it is not defined yet.
     result.sm_newline_defaultize()
@@ -37,8 +38,7 @@ def parse_indentation(fh):
                                                        Setup.get_character_value_limit(), 
                                                        result.sr)
     result.consistency_check(fh)
-    
-    return CounterSetupIndentation(result)
+    return result
 
 def __parse_definition_head(fh, result):
 
@@ -100,9 +100,9 @@ def __parse(fh, result, IndentationSetupF=False):
             if identifier == "bad":
                 result.specify_bad(pattern, sr)
             elif identifier == "newline":
-                result.specify_newline(pattern, sr)
+                result.specify_newline(pattern.sm, sr)
             elif identifier == "suppressor":
-                result.specify_suppressor(pattern, sr)
+                result.specify_suppressor(pattern.sm, sr)
             else:
                 assert False, "Unreachable code reached."
         else:

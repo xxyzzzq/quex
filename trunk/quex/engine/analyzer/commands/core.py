@@ -86,6 +86,7 @@ E_R = Enum("AcceptanceRegister",
            "Indentation",
            "Column",
            "Input",
+           "Indentation",
            "InputP",
            "LexemeStartP",
            "LexemeEnd",
@@ -357,6 +358,8 @@ def __configure():
                                               (E_R.Indentation,r+w))
     c(E_Cmd.IndentationGridAdd,               ("grid_size",),
                                               (E_R.Indentation,r+w))
+    c(E_Cmd.IndentationHandlerCall,           ("default_f", "mode_name"),
+                                              (E_R.Indentation,r), (E_R.ReferenceP,r))
     c(E_Cmd.IndentationReferencePSet,         ("pointer_name", "offset"),
                                               (E_R.ReferenceP,w))
     c(E_Cmd.IndentationReferencePDeltaAdd,    ("pointer_name", "indentation_n_per_chunk"),
@@ -506,6 +509,9 @@ def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk):
 
 def ColumnCountAdd(Value):
     return Command(E_Cmd.ColumnCountAdd, Value)
+
+def IndentationHandlerCall(DefaultIhF, ModeName):
+    return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
 
 def ColumnCountGridAdd(GridSize):
     return Command(E_Cmd.ColumnCountGridAdd, GridSize)

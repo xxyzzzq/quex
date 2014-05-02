@@ -11,7 +11,10 @@ token {
 }
 
 mode Y : 
-<indentation: [\t] => space 1; [\n] => newline;> 
+<indentation: 
+ [\t] => space 1; 
+ [\n] => newline;
+> 
 { "test" => QUEX_TKN_TEST; }
 
 mode X { 
