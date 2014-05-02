@@ -6,7 +6,7 @@ from   quex.engine.generator.code.core            import CodeTerminal
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.tools                          import return_None
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.analyzer.commands.core              import E_R, \
+from   quex.engine.analyzer.commands.core         import E_R, \
                                                          Assign, \
                                                          ColumnCountAdd, \
                                                          ColumnCountGridAdd, \
@@ -40,7 +40,7 @@ class CounterSetupIndentation(object):
         self.count_command_map     = IndSetup.count_command_map
         self.sm_newline            = IndSetup.sm_newline
         self.sm_newline_suppressor = IndSetup.sm_newline_suppressor
-        self.bad_character_set     = IndSetup.bad_character_set.get()
+        self.bad_character_set     = IndSetup.bad_character_set
 
         self.defaultize()
 
@@ -123,6 +123,11 @@ class CountCmdFactory:
         return [ (x.character_set, x.incidence_id) for x in self.__map ]
 
     def get_terminal_list(self, IncidenceMap, DoorIdOk, DoorIdOnLexemeEnd=None):
+        # _get_terminal() --> _do_with_lexeme_end_check()
+        #             '-----> _do()
+        #
+        # In the '_do' functions the 'door_id_ok' and 'door_id_on_lexeme_end'
+        # are required.
         self.door_id_ok            = DoorIdOk
         self.door_id_on_lexeme_end = DoorIdOnLexemeEnd
         return [ self._get_terminal(x) for x in self.__map ] 

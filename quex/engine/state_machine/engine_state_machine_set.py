@@ -62,7 +62,7 @@ class EngineStateMachineSet:
 
 class CharacterSetStateMachine:
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
-    def __init__(self, IncidenceIdMap, MaintainLexemeF):
+    def __init__(self, IncidenceIdMap, MaintainLexemeF, ParallelSmList=None):
         """Brief: Generates a state machine that implements the transition
         to terminals upon the input falling into a number set. 
             
@@ -86,9 +86,18 @@ class CharacterSetStateMachine:
 
         IncidenceIdMap: List of tuples (NumberSet, IncidenceId) 
 
+        ParallelSmList: List of state machines which are supposed to be mounted
+                        in parallel to the root incidence map.
+
         """
-        self.sm = self.__prepare(IncidenceIdMap)
         self.maintain_lexeme_f = MaintainLexemeF
+
+        sm = self.__prepare_incidence_id_map(IncidenceIdMap)
+        sm = self.__mount_parallel_state_machines(sm, ParallelSmList)
+
+        # Perform a character set transformation, if required.
+        dummy, \
+        self.sm = transformation.do_state_machine(sm)
 
         self.__prepare_begin_and_putback()
         self.__prepare_before_and_after_reload()
@@ -111,9 +120,10 @@ class CharacterSetStateMachine:
             self.on_putback = [ Assign(E_R.InputP, E_R.CharacterBeginP) ]
 
     def __prepare_before_and_after_reload(self):
-        """The 'lexeme_start_p' restricts the amount of data which is load into the
-        buffer upon reload--if the lexeme needs to be maintained. If the lexeme
-        does not need to be maintained, then the whole buffer can be refilled.
+        """The 'lexeme_start_p' restricts the amount of data which is loaded 
+        into the buffer upon reload--if the lexeme needs to be maintained. If 
+        the lexeme does not need to be maintained, then the whole buffer can 
+        be refilled.
         
         For this, the 'lexeme_start_p' is set to the input pointer. 
         
@@ -137,7 +147,7 @@ class CharacterSetStateMachine:
             self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
             self.on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]
 
-    def __prepare(self, IncidenceIdMap):
+    def __prepare_incidence_id_map(self, IncidenceIdMap):
         sm = StateMachine()
         def add(sm, StateIndex, TriggerSet, IncidenceId):
             target_state_index = sm.add_transition(StateIndex, TriggerSet)
@@ -151,8 +161,28 @@ class CharacterSetStateMachine:
             # 'cliid' = unique command list incidence id.
             add(sm, sm.init_state_index, character_set, incidence_id)
 
-        dummy, sm = transformation.do_state_machine(sm)
         return sm
+
+    def __mount_parallel_state_machines(self, sm, ParallelSmList):
+        if ParallelSmList is None:
+            return sm
+
+        for psm in ParallelSmList:
+            assert psm.is_DFA_compliant()
+
+        # CloneF = False => sm will contain the result.
+        parallelize.do([sm] + ParallelSmList, CommonTerminalStateF=False, 
+                       CloneF=False)
+
+        # -- ParallelSmList MUST be setup in a way that they do not intersect
+        #    with incidence_id_map.
+        # => There CANNOT be a transition on the same character to different 
+        #    states from the init states. 
+        # => Thus, the parallelization must be a DFA.
+        assert sm.is_DFA_compliant(), sm.get_string(Option="hex")
+
+        return sm
+
 
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell

@@ -1,10 +1,11 @@
 # (C) Frank-Rene Schaefer
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.counter                        import CountCmdFactory
-from   quex.engine.generator.code.base            import LocalizedParameter, \
+from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_VOID
-from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.interval_handling              import NumberSet, \
+                                                         NumberSet_All
 from   quex.engine.tools                          import typed
 from   quex.blackboard                            import E_CharacterCountType
 from   quex.engine.misc.file_in                   import error_msg
@@ -28,8 +29,57 @@ cc_type_db = {
 cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 
 
-CountCmdMapEntry = namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))
-CountInfo        = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
+class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))):
+    def __new__(self, CCType, Value, sr)
+        return super(CountCmdMapEntry, self).__new__(self, CCType, Value, sr)
+
+    def get_command_list(self, ColumnCountPerChunk=None):
+        if self.column_count_per_chunk is None:
+            cmd = {
+                E_CharacterCountType.COLUMN: ColumnCountAdd,
+                E_CharacterCountType.GRID:   ColumnCountGridAdd,
+                E_CharacterCountType.LINE:   LineCountAdd,
+            }[self.cc_type](self.value)
+        else:
+            cmd = {
+                E_CharacterCountType.COLUMN: return_None,
+                E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP,
+                E_CharacterCountType.LINE:   LineCountAddWithReferenceP,
+            }[self.cc_type](self.value, E_R.InputP, ColumnCountPerChunk)
+
+        if cmd is None: return []
+        else:           return [ cmd ]
+
+    def get_command_list_with_lexeme_end_check(self, ColumnCountPerChunk, DoorIdOk, DoorIdOnLexemeEnd):
+        """     .---------------.    ,----------.   no
+           ---->| Count Command |---< LexemeEnd? >------> DoorIdOk
+                '---------------'    '----+-----'
+                                          | yes
+                                   .---------------.
+                                   |  Lexeme End   |
+                                   | Count Command |----> DoorIdOnLexemeEnd
+                                   '---------------'
+        """
+        assert DoorIdOk is not None
+        assert DoorIdOnLexemeEnd is not None
+
+        cl = self._command(self.cc_type, self.value)
+        cl.append(
+            GotoDoorIdIfInputPNotEqualPointer(DoorIdOk, E_R.LexemeEnd),
+        )
+
+        if ColumnCountPerChunk is not None and self.cc_type == E_CharacterCountType.COLUMN:
+            cl.append(
+                ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk)
+            )
+
+        cl.append(
+            GotoDoorId(DoorIdOnLexemeEnd)
+        )
+        return cl
+
+
+CountInfo = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
 
 
 class CountCmdMap(object):
@@ -72,8 +122,9 @@ class CountCmdMap(object):
 
     def add(self, CharSet, Identifier, Value, sr):
         global cc_type_db
+        print "#id:", Identifier, CharSet
         if CharSet.is_empty(): 
-            error_msg("Empty character set found.", sr)
+            error_msg("Empty character set found for '%s'." % Identifier, sr)
         cc_type = cc_type_db[Identifier]
         self.check_intersection(cc_type, CharSet, sr)
         self.__map.append((CharSet, CountCmdMapEntry(cc_type, Value, sr)))
@@ -162,10 +213,27 @@ class CountCmdMap(object):
         if not remaining_set.is_empty():
             self.__map.append((remaining_set, else_cmd))
 
-    def pruned_iterable(self, CharacterSet):
+    def pruned_cgl_iterable(self, CharacterSet):
+        """Iterate over count command map. It is assumed that anything in the map
+        is 'valid'. 
+        """
+        considered_set = (E_CharacterCountType.COLUMN, 
+                          E_CharacterCountType.GRID, 
+                          E_CharacterCountType.LINE)
         for character_set, info in self.__map:
             if character_set.has_intersection(CharacterSet):
+                if info.cc_type not in considered_set: continue
                 yield character_set.intersection(CharacterSet), info
+
+    def column_grid_bad_count_iterable(self):
+        """Iterate over count command map. Only 'COLUMN' and 'GRID' are reported. 
+        This is for indentation counting.
+        """
+        for character_set, info in self.__map:
+            if    info.cc_type == E_CharacterCountType.COLUMN \
+               or info.cc_type == E_CharacterCountType.GRID:
+               or info.cc_type == E_CharacterCountType.BAD:
+                yield character_set, info
 
     @typed(CharacterSet=NumberSet)
     def get_column_number_per_chunk(self, CharacterSet):
@@ -179,7 +247,7 @@ class CountCmdMap(object):
         """
         column_incr_per_character = None
         number_set                = None
-        for character_set, info in self.pruned_iterable(CharacterSet):
+        for character_set, info in self.pruned_cgl_iterable(CharacterSet):
             if info.cc_type != E_CharacterCountType.COLUMN: 
                 continue
             elif column_incr_per_character is None:       
@@ -216,6 +284,7 @@ class CountCmdMap(object):
             if   before.cc_type in Tolerated:                 continue
             elif not character_set.has_intersection(CharSet): continue
             return before
+        return None
 
     def __get_remaining_set(self):
         ignored = (E_CharacterCountType.BAD, 
@@ -371,14 +440,15 @@ class ParserDataLineColumn(Base):
 
     @typed(CharacterSet=NumberSet)
     def get_factory(self, CharacterSet, InputPName):
-        """User NumberSet_All() if all characters shall be used.
+        """Use NumberSet_All() if all characters shall be used.
         """
-        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
 
         cmap = [
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
-            for intersection, info in self.count_command_map.pruned_iterable(CharacterSet)
+            for intersection, info in self.count_command_map.pruned_cgl_iterable(CharacterSet)
         ]
+
+        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
 
         return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
 
@@ -408,9 +478,9 @@ class ParserDataIndentation(Base):
     """
     @typed(sr=SourceRef)
     def __init__(self, sr):
-        self.bad_character_set          = None
-        self.pattern_newline            = None
-        self.pattern_newline_suppressor = None
+        self.bad_character_set     = SourceRefObject("bad", None)
+        self.sm_newline            = SourceRefObject("newline", None)
+        self.sm_newline_suppressor = SourceRefObject("suppressor", None)
 
         Base.__init__(self, sr, "Indentation counter", ("space", "grid", "newline", "suppressor", "bad"))
 
@@ -418,35 +488,37 @@ class ParserDataIndentation(Base):
     def specify_bad(self, Pattern, sr):
         bad_set = extract_trigger_set(sr, "bad", Pattern)
         self.count_command_map.add(bad_set, "bad", None, sr)
-        self.bad_character_set = bad_set
+        self.bad_character_set.set(bad_set, sr)
 
     @typed(sr=SourceRef)
-    def specify_newline(self, Pattern, sr):
-        _error_if_defined_before(self.newline)
-        begining_char_set = Setting.get_beginning_character_set()
-        ending_char_set   = Setting.get_ending_character_set()
+    def specify_newline(self, SmNewline, sr):
+        _error_if_defined_before(self.sm_newline, sr)
+
+        beginning_char_set = SmNewline.get_beginning_character_set()
+        ending_char_set    = SmNewline.get_ending_character_set()
+
+        self.count_command_map.add(beginning_char_set, "begin(newline)", None, sr)
+
         # Do not consider a character from newline twice
-        ending_char_set.subtract(begining_char_set)
+        ending_char_set.subtract(beginning_char_set)
+        if not ending_char_set.is_empty():
+            self.count_command_map.add(ending_char_set, "end(newline)", None, sr)
 
-        self.count_command_map.add(begining_char_set, "begin(newline)", None, sr)
-        self.count_command_map.add(ending_char_set, "end(newline)", None, sr)
-
-        self.pattern_newline = Pattern
+        self.sm_newline.set(SmNewline, sr)
 
     @typed(sr=SourceRef)
-    def specify_suppressor(self, Pattern, sr):
-        _error_if_defined_before(self.sm_newline_suppressor)
+    def specify_suppressor(self, SmNewlineSuppressor, sr):
+        _error_if_defined_before(self.sm_newline_suppressor, sr)
 
-        begining_char_set = Setting.get_ending_character_set()
-        self.count_command_map.add(begining_char_set, "begin(newline supressor)", None, sr)
-
-        self.pattern_newline_suppressor = Pattern
+        self.count_command_map.add(SmNewlineSuppressor.get_beginning_character_set(), 
+                                   "begin(newline supressor)", None, sr)
+        self.sm_newline_suppressor.set(SmNewlineSuppressor, sr)
 
     def sm_newline_defaultize(self):
         """Default newline: '(\n)|(\r\n)'
         """
         global cc_type_name_db
-        if self.sm_newline is not None:
+        if self.sm_newline.get() is not None:
             return
 
         newline = ord('\n')
@@ -480,6 +552,19 @@ class ParserDataIndentation(Base):
             sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
             all_set.unite_with(retour_set)
         return sm
+
+    def get_cgb_factory(self, InputPName):
+        """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
+        """
+        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(NumberSet_All())
+
+        cmap = [
+            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, character_set)
+            for character_set, info in self.count_command_map.column_grid_bad_count_iterable()
+        ]
+
+        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, NumberSet_All()) 
+
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -527,12 +612,11 @@ def _error_set_intersection(CcType, Before, sr):
                   "to indentation counting (i.e. 'space' or 'grid').", sr)
 
 def _error_if_defined_before(Before, sr):
-    if Before is None:
-        return
+    if not Before.set_f(): return
 
     error_msg("'%s' has been defined before;" % Before.name, sr, 
               DontExitF=True, WarningF=False)
-    error_msg("at this place.", Before.file_name, Before.line_n)
+    error_msg("at this place.", Before.sr.file_name, Before.sr.line_n)
 
 def extract_trigger_set(sr, Keyword, Pattern):
     if Pattern is None:

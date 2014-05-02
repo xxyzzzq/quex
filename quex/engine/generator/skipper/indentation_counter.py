@@ -2,7 +2,7 @@ import quex.engine.state_machine.index              as     sm_index
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
-from   quex.engine.analyzer.commands.core           import CommandList
+from   quex.engine.analyzer.commands.core           import CommandList, IndentationHandlerCall
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 import quex.engine.generator.loop                   as     loop
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
@@ -15,6 +15,27 @@ import quex.blackboard                              as     blackboard
 
 def do(Data, Mode=None):
     """________________________________________________________________________
+    Counting whitespace at the beginning of a line.
+
+                   .-----<----+----------<--------------+--<----.
+                   |          | count                   |       | count = 0
+                   |          | whitespace              |       |
+                 .---------.  |                         |       |
+       --------->|         +--'                         |       |
+                 |         |                            |       |
+                 |         |                            |       |
+                 |         |          .------------.    |       |
+                 |         +----->----| suppressor |----'       |
+                 |         |          | + newline  |            | 
+                 | COUNTER |          '------------'            |
+                 |         |          .---------.               |
+                 |         +----->----| newline |---------------'
+                 |         |          '---------'
+                 |         |
+                 |         |----->-------------------------------> RESTART
+                 '---------'   else
+                                           
+
     Generate an indentation counter. An indentation counter is entered upon 
     the detection of a newline (which is not followed by a newline suppressor).
     
@@ -50,28 +71,56 @@ def do(Data, Mode=None):
     ___________________________________________________________________________
     """
     global variable_db
+    isetup       = Data["indentation_setup"]
+    default_ih_f = Data["default_indentation_handler_f"]
+    mode_name    = Data["mode_name"]
+    ih_call      = IndentationHandlerCall(default_ih_f, mode_name)
 
-    
+    # -- Determine actions upon 'newline', 'newline suppressor' and on the
+    #    event of a 'bad character' occurring.
+    action_on_newline            = get_action_on_newline()
+    action_on_newline_suppressor = get_action_on_newline_supressor()
+    action_on_bad                = get_action_on_bad_character()
 
-    IndentationSetup = Data["indentation_setup"]
-    assert IndentationSetup.__class__.__name__ == "IndentationSetup"
+    # -- Collect all state machines together with the actions that they trigger.
+    sm_action_list = get_state_machine_action_pair_list(isetup.count_command_map, 
+                                                        action_on_bad)
+    sm_action_list.extend([
+        (isetup.sm_newline.get(),            action_on_newline),
+        (isetup.sm_newline_suppressor.get(), action_on_newline_suppressor),
+    ])
 
-    if Setup.buffer_based_analyzis_f:
-        reload_f     = False
-        reload_state = None
-    else:
-        reload_f     = True
-        reload_state = TheAnalyzer.reload_state
+    # -- On Failure: No state machine accepted.
+    #
+    # As soon, as a character appears which is neither a 'whitespace to be
+    # counted' or a newline, or a newline suppressor followed by newline, the
+    # indentation counter stops. Then, the lexical analyzer is re-entered
+    # again. 
+    on_failure = get_action_on_beyond()
 
-    result = loop.do(counter_db, 
-                     AfterExitDoorId   = DoorID.continue_without_on_after_match(),
-                     CharacterSet      = character_set,
-                     CheckLexemeEndF   = False,
-                     ReloadF           = reload_f,
-                     ReloadStateExtern = reload_state, 
-                     EngineType        = engine.FORWARD,
-                     MaintainLexemeF   = False)
-    assert isinstance(result, list)
+    return generator.do_mini(sm_action_list, on_failure)
+
+    CsSm, beyond_iid = loop.get_CharacterSetStateMachine(CcFactory, False, [
+        sm_newline,
+        sm_newline_suppressor_plus_newline,
+    ])
+
+    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadState)
+    analyzer.init_state().drop_out = DropOutGotoDoorId(DoorID.global_reentry())
+
+    door_id_loop = loop.prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
+
+    terminal_list = CcFactory.get_terminal_list(Lng.INPUT_P(), 
+                                                DoorIdOk = door_id_loop) 
+    terminal_list.append(get_terminal_newline(sm_newline.get_id()))
+    if sm_newline_suppressor is not None:
+        terminal_list.append(
+            get_terminal_newline_suppressor(sm_newline_suppressor.get_id())
+        )
+
+    terminal_beyond = loop.get_terminal_beyond(CcSm, CcFactory, DoorID.global_reentry(), 
+                                               beyond_iid, [ih_call])
+    terminal_list.append(terminal_beyond)
 
     Mode = None
     if IndentationSetup.containing_mode_name() != "":
@@ -88,13 +137,12 @@ def do(Data, Mode=None):
     dial_db.mark_address_as_routed(counter_adr) 
 
     # The finishing touch
-    prolog = blue_print(prolog_txt,
-                         [
-                           ["$$INPUT_GET$$",         Lng.ACCESS_INPUT()],
-                           ["$$INPUT_P_INCREMENT$$", Lng.INPUT_P_INCREMENT()],
-                           ["$$LABEL$$",             counter_label],
-                           ["$$ADDRESS$$",           counter_adr_str], 
-                         ])
+    prolog = blue_print(prolog_txt, [
+        ["$$INPUT_GET$$",         Lng.ACCESS_INPUT()],
+        ["$$INPUT_P_INCREMENT$$", Lng.INPUT_P_INCREMENT()],
+        ["$$LABEL$$",             counter_label],
+        ["$$ADDRESS$$",           counter_adr_str], 
+    ])
 
     # The finishing touch
     teof_address = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
@@ -114,6 +162,17 @@ def do(Data, Mode=None):
     variable_db.require("reference_p")
 
     return txt
+
+def get_state_machine_action_pair_list(CountMap):
+    """RETURNS: list of (StateMachine, CodeFragment)
+
+    which means that 'CodeFragment' is to be executed when the 'StateMachine'
+    accepts--for all pairs in the list.
+    """
+    return [
+        (StateMachine.from_character_set(character_set), info.get_command_list())
+        for character_set, info in CountMap.column_grid_count_bad_iterable()
+    ]
 
 prolog_txt = """
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);

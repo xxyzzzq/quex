@@ -33,10 +33,13 @@ class TerminalFactory:
         """
         self.required_default_counter_f   = False
 
-        self.txt_indentation_handler_call = Lng.INDENTATION_HANDLER_CALL(
-                                                blackboard.required_support_indentation_count(), 
-                                                not IncidenceDb.default_indentation_handler(),
-                                                ModeName) 
+        if blackboard.required_support_indentation_count(): 
+            self.txt_indentation_handler_call = Lng.INDENTATION_HANDLER_CALL(
+                                                    IncidenceDb.default_indentation_handler_f(),
+                                                    ModeName) 
+        else:
+            self.txt_indentation_handler_call = ""
+
         self.txt_store_last_character = Lng.STORE_LAST_CHARACTER(blackboard.required_support_begin_of_line())
 
         self.on_match       = IncidenceDb.get_CodeTerminal(E_IncidenceIDs.MATCH)

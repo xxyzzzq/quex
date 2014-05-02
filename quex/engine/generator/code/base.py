@@ -114,41 +114,36 @@ class CodeFragment(object):
 
 CodeFragment_NULL = CodeFragment([])
 
-class LocalizedParameter:
-    def __init__(self, Name, Default, FH=-1, PatternStr = None):
-        self.name      = Name
-        self.__default = Default
-        self.sr        = SourceRef.from_FileHandle(FH)
-        if FH == -1: self.__value = None
-        else:        self.__value = Default
-        self.__pattern_string = PatternStr
+class SourceRefObject:
+    """________________________________________________________________________
+    Maintains information about an object which has been defined somewhere in
+    the source code. It stores the name, the value, and the source code 
+    position.
 
-    def set(self, Value, fh, PatternStr=None):
-        if self.__value is not None:
-            error_msg("%s has been defined more than once.\n" % self.name, fh, DontExitF=True)
-            error_msg("previous definition has been here.\n", self.file_name, self.line_n)
-                      
-        self.__value   = Value
-        if fh == -1:
-            self.file_name = "<string>"
-            self.line_n    = 1
-        else:
-            self.file_name = fh.name
-            self.line_n    = get_current_line_info_number(fh)
+        .name  = Name of the object.
+        .sr    = SourceRef of the object, i.e. where it was defined.
+        .set_f()        -> Value has been 'set()' other than with constructor.
+        .set(Value, sr) -> Set value of the object.
+        .get()          -> Read value of the object
 
-        self.__pattern_string = PatternStr
+    ___________________________________________________________________________
+    """
+    def __init__(self, Name, Default, FH=-1):
+        self.name    = Name
+        self.__value = Default
+        self.__set_f = False
+        # Reference place, where it was set
+        self.sr      = SourceRef.from_FileHandle(FH)
+
+    @typed(sr=SourceRef)
+    def set(self, Value, sr):
+        self.__value = Value
+        self.sr      = sr
+        self.__set_f = True
 
     def get(self):
-        if self.__value is not None: return self.__value
-        return self.__default
+        return self.__value
 
-    def set_pattern_string(self, Value):
-        self.__pattern_string = Value
-
-    def pattern_string(self):
-        return self.__pattern_string
-
-    @property
-    def comment(self):
-        return self.name
+    def set_f(self):
+        return self.__set_f
 

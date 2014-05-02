@@ -961,7 +961,7 @@ class StateMachine(object):
         """
         result = NumberSet()
         for end_state_index in self.get_acceptance_state_index_list():
-            for state in self.states.values():
+            for state in self.states.itervalues():
                 if state.target_map.has_target(end_state_index) == False: continue
                 result.unite_with(state.target_map.get_trigger_set_to_target(end_state_index))
         return result

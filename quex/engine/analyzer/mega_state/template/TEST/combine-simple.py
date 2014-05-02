@@ -65,7 +65,11 @@ elif "distinguished" in sys.argv:
 
 # AnalyzerState-s: The base.
 analyzer = get_Analyzer( 
-    [(long(i), transition_map_for_state(long(i))) for i in xrange(5)]
+    [ 
+        # (StateIndex, TransitionMap)
+        (long(i), transition_map_for_state(long(i))) 
+        for i in xrange(5)
+    ]
 )
 
 s = [ analyzer.state_db[i] for i in xrange(5) ]

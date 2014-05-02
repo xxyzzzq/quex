@@ -104,6 +104,26 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
 
     return function_body, variable_definitions
 
+def do_mini(SmActionList):
+    """SmActionList is a list of (StateMachine, CodeFragment) pairs.
+
+    A combined state machine is build out of all state machines in the list.
+    Additionally, all terminals are coded. 
+
+    RETURNS: list of strings.
+
+    Where the list of strings implements the given state machines and their
+    terminals.
+    """
+    sm_all = get_combined_state_machine([
+        sm for sm, action in SmActionList
+    ])
+    terminal_list = [
+        Terminal(sm.get_id(), action)
+        for sm, action in SmActionList
+    ]
+    return code_this(sm_all, terminal_list)
+
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
     txt_function = Lng.ANALYZER_FUNCTION(ModeName, Setup, VariableDefs, 
                                          FunctionBody, ModeNameList) 
