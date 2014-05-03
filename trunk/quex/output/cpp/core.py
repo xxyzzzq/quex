@@ -104,25 +104,55 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
 
     return function_body, variable_definitions
 
-def do_mini(SmActionList):
-    """SmActionList is a list of (StateMachine, CodeFragment) pairs.
+def do_mini(SmActionList, EngineType, ReloadState=None):
+    """Generate code that executes actions upon the acceptance of state 
+    machines.  A combined state machine is build out of all state machines 
+    in the list.  Additionally, all terminals are coded. 
 
-    A combined state machine is build out of all state machines in the list.
-    Additionally, all terminals are coded. 
+        THE ReloadState IS NOT CODED!
+    
+    ARGUMENTS:
 
-    RETURNS: list of strings.
+        SmActionList: is a list of (StateMachine, CodeFragment) pairs.
+        
+            A pair (sm, cf) means that 'cf' has to be executed if 'sm' accepts.
 
-    Where the list of strings implements the given state machines and their
-    terminals.
+        ReloadState: is a reload state that can be 'adapted' to load for 
+                     any other state.  
+                    
+            If ReloadState is None -> no reload.
+    
+    TRANSITION MAP ADAPTION: 
+        
+        If and only if reload is required, then all states will contain a
+        transition to the ReloadState on the buffer limit code (BLC). 
+
+    RETURNS: 
+        
+        List of strings--the generated code.
     """
-    sm_all = get_combined_state_machine([
-        sm for sm, action in SmActionList
-    ])
+    # -- Build list of 'Terminal-s'.
+    # -- Associate 'StateMachine-s' with 'Terminal-s' based on 'id'
     terminal_list = [
         Terminal(sm.get_id(), action)
         for sm, action in SmActionList
     ]
-    return code_this(sm_all, terminal_list)
+
+    # -- Combine all 'StateMachine-s' into a single one
+    sm_all = get_combined_state_machine([
+        sm for sm, action in SmActionList
+    ])
+
+    # -- Transform 'StateMachine' into 'Analyzer'
+    analyzer = analyzer_generator.do(sm, EngineType, 
+                                     ReloadStateExtern=ReloadState)
+
+    #    Prepare the reload if required
+    if ReloadState is not None:
+        analyzer_generator.prepare_reload(analyzer)
+
+    # -- Generate code.
+    return do_analyzer(analyzer)
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
     txt_function = Lng.ANALYZER_FUNCTION(ModeName, Setup, VariableDefs, 

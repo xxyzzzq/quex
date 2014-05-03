@@ -30,7 +30,7 @@ cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 
 
 class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))):
-    def __new__(self, CCType, Value, sr)
+    def __new__(self, CCType, Value, sr):
         return super(CountCmdMapEntry, self).__new__(self, CCType, Value, sr)
 
     def get_command_list(self, ColumnCountPerChunk=None):
@@ -122,7 +122,6 @@ class CountCmdMap(object):
 
     def add(self, CharSet, Identifier, Value, sr):
         global cc_type_db
-        print "#id:", Identifier, CharSet
         if CharSet.is_empty(): 
             error_msg("Empty character set found for '%s'." % Identifier, sr)
         cc_type = cc_type_db[Identifier]
@@ -231,7 +230,7 @@ class CountCmdMap(object):
         """
         for character_set, info in self.__map:
             if    info.cc_type == E_CharacterCountType.COLUMN \
-               or info.cc_type == E_CharacterCountType.GRID:
+               or info.cc_type == E_CharacterCountType.GRID \
                or info.cc_type == E_CharacterCountType.BAD:
                 yield character_set, info
 
