@@ -74,7 +74,11 @@ def do(Data, Mode=None):
     isetup       = Data["indentation_setup"]
     default_ih_f = Data["default_indentation_handler_f"]
     mode_name    = Data["mode_name"]
-    ih_call      = IndentationHandlerCall(default_ih_f, mode_name)
+
+    if Setup.buffer_based_analyzis_f: reload_state = None
+    else:                             reload_state = TheAnalyzer.reload_state
+
+    ih_call = IndentationHandlerCall(default_ih_f, mode_name)
 
     # -- Determine actions upon 'newline', 'newline suppressor' and on the
     #    event of a 'bad character' occurring.
@@ -98,7 +102,8 @@ def do(Data, Mode=None):
     # again. 
     on_failure = get_action_on_beyond()
 
-    return generator.do_mini(sm_action_list, on_failure)
+    return generator.do_mini(sm_action_list, on_failure, 
+                             engine.FORWARD(), ReloadState=reload_state)
 
     CsSm, beyond_iid = loop.get_CharacterSetStateMachine(CcFactory, False, [
         sm_newline,
