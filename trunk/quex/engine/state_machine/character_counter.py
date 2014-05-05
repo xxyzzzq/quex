@@ -53,7 +53,7 @@ class UniqueValue(object):
         return False
 
     def __ne__(self, Other):
-        return not self.__eq__(Other)
+        return not (self == Other)
 
     def voidify_if_deviant(self, A, B):
         if A.value != B.value: self.value = E_Count.VOID

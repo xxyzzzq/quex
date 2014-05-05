@@ -272,7 +272,7 @@ class Analyzer:
 
         return state
 
-    def prepare_DoorIDs(self, door_id_provider=None):
+    def prepare_DoorIDs(self):
         """Assign DoorID-s to transition actions and relate transitions to DoorID-s.
         """
         for state in self.__state_db.itervalues():
@@ -280,7 +280,7 @@ class Analyzer:
 
         for state in self.__state_db.itervalues():
             if state.transition_map is None: continue
-            state.transition_map = state.transition_map.relate_to_DoorIDs(self, state.index, door_id_provider)
+            state.transition_map = state.transition_map.relate_to_DoorIDs(self, state.index)
 
         return 
                                       
@@ -386,26 +386,28 @@ class Analyzer:
 
         # (*) Acceptance Checker
         accept_sequence = self.__trace_db[StateIndex].uniform_acceptance_sequence()
-        if accept_sequence is not None:
+        if accept_sequence is not None and result.accepter_enable():
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
             for x in accept_sequence:
-                result.accept(x.pre_context_id, x.acceptance_id)
+                result.accepter_add(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
                 if     x.pre_context_id == E_PreContextIDs.NONE \
                    and x.acceptance_id  != E_IncidenceIDs.MATCH_FAILURE: break
         else:
             # (ii) Non-Uniform Acceptance Patterns
             #
-            #     Different paths to one state result in different acceptances. 
-            #     There is only one way to handle this:
+            # Different paths to one state result in different acceptances. 
+            # There is only one way to handle this:
             #
-            #     -- The acceptance must be stored in the state where it occurs, 
-            #     -- and it must be restored here.
+            # -- The acceptance must be stored in the state where it occurs, 
+            # -- and it must be restored here.
             #
-            result.accept(E_PreContextIDs.NONE, E_IncidenceIDs.VOID)
+
+            # Only restore last acceptance, do not derive acceptance!
+            result.accepter_disable()
 
             # Dependency: Related states are required to store acceptance at state entry.
             for accepting_state_index in self.__trace_db[StateIndex].accepting_state_index_list():
@@ -416,7 +418,7 @@ class Analyzer:
 
         # (*) Terminal Router
         for x in self.__trace_db[StateIndex].positioning_info():
-            result.route_to_terminal(x.acceptance_id, x.transition_n_since_positioning)
+            result.terminal_router_add(x.acceptance_id, x.transition_n_since_positioning)
 
             if x.transition_n_since_positioning != E_TransitionN.VOID: continue
 

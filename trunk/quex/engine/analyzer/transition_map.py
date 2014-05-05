@@ -105,24 +105,14 @@ class TransitionMap(list):
         yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
         return
 
-    def relate_to_DoorIDs(self, TheAnalyzer, StateIndex, door_id_provider=None):
+    def relate_to_DoorIDs(self, TheAnalyzer, StateIndex):
         """Creates a transition_map that triggers to DoorIDs instead of target states.
-
-        door_id_provider(Analyzer, ToStateIndex, FromStateIndex) 
-        --> optionally provides a DoorID for a given transition 'FromStateIndex 
-            to ToStateIndex'. This may be used for 'bending' transitions.
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
                 return DoorID.drop_out(StateIndex)
-
-            if door_id_provider is not None:
-                door_id = door_id_provider(TheAnalyzer, ToStateIndex=Target, FromStateIndex=StateIndex)
-                if door_id is not None: 
-                    assert isinstance(door_id, DoorID)
-                    return door_id
-
-            if Target == E_StateIndices.RELOAD_FORWARD or Target == E_StateIndices.RELOAD_BACKWARD:
+            elif  Target == E_StateIndices.RELOAD_FORWARD \
+               or Target == E_StateIndices.RELOAD_BACKWARD:
                 te = TheAnalyzer.reload_state.entry
             else:
                 te = TheAnalyzer.state_db[Target].entry

@@ -548,8 +548,8 @@ class _Trace(object):
         
         return True
 
-    def __neq__(self):
-        return not self.__eq__(self)
+    def __ne__(self):
+        return not (self == Other)
 
     def __repr__(self):
         return "".join([repr(x) for x in self.__acceptance_trace]) + "".join([repr(x) for x in self.__storage_db.iteritems()])

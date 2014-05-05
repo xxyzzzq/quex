@@ -94,16 +94,18 @@ def do(Data, Mode=None):
         (isetup.sm_newline_suppressor.get(), action_on_newline_suppressor),
     ])
 
-    # -- On Failure: No state machine accepted.
+    # -- On DropOut: No state machine accepted.
     #
     # As soon, as a character appears which is neither a 'whitespace to be
     # counted' or a newline, or a newline suppressor followed by newline, the
     # indentation counter stops. Then, the lexical analyzer is re-entered
     # again. 
-    on_failure = get_action_on_beyond()
+    on_drop_out = get_action_on_beyond()
 
-    return generator.do_mini(sm_action_list, on_failure, 
-                             engine.FORWARD(), ReloadState=reload_state)
+    return generator.do_mini(sm_action_list, 
+                             on_drop_out, 
+                             engine.FORWARD(), 
+                             ReloadState=reload_state)
 
     CsSm, beyond_iid = loop.get_CharacterSetStateMachine(CcFactory, False, [
         sm_newline,
@@ -242,7 +244,7 @@ class IndentationCounter(TransitionCode):
         self.counter_adr = CounterAdr
 
     def __ne__(self, Other):
-        return not self.__eq__(Other)
+        return not (self == Other)
 
     @property
     def drop_out_f(self):

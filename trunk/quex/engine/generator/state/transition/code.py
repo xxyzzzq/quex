@@ -69,8 +69,8 @@ class TransitionCode:
     def __eq__(self, Other): 
         if isinstance(Other, TransitionCode) == False: return False
         return self.__code == Other.__code 
-    def __neq__(self, Other): 
-        return not self.__eq__(self, Other)
+    def __ne__(self, Other): 
+        return not (self == Other)
 
 class TransitionCodeByDoorId(TransitionCode):
     """The purpose of this class is to delay the reference of a DoorID until
