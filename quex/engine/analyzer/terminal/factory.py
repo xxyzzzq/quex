@@ -112,7 +112,6 @@ class TerminalFactory:
 
         return lexeme_begin_f, terminating_zero_f, result
 
-
     @typed(ThePattern=Pattern)
     def do_match_pattern(self, Code, ThePattern):
         """A pattern has matched."""

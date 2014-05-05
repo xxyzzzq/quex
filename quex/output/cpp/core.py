@@ -104,7 +104,7 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
 
     return function_body, variable_definitions
 
-def do_mini(SmActionList, EngineType, ReloadState=None):
+def do_mini(SmActionList, OnFailure, EngineType, ReloadState=None):
     """Generate code that executes actions upon the acceptance of state 
     machines.  A combined state machine is build out of all state machines 
     in the list.  Additionally, all terminals are coded. 
@@ -116,6 +116,8 @@ def do_mini(SmActionList, EngineType, ReloadState=None):
         SmActionList: is a list of (StateMachine, CodeFragment) pairs.
         
             A pair (sm, cf) means that 'cf' has to be executed if 'sm' accepts.
+
+        OnFailure: CodeFragment which is executed if NO state machine accepts.
 
         ReloadState: is a reload state that can be 'adapted' to load for 
                      any other state.  
@@ -137,6 +139,9 @@ def do_mini(SmActionList, EngineType, ReloadState=None):
         Terminal(sm.get_id(), action)
         for sm, action in SmActionList
     ]
+    terminal_list.append(
+        Terminal(OnFailureId, OnFailure)
+    )
 
     # -- Combine all 'StateMachine-s' into a single one
     sm_all = get_combined_state_machine([
@@ -152,7 +157,10 @@ def do_mini(SmActionList, EngineType, ReloadState=None):
         analyzer_generator.prepare_reload(analyzer)
 
     # -- Generate code.
-    return do_analyzer(analyzer)
+    txt = do_comment(sm)
+    txt.extend(do_analyzer(analyzer))
+    txt.extend(do_terminals(terminal_list))
+    return txt
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
     txt_function = Lng.ANALYZER_FUNCTION(ModeName, Setup, VariableDefs, 

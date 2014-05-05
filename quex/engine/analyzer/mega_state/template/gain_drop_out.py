@@ -48,7 +48,7 @@ def _drop_out_cost(X, StateIndexN):
     #    acceptance = Const;
     # After:
     #        ...
-    La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.get_acceptance_checker()))
+    La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.access_accepter()))
     assignment_n  = La
     goto_n        = La
     cmp_n         = La
@@ -61,10 +61,10 @@ def _drop_out_cost(X, StateIndexN):
     #         goto TerminalYZ
     #     Next1:
     #         ...
-    Lt = len(X.get_terminal_router())
+    Lt = len(X.terminal_router())
     assignment_n += len(filter(lambda x:     x.positioning != E_TransitionN.VOID 
                                          and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
-                        X.get_terminal_router()))
+                        X.terminal_router()))
     cmp_n  += Lt
     goto_n += Lt  
 

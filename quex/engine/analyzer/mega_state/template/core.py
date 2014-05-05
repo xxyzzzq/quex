@@ -211,7 +211,7 @@ class CandidateList(list):
 
         for state in TheElectDB.itervalues():
             if self.__uniformity_required_f:
-                # Rely on __eq__ operator (used '=='). '!=' uses __neq__ 
+                # Rely on __eq__ operator (used '=='). '!=' uses __ne__ 
                 if   not (state.drop_out == NewElect.drop_out):    continue
                 elif not (state.entry.is_uniform(NewElect.entry)): continue
 

@@ -1,7 +1,14 @@
-from   quex.engine.analyzer.commands.core              import repr_acceptance_id, repr_pre_context_id, repr_positioning
+from   quex.engine.analyzer.commands.core         import repr_acceptance_id, \
+                                                         repr_pre_context_id, \
+                                                         repr_positioning, \
+                                                         Accepter, \
+                                                         Router, \
+                                                         IfPreContextSetPositionAndGoto
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.tools                          import typed
-from   quex.blackboard                            import E_PreContextIDs, E_IncidenceIDs, E_TransitionN
+from   quex.engine.tools                          import typed, print_callstack
+from   quex.blackboard                            import E_PreContextIDs, \
+                                                         E_IncidenceIDs, \
+                                                         E_TransitionN
 from   itertools                                  import ifilter, imap
 
 class DropOut(object):
@@ -21,7 +28,7 @@ class DropOut(object):
                 case 45: input_p  = last_acceptance_position; goto TERMINAL_45;
                 }
 
-       The first sub-task is described by the member '.acceptance_checker' which is a list
+       The first sub-task is described by the member '.access_accepter' which is a list
        of objects of class 'AcceptanceCheckerElement'. An empty list means that
        there is no check and the acceptance has to be restored from 'last_acceptance'.
        
@@ -34,79 +41,81 @@ class DropOut(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("__acceptance_checker", "__terminal_router", "__hash")
+    __slots__ = ("_accepter", "_terminal_router", "_hash")
 
     def __init__(self):
-        self.__acceptance_checker = []
-        self.__terminal_router    = []
-        self.__hash               = None
+        self._hash            = None
+        self._accepter        = -1    # -1: Virginity!; None: disabled
+        self._terminal_router = Router()
 
-    def restore_acceptance_f(self):
-        """If there is one acceptance involved which is restored from
-        a stored acceptance, then the acceptance behavior depends on stored
-        acceptances.
+    def access_accepter(self):
+        """RETURN: None, if accepter has been disabled. 
+
+        A disabled accepter means, that acceptance is derived solely from 
+        'last_acceptance'.
         """
-        for element in self.__acceptance_checker:
-            if element.acceptance_id == E_IncidenceIDs.VOID: return True
-        return False
+        assert self._accepter != -1 # Cannot be virgin!
+        return self._accepter.content
 
-    def restore_position_f(self, RegisterIndex):
-        """If there is one element that requires positions to be restored, 
-        then the drop out is considered as depending on restored positions.
+    def accepter_disable(self):
+        self._accepter = None
+
+    def accepter_enable(self):
+        """Enable the accepter. If the accepter has been disabled explicitly,
+        then it cannot be enabled any more.
         """
-        for element in [x for x in self.__terminal_router if x.position_register == RegisterIndex]:
-            return element.positioning == E_TransitionN.VOID
-        return False
-
-    def set_acceptance_checker(self, AC):
-        assert isinstance(AC, list)
-        self.__acceptance_checker = AC
-        self.__hash               = None
-
-    def get_acceptance_checker(self):
-        return self.__acceptance_checker
-
-    def set_terminal_router(self, TR):
-        assert isinstance(TR, list)
-        self.__terminal_router = TR
-        self.__hash            = None
-
-    def get_terminal_router(self):
-        return self.__terminal_router
-
-    def accept(self, PreContextID, AcceptanceID):
-        self.__acceptance_checker.append(
-             AcceptanceCheckerElement(PreContextID, AcceptanceID))
-        self.__hash = None
-
-    def route_to_terminal(self, AcceptanceID, TransitionNSincePositioning):
-        self.__terminal_router.append(
-             TerminalRouterElement(AcceptanceID, TransitionNSincePositioning))
-        self.__hash = None
-
-    def __hash__(self):
-        if self.__hash is None:
-            h = 0x5A5A5A5A
-            for x in self.__acceptance_checker:
-                h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
-            for x in self.__terminal_router:
-                h ^= hash(x.positioning) ^ hash(x.acceptance_id)
-            self.__hash = h
-        return self.__hash
-
-    def __eq__(self, Other):
-        if   not isinstance(Other, DropOut):                          return False
-        elif self.__acceptance_checker != Other.__acceptance_checker: return False
-        elif self.__terminal_router    != Other.__terminal_router:    return False
+        if   self._accepter is None: return False
+        elif self._accepter == -1:   self._accepter = Accepter()
         return True
 
-    def __ne__(self, Other):
-        return not self.__eq__(Other)
+    def accepter_add(self, PreContextID, AcceptanceID):
+        assert self._accepter is not None
+        self._accepter.content.add(PreContextID, AcceptanceID)
+        self._hash = None
 
-    def finish(self, PositionRegisterMap):
-        for element in self.__terminal_router:
-            if element.positioning is not E_TransitionN.VOID: continue
-            element.position_register = PositionRegisterMap[element.position_register]
+    def terminal_router(self):
+        return self._terminal_router.content
+
+    def terminal_router_add(self, AcceptanceID, TransitionNSincePositioning):
+        self._terminal_router.content.add(AcceptanceID, TransitionNSincePositioning)
+        self._hash = None
+
+    def terminal_router_replace(self, PositionRegisterMap):
+        self._terminal_router.content.replace(PositionRegisterMap)
+
+    def get_command_list(self):
+        assert self._accepter != -1
+        trivial_solution = self.trivialize()
+        if trivial_solution is None:
+            if self._accepter is not None:
+                return [ self._accepter, self._terminal_router ]
+            else:
+                return [ self._terminal_router ]
+        else:
+            assert len(trivial_solution) != 0
+            return [ 
+                IfPreContextSetPositionAndGoto(x.pre_context_id, router_content_element)
+                for x, router_content_element in trivial_solution
+            ]
+
+    def __hash__(self):
+        if self._hash is None:
+            h = 0x5A5A5A5A
+            for x in self._accepter.content:
+                h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
+            for x in self._terminal_router.content:
+                h ^= hash(x.positioning) ^ hash(x.acceptance_id)
+            self._hash = h
+        return self._hash
+
+    def __eq__(self, Other):
+        if   not isinstance(Other, DropOut):                                     return False
+        elif self._accepter.content        != Other._accepter.content:         return False
+        elif self._terminal_router.content != Other._terminal_router.content:  return False
+        else:                                                                    return True
+
+    def __ne__(self, Other):
+        return not (self == Other)
 
     def trivialize(self):
         """If there is no stored acceptance involved, then one can directly
@@ -124,15 +133,15 @@ class DropOut(object):
         RETURNS: None                                          -- if not trivial
                  list((pre_context_id, TerminalRouterElement)) -- if trivial
         """
-        if self.restore_acceptance_f():
+        if self._accepter is None: # Dependence on 'last_acceptance'
             return None
 
         result = []
-        for check in self.__acceptance_checker:
-            for router_element in self.__terminal_router:
+        for check in self._accepter.content:
+            for router_element in self._terminal_router.content:
                 if router_element.acceptance_id == check.acceptance_id: break
             else:
-                assert False # check.acceptance_id must be mentioned in self.__terminal_router
+                assert False # check.acceptance_id must be mentioned in self._terminal_router
             result.append((check, router_element))
             # NOTE: "if check.pre_context_id is None: break" is not necessary since 
             #       get_drop_out_object() makes sure that the acceptance_checker stops after i
@@ -141,7 +150,7 @@ class DropOut(object):
         return result
 
     def __repr__(self):
-        if len(self.__acceptance_checker) == 0 and len(self.__terminal_router) == 0:
+        if len(self._accepter.content) == 0 and len(self._terminal_router.content) == 0:
             return "    <unreachable code>"
 
         info = self.trivialize()
@@ -167,7 +176,7 @@ class DropOut(object):
 
         txt = ["    Checker:\n"]
         if_str = "if     "
-        for element in self.__acceptance_checker:
+        for element in self._accepter.content:
             if element.pre_context_id != E_PreContextIDs.NONE:
                 txt.append("        %s %s\n" % (if_str, repr(element)))
             else:
@@ -178,7 +187,7 @@ class DropOut(object):
             if_str = "else if"
 
         txt.append("    Router:\n")
-        for element in self.__terminal_router:
+        for element in self._terminal_router.content:
             txt.append("        %s\n" % repr(element))
 
         return "".join(txt)
@@ -193,7 +202,7 @@ class DropOutIndifferent(DropOut):
         DropOut.__init__(self)
         pass
 
-    def finish(self, PositionRegisterMap):
+    def terminal_router_replace(self, PositionRegisterMap):
         pass
 
     def __repr__(self):
@@ -207,7 +216,7 @@ class DropOutBackwardInputPositionDetection(DropOut):
         """
         self.__reachable_f = AcceptanceF
 
-    def finish(self, PositionRegisterMap):
+    def terminal_router_replace(self, PositionRegisterMap):
         pass
 
     @property
@@ -222,124 +231,3 @@ class DropOutBackwardInputPositionDetection(DropOut):
         if not self.__reachable_f: return "<unreachable>"
         else:                      return "<backward input position detected>"
 
-class AcceptanceCheckerElement(object):
-    """Objects of this class shall describe a check sequence such as
-
-            if     ( pre_condition_5_f ) last_acceptance = 34;
-            else if( pre_condition_7_f ) last_acceptance = 67;
-            else if( pre_condition_9_f ) last_acceptance = 31;
-            else                         last_acceptance = 11;
-
-       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]. Note, that
-       the prioritization is not necessarily by acceptance_id. This is so, since
-       the whole trace is considered and length precedes acceptance_id.
-    
-       The values for .pre_context_id and .acceptance_id are carry the 
-       following meaning:
-
-       .pre_context_id   PreContextID of concern. 
-
-                         is None --> no pre-context (normal pattern)
-                         is -1   --> pre-context 'begin-of-line'
-                         >= 0    --> id of the pre-context state machine/flag
-
-       .acceptance_id    Terminal to be targeted (what was accepted).
-
-                         is None --> acceptance determined by stored value in 
-                                     'last_acceptance', thus "goto *last_acceptance;"
-                         == -1   --> goto terminal 'failure', nothing matched.
-                         >= 0    --> goto terminal given by '.terminal_id'
-
-    """
-    __slots__ = ("pre_context_id", "acceptance_id") 
-
-    def __init__(self, PreContextID, AcceptanceID):
-        assert    isinstance(AcceptanceID, (int, long)) \
-               or AcceptanceID in E_IncidenceIDs, "%s" % AcceptanceID
-        self.pre_context_id = PreContextID
-        self.acceptance_id  = AcceptanceID
-
-    def __eq__(self, Other):
-        return     self.pre_context_id == Other.pre_context_id \
-               and self.acceptance_id  == Other.acceptance_id
-
-    def __repr__(self):
-        txt = []
-        txt.append("%s: accept = %s" % (repr_pre_context_id(self.pre_context_id),
-                                        repr_acceptance_id(self.acceptance_id)))
-        return "".join(txt)
-
-class TerminalRouterElement(object):
-    """Objects of this class shall be elements to build a router to the terminal
-       based on the setting 'last_acceptance', i.e.
-
-            switch( last_acceptance ) {
-                case  45: input_p -= 3;                   goto TERMINAL_45;
-                case  43:                                 goto TERMINAL_43;
-                case  41: input_p -= 2;                   goto TERMINAL_41;
-                case  33: input_p = lexeme_start_p - 1;   goto TERMINAL_33;
-                case  22: input_p = position_register[2]; goto TERMINAL_22;
-            }
-
-       That means, the 'router' actually only tells how the positioning has to happen
-       dependent on the acceptance. Then it goes to the action of the matching pattern.
-       Following elements are provided:
-
-        .acceptance_id    Terminal to be targeted (what was accepted).
-
-                         == -1   --> goto terminal 'failure', nothing matched.
-                         >= 0    --> goto terminal given by '.terminal_id'
-
-        .positioning     Adaption of the input pointer, before the terminal is entered.
-
-                         >= 0    
-                                   input_p -= .positioning 
-
-                            This is only possible if the number of transitions
-                            since acceptance is determined before run time.
-
-                         == E_TransitionN.VOID 
-                         
-                                   input_p = position[.position_register]
-
-                            Restore a stored input position from its register.
-                            A loop appeared on the path from 'store input
-                            position' to here.
-
-                         == E_TransitionN.LEXEME_START_PLUS_ONE 
-                         
-                                   input_p = lexeme_start_p + 1
-
-                            Case of failure (actually redundant information).
-    """
-    __slots__ = ("acceptance_id", "positioning", "position_register")
-
-    def __init__(self, AcceptanceID, TransitionNSincePositioning):
-        assert    TransitionNSincePositioning == E_TransitionN.VOID \
-               or TransitionNSincePositioning == E_TransitionN.LEXEME_START_PLUS_ONE \
-               or TransitionNSincePositioning == E_TransitionN.IRRELEVANT \
-               or TransitionNSincePositioning >= 0
-        assert    AcceptanceID in E_IncidenceIDs \
-               or AcceptanceID >= 0
-
-        self.acceptance_id     = AcceptanceID
-        self.positioning       = TransitionNSincePositioning
-        self.position_register = AcceptanceID                 # May later be adapted.
-
-    def __eq__(self, Other):
-        return     self.acceptance_id     == Other.acceptance_id   \
-               and self.positioning       == Other.positioning     \
-               and self.position_register == Other.position_register
-
-    def __repr__(self):
-        if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
-        else:                                                  assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
-
-        if self.positioning != 0:
-            return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                             repr_positioning(self.positioning, self.position_register), 
-                                             repr_acceptance_id(self.acceptance_id))
-        else:
-            return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                          repr_acceptance_id(self.acceptance_id))
-        

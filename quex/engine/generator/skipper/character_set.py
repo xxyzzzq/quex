@@ -73,7 +73,6 @@ def do(Data, TheAnalyzer):
     else:
         reload_f     = True
         reload_state = TheAnalyzer.reload_state
-
         
     result, \
     door_id_beyond = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 

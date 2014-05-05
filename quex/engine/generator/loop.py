@@ -27,8 +27,8 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
 
-       NOTE: This function does NOT code the FAILURE terminal. The caller needs to 
-             do this if required.
+    NOTE: This function does NOT code the FAILURE terminal. The caller needs to 
+          do this if required.
 
     Generate code to iterate over the input stream until
 
@@ -54,8 +54,6 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
             
     During the 'loop' possible line/column count commands may be applied. To
     achieve the iteration, a simplified pattern matching engine is implemented:
-
-
 
               transition
               map

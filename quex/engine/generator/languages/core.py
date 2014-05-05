@@ -15,7 +15,8 @@
 import quex.engine.generator.languages.cpp               as     cpp
 from   quex.engine.generator.code.base                   import SourceRef
 from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.analyzer.commands.core                     import E_R
+from   quex.engine.analyzer.commands.core                import E_R, \
+                                                                RouterContentElement
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
@@ -254,7 +255,7 @@ class Lng_Cpp(dict):
             else_str = ""
             txt      = []
             for element in Cmd.content:
-                if   element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                if element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
                     txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
                 elif element.pre_context_id != E_PreContextIDs.NONE:
                     txt.append("    %sif( pre_context_%i_fulfilled_f ) " % (else_str, element.pre_context_id))
@@ -263,6 +264,24 @@ class Lng_Cpp(dict):
                 txt.append("{ last_acceptance = %s; __quex_debug(\"last_acceptance = %s\\n\"); }\n" \
                            % (self.ACCEPTANCE(element.acceptance_id), self.ACCEPTANCE(element.acceptance_id)))
                 else_str = "else "
+            return "".join(txt)
+
+        elif Cmd.id == E_Cmd.Router:
+            case_list = [
+                (Lng.ACCEPTANCE(element.acceptance_id), 
+                 self.position_and_goto(self.__analyzer.engine_type, element))
+                for element in Cmd.content
+            ]
+            txt = Lng.SELECTION("last_acceptance", case_list)
+            result = "".join(self.GET_PLAIN_STRINGS(txt))
+            return result
+
+        elif Cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
+            pre_context_id = Cmd.content.pre_context_id
+            block = Lng.position_and_goto(self.__analyzer.engine_type, 
+                                          Cmd.content.router_content_element)
+            txt = []
+            self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)
 
         elif Cmd.id == E_Cmd.Assign:
@@ -526,7 +545,7 @@ class Lng_Cpp(dict):
 
     def ACCEPTANCE(self, AcceptanceID):
         if AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
-        else:                                       return "%i" % AcceptanceID
+        else:                                            return "%i" % AcceptanceID
 
     def UNREACHABLE_BEGIN(self):
         return "if( 0 ) {"
@@ -567,17 +586,16 @@ class Lng_Cpp(dict):
     def IF_PRE_CONTEXT(self, txt, FirstF, PreContextID, Consequence):
 
         if PreContextID == E_PreContextIDs.NONE:
-            if FirstF: opening = [];           indent = 0; closing = []
-            else:      opening = ["else {\n"]; indent = 1; closing = [1, "}\n"]
+            if FirstF: opening = [];           closing = []
+            else:      opening = ["else {\n"]; closing = ["    }\n"]
         else:
             condition = self.PRE_CONTEXT_CONDITION(PreContextID) 
-            indent  = 0
             if FirstF: opening = ["if( %s ) {\n" % condition]
             else:      opening = ["else if( %s ) {\n" % condition]
-            closing = [0, "}\n"]
+            closing = ["}\n"]
 
         txt.extend(opening)
-        txt.append(indent)
+        txt.append("    ")
         if isinstance(Consequence, (str, unicode)): txt.append(Consequence)
         else:                                       txt.extend(Consequence)
         txt.extend(closing)
@@ -649,6 +667,7 @@ class Lng_Cpp(dict):
     def POSITION_REGISTER(self, Index):
         return "position[%i]" % Index
 
+    @typed(X=RouterContentElement)
     def POSITIONING(self, X):
         Positioning = X.positioning
         Register    = X.position_register
@@ -780,6 +799,24 @@ class Lng_Cpp(dict):
         fh.close()
         write_safely_and_close(FileName, "".join(new_content))
 
+    @typed(X=RouterContentElement)
+    def position_and_goto(self, EngineType, X):
+        # If the pattern requires backward input position detection, then
+        # jump to the entry of the detector. (This is a very seldom case)
+        if EngineType.is_FORWARD():
+            bipd_entry_door_id = EngineType.bipd_entry_door_id_db.get(X.acceptance_id)
+            if bipd_entry_door_id is not None:                        
+                return self.GOTO(bipd_entry_door_id) 
+
+        # Position the input pointer and jump to terminal.
+        positioning_str   = self.POSITIONING(X)
+        if len(positioning_str) != 0: positioning_str += "\n"
+        goto_terminal_str = self.GOTO(DoorID.incidence(X.acceptance_id))
+        return [
+            positioning_str, "\n" if len(positioning_str) != 0 else "",
+            goto_terminal_str
+        ]
+
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
@@ -877,3 +914,4 @@ db["C"].update([
     ("$file_extension",         ".c"),
     ("$comment-delimiters", [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]),
 ])
+

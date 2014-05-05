@@ -177,21 +177,60 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
             return "%s: { %s }" % (name_str, content_str)   
 
-AccepterContentElement = namedtuple("AccepterContentElement", ("pre_context_id", "acceptance_id"))
+class AccepterContentElement(namedtuple("AccepterContentElement_tuple", ("pre_context_id", "acceptance_id"))):
+    """Objects of this class shall describe a check sequence such as
+
+            if     ( pre_condition_5_f ) last_acceptance = 34;
+            else if( pre_condition_7_f ) last_acceptance = 67;
+            else if( pre_condition_9_f ) last_acceptance = 31;
+            else                         last_acceptance = 11;
+
+       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]. Note, that
+       the prioritization is not necessarily by acceptance_id. This is so, since
+       the whole trace is considered and length precedes acceptance_id.
+    
+       The values for .pre_context_id and .acceptance_id are carry the 
+       following meaning:
+
+       .pre_context_id   PreContextID of concern. 
+
+                         is None --> no pre-context (normal pattern)
+                         is -1   --> pre-context 'begin-of-line'
+                         >= 0    --> id of the pre-context state machine/flag
+
+       .acceptance_id    Terminal to be targeted (what was accepted).
+
+                         is None --> acceptance determined by stored value in 
+                                     'last_acceptance', thus "goto *last_acceptance;"
+                         == -1   --> goto terminal 'failure', nothing matched.
+                         >= 0    --> goto terminal given by '.terminal_id'
+
+    """
+    def __new__(self, PreContextId, AcceptanceID):
+        return super(AccepterContentElement, self).__new__(self, PreContextId, AcceptanceID)
+
+    def __str_(self):
+        txt = []
+        txt.append("%s: accept = %s" % (repr_pre_context_id(self.pre_context_id),
+                                        repr_acceptance_id(self.acceptance_id)))
+        return "".join(txt)
 
 class AccepterContent:
     """_________________________________________________________________________
 
-    AccepterContent: A list of conditional pattern acceptance actions. It 
-          corresponds to a sequence of if-else statements such as 
+    A list of conditional pattern acceptance actions. It corresponds to a 
+    sequence of if-else statements such as 
 
           [0]  if   pre_condition_4711_f: acceptance = Pattern32
           [1]  elif pre_condition_512_f:  acceptance = Pattern21
           [2]  else:                      acceptance = Pattern56
     
-    AccepterContentElement: An element in the sorted list of test/accept
-    commands.  It contains the 'pre_context_id' of the condition to be checked
-    and the 'acceptance_id' to be accepted if the condition is true.
+    Requires: AccepterContentElement (see above) which stores the elements
+              of the list.
+
+    An element in the sorted list of test/accept commands.  It contains the
+    'pre_context_id' of the condition to be checked and the 'acceptance_id' to
+    be accepted if the condition is true.
     ___________________________________________________________________________
     """
 
@@ -264,6 +303,160 @@ class AccepterContent:
         last_i = len(self.__list) - 1
         return "".join("%s%s" % (to_string(element, i==0), "\n" if i != last_i else "") 
                        for i, element in enumerate(self.__list))
+
+    def __len__(self):
+        return len(self.__list)
+
+class RouterContentElement(object):
+    """Objects of this class shall be elements to build a router to the terminal
+       based on the setting 'last_acceptance', i.e.
+
+            switch( last_acceptance ) {
+                case  45: input_p -= 3;                   goto TERMINAL_45;
+                case  43:                                 goto TERMINAL_43;
+                case  41: input_p -= 2;                   goto TERMINAL_41;
+                case  33: input_p = lexeme_start_p - 1;   goto TERMINAL_33;
+                case  22: input_p = position_register[2]; goto TERMINAL_22;
+            }
+
+       That means, the 'router' actually only tells how the positioning has to happen
+       dependent on the acceptance. Then it goes to the action of the matching pattern.
+       Following elements are provided:
+
+        .acceptance_id    Terminal to be targeted (what was accepted).
+
+                         == -1   --> goto terminal 'failure', nothing matched.
+                         >= 0    --> goto terminal given by '.terminal_id'
+
+        .positioning     Adaption of the input pointer, before the terminal is entered.
+
+                         >= 0    
+                                   input_p -= .positioning 
+
+                            This is only possible if the number of transitions
+                            since acceptance is determined before run time.
+
+                         == E_TransitionN.VOID 
+                         
+                                   input_p = position[.position_register]
+
+                            Restore a stored input position from its register.
+                            A loop appeared on the path from 'store input
+                            position' to here.
+
+                         == E_TransitionN.LEXEME_START_PLUS_ONE 
+                         
+                                   input_p = lexeme_start_p + 1
+
+                            Case of failure (actually redundant information).
+    """
+    __slots__ = ("acceptance_id", "positioning", "position_register")
+
+    def __init__(self, AcceptanceID, TransitionNSincePositioning):
+        assert    TransitionNSincePositioning == E_TransitionN.VOID \
+               or TransitionNSincePositioning == E_TransitionN.LEXEME_START_PLUS_ONE \
+               or TransitionNSincePositioning == E_TransitionN.IRRELEVANT \
+               or TransitionNSincePositioning >= 0
+        assert    AcceptanceID in E_IncidenceIDs \
+               or AcceptanceID >= 0
+
+        self.acceptance_id     = AcceptanceID
+        self.positioning       = TransitionNSincePositioning
+        self.position_register = AcceptanceID                 # May later be adapted.
+
+    def __hash__(self):
+        return       hash(self.acceptance_id) \
+               + 2 * hash(self.positioning) \
+               + 5 * hash(self.position_register)
+
+    def __eq__(self, Other):
+        return     self.acceptance_id     == Other.acceptance_id   \
+               and self.positioning       == Other.positioning     \
+               and self.position_register == Other.position_register
+
+    def __ne__(self, Other):
+        return not (self == Other)
+
+    def __str__(self):
+        if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
+        else:                                                  assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
+
+        if self.positioning != 0:
+            return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
+                                             repr_positioning(self.positioning, self.position_register), 
+                                             repr_acceptance_id(self.acceptance_id))
+        else:
+            return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
+                                          repr_acceptance_id(self.acceptance_id))
+        
+class RouterContent:
+    """_________________________________________________________________________
+
+    RouterContent: Contains a list of pairs that indicates where to go based
+                   on the setting of the acceptance register. 
+
+          [0]  if   last_acceptance == FAILURE: goto TERMINAL_FAILURE;
+          [1]  elif last_acceptance == 5:       input_p = Position[5]; goto TERMINAL_5;
+          [2]  else:                            goto TERMINAL_Pattern56
+    
+    Requires: RouterContentElement which stores the elements of the list.
+
+    E_R.AcceptanceRegister: Read.
+    E_R.InputP:             Possibly write.
+    E_R.ThreadOfControl:    Write (jumps to terminals). 
+    ___________________________________________________________________________
+    """
+    def __init__(self):
+        Command.__init__(self)
+        self.__list = []
+
+    def clone(self):
+        result = RouterContent()
+        result.__list = [ deepcopy(x) for x in self.__list ]
+        return result
+    
+    def add(self, Value, Address):
+        self.__list.append(RouterContentElement(Value, Address))
+
+    def replace(self, PositionRegisterMap):
+        """Replaces position register indices with the onces given in the map.
+        That is, for each pair (key, value) in the 'PositionRegisterMap' replace
+        any occurrence of 'position_register=key' with 'position_register=value'.
+        """
+        for element in self.__list:
+            if element.positioning != E_TransitionN.VOID: continue
+            element.position_register = PositionRegisterMap[element.position_register]
+
+    # Require '__hash__' and '__eq__' to be element of a set.
+    def __hash__(self): 
+        xor_sum = 0
+        for i, x in enumerate(self.__list):
+            xor_sum ^= i * hash(x)
+        return xor_sum
+
+    def __eq__(self, Other):
+        if   not isinstance(Other, RouterContent):    return False
+        elif len(self.__list) != len(Other.__list):   return False
+
+        for x, y in zip(self.__list, Other.__list):
+            if x != y: return False
+
+        return True
+
+    def __ne__(self, Other):
+        return not (self == Other)
+
+    def __iter__(self):
+        for x in self.__list:
+            yield x
+
+    def __str__(self):
+        txt = [ "on last_acceptance:\n" ]
+        txt.extend(str(x) for x in self.__list)
+        return txt
+
+    def __len__(self):
+        return len(self.__list)
 
 #______________________________________________________________________________
 # CommandInfo: Information about a command. CommandInfo-s provide information
@@ -342,12 +535,15 @@ def __configure():
                                               (E_R.PreContextFlags,w))
     #
     c(E_Cmd.GotoDoorId,                        ("door_id",), 
-                                               (E_R.ThreadOfControl,r))
+                                               (E_R.ThreadOfControl,w))
     c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id",                              "pointer"),
-                                               (E_R.ThreadOfControl,r), (E_R.InputP,r), (1,r))
+                                               (E_R.ThreadOfControl,w), (E_R.InputP,r), (1,r))
     #
     c(E_Cmd.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
                                               (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
+    c(E_Cmd.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_content_element"),
+                                              (E_R.PreContextFlags, r), (E_R.PositionRegister, r), (E_R.ThreadOfControl, w), 
+                                              (E_R.InputP, r+w))
     c(E_Cmd.InputPDecrement,                  None, (E_R.InputP,r+w))
     c(E_Cmd.InputPIncrement,                  None, (E_R.InputP,r+w))
     c(E_Cmd.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
@@ -384,6 +580,8 @@ def __configure():
     #
     c(E_Cmd.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
                                               (E_R.PathIterator,w))
+    c(E_Cmd.Router,                           RouterContent, 
+                                              (E_R.AcceptanceRegister,r), (E_R.InputP,w), (E_R.ThreadOfControl,w))
     c(E_Cmd.TemplateStateKeySet,              ("state_key",),
                                               (E_R.TemplateStateKey,w))
     #
@@ -513,6 +711,9 @@ def ColumnCountAdd(Value):
 def IndentationHandlerCall(DefaultIhF, ModeName):
     return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
 
+def IfPreContextSetPositionAndGoto(Check, RouterElement):
+    return Command(E_Cmd.IfPreContextSetPositionAndGoto, Check, RouterElement)
+
 def ColumnCountGridAdd(GridSize):
     return Command(E_Cmd.ColumnCountGridAdd, GridSize)
 
@@ -536,6 +737,9 @@ def Assign(TargetRegister, SourceRegister):
 
 def Accepter():
     return Command(E_Cmd.Accepter)
+
+def Router():
+    return Command(E_Cmd.Router)
 
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
@@ -675,7 +879,7 @@ class CommandList(list):
         return super(CommandList, self).__eq__(Other)
 
     def __ne__(self, Other):
-        return not self.__eq__(Other)
+        return not (self == Other)
 
     def __str__(self):
         return "".join("%s\n" % str(cmd) for cmd in self)
