@@ -5,7 +5,7 @@ from   quex.engine.analyzer.commands.core         import repr_acceptance_id, \
                                                          Router, \
                                                          IfPreContextSetPositionAndGoto
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.tools                          import typed, print_callstack
+from   quex.engine.tools                          import typed, print_callstack, E_Values
 from   quex.blackboard                            import E_PreContextIDs, \
                                                          E_IncidenceIDs, \
                                                          E_TransitionN
@@ -45,8 +45,11 @@ class DropOut(object):
 
     def __init__(self):
         self._hash            = None
-        self._accepter        = -1    # -1: Virginity!; None: disabled
+        self._accepter        = E_Values.UNASSIGNED    # E_Values.UNASSIGNED: Virginity!; None: disabled
         self._terminal_router = Router()
+
+    def has_accepter(self):
+        return self._accepter is not None
 
     def access_accepter(self):
         """RETURN: None, if accepter has been disabled. 
@@ -54,7 +57,7 @@ class DropOut(object):
         A disabled accepter means, that acceptance is derived solely from 
         'last_acceptance'.
         """
-        assert self._accepter != -1 # Cannot be virgin!
+        assert self._accepter != E_Values.UNASSIGNED # Cannot be virgin!
         return self._accepter.content
 
     def accepter_disable(self):
@@ -65,7 +68,7 @@ class DropOut(object):
         then it cannot be enabled any more.
         """
         if   self._accepter is None: return False
-        elif self._accepter == -1:   self._accepter = Accepter()
+        elif self._accepter == E_Values.UNASSIGNED:   self._accepter = Accepter()
         return True
 
     def accepter_add(self, PreContextID, AcceptanceID):
@@ -84,7 +87,7 @@ class DropOut(object):
         self._terminal_router.content.replace(PositionRegisterMap)
 
     def get_command_list(self):
-        assert self._accepter != -1
+        assert self._accepter != E_Values.UNASSIGNED
         trivial_solution = self.trivialize()
         if trivial_solution is None:
             if self._accepter is not None:
@@ -101,18 +104,20 @@ class DropOut(object):
     def __hash__(self):
         if self._hash is None:
             h = 0x5A5A5A5A
-            for x in self._accepter.content:
-                h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
+            if self._accepter is not None and self._accepter != E_Values.UNASSIGNED:
+                for x in self._accepter.content:
+                    h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
             for x in self._terminal_router.content:
                 h ^= hash(x.positioning) ^ hash(x.acceptance_id)
             self._hash = h
         return self._hash
 
     def __eq__(self, Other):
-        if   not isinstance(Other, DropOut):                                     return False
-        elif self._accepter.content        != Other._accepter.content:         return False
+        if   Other.__class__  != self.__class__:                               return False
+
+        if   self._accepter != Other._accepter:                                return False
         elif self._terminal_router.content != Other._terminal_router.content:  return False
-        else:                                                                    return True
+        else:                                                                  return True
 
     def __ne__(self, Other):
         return not (self == Other)
@@ -150,7 +155,7 @@ class DropOut(object):
         return result
 
     def __repr__(self):
-        if len(self._accepter.content) == 0 and len(self._terminal_router.content) == 0:
+        if (self._accepter is None or len(self._accepter.content)) == 0 and len(self._terminal_router.content) == 0:
             return "    <unreachable code>"
 
         info = self.trivialize()
@@ -175,16 +180,19 @@ class DropOut(object):
                 return "".join(txt)
 
         txt = ["    Checker:\n"]
-        if_str = "if     "
-        for element in self._accepter.content:
-            if element.pre_context_id != E_PreContextIDs.NONE:
-                txt.append("        %s %s\n" % (if_str, repr(element)))
-            else:
-                txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
-                # No check after the unconditional acceptance
-                break
+        if self._accepter is None:
+            txt.append("    <empty>\n")
+        else:
+            if_str = "if     "
+            for element in self._accepter.content:
+                if element.pre_context_id != E_PreContextIDs.NONE:
+                    txt.append("        %s %s\n" % (if_str, repr(element)))
+                else:
+                    txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
+                    # No check after the unconditional acceptance
+                    break
 
-            if_str = "else if"
+                if_str = "else if"
 
         txt.append("    Router:\n")
         for element in self._terminal_router.content:

@@ -150,6 +150,15 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     def __hash__(self):      
         return self.my_hash
 
+    def __eq__(self, Other):
+        if   self.__class__ != Other.__class__: return False
+        elif self.id != Other.id:               return False
+        elif self.content != Other.content:     return False
+        else:                                   return True
+
+    def __ne__(self, Other):
+        return not (self == Other)
+
     def __str__(self):
         name_str = str(self.id)
         if self.content is None:
@@ -283,6 +292,9 @@ class AccepterContent:
             elif x.acceptance_id  != y.acceptance_id:   return False
 
         return True
+
+    def __ne__(self, Other):
+        return not (self == Other)
 
     def __iter__(self):
         for x in self.__list:
