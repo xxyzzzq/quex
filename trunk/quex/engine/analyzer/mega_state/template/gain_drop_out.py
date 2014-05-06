@@ -48,7 +48,10 @@ def _drop_out_cost(X, StateIndexN):
     #    acceptance = Const;
     # After:
     #        ...
-    La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.access_accepter()))
+    if X.has_accepter():
+        La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.access_accepter()))
+    else:
+        La = 0
     assignment_n  = La
     goto_n        = La
     cmp_n         = La
