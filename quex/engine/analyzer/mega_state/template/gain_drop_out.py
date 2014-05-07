@@ -40,36 +40,5 @@ def _drop_out_cost(X, StateIndexN):
         # happen or terminate input position detection.
         return 0
 
-    assert isinstance(X, DropOut)
-    # One Acceptance Check implies:
-    #    if( pre_condition == Const ) acceptance = const; 
-    # in pseudo-assembler:
-    #    jump-if-not (pre_condition == Const) --> goto After
-    #    acceptance = Const;
-    # After:
-    #        ...
-    if X.has_accepter():
-        La = len(filter(lambda x: x.acceptance_id != E_IncidenceIDs.VOID, X.access_accepter()))
-    else:
-        La = 0
-    assignment_n  = La
-    goto_n        = La
-    cmp_n         = La
-    # (2) Terminal Routing:
-    #         jump-if-not (acceptance == Const0 ) --> Next0
-    #         goto TerminalXY
-    #     Next0:
-    #         jump-if-not (acceptance == Const0 ) --> Next1
-    #         position = something;
-    #         goto TerminalYZ
-    #     Next1:
-    #         ...
-    Lt = len(X.terminal_router())
-    assignment_n += len(filter(lambda x:     x.positioning != E_TransitionN.VOID 
-                                         and x.positioning != E_TransitionN.LEXEME_START_PLUS_ONE, 
-                        X.terminal_router()))
-    cmp_n  += Lt
-    goto_n += Lt  
-
-    return assignment_n + cmp_n + goto_n 
+    return X.cost()
 

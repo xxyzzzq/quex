@@ -224,9 +224,9 @@ class CharacterPath(object):
         assert self.uniform_DropOut.is_uniform()
 
         # (1) Check on 'DropOut'. This is done quickly.
-        ## print "#uniform_DropOut:", str(self.uniform_DropOut.content).strip()
-        ## print "#        DropOut:", str(State.drop_out).strip()
-        ## print "#            fit:", self.uniform_DropOut.fit(State.drop_out)
+        print "#uniform_DropOut:", str(self.uniform_DropOut.content).strip()
+        print "#        DropOut:", str(State.drop_out).strip()
+        print "#            fit:", self.uniform_DropOut.fit(State.drop_out)
         if not self.uniform_DropOut.fit(State.drop_out): 
             return False
 

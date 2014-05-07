@@ -45,9 +45,11 @@ from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.commands.core              import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \
-                                                         PreContextOK
+                                                         PreContextOK, \
+                                                         Accepter, \
+                                                         Router
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
-from   quex.engine.analyzer.commands.core              import CommandList
+from   quex.engine.analyzer.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
@@ -382,17 +384,16 @@ class Analyzer:
         are even any pre-context patterns).
         _______________________________________________________________________
         """
-        result = DropOut()
-
         # (*) Acceptance Checker
         accept_sequence = self.__trace_db[StateIndex].uniform_acceptance_sequence()
-        if accept_sequence is not None and result.accepter_enable():
+        if accept_sequence is not None:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
+            accepter = Accepter() # Accepter content
             for x in accept_sequence:
-                result.accepter_add(x.pre_context_id, x.acceptance_id)
+                accepter.content.add(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
                 if     x.pre_context_id == E_PreContextIDs.NONE \
                    and x.acceptance_id  != E_IncidenceIDs.MATCH_FAILURE: break
@@ -405,9 +406,7 @@ class Analyzer:
             # -- The acceptance must be stored in the state where it occurs, 
             # -- and it must be restored here.
             #
-
-            # Only restore last acceptance, do not derive acceptance!
-            result.accepter_disable()
+            accepter = None # Only rely on 'last_acceptance' being stored.
 
             # Dependency: Related states are required to store acceptance at state entry.
             for accepting_state_index in self.__trace_db[StateIndex].accepting_state_index_list():
@@ -417,8 +416,9 @@ class Analyzer:
             # implement the acceptance storage.
 
         # (*) Terminal Router
+        terminal_router = Router()
         for x in self.__trace_db[StateIndex].positioning_info():
-            result.terminal_router_add(x.acceptance_id, x.transition_n_since_positioning)
+            terminal_router.content.add(x.acceptance_id, x.transition_n_since_positioning)
 
             if x.transition_n_since_positioning != E_TransitionN.VOID: continue
 
@@ -430,8 +430,7 @@ class Analyzer:
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
-        result.trivialize()
-        return result
+        return DropOut(accepter, terminal_router)
 
     def configure_entries(self, SM):
         """DropOut objects may rely on acceptances and input positions being 

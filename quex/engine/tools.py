@@ -54,7 +54,7 @@ def pair_combinations(iterable):
         for y in islice(other, i+1, None):
             yield x, y
 
-E_Values = Enum("UNASSIGNED", "VOID", "_DEBUG_E_Values")
+E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "_DEBUG_E_Values")
 
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
@@ -177,8 +177,13 @@ def _get_value_check_function(Type):
             return is_ok
     return None
 
-def all_true(List, Condition):
-    for x in List:
+def one_true(Iterable, Condition):
+    for x in Iterable:
+        if Condition(x) == True: return True
+    return False
+
+def all_true(Iterable, Condition):
+    for x in Iterable:
         if Condition(x) != True: return False
     return True
 
