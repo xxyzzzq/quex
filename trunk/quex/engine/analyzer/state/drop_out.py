@@ -3,12 +3,15 @@ from   quex.engine.analyzer.commands.core         import repr_acceptance_id, \
                                                          repr_positioning, \
                                                          Accepter, \
                                                          Router, \
+                                                         Command, \
+                                                         CommandList, \
                                                          IfPreContextSetPositionAndGoto
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.tools                          import typed, print_callstack, E_Values
 from   quex.blackboard                            import E_PreContextIDs, \
                                                          E_IncidenceIDs, \
-                                                         E_TransitionN
+                                                         E_TransitionN, \
+                                                         E_Cmd
 from   itertools                                  import ifilter, imap
 
 class DropOut(object):
@@ -41,15 +44,16 @@ class DropOut(object):
        NOTE: This type supports being a dictionary key by '__hash__' and '__eq__'.
              Required for the optional 'template compression'.
     """
-    __slots__ = ("_accepter", "_terminal_router", "_hash")
+    __slots__ = ("__list", "_hash")
 
-    def __init__(self):
-        self._hash            = None
-        self._accepter        = E_Values.UNASSIGNED    # E_Values.UNASSIGNED: Virginity!; None: disabled
-        self._terminal_router = Router()
+    def __init__(self, TheAccepter=None, TheTerminalRouter=None):
+        if TheAccepter is None and TheTerminalRouter is None:
+            self.__list = CommandList()
+        else:
+            self.__list = CommandList.from_iterable(self.__trivialize(TheAccepter, TheTerminalRouter))
 
     def has_accepter(self):
-        return self._accepter is not None
+        return self.access_accepter() is not None
 
     def access_accepter(self):
         """RETURN: None, if accepter has been disabled. 
@@ -57,72 +61,30 @@ class DropOut(object):
         A disabled accepter means, that acceptance is derived solely from 
         'last_acceptance'.
         """
-        assert self._accepter != E_Values.UNASSIGNED # Cannot be virgin!
-        return self._accepter.content
-
-    def accepter_disable(self):
-        self._accepter = None
-
-    def accepter_enable(self):
-        """Enable the accepter. If the accepter has been disabled explicitly,
-        then it cannot be enabled any more.
-        """
-        if   self._accepter is None: return False
-        elif self._accepter == E_Values.UNASSIGNED:   self._accepter = Accepter()
-        return True
-
-    def accepter_add(self, PreContextID, AcceptanceID):
-        assert self._accepter is not None
-        self._accepter.content.add(PreContextID, AcceptanceID)
-        self._hash = None
-
-    def terminal_router(self):
-        return self._terminal_router.content
-
-    def terminal_router_add(self, AcceptanceID, TransitionNSincePositioning):
-        self._terminal_router.content.add(AcceptanceID, TransitionNSincePositioning)
-        self._hash = None
+        for cmd in self.__list:
+            if cmd.id == E_Cmd.Accepter: return cmd.content
+        return None
 
     def terminal_router_replace(self, PositionRegisterMap):
-        self._terminal_router.content.replace(PositionRegisterMap)
+        self.__list.replace_position_registers(PositionRegisterMap)
 
     def get_command_list(self):
-        assert self._accepter != E_Values.UNASSIGNED
-        trivial_solution = self.trivialize()
-        if trivial_solution is None:
-            if self._accepter is not None:
-                return [ self._accepter, self._terminal_router ]
-            else:
-                return [ self._terminal_router ]
-        else:
-            assert len(trivial_solution) != 0
-            return [ 
-                IfPreContextSetPositionAndGoto(x.pre_context_id, router_content_element)
-                for x, router_content_element in trivial_solution
-            ]
+        return self.__list
+
+    def cost(self):
+        return self.__list.cost()
 
     def __hash__(self):
-        if self._hash is None:
-            h = 0x5A5A5A5A
-            if self._accepter is not None and self._accepter != E_Values.UNASSIGNED:
-                for x in self._accepter.content:
-                    h ^= hash(x.pre_context_id) ^ hash(x.acceptance_id)
-            for x in self._terminal_router.content:
-                h ^= hash(x.positioning) ^ hash(x.acceptance_id)
-            self._hash = h
-        return self._hash
+        return hash(self.__list)
 
     def __eq__(self, Other):
-        if   Other.__class__  != self.__class__:                               return False
-
-        if   self._accepter != Other._accepter:                                return False
-        elif self._terminal_router.content != Other._terminal_router.content:  return False
-        else:                                                                  return True
+        if Other.__class__  != self.__class__: return False
+        return self.__list != Other.__list
 
     def __ne__(self, Other):
         return not (self == Other)
 
-    def trivialize(self):
+    def __trivialize(self, TheAccepter, TheTerminalRouter):
         """If there is no stored acceptance involved, then one can directly
         conclude from the pre-contexts to the acceptance_id. Then the drop-
         out action can be described as a sequence of checks
@@ -138,67 +100,29 @@ class DropOut(object):
         RETURNS: None                                          -- if not trivial
                  list((pre_context_id, TerminalRouterElement)) -- if trivial
         """
-        if self._accepter is None: # Dependence on 'last_acceptance'
-            return None
+        # If the 'last_acceptance' is not determined in this state, then it
+        # must be derived from previous storages. We cannot simplify here.
+        if TheAccepter is None: 
+            return (TheTerminalRouter)
+        elif not TheAccepter.content.has_acceptance_without_pre_context():
+            # If no pre-context is met, then 'last_acceptance' needs to be 
+            # considered.
+            return (TheAccepter, TheTerminalRouter)
 
-        result = []
-        for check in self._accepter.content:
-            for router_element in self._terminal_router.content:
-                if router_element.acceptance_id == check.acceptance_id: break
-            else:
-                assert False # check.acceptance_id must be mentioned in self._terminal_router
-            result.append((check, router_element))
-            # NOTE: "if check.pre_context_id is None: break" is not necessary since 
-            #       get_drop_out_object() makes sure that the acceptance_checker stops after i
-            #       the first non-pre-context drop-out.
+        def router_element(TerminalRouter, AcceptanceId):
+            for x in TerminalRouter:
+                if x.acceptance_id == AcceptanceId: return x
+            assert False  # There MUST be an element for each acceptance_id!
 
-        return result
+        router = TheTerminalRouter.content
+        return [
+            IfPreContextSetPositionAndGoto(check.pre_context_id, 
+                                           router_element(router, check.acceptance_id))
+            for check in TheAccepter.content
+        ]
 
     def __repr__(self):
-        if (self._accepter is None or len(self._accepter.content)) == 0 and len(self._terminal_router.content) == 0:
-            return "    <unreachable code>"
-
-        info = self.trivialize()
-        if info is not None:
-            if len(info) == 2 and info[0] is None:
-                return "    goto PreContextCheckTerminated;"
-            else:
-                txt = []
-                if_str = "if"
-                for easy in info:
-                    if easy[0].pre_context_id == E_PreContextIDs.NONE:
-                        txt.append("    %s goto %s;\n" % \
-                                   (repr_positioning(easy[1].positioning, easy[1].position_register),
-                                    repr_acceptance_id(easy[1].acceptance_id)))
-                    else:
-                        txt.append("    %s %s: %s goto %s;\n" % \
-                                   (if_str,
-                                    repr_pre_context_id(easy[0].pre_context_id),
-                                    repr_positioning(easy[1].positioning, easy[1].position_register),
-                                    repr_acceptance_id(easy[1].acceptance_id)))
-                        if_str = "else if"
-                return "".join(txt)
-
-        txt = ["    Checker:\n"]
-        if self._accepter is None:
-            txt.append("    <empty>\n")
-        else:
-            if_str = "if     "
-            for element in self._accepter.content:
-                if element.pre_context_id != E_PreContextIDs.NONE:
-                    txt.append("        %s %s\n" % (if_str, repr(element)))
-                else:
-                    txt.append("        accept = %s\n" % repr_acceptance_id(element.acceptance_id))
-                    # No check after the unconditional acceptance
-                    break
-
-                if_str = "else if"
-
-        txt.append("    Router:\n")
-        for element in self._terminal_router.content:
-            txt.append("        %s\n" % repr(element))
-
-        return "".join(txt)
+        return "".join(str(cmd) for cmd in self.__list)
 
 class DropOutGotoDoorId(object):
     @typed(DoorId=DoorID)

@@ -264,6 +264,11 @@ class AccepterContent:
         if i != len(self.__list) - 1:
             del self.__list[i+1:]
 
+    def has_acceptance_without_pre_context(self):
+        for x in self.__list:
+            if x.pre_context_id == E_PreContextIDs.NONE: return True
+        return False
+
     def get_pretty_string(self):
         txt    = []
         if_str = "if     "
@@ -375,6 +380,15 @@ class RouterContentElement(object):
         self.acceptance_id     = AcceptanceID
         self.positioning       = TransitionNSincePositioning
         self.position_register = AcceptanceID                 # May later be adapted.
+
+    def replace(self, PositionRegisterMap):
+        """Replace the '.position_register' with the correspondance provided
+        in PositionRegisterMap. This is only relevant, if the position register
+        is actually used. That is, if the position is not VOID, then no 
+        replacement needs to take place.
+        """
+        if self.positioning != E_TransitionN.VOID: return
+        self.position_register = PositionRegisterMap[self.position_register]
 
     def __hash__(self):
         return       hash(self.acceptance_id) \
@@ -828,13 +842,16 @@ class CommandList(list):
 
         for i in xrange(len(self)):
             cmd = self[i]
-            if cmd.id != E_Cmd.StoreInputPosition: continue
-
-            # Commands are immutable, so create a new one.
-            new_command = StoreInputPosition(cmd.content.pre_context_id, 
-                                             PositionRegisterMap[cmd.content.position_register],
-                                             cmd.content.offset)
-            self[i] = new_command
+            if cmd.id == E_Cmd.StoreInputPosition:
+                # Commands are immutable, so create a new one.
+                new_command = StoreInputPosition(cmd.content.pre_context_id, 
+                                                 PositionRegisterMap[cmd.content.position_register],
+                                                 cmd.content.offset)
+                self[i] = new_command
+            elif cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
+                cmd.content.router_element.replace(PositionRegisterMap)
+            elif cmd.id == E_Cmd.Router:
+                cmd.content.replace(PositionRegisterMap)
 
     def delete_superfluous_commands(self):
         """
