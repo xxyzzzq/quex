@@ -37,7 +37,7 @@ def do(analyzer):
     for state in analyzer.state_db.itervalues():
         state.entry.replace_position_registers(analyzer.position_register_map)
         state.entry.delete_superfluous_commands()
-        state.drop_out.terminal_router_replace(analyzer.position_register_map)
+        state.drop_out.replace_position_registers(analyzer.position_register_map)
 
     return analyzer
 

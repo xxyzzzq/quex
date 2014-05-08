@@ -7,7 +7,7 @@ from   quex.engine.analyzer.commands.core         import repr_acceptance_id, \
                                                          CommandList, \
                                                          IfPreContextSetPositionAndGoto
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.tools                          import typed, print_callstack, E_Values
+from   quex.engine.tools                          import typed, E_Values
 from   quex.blackboard                            import E_PreContextIDs, \
                                                          E_IncidenceIDs, \
                                                          E_TransitionN, \
@@ -50,7 +50,8 @@ class DropOut(object):
         if TheAccepter is None and TheTerminalRouter is None:
             self.__list = CommandList()
         else:
-            self.__list = CommandList.from_iterable(self.__trivialize(TheAccepter, TheTerminalRouter))
+            cl = self.__trivialize(TheAccepter, TheTerminalRouter)
+            self.__list = CommandList.from_iterable(cl)
 
     def has_accepter(self):
         return self.access_accepter() is not None
@@ -65,7 +66,7 @@ class DropOut(object):
             if cmd.id == E_Cmd.Accepter: return cmd.content
         return None
 
-    def terminal_router_replace(self, PositionRegisterMap):
+    def replace_position_registers(self, PositionRegisterMap):
         self.__list.replace_position_registers(PositionRegisterMap)
 
     def get_command_list(self):
@@ -79,7 +80,7 @@ class DropOut(object):
 
     def __eq__(self, Other):
         if Other.__class__  != self.__class__: return False
-        return self.__list != Other.__list
+        return self.__list == Other.__list
 
     def __ne__(self, Other):
         return not (self == Other)
@@ -103,7 +104,7 @@ class DropOut(object):
         # If the 'last_acceptance' is not determined in this state, then it
         # must be derived from previous storages. We cannot simplify here.
         if TheAccepter is None: 
-            return (TheTerminalRouter)
+            return (TheTerminalRouter,)
         elif not TheAccepter.content.has_acceptance_without_pre_context():
             # If no pre-context is met, then 'last_acceptance' needs to be 
             # considered.
@@ -134,7 +135,7 @@ class DropOutIndifferent(DropOut):
         DropOut.__init__(self)
         pass
 
-    def terminal_router_replace(self, PositionRegisterMap):
+    def replace_position_registers(self, PositionRegisterMap):
         pass
 
     def __repr__(self):
@@ -148,7 +149,7 @@ class DropOutBackwardInputPositionDetection(DropOut):
         """
         self.__reachable_f = AcceptanceF
 
-    def terminal_router_replace(self, PositionRegisterMap):
+    def replace_position_registers(self, PositionRegisterMap):
         pass
 
     @property

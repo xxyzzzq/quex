@@ -102,6 +102,7 @@ class UniformObject(object):
 
         if   E_Values.UNASSIGNED == self._content: return True
         elif E_Values.VOID       == self._content: return False
+        
         return self._equal(self._content, NewContent)
 
     @property
@@ -340,7 +341,6 @@ class TypedDict(dict):
                 (self._error(self.__key_class), Key.__class__.__name__, Key)
 
     def _error_value(self, Value):
-        print "####", isinstance(Value, long)
         return "%s as value. Found '%s'" % \
                 (self._error(self.__value_class), Value.__class__.__name__)
 
