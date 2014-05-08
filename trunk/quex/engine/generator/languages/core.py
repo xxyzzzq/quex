@@ -279,7 +279,7 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
             pre_context_id = Cmd.content.pre_context_id
             block = Lng.position_and_goto(self.__analyzer.engine_type, 
-                                          Cmd.content.router_content_element)
+                                          Cmd.content.router_element)
             txt = []
             self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)

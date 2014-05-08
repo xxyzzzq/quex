@@ -69,7 +69,7 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 from   quex.engine.misc.enum import Enum
-from   quex.engine.tools     import typed
+from   quex.engine.tools     import typed, print_callstack
 from   quex.blackboard       import E_Cmd, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \
@@ -177,6 +177,9 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             return txt
 
         elif self.id == E_Cmd.Accepter:
+            return str(self.content)
+
+        elif self.id == E_Cmd.Router:
             return str(self.content)
 
         elif self.id == E_Cmd.PreContextOK:
@@ -479,7 +482,7 @@ class RouterContent:
     def __str__(self):
         txt = [ "on last_acceptance:\n" ]
         txt.extend(str(x) for x in self.__list)
-        return txt
+        return "".join(txt)
 
     def __len__(self):
         return len(self.__list)
@@ -567,7 +570,7 @@ def __configure():
     #
     c(E_Cmd.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
                                               (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
-    c(E_Cmd.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_content_element"),
+    c(E_Cmd.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_element"),
                                               (E_R.PreContextFlags, r), (E_R.PositionRegister, r), (E_R.ThreadOfControl, w), 
                                               (E_R.InputP, r+w))
     c(E_Cmd.InputPDecrement,                  None, (E_R.InputP,r+w))
