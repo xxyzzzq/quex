@@ -2,7 +2,7 @@ import quex.engine.state_machine.index                      as index
 from   quex.engine.analyzer.core                            import Analyzer
 from   quex.engine.analyzer.transition_map                  import TransitionMap
 from   quex.engine.analyzer.state.core                      import AnalyzerState
-from   quex.engine.analyzer.state.drop_out                  import DropOutIndifferent
+from   quex.engine.analyzer.state.drop_out                  import DropOut
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import TransitionAction, \
                                                                    TransitionID
@@ -15,6 +15,7 @@ from   quex.engine.analyzer.mega_state.target               import TargetByState
 from   quex.engine.analyzer.mega_state.template.state       import TemplateState, \
                                                                    PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
+from   quex.engine.analyzer.commands.core                   import CommandList
 from   quex.engine.analyzer.commands.tree                   import CommandTree
 from   quex.engine.state_machine.core                       import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
@@ -28,7 +29,7 @@ import sys
 
 def get_AnalyzerState(StateIndex, TM):
     state = AnalyzerState(StateIndex, TM)
-    state.drop_out = DropOutIndifferent()
+    state.drop_out = CommandList()
     return state
 
 def get_AnalyzerState_Init(InitStateIndex, StateIndexList):

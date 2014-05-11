@@ -38,7 +38,7 @@ _______________________________________________________________________________
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
-from   quex.engine.analyzer.state.drop_out        import DropOut
+import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
                                                          TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID
@@ -430,7 +430,7 @@ class Analyzer:
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
-        return DropOut(accepter, terminal_router)
+        return drop_out.get_CommandList(accepter, terminal_router)
 
     def configure_entries(self, SM):
         """DropOut objects may rely on acceptances and input positions being 

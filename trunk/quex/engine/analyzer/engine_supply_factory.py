@@ -1,8 +1,12 @@
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
-from   quex.engine.analyzer.commands.core           import PreContextOK
-from   quex.engine.analyzer.state.drop_out     import DropOutIndifferent, \
-                                                      DropOutBackwardInputPositionDetection
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.analyzer.commands.core      import PreContextOK, \
+                                                      CommandList, \
+                                                      GotoDoorId, \
+                                                      InputPIncrement, \
+                                                      QuexAssertNoPassage, \
+                                                      QuexDebug
 from   quex.blackboard  import E_InputActions
 
 class Base:
@@ -79,7 +83,7 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_DropOut(self, SM_State):                        
-        return DropOutIndifferent()
+        return CommandList(GotoDoorId(DoorID.global_end_of_pre_context_check()))
 
 class Class_BACKWARD_INPUT_POSITION(Base):
     def __init__(self, IncidenceIdOnBehalfOfWhichBipdOperates):
@@ -104,7 +108,17 @@ class Class_BACKWARD_INPUT_POSITION(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_DropOut(self, SM_State):                          
-        return DropOutBackwardInputPositionDetection(SM_State.is_acceptance())
+        if SM_State.is_acceptance():
+            incidence_id = self.__incidence_id_of_bipd
+            return CommandList(
+                QuexDebug('pattern %i: backward input position detected\\n' % incidence_id),
+                InputPIncrement(), 
+                GotoDoorId(DoorID.incidence(incidence_id))
+            )
+        else:
+            return CommandList(
+                QuexAssertNoPassage()
+            )
 
 FORWARD                 = Class_FORWARD()
 CHARACTER_COUNTER       = Class_CHARACTER_COUNTER()

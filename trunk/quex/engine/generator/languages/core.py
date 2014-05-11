@@ -284,6 +284,12 @@ class Lng_Cpp(dict):
             self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)
 
+        elif Cmd.id == E_Cmd.QuexDebug:
+            return '__quex_debug("%s");\n' % Cmd.content.string
+
+        elif Cmd.id == E_Cmd.QuexAssertNoPassage:
+            return self.UNREACHABLE
+
         elif Cmd.id == E_Cmd.Assign:
             return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
 

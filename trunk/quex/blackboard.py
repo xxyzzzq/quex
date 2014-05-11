@@ -222,6 +222,8 @@ E_Cmd = Enum("Accepter",
              "PreContextOK",
              "PrepareAfterReload",
              "Router",
+             "QuexDebug",
+             "QuexAssertNoPassage",
              "StoreInputPosition",
              "TemplateStateKeySet",
              "_DEBUG_Commands")

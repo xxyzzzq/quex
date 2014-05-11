@@ -1,6 +1,3 @@
-from   quex.engine.analyzer.state.drop_out import DropOutIndifferent, \
-                                                  DropOutBackwardInputPositionDetection, \
-                                                  DropOut
 from   quex.blackboard import E_IncidenceIDs, \
                               E_TransitionN
 from   itertools import chain
@@ -9,9 +6,9 @@ def do(A, B):
     """Computes 'gain' with respect to drop-out actions, if two states are
     combined.
     """
-    a_cost_db = dict((drop_out, _drop_out_cost(drop_out, len(state_index_list))) \
+    a_cost_db = dict((drop_out, drop_out.cost()) \
                      for drop_out, state_index_list in A.iteritems())
-    b_cost_db = dict((drop_out, _drop_out_cost(drop_out, len(state_index_list))) \
+    b_cost_db = dict((drop_out, drop_out.cost()) \
                      for drop_out, state_index_list in B.iteritems())
 
     # (1) Compute sum BEFORE setting 'combined_cost_db = a_cost_db'!
@@ -28,17 +25,4 @@ def do(A, B):
     c_sum = sum(combined_cost_db.itervalues())
 
     return ab_sum - c_sum
-
-def _drop_out_cost(X, StateIndexN):
-    if   isinstance(X, DropOutIndifferent):
-        # Drop outs in pre-context checks all simply transit to the begin 
-        # of the forward analyzer. No difference.
-        return 0
-
-    elif isinstance(X, DropOutBackwardInputPositionDetection):
-        # Drop outs of backward input position handling either do not
-        # happen or terminate input position detection.
-        return 0
-
-    return X.cost()
 
