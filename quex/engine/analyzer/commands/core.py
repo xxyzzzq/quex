@@ -95,6 +95,7 @@ E_R = Enum("AcceptanceRegister",
            "PathIterator",
            "PreContextFlags",
            "ReferenceP",
+           "StandardOutput",
            "PositionRegister",
            "Pointer",
            "TargetStateElseIndex",
@@ -616,6 +617,11 @@ def __configure():
     #
     c(E_Cmd.PrepareAfterReload,               ("on_success_door_id", "on_failure_door_id"),
                                               (E_R.TargetStateIndex,w), (E_R.TargetStateElseIndex,w))
+    #
+    c(E_Cmd.QuexDebug,                        ("string",), 
+                                              (E_R.StandardOutput,w))
+    c(E_Cmd.QuexAssertNoPassage,              None, 
+                                              (E_R.StandardOutput,w), (E_R.ThreadOfControl, r+w))
 
     return access_db, content_db, brancher_set, cost_db
 
@@ -769,6 +775,12 @@ def Accepter():
 
 def Router():
     return Command(E_Cmd.Router)
+
+def QuexDebug(TheString):
+    return Command(E_Cmd.QuexDebug, TheString)
+
+def QuexAssertNoPassage():
+    return Command(E_Cmd.QuexAssertNoPassage)
 
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.

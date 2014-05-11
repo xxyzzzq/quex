@@ -5,9 +5,6 @@ import quex.engine.analyzer.mega_state.template.gain_entry          as     gain_
 import quex.engine.analyzer.mega_state.template.gain_drop_out       as     gain_drop_out      
 import quex.engine.analyzer.mega_state.template.gain_transition_map as     gain_transition_map
 from   quex.engine.analyzer.door_id_address_label          import DoorID_Scheme
-from   quex.engine.analyzer.state.drop_out                 import DropOut, \
-                                                                  DropOutIndifferent, \
-                                                                  DropOutBackwardInputPositionDetection
 from   quex.engine.analyzer.transition_map                 import TransitionMap       
 
 from   quex.blackboard import E_IncidenceIDs, \

@@ -60,12 +60,11 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.analyzer.commands.core         import Command
+from quex.engine.analyzer.commands.core         import Command, \
+                                                       CommandList
 from quex.engine.analyzer.state.core            import AnalyzerState
 from quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from quex.engine.analyzer.state.entry           import Entry
-from quex.engine.analyzer.state.drop_out        import DropOut, \
-                                                       DropOutBackwardInputPositionDetection
 from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.transition_map        import TransitionMap
 from quex.engine.interval_handling              import Interval
@@ -469,7 +468,8 @@ class MegaState_DropOut(TypedDict):
         """Receives a list of states, extracts the drop outs and associates 
         each DropOut with the state indices that implement it.
         """
-        TypedDict.__init__(self, DropOut, set)
+        # TypedDict.__init__(self, DropOut, set)
+        TypedDict.__init__(self, CommandList, set)
 
         for state in StateList:
             if isinstance(state,  MegaState): 

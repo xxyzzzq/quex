@@ -4,7 +4,6 @@ from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.generator.code.core                 import CodeTerminal
 from   quex.engine.analyzer.state.entry_action         import TransitionAction
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-from   quex.engine.analyzer.state.drop_out             import DropOutGotoDoorId
 import quex.engine.analyzer.core                       as     analyzer_generator
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.commands.core                   import E_R, \
@@ -74,7 +73,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     CsSm, beyond_iid = get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF)
 
     analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadStateExtern)
-    analyzer.init_state().drop_out = DropOutGotoDoorId(DoorIdExit)
+    analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorIdExit))
 
     door_id_loop = _prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
 

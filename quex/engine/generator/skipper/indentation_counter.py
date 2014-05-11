@@ -113,7 +113,7 @@ def do(Data, Mode=None):
     ])
 
     analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadState)
-    analyzer.init_state().drop_out = DropOutGotoDoorId(DoorID.global_reentry())
+    analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorID.global_reentry()))
 
     door_id_loop = loop.prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
 
