@@ -287,7 +287,7 @@ def get_on_indentation_handler(Mode):
 
     # A mode that deals only with the default indentation handler relies
     # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
-    if Mode.incidence_db.default_indentation_handler():
+    if Mode.incidence_db.default_indentation_handler_f():
         return "    return;"
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_INDENT)

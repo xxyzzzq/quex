@@ -57,7 +57,7 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     
     print SM.get_string(NormalizeF=True, OriginalStatesF=False)
 
-    plain = core.Analyzer.from_state_machine(SM, EngineType)
+    plain = core.Analyzer.from_StateMachine(SM, EngineType)
 
     # Print plain analyzer, note down what changed during optimization
     states_txt_db = {}

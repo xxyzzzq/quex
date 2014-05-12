@@ -2,7 +2,6 @@ import quex.engine.state_machine.index                      as index
 from   quex.engine.analyzer.core                            import Analyzer
 from   quex.engine.analyzer.transition_map                  import TransitionMap
 from   quex.engine.analyzer.state.core                      import AnalyzerState
-from   quex.engine.analyzer.state.drop_out                  import DropOut
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import TransitionAction, \
                                                                    TransitionID

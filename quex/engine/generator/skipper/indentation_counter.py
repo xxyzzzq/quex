@@ -10,7 +10,8 @@ from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.misc.string_handling             import blue_print
 from   quex.blackboard                              import Lng, \
-                                                           E_StateIndices
+                                                           E_StateIndices, \
+                                                           setup as Setup
 import quex.blackboard                              as     blackboard
 
 def do(Data, Mode=None):

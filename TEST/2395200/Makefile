@@ -16,7 +16,7 @@ error-lexer:
 	      ../lexer-simply.cpp Simple.cpp -o error-lexer
 
 lexer:
-	quex -i simple.qx -o Simple --token-policy single # --debug-exception
+	quex -i simple.qx -o Simple --token-policy single --debug-exception
 	$(CC) -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION \
 		  -DSTRANGE_STREAM \
 		  ../lexer-simply.cpp Simple.cpp -o lexer
