@@ -150,7 +150,8 @@ _48:
 }
 
     __quex_debug_drop_out(128);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _3: /* (129 from 128) (129 from 95) */
@@ -175,7 +176,8 @@ _51:
 }
 
     __quex_debug_drop_out(129);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _4: /* (130 from 136) (130 from 120) */
@@ -200,7 +202,8 @@ _53:
 }
 
     __quex_debug_drop_out(130);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _5: /* (131 from 130) (131 from 137) */
@@ -225,7 +228,8 @@ _55:
 }
 
     __quex_debug_drop_out(131);
-goto _57;
+    goto _57;
+
 
     __quex_assert_no_passage();
 _6: /* (132 from 134) (132 from 131) (132 from 138) */
@@ -250,7 +254,8 @@ _58:
 }
 
     __quex_debug_drop_out(132);
-goto _57;
+    goto _57;
+
 
     __quex_assert_no_passage();
 _7: /* (133 from 101) */
@@ -272,7 +277,8 @@ _60:
 }
 
     __quex_debug_drop_out(133);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _8: /* (134 from 133) */
@@ -294,7 +300,8 @@ _61:
 }
 
     __quex_debug_drop_out(134);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _9: /* (136 from 97) */
@@ -374,7 +381,8 @@ _62:
     }
 
     __quex_debug_drop_out(136);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _10: /* (137 from 136) */
@@ -454,7 +462,8 @@ _63:
     }
 
     __quex_debug_drop_out(137);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _11: /* (138 from 137) */
@@ -534,7 +543,8 @@ _64:
     }
 
     __quex_debug_drop_out(138);
-goto _57;
+    goto _57;
+
 
     __quex_assert_no_passage();
 _12: /* (139 from 138) */
@@ -556,7 +566,8 @@ _65:
 }
 
     __quex_debug_drop_out(139);
-goto _57;
+    goto _57;
+
 
     __quex_assert_no_passage();
 _14: /* (96 from 95) */
@@ -568,7 +579,8 @@ _66:
 
     __quex_debug_state(96);
     __quex_debug_drop_out(96);
-goto _68;
+    goto _68;
+
 
     __quex_assert_no_passage();
 _15: /* (97 from 95) */
@@ -648,7 +660,8 @@ _69:
     }
 
     __quex_debug_drop_out(97);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _16: /* (98 from 95) */
@@ -696,7 +709,8 @@ _70:
     }
 
     __quex_debug_drop_out(98);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _17: /* (99 from 95) */
@@ -772,7 +786,8 @@ _71:
     }
 
     __quex_debug_drop_out(99);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _18: /* (101 from 95) (101 from 99) */
@@ -797,7 +812,8 @@ _72:
 }
 
     __quex_debug_drop_out(101);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _19: /* (104 from 95) */
@@ -809,7 +825,8 @@ _74:
 
     __quex_debug_state(104);
     __quex_debug_drop_out(104);
-goto _76;
+    goto _76;
+
 
     __quex_assert_no_passage();
 _20: /* (105 from 95) */
@@ -821,7 +838,8 @@ _77:
 
     __quex_debug_state(105);
     __quex_debug_drop_out(105);
-goto _79;
+    goto _79;
+
 
     __quex_assert_no_passage();
 _21: /* (107 from 139) (107 from 95) (107 from 132) (107 from 109) */
@@ -836,7 +854,8 @@ _80:
 
     __quex_debug_state(107);
     __quex_debug_drop_out(107);
-goto _57;
+    goto _57;
+
 
     __quex_assert_no_passage();
 _22: /* (109 from 95) (109 from 129) (109 from 98) */
@@ -861,7 +880,8 @@ _83:
 }
 
     __quex_debug_drop_out(109);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _23: /* (120 from 99) (120 from 97) */
@@ -886,7 +906,8 @@ _85:
 }
 
     __quex_debug_drop_out(120);
-goto _50;
+    goto _50;
+
 
     __quex_assert_no_passage();
 _24: /* (123 from 99) */
@@ -908,7 +929,8 @@ _87:
 }
 
     __quex_debug_drop_out(123);
-goto _50;
+    goto _50;
+
     /* (*) Terminal states _______________________________________________________
      *
      * States that implement actions of the 'winner patterns.                     */

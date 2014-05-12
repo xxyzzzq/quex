@@ -392,7 +392,7 @@ def _prepare_skip_character_set(ModeName, OptionsDb, CounterDb, IncidenceDb, ter
     ccfactory = CounterDb.get_factory(total_set, Lng.INPUT_P())
 
     new_ppt_list = [
-        PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str)
+        PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory)
         for character_set, incidence_id in ccfactory.get_incidence_id_map()
     ]
 
@@ -409,7 +409,7 @@ def _prepare_skip_range(ModeName, OptionsDb, CounterDb, IncidenceDb,
     if SrSetup is None or len(SrSetup) == 0: return [], []
 
     return [], [
-        PPT_range_skipper(False, MHI, i, data, ModeName, CounterDb, IncidenceDb)
+        PPT_range_skipper(False, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory)
         for i, data in enumerate(SrSetup)
     ]
 
@@ -420,11 +420,11 @@ def _prepare_skip_nested_range(ModeName, OptionsDb, CounterDb, IncidenceDb,
     if SrSetup is None or len(SrSetup) == 0: return [], []
 
     return [], [
-        PPT_range_skipper(True, MHI, i, data, ModeName, CounterDb, IncidenceDb)
+        PPT_range_skipper(True, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory)
         for i, data in enumerate(SrSetup)
     ]
 
-def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str):
+def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory):
     """Generate a PPT for a character set skipper. That is, 
         -- A PatternPriority based on a given MHI and the specified incidence id.
         -- A Pattern to be webbed into the lexical analyzer state machine.
@@ -441,7 +441,7 @@ def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_
     sub_terminal.set_name("Entry to 'skip': %s" % character_set.get_string("hex"))
     return PPT(priority, pattern, sub_terminal)
 
-def PPT_range_skipper(NestedF, MHI, i, data, CounterDb, ModeName, IncidenceDb):
+def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory):
     """Generate a PPT for a range skipper.
     """
     # -- door_id_after: Where to go after the closing character sequence matched:

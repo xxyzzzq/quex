@@ -68,7 +68,7 @@ from   operator         import attrgetter
 def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None):
 
     # Generate Analyzer from StateMachine
-    analyzer = Analyzer.from_state_machine(SM, EngineType, ReloadStateExtern)
+    analyzer = Analyzer.from_StateMachine(SM, EngineType, ReloadStateExtern)
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
@@ -110,7 +110,7 @@ class Analyzer:
         self.__state_db         = {}
 
     @classmethod
-    def from_state_machine(cls, SM, EngineType, ReloadStateExtern=None):
+    def from_StateMachine(cls, SM, EngineType, ReloadStateExtern=None):
         """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
