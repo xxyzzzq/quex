@@ -71,7 +71,8 @@ from quex.engine.interval_handling              import Interval
 from quex.blackboard                            import E_StateIndices, \
                                                        E_Cmd
 
-from quex.engine.tools import TypedDict
+from quex.engine.tools import typed, \
+                              TypedDict
 
 from copy import copy
 
@@ -299,6 +300,7 @@ class MegaState(AnalyzerState):
           been generated.
     ___________________________________________________________________________
     """ 
+    @typed(TheTransitionMap=TransitionMap)
     def __init__(self, StateIndex, TheTransitionMap, SkiDb):
         # A 'PseudoTemplateState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
         # On the long term 'MegaState_DropOut' should be derived from 'DropOut'.

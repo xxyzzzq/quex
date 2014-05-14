@@ -1,4 +1,5 @@
 import quex.engine.generator.state.core      as     state_coder
+import quex.engine.generator.state.entry     as     entry
 import quex.engine.generator.mega_state.core as     mega_state_coder
 from   quex.blackboard                       import setup as Setup, Lng
 
@@ -17,6 +18,11 @@ def do(TheAnalyzer):
     # (*) Init State must be first!
     txt = []
     state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
+
+    # (*) The drop-out catcher, since it is referenced the most.
+    result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
+    txt.extend(result)
+    txt.append(Lng.UNREACHABLE)
 
     # (*) Code the Mega States (implementing multiple states in one)
     for state in TheAnalyzer.mega_state_list:
@@ -42,8 +48,7 @@ def get_frequency_db(StateDB, RemainderStateIndexList):
     # Count number of transitions to a state: frequency_db
     frequency_db = defaultdict(int)
     for state in (StateDB[i] for i in RemainderStateIndexList):
-        if state.transition_map is None:
-            continue
+        assert state.transition_map is not None
         for interval, target_index in state.transition_map:
             frequency_db[target_index] += 1
     return frequency_db

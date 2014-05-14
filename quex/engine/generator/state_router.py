@@ -70,6 +70,7 @@ def get_info(StateIndexList):
             case_index = index
             label      = dial_db.get_label_by_address(index)
         else:
+            assert False, "Is this still an issue?"
             # Transition to a templates 'drop-out'
             door_id    = DoorID.drop_out(- index)
             case_index = dial_db.get_address_by_door_id(door_id)

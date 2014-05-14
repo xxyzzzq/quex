@@ -18,9 +18,6 @@ def do(code, TheState, TheAnalyzer):
     tm = relate_to_TransitionCode(TheState.transition_map)
     transition_block.do(txt, tm)
 
-    # (*) Drop Out ____________________________________________________________
-    drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
-
     # ( ) Post-state entry to init state (if necessary)
     txt.extend(post_txt) 
 

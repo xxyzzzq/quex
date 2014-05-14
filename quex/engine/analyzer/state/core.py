@@ -49,15 +49,13 @@ class Processor(object):
 # If no state transition is possible, then 'drop out actions' are executed.
 #__________________________________________________________________________
 class AnalyzerState(Processor):
-    __slots__ = ("drop_out", 
-                 "map_target_index_to_character_set", 
+    __slots__ = ("map_target_index_to_character_set", 
                  "transition_map") 
 
-    @typed(StateIndex=(int,long), TheTransitionMap=(None, TransitionMap))
+    @typed(StateIndex=(int,long), TheTransitionMap=TransitionMap)
     def __init__(self, StateIndex, TheTransitionMap):
         # Empty transition maps are reported as 'None'
         Processor.__init__(self, StateIndex, Entry())
-        self.drop_out                          = None
         self.map_target_index_to_character_set = None
         self.transition_map                    = TheTransitionMap
 
@@ -68,9 +66,6 @@ class AnalyzerState(Processor):
         assert isinstance(StateIndex, (int, long))
 
         x = AnalyzerState(StateIndex, TransitionMap.from_TargetMap(SM_State.target_map))
-
-        # (*) Drop Out
-        x.drop_out = EngineType.create_DropOut(SM_State)
 
         # (*) Transition
         # Currently, the following is only used for path compression. If the alternative
@@ -138,8 +133,7 @@ class AnalyzerState(Processor):
         if AfterReloadCmdList is not None:
             after_cl.extend(AfterReloadCmdList)
 
-        on_success_ta = TransitionAction(CommandList.from_iterable(after_cl))
-        self.entry.enter(self.index, reload_state.index, on_success_ta)
+        self.entry.enter_CommandList(self.index, reload_state.index, CommandList.from_iterable(after_cl))
         self.entry.categorize(self.index) # Categorize => DoorID is available.
         on_success_door_id = self.entry.get_door_id(self.index, reload_state.index)
 
@@ -148,7 +142,7 @@ class AnalyzerState(Processor):
         if TheAnalyzer.is_init_state_forward(self.index):
             on_failure_door_id = DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)
         else:
-            on_failure_door_id = DoorID.drop_out(self.index)
+            on_failure_door_id = TheAnalyzer.drop_out_DoorID(self.index)
 
         # (3) Create 'Door from X' in Reloader
         assert on_failure_door_id != on_success_door_id

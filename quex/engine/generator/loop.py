@@ -133,8 +133,8 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, CsSm):
                                                        CsSm.on_begin + CcFactory.on_begin)
 
     # OnReEntry
-    tid_reentry = entry.enter(init_state_index, index.get(), 
-                              TransitionAction(CommandList.from_iterable(CsSm.on_begin)))
+    tid_reentry = entry.enter_CommandList(init_state_index, index.get(), 
+                                          CommandList.from_iterable(CsSm.on_begin))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id
