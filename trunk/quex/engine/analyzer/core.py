@@ -37,7 +37,10 @@ _______________________________________________________________________________
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
 import quex.engine.analyzer.optimizer             as     optimizer
-from   quex.engine.analyzer.state.core            import AnalyzerState, ReloadState
+from   quex.engine.analyzer.state.entry           import Entry
+from   quex.engine.analyzer.state.core            import Processor, \
+                                                         AnalyzerState, \
+                                                         ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
                                                          TransitionAction
@@ -53,6 +56,7 @@ from   quex.engine.analyzer.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
+import quex.engine.state_machine.index            as     sm_index
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_IncidenceIDs, \
@@ -108,6 +112,7 @@ class Analyzer:
         self.__engine_type      = EngineType
         self.__init_state_index = InitStateIndex
         self.__state_db         = {}
+        self.drop_out           = Processor(E_StateIndices.DROP_OUT, Entry())
 
     @classmethod
     def from_StateMachine(cls, SM, EngineType, ReloadStateExtern=None):
@@ -119,7 +124,7 @@ class Analyzer:
         assert isinstance(SM, StateMachine)
 
         result.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        result.__state_machine_id = SM.get_id()
+        result.__state_machine_id            = SM.get_id()
 
         # (*) From/To Databases
         #
@@ -128,14 +133,10 @@ class Analyzer:
         #
         result.__from_db, result.__to_db = SM.get_from_to_db()
 
-        # (*) PathTrace database, Successor database
-        result.__trace_db,       \
-        result.__path_element_db = track_analysis.do(SM, result.__to_db)
-
         # (*) Prepare AnalyzerState Objects
-        result.__state_db.update([
-            (state_index, result.prepare_state(SM.states[state_index], state_index))
-            for state_index in result.__trace_db.iterkeys()]
+        result.__state_db.update(
+            (state_index, result.prepare_state(state, state_index))
+            for state_index, state in SM.states.iteritems()
         )
 
         if ReloadStateExtern is None:
@@ -149,16 +150,24 @@ class Analyzer:
         result.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
 
         if not EngineType.requires_detailed_track_analysis():
+            for state_index, state in SM.states.iteritems():
+                result.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index,
+                                                        EngineType.create_DropOut(state))
+
             result.__position_register_map = None
             return result
         else:
+            # (*) PathTrace database, Successor database
+            result.__trace_db,       \
+            result.__path_element_db = track_analysis.do(SM, result.__to_db)
+
             # (*) Drop Out Behavior
             #     The PathTrace objects tell what to do at drop_out. From this, the
             #     required entry actions of states can be derived.
             result.__require_acceptance_storage_db = defaultdict(list)
             result.__require_position_storage_db   = defaultdict(list)
             for state_index, trace_list in result.__trace_db.iteritems():
-                result.__state_db[state_index].drop_out = result.configure_drop_out(state_index)
+                result.drop_out_configure(state_index)
 
             # (*) Entry Behavior
             #     Implement the required entry actions.
@@ -279,12 +288,21 @@ class Analyzer:
         """
         for state in self.__state_db.itervalues():
             state.entry.categorize(state.index)
+        self.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
         for state in self.__state_db.itervalues():
-            if state.transition_map is None: continue
+            assert state.transition_map is not None
             state.transition_map = state.transition_map.relate_to_DoorIDs(self, state.index)
 
         return 
+
+    def drop_out_DoorID(self, StateIndex):
+        """RETURNS: DoorID of the drop-out catcher for the state of the given
+                    'StateIndex'
+        """
+        drop_out_door_id = self.drop_out.entry.get_door_id(E_StateIndices.DROP_OUT, StateIndex)
+        assert drop_out_door_id is not None
+        return drop_out_door_id
                                       
     def init_state(self):
         return self.state_db[self.init_state_index]
@@ -351,7 +369,7 @@ class Analyzer:
             if entry.has_command(E_Cmd.Accepter): return True
         return False
 
-    def configure_drop_out(self, StateIndex):
+    def drop_out_configure(self, StateIndex):
         """____________________________________________________________________
         Every analysis step ends with a 'drop-out'. At this moment it is
         decided what pattern has won. Also, the input position pointer must be
@@ -430,13 +448,14 @@ class Analyzer:
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
-        return drop_out.get_CommandList(accepter, terminal_router)
+        cl = drop_out.get_CommandList(accepter, terminal_router)
+        self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, StateIndex, cl)
 
     def configure_entries(self, SM):
         """DropOut objects may rely on acceptances and input positions being 
            stored. This storage happens at state entries.
            
-           Function 'configure_drop_out()' registers which states have to store
+           Function 'drop_out_configure()' registers which states have to store
            the input position and which ones have to store acceptances. These
            tasks are specified in the two members:
 
@@ -472,7 +491,7 @@ class Analyzer:
         state Z is entered it has to store 'A'. This would cancel the
         possibility of having 'B' accepted here. There is good news:
         
-        ! During the 'configure_drop_out()' the last acceptance is restored    !
+        ! During the 'drop_out_configure()' the last acceptance is restored    !
         ! if and only if there are at least two paths with differing           !
         ! acceptance patterns. Thus, it is sufficient to consider the restore  !
         ! of acceptance in the drop_out as a terminal condition.               !
@@ -489,7 +508,7 @@ class Analyzer:
         # the first state that restores acceptance is the acceptance state itself.
         #
         # (1) Restore only happens if there is non-uniform acceptance. See 
-        #     function 'configure_drop_out(...)'. 
+        #     function 'drop_out_configure(...)'. 
         # (2) Non-uniform acceptance only happens, if there are multiple paths
         #     to the same state with different trailing acceptances.
         # (3) If there was an absolute acceptance, then all previous trailing 
@@ -530,7 +549,7 @@ class Analyzer:
                          Critical Point: Loops and Forks
 
         If a loop is reached then the input position can no longer be determined
-        by the transition number. The good news is that during 'configure_drop_out'
+        by the transition number. The good news is that during 'drop_out_configure'
         any state that has undetermined positioning restores the input position.
         Thus 'restore_position_f(register)' is enough to catch this case.
         """

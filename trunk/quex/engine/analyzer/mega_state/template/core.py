@@ -319,7 +319,7 @@ class ElectDB(dict):
 
         # Represent AnalyzerState-s by PseudoTemplateState-s so they behave
         # uniformly with TemplateState-s.
-        result = dict((state_index, PseudoTemplateState(state)) \
+        result = dict((state_index, PseudoTemplateState(state, TheAnalyzer.drop_out)) \
                       for state_index, state in ifilter(condition, StateDB.iteritems()) )
 
         self.update(result)

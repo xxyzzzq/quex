@@ -14,7 +14,7 @@
 #########################################################################################################
 import quex.engine.generator.languages.cpp               as     cpp
 from   quex.engine.generator.code.base                   import SourceRef
-from   quex.engine.analyzer.state.core                   import AnalyzerState
+from   quex.engine.analyzer.state.core                   import Processor
 from   quex.engine.analyzer.commands.core                import E_R, \
                                                                 RouterContentElement
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
@@ -663,11 +663,14 @@ class Lng_Cpp(dict):
             txt.append("__quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
                        % (TheState.index, TheState.index))
         else:
-            assert isinstance(TheState, AnalyzerState)
+            assert isinstance(TheState, Processor)
             if TheAnalyzer.is_init_state_forward(TheState.index): 
                 txt.append("__quex_debug(\"Init State\\n\");\n")
                 txt.append(1)
-            txt.append("__quex_debug_state(%i);\n" % TheState.index)
+            elif TheState.index == E_StateIndices.DROP_OUT:
+                txt.append("__quex_debug(\"Drop-Out Catcher\\n\");\n")
+            else:
+                txt.append("__quex_debug_state(%i);\n" % TheState.index)
         return 
 
     def POSITION_REGISTER(self, Index):

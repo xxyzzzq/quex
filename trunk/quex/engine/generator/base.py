@@ -32,8 +32,6 @@ from   quex.blackboard import E_IncidenceIDs, \
 
 from   copy        import copy, deepcopy
 from   collections import defaultdict
-
-
 # MAIN:      sm --> analyzer
 #            sm_txt --> code_analyzer
 #            terminal_txt --> code_terminals

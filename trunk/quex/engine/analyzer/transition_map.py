@@ -27,23 +27,20 @@ class TransitionMap(list):
     """
     @classmethod
     def from_TargetMap(cls, TM):
-        if TM is None:
-            return None
-
-        tm_map = TM.get_map()
-        if len(tm_map) == 0:
-            return None
-
+        """Derives a TransitionMap object from a target map of a 'normal' state
+        machine state.
+        """
         result = cls()
-        for target, character_set in tm_map.iteritems():
-            assert not character_set.is_empty()
-            result.extend((interval.clone(), target) 
-                        for interval in character_set.get_intervals(PromiseToTreatWellF=True))
-        assert len(result) != 0 # Empty target maps would be 'None'
-        result.sort()
-        # Empty transition maps shall not fill their gaps!
-        if len(result) != 0:
-            result.fill_gaps(E_StateIndices.DROP_OUT)
+        if (TM is not None) and (not TM.is_empty()): 
+
+            for target, character_set in TM.get_map().iteritems():
+                assert not character_set.is_empty()
+                result.extend((interval.clone(), target) 
+                            for interval in character_set.get_intervals(PromiseToTreatWellF=True))
+            assert len(result) != 0 # Empty target maps have been handled before
+            result.sort()
+
+        result.fill_gaps(E_StateIndices.DROP_OUT)
         return result
 
     @classmethod
@@ -110,7 +107,7 @@ class TransitionMap(list):
         """
         def relate(Target):
             if Target == E_StateIndices.DROP_OUT:
-                return DoorID.drop_out(StateIndex)
+                te     = TheAnalyzer.drop_out.entry
             elif  Target == E_StateIndices.RELOAD_FORWARD \
                or Target == E_StateIndices.RELOAD_BACKWARD:
                 te = TheAnalyzer.reload_state.entry
@@ -125,15 +122,15 @@ class TransitionMap(list):
         
         return self.__class__.from_iterable(self, relate)
 
-    def relate_to_TargetByStateKeys(self, StateIndex):
+    def relate_to_TargetByStateKeys(self, StateIndex, DropOutCatcher):
         """ASSUME: The transition map targets DoorID-s. 
         
         Then the internal DoorID-s are translated into TargetByStateKey objects.
         """
         def relate(TargetDoorId):
             if TargetDoorId.drop_out_f():
-                transition_id = TransitionID(E_StateIndices.DROP_OUT, StateIndex, TriggerId=0)
-                door_id       = DoorID.drop_out(StateIndex)
+                transition_id = TransitionID(DropOutCatcher.index, StateIndex, TriggerId=0)
+                door_id       = DropOutCatcher.get_door_id(StateIndex)
             else:
                 transition_id = TransitionID(TargetDoorId.state_index, StateIndex, TriggerId=0)
                 door_id       = TargetDoorId

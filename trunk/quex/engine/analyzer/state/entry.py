@@ -1,7 +1,8 @@
-from   quex.engine.analyzer.commands.core              import Accepter, StoreInputPosition, Command
+from   quex.engine.analyzer.commands.core         import Accepter, StoreInputPosition, Command, CommandList
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
-from   quex.engine.tools                          import TypedDict
+from   quex.engine.tools                          import typed, \
+                                                         TypedDict
 from   quex.blackboard                            import setup as Setup, \
                                                          E_IncidenceIDs, \
                                                          E_Cmd, \
@@ -96,7 +97,7 @@ class Entry(object):
                    None,  if the transition is not implemented in this
                           state.
         """
-        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, 0))
+        action = self.__db.get(TransitionID(StateIndex, FromStateIndex, TriggerId))
         if action is None: return None
         else:              return action.door_id
 
@@ -124,6 +125,10 @@ class Entry(object):
 
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
+
+    @typed(Cl=CommandList)
+    def enter_CommandList(self, ToStateIndex, FromStateIndex, Cl):
+        return self.enter(ToStateIndex, FromStateIndex, TransitionAction(Cl))
 
     def enter(self, ToStateIndex, FromStateIndex, TheAction):
         assert isinstance(TheAction, TransitionAction)

@@ -9,8 +9,7 @@ from   quex.blackboard import E_StateIndices, \
                               Lng
 
 def relate_to_TransitionCode(tm):
-    if tm is None:
-        return None
+    assert tm is not None
     tm.assert_continuity()
     tm.assert_adjacency()
     return TransitionMap.from_iterable(tm, TransitionCodeFactory.do)

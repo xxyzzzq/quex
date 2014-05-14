@@ -11,7 +11,7 @@ def find_core(sm, SelectF=False):
     for state in analyzer.state_db.itervalues():
         state.entry.categorize(state.index)
     for state in analyzer.state_db.itervalues():
-        if state.transition_map is None: continue
+        assert state.transition_map is not None
         state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
 
     AvailableStateIndexSet = set(analyzer.state_db.keys())

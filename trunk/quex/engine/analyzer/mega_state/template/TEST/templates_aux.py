@@ -1,7 +1,7 @@
 import quex.engine.state_machine.index                      as index
 from   quex.engine.analyzer.core                            import Analyzer
 from   quex.engine.analyzer.transition_map                  import TransitionMap
-from   quex.engine.analyzer.state.core                      import AnalyzerState
+from   quex.engine.analyzer.state.core                      import AnalyzerState, Processor
 from   quex.engine.analyzer.state.entry                     import Entry
 from   quex.engine.analyzer.state.entry_action              import TransitionAction, \
                                                                    TransitionID
@@ -38,9 +38,10 @@ def get_AnalyzerState_Init(InitStateIndex, StateIndexList):
     )
     return get_AnalyzerState(InitStateIndex, init_tm)
 
-def get_TemplateState(State, Name=None):
+@typed(DropOutCatcher=Processor)
+def get_TemplateState(State, DropOutCatcher, Name=None)
     if not isinstance(State, TemplateState): 
-        State = PseudoTemplateState(State)
+        State = PseudoTemplateState(State, DropOutCatcher)
 
     if Name is not None:
         print "State %s:" % Name, State.state_index_sequence()
@@ -117,7 +118,7 @@ def setup_TemplateState(analyzer, StateIndexList):
     assert len(StateIndexList) > 1
 
     s = [
-        get_TemplateState(analyzer.state_db[i])
+        get_TemplateState(analyzer.state_db[i], analyzer.drop_out)
         for i in StateIndexList
     ]
     candidate = TemplateStateCandidate(s[0], s[1])
@@ -158,8 +159,8 @@ def combine(analyzer, A, B, A_Name="A", B_Name="B", DrawF=False):
     # Make sure, that the states are 'TemplateState'-s, because the 
     # combination algo does only work on TemplateState-s.
     print "_" * 80
-    A = get_TemplateState(A, A_Name)
-    B = get_TemplateState(B, B_Name)
+    A = get_TemplateState(A, analyzer.drop_out, A_Name)
+    B = get_TemplateState(B, analyzer.drop_out, B_Name)
     print
 
     candidate = TemplateStateCandidate(A, B)

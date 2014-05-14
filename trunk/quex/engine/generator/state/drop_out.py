@@ -13,15 +13,13 @@ from   quex.blackboard                            import E_IncidenceIDs, E_State
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     
     EngineType = TheAnalyzer.engine_type
-    if DefineLabelF:
-        txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(StateIndex)))
 
     if MentionStateIndexF:
         txt.append(1)
         txt.append("__quex_debug_drop_out(%i);\n" % StateIndex)
 
     txt.extend(
-        "%s\n" % Lng.COMMAND(x) for x in DropOut
+        Lng.GOTO(TheAnalyzer.drop_out_DoorID(StateIndex))
     )
     return 
 

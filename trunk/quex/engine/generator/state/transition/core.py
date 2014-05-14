@@ -9,12 +9,7 @@ from   copy      import copy
 from   itertools import islice
 
 def do(txt, TM):
-    global Lng
-    
-
-    if TM is None:
-        return
-
+    assert TM is not None
     assert len(TM) != 0
 
     # The range of possible characters may be restricted. It must be ensured,
@@ -45,7 +40,7 @@ def do(txt, TM):
     if outstanding_list is not None: 
         txt.append(Lng.ENDIF)
 
-    txt.append("\n")
+    txt.append("%s\n" % Lng.UNREACHABLE)
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.
@@ -146,7 +141,6 @@ def __get_switch(txt, TriggerMap):
 
     case_code_list = []
     for interval, target in TriggerMap:
-        if target.drop_out_f(): continue
         target_code = []
         __get_transition(target_code, (interval, target))
         case_code_list.append((range(interval.begin, interval.end), target_code))
@@ -157,7 +151,6 @@ def __get_switch(txt, TriggerMap):
 
 def __get_bisection(txt, TriggerMap):
     
-
     BisectionIndex = bisection.get_index(TriggerMap)
 
     lower  = TriggerMap[:BisectionIndex]
@@ -168,11 +161,6 @@ def __get_bisection(txt, TriggerMap):
 
     HighBegin = higher[0][0].begin
     LowBegin  = lower[0][0].begin
-
-    def is_only_drop_out(X):
-        """RETURNS: True, if all intervals (actually n==1) in X only transit 
-                   to DROP_OUT."""
-        return len(X) == 1 and X[0][1].drop_out_f()
 
     def is_single_character(X):
         """RETURNS: True, if interval of X transits on a single character."""
@@ -193,20 +181,11 @@ def __get_bisection(txt, TriggerMap):
     # Note, that an '<' does involve a subtraction. A '==' only a comparison.
     # The latter is safe to be faster (or at least equally fast) on any machine.
     txt.append(0)
-    if is_only_drop_out(higher):
-        txt.append(get_if_statement())
-        __bisection(txt, lower)
-        # No 'else' case for what comes BEHIND middle => drop_out
-    elif is_only_drop_out(lower):
-        txt.append(get_if_statement(InverseF=True))
-        __bisection(txt, higher)
-        # No 'else' case for what comes BEFORE middle => drop_out
-    else:
-        txt.append(get_if_statement())
-        __bisection(txt, lower)
-        txt.append(0)
-        txt.append(Lng.ELSE)
-        __bisection(txt, higher)
+    txt.append(get_if_statement())
+    __bisection(txt, lower)
+    txt.append(0)
+    txt.append(Lng.ELSE)
+    __bisection(txt, higher)
 
     txt.append(0)
     txt.append(Lng.END_IF())
@@ -245,15 +224,11 @@ def __get_comparison_sequence(txt, TriggerMap):
 
         if i != 0: txt.append("\n")
         txt.append(0)
-        if   i == LastI:
-            txt.append(Lng.ELSE)
-        elif interval.size() == 1:
-            txt.append(Lng.IF_INPUT("==", interval.begin, i==0))
-        else:
-            txt.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
+        if   i == LastI:           txt.append(Lng.ELSE)
+        elif interval.size() == 1: txt.append(Lng.IF_INPUT("==", interval.begin, i==0))
+        else:                      txt.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
 
-        if not target.drop_out_f():
-            __get_transition(txt, entry, IndentF=True)
+        __get_transition(txt, entry, IndentF=True)
 
     txt.append("\n")
     txt.append(0)

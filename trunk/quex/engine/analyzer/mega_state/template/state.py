@@ -5,13 +5,14 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            MegaState_DropOut, \
                                                            StateKeyIndexDB
 from   quex.engine.analyzer.transition_map          import TransitionMap        
+from   quex.engine.analyzer.state.core              import Processor
+from   quex.engine.analyzer.state.entry             import Entry
 from   quex.engine.analyzer.state.entry_action      import TransitionID
-from   quex.engine.analyzer.door_id_address_label   import DoorID, \
-                                                           DoorID_Scheme
-from   quex.engine.analyzer.commands.core                import TemplateStateKeySet
+from   quex.engine.analyzer.commands.core           import TemplateStateKeySet
 import quex.engine.state_machine.index              as     index
-from   quex.engine.interval_handling                       import Interval
-from   quex.engine.tools                            import UniformObject
+from   quex.engine.interval_handling                import Interval
+from   quex.engine.tools                            import typed, \
+                                                           UniformObject
 
 from   quex.blackboard import E_StateIndices
 
@@ -35,9 +36,6 @@ class TemplateState(MegaState):
         ski_db = StateKeyIndexDB(StateA.state_index_sequence() + StateB.state_index_sequence())
         MegaState.__init__(self, index.get(), transition_map, ski_db)
 
-        self.uniform_DropOut           = UniformObject.from_iterable((
-                                                       StateA.uniform_DropOut,
-                                                       StateB.uniform_DropOut))
         self.uniform_entry_CommandList = UniformObject.from_iterable((
                                                        StateA.uniform_entry_CommandList,
                                                        StateB.uniform_entry_CommandList))
@@ -103,12 +101,14 @@ class PseudoTemplateState(MegaState):
     instead of mapping to a target state index.
     ___________________________________________________________________________
     """
-    def __init__(self, Represented_AnalyzerState):
+    @typed(DropOutCatcher=Processor)
+    def __init__(self, Represented_AnalyzerState, DropOutCatcher):
         assert not isinstance(Represented_AnalyzerState, MegaState)
         state_index            = Represented_AnalyzerState.index
         transition_map         = Represented_AnalyzerState.transition_map
 
-        adapted_transition_map = transition_map.relate_to_TargetByStateKeys(state_index)
+        adapted_transition_map = transition_map.relate_to_TargetByStateKeys(state_index, 
+                                                                            DropOutCatcher)
         ski_db                 = StateKeyIndexDB([state_index])
         MegaState.__init__(self, state_index, adapted_transition_map, ski_db)
 
