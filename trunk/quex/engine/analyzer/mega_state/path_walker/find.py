@@ -33,9 +33,9 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
 
     return path_list
 
-def DropOutConsideration_relate(DoorId, PathWalkerState_index):
-    if not DoorId.drop_out_f(): return DoorId
-    else:                       return DoorID.drop_out(PathWalkerState_index)
+def DropOutConsideration_relate(PathWalkersDropOutDoorId, Target):
+    if not Target.drop_out_f(): return None
+    else:                       return PathWalkersDropOutDoorId
 
 def DropOutConsideration_cmp(DoorId_A, DoorId_B):
     """For transition maps on path DropOut == DropOut. At the end of the

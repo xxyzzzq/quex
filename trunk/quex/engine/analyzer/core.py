@@ -36,6 +36,7 @@ _______________________________________________________________________________
 """
 
 import quex.engine.analyzer.track_analysis        as     track_analysis
+from   quex.engine.analyzer.paths_to_state        import PathsToState
 import quex.engine.analyzer.optimizer             as     optimizer
 from   quex.engine.analyzer.state.entry           import Entry
 from   quex.engine.analyzer.state.core            import Processor, \
@@ -58,6 +59,7 @@ import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
 import quex.engine.state_machine.index            as     sm_index
 from   quex.engine.state_machine.core             import StateMachine
+from   quex.engine.tools                          import typed
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_IncidenceIDs, \
                                E_TransitionN, \
@@ -167,7 +169,8 @@ class Analyzer:
             result.__require_acceptance_storage_db = defaultdict(list)
             result.__require_position_storage_db   = defaultdict(list)
             for state_index, trace_list in result.__trace_db.iteritems():
-                result.drop_out_configure(state_index)
+                cl = result.drop_out_configure(state_index, trace_list)
+                result.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index, cl)
 
             # (*) Entry Behavior
             #     Implement the required entry actions.
@@ -369,7 +372,8 @@ class Analyzer:
             if entry.has_command(E_Cmd.Accepter): return True
         return False
 
-    def drop_out_configure(self, StateIndex):
+    @typed(TraceList=PathsToState)
+    def drop_out_configure(self, StateIndex, TraceList):
         """____________________________________________________________________
         Every analysis step ends with a 'drop-out'. At this moment it is
         decided what pattern has won. Also, the input position pointer must be
@@ -403,7 +407,7 @@ class Analyzer:
         _______________________________________________________________________
         """
         # (*) Acceptance Checker
-        accept_sequence = self.__trace_db[StateIndex].uniform_acceptance_sequence()
+        accept_sequence = TraceList.uniform_acceptance_sequence()
         if accept_sequence is not None:
             # (i) Uniform Acceptance Pattern for all paths through the state.
             # 
@@ -427,7 +431,7 @@ class Analyzer:
             accepter = None # Only rely on 'last_acceptance' being stored.
 
             # Dependency: Related states are required to store acceptance at state entry.
-            for accepting_state_index in self.__trace_db[StateIndex].accepting_state_index_list():
+            for accepting_state_index in TraceList.accepting_state_index_list():
                 self.__require_acceptance_storage_db[accepting_state_index].append(StateIndex)
 
             # Later, a function will use the '__require_acceptance_storage_db' to 
@@ -435,7 +439,7 @@ class Analyzer:
 
         # (*) Terminal Router
         terminal_router = Router()
-        for x in self.__trace_db[StateIndex].positioning_info():
+        for x in TraceList.positioning_info():
             terminal_router.content.add(x.acceptance_id, x.transition_n_since_positioning)
 
             if x.transition_n_since_positioning != E_TransitionN.VOID: continue
@@ -448,8 +452,7 @@ class Analyzer:
             # Later, a function will use the '__require_position_storage_db' to 
             # implement the position storage.
 
-        cl = drop_out.get_CommandList(accepter, terminal_router)
-        self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, StateIndex, cl)
+        return drop_out.get_CommandList(accepter, terminal_router)
 
     def configure_entries(self, SM):
         """DropOut objects may rely on acceptances and input positions being 

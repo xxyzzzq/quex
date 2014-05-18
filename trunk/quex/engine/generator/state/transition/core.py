@@ -40,7 +40,7 @@ def do(txt, TM):
     if outstanding_list is not None: 
         txt.append(Lng.ENDIF)
 
-    txt.append("%s\n" % Lng.UNREACHABLE)
+    txt.append("\n%s\n" % Lng.UNREACHABLE)
 
 class SubTriggerMap(object):
     """A trigger map that 'points' into a subset of a trigger map.

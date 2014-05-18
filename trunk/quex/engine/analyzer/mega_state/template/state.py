@@ -2,13 +2,13 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
                                                            TargetByStateKey, \
                                                            StateKeyIndexDB, \
                                                            MegaState_Entry, \
-                                                           MegaState_DropOut, \
                                                            StateKeyIndexDB
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.core              import Processor
 from   quex.engine.analyzer.state.entry             import Entry
 from   quex.engine.analyzer.state.entry_action      import TransitionID
-from   quex.engine.analyzer.commands.core           import TemplateStateKeySet
+from   quex.engine.analyzer.commands.core           import TemplateStateKeySet, \
+                                                           E_R
 import quex.engine.state_machine.index              as     index
 from   quex.engine.interval_handling                import Interval
 from   quex.engine.tools                            import typed, \
@@ -120,16 +120,13 @@ class PseudoTemplateState(MegaState):
             if self.uniform_entry_CommandList.is_uniform() == False:
                 break # No more need to investigate
 
-        # Uniform DropOut:
-        self.uniform_DropOut = UniformObject(Represented_AnalyzerState.drop_out)
-
-        self._finalize_absorb_Entry_DropOut_from_state(Represented_AnalyzerState)
+        self.entry.absorb(Represented_AnalyzerState.entry)
 
     @property
     def target_scheme_n(self):  
         return 0
 
-    def _finalize_transition_map(self):
+    def _finalize_transition_map(self, TheAnalyzer):
         pass # Nothing to be done
 
     def _finalize_entry_CommandLists(self): 

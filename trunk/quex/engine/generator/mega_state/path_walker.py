@@ -102,8 +102,6 @@ def framework(txt, PWState, TheAnalyzer):
              implemented states had in common. Now, transitions to 
              states outside the path may happen.
     """
-    
-
     # Three Versions of PathWalker Heads:
     if PWState.uniform_door_id is not None:
         # UNIFORM PATHS: Along the path, always the same (or no) commands are executed.

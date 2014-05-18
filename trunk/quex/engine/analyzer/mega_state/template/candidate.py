@@ -2,7 +2,6 @@
 # (C) 2010-2012 Frank-Rene Schäfer
 from   quex.engine.analyzer.mega_state.core                         import TargetByStateKey
 import quex.engine.analyzer.mega_state.template.gain_entry          as     gain_entry         
-import quex.engine.analyzer.mega_state.template.gain_drop_out       as     gain_drop_out      
 import quex.engine.analyzer.mega_state.template.gain_transition_map as     gain_transition_map
 from   quex.engine.analyzer.door_id_address_label          import DoorID_Scheme
 from   quex.engine.analyzer.transition_map                 import TransitionMap       
@@ -44,7 +43,6 @@ class TemplateStateCandidate(object):
 
         # (*) Compute gain of combining the two states
         entry_gain          = gain_entry.do(StateA.entry, StateB.entry)
-        drop_out_gain       = gain_drop_out.do(StateA.drop_out, StateB.drop_out)
 
         transition_map_gain = gain_transition_map.do(StateA.transition_map,
                                                      len(StateA.implemented_state_index_set()),
@@ -53,8 +51,7 @@ class TemplateStateCandidate(object):
                                                      len(StateB.implemented_state_index_set()),
                                                      StateB.target_scheme_n)
 
-        self.__gain =   entry_gain + drop_out_gain \
-                      + transition_map_gain
+        self.__gain = entry_gain + transition_map_gain
 
         # (*) Store reference to the two states
         self.__state_a = StateA

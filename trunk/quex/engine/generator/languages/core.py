@@ -276,6 +276,21 @@ class Lng_Cpp(dict):
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
+        elif Cmd.id == E_Cmd.RouterOnStateKey:
+            case_list = [
+                (state_key, Lng.GOTO(door_id)) for state_key, door_id in Cmd.content
+            ]
+            if Cmd.content.register == E_R.PathIterator:
+                key_txt = "path_iterator - path_walker_%i_path_base" % Cmd.content.mega_state_index 
+            elif Cmd.content.register == E_R.TemplateStateKey:
+                key_txt = "state_key"
+            else:
+                assert False
+
+            txt = Lng.SELECTION(key_txt, case_list)
+            result = "".join(self.GET_PLAIN_STRINGS(txt))
+            return result
+
         elif Cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
             pre_context_id = Cmd.content.pre_context_id
             block = Lng.position_and_goto(self.__analyzer.engine_type, 

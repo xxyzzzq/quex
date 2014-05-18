@@ -44,10 +44,14 @@ class TransitionMap(list):
         return result
 
     @classmethod
-    def from_iterable(cls, Iterable, TheTargetFactory=deepcopy):
+    def from_iterable(cls, Iterable, TheTargetFactory=None):
         result = cls()
-        result.extend((interval.clone(), TheTargetFactory(target)) 
-                      for interval, target in Iterable)
+        if TheTargetFactory is None:
+            result.extend((interval.clone(), target) 
+                          for interval, target in Iterable)
+        else:
+            result.extend((interval.clone(), TheTargetFactory(target)) 
+                          for interval, target in Iterable)
         return result
 
     def clone(self):
