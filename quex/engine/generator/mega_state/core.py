@@ -73,101 +73,10 @@ def do(txt, TheState, TheAnalyzer):
     tm = MegaState_relate_to_transition_code(TheState, TheAnalyzer, specific.state_key_str)
     transition_block.do(txt, tm)
 
-    # (*) Drop Out ____________________________________________________________
-    drop_out_scheme_do(txt, TheState, TheAnalyzer, 
-                       specific.state_key_str, 
-                       specific.debug_drop_out_str)
-
     # (*) Request necessary variable definition _______________________________
     specific.require_data(TheState, TheAnalyzer)
 
     specific.debug_info_undo_map_state_key_to_state_index(txt)
     return
 
-def drop_out_scheme_do(txt, TheState, TheAnalyzer, StateKeyString, DebugString):
-    """DropOut Section:
-
-       The drop out section is the place where we come if the transition map
-       does not trigger to another state. We also land here if the reload fails.
-
-       A 'DropOut' object is a dictionary which maps from a command list
-       to the list of states which it represents, i.e.
-
-           map:       CommandList --> state_index_set
-
-       which means that in the expression
-        
-              for command_list, state_index_set in DropOut.iteritems():
-                  ...
-
-       all states with indices from 'state_index_set' implement the drop
-       out as the given 'command_list'.
-
-       There are two possible cases: 
-       
-       (1) All DropOut-s of the MegaState are the same (uniform). Then 
-           nothing has to be distinguished. Simply implement the CommandList.
-
-       (2) DropOut-s for states differ. Than the state key is used to 
-           distinguish between the different drop out CommandList-s.
-       
-           _4711: /* Address of the drop out */
-               switch( state_key ) {
-               case 0:
-                     ... drop out of state 815 ...
-               case 1: 
-                     ... drop out of state 541 ...
-               }
-    """
-    
-    # (*) Central Label for the Templates Drop Out
-    #     (The rules for having or not having a label here are complicated, 
-    #      so rely on the label's usage database.)
-    txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(TheState.index)))
-    txt.append("    %s\n" % DebugString) 
-
-    uniform_drop_out, state_index_set = TheState.drop_out.get_uniform_prototype()
-
-    # (*) Drop Out Section(s)
-    if uniform_drop_out is not None:
-        # uniform drop outs => no 'switch-case' required
-        for state_index in state_index_set:
-            txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(state_index)))
-
-        drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
-                    DefineLabelF=False, MentionStateIndexF=False)
-    else:
-        # There must be more than one drop-out scheme. Otherwise, it would be 
-        # uniform.
-        assert len(TheState.drop_out) > 1
-
-        # non-uniform drop outs => route by 'state_key'
-        case_list = []
-        assert_remainder = set( 
-            TheState.map_state_index_to_state_key(state_index)
-            for state_index in TheState.implemented_state_index_set() 
-        )
-
-        for drop_out_object, state_index_set in TheState.drop_out.iteritems():
-            # state keys related to drop out
-            state_key_list = map(lambda i: TheState.map_state_index_to_state_key(i), state_index_set)
-            assert assert_remainder.issuperset(state_key_list)
-            assert_remainder.difference_update(state_key_list)
-
-            # drop out action
-            # Implement drop-out for each state key. 'state_key_list' combines
-            # states that implement the same drop-out behavior. Same drop-outs
-            # are implemented only once.
-            case_txt = []
-            for state_index in state_index_set:
-                case_txt.append(IfDoorIdReferencedLabel(DoorID.drop_out(state_index)))
-            drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
-                        DefineLabelF=False, MentionStateIndexF=False)
-            case_list.append((state_key_list, case_txt))
-    
-        assert len(assert_remainder) == 0, "Missing: '%s'" % assert_remainder
-
-        case_txt = Lng.SELECTION(StateKeyString, case_list)
-        Lng.INDENT(case_txt)
-        txt.extend(case_txt)
 

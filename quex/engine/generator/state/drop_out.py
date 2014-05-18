@@ -4,12 +4,6 @@ from   quex.blackboard                            import E_IncidenceIDs, E_State
                                                          E_TransitionN, E_PostContextIDs, E_PreContextIDs, \
                                                          Lng
 
-#drop_out.do(txt, TheState.index, TheState.drop_out, TheAnalyzer)
-#drop_out.do(txt, TheState.index, uniform_drop_out, TheAnalyzer, \
-#            DefineLabelF=False, MentionStateIndexF=False)
-#drop_out.do(case_txt, TheState.index, drop_out_object, TheAnalyzer, 
-#            DefineLabelF=False, MentionStateIndexF=False)
-
 def do(txt, StateIndex, DropOut, TheAnalyzer, DefineLabelF=True, MentionStateIndexF=True):
     
     EngineType = TheAnalyzer.engine_type

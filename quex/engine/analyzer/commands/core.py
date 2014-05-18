@@ -488,6 +488,62 @@ class RouterContent:
     def __len__(self):
         return len(self.__list)
 
+class RouterOnStateKeyContent:
+    """_________________________________________________________________________
+
+    Implements:
+
+        switch( path_iterator - base ) {
+            0: goto DoorID(drop out of state '0');
+            1: goto DoorID(drop out of state '1');
+            2: goto DoorID(drop out of state '2');
+            ...
+        }
+    ___________________________________________________________________________
+    """
+    def __init__(self):
+        Command.__init__(self)
+        self.__list = []
+
+    def configure(self, Register, MegaStateIndex):
+        assert Register in E_R
+        self.register         = Register
+        self.mega_state_index = MegaStateIndex
+
+    def clone(self):
+        result = RouterOnStateKey()
+        result.__list = [ deepcopy(x) for x in self.__list ]
+        return result
+    
+    def add(self, StateKey, DoorId):
+        self.__list.append((StateKey, DoorId))
+
+    # Require '__hash__' and '__eq__' to be element of a set.
+    def __hash__(self): 
+        xor_sum = 0
+        for i, x in enumerate(self.__list):
+            xor_sum ^= i * hash(x)
+        return xor_sum
+
+    def __eq__(self, Other):
+        if   not isinstance(Other, self.__class__): return False
+        return self.__list == Other.__list
+
+    def __ne__(self, Other):
+        return not (self == Other)
+
+    def __iter__(self):
+        for x in self.__list:
+            yield x
+
+    def __str__(self):
+        txt = [ "on last_acceptance:\n" ]
+        txt.extend(str(x) for x in self.__list)
+        return "".join(txt)
+
+    def __len__(self):
+        return len(self.__list)
+
 #______________________________________________________________________________
 # CommandInfo: Information about a command. CommandInfo-s provide information
 #     about commands based on the command identifier. That is:
@@ -612,6 +668,8 @@ def __configure():
                                               (E_R.PathIterator,w))
     c(E_Cmd.Router,                           RouterContent, 
                                               (E_R.AcceptanceRegister,r), (E_R.InputP,w), (E_R.ThreadOfControl,w))
+    c(E_Cmd.RouterOnStateKey,                 RouterOnStateKeyContent, 
+                                              (E_R.TemplateStateKey,r), (E_R.PathIterator,r), (E_R.ThreadOfControl,w))
     c(E_Cmd.TemplateStateKeySet,              ("state_key",),
                                               (E_R.TemplateStateKey,w))
     #
@@ -775,6 +833,11 @@ def Accepter():
 
 def Router():
     return Command(E_Cmd.Router)
+
+def RouterOnStateKey(Register, MegaStateIndex):
+    result = Command(E_Cmd.RouterOnStateKey)
+    result.content.configure(Register, MegaStateIndex)
+    return result
 
 def QuexDebug(TheString):
     return Command(E_Cmd.QuexDebug, TheString)

@@ -110,9 +110,13 @@ where the path iterator (~ state  key) is set to the appropriate position.
 
 (C) 2009-2013 Frank-Rene Schaefer
 """
+from   quex.engine.analyzer.commands.core                import RouterOnStateKey, \
+                                                                CommandList, \
+                                                                E_R
 import quex.engine.analyzer.mega_state.path_walker.find  as     find
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.blackboard                                   import E_Compression
+from   quex.blackboard                                   import E_Compression, \
+                                                                E_StateIndices
 
 from   collections import defaultdict
 from   copy        import copy
@@ -312,6 +316,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
     PathWalkerState-s.  
     """
     path_walker_list = []
+    # (*) Collect path walkers into groups of similar ones
     for path in CharacterPathList:
         for path_walker in path_walker_list:
             # Set-up the walk in an existing PathWalkerState
@@ -321,7 +326,7 @@ def group(CharacterPathList, TheAnalyzer, CompressionType):
             # Create a new PathWalkerState
             path_walker = PathWalkerState(path, TheAnalyzer)
             path_walker_list.append(path_walker)
-    
+
     return path_walker_list
 
 def path_list_assert_consistency(path_list, TheAnalyzer, AvailableStateIndexList, CompressionType):

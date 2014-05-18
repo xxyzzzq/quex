@@ -1,17 +1,17 @@
 # (C) 2010-2013 Frank-Rene Schaefer
-from   quex.engine.analyzer.transition_map      import TransitionMap   
-from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.analyzer.commands.core            import PathIteratorSet
-from   quex.engine.analyzer.mega_state.core     import MegaState, \
-                                                       TargetByStateKey, \
-                                                       StateKeyIndexDB, \
-                                                       MegaState_Entry, \
-                                                       MegaState_DropOut
+from   quex.engine.analyzer.transition_map        import TransitionMap   
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.analyzer.commands.core         import PathIteratorSet, \
+                                                         E_R
+from   quex.engine.analyzer.mega_state.core       import MegaState, \
+                                                         TargetByStateKey, \
+                                                         StateKeyIndexDB, \
+                                                         MegaState_Entry
 from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \
                                                                   DropOutConsideration_relate
-import quex.engine.state_machine.index          as     index
-from   quex.engine.tools                        import UniformObject
-from   quex.blackboard                          import E_Compression, E_Cmd
+import quex.engine.state_machine.index             as     index
+from   quex.engine.tools                           import UniformObject
+from   quex.blackboard                             import E_Compression, E_Cmd
 
 from   itertools import izip
 
@@ -55,16 +55,10 @@ class PathWalkerState(MegaState):
         my_index       = index.get()
         ski_db         = StateKeyIndexDB([x.state_index for x in FirstPath.step_list],
                                          IgnoredListIndex=len(FirstPath.step_list)-1)
-        transition_map = TransitionMap.from_iterable(
-            (interval, DropOutConsideration_relate(target, my_index))
-            for interval, target in FirstPath.transition_map
-        )
-        transition_map.combine_adjacents()
-        MegaState.__init__(self, my_index, transition_map, ski_db)
+        MegaState.__init__(self, my_index, FirstPath.transition_map, ski_db)
 
         # Uniform CommandList along entries on the path (optional)
         self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
-        self.uniform_DropOut           = FirstPath.uniform_DropOut.clone()
 
         self.__path_list = [ FirstPath.step_list ]
 
@@ -125,8 +119,7 @@ class PathWalkerState(MegaState):
             return False
 
         if CompressionType == E_Compression.PATH_UNIFORM:
-            if    (not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList)) \
-               or (not self.uniform_DropOut.fit(Path.uniform_DropOut)):
+            if not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList):
                 return False
 
         return True
@@ -151,7 +144,6 @@ class PathWalkerState(MegaState):
         # (2) Absorb Entry/DropOut Information
         #
         self.uniform_entry_CommandList <<= Path.uniform_entry_CommandList
-        self.uniform_DropOut           <<= Path.uniform_DropOut
 
         return True
 
@@ -189,12 +181,20 @@ class PathWalkerState(MegaState):
         # assigned with new DoorID-s. 
         assert len(self.entry.transition_reassignment_candidate_list) > 0
 
-    def _finalize_transition_map(self):
-        """Nothing to be done. All re-assigned transitions lie on the path. The
-        path is implemented by the character sequence and not part of the 
-        transition map.
+    def _finalize_transition_map(self, TheAnalyzer):
+        """All drop-outs of this path walker enter a common door in the drop-out
+        catcher. There, they are routed to the drop-outs for the current state
+        which the path walker representes. The current state is given by the 
+        state key.
         """
-        pass
+        ## No recursions possible in pathwalker.
+        ## => NOT: MegaState._finalize_transition_map(self, TheAnalyzer)
+
+        # Any drop-out in the transition map must become a 'goto path walker's i
+        # drop-out'. In the path walker's drop-out it is routed to the drop-out of
+        # the state which it currently represented.
+        drop_out_door_id = TheAnalyzer.drop_out_DoorID(self.index)
+        self.transition_map.adapt_targets(drop_out_door_id, DropOutConsideration_relate)
 
     def _finalize_content(self, TheAnalyzer):
         self.__finalized = FinalizedContent(self, TheAnalyzer)
@@ -227,10 +227,6 @@ class PathWalkerState(MegaState):
         return TargetScheme
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
-        # If uniform_DropOut is claimed, then there can be only
-        # drop-out alternative--and vice versa.
-        assert self.drop_out.is_uniform() == self.uniform_DropOut.is_uniform()
-
         # If uniform_entry_CommandList is claimed, then the DoorID must be 
         # the same along all paths--and vice versa.
         assert    (self.uniform_door_id is not None) \
@@ -239,8 +235,6 @@ class PathWalkerState(MegaState):
         # If uniformity was required, then it must have been maintained.
         if CompressionType == E_Compression.PATH_UNIFORM:
             assert self.uniform_door_id is not None
-            assert self.drop_out.is_uniform()
-            assert self.uniform_DropOut.is_uniform()
             assert self.uniform_entry_CommandList.is_uniform()
 
         # The door_id_sequence_list corresponds to the path_list.

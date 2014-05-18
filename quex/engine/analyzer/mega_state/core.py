@@ -19,11 +19,11 @@ MegaState involved. At the time of this writing there are two derived classes
 
 
 Analogous to the AnalyzerState, a MegaState has special classes to implement
-'Entry' and 'DropOut', namely 'MegaState_Entry' and 'MegaState_DropOut'.  Where
-an AnalyzerState's transition_map associates a character interval with a target
-state index, the MegaState's transition_map associates a character interval
-with a 'TargetByStateKey'. Given a state_key, the TargetByStateKey provides the
-target state index for the given character interval.
+'Entry', namely 'MegaState_Entry'.  Where an AnalyzerState's transition_map
+associates a character interval with a target state index, the MegaState's
+transition_map associates a character interval with a 'TargetByStateKey'. Given
+a state_key, the TargetByStateKey provides the target state index for the given
+character interval.
 
 The following pinpoints the general idea of a MegaState.
 
@@ -40,10 +40,6 @@ The following pinpoints the general idea of a MegaState.
         ...                                             --> character.
         in interval_N:  TargetByStateKey_N[state_key]; 
     }
-
-    MegaState_DropOut:
-
-        ... drop-out actions of absorbed states ...
 _______________________________________________________________________________
 
 This file provides two special classes for to represent 'normal' 
@@ -61,7 +57,9 @@ _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
 from quex.engine.analyzer.commands.core         import Command, \
-                                                       CommandList
+                                                       CommandList, \
+                                                       RouterOnStateKey, \
+                                                       E_R
 from quex.engine.analyzer.state.core            import AnalyzerState
 from quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from quex.engine.analyzer.state.entry           import Entry
@@ -69,12 +67,14 @@ from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.transition_map        import TransitionMap
 from quex.engine.interval_handling              import Interval
 from quex.blackboard                            import E_StateIndices, \
-                                                       E_Cmd
+                                                       E_Cmd, \
+                                                       E_Compression
 
 from quex.engine.tools import typed, \
                               TypedDict
 
-from copy import copy
+from copy     import copy
+from operator import itemgetter
 
 class MegaState_Entry(Entry):
     """________________________________________________________________________
@@ -234,6 +234,14 @@ class StateKeyIndexDB(dict):
         assert result in self.__implemented_state_index_set
         return result
 
+    def iterable_state_key_state_index_pairs(self):
+        """RETURNS: List of pairs (state-key, state-index) for all pairs in the 
+                    ski-database. Entries are sorted by state-key.
+        """
+        for state_index, key in sorted(self.__map_state_index_to_state_key.iteritems(), 
+                                       key=itemgetter(1)):
+            yield key, state_index
+
     def map_state_index_to_state_key(self, StateIndex): 
         assert StateIndex in self.__implemented_state_index_set
         return self.__map_state_index_to_state_key[StateIndex]
@@ -302,12 +310,10 @@ class MegaState(AnalyzerState):
     """ 
     @typed(TheTransitionMap=TransitionMap)
     def __init__(self, StateIndex, TheTransitionMap, SkiDb):
-        # A 'PseudoTemplateState' does not implement a 'MegaState_Entry' and 'MegaState_DropOut'.
-        # On the long term 'MegaState_DropOut' should be derived from 'DropOut'.
+        # A 'PseudoTemplateState' does not implement a 'MegaState_Entry'.
         assert isinstance(StateIndex, long)
 
         self.__entry    = MegaState_Entry()
-        self.__drop_out = MegaState_DropOut()
         AnalyzerState.set_index(self, StateIndex)
         # AnalyzerState.__init__(StateIndex, InitStateF, EngineType, TheTransitionMap):
 
@@ -319,9 +325,6 @@ class MegaState(AnalyzerState):
 
     @property
     def entry(self): return self.__entry
-
-    @property
-    def drop_out(self): return self.__drop_out
 
     def implemented_state_index_set(self):
         return self.ski_db.implemented_state_index_set
@@ -348,34 +351,68 @@ class MegaState(AnalyzerState):
         return self.__bad_company
 
     def finalize(self, TheAnalyzer, CompressionType):
-        # (1.1) Collect all Entry and DropOut objects from implemented states.
+        # (1.1) Collect all Entry objects from implemented states.
         for state_index in self.ski_db.implemented_state_index_set:
-            self._finalize_absorb_Entry_DropOut_from_state(TheAnalyzer.state_db[state_index])
+            self.entry.absorb(TheAnalyzer.state_db[state_index].entry)
 
         # (1.2) Configure the entry actions, so that the state key is set 
         #       where necessary.
         self._finalize_entry_CommandLists()                    # --> derived class!
+        self._finalize_configure_global_drop_out(CompressionType, TheAnalyzer)
+
         #      => '.transition_reassignment_db'
         self.entry.transition_reassignment_db_construct(self.index)
 
         # (2) Reconfigure the transition map based on 
         #     '.transition_reassignment_db'
-        self._finalize_transition_map()                        # --> derived class!
+        self._finalize_transition_map(TheAnalyzer)             # --> derived class!
 
         # (3) Finalize some specific content
         self._finalize_content(TheAnalyzer)                    # --> derived class!
 
-    def _finalize_absorb_Entry_DropOut_from_state(self, TheState):
-        self.entry.absorb(TheState.entry)
-        self.drop_out.absorb(TheState.index, TheState.drop_out)
-
-    def _finalize_transition_map(self):     
+    def _finalize_transition_map(self, TheAnalyzer):
+        """You MUST call this function explicitly in the derived class's 
+        overwriting function."""
         def get_new_target(TransitionIdToDoorId_db, Target):
             return Target.clone_adapted_self(TransitionIdToDoorId_db)
         self.transition_map.adapt_targets(self.entry.transition_reassignment_db, get_new_target)
 
     def _finalize_entry_CommandLists(self): 
         assert False, "--> derived class"
+
+    def _finalize_configure_global_drop_out(self, CompressionType, TheAnalyzer):
+        """Upon 'drop-out', or when the reload fails the MegaState's drop-out
+        section is entered. Then, it must be routed to the represented state
+        based upon the state key. The routing command is setup in the MegaState-s
+        drop-out. That is,
+                        
+                        Global Drop-Out
+                       .---------------------------------
+                     .---------------.       on state-key
+        drop-out --->| MegaState's   |       .---.
+                     | DropOut-Door  |------>| 0 |-----> Drop-out of state[0]
+                     '---------------'       | 1 |-----> Drop-out of state[1]
+                       |                     | : |
+                       :                     '---'
+                       '---------------------------------
+
+        The Command, which does that is the RouterOnStateKey. It contains the 
+        'StateKeyRegister' which tells the code generator which state key to
+        take as a basis for routing.
+        """
+        state_key_register = {
+            E_Compression.PATH:             E_R.PathIterator,
+            E_Compression.PATH_UNIFORM:     E_R.PathIterator,
+            E_Compression.TEMPLATE:         E_R.TemplateStateKey,
+            E_Compression.TEMPLATE_UNIFORM: E_R.TemplateStateKey,
+        }[CompressionType]
+
+        cmd = RouterOnStateKey(state_key_register, self.index)
+        for key, state_index in self.ski_db.iterable_state_key_state_index_pairs():
+            cmd.content.add(key, TheAnalyzer.drop_out_DoorID(state_index))
+        TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 
+                                                     CommandList(cmd))
+        TheAnalyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     def _finalize_content(self):            
         assert False, "--> derived class"
@@ -447,73 +484,4 @@ class MegaState(AnalyzerState):
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
         assert False, "--> derived class"
-
-class MegaState_DropOut(TypedDict):
-    """_________________________________________________________________________
-    
-    Map: 'DropOut' object --> indices of states that implement the 
-                              same drop out actions.
-
-    For example, if four states 1, 4, 7, and 9 have the same drop_out behavior
-    DropOut_X, then this is stated by an entry in the dictionary as
-
-             { ...     DropOut_X: [1, 4, 7, 9],      ... }
-
-    For this to work, the drop-out objects must support a proper interaction
-    with the 'dict'-objects. Namely, they must support:
-
-             __hash__          --> get the right 'bucket'.
-             __eq__ or __cmp__ --> compare elements of 'bucket'.
-    ____________________________________________________________________________
-    """
-    def __init__(self, *StateList):
-        """Receives a list of states, extracts the drop outs and associates 
-        each DropOut with the state indices that implement it.
-        """
-        # TypedDict.__init__(self, DropOut, set)
-        TypedDict.__init__(self, CommandList, set)
-
-        for state in StateList:
-            if isinstance(state,  MegaState): 
-                self.update(state.drop_out.iteritems())
-            else:
-                self.absorb(state.index, state.drop_out)
-        return
-
-    def is_uniform(self):
-        return len(self) == 1
-
-    def get_uniform_prototype(self):
-        """Uniform drop-out means, that for all drop-outs mentioned the same
-        actions have to be performed. This is the case, if all states are
-        categorized under the same drop-out. Thus the dictionary's size
-        will be '1'.
-
-        RETURNS: [0] uniform prototype
-                 [1] set of all state indices
-        """
-        if len(self) != 1: return None, None
-        prototype = self.iterkeys().next()
-
-        # Generator of an iteratoer over all state indices
-        all_state_indices = set()
-        for state_index_list in self.itervalues():
-            all_state_indices.update(state_index_list)
-
-        return prototype, all_state_indices
-
-    def update(self, Iterable):
-        for drop_out, state_index_set in Iterable:
-            x = self.get(drop_out)
-            if x is None: self[drop_out] = copy(state_index_set)
-            else:         x.update(state_index_set)
-
-    def add(self, S, D):
-        assert False, "Call 'absorb'"
-
-    def absorb(self, StateIndex, TheDropOut):
-        x = self.get(TheDropOut)
-        if x is None: self[TheDropOut] = set([StateIndex])
-        else:         x.add(StateIndex)
-
 

@@ -22,7 +22,7 @@ def do(TheAnalyzer):
     # (*) The drop-out catcher, since it is referenced the most.
     result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
     txt.extend(result)
-    txt.append(Lng.UNREACHABLE)
+    txt.append("\n%s\n" % Lng.UNREACHABLE)
 
     # (*) Code the Mega States (implementing multiple states in one)
     for state in TheAnalyzer.mega_state_list:

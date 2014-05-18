@@ -5,7 +5,8 @@ import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
 from   quex.engine.analyzer.mega_state.core             import MegaState
 from   quex.engine.analyzer.mega_state.target           import TargetByStateKey
 from   quex.blackboard                                  import setup as Setup, \
-                                                               E_Compression
+                                                               E_Compression, \
+                                                               E_StateIndices
 
 def do(TheAnalyzer):
     """MegaState Analysis _____________________________________________________
