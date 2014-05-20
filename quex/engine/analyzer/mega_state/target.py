@@ -130,10 +130,13 @@ class TargetByStateKey(object):
     def uniform_door_id(self):
         return self.__uniform_door_id
 
-    @property
     def drop_out_f(self):
-        if self.__uniform_door_id is None: return False
-        return self.__uniform_door_id.state_index == E_StateIndices.DROP_OUT
+        if self.__uniform_door_id is not None: 
+            return self.__uniform_door_id.state_index == E_StateIndices.DROP_OUT
+
+        for x in self.__scheme:
+            if x.door_id.drop_out_f() == False: return False
+        return True
 
     @property
     def scheme_id(self):    return self.__scheme_id
@@ -188,7 +191,7 @@ class TargetByStateKey(object):
         return
 
     def __repr__(self):
-        if   self.drop_out_f:        
+        if   self.drop_out_f():        
             return "TargetByStateKey:DropOut"
         elif self.uniform_door_id is not None: 
             return "TargetByStateKey:%s"         % repr(self.__uniform_door_id).replace("L", "")

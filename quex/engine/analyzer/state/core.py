@@ -104,6 +104,7 @@ class AnalyzerState(Processor):
         (4) Adapt state X's transition map, so that:
               BUFFER LIMIT CODE --> reload procedure.
         """
+        assert self.transition_map is not None
         assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
         assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
 
@@ -115,8 +116,10 @@ class AnalyzerState(Processor):
             # Engine type does not require reload => no reload. 
             return
 
-        elif self.transition_map is None: 
-            # No transition map => no transition to reloader.
+        elif self.transition_map.is_only_drop_out():
+            # If the state drops out anyway, then there is no need to reload.
+            # -- The transition map is not adapted.
+            # -- The reloader is not instrumented to reload for that state.
             return                      
 
         assert self.index in TheAnalyzer.state_db

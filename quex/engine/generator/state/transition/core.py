@@ -12,6 +12,16 @@ def do(txt, TM):
     assert TM is not None
     assert len(TM) != 0
 
+    if len(TM) == 1:
+        # If there is only one entry,
+        # then it MUST cover the the whole range (or more).
+        TM.prune(0, Setup.get_character_value_limit())
+        entry = TM[0]
+        assert entry[0].begin == 0
+        assert entry[0].end   == Setup.get_character_value_limit()
+        __get_transition(txt, entry)
+        return
+
     # The range of possible characters may be restricted. It must be ensured,
     # that the occurring characters only belong to the admissible range.
     TM.prune(0, Setup.get_character_value_limit())

@@ -434,7 +434,7 @@ class MegaState(AnalyzerState):
         """
         # Exceptions: replaced DoorID-s. No assumptions made on those targets.
         replaced_door_id_set = set(self.entry.transition_reassignment_db.itervalues())
-        self_DoorID_drop_out = DoorID.drop_out(self.index)
+        self_DoorID_drop_out = TheAnalyzer.drop_out_DoorID(self.index)
 
         # Iterate over all represented states of the MegaState
         for state_index in self.implemented_state_index_set():
@@ -454,10 +454,12 @@ class MegaState(AnalyzerState):
                 print "#original:\n"    + original_tm.get_string("hex")
                 print "#scheme:\n"      + self.transition_map.get_string("hex")
                 print "#selfDropOut:\n" + str(self_DoorID_drop_out)
-                print "#StateKey:", state_key
-                print "#siseq:", self.ski_db.state_index_sequence
-                print "#siseq[StateKey]:", self.ski_db.state_index_sequence[state_key]
-                print "# %s: tm -> %s; scheme[%s] -> %s;" % (Interval(begin, end).get_string("hex"), target, state_key, target_by_state_key)
+                print "#StateKey:        ", state_key
+                print "#siseq:           ", self.ski_db.state_index_sequence
+                print "#siseq[StateKey]: ", self.ski_db.state_index_sequence[state_key]
+                print "# %s: tm -> %s; scheme[%s] -> %s;" % (Interval(begin, end).get_string("hex"), 
+                                                             target, 
+                                                             state_key, target_by_state_key)
                 return False
         return True
 
