@@ -35,8 +35,10 @@ class TransitionMap(list):
 
             for target, character_set in TM.get_map().iteritems():
                 assert not character_set.is_empty()
-                result.extend((interval.clone(), target) 
-                            for interval in character_set.get_intervals(PromiseToTreatWellF=True))
+                result.extend(
+                    (interval.clone(), target) 
+                    for interval in character_set.get_intervals(PromiseToTreatWellF=True)
+                )
             assert len(result) != 0 # Empty target maps have been handled before
             result.sort()
 
@@ -132,12 +134,8 @@ class TransitionMap(list):
         Then the internal DoorID-s are translated into TargetByStateKey objects.
         """
         def relate(TargetDoorId):
-            if TargetDoorId.drop_out_f():
-                transition_id = TransitionID(DropOutCatcher.index, StateIndex, TriggerId=0)
-                door_id       = DropOutCatcher.get_door_id(StateIndex)
-            else:
-                transition_id = TransitionID(TargetDoorId.state_index, StateIndex, TriggerId=0)
-                door_id       = TargetDoorId
+            transition_id = TransitionID(TargetDoorId.state_index, StateIndex, TriggerId=0)
+            door_id       = TargetDoorId
             return TargetByStateKey.from_transition(transition_id, door_id)
 
         return self.__class__.from_iterable(self, relate)
@@ -162,6 +160,15 @@ class TransitionMap(list):
             assert isinstance(info, DoorID), "%s%s" % (info.__class__, info)
             if info in DoorIdSet: return True
         return False
+
+    def is_only_drop_out(self):
+        """RETURNS: True  -- if there is only one target which is 'DROP-OUT'.
+                    False -- if there are transitions to other states.
+        """
+        assert len(self) != 0
+        if len(self) != 1: return False
+        assert isinstance(self[0][1], (TargetByStateKey, DoorID))
+        return self[0][1].drop_out_f()
 
     def is_equal(self, Other, EqualCmp=lambda x,y: x==y):
         if len(self) != len(Other):        return False

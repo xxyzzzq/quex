@@ -247,7 +247,6 @@ class IndentationCounter(TransitionCode):
     def __ne__(self, Other):
         return not (self == Other)
 
-    @property
     def drop_out_f(self):
         return False
 

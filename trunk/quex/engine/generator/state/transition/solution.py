@@ -102,7 +102,7 @@ def get(TriggerMap,
 
     p = log(len(TriggerMap), 2) / (size_all_intervals - size_all_drop_out_intervals)
 
-    if p > 0.03: 
+    if p > 0.03 and size_all_drop_out_intervals < 512: 
         return E_Type.SWITCH_CASE
 
     if len(TriggerMap) > 5: 

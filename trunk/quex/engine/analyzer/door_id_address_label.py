@@ -70,7 +70,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
         return result
 
     @staticmethod
-    def drop_out(StateIndex):              return DoorID(StateIndex, E_DoorIdIndex.DROP_OUT)
+    def drop_out(StateIndex):              return DoorID(E_StateIndices.DROP_OUT, StateIndex)
     @staticmethod                        
     def transition_block(StateIndex):      return DoorID(StateIndex, E_DoorIdIndex.TRANSITION_BLOCK)
     @staticmethod                        
@@ -90,7 +90,7 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod
     def continue_without_on_after_match(): return DoorID(0L,         E_DoorIdIndex.CONTINUE_WITHOUT_ON_AFTER_MATCH)
 
-    def drop_out_f(self):                  return self.door_index == E_DoorIdIndex.DROP_OUT
+    def drop_out_f(self):                  return self.state_index == E_StateIndices.DROP_OUT
     def last_acceptance_f(self):           return     self.door_index  == E_DoorIdIndex.ACCEPTANCE \
                                                   and self.state_index == E_IncidenceIDs.VOID
 
