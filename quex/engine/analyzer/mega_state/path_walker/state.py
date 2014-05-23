@@ -196,6 +196,8 @@ class PathWalkerState(MegaState):
         drop_out_door_id = TheAnalyzer.drop_out_DoorID(self.index)
         self.transition_map.adapt_targets(drop_out_door_id, DropOutConsideration_relate)
 
+        super(self.__class__)._finalize_transition_map(self, TheAnalyzer)
+
     def _finalize_content(self, TheAnalyzer):
         self.__finalized = FinalizedContent(self, TheAnalyzer)
 

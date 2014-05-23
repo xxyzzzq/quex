@@ -201,7 +201,6 @@ def do_state_machine(sm, EngineType):
 
     # -- implement the state machine itself
     analyzer = analyzer_generator.do(sm, EngineType)
-    analyzer_generator.prepare_reload(analyzer)
     sm_text  = do_analyzer(analyzer)
     txt.extend(sm_text)
     return txt, analyzer

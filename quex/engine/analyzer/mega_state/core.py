@@ -66,7 +66,8 @@ from quex.engine.analyzer.state.entry           import Entry
 from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.transition_map        import TransitionMap
 from quex.engine.interval_handling              import Interval
-from quex.blackboard                            import E_StateIndices, \
+from quex.blackboard                            import setup as Setup, \
+                                                       E_StateIndices, \
                                                        E_Cmd, \
                                                        E_Compression
 
@@ -351,6 +352,8 @@ class MegaState(AnalyzerState):
         return self.__bad_company
 
     def finalize(self, TheAnalyzer, CompressionType):
+        assert CompressionType in E_Compression
+
         # (1.1) Collect all Entry objects from implemented states.
         for state_index in self.ski_db.implemented_state_index_set:
             self.entry.absorb(TheAnalyzer.state_db[state_index].entry)
@@ -370,12 +373,16 @@ class MegaState(AnalyzerState):
         # (3) Finalize some specific content
         self._finalize_content(TheAnalyzer)                    # --> derived class!
 
+        # (4) Set the compression type to indicate the MegaState's type.
+        self._compression_type = CompressionType
+
     def _finalize_transition_map(self, TheAnalyzer):
         """You MUST call this function explicitly in the derived class's 
         overwriting function."""
         def get_new_target(TransitionIdToDoorId_db, Target):
             return Target.clone_adapted_self(TransitionIdToDoorId_db)
-        self.transition_map.adapt_targets(self.entry.transition_reassignment_db, get_new_target)
+        self.transition_map.adapt_targets(self.entry.transition_reassignment_db, 
+                                          get_new_target)
 
     def _finalize_entry_CommandLists(self): 
         assert False, "--> derived class"
@@ -387,32 +394,46 @@ class MegaState(AnalyzerState):
         drop-out. That is,
                         
                         Global Drop-Out
-                       .---------------------------------
+                       .--------------------------------- - -  -
                      .---------------.       on state-key
         drop-out --->| MegaState's   |       .---.
                      | DropOut-Door  |------>| 0 |-----> Drop-out of state[0]
                      '---------------'       | 1 |-----> Drop-out of state[1]
                        |                     | : |
                        :                     '---'
-                       '---------------------------------
+                       '--------------------------------- - -  -
 
         The Command, which does that is the RouterOnStateKey. It contains the 
         'StateKeyRegister' which tells the code generator which state key to
         take as a basis for routing.
         """
-        state_key_register = {
-            E_Compression.PATH:             E_R.PathIterator,
-            E_Compression.PATH_UNIFORM:     E_R.PathIterator,
-            E_Compression.TEMPLATE:         E_R.TemplateStateKey,
-            E_Compression.TEMPLATE_UNIFORM: E_R.TemplateStateKey,
-        }[CompressionType]
+        cmd = RouterOnStateKey(CompressionType, self.index,
+                               self.ski_db.iterable_state_key_state_index_pairs(),
+                               lambda state_index: TheAnalyzer.drop_out_DoorID(state_index))
 
-        cmd = RouterOnStateKey(state_key_register, self.index)
-        for key, state_index in self.ski_db.iterable_state_key_state_index_pairs():
-            cmd.content.add(key, TheAnalyzer.drop_out_DoorID(state_index))
         TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 
                                                      CommandList(cmd))
         TheAnalyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
+
+    def prepare_again_for_reload(self, TheAnalyzer):
+        """Similar to '_finalize_configure_global_drop_out()' we implement a 
+        router from the MegaState-s door into the Reloader to the doors of the
+        implemented states. 
+        
+        (For figure see comment to 'ReloadState.add_mega_state()')
+        """
+        # (*) Generate the entry into the reloader that routes to the 
+        #     state's entry into the reloader
+        reload_door_id = TheAnalyzer.reload_state.add_mega_state(
+            self.index, 
+            self._compression_type, 
+            self.ski_db.iterable_state_key_state_index_pairs(),
+            TheAnalyzer
+        )
+
+        # (*) Adapt transition map: BUFFER LIMIT CODE --> reload_door_id
+        #
+        self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
 
     def _finalize_content(self):            
         assert False, "--> derived class"

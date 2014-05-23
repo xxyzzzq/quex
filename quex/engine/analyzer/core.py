@@ -71,40 +71,47 @@ from   collections      import defaultdict
 from   itertools        import imap
 from   operator         import attrgetter
 
-def do(SM, EngineType=engine.FORWARD, ReloadStateExtern=None):
+def do(SM, EngineType=engine.FORWARD, 
+       ReloadStateExtern=None, 
+       OnBeforeReload=None, 
+       OnAfterReload=None, 
+       ReloadF=True):
 
     # Generate Analyzer from StateMachine
     analyzer = Analyzer.from_StateMachine(SM, EngineType, ReloadStateExtern)
     # Optimize the Analyzer
     analyzer = optimizer.do(analyzer)
 
-    # AnalyzerState.transition_map:    Interval --> DoorID
-    # ('.prepare_for_reload()' requires DoorID-s.
+    # DoorID-s required by '.prepare_for_reload()'
     analyzer.prepare_DoorIDs()
+
+    # Prepare the reload BEFORE mega state compression!
+    if ReloadF:
+        # TransitionMap: 
+        #     On BufferLimitCode --> ReloadState
+        # ReloadState.door of state: 
+        #     OnBeforeReload
+        #     prepare DoorID of reload success and reload fail
+        # State.door of ReloadState:
+        #     OnAfterReload (when reload was a success).
+        for state in analyzer.state_db.itervalues():
+            state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
         mega_state_analyzer.do(analyzer)
-        # MegaState.transition_map:    Interval --> TargetByStateKey
-        #                           or Interval --> DoorID
+        # TransitionMap: 
+        #     On BufferLimitCode --> ReloadState
+        # ReloadState.door of mega state:
+        #     Router to doors of implemented states.
+        for state in analyzer.mega_state_list:
+            state.prepare_again_for_reload(analyzer) 
 
+    # AnalyzerState.transition_map:    Interval --> DoorID
+    # MegaState.transition_map:        Interval --> TargetByStateKey
+    #                               or Interval --> DoorID
     return analyzer
 
-def prepare_reload(analyzer, OnBeforeReload=None, OnAfterReload=None):
-    """Implement the infrastructure for 'reload':
-
-       -- Transition maps goto the 'reload procedure' upon 'buffer limit' code
-       -- The 'reload state' does certain things dependent on the from what state
-          it is entered.
-       -- The states have a dedicated entry from after the reload procedure.
-      
-       (The following is a null operation, if the analyzer.engine_type does not
-        require reload preparation.)
-    """
-    for state in analyzer.state_db.itervalues():
-        state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
-
-    return analyzer
 
 class Analyzer:
     """A representation of a pattern analyzing StateMachine suitable for

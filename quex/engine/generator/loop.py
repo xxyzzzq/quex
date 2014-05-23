@@ -72,7 +72,21 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     #
     CsSm, beyond_iid = get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF)
 
-    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadStateExtern)
+    if ReloadF:
+        on_before_reload = CommandList.from_iterable(
+            CsSm.on_before_reload + CcFactory.on_before_reload
+        )
+        on_after_reload  = CommandList.from_iterable(
+            CsSm.on_after_reload + CcFactory.on_after_reload
+        )
+    else:
+        on_before_reload = on_after_reload = None
+
+    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadStateExtern,
+                                     OnBeforeReload=on_before_reload, 
+                                     OnAfterReload=on_after_reload,
+                                     ReloadF=ReloadF)
+
     analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorIdExit))
 
     door_id_loop = _prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
@@ -80,9 +94,6 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
-    # -- Analyzer: Prepare Reload
-    if ReloadF:
-        _prepare_reload(analyzer, CcFactory, CsSm, ReloadStateExtern)
 
     # -- The terminals 
     #
@@ -153,26 +164,7 @@ def get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF, ParallelSmList=No
     # Build a state machine based on (character set, incidence_id) pairs.
     ccsm = CharacterSetStateMachine(incidence_id_map, LexemeMaintainedF, ParallelSmList)
     return ccsm, beyond_iid
-
-def _prepare_reload(analyzer, CcFactory, CsSm, ReloadStateExtern): 
         
-    on_before_reload = CommandList.from_iterable(
-           CsSm.on_before_reload
-         + CcFactory.on_before_reload
-    )
-#    def debuggey(Name, Cl):
-#        print "#Nam:", Name
-#        for cmd in Cl:
-#            print "#  ", str(cmd)
-#    debuggey("CcFactor", CcFactory.on_after_reload)
-#    debuggey("CsSm", CsSm.on_after_reload)
-    on_after_reload  = CommandList.from_iterable(
-          CsSm.on_after_reload
-        + CcFactory.on_after_reload
-    )
-
-    analyzer_generator.prepare_reload(analyzer, on_before_reload, on_after_reload)
-
 def get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIid, AdditionalCommandList=None):
     """Generate Terminal to be executed upon exit from the 'loop'.
     

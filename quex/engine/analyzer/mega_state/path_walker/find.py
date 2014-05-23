@@ -43,7 +43,13 @@ def DropOutConsideration_cmp(DoorId_A, DoorId_B):
     """
     if xor((DoorId_A == E_StateIndices.VOID), (DoorId_B == E_StateIndices.VOID)):
         return False # See 'match_with_wildcard' for further consideration.
-    elif DoorId_A.drop_out_f() and DoorId_B.drop_out_f():
+    elif   DoorId_A.state_index == E_StateIndices.RELOAD_FORWARD \
+       and DoorId_B.state_index == E_StateIndices.RELOAD_FORWARD:
+        return True
+    elif   DoorId_A.state_index == E_StateIndices.RELOAD_BACKWARD \
+       and DoorId_B.state_index == E_StateIndices.RELOAD_BACKWARD:
+        return True
+    elif   DoorId_A.drop_out_f() and DoorId_B.drop_out_f():
         return True
     else:
         return DoorId_A == DoorId_B

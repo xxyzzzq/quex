@@ -5,9 +5,10 @@ from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
 from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands.core           import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference
+from   quex.engine.analyzer.commands.core           import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference, \
+                                                           RouterOnStateKey
 from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
-from   quex.engine.tools import typed
+from   quex.engine.tools import typed, print_callstack
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
                                E_StateIndices, \
@@ -157,7 +158,6 @@ class AnalyzerState(Processor):
         # (4) Adapt transition map: BUFFER LIMIT CODE --> reload_door_id
         #
         self.transition_map.set_target(Setup.buffer_limit_code, reload_door_id)
-
         return
 
     def get_string_array(self, InputF=True, EntryF=True, TransitionMapF=True, DropOutF=True):
@@ -228,10 +228,53 @@ class ReloadState(Processor):
         # No two transitions can have the same DoorID!
         # => it is safe to assign a new DoorID withouth .categorize()
         ta         = TransitionAction(before_cl)
+        # Assign a DoorID (without categorization) knowing that no such entry
+        # into this state existed before.
         ta.door_id = dial_db.new_door_id(self.index)
 
         assert not self.entry.has_transition(self.index, StateIndex) # Cannot be in there twice!
         self.entry.enter(self.index, StateIndex, ta)
+
+        return ta.door_id
+
+    def add_mega_state(self, MegaStateIndex, StateKeyRegister, Iterable_StateKey_Index_Pairs, 
+                       TheAnalyzer):
+        """Implement a router from the MegaState-s door into the Reloader to
+        the doors of the implemented states. 
+        
+                        Reload State
+                       .--------------------------------- - -  -
+                     .--------------.    on state-key
+          reload --->| MegaState's  |       .---.
+                     | Reload Door  |------>| 0 |-----> Reload Door of state[0]
+                     '--------------'       | 1 |-----> Reload Door of state[1]
+                       |                    | : |
+                       :                    '---'
+                       '--------------------------------- - -  -
+
+        """
+        def DoorID_provider(state_index):
+            door_id = self.entry.get_door_id(self.index, state_index)
+            if door_id is None:
+                # The state implemented in the MegaState did not have a 
+                # transition to 'ReloadState'. Thus, it was a total drop-out.
+                # => Route to the state's drop-out.
+                door_id = TheAnalyzer.drop_out_DoorID(state_index)
+            return door_id
+
+        cmd = RouterOnStateKey(
+            StateKeyRegister, MegaStateIndex,
+            Iterable_StateKey_Index_Pairs,
+            DoorID_provider
+        )
+
+        ta         = TransitionAction(CommandList(cmd))
+        # Assign a DoorID (without categorization) knowing that no such entry
+        # into this state existed before.
+        ta.door_id = dial_db.new_door_id(self.index)
+
+        assert not self.entry.has_transition(self.index, MegaStateIndex) # Cannot be in there twice!
+        self.entry.enter(self.index, MegaStateIndex, ta)
 
         return ta.door_id
 

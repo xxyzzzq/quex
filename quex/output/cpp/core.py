@@ -154,7 +154,7 @@ def do_mini(SmActionList, OnFailure, EngineType, ReloadState=None):
 
     #    Prepare the reload if required
     if ReloadState is not None:
-        analyzer_generator.prepare_reload(analyzer)
+        analyzer_generator.XX_prepare_reload(analyzer)
 
     # -- Generate code.
     txt = do_comment(sm)

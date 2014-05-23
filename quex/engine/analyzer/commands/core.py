@@ -74,6 +74,7 @@ from   quex.blackboard       import E_Cmd, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \
                                     E_IncidenceIDs, \
+                                    E_Compression, \
                                     E_PostContextIDs
 
 from   collections import namedtuple
@@ -505,19 +506,24 @@ class RouterOnStateKeyContent:
         Command.__init__(self)
         self.__list = []
 
-    def configure(self, Register, MegaStateIndex):
-        assert Register in E_R
-        self.register         = Register
+    def configure(self, CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
+        self.register = {
+            E_Compression.PATH:             E_R.PathIterator,
+            E_Compression.PATH_UNIFORM:     E_R.PathIterator,
+            E_Compression.TEMPLATE:         E_R.TemplateStateKey,
+            E_Compression.TEMPLATE_UNIFORM: E_R.TemplateStateKey,
+        }[CompressionType]
         self.mega_state_index = MegaStateIndex
+        self.__list = [
+            (state_key, DoorID_provider(state_index))
+            for state_key, state_index in IterableStateKeyStateIndexPairs
+        ]
 
     def clone(self):
         result = RouterOnStateKey()
         result.__list = [ deepcopy(x) for x in self.__list ]
         return result
     
-    def add(self, StateKey, DoorId):
-        self.__list.append((StateKey, DoorId))
-
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self): 
         xor_sum = 0
@@ -834,9 +840,11 @@ def Accepter():
 def Router():
     return Command(E_Cmd.Router)
 
-def RouterOnStateKey(Register, MegaStateIndex):
+def RouterOnStateKey(CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
     result = Command(E_Cmd.RouterOnStateKey)
-    result.content.configure(Register, MegaStateIndex)
+
+    result.content.configure(CompressionType, MegaStateIndex, 
+                             IterableStateKeyStateIndexPairs, DoorID_provider)
     return result
 
 def QuexDebug(TheString):

@@ -33,13 +33,15 @@ class Handler:
 
     def debug_info_map_state_key_to_state_index(self, txt):
         txt.append("#   define __QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(X) ( \\\n")
-        pair_list = list((self.state.map_state_index_to_state_key(si), si) \
-                         for si in self.state.implemented_state_index_set())
+        pair_list = [
+            (state_key, state_index)
+            for state_key, state_index in self.state.ski_db.iterable_state_key_state_index_pairs()
+        ]
         pair_list.sort()
         for state_key, state_index in pair_list[:-1]:
             txt.append("             (X) == %i ? %i :    \\\n" % (state_key, state_index))
 
-        state_index, state_index = pair_list[-1]
+        state_key, state_index = pair_list[-1]
         txt.append("             (X) == %i ? %i : 0)" % (state_key, state_index))
 
         if isinstance(self.state, PathWalkerState):
@@ -59,6 +61,7 @@ class Handler:
 def do(txt, TheState, TheAnalyzer):
     specific = Handler(TheState)
 
+    # [X] Helper definitions
     specific.debug_info_map_state_key_to_state_index(txt)
 
     # (*) Entry _______________________________________________________________
@@ -76,6 +79,7 @@ def do(txt, TheState, TheAnalyzer):
     # (*) Request necessary variable definition _______________________________
     specific.require_data(TheState, TheAnalyzer)
 
+    # Undo defines from [X]
     specific.debug_info_undo_map_state_key_to_state_index(txt)
     return
 
