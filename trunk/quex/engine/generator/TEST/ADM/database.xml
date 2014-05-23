@@ -1,4 +1,4 @@
-<test-database execution-time-sec="296.86" date="Tue May 20 07:00:30 2014">
+<test-database execution-time-sec="292.96" date="Fri May 23 20:16:42 2014">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.11"> 
         <application file-name="test-mode-changes.py" info-request-time="1387873735L" vanished="False"/>
@@ -26,22 +26,22 @@
         </choice-list>
     </test>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="11.66"> 
+        <test title="Backwards" time-sum-sec="7.76"> 
             <application file-name="test-backward_loading.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="13" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="-1584767564"/>
-               <choice name="ANSI-C" result="OK" time_sec="0.66" crc="-1584767564"/>
-               <choice name="ANSI-C-CG" result="OK" time_sec="0.65" crc="-1584767564"/>
-               <choice name="Cpp" result="OK" time_sec="0.97" crc="-1584767564"/>
-               <choice name="Cpp-Template" result="FAIL" time_sec="1.10" crc="-1584767564"/>
-               <choice name="Cpp-Template-CG" result="FAIL" time_sec="1.10" crc="-1584767564"/>
-               <choice name="Cpp-Path" result="FAIL" time_sec="0.95" crc="-1584767564"/>
-               <choice name="Cpp-PathUniform" result="FAIL" time_sec="0.96" crc="-1584767564"/>
-               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.95" crc="-1584767564"/>
-               <choice name="Cpp-PathUniform-CG" result="FAIL" time_sec="0.95" crc="-1584767564"/>
-               <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.96" crc="-1584767564"/>
-               <choice name="Cpp-ASSERTS" result="OK" time_sec="0.98" crc="-1584767564"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.65" crc="-1584767564"/>
+               <choice name="ANSI-C" result="OK" time_sec="0.67" crc="-1584767564"/>
+               <choice name="ANSI-C-CG" result="OK" time_sec="0.66" crc="-1584767564"/>
+               <choice name="Cpp" result="OK" time_sec="0.98" crc="-1584767564"/>
+               <choice name="Cpp-Template" result="OK" time_sec="0.97" crc="-1584767564"/>
+               <choice name="Cpp-Template-CG" result="OK" time_sec="0.99" crc="-1584767564"/>
+               <choice name="Cpp-Path" result="FAIL" time_sec="0.24" crc="-1584767564"/>
+               <choice name="Cpp-PathUniform" result="FAIL" time_sec="0.24" crc="-1584767564"/>
+               <choice name="Cpp-Path-CG" result="FAIL" time_sec="0.24" crc="-1584767564"/>
+               <choice name="Cpp-PathUniform-CG" result="FAIL" time_sec="0.24" crc="-1584767564"/>
+               <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.24" crc="-1584767564"/>
+               <choice name="Cpp-ASSERTS" result="OK" time_sec="0.99" crc="-1584767564"/>
                <choice name="ANSI-C-ASSERTS" result="OK" time_sec="0.66" crc="-1584767564"/>
             </choice-list>
         </test>
