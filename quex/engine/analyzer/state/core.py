@@ -109,11 +109,7 @@ class AnalyzerState(Processor):
         assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
         assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
 
-        if Setup.buffer_based_analyzis_f:
-            # Buffer-only-mode => no reload.
-            return
-
-        elif not TheAnalyzer.engine_type.requires_buffer_limit_code_for_reload():
+        if not TheAnalyzer.engine_type.subject_to_reload():
             # Engine type does not require reload => no reload. 
             return
 

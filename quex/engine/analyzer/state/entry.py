@@ -120,7 +120,6 @@ class Entry(object):
         """Absorbs all, but the 'reload transitions'.
         """
         for tid, action in Other.__db.iteritems():
-            if TransitionID.is_from_reload(tid): continue
             self.enter(tid.target_state_index, tid.source_state_index, action)
 
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:

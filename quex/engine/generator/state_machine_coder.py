@@ -19,7 +19,8 @@ def do(TheAnalyzer):
     txt = []
     state_coder.do(txt, TheAnalyzer.state_db[TheAnalyzer.init_state_index], TheAnalyzer)
 
-    # (*) The drop-out catcher, since it is referenced the most.
+    # (*) Second: The drop-out catcher, since it is referenced the most.
+    #     (Is implemented entirely by 'entry')
     result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
     txt.extend(result)
     txt.append("\n%s\n" % Lng.UNREACHABLE)

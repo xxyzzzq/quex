@@ -128,12 +128,10 @@ def do_reload_procedure(TheAnalyzer):
     happen after the code generation of forward or backward state machine.
     """
     # Variables that tell where to go after reload success and reload failure
-    if Setup.buffer_based_analyzis_f:       return []
-
-    if   TheAnalyzer is None:                                  return []
-    elif TheAnalyzer.engine_type.is_BACKWARD_INPUT_POSITION(): return []
-    elif TheAnalyzer.reload_state is None:                     return []
-    elif TheAnalyzer.reload_state_extern_f:                    return []
+    if   TheAnalyzer is None:                         return []
+    elif not TheAnalyzer.engine_type.subject_to_reload(): return []
+    elif TheAnalyzer.reload_state is None:            return []
+    elif TheAnalyzer.reload_state_extern_f:           return []
 
     variable_db.require("target_state_else_index")  # upon reload failure
     variable_db.require("target_state_index")       # upon reload success

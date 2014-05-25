@@ -45,8 +45,8 @@ from   quex.engine.analyzer.state.core            import Processor, \
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionID, \
                                                          TransitionAction
-from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands.core              import InputPDereference, \
+from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
+from   quex.engine.analyzer.commands.core         import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \
                                                          PreContextOK, \
@@ -59,7 +59,7 @@ import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.misc.tree_walker               import TreeWalker
 import quex.engine.state_machine.index            as     sm_index
 from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.tools                          import typed
+from   quex.engine.tools                          import typed, print_callstack
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_IncidenceIDs, \
                                E_TransitionN, \
@@ -86,7 +86,7 @@ def do(SM, EngineType=engine.FORWARD,
     analyzer.prepare_DoorIDs()
 
     # Prepare the reload BEFORE mega state compression!
-    if ReloadF:
+    if EngineType.subject_to_reload():
         # TransitionMap: 
         #     On BufferLimitCode --> ReloadState
         # ReloadState.door of state: 
@@ -100,12 +100,15 @@ def do(SM, EngineType=engine.FORWARD,
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
         mega_state_analyzer.do(analyzer)
-        # TransitionMap: 
-        #     On BufferLimitCode --> ReloadState
-        # ReloadState.door of mega state:
-        #     Router to doors of implemented states.
-        for state in analyzer.mega_state_list:
-            state.prepare_again_for_reload(analyzer) 
+        if EngineType.subject_to_reload():
+            # TransitionMap: 
+            #     On BufferLimitCode --> ReloadState
+            # ReloadState.door of mega state:
+            #     Router to doors of implemented states.
+            for state in analyzer.mega_state_list:
+                state.prepare_again_for_reload(analyzer) 
+
+            reload_door_id = analyzer.reload_state.entry.get_door_id(analyzer.reload_state.index, state.index)
 
     # AnalyzerState.transition_map:    Interval --> DoorID
     # MegaState.transition_map:        Interval --> TargetByStateKey
@@ -352,8 +355,8 @@ class Analyzer:
         """Determine whether the init state is entered from another state.
         (If not, only the default entry into the init state is generated.)
         """
-        if not self.__engine_type.is_FORWARD():                        return False
-        if self.__engine_type.requires_buffer_limit_code_for_reload(): return True
+        if not self.__engine_type.is_FORWARD():    return False
+        if self.__engine_type.subject_to_reload(): return True
 
         # Is there any state from where the init state is entered?
         source_state_list = self.__from_db.get(self.__init_state_index)

@@ -119,7 +119,6 @@ def prepare(tm):
     iid_map = [ (character_set, iid) for iid, character_set in iid_db.iteritems() ]
     return iid_map
 
-
 def get_transition_function(iid_map, Codec):
     if Codec == "UTF8":
         Setup.buffer_codec_transformation_info = "utf8-state-split"
@@ -127,7 +126,7 @@ def get_transition_function(iid_map, Codec):
         Setup.buffer_codec_transformation_info = None
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
-    analyzer = analyzer_generator.do(cssm.sm, engine.FORWARD)
+    analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)
     tm_txt   = do_analyzer(analyzer)
     tm_txt   = Lng.GET_PLAIN_STRINGS(tm_txt)
     tm_txt.append("\n")

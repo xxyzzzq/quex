@@ -187,16 +187,12 @@ class PathWalkerState(MegaState):
         which the path walker representes. The current state is given by the 
         state key.
         """
-        ## No recursions possible in pathwalker.
-        ## => NOT: MegaState._finalize_transition_map(self, TheAnalyzer)
-
         # Any drop-out in the transition map must become a 'goto path walker's i
         # drop-out'. In the path walker's drop-out it is routed to the drop-out of
         # the state which it currently represented.
         drop_out_door_id = TheAnalyzer.drop_out_DoorID(self.index)
         self.transition_map.adapt_targets(drop_out_door_id, DropOutConsideration_relate)
-
-        super(self.__class__)._finalize_transition_map(self, TheAnalyzer)
+        self.transition_map.combine_adjacents()
 
     def _finalize_content(self, TheAnalyzer):
         self.__finalized = FinalizedContent(self, TheAnalyzer)
