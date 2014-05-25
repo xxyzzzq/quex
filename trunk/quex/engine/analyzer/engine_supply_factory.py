@@ -7,7 +7,8 @@ from   quex.engine.analyzer.commands.core      import PreContextOK, \
                                                       InputPIncrement, \
                                                       QuexAssertNoPassage, \
                                                       QuexDebug
-from   quex.blackboard  import E_InputActions
+from   quex.blackboard  import E_InputActions, \
+                               setup as Setup
 
 class Base:
     def is_FORWARD(self):                  return False
@@ -16,7 +17,15 @@ class Base:
     def is_CHARACTER_COUNTER(self):        return False
 
     def requires_detailed_track_analysis(self):      return False
-    def requires_buffer_limit_code_for_reload(self): return True
+
+    def subject_to_reload(self):
+        # No engine type is subject to 'reload', if the setup imposes
+        # buffer based analysis.
+        if Setup.buffer_based_analyzis_f:  return False
+        # Ask derived type whether by principal, they require reload.
+        return self._principally_subject_to_reload()
+
+    def _principally_subject_to_reload(self): return True
     def requires_position_register_map(self):        return False
 
     def direction_str(self):               return None
@@ -63,7 +72,7 @@ class Class_FORWARD(Base):
 class Class_CHARACTER_COUNTER(Class_FORWARD):
     def is_CHARACTER_COUNTER(self): return True
 
-    def requires_buffer_limit_code_for_reload(self): 
+    def _principally_subject_to_reload(self): 
         """Characters to be counted are only inside the lexeme. The lexeme must 
         be entirely in the buffer. Thus, no reload is involved.
         """
@@ -95,7 +104,7 @@ class Class_BACKWARD_INPUT_POSITION(Base):
     def incidence_id_of_bipd(self):
         return self.__incidence_id_of_bipd
 
-    def requires_buffer_limit_code_for_reload(self): 
+    def _principally_subject_to_reload(self): 
         """When going backwards, this happens only along a lexeme which must
         be entirely in the buffer. Thus, no reload is involved.
         """

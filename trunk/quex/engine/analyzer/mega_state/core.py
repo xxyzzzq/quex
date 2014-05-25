@@ -190,6 +190,27 @@ class MegaState_Entry(Entry):
         #print "#transition_reassignment_db:", self.__transition_reassignment_db
         return
 
+    def prepare_relation_DoorID_to_Address(self, MegaStateIndex):
+        """In MegaState-s it is conceivable, that the entries of multiple states
+        are implemented in a single entry, thus, there might be the SAME address
+        for multiple DoorID-s. This assignment is performed here.
+        """
+        original_door_id_db = {}
+        for transition_id, transition_action in self.iteritems():
+            original_door_id_db[transition_id] = transition_id.door_id
+            # Setting the DoorID to None ensures that 'categorize()' will
+            # start all over again.
+            transition_action.door_id = None
+
+        self.categorize(MegaStateIndex)
+        same_address_db = {}
+        for transition_id, transition_action in self.iteritems():
+            original_door_id = original_door_id_db[transition_id]
+            same_address_db[original_door_id].append(transition_action_id.door_id)
+
+        for door_id, door_id_list in same_address_db:
+            dial_db.assign_same_address(door_id, door_id_list)
+
 class StateKeyIndexDB(dict):
     """Maintenance of relationships between 'state_keys' of a MegaState and the
        'state_index' of the state which they represent.
@@ -363,11 +384,11 @@ class MegaState(AnalyzerState):
         self._finalize_entry_CommandLists()                    # --> derived class!
         self._finalize_configure_global_drop_out(CompressionType, TheAnalyzer)
 
-        #      => '.transition_reassignment_db'
+        #      Assign: MULTIPLE DoorID ---> ONE Address
+        #      if same entry CommandList-s appear in multiple doors. 
         self.entry.transition_reassignment_db_construct(self.index)
 
-        # (2) Reconfigure the transition map based on 
-        #     '.transition_reassignment_db'
+        # (2) Reconfigure the transition map for drop-out
         self._finalize_transition_map(TheAnalyzer)             # --> derived class!
 
         # (3) Finalize some specific content
@@ -456,6 +477,7 @@ class MegaState(AnalyzerState):
         # Exceptions: replaced DoorID-s. No assumptions made on those targets.
         replaced_door_id_set = set(self.entry.transition_reassignment_db.itervalues())
         self_DoorID_drop_out = TheAnalyzer.drop_out_DoorID(self.index)
+        self_DoorID_reload   = TheAnalyzer.reload_state.entry.get_door_id(TheAnalyzer.reload_state.index, self.index)
 
         # Iterate over all represented states of the MegaState
         for state_index in self.implemented_state_index_set():
@@ -468,6 +490,7 @@ class MegaState(AnalyzerState):
                 target_by_state_key = self._get_target_by_state_key(begin, end, target_scheme, state_key)
                 if   target_by_state_key == target:               continue # The target must be the same, or
                 elif target_by_state_key in replaced_door_id_set: continue # be a 'replaced one'.
+                elif target.state_index == TheAnalyzer.reload_state.index: continue
                 # A MegaState-s DropOut may represent any DropOut
                 elif     target_by_state_key == self_DoorID_drop_out  \
                      and target.drop_out_f():                     continue 

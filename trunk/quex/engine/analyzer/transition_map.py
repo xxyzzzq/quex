@@ -497,7 +497,7 @@ class TransitionMap(list):
             assert interval.begin >= prev_interval.end  # Intervals appear sorted, 
             if interval.begin == prev_interval.end and StrictF:
                 # If the touch, require the target is different
-                assert target != prev_target, "%s" % self
+                assert target != prev_target, "%s" % self.get_string()
             prev_interval = interval
             prev_target   = target
 
