@@ -161,7 +161,7 @@ class AnalyzerState(Processor):
         # if InputF:         txt.append("  .input: move position %s\n" % repr(self.input))
         if EntryF:         txt.append("  .entry:\n"); txt.append(repr(self.entry))
         if TransitionMapF: txt.append("  .transition_map:\n")
-        if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
+        #if DropOutF:       txt.extend(["  .drop_out:\n",    repr(self.drop_out)])
         txt.append("\n")
         return txt
 

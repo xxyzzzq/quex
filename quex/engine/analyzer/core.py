@@ -72,10 +72,7 @@ from   itertools        import imap
 from   operator         import attrgetter
 
 def do(SM, EngineType=engine.FORWARD, 
-       ReloadStateExtern=None, 
-       OnBeforeReload=None, 
-       OnAfterReload=None, 
-       ReloadF=True):
+       ReloadStateExtern=None, OnBeforeReload=None, OnAfterReload=None):
 
     # Generate Analyzer from StateMachine
     analyzer = Analyzer.from_StateMachine(SM, EngineType, ReloadStateExtern)
@@ -86,29 +83,24 @@ def do(SM, EngineType=engine.FORWARD,
     analyzer.prepare_DoorIDs()
 
     # Prepare the reload BEFORE mega state compression!
-    if EngineType.subject_to_reload():
-        # TransitionMap: 
-        #     On BufferLimitCode --> ReloadState
-        # ReloadState.door of state: 
-        #     OnBeforeReload
-        #     prepare DoorID of reload success and reload fail
-        # State.door of ReloadState:
-        #     OnAfterReload (when reload was a success).
-        for state in analyzer.state_db.itervalues():
-            state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
+    # (Null-operation, in case no reload required.)
+    # TransitionMap:              On BufferLimitCode --> ReloadState
+    # ReloadState.door of state:  OnBeforeReload
+    #                             prepare goto on reload success and reload fail
+    # State.door of ReloadState:  OnAfterReload (when reload was a success).
+    for state in analyzer.state_db.itervalues():
+        # Null-operation, in case no reload required.
+        state.prepare_for_reload(analyzer, OnBeforeReload, OnAfterReload) 
 
     # [Optional] Combination of states into MegaState-s.
     if len(Setup.compression_type_list) != 0:
         mega_state_analyzer.do(analyzer)
-        if EngineType.subject_to_reload():
-            # TransitionMap: 
-            #     On BufferLimitCode --> ReloadState
-            # ReloadState.door of mega state:
-            #     Router to doors of implemented states.
-            for state in analyzer.mega_state_list:
-                state.prepare_again_for_reload(analyzer) 
-
-            reload_door_id = analyzer.reload_state.entry.get_door_id(analyzer.reload_state.index, state.index)
+        # Prepare Reload:
+        # (Null-operation, in case no reload required.)
+        # TransitionMap:                  On BufferLimitCode --> ReloadState
+        # ReloadState.door of mega state: Router to doors of implemented states.
+        for state in analyzer.mega_state_list:
+            state.prepare_again_for_reload(analyzer) 
 
     # AnalyzerState.transition_map:    Interval --> DoorID
     # MegaState.transition_map:        Interval --> TargetByStateKey
@@ -350,27 +342,6 @@ class Analyzer:
             level_i += 1
 
         return depth_db
-
-    def has_transition_to_init_state(self):
-        """Determine whether the init state is entered from another state.
-        (If not, only the default entry into the init state is generated.)
-        """
-        if not self.__engine_type.is_FORWARD():    return False
-        if self.__engine_type.subject_to_reload(): return True
-
-        # Is there any state from where the init state is entered?
-        source_state_list = self.__from_db.get(self.__init_state_index)
-
-        if source_state_list is None:                                  return False
-        if len(source_state_list) == 0:                                return False
-        # To be 100% sure (robust against double occurence of NONE)
-        # => not only consider len(source_state_list) >= 2, but iterate
-        for source_state in source_state_list:
-            if source_state != E_StateIndices.NONE:                    return True
-
-        # The 'source_state_list' contains only 'NONE'. Thus, the init state is not
-        # entered from any other state.
-        return False
 
     def last_acceptance_variable_required(self):
         """If one entry stores the last_acceptance, then the 

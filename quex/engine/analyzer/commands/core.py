@@ -408,17 +408,19 @@ class RouterContentElement(object):
     def __ne__(self, Other):
         return not (self == Other)
 
-    def __str__(self):
+    def get_string(self):
         if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
         else:                                                  assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
 
         if self.positioning != 0:
-            return "case %s: %s goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                             repr_positioning(self.positioning, self.position_register), 
-                                             repr_acceptance_id(self.acceptance_id))
+            return "%s goto %s;" % (repr_positioning(self.positioning, self.position_register), 
+                                    repr_acceptance_id(self.acceptance_id))
         else:
-            return "case %s: goto %s;" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                          repr_acceptance_id(self.acceptance_id))
+            return "goto %s;"    % (repr_acceptance_id(self.acceptance_id))
+
+    def __str__(self):
+        return "case %s: %s" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
+                                self.get_string())
         
 class RouterContent:
     """_________________________________________________________________________
@@ -479,11 +481,12 @@ class RouterContent:
 
     def __iter__(self):
         for x in self.__list:
+            assert isinstance(x, RouterContentElement)
             yield x
 
     def __str__(self):
         txt = [ "on last_acceptance:\n" ]
-        txt.extend(str(x) for x in self.__list)
+        txt.extend("case %s: %s\n" % (x.acceptance_id, x.get_string()) for x in self.__list)
         return "".join(txt)
 
     def __len__(self):
@@ -810,8 +813,8 @@ def ColumnCountAdd(Value):
 def IndentationHandlerCall(DefaultIhF, ModeName):
     return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
 
-def IfPreContextSetPositionAndGoto(Check, RouterElement):
-    return Command(E_Cmd.IfPreContextSetPositionAndGoto, Check, RouterElement)
+def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
+    return Command(E_Cmd.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
 
 def ColumnCountGridAdd(GridSize):
     return Command(E_Cmd.ColumnCountGridAdd, GridSize)
