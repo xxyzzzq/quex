@@ -12,7 +12,7 @@ from   quex.blackboard                            import setup as Setup, \
                                                          E_TransitionN, \
                                                          E_TriggerIDs
 
-from   operator import attrgetter
+from   operator    import attrgetter
 from   collections import defaultdict
 
 class Entry(object):
@@ -226,7 +226,9 @@ class Entry(object):
         return
 
     def itervalues(self):
-        return self.__db.itervalues()
+        for ta in self.__db.itervalues():
+            assert ta.door_id is not None, ".categorize() needs to be called before this!"
+            yield ta
 
     def iteritems(self):
         return self.__db.iteritems()

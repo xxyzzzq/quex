@@ -5,7 +5,7 @@ import quex.engine.analyzer.track_analysis         as     track_analysis
 from   quex.engine.analyzer.position_register_map  import print_this
 import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.state_machine.engine_state_machine_set                  import get_combined_state_machine
-from   quex.blackboard                             import E_InputActions, setup as Setup
+from   quex.blackboard                             import E_InputActions, setup as Setup, E_StateIndices, E_PreContextIDs, E_Cmd
 
 import sys
 import os
@@ -53,6 +53,16 @@ def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
             print accept_sequence.get_string(Indent=1)
         print
 
+def get_drop_out_string(analyzer, StateIndex):
+    txt = ".drop_out:\n"
+    for cmd in analyzer.drop_out.entry.get_command_list(E_StateIndices.DROP_OUT, StateIndex):
+        if cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
+            if cmd.content.pre_context_id != E_PreContextIDs.NONE: txt += "if %s:" % cmd.content.pre_context_id
+            txt += cmd.content.router_element.get_string()
+        else:
+            txt += str(cmd.content)
+    return txt
+
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     
     print SM.get_string(NormalizeF=True, OriginalStatesF=False)
@@ -68,6 +78,7 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
         plain_txt = state.get_string(InputF=False, TransitionMapF=False)
         states_txt_db[state.index] = plain_txt
         print plain_txt
+        print get_drop_out_string(plain, state.index)
 
     if PrintPRM_F:
         print_this(plain)

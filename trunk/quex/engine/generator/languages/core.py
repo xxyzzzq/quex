@@ -268,17 +268,17 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.Router:
             case_list = [
-                (Lng.ACCEPTANCE(element.acceptance_id), 
+                (self.ACCEPTANCE(element.acceptance_id), 
                  self.position_and_goto(self.__analyzer.engine_type, element))
                 for element in Cmd.content
             ]
-            txt = Lng.SELECTION("last_acceptance", case_list)
+            txt = self.SELECTION("last_acceptance", case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
         elif Cmd.id == E_Cmd.RouterOnStateKey:
             case_list = [
-                (state_key, Lng.GOTO(door_id)) for state_key, door_id in Cmd.content
+                (state_key, self.GOTO(door_id)) for state_key, door_id in Cmd.content
             ]
             if Cmd.content.register == E_R.PathIterator:
                 key_txt = "path_iterator - path_walker_%i_path_base" % Cmd.content.mega_state_index 
@@ -287,14 +287,14 @@ class Lng_Cpp(dict):
             else:
                 assert False
 
-            txt = Lng.SELECTION(key_txt, case_list)
+            txt = self.SELECTION(key_txt, case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
         elif Cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
             pre_context_id = Cmd.content.pre_context_id
-            block = Lng.position_and_goto(self.__analyzer.engine_type, 
-                                          Cmd.content.router_element)
+            block = self.position_and_goto(self.__analyzer.engine_type, 
+                                           Cmd.content.router_element)
             txt = []
             self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)
@@ -439,7 +439,7 @@ class Lng_Cpp(dict):
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
             door_id = DoorID.incidence(terminal.incidence_id())
             t_txt = ["%s __quex_debug(\"* TERMINAL %s\\n\");\n" % \
-                     (Lng.LABEL(door_id), terminal.name())]
+                     (self.LABEL(door_id), terminal.name())]
             code  = terminal.code(TheAnalyzer)
             assert none_isinstance(code, list)
             t_txt.extend(code)
@@ -644,7 +644,7 @@ class Lng_Cpp(dict):
     def PRE_CONTEXT_RESET(self, PreConditionIDList):
         if PreConditionIDList is None: return ""
         return "".join([
-            "    %s\n" % Lng.ASSIGN("pre_context_%s_fulfilled_f" % pre_context_id, 0)
+            "    %s\n" % self.ASSIGN("pre_context_%s_fulfilled_f" % pre_context_id, 0)
             for pre_context_id in PreConditionIDList
         ])
 
@@ -700,7 +700,7 @@ class Lng_Cpp(dict):
                    + "me->buffer._input_p = position[%i];\n" % Register
         # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-            return ""
+            return "__quex_assert(%s == %s + 1);\n" % (self.INPUT_P(), self.LEXEME_START_P())
         elif Positioning > 0:     
             return "me->buffer._input_p -= %i; " % Positioning
         elif Positioning == 0:    

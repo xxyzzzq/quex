@@ -79,15 +79,21 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
         on_after_reload  = CommandList.from_iterable(
             CsSm.on_after_reload + CcFactory.on_after_reload
         )
+        engine_type = engine.FORWARD
     else:
         on_before_reload = on_after_reload = None
+        engine_type = engine.CHARACTER_COUNTER
 
-    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadStateExtern,
+    analyzer = analyzer_generator.do(CsSm.sm, engine_type,
+                                     ReloadStateExtern,
                                      OnBeforeReload=on_before_reload, 
-                                     OnAfterReload=on_after_reload,
-                                     ReloadF=ReloadF)
+                                     OnAfterReload=on_after_reload)
 
-    analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorIdExit))
+    analyzer.drop_out.entry.enter_CommandList(
+        E_StateIndices.DROP_OUT, analyzer.init_state_index, 
+        CommandList(GotoDoorId(DoorIdExit))
+    )
+    analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     door_id_loop = _prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
 

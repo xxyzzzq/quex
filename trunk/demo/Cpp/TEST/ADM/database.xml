@@ -1,193 +1,193 @@
-<test-database execution-time-sec="343.73" date="Mon May 12 07:08:22 2014">
+<test-database execution-time-sec="274.76" date="Mon May 26 07:19:57 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="8.98"> 
+        <test title="Single Mode Example" time-sum-sec="6.76"> 
             <application file-name="000.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="4.67" crc="-584949883"/>
-               <choice name="DEBUG" result="OK" time_sec="4.32" crc="-584949883"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.68" crc="-584949883"/>
+               <choice name="DEBUG" result="OK" time_sec="3.08" crc="-584949883"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="8.80"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="7.24"> 
             <application file-name="001.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="4.84" crc="1133630677"/>
-               <choice name="DEBUG" result="OK" time_sec="3.95" crc="1133630677"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.83" crc="1133630677"/>
+               <choice name="DEBUG" result="OK" time_sec="3.41" crc="1133630677"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="1.71"> 
+        <test title="Indentation Based Scopes" time-sum-sec="1.28"> 
             <application file-name="002.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.91" crc="-1626426563"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.80" crc="-1626426563"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="0.67" crc="-1626426563"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.60" crc="-1626426563"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="22.44"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="19.26"> 
             <application file-name="003.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
-               <choice name="BPC=2" result="OK" time_sec="5.98" crc="766281751"/>
-               <choice name="BPC=2_NDEBUG" result="OK" time_sec="4.55" crc="766281751"/>
-               <choice name="BPC=4" result="OK" time_sec="3.97" crc="766281751"/>
-               <choice name="BPC=4_NDEBUG" result="OK" time_sec="4.01" crc="766281751"/>
-               <choice name="BPC=wchar_t" result="OK" time_sec="3.93" crc="766281751"/>
+               <choice name="BPC=2" result="OK" time_sec="5.09" crc="766281751"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time_sec="3.52" crc="766281751"/>
+               <choice name="BPC=4" result="OK" time_sec="3.53" crc="766281751"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.53" crc="766281751"/>
+               <choice name="BPC=wchar_t" result="OK" time_sec="3.58" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="15.29"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="11.95"> 
             <application file-name="003-bom.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
-               <choice name="Without" result="OK" time_sec="6.32" crc="1853132003"/>
-               <choice name="UTF8-BOM" result="OK" time_sec="4.25" crc="-478996158"/>
-               <choice name="UTF16BE-BOM" result="OK" time_sec="4.72" crc="591404884"/>
+               <choice name="Without" result="OK" time_sec="4.94" crc="1853132003"/>
+               <choice name="UTF8-BOM" result="OK" time_sec="3.55" crc="-478996158"/>
+               <choice name="UTF16BE-BOM" result="OK" time_sec="3.45" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="25.35"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="20.16"> 
             <application file-name="003-icu.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
-               <choice name="BPC=2" result="OK" time_sec="6.76" crc="1977270883"/>
-               <choice name="BPC=2_NDEBUG" result="OK" time_sec="4.58" crc="1977270883"/>
-               <choice name="BPC=4" result="OK" time_sec="4.82" crc="1977270883"/>
-               <choice name="BPC=4_NDEBUG" result="OK" time_sec="4.53" crc="1977270883"/>
-               <choice name="BPC=wchar_t" result="OK" time_sec="4.66" crc="1977270883"/>
+               <choice name="BPC=2" result="OK" time_sec="5.74" crc="1977270883"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time_sec="3.78" crc="1977270883"/>
+               <choice name="BPC=4" result="OK" time_sec="3.49" crc="1977270883"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time_sec="3.82" crc="1977270883"/>
+               <choice name="BPC=wchar_t" result="OK" time_sec="3.33" crc="1977270883"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="3.98"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="12.87"> 
             <application file-name="004.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.95" crc="-1383033063"/>
-               <choice name="DEBUG" result="FAIL" time_sec="2.04" crc="-1383033063"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="7.93" crc="-1383033063"/>
+               <choice name="DEBUG" result="FAIL" time_sec="4.94" crc="-1383033063"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="17.22"> 
+        <test title="Including Files" time-sum-sec="13.01"> 
             <application file-name="005.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="4.87" crc="256352848"/>
-               <choice name="1_NDEBUG" result="OK" time_sec="4.10" crc="256352848"/>
-               <choice name="2" result="OK" time_sec="4.04" crc="-364815969"/>
-               <choice name="2_NDEBUG" result="OK" time_sec="4.22" crc="-364815969"/>
+               <choice name="1" result="OK" time_sec="3.47" crc="256352848"/>
+               <choice name="1_NDEBUG" result="OK" time_sec="2.99" crc="256352848"/>
+               <choice name="2" result="OK" time_sec="3.25" crc="-364815969"/>
+               <choice name="2_NDEBUG" result="OK" time_sec="3.30" crc="-364815969"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="8.82"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="7.01"> 
             <application file-name="006.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="4.61" crc="67355700"/>
-               <choice name="DEBUG" result="OK" time_sec="4.21" crc="67355700"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.79" crc="67355700"/>
+               <choice name="DEBUG" result="OK" time_sec="3.22" crc="67355700"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="9.88"> 
+        <test title="Miscellaneous Features" time-sum-sec="8.20"> 
             <application file-name="007.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="5.18" crc="-1744057875"/>
-               <choice name="DEBUG" result="OK" time_sec="4.70" crc="-1744057875"/>
+               <choice name="NDEBUG" result="OK" time_sec="4.66" crc="-1744057875"/>
+               <choice name="DEBUG" result="OK" time_sec="3.54" crc="-1744057875"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="14.25"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="8.50"> 
             <application file-name="008.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="7.21" crc="-1669907923"/>
-               <choice name="DEBUG" result="OK" time_sec="7.04" crc="-1669907923"/>
+               <choice name="NDEBUG" result="OK" time_sec="4.15" crc="-1669907923"/>
+               <choice name="DEBUG" result="OK" time_sec="4.35" crc="-1669907923"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/009">
-        <test title="Standard Input (stdin/cin)" time-sum-sec="9.14"> 
+        <test title="Standard Input (stdin/cin)" time-sum-sec="5.12"> 
             <application file-name="009b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="9.14" crc="-828377416"/>
+               <choice name="" result="FAIL" time_sec="5.12" crc="-828377416"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="17.42"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="12.47"> 
             <application file-name="009.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="FAIL" time_sec="9.71" crc="1910061155"/>
-               <choice name="wlexer" result="FAIL" time_sec="7.71" crc="1910061155"/>
+               <choice name="lexer" result="FAIL" time_sec="6.42" crc="1910061155"/>
+               <choice name="wlexer" result="FAIL" time_sec="6.05" crc="1910061155"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="111.07"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="113.19"> 
             <application file-name="010.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
-               <choice name="copy" result="FAIL" time_sec="5.86" crc="1030682096"/>
-               <choice name="fill" result="FAIL" time_sec="5.75" crc="1030682096"/>
-               <choice name="point" result="OK" time_sec="5.57" crc="861795188"/>
-               <choice name="copy-ez" result="OK" time_sec="5.29" crc="-812025512"/>
-               <choice name="fill-ez" result="OK" time_sec="5.74" crc="-812025512"/>
-               <choice name="copy-conversion" result="FAIL" time_sec="25.28" crc="-470382527"/>
-               <choice name="copy-conversion-direct" result="FAIL" time_sec="25.68" crc="-470382527"/>
-               <choice name="fill-conversion-direct" result="FAIL" time_sec="26.11" crc="-470382527"/>
-               <choice name="re-point" result="OK" time_sec="5.81" crc="1228316465"/>
+               <choice name="copy" result="FAIL" time_sec="4.42" crc="1030682096"/>
+               <choice name="fill" result="FAIL" time_sec="4.57" crc="1030682096"/>
+               <choice name="point" result="OK" time_sec="4.59" crc="861795188"/>
+               <choice name="copy-ez" result="OK" time_sec="4.46" crc="-812025512"/>
+               <choice name="fill-ez" result="OK" time_sec="4.47" crc="-812025512"/>
+               <choice name="copy-conversion" result="FAIL" time_sec="29.41" crc="-470382527"/>
+               <choice name="copy-conversion-direct" result="FAIL" time_sec="29.23" crc="-470382527"/>
+               <choice name="fill-conversion-direct" result="FAIL" time_sec="27.45" crc="-470382527"/>
+               <choice name="re-point" result="OK" time_sec="4.58" crc="1228316465"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="17.19"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="12.27"> 
             <application file-name="011.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="OK" time_sec="4.65" crc="-1827787599"/>
-               <choice name="utf8" result="OK" time_sec="4.62" crc="-1827787599"/>
-               <choice name="utf16-be" result="OK" time_sec="3.97" crc="-1827787599"/>
-               <choice name="utf16-le" result="OK" time_sec="3.95" crc="-1827787599"/>
+               <choice name="iso8859-7" result="FAIL" time_sec="1.57" crc="-1827787599"/>
+               <choice name="utf8" result="OK" time_sec="4.02" crc="-1827787599"/>
+               <choice name="utf16-be" result="OK" time_sec="3.17" crc="-1827787599"/>
+               <choice name="utf16-le" result="OK" time_sec="3.50" crc="-1827787599"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" time-sum-sec="8.92"> 
+        <test title="Engine Encoding UTF16" time-sum-sec="7.54"> 
             <application file-name="011b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="LE" result="OK" time_sec="4.22" crc="2001714839"/>
-               <choice name="BE" result="OK" time_sec="4.70" crc="2001714839"/>
+               <choice name="LE" result="OK" time_sec="3.86" crc="2001714839"/>
+               <choice name="BE" result="OK" time_sec="3.69" crc="2001714839"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="20.23"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="5.98"> 
             <application file-name="012.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="12.82" crc="-62717966"/>
-               <choice name="DEBUG" result="OK" time_sec="7.41" crc="-62717966"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="3.95" crc="-62717966"/>
+               <choice name="DEBUG" result="FAIL" time_sec="2.03" crc="-62717966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="23.03"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="1.95"> 
             <application file-name="012b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="OK" time_sec="14.09" crc="-62717966"/>
-               <choice name="DEBUG" result="OK" time_sec="8.94" crc="-62717966"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="1.14" crc="-62717966"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.81" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

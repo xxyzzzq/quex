@@ -440,9 +440,23 @@ class MegaState(AnalyzerState):
         """Similar to '_finalize_configure_global_drop_out()' we implement a 
         router from the MegaState-s door into the Reloader to the doors of the
         implemented states. 
-        
+
         (For figure see comment to 'ReloadState.add_mega_state()')
+        
         """
+        if not TheAnalyzer.engine_type.subject_to_reload():
+            # Engine type does not require reload => no reload. 
+            return
+        else:
+            # Case 'transition map is only drop-out': In that case, NO reload is
+            # required. For any state in the set of implemented states, it holds:
+            # => No reload is prepared for that implemented state. 
+            # => The reload state does not contain an entry from that state. 
+            # => The reload state's function 'add_mega_state' then implements a 
+            #    routing to the state's drop-out upon reload (instead of routing
+            #    to the state's reload).
+            pass
+
         # (*) Generate the entry into the reloader that routes to the 
         #     state's entry into the reloader
         reload_door_id = TheAnalyzer.reload_state.add_mega_state(
