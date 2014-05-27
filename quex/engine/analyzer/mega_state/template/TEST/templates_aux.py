@@ -22,14 +22,12 @@ from   quex.engine.tools                                    import typed
 
 from   operator    import attrgetter
 from   collections import defaultdict
-from   quex.blackboard import E_StateIndices
+from   quex.blackboard import E_StateIndices, E_Compression
 
 import sys
 
 def get_AnalyzerState(StateIndex, TM):
-    state = AnalyzerState(StateIndex, TM)
-    state.drop_out = CommandList()
-    return state
+    return AnalyzerState(StateIndex, TM)
 
 def get_AnalyzerState_Init(InitStateIndex, StateIndexList):
     init_tm = TransitionMap.from_iterable( 
@@ -39,7 +37,7 @@ def get_AnalyzerState_Init(InitStateIndex, StateIndexList):
     return get_AnalyzerState(InitStateIndex, init_tm)
 
 @typed(DropOutCatcher=Processor)
-def get_TemplateState(State, DropOutCatcher, Name=None)
+def get_TemplateState(State, DropOutCatcher, Name=None):
     if not isinstance(State, TemplateState): 
         State = PseudoTemplateState(State, DropOutCatcher)
 
@@ -165,7 +163,7 @@ def combine(analyzer, A, B, A_Name="A", B_Name="B", DrawF=False):
 
     candidate = TemplateStateCandidate(A, B)
     result    = TemplateState(candidate)
-    result.finalize(analyzer, CompressionType=None) # CompressionType not used for templates
+    result.finalize(analyzer, CompressionType=E_Compression.TEMPLATE) # CompressionType not used for templates
 
     print "_ _" * 20
     print_combination_result(result, A, B, A_Name, B_Name)

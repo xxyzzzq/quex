@@ -2,7 +2,8 @@ import quex.engine.analyzer.mega_state.path_walker.core  as     paths
 import quex.engine.analyzer.mega_state.path_walker.find  as     find
 import quex.engine.analyzer.engine_supply_factory        as     engine
 from   quex.engine.analyzer.core                         import Analyzer
-from   quex.blackboard                                   import E_Compression
+from   quex.blackboard                                   import E_Compression, \
+                                                                E_StateIndices
 
 def find_core(sm, SelectF=False):
     print sm.get_graphviz_string(NormalizeF=False)
@@ -10,6 +11,8 @@ def find_core(sm, SelectF=False):
     analyzer = Analyzer.from_StateMachine(sm, engine.FORWARD)
     for state in analyzer.state_db.itervalues():
         state.entry.categorize(state.index)
+    analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
+
     for state in analyzer.state_db.itervalues():
         assert state.transition_map is not None
         state.transition_map = state.transition_map.relate_to_DoorIDs(analyzer, state.index)
