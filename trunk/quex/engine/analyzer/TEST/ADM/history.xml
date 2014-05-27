@@ -1,4 +1,4 @@
-<history date="Tue May 27 07:39:05 2014" element-n="1095">
+<history date="Tue May 27 23:09:16 2014" element-n="1104">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -1271,5 +1271,16 @@
     </day>
     <day year="2014" month="04" day="05">
         <crc-error time="08:33:19" application="paths_analysis-pre.py" choice="7" database-crc="1071636588" real-crc="2050565048"/>
+    </day>
+    <day year="2014" month="05" day="27">
+        <crc-error time="06:25:49" application="paths_analysis-loops.py" choice="0" database-crc="508812700" real-crc="-1369335040"/>
+        <crc-error time="06:26:25" application="paths_analysis-loops.py" choice="0" database-crc="-1369335040" real-crc="153176669"/>
+        <crc-error time="06:26:45" application="paths_analysis-loops.py" choice="0" database-crc="153176669" real-crc="1051455443"/>
+        <crc-error time="06:27:38" application="paths_analysis-loops.py" choice="1" database-crc="1549230207" real-crc="-1332943364"/>
+        <crc-error time="06:38:42" application="paths_analysis.py" choice="3" database-crc="-795200862" real-crc="-277962426"/>
+        <crc-error time="21:01:58" application="paths_analysis.py" choice="7" database-crc="-1052461595" real-crc="1557254239"/>
+        <crc-error time="21:02:35" application="paths_analysis.py" choice="8" database-crc="1286606980" real-crc="1038801605"/>
+        <crc-error time="21:03:42" application="paths_analysis.py" choice="10" database-crc="1068945929" real-crc="-1365873662"/>
+        <crc-error time="21:08:42" application="paths_analysis.py" choice="10" database-crc="-1365873662" real-crc="1560628877"/>
     </day>
 </history>

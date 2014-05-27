@@ -486,7 +486,11 @@ class RouterContent:
 
     def __str__(self):
         txt = [ "on last_acceptance:\n" ]
-        txt.extend("case %s: %s\n" % (x.acceptance_id, x.get_string()) for x in self.__list)
+        def case_str(AcceptanceId):
+            msg = "%s" % AcceptanceId
+            if msg == "MATCH_FAILURE": return "Failure"
+            else:                      return msg
+        txt.extend("case %s: %s\n" % (case_str(x.acceptance_id), x.get_string()) for x in self.__list)
         return "".join(txt)
 
     def __len__(self):

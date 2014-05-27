@@ -3,6 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+import quex.engine.state_machine.index                             as     sm_index
+from   quex.engine.analyzer.state.core                             import AnalyzerState
 from   quex.engine.analyzer.transition_map                         import TransitionMap
 import quex.engine.analyzer.mega_state.template.core               as     templates
 from   quex.engine.analyzer.mega_state.template.state              import combine_maps, TemplateState
@@ -40,11 +42,14 @@ def test(TMa, TMb, InvolvedStateListA=[10L], InvolvedStateListB=[20L], DrawF=Fal
     print "(Vice Versa)-------------------------------------"
     test_combination(StateB, StateA, analyzer, "A", "B", DrawF)
 
-def get_transition_map(TM, StateIndex):
+def get_transition_map(TM, StateIndex, DropOutCatcher=None):
+    if DropOutCatcher is None:
+        DropOutCatcher = AnalyzerState(sm_index.get(), TransitionMap())
+
     def get_door_id(Target):
         return DoorID(Target, 0)
     tm = TransitionMap.from_iterable(TM, get_door_id)
-    return tm.relate_to_TargetByStateKeys(StateIndex)
+    return tm.relate_to_TargetByStateKeys(StateIndex, DropOutCatcher)
 
 def test_core(tm_a, tm_b):
     result, scheme_n = combine_maps(tm_a, tm_b)

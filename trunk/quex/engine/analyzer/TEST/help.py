@@ -55,12 +55,18 @@ def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
 
 def get_drop_out_string(analyzer, StateIndex):
     txt = ".drop_out:\n"
+    if_str = "if"
     for cmd in analyzer.drop_out.entry.get_command_list(E_StateIndices.DROP_OUT, StateIndex):
         if cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
-            if cmd.content.pre_context_id != E_PreContextIDs.NONE: txt += "if %s:" % cmd.content.pre_context_id
-            txt += cmd.content.router_element.get_string()
+            if cmd.content.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE: 
+                txt += "%s BeginOfLine: " % (if_str)
+            elif cmd.content.pre_context_id != E_PreContextIDs.NONE: 
+                txt += "%s PreContext_%s: " % (if_str, cmd.content.pre_context_id)
+
+            if if_str == "if": if_str = "else if"
+            txt += cmd.content.router_element.get_string() + "\n"
         else:
-            txt += str(cmd.content)
+            txt += str(cmd.content) + "\n"
     return txt
 
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
@@ -98,3 +104,4 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
         print 
         for state_index, state_txt in sorted(diff_txt_db.iteritems(), key=itemgetter(0)):
             print state_txt
+            print get_drop_out_string(optimized, state_index)

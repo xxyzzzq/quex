@@ -403,7 +403,7 @@ class Entry(object):
             p_txt  = get_pre_context_oks(pcok_command_list)
             sk_txt = get_set_template_state_keys(ssk_command_list)
             pi_txt = get_set_path_iterator_keys(spi_command_list)
-            content = "".join(a_txt + s_txt + p_txt + sk_txt + pi_txt)
+            content = "".join("%s\n" % x for x in a_txt + s_txt + p_txt + sk_txt + pi_txt)
             content = content.strip()
             if content.count("\n") == 0:
                 # Append to same line

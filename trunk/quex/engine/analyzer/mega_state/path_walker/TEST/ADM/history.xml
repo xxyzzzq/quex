@@ -1,4 +1,4 @@
-<history date="Mon May 26 07:23:17 2014" element-n="66">
+<history date="Tue May 27 23:17:57 2014" element-n="68">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -84,5 +84,9 @@
     <day year="2014" month="01" day="10">
         <crc-error time="03:56:41" application="find-2.py" choice="1" database-crc="925968164" real-crc="-1378500123"/>
         <crc-error time="03:57:18" application="find-2.py" choice="2" database-crc="601842591" real-crc="-1531743516"/>
+    </day>
+    <day year="2014" month="05" day="27">
+        <crc-error time="21:17:06" application="find.py" choice="5" database-crc="-1027595222" real-crc="-1643133387"/>
+        <crc-error time="21:17:57" application="find-2.py" choice="1" database-crc="-1878001229" real-crc="507022156"/>
     </day>
 </history>

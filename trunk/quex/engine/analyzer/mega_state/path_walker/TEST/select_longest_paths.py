@@ -8,7 +8,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling    import *
 import quex.engine.state_machine.core   as     core
 from   quex.engine.analyzer.state.core  import AnalyzerState
-from   quex.engine.analyzer.state.drop_out  import DropOut
 from   quex.engine.analyzer.mega_state.path_walker.core   import select
 from   quex.engine.analyzer.mega_state.path_walker.path   import CharacterPath, CharacterPathStep
 from   quex.engine.analyzer.transition_map                import TransitionMap              
