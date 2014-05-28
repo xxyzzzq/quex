@@ -27,108 +27,101 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from NONE: 
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 0: 
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 2:
   .entry:
     .from 1: position[PostContext_1]  = input_p;
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 3:
   .entry:
     .from 2: last_acceptance = Pattern1
     .from 3: last_acceptance = Pattern1
-  .drop_out:
-    pos = position[PostContext_1] ; goto Pattern1;
 
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
 
 State 4:
   .entry:
-    .from 3:
-    .from 7:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 1: pos = position[PostContext_1] ; goto Pattern1;
-        case 2: pos -= 2;  goto Pattern2;
+    .from 3: 
+    .from 7: 
+
+.drop_out:
+on last_acceptance:
 
 
-State 5:
-  .entry:
-    .from 4:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 1: pos = position[PostContext_1] ; goto Pattern1;
-        case 2: pos -= 3;  goto Pattern2;
+case 1: pos = position[PostContext_1] ; goto Pattern1;
+  case 2: pos -= 2;  goto Pattern2;
+    State 5: 
 
+.entry:
+.from 4:
+.drop_out:
+on last_acceptance:
+    case 1: pos = position[PostContext_1] ; goto Pattern1; 
 
+case 2: pos -= 3;  goto Pattern2;
 State 6:
-  .entry:
-    .from 5:
-  .drop_out:
-     goto Pattern3;
 
+.entry:
+  .from 5:
+    .drop_out:
 
+goto Pattern3;
 State 7:
-  .entry:
-    .from 2: last_acceptance = Pattern2
+
+
+.entry:
+
+.from 2: last_acceptance = Pattern2
   .drop_out:
     pos -= 1;  goto Pattern2;
 
-
-
 --- Optimized States ---
-
 State 2:
-  .entry:
-    .from 1: position[PostContext_0]  = input_p;
-  .drop_out:
+
+.entry:
+  .from 1: position[PostContext_0]  = input_p;
+    .drop_out:
     pos = lexeme_start_p + 1;  goto Failure;
 
-
 State 3:
-  .entry:
-    .from 2: last_acceptance = Pattern1
-    .from 3: last_acceptance = Pattern1
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern1;
+.entry:
 
+.from 2: last_acceptance = Pattern1
+  .from 3: last_acceptance = Pattern1
+    .drop_out: 
+    pos = position[PostContext_0] ; goto Pattern1; 
 
 State 4:
-  .entry:
-    .from 3:
-    .from 7:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 1: pos = position[PostContext_0] ; goto Pattern1;
-        case 2: pos -= 2;  goto Pattern2;
+.entry:
+.from 3:
+.from 7:
 
 
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos -= 2; goto Pattern2;
 State 5:
-  .entry:
-    .from 4:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case 1: pos = position[PostContext_0] ; goto Pattern1;
-        case 2: pos -= 3;  goto Pattern2;
 
 
+.entry:
+.from 4:
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos -= 3;  goto Pattern2;

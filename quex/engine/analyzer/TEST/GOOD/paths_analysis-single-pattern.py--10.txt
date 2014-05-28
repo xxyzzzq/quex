@@ -12,26 +12,25 @@ init-state = 0L
 State 0:
   .entry:
     .from NONE: last_acceptance = Failure
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0:
-    .from 2:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 1: pos -= 1;  goto Pattern1;
+    .from 0: 
+    .from 2: 
+
+.drop_out:
+on last_acceptance:
 
 
-State 2:
-  .entry:
-    .from 1: last_acceptance = Pattern1
-  .drop_out:
-     goto Pattern1;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
+  case 1: pos -= 1;  goto Pattern1;
+    State 2:
 
+.entry:
+.from 1: last_acceptance = Pattern1
 
+.drop_out:
+goto Pattern1;
