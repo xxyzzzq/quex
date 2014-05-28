@@ -69,6 +69,21 @@ def get_drop_out_string(analyzer, StateIndex):
             txt += str(cmd.content) + "\n"
     return txt
 
+def get_state_text(TheAnalyzer, state):
+    txt = state.get_string(InputF=False, TransitionMapF=False)
+    return txt + get_drop_out_string(TheAnalyzer, state.index)
+
+def print_analyzer(TheAnalyzer):
+    states_txt_db = {}
+    for state in TheAnalyzer:
+        #if EngineType.is_FORWARD():
+        #    # if state.index == SM.init_state_index: assert state.input == E_InputActions.DEREF
+        #    # else: assert state.input == E_InputActions.INCREMENT_THEN_DEREF
+        txt = get_state_text(TheAnalyzer, state)
+        print txt
+        states_txt_db[state.index] = txt
+    return states_txt_db
+
 def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     
     print SM.get_string(NormalizeF=True, OriginalStatesF=False)
@@ -76,15 +91,7 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     plain = core.Analyzer.from_StateMachine(SM, EngineType)
 
     # Print plain analyzer, note down what changed during optimization
-    states_txt_db = {}
-    for state in plain:
-        #if EngineType.is_FORWARD():
-        #    # if state.index == SM.init_state_index: assert state.input == E_InputActions.DEREF
-        #    # else: assert state.input == E_InputActions.INCREMENT_THEN_DEREF
-        plain_txt = state.get_string(InputF=False, TransitionMapF=False)
-        states_txt_db[state.index] = plain_txt
-        print plain_txt
-        print get_drop_out_string(plain, state.index)
+    states_txt_db = print_analyzer(plain)
 
     if PrintPRM_F:
         print_this(plain)
@@ -92,8 +99,7 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     diff_txt_db = {}
     optimized = optimizer.do(plain)
     for state in optimized:
-        optimized_txt = optimized.state_db[state.index].get_string(InputF=False, TransitionMapF=False)
-
+        optimized_txt = get_state_text(optimized, optimized.state_db[state.index])
         if states_txt_db[state.index] != optimized_txt:
             diff_txt_db[state.index] = optimized_txt
 
@@ -104,4 +110,3 @@ def test(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
         print 
         for state_index, state_txt in sorted(diff_txt_db.iteritems(), key=itemgetter(0)):
             print state_txt
-            print get_drop_out_string(optimized, state_index)

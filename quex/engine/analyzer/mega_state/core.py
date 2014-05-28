@@ -373,7 +373,6 @@ class MegaState(AnalyzerState):
         return self.__bad_company
 
     def finalize(self, TheAnalyzer, CompressionType):
-        print "#CompressionType:", CompressionType
         assert CompressionType in E_Compression
 
         # (1.1) Collect all Entry objects from implemented states.

@@ -21,72 +21,77 @@ init-state = 0L
 State 0:
   .entry:
     .from NONE: last_acceptance = Failure
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0: if      BeginOfLine: last_acceptance = Pattern1
-  .drop_out:
-    if BeginOfLine:  goto Pattern1;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 0: if BeginOfLine:  last_acceptance = Pattern1
 
+
+.drop_out:
+if BeginOfLine: goto Pattern1;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 2:
   .entry:
-    .from 1:
-  .drop_out:
-    if BeginOfLine: pos -= 1;  goto Pattern1;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 1: 
 
+
+.drop_out:
+if BeginOfLine: pos -= 1;  goto Pattern1;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 3:
   .entry:
-    .from 2:
-    .from 5:
-  .drop_out:
-    Checker:
-        accept = last_acceptance
-    Router:
-        case Failure: pos = lexeme_start_p + 1;  goto Failure;
-        case 1: pos -= 2;  goto Pattern1;
-        case 2: pos -= 1;  goto Pattern2;
+    .from 2: 
+    .from 5: 
 
 
-State 4:
-  .entry:
-    .from 3:
-  .drop_out:
-     goto Pattern3;
+.drop_out:
+on last_acceptance:
+case Failure: pos = lexeme_start_p  + 1;  goto Failure;
 
 
-State 5:
-  .entry:
-    .from 0: last_acceptance = Pattern2
-  .drop_out:
-     goto Pattern2;
+case 1: pos -= 2;  goto Pattern1;
+  case 2: pos -= 1;  goto Pattern2;
+    State 4: 
 
+
+.entry:
+.from 3:
+
+.drop_out:
+  goto Pattern3;
+    State 5:
+
+
+.entry:
+.from 0: last_acceptance = Pattern2
+
+.drop_out:
+        goto Pattern2;
 
 State 0:
         [MATCH_FAILURE]: NONE/set([0L])
+        State      1:
 
-State 1:
-        [MATCH_FAILURE]: NONE/set([0L])
-        [      1]: BEGIN_OF_LINE/set([1L])
+[MATCH_FAILURE]: NONE/set([0L])
+        [ 1]: BEGIN_OF_LINE/set([1L])
+        State      2:
 
-State 2:
-        [MATCH_FAILURE]: NONE/set([0L])
-        [      1]: BEGIN_OF_LINE/set([1L])
+[MATCH_FAILURE]: NONE/set([0L])
+        [ 1]: BEGIN_OF_LINE/set([1L])
+        State      3:
+        [MATCH_FAILURE]:      NONE/set([0L])
 
-State 3:
-        [MATCH_FAILURE]: NONE/set([0L])
-        [      1]: BEGIN_OF_LINE/set([1L])
+[ 1]: BEGIN_OF_LINE/set([1L])
         [      2]: NONE/set([5L])
 
 State 4:
         [      3]: NONE/set([4L])
 
 State 5:
-        [      2]: NONE/set([5L])
-
+[      2]: NONE/set([5L])

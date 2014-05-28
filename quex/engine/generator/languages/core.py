@@ -700,7 +700,7 @@ class Lng_Cpp(dict):
                    + "me->buffer._input_p = position[%i];\n" % Register
         # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-            return "__quex_assert(%s == %s + 1);\n" % (self.INPUT_P(), self.LEXEME_START_P())
+            return "%s = %s + 1; " % (self.INPUT_P(), self.LEXEME_START_P())
         elif Positioning > 0:     
             return "me->buffer._input_p -= %i; " % Positioning
         elif Positioning == 0:    
