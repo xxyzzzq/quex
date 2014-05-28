@@ -1,4 +1,4 @@
-<history date="Tue May 27 23:09:16 2014" element-n="1104">
+<history date="Wed May 28 07:35:13 2014" element-n="1116">
     <day year="2011" month="04" day="29">
         <history-init time="04:18:51"/>
     </day>
@@ -1282,5 +1282,19 @@
         <crc-error time="21:02:35" application="paths_analysis.py" choice="8" database-crc="1286606980" real-crc="1038801605"/>
         <crc-error time="21:03:42" application="paths_analysis.py" choice="10" database-crc="1068945929" real-crc="-1365873662"/>
         <crc-error time="21:08:42" application="paths_analysis.py" choice="10" database-crc="-1365873662" real-crc="1560628877"/>
+    </day>
+    <day year="2014" month="05" day="28">
+        <crc-error time="05:17:44" application="paths_analysis-pre.py" choice="8" database-crc="-1029552725" real-crc="1320988558"/>
+        <crc-error time="05:18:09" application="paths_analysis-pre.py" choice="9" database-crc="1527383754" real-crc="852077744"/>
+        <crc-error time="05:18:27" application="paths_analysis-pre.py" choice="10" database-crc="-1447847176" real-crc="-1517813376"/>
+        <crc-error time="05:19:38" application="paths_analysis-pre.py" choice="10" database-crc="-1517813376" real-crc="-165801052"/>
+        <crc-error time="05:20:14" application="paths_analysis-pre.py" choice="11" database-crc="408349639" real-crc="892545570"/>
+        <crc-error time="05:20:32" application="paths_analysis-pre.py" choice="11" database-crc="892545570" real-crc="165089305"/>
+        <crc-error time="05:20:55" application="paths_analysis-pre.py" choice="11" database-crc="165089305" real-crc="-1242474910"/>
+        <crc-error time="05:22:00" application="paths_analysis-pre.py" choice="13" database-crc="1524270478" real-crc="-1297291633"/>
+        <crc-error time="05:25:27" application="paths_analysis-pre-post.py" choice="7" database-crc="1504436441" real-crc="-561222824"/>
+        <crc-error time="05:25:38" application="paths_analysis-pre-post.py" choice="7" database-crc="-561222824" real-crc="843195898"/>
+        <crc-error time="05:26:59" application="paths_analysis-pre-post.py" choice="8" database-crc="485221815" real-crc="-685468829"/>
+        <crc-error time="05:27:56" application="paths_analysis-pre-post.py" choice="9" database-crc="624566485" real-crc="-1183038504"/>
     </day>
 </history>

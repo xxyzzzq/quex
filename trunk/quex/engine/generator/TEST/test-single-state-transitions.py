@@ -158,6 +158,7 @@ main_template = """
 typedef struct {
     struct {
         QUEX_TYPE_CHARACTER*  _input_p;
+        QUEX_TYPE_CHARACTER*  _lexeme_start_p;
     } buffer;
 } MiniAnalyzer;
 
