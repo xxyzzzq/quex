@@ -65,6 +65,8 @@ def get_drop_out_string(analyzer, StateIndex):
 
             if if_str == "if": if_str = "else if"
             txt += cmd.content.router_element.get_string() + "\n"
+        elif cmd.id == E_Cmd.GotoDoorId:
+            txt += "GotoDoorId: %s" % str(cmd.content.door_id)
         else:
             txt += str(cmd.content) + "\n"
     return txt

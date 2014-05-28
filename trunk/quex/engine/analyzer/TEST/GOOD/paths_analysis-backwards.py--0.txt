@@ -10,19 +10,19 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-    goto CheckTerminated;
+    .from NONE: 
 
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
 State 1:
   .entry:
-    .from 0:     pre-context-fulfilled = 1;
-  .drop_out:
-    goto CheckTerminated;
+    .from 0: pre-context-fulfilled = 1;
 
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
 State 2:
   .entry:
-    .from 0:     pre-context-fulfilled = 2;
-  .drop_out:
-    goto CheckTerminated;
+    .from 0: pre-context-fulfilled = 2;
 
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
