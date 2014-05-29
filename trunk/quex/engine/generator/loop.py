@@ -100,24 +100,16 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
-
     # -- The terminals 
     #
-    terminal_list   = CcFactory.get_terminal_list(Lng.INPUT_P(), 
-                                                  DoorIdOk          = door_id_loop, 
-                                                  DoorIdOnLexemeEnd = door_id_on_lexeme_end)
-
-    terminal_list.append(get_terminal_beyond(CsSm, CcFactory, DoorIdExit, beyond_iid))
+    terminal_list =  _get_terminal_list(CsSm, CcFactory, 
+                                        beyond_iid,
+                                        DoorIdExit, 
+                                        door_id_loop, 
+                                        door_id_on_lexeme_end)
 
     # (*) Generate Code _______________________________________________________
-    txt = []
-    txt.extend(generator.do_analyzer(analyzer))
-    txt.extend(generator.do_terminals(terminal_list, analyzer))
-    if ReloadF:
-        txt.extend(generator.do_reload_procedure(analyzer))
-
-    if CcFactory.requires_reference_p():   variable_db.require("reference_p")
-    if Setup.variable_character_sizes_f(): variable_db.require("character_begin_p")
+    txt = _get_source_code(CcFactory, analyzer, terminal_list)
     
     return txt, DoorID.incidence(beyond_iid)
 
@@ -160,15 +152,13 @@ def get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF, ParallelSmList=No
     """Takes a character counting factory and produces a state machine out
     of it.
     """
-    beyond_set = CcFactory.character_set.inverse().mask(0, Setup.get_character_value_limit())
-
-    incidence_id_map = CcFactory.get_incidence_id_map()
-
     beyond_iid = dial_db.new_incidence_id()
-    incidence_id_map.append((beyond_set, beyond_iid))
 
     # Build a state machine based on (character set, incidence_id) pairs.
-    ccsm = CharacterSetStateMachine(incidence_id_map, LexemeMaintainedF, ParallelSmList)
+    ccsm = CharacterSetStateMachine(
+               CcFactory.get_incidence_id_map(beyond_iid), 
+               LexemeMaintainedF, 
+               ParallelSmList)
     return ccsm, beyond_iid
         
 def get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIid, AdditionalCommandList=None):
@@ -193,3 +183,21 @@ def get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIid, AdditionalComman
 
     return result
 
+def _get_source_code(CcFactory, analyzer, terminal_list):
+    txt = []
+    txt.extend(generator.do_analyzer(analyzer))
+    txt.extend(generator.do_terminals(terminal_list, analyzer))
+    if analyzer.engine_type.subject_to_reload():
+        txt.extend(generator.do_reload_procedure(analyzer))
+
+    if CcFactory.requires_reference_p():   variable_db.require("reference_p")
+    if Setup.variable_character_sizes_f(): variable_db.require("character_begin_p")
+    return txt
+
+def _get_terminal_list(CsSm, CcFactory, BeyondIncidenceId, DoorIdExit, door_id_loop, door_id_on_lexeme_end):
+    result = CcFactory.get_terminal_list(Lng.INPUT_P(), 
+                                         DoorIdOk          = door_id_loop, 
+                                         DoorIdOnLexemeEnd = door_id_on_lexeme_end)
+
+    result.append(get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIncidenceId))
+    return result
