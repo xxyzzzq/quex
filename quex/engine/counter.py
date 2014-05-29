@@ -119,8 +119,20 @@ class CountCmdFactory:
     def requires_reference_p(self):
         return self.column_count_per_chunk is not None
 
-    def get_incidence_id_map(self):
-        return [ (x.character_set, x.incidence_id) for x in self.__map ]
+    def get_incidence_id_map(self, BeyondIncidenceId=None):
+        """RETURNS: A list of pairs: (character_set, incidence_id) 
+             
+           All same counting actions are referred to by the same incidence id.
+
+           If BeyondIncidenceId is given, then the remaining set of characters
+           is associated with 'BeyondIncidenceId'.
+        """
+        result = [ (x.character_set, x.incidence_id) for x in self.__map ]
+        if BeyondIncidenceId is not None:
+            beyond_set = self.character_set.inverse().mask(0, Setup.get_character_value_limit())
+            result.append((beyond_set, BeyondIncidenceId))
+        return result
+        
 
     def get_terminal_list(self, IncidenceMap, DoorIdOk, DoorIdOnLexemeEnd=None):
         # _get_terminal() --> _do_with_lexeme_end_check()
