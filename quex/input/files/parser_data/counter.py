@@ -1,6 +1,5 @@
 # (C) Frank-Rene Schaefer
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.counter                        import CountCmdFactory
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_VOID
@@ -437,20 +436,6 @@ class ParserDataLineColumn(Base):
     def __init__(self, sr, TheCountCmdMap=None):
         Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
 
-    @typed(CharacterSet=NumberSet)
-    def get_factory(self, CharacterSet, InputPName):
-        """Use NumberSet_All() if all characters shall be used.
-        """
-
-        cmap = [
-            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
-            for intersection, info in self.count_command_map.pruned_cgl_iterable(CharacterSet)
-        ]
-
-        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(CharacterSet)
-
-        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
-
 class ParserDataIndentation(Base):
     """Indentation counter specification.
     ____________________________________________________________________________
@@ -551,19 +536,6 @@ class ParserDataIndentation(Base):
             sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
             all_set.unite_with(retour_set)
         return sm
-
-    def get_cgb_factory(self, InputPName):
-        """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
-        """
-        ColumnNPerChunk = self.count_command_map.get_column_number_per_chunk(NumberSet_All())
-
-        cmap = [
-            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, character_set)
-            for character_set, info in self.count_command_map.column_grid_bad_count_iterable()
-        ]
-
-        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, NumberSet_All()) 
-
 
     def __repr__(self):
         txt = Base.__repr__(self)

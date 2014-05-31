@@ -144,7 +144,7 @@ def get_test_application(counter_db, ReferenceP, CT):
         Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(codec)
     # (*) Generate Code 
     counter_function_name, \
-    counter_str            = counter.get(counter_db.get_factory(NumberSet_All(), Lng.INPUT_P()), 
+    counter_str            = counter.get(CountCmdFactory.from_ParserDataLineColumn(counter_db, NumberSet_All(), Lng.INPUT_P()), 
                                          "TEST_MODE")
     counter_str = counter_str.replace("static void", "void")
 

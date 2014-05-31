@@ -145,7 +145,7 @@ def analyzer_functions_get(ModeDB):
         txt_counter = []
         if mode.default_character_counter_required_f:
             dial_db.clear()
-            ccfactory   = mode.counter_db.get_factory(NumberSet_All(), Lng.INPUT_P())
+            ccfactory   = CountCmdFactory.from_ParserDataLineColumn(mode.counter_db, NumberSet_All(), Lng.INPUT_P())
             txt_counter = cpp_generator.do_default_counter(mode.name, ccfactory)
 
         code_analyzer.extend(txt_counter)

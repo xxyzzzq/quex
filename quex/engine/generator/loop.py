@@ -3,7 +3,6 @@ import quex.engine.generator.base                      as     generator
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.generator.code.core                 import CodeTerminal
 from   quex.engine.analyzer.state.entry_action         import TransitionAction
-from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.core                       as     analyzer_generator
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.commands.core                   import E_R, \
@@ -21,7 +20,7 @@ from   quex.blackboard import E_StateIndices, \
 
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
-def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateExtern=None, LexemeMaintainedF=False):
+def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -67,27 +66,16 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
               +------+
     """
     assert ReloadF or ReloadStateExtern is None
+    assert EngineType is not None
 
     # (*) Construct State Machine and Terminals _______________________________
     #
-    CsSm, beyond_iid = get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF)
+    CsSm, beyond_iid = CcFactory.get_CharacterSetStateMachine(LexemeMaintainedF)
 
-    if ReloadF:
-        on_before_reload = CommandList.from_iterable(
-            CsSm.on_before_reload + CcFactory.on_before_reload
-        )
-        on_after_reload  = CommandList.from_iterable(
-            CsSm.on_after_reload + CcFactory.on_after_reload
-        )
-        engine_type = engine.FORWARD
-    else:
-        on_before_reload = on_after_reload = None
-        engine_type = engine.CHARACTER_COUNTER
-
-    analyzer = analyzer_generator.do(CsSm.sm, engine_type,
+    analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
-                                     OnBeforeReload=on_before_reload, 
-                                     OnAfterReload=on_after_reload)
+                                     OnBeforeReload = CsSm.on_before_reload, 
+                                     OnAfterReload  = CsSm.on_after_reload)
 
     analyzer.drop_out.entry.enter_CommandList(
         E_StateIndices.DROP_OUT, analyzer.init_state_index, 
@@ -95,25 +83,25 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, ReloadF=False, ReloadStateE
     )
     analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
-    door_id_loop = _prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
+    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm) 
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
     # -- The terminals 
     #
-    terminal_list =  _get_terminal_list(CsSm, CcFactory, 
-                                        beyond_iid,
-                                        DoorIdExit, 
-                                        door_id_loop, 
-                                        door_id_on_lexeme_end)
+    terminal_list = CcFactory.get_terminal_list(Lng.INPUT_P(), 
+                                                BeyondIncidenceId,
+                                                DoorIdExit,
+                                                DoorIdOk          = door_id_loop, 
+                                                DoorIdOnLexemeEnd = door_id_on_lexeme_end)
 
     # (*) Generate Code _______________________________________________________
     txt = _get_source_code(CcFactory, analyzer, terminal_list)
     
     return txt, DoorID.incidence(beyond_iid)
 
-def _prepare_entry_and_reentry(analyzer, CcFactory, CsSm):
+def _prepare_entry_and_reentry(analyzer, CsSm):
     """Prepare the entry and re-entry doors into the initial state
     of the loop-implementing initial state.
 
@@ -139,49 +127,14 @@ def _prepare_entry_and_reentry(analyzer, CcFactory, CsSm):
     # OnEntry
     ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
     ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                       CsSm.on_begin + CcFactory.on_begin)
+                                                       CsSm.on_begin)
 
     # OnReEntry
     tid_reentry = entry.enter_CommandList(init_state_index, index.get(), 
-                                          CommandList.from_iterable(CsSm.on_begin))
+                                          CommandList.from_iterable(CsSm.on_step))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id
-
-def get_CharacterSetStateMachine(CcFactory, LexemeMaintainedF, ParallelSmList=None):
-    """Takes a character counting factory and produces a state machine out
-    of it.
-    """
-    beyond_iid = dial_db.new_incidence_id()
-
-    # Build a state machine based on (character set, incidence_id) pairs.
-    ccsm = CharacterSetStateMachine(
-               CcFactory.get_incidence_id_map(beyond_iid), 
-               LexemeMaintainedF, 
-               ParallelSmList)
-    return ccsm, beyond_iid
-        
-def get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIid, AdditionalCommandList=None):
-    """Generate Terminal to be executed upon exit from the 'loop'.
-    
-       CcFactory  -- Determines what is to to be done upon exit from the 'loop'.
-       DoorIdExit -- DoorId where to go after the terminal has finished.
-       BeyondIid  -- 'Beyond Incidence Id', that is the incidencen id if of
-                     the terminal to be generated.
-    """
-    on_beyond = []
-    on_beyond.extend(CsSm.on_putback)
-    on_beyond.extend(CcFactory.on_end)
-    if AdditionalCommandList is not None:
-        on_beyond.extend(AdditionalCommandList)
-    on_beyond.append(GotoDoorId(DoorIdExit))
-
-    code_on_beyond  = CodeTerminal([Lng.COMMAND(cmd) for cmd in on_beyond])
-
-    result = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
-    result.set_incidence_id(BeyondIid)
-
-    return result
 
 def _get_source_code(CcFactory, analyzer, terminal_list):
     txt = []
@@ -194,10 +147,5 @@ def _get_source_code(CcFactory, analyzer, terminal_list):
     if Setup.variable_character_sizes_f(): variable_db.require("character_begin_p")
     return txt
 
-def _get_terminal_list(CsSm, CcFactory, BeyondIncidenceId, DoorIdExit, door_id_loop, door_id_on_lexeme_end):
-    result = CcFactory.get_terminal_list(Lng.INPUT_P(), 
-                                         DoorIdOk          = door_id_loop, 
-                                         DoorIdOnLexemeEnd = door_id_on_lexeme_end)
 
-    result.append(get_terminal_beyond(CsSm, CcFactory, DoorIdExit, BeyondIncidenceId))
     return result

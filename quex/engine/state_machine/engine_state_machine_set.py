@@ -62,7 +62,8 @@ class EngineStateMachineSet:
 
 class CharacterSetStateMachine:
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
-    def __init__(self, IncidenceIdMap, MaintainLexemeF, ParallelSmList=None):
+    def __init__(self, IncidenceIdMap, MaintainLexemeF, ParallelSmList=None, 
+                 OnBegin=None, OnEnd=None, OnBeforeReload=None, OnAfterReload=None):
         """Brief: Generates a state machine that implements the transition
         to terminals upon the input falling into a number set. 
             
@@ -99,10 +100,10 @@ class CharacterSetStateMachine:
         dummy, \
         self.sm = transformation.do_state_machine(sm)
 
-        self.__prepare_begin_and_putback()
-        self.__prepare_before_and_after_reload()
+        self.__prepare_begin_and_putback(OnBegin, OnEnd)
+        self.__prepare_before_and_after_reload(OnBeforeReload, OnAfterReload)
 
-    def __prepare_begin_and_putback(self):
+    def __prepare_begin_and_putback(self, OnBegin, OnEnd):
         """If we deal with variable character sizes, the begin of the letter is stored
         in 'character_begin_p'. To reset the input pointer 'input_p = character_begin_p' 
         is applied.
@@ -110,16 +111,18 @@ class CharacterSetStateMachine:
         if not Setup.variable_character_sizes_f():
             # 1 character == 1 chunk
             # => rest to last character: 'input_p = input_p - 1'
-            self.on_begin   = []
+            self.on_step    = []
             self.on_putback = [ InputPDecrement() ]
         else:
             # 1 character == variable number of chunks
             # => store begin of character in 'lexeme_start_p'
             # => rest to last character: 'input_p = lexeme_start_p'
-            self.on_begin   = [ Assign(E_R.CharacterBeginP, E_R.InputP) ]
+            self.on_step    = [ Assign(E_R.CharacterBeginP, E_R.InputP) ]
             self.on_putback = [ Assign(E_R.InputP, E_R.CharacterBeginP) ]
+        self.on_begin = self.on_step    + OnBegin
+        self.on_end   = self.on_putback + OnEnd 
 
-    def __prepare_before_and_after_reload(self):
+    def __prepare_before_and_after_reload(self, OnBeforeReload, OnAfterReload):
         """The 'lexeme_start_p' restricts the amount of data which is loaded 
         into the buffer upon reload--if the lexeme needs to be maintained. If 
         the lexeme does not need to be maintained, then the whole buffer can 
@@ -136,16 +139,19 @@ class CharacterSetStateMachine:
         """
         if Setup.variable_character_sizes_f():
             if not self.maintain_lexeme_f:
-                self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
-                self.on_after_reload  = [ Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
+                on_before_reload = [ Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
+                on_after_reload  = [ Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
             else:
                 assert False
                 # Here, the character begin p needs to be adapted to what has been reloaded.
-                self.on_before_reload = [ ] # LexemeBegin is enough.
-                self.on_after_reload  = [ ]
+                on_before_reload = [ ] # LexemeBegin is enough.
+                on_after_reload  = [ ]
         else:
-            self.on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
-            self.on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]
+            on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
+            on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]
+
+        self.on_before_reload = on_before_reload + OnBeforeReload
+        self.on_after_reload  = on_after_reload  + OnAfterReload
 
     def __prepare_incidence_id_map(self, IncidenceIdMap):
         sm = StateMachine()
