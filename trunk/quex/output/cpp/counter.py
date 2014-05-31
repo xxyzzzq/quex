@@ -57,7 +57,8 @@ def get(CCFactory, Name):
     code, \
     door_id_beyond = loop.do(CCFactory, 
                              DoorIdExit      = door_id_return,
-                             LexemeEndCheckF = True)
+                             LexemeEndCheckF = True,
+                             EngineType      = engine.CHARACTER_COUNTER)
 
     implementation = __frame(function_name, Lng.INPUT_P(), code, door_id_return, 
                              door_id_beyond) 

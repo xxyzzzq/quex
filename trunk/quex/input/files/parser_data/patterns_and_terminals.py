@@ -389,7 +389,7 @@ def _prepare_skip_character_set(ModeName, OptionsDb, CounterDb, IncidenceDb, ter
     # Counting actions are added to the terminal automatically by the
     # terminal_factory. The only thing that remains for each sub-terminal:
     # 'goto skipper'.
-    ccfactory = CounterDb.get_factory(total_set, Lng.INPUT_P())
+    ccfactory = CountCmdFactory.from_ParserDataLineColumn(CounterDb, total_set, Lng.INPUT_P())
 
     new_ppt_list = [
         PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory)

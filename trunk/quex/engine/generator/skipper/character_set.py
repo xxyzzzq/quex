@@ -75,11 +75,11 @@ def do(Data, TheAnalyzer):
         reload_state = TheAnalyzer.reload_state
         
     result, \
-    door_id_beyond = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 
+    door_id_beyond = loop.do(CountCmdFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 
                              DoorIdExit        = DoorID.continue_without_on_after_match(),
                              LexemeEndCheckF   = False,
                              LexemeMaintainedF = False,
-                             ReloadF           = reload_f,
+                             EngineType        = engine.FORWARD,
                              ReloadStateExtern = reload_state) 
 
     assert isinstance(result, list)

@@ -108,7 +108,7 @@ def do(Data, Mode=None):
                              engine.FORWARD(), 
                              ReloadState=reload_state)
 
-    CsSm, beyond_iid = loop.get_CharacterSetStateMachine(CcFactory, False, [
+    CsSm, beyond_iid = CcFactory.get_CharacterSetStateMachine(False, [
         sm_newline,
         sm_newline_suppressor_plus_newline,
     ])
