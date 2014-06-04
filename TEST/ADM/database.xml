@@ -1,4 +1,4 @@
-<test-database execution-time-sec="346.81" date="Wed Jun  4 07:10:12 2014">
+<test-database execution-time-sec="346.31" date="Wed Jun  4 08:46:56 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.76"> 
@@ -87,12 +87,12 @@
                <choice name="5" result="OK" time_sec="0.22" crc="436945311"/>
             </choice-list>
         </test>
-        <test title="2002070 Output buffer overflow" time-sum-sec="4.18"> 
+        <test title="2002070 Output buffer overflow" time-sum-sec="4.32"> 
             <application file-name="bug-2002070.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="iconv" result="FAIL" time_sec="2.24" crc="None"/>
-               <choice name="icu" result="FAIL" time_sec="1.94" crc="None"/>
+               <choice name="iconv" result="OK" time_sec="2.39" crc="364724768"/>
+               <choice name="icu" result="OK" time_sec="1.93" crc="364724768"/>
             </choice-list>
         </test>
         <test title="2001787 RE Problem with inverted whitespace" time-sum-sec="4.23"> 
@@ -173,21 +173,21 @@
                <choice name="" result="OK" time_sec="0.51" crc="-99272246"/>
             </choice-list>
         </test>
-        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="6.44"> 
+        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="5.92"> 
             <application file-name="bug-3357694.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
                <choice name="Normal" result="OK" time_sec="1.68" crc="1869054668"/>
                <choice name="TemplateCompression" result="OK" time_sec="1.59" crc="1869054668"/>
-               <choice name="PathCompression" result="FAIL" time_sec="1.53" crc="None"/>
-               <choice name="PathTemplateCompression" result="FAIL" time_sec="1.64" crc="None"/>
+               <choice name="PathCompression" result="OK" time_sec="1.27" crc="1869054668"/>
+               <choice name="PathTemplateCompression" result="OK" time_sec="1.38" crc="1869054668"/>
             </choice-list>
         </test>
-        <test title="3392478 UTF-8 Backward Input Position Detection Error" time-sum-sec="1.45"> 
+        <test title="3392478 UTF-8 Backward Input Position Detection Error" time-sum-sec="1.32"> 
             <application file-name="bug-3392478.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.45" crc="None"/>
+               <choice name="" result="FAIL" time_sec="1.32" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -286,11 +286,11 @@
                <choice name="" result="OK" time_sec="2.67" crc="226119427"/>
             </choice-list>
         </test>
-        <test title="1948456 (feature) Inheritance Info" time-sum-sec="0.98"> 
+        <test title="1948456 (feature) Inheritance Info" time-sum-sec="0.86"> 
             <application file-name="feature-1948456.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.98" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.86" crc="None"/>
             </choice-list>
         </test>
         <test title="2277660 character count pre-determination" time-sum-sec="7.41"> 
@@ -316,11 +316,11 @@
                <choice name="" result="OK" time_sec="0.33" crc="1758382025"/>
             </choice-list>
         </test>
-        <test title="3038088 token_id = numeric value" time-sum-sec="0.25"> 
+        <test title="3038088 token_id = numeric value" time-sum-sec="0.24"> 
             <application file-name="feature-3038088.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.25" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.24" crc="None"/>
             </choice-list>
         </test>
         <test title="2161098 0.32.1 Range Skipper Line Number Counter" time-sum-sec="6.03"> 
@@ -332,12 +332,12 @@
                <choice name="funny_comments" result="OK" time_sec="2.08" crc="-500944698"/>
             </choice-list>
         </test>
-        <test title="2209142 0.33.1-pre-release" time-sum-sec="4.68"> 
+        <test title="2209142 0.33.1-pre-release" time-sum-sec="4.52"> 
             <application file-name="bug-2209142.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="error" result="FAIL" time_sec="2.24" crc="None"/>
-               <choice name="good" result="FAIL" time_sec="2.44" crc="None"/>
+               <choice name="error" result="FAIL" time_sec="2.35" crc="None"/>
+               <choice name="good" result="FAIL" time_sec="2.17" crc="None"/>
             </choice-list>
         </test>
         <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="38.85"> 
@@ -355,11 +355,11 @@
                <choice name="2502" result="OK" time_sec="3.99" crc="754141749"/>
             </choice-list>
         </test>
-        <test title="3039173 On Mismatch" time-sum-sec="0.77"> 
+        <test title="3039173 On Mismatch" time-sum-sec="0.76"> 
             <application file-name="feature-3039173.sh" info-request-time="1381662253L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.77" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.76" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -548,12 +548,12 @@
                <choice name="" result="OK" time_sec="1.03" crc="1152736058"/>
             </choice-list>
         </test>
-        <test title="3512806 0.62.2 build error" time-sum-sec="1.08"> 
+        <test title="3512806 0.62.2 build error" time-sum-sec="1.32"> 
             <application file-name="bug-3512806.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="C" result="FAIL" time_sec="0.42" crc="None"/>
-               <choice name="Cpp" result="FAIL" time_sec="0.66" crc="None"/>
+               <choice name="C" result="FAIL" time_sec="0.56" crc="None"/>
+               <choice name="Cpp" result="FAIL" time_sec="0.76" crc="None"/>
             </choice-list>
         </test>
         <test title="3402386 Option --language dot" time-sum-sec="0.45"> 
@@ -705,13 +705,13 @@
                <choice name="" result="FAIL" time_sec="0.18" crc="None"/>
             </choice-list>
         </test>
-        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.69"> 
+        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.70"> 
             <application file-name="bug-2799244.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
                <choice name="error" result="OK" time_sec="0.38" crc="972830212"/>
                <choice name="good-1" result="OK" time_sec="0.72" crc="1658979746"/>
-               <choice name="good-2" result="FAIL" time_sec="0.59" crc="None"/>
+               <choice name="good-2" result="FAIL" time_sec="0.60" crc="None"/>
             </choice-list>
         </test>
         <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" time-sum-sec="0.42"> 
@@ -824,11 +824,11 @@
                <choice name="" result="OK" time_sec="0.16" crc="-2033217112"/>
             </choice-list>
         </test>
-        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.68"> 
+        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.62"> 
             <application file-name="bug-1889702.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.68" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.62" crc="None"/>
             </choice-list>
         </test>
         <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.58"> 
@@ -882,7 +882,7 @@
                <choice name="" result="OK" time_sec="0.47" crc="-1268709998"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="9.41"> 
+        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="9.46"> 
             <application file-name="bug-2095970.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -890,10 +890,10 @@
                <choice name="NormalNoAsserts" result="OK" time_sec="1.79" crc="-1188795240"/>
                <choice name="NoModeDetection" result="OK" time_sec="1.94" crc="497399015"/>
                <choice name="NoModeDetectionNoAsserts" result="OK" time_sec="1.72" crc="497399015"/>
-               <choice name="NoModeDetection_ErrorCase" result="FAIL" time_sec="2.04" crc="None"/>
+               <choice name="NoModeDetection_ErrorCase" result="FAIL" time_sec="2.09" crc="None"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="9.50"> 
+        <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" time-sum-sec="9.46"> 
             <application file-name="bug-2095970-ntq.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -901,7 +901,7 @@
                <choice name="NormalNoAsserts" result="OK" time_sec="1.68" crc="-1188795240"/>
                <choice name="NoModeDetection" result="OK" time_sec="2.04" crc="-552687673"/>
                <choice name="NoModeDetectionNoAsserts" result="OK" time_sec="1.73" crc="-552687673"/>
-               <choice name="NoModeDetection_ErrorCase" result="FAIL" time_sec="2.21" crc="None"/>
+               <choice name="NoModeDetection_ErrorCase" result="FAIL" time_sec="2.17" crc="None"/>
             </choice-list>
         </test>
         <test title="1900391 malformed --set-by-expression can crash 0.21.8" time-sum-sec="0.32"> 
@@ -918,11 +918,11 @@
                <choice name="" result="OK" time_sec="1.80" crc="1111665920"/>
             </choice-list>
         </test>
-        <test title="1889892 x, X or followed by a non-hex digit crashes 0.19.4" time-sum-sec="1.12"> 
+        <test title="1889892 x, X or followed by a non-hex digit crashes 0.19.4" time-sum-sec="1.21"> 
             <application file-name="bug-1889892.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.12" crc="None"/>
+               <choice name="" result="FAIL" time_sec="1.21" crc="None"/>
             </choice-list>
         </test>
         <test title="1908436 0.23.6 rule precedence reversed for identical patterns" time-sum-sec="0.23"> 
@@ -946,11 +946,11 @@
                <choice name="" result="OK" time_sec="0.25" crc="-241248344"/>
             </choice-list>
         </test>
-        <test title="1893880 0.20.5 allows inheritable" time-sum-sec="0.19"> 
+        <test title="1893880 0.20.5 allows inheritable" time-sum-sec="0.20"> 
             <application file-name="bug-1893880.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.19" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.20" crc="None"/>
             </choice-list>
         </test>
     </group>
