@@ -64,6 +64,8 @@ class PathWalkerState(MegaState):
 
         # Following is set by 'finalize()'.
         self.__finalized = None # <-- ._finalize_content()
+       
+        print "#pw:index:", my_index
 
     @property
     def door_id_sequence_list(self):

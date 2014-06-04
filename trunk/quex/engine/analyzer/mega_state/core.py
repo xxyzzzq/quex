@@ -345,6 +345,8 @@ class MegaState(AnalyzerState):
         # Maintain a list of states with which the state may not combine well
         self.__bad_company = set()
 
+        print "#ms:index:", self.index
+
     @property
     def entry(self): return self.__entry
 
@@ -428,6 +430,7 @@ class MegaState(AnalyzerState):
         'StateKeyRegister' which tells the code generator which state key to
         take as a basis for routing.
         """
+        print "#ms:index:fgdo:", self.index
         cmd = RouterOnStateKey(CompressionType, self.index,
                                self.ski_db.iterable_state_key_state_index_pairs(),
                                lambda state_index: TheAnalyzer.drop_out_DoorID(state_index))

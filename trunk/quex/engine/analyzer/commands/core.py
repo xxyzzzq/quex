@@ -511,6 +511,7 @@ class RouterOnStateKeyContent:
     """
     def __init__(self):
         Command.__init__(self)
+        self.mega_state_index = -1
         self.__list = []
 
     def configure(self, CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
@@ -533,13 +534,14 @@ class RouterOnStateKeyContent:
     
     # Require '__hash__' and '__eq__' to be element of a set.
     def __hash__(self): 
-        xor_sum = 0
+        xor_sum = 3 * self.mega_state_index
         for i, x in enumerate(self.__list):
             xor_sum ^= i * hash(x)
         return xor_sum
 
     def __eq__(self, Other):
-        if   not isinstance(Other, self.__class__): return False
+        if   not isinstance(Other, self.__class__):           return False
+        elif self.mega_state_index != Other.mega_state_index: return False
         return self.__list == Other.__list
 
     def __ne__(self, Other):
