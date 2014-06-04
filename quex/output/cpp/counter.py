@@ -2,6 +2,7 @@
 (C) 2012-2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
+import quex.engine.generator.base                   as     generator
 import quex.engine.generator.loop                   as     loop
 from   quex.engine.generator.languages.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
@@ -76,6 +77,8 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
           % FunctionName \
         + "{\n" \
         + "#   define self (*me)\n" \
+        + "/*  'QUEX_GOTO_STATE' requires 'QUEX_LABEL_STATE_ROUTER' */\n"
+        + "#   define QUEX_LABEL_STATE_ROUTER %s\n" % dial_db.get_label_by_door_id(DoorID.global_state_router())
     ]
 
     # Following function refers to the global 'variable_db'
@@ -106,12 +109,16 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
        + "    __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
          % IteratorName \
        + "   return;\n" \
+       + "".join(generator.do_state_router()) \
        + "#  undef self\n" \
+       + "#  undef QUEX_LABEL_STATE_ROUTER\n" 
        # If there is no MATCH_FAILURE, then DoorIdBeyond is still referenced as 'gotoed',
        # but MATCH_FAILURE is never implemented, later on, because its DoorId is not 
        # referenced.
        + "    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */\n" \
        + "    %s\n" % Lng.GOTO(DoorIdBeyond) \
+       + "    (void)target_state_index;\n"
+       + "    (void)target_state_else_index;\n"
        + "}\n" \
        + "#endif /* __QUEX_OPTION_COUNTER */\n" 
     )

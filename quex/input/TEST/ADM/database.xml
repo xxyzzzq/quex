@@ -1,13 +1,13 @@
-<test-database execution-time-sec="16.51" date="Mon May 26 07:31:00 2014">
+<test-database execution-time-sec="16.45" date="Wed Jun  4 06:29:51 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.94"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.90"> 
         <application file-name="indentation_setup.py" info-request-time="1392920307L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.19" crc="-1913863679"/>
-           <choice name="twice" result="FAIL" time_sec="0.19" crc="1970468013"/>
+           <choice name="basic" result="FAIL" time_sec="0.18" crc="-1913863679"/>
+           <choice name="twice" result="FAIL" time_sec="0.18" crc="1970468013"/>
            <choice name="intersection" result="FAIL" time_sec="0.18" crc="395610589"/>
-           <choice name="intersection-2" result="FAIL" time_sec="0.20" crc="373692848"/>
+           <choice name="intersection-2" result="FAIL" time_sec="0.18" crc="373692848"/>
            <choice name="non-numeric" result="FAIL" time_sec="0.18" crc="-1942671049"/>
         </choice-list>
     </test>
@@ -66,7 +66,7 @@
         </test>
     </group>
     <group name="token_type">
-        <test title="Union Members" time-sum-sec="0.98"> 
+        <test title="Union Members" time-sum-sec="0.97"> 
             <application file-name="token_type-3.py" info-request-time="1394741671L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -92,7 +92,7 @@
                <choice name="Copy" result="OK" time_sec="0.11" crc="-993555752"/>
             </choice-list>
         </test>
-        <test title="Class Name and Namespace" time-sum-sec="0.79"> 
+        <test title="Class Name and Namespace" time-sum-sec="0.78"> 
             <application file-name="token_type-5.py" info-request-time="1394741680L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">
@@ -105,7 +105,7 @@
                <choice name="6" result="OK" time_sec="0.11" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" time-sum-sec="0.90"> 
+        <test title="Buildt-In Members" time-sum-sec="0.89"> 
             <application file-name="token_type-1.py" info-request-time="1394741702L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">

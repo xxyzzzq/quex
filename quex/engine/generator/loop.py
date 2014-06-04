@@ -65,8 +65,10 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
               |  i2  |----------> Terminal2: CommandList2
               +------+
     """
-    assert ReloadF or ReloadStateExtern is None
     assert EngineType is not None
+    # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is None
+    # This would mean, that the user has to make these kinds of decisions. But, 
+    # we are easily able to ignore meaningless ReloadStateExtern objects.
 
     # (*) Construct State Machine and Terminals _______________________________
     #
@@ -74,8 +76,8 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
 
     analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
-                                     OnBeforeReload = CsSm.on_before_reload, 
-                                     OnAfterReload  = CsSm.on_after_reload)
+                                     OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
+                                     OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
 
     analyzer.drop_out.entry.enter_CommandList(
         E_StateIndices.DROP_OUT, analyzer.init_state_index, 
@@ -83,15 +85,14 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
     )
     analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
-    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm) 
+    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
 
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
     # -- The terminals 
     #
-    terminal_list = CcFactory.get_terminal_list(Lng.INPUT_P(), 
-                                                BeyondIncidenceId,
+    terminal_list = CcFactory.get_terminal_list(CsSm.on_end, beyond_iid,
                                                 DoorIdExit,
                                                 DoorIdOk          = door_id_loop, 
                                                 DoorIdOnLexemeEnd = door_id_on_lexeme_end)
@@ -101,7 +102,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
     
     return txt, DoorID.incidence(beyond_iid)
 
-def _prepare_entry_and_reentry(analyzer, CsSm):
+def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     """Prepare the entry and re-entry doors into the initial state
     of the loop-implementing initial state.
 
@@ -127,16 +128,23 @@ def _prepare_entry_and_reentry(analyzer, CsSm):
     # OnEntry
     ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
     ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
-                                                       CsSm.on_begin)
+                                                       OnBegin)
 
     # OnReEntry
     tid_reentry = entry.enter_CommandList(init_state_index, index.get(), 
-                                          CommandList.from_iterable(CsSm.on_step))
+                                          CommandList.from_iterable(OnStep))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id
 
 def _get_source_code(CcFactory, analyzer, terminal_list):
+    """RETURNS: String containing source code for the 'loop'. 
+
+       -- The source code for the (looping) state machine.
+       -- The terminals which contain counting actions.
+
+    Also, it requests variable definitions as they are required.
+    """
     txt = []
     txt.extend(generator.do_analyzer(analyzer))
     txt.extend(generator.do_terminals(terminal_list, analyzer))
@@ -146,6 +154,3 @@ def _get_source_code(CcFactory, analyzer, terminal_list):
     if CcFactory.requires_reference_p():   variable_db.require("reference_p")
     if Setup.variable_character_sizes_f(): variable_db.require("character_begin_p")
     return txt
-
-
-    return result

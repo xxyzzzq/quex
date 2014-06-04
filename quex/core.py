@@ -1,5 +1,3 @@
-from   quex.engine.misc.file_in                 import write_safely_and_close
-
 from   quex.blackboard                          import setup as Setup, \
                                                        Lng
 import quex.output.cpp.source_package           as source_package
@@ -10,6 +8,8 @@ import quex.input.files.consistency_check       as     consistency_check
 #
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.interval_handling               import NumberSet_All
+from   quex.engine.misc.file_in                 import write_safely_and_close
+from   quex.engine.counter                      import CountCmdFactory
 #
 import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker

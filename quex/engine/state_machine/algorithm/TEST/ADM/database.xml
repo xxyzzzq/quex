@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.80" date="Mon May 26 07:30:37 2014">
+<test-database execution-time-sec="0.79" date="Wed Jun  4 06:29:50 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.26"> 
@@ -17,7 +17,7 @@
                <choice name="ADAPT" result="OK" time_sec="0.09" crc="320921215"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.15"> 
+        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.14"> 
             <application file-name="test-hopcroft-minimization-3.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -27,18 +27,18 @@
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.07"> 
-            <application file-name="test-nfa-to-dfa.py" info-request-time="1387873735L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="1794649778"/>
-            </choice-list>
-        </test>
         <test title="Conversion to DFA - Special Case" time-sum-sec="0.14"> 
             <application file-name="test-nfa-to-dfa-special.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.14" crc="1159177584"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.07"> 
+            <application file-name="test-nfa-to-dfa.py" info-request-time="1387873735L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.07" crc="1794649778"/>
             </choice-list>
         </test>
     </group>

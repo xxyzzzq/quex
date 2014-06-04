@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.08" date="Mon May 26 07:23:12 2014">
+<test-database execution-time-sec="5.05" date="Wed Jun  4 06:29:45 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -28,11 +28,11 @@
         </choice-list>
     </test>
     <group name="Command">
-        <test title="Basic" time-sum-sec="0.12"> 
+        <test title="Basic" time-sum-sec="0.10"> 
             <application file-name="basic.py" info-request-time="1395293270L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.12" crc="1248621088"/>
+               <choice name="" result="FAIL" time_sec="0.10" crc="1248621088"/>
             </choice-list>
         </test>
         <test title="is_switchable" time-sum-sec="0.11"> 
@@ -44,7 +44,7 @@
         </test>
     </group>
     <group name="Command.shared_tail">
-        <test title="find_last_common" time-sum-sec="0.46"> 
+        <test title="find_last_common" time-sum-sec="0.47"> 
             <application file-name="test-shared_tail.py" info-request-time="1396301676L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -54,7 +54,7 @@
                <choice name="multiple" result="OK" time_sec="0.13" crc="-1427481276"/>
             </choice-list>
         </test>
-        <test title="can_be_moved_to_tail" time-sum-sec="0.22"> 
+        <test title="can_be_moved_to_tail" time-sum-sec="0.21"> 
             <application file-name="can_be_moved_to_tail.py" info-request-time="1396507070L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">

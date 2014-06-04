@@ -1,4 +1,4 @@
-<test-database execution-time-sec="50.62" date="Mon May 26 07:29:27 2014">
+<test-database execution-time-sec="50.61" date="Wed Jun  4 06:29:50 2014">
     <last-used-diff-display-program name=""/>
     <group name="Skip-Characters">
         <test title="Large Buffer" time-sum-sec="8.46"> 
@@ -47,7 +47,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="9.07"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="9.06"> 
             <application file-name="test-skip_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">

@@ -770,6 +770,14 @@ class Lng_Cpp(dict):
         return get_plain_strings(txt_list)
 
     def VARIABLE_DEFINITIONS(self, VariableDB):
+        # ROBUSTNESS: Require 'target_state_index' and 'target_state_else_index'
+        #             ALWAYS. Later, they are referenced in dead code to avoid
+        #             warnings of unused variables.
+        # BOTH: -- Used in QUEX_GOTO_STATE in case of no computed goto-s.
+        #       -- During reload.
+        VariableDB.require("target_state_index")
+        VariableDB.require("target_state_else_index")
+
         assert type(VariableDB) != dict
         return cpp._local_variable_definitions(VariableDB.get()) 
 

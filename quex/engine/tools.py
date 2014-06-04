@@ -56,6 +56,15 @@ def pair_combinations(iterable):
 
 E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "_DEBUG_E_Values")
 
+def concatinate(one_list, other_list):
+    """RETURNS: The 'one_list' extended with 'other_list' in case that 
+                'other_list' is not None.
+
+       Both lists remain unchanged during the operation.
+    """
+    if other_list is not None: return one_list + other_list
+    else:                      return one_list
+
 class UniformObject(object):
     __slots__ = ("_content", "_equal")
     def __init__(self, EqualCmp=lambda x,y: x==y, Initial=E_Values.UNASSIGNED):

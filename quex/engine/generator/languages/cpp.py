@@ -20,9 +20,18 @@ def _local_variable_definitions(VariableDB):
     if len(VariableDB) == 0: return ""
 
     def __group_by_condition(VariableDB):
+        """Groups variables by their conditional compilation macro.
+
+        RETURNS: A map to a pair of lists:
+            
+                 macro name ---> (ifdef_list, ifndef_list) 
+
+        The 'ifdef_list' is the list of variables which is defined IF the macro
+        is defined. The variables in 'ifndef_list' are defined if the macro is 
+        NOT defined.
+        """
         result = {}
         for variable in VariableDB.itervalues():
-
             variable_list = result.get(variable.condition)
             if variable_list is None: 
                 variable_list              = [[], []]
@@ -214,7 +223,7 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "\n",                                                                                             
         "    /* Following labels are referenced in macros. It cannot be detected\n"
         "     * whether the macros are applied in user code or not. To avoid compiler.\n"
-        "     * warnings of unused labels, they are referenced in unreachable code. */\n"
+        "     * warnings of unused labels, they are referenced in unreachable code.   */\n"
         "    %s /* in RETURN                */\n" % Lng.GOTO(DoorID.return_with_on_after_match()),
         "    %s /* in CONTINUE              */\n" % Lng.GOTO(DoorID.continue_with_on_after_match()),
         "    %s /* in CONTINUE and skippers */\n" % Lng.GOTO(DoorID.continue_without_on_after_match()),
@@ -222,9 +231,13 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "    %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO(DoorID.global_state_router()),
         "#   endif\n",
         "\n",
-        "    /* Prevent compiler warning 'unused variable'. */\n",
+        "    /* Prevent compiler warning 'unused variable'.                           */\n",
         "    (void)QUEX_LEXEME_NULL;\n",                                    
         "    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);\n",                
+        "    /* target_state_index and target_state_else_index appear when \n",
+        "     * QUEX_GOTO_STATE is used without computed goto-s.                      */\n",
+        "    (void)target_state_index;\n",
+        "    (void)target_state_else_index;\n",
         #
         # Macro undefinitions
         # 

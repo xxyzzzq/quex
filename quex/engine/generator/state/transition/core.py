@@ -17,8 +17,8 @@ def do(txt, TM):
         # then it MUST cover the the whole range (or more).
         TM.prune(0, Setup.get_character_value_limit())
         entry = TM[0]
-        assert entry[0].begin == 0
-        assert entry[0].end   == Setup.get_character_value_limit()
+        assert entry[0].begin == 0, "%s" % entry[0]
+        assert entry[0].end   == Setup.get_character_value_limit(), "%s" % entry[0]
         __get_transition(txt, entry)
         return
 

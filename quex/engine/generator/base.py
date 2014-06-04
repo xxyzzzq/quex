@@ -174,18 +174,17 @@ def do_state_router():
     #    return []
 
     # Add the address of 'terminal_end_of_file()' if it is not there, already.
-    # (It should: assert address_eof in routed_address_set
-    address_eof        = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)) 
-    routed_address_set.add(address_eof)
-    dial_db.mark_label_as_gotoed(dial_db.get_label_by_address(address_eof))
+    # (It should not be there, if we are working on a fixed chunk, as in 'counting'.
+    #  When counting is webbed into analysis:: assert address_eof in routed_address_set)
+    if False:
+        address_eof        = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)) 
+        routed_address_set.add(address_eof)
+        dial_db.mark_label_as_gotoed(dial_db.get_label_by_address(address_eof))
 
     routed_state_info_list = state_router_generator.get_info(routed_address_set)
     return state_router_generator.do(routed_state_info_list) 
 
 def do_variable_definitions():
-    # Target state index
-    variable_db.require("target_state_index", Condition_ComputedGoto=False) 
-
     # Following function refers to the global 'variable_db'
     return Lng.VARIABLE_DEFINITIONS(variable_db)
 
