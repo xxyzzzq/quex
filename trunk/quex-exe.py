@@ -17,8 +17,16 @@
 # (C) Frank-Rene Schaefer
 #
 ################################################################################
-import signal # Prevent 'SIGPIPE' error when quex's caller breaks his pipe!
-signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+try:
+    # Prevent 'SIGPIPE' error when quex's caller breaks his pipe!
+    #
+    # The SIGPIPE is NOT available under some operating systems. So, the 
+    # procedure has been setup in a try-except frame.
+    import signal 
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+except:
+    pass
 
 import sys
 import os

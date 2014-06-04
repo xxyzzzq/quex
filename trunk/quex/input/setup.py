@@ -39,12 +39,15 @@ class QuexSetup:
         elif self.buffer_element_size_irrelevant: return sys.maxint
 
         try:
-            return 256 ** self.buffer_element_size
+            result = 256 ** self.buffer_element_size
         except:
             file_in.error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
                               % self.get_character_value_limit_str()                                    + \
                               "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
                               "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
+
+        if result > sys.maxint: return sys.maxint
+        else:                   return result
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"

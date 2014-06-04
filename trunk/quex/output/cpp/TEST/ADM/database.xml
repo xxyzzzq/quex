@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.35" date="Mon May 26 07:31:16 2014">
+<test-database execution-time-sec="10.12" date="Wed Jun  4 06:29:52 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.11"> 
         <application file-name="test-token_class.py" info-request-time="1397193517L" vanished="False"/>
@@ -9,8 +9,8 @@
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="7.35"> 
-            <application file-name="test-counter.py" info-request-time="1397193033L" vanished="False"/>
+        <test title="Default Implementation" time-sum-sec="7.10"> 
+            <application file-name="test-counter.py" info-request-time="1401563422L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="18" same_result="True">
                <choice name="ascii-1" result="OK" time_sec="0.38" crc="619081608"/>
@@ -21,8 +21,8 @@
                <choice name="utf_16_le-2-wo-ReferenceP" result="OK" time_sec="0.37" crc="-105504916"/>
                <choice name="utf_32_le-1" result="OK" time_sec="0.38" crc="1279519903"/>
                <choice name="utf_32_le-1-wo-ReferenceP" result="OK" time_sec="0.37" crc="1279519903"/>
-               <choice name="cp737-1" result="FAIL" time_sec="0.34" crc="619081608"/>
-               <choice name="cp737-1-wo-ReferenceP" result="FAIL" time_sec="0.31" crc="619081608"/>
+               <choice name="cp737-1" result="FAIL" time_sec="0.21" crc="619081608"/>
+               <choice name="cp737-1-wo-ReferenceP" result="FAIL" time_sec="0.21" crc="619081608"/>
                <choice name="utf_8-1" result="OK" time_sec="0.46" crc="619081608"/>
                <choice name="utf_8-1-wo-ReferenceP" result="OK" time_sec="0.47" crc="619081608"/>
                <choice name="utf_8-2" result="OK" time_sec="0.43" crc="619081608"/>
@@ -35,7 +35,7 @@
         </test>
     </group>
     <group name="Converter">
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.32"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.33"> 
             <application file-name="test-converter-x.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
@@ -54,7 +54,7 @@
                <choice name="cp1256" result="OK" time_sec="0.53" crc="1051252697"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.43"> 
+        <test title="Determine UTF-8 Range Map for Codec" time-sum-sec="0.44"> 
             <application file-name="test-converter.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">

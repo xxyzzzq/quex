@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.71" date="Tue May 27 23:25:41 2014">
+<test-database execution-time-sec="3.79" date="Wed Jun  4 06:29:50 2014">
     <last-used-diff-display-program name=""/>
     <test title="Combination of Two Transition Maps" time-sum-sec="0.48"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
@@ -11,7 +11,7 @@
            <choice name="4" result="OK" time_sec="0.09" crc="1319313977"/>
         </choice-list>
     </test>
-    <test title="Combine Simple" time-sum-sec="0.50"> 
+    <test title="Combine Simple" time-sum-sec="0.51"> 
         <application file-name="combine-simple.py" info-request-time="1398227720L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -20,27 +20,27 @@
            <choice name="distinguished" result="FAIL" time_sec="0.17" crc="1951953792"/>
         </choice-list>
     </test>
-    <test title="Template states handling recursion" time-sum-sec="0.85"> 
+    <test title="Template states handling recursion" time-sum-sec="0.87"> 
         <application file-name="recursion.py" info-request-time="1399876903L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
            <choice name="0" result="FAIL" time_sec="0.17" crc="412753535"/>
            <choice name="0b" result="FAIL" time_sec="0.17" crc="-1393433161"/>
-           <choice name="1b" result="FAIL" time_sec="0.17" crc="-748825646"/>
-           <choice name="1" result="FAIL" time_sec="0.18" crc="-2048096852"/>
+           <choice name="1b" result="FAIL" time_sec="0.19" crc="-748825646"/>
+           <choice name="1" result="FAIL" time_sec="0.17" crc="-2048096852"/>
            <choice name="1c" result="FAIL" time_sec="0.17" crc="-719613315"/>
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Get Best Matching Pair" time-sum-sec="0.85"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.88"> 
             <application file-name="best_matching_pair.py" info-request-time="1397789073L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
-               <choice name="0" result="FAIL" time_sec="0.17" crc="-1156851576"/>
-               <choice name="1" result="FAIL" time_sec="0.17" crc="-373353205"/>
+               <choice name="0" result="FAIL" time_sec="0.18" crc="-1156851576"/>
+               <choice name="1" result="FAIL" time_sec="0.18" crc="-373353205"/>
                <choice name="2" result="FAIL" time_sec="0.17" crc="-326735393"/>
                <choice name="3" result="FAIL" time_sec="0.17" crc="-436647206"/>
-               <choice name="recursive" result="FAIL" time_sec="0.17" crc="961507194"/>
+               <choice name="recursive" result="FAIL" time_sec="0.18" crc="961507194"/>
             </choice-list>
         </test>
         <test title="Combine Combined Trigger Maps" time-sum-sec="0.35"> 
@@ -51,7 +51,7 @@
                <choice name="2" result="FAIL" time_sec="0.18" crc="-1615454940"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.68"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.70"> 
             <application file-name="metric.py" info-request-time="1398237111L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">

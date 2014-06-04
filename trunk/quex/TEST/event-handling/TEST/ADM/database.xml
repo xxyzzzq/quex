@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.50" date="Mon May 26 07:20:16 2014">
+<test-database execution-time-sec="0.49" date="Wed Jun  4 06:29:32 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1394750707L" vanished="False"/>
@@ -8,16 +8,16 @@
            <choice name="customized" result="MAKE FAILED" time_sec="0.02" crc="-1869838464"/>
         </choice-list>
     </test>
-    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
+    <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open.sh" info-request-time="1395004206L" vanished="False"/>
         <analogy open="((" close="))"/>
         <make-procedure success="True" time_sec="0.044855"/>
         <choice-list number="1" same_result="False">
-           <choice name="default" result="FAIL" time_sec="0.03" crc="412955726"/>
+           <choice name="default" result="FAIL" time_sec="0.02" crc="412955726"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.24"> 
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.23"> 
             <application file-name="transition-x.sh" info-request-time="1395004205L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.048730"/>

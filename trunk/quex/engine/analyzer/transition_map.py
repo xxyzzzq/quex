@@ -406,7 +406,6 @@ class TransitionMap(list):
                 prev_target = target
 
             elif prev_target != Target:
-                ##print "#B"
                 # (*) Gap detected, targets differ => fill!
                 self.insert(i, (Interval(prev_end, interval.begin), Target))
                 size += 1
@@ -415,7 +414,6 @@ class TransitionMap(list):
                 # NOT: i+=1, because need to check for combination with next interval.
 
             else:
-                ##print "#C", prev_target, Target
                 # (*) Gap detected, targets equal => extend!
                 self[i-1][0].end = interval.begin
                 prev_target = Target
@@ -446,7 +444,7 @@ class TransitionMap(list):
         end_i = None
         for i, info in r_enumerate(TriggerMap):
             interval, target = info
-            if interval.begin > End: continue
+            if interval.begin >= End: continue
 
             # Found an interval that intersects with 'End' line
             if interval.end > End:

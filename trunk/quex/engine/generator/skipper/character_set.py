@@ -1,3 +1,4 @@
+from   quex.engine.counter                        import CountCmdFactory
 from   quex.engine.analyzer.state.core            import Processor
 
 import quex.engine.generator.loop                 as     loop

@@ -3,12 +3,13 @@ import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.transformation        as     transformation
-from   quex.engine.analyzer.commands.core                   import E_R, \
+from   quex.engine.analyzer.commands.core              import E_R, \
                                                               InputPDecrement, \
                                                               Assign
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
                                                               none_is_None, \
+                                                              concatinate, \
                                                               typed
 from   quex.blackboard import setup as Setup, \
                               Lng
@@ -58,7 +59,6 @@ class EngineStateMachineSet:
             if pattern.bipd_sm is not None 
         ]
         return state_machine_list, pre_context_sm_list, bipd_sm_list
-
 
 class CharacterSetStateMachine:
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
@@ -119,8 +119,8 @@ class CharacterSetStateMachine:
             # => rest to last character: 'input_p = lexeme_start_p'
             self.on_step    = [ Assign(E_R.CharacterBeginP, E_R.InputP) ]
             self.on_putback = [ Assign(E_R.InputP, E_R.CharacterBeginP) ]
-        self.on_begin = self.on_step    + OnBegin
-        self.on_end   = self.on_putback + OnEnd 
+        self.on_begin = concatinate(self.on_step, OnBegin)
+        self.on_end   = concatinate(self.on_putback, OnEnd)
 
     def __prepare_before_and_after_reload(self, OnBeforeReload, OnAfterReload):
         """The 'lexeme_start_p' restricts the amount of data which is loaded 
@@ -150,8 +150,8 @@ class CharacterSetStateMachine:
             on_before_reload = [ Assign(E_R.LexemeStartP, E_R.InputP) ] 
             on_after_reload  = [ ] # Assign(E_R.InputP, E_R.LexemeStartP) ]
 
-        self.on_before_reload = on_before_reload + OnBeforeReload
-        self.on_after_reload  = on_after_reload  + OnAfterReload
+        self.on_before_reload = concatinate(on_before_reload,OnBeforeReload)
+        self.on_after_reload  = concatinate(on_after_reload, OnAfterReload)
 
     def __prepare_incidence_id_map(self, IncidenceIdMap):
         sm = StateMachine()

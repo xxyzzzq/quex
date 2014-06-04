@@ -1,4 +1,4 @@
-<test-database execution-time-sec="11.58" date="Mon May 26 07:20:09 2014">
+<test-database execution-time-sec="10.98" date="Wed Jun  4 06:29:29 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -21,11 +21,11 @@
            <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="10.16"> 
+    <test title="Code Check with pyflakes" time-sum-sec="9.55"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="10.16" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="9.55" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.05"> 
@@ -43,7 +43,7 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="0.58"> 
+        <test title="Include Guards for C/C++" time-sum-sec="0.59"> 
             <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">

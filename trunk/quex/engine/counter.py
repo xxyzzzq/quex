@@ -1,5 +1,6 @@
 from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
-                                                         ParserDataIndentation
+                                                         ParserDataIndentation, \
+                                                         CountInfo
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.generator.code.base            import SourceRef_VOID, \
@@ -189,7 +190,7 @@ class CountCmdFactory:
 
         return cssm, beyond_iid
 
-    def get_terminal_list(self, CsSm, IncidenceMap, BeyondIncidenceId, DoorIdExit, DoorIdOk, DoorIdOnLexemeEnd=None):
+    def get_terminal_list(self, OnEnd, BeyondIncidenceId, DoorIdExit, DoorIdOk, DoorIdOnLexemeEnd=None):
         # _get_terminal() --> _do_with_lexeme_end_check()
         #             '-----> _do()
         #
@@ -199,11 +200,11 @@ class CountCmdFactory:
         self.door_id_on_lexeme_end = DoorIdOnLexemeEnd
         result = [ self._get_terminal(x) for x in self.__map ] 
         if BeyondIncidenceId is not None:
-            result.append(self.__get_terminal_beyond(CsSm, DoorIdExit, BeyondIncidenceId))
+            result.append(self.__get_terminal_beyond(OnEnd, DoorIdExit, BeyondIncidenceId))
         return result
 
     @staticmethod
-    def __get_terminal_beyond(CsSm, DoorIdExit, BeyondIid, AdditionalCommandList=None):
+    def __get_terminal_beyond(OnEnd, DoorIdExit, BeyondIid, AdditionalCommandList=None):
         """Generate Terminal to be executed upon exit from the 'loop'.
         
            DoorIdExit -- DoorId where to go after the terminal has finished.
@@ -211,7 +212,7 @@ class CountCmdFactory:
                          the terminal to be generated.
         """
         on_beyond = []
-        on_beyond.extend(CsSm.on_end)
+        on_beyond.extend(OnEnd)
         if AdditionalCommandList is not None:
             on_beyond.extend(AdditionalCommandList)
         on_beyond.append(GotoDoorId(DoorIdExit))

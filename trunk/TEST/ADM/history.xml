@@ -1,4 +1,4 @@
-<history date="Wed May 28 01:30:03 2014" element-n="1074">
+<history date="Wed Jun  4 07:10:12 2014" element-n="1076">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -2020,5 +2020,9 @@
     <day year="2014" month="03" day="15">
         <crc-error time="23:22:28" application="bug-2001787.sh" choice="iconv" database-crc="-1133373463" real-crc="1510462883"/>
         <crc-error time="23:22:30" application="bug-2001787.sh" choice="icu" database-crc="-1133373463" real-crc="1510462883"/>
+    </day>
+    <day year="2014" month="06" day="04">
+        <crc-error time="05:01:28" application="bug-261.sh" choice="1" database-crc="-2113056012" real-crc="1927705418"/>
+        <crc-error time="05:02:13" application="bug-261.sh" choice="1" database-crc="1927705418" real-crc="1096910907"/>
     </day>
 </history>

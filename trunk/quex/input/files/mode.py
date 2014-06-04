@@ -262,7 +262,8 @@ class IncidenceDB(dict):
         elif IncidenceId == E_IncidenceIDs.END_OF_STREAM:
             return CodeFragment([
                 "self_send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
-                "%s\n" % Lng.PURE_RETURN
+                # NOT: "Lng.PURE_RETURN" because the terminal end of stream 
+                #      exits anyway immediately--after 'on_after_match'.
             ])
 
         elif IncidenceId == E_IncidenceIDs.SKIP_RANGE_OPEN:

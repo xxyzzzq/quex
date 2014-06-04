@@ -1,14 +1,15 @@
 from   quex.input.files.mode_option                    import SkipRangeData
+from   quex.input.regular_expression.construct         import Pattern           
+from   quex.engine.counter                             import CountCmdFactory
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
-from   quex.engine.generator.code.core                 import CodeTerminal, \
-                                                              CodeTerminalOnMatch
-from   quex.input.regular_expression.construct         import Pattern           
 from   quex.engine.analyzer.door_id_address_label        import DoorID, dial_db
 import quex.engine.generator.skipper.character_set       as   skip_character_set
 import quex.engine.generator.skipper.range               as   skip_range
 import quex.engine.generator.skipper.nested_range        as   skip_nested_range
 import quex.engine.generator.skipper.indentation_counter as   indentation_counter
+from   quex.engine.generator.code.core                 import CodeTerminal, \
+                                                              CodeTerminalOnMatch
 import quex.engine.state_machine.check.superset        as     superset_check
 import quex.engine.state_machine.check.identity        as     identity_checker
 import quex.engine.state_machine.repeat                as     repeat

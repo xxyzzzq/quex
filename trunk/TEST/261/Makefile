@@ -16,25 +16,26 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
 
 CC = $(COMPILER)        \
+	 -DPRINT_LINE_COLUMN_NUMBER \
 	 -I./ -I$(QUEX_PATH)  # -DQUEX_OPTION_DEBUG_SHOW
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
    
 case1:
 	quex -i                 case1.qx  \
-	     --engine           EasyLexer  \
-		 --token-id-offset  0x1000     --debug-exception
-	$(CC) -o $@ example.cpp EasyLexer.cpp 
+	     --engine           Simple  \
+		 --token-id-offset  0x1000     --debug-exception --language C
+	$(CC) -o $@ ../lexer.c Simple.c 
           
 case2:
 	quex -i                 case2.qx  \
-	     --engine           EasyLexer  \
-		 --token-id-offset  0x1000     --debug-exception
-	$(CC) -o $@ example.cpp EasyLexer.cpp 
+	     --engine           Simple  \
+		 --token-id-offset  0x1000     --debug-exception --language C
+	$(CC) -o $@ ../lexer.c Simple.c 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	rm -f EasyLexer*
+	rm -f Simple*
 	rm -f *.o
 	rm -f *.bak
 	rm -f *.E

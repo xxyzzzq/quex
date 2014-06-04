@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.04" date="Mon May 26 07:31:06 2014">
+<test-database execution-time-sec="5.07" date="Wed Jun  4 06:29:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.14"> 
         <application file-name="test-pattern-matching.py" info-request-time="1387873736L" vanished="False"/>
@@ -29,7 +29,7 @@
            <choice name="pattern" result="OK" time_sec="0.16" crc="577634184"/>
         </choice-list>
     </test>
-    <test title="Operations" time-sum-sec="0.80"> 
+    <test title="Operations" time-sum-sec="0.81"> 
         <application file-name="test-operations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">

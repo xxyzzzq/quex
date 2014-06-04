@@ -147,12 +147,12 @@ class TerminalFactory:
         adorned_code        = self.__adorn_user_code(Code, MatchF=False)
 
         text = [ 
-            Lng.IF_END_OF_FILE(),
-                self.get_counter_text(None),
-                Lng.GOTO(DoorID.continue_without_on_after_match()),
-            Lng.IF_INPUT_P_EQUAL_LEXEME_START_P(FirstF=False),
-                Lng.INPUT_P_INCREMENT(),
-            Lng.END_IF(),
+            #Lng.IF_END_OF_FILE(),
+            #    self.get_counter_text(None),
+            #    Lng.GOTO(DoorID.continue_without_on_after_match()),
+            #Lng.IF_INPUT_P_EQUAL_LEXEME_START_P(FirstF=False),
+            #    Lng.INPUT_P_INCREMENT(),
+            #Lng.END_IF(),
             self.get_counter_text(None),
             #
             adorned_code,

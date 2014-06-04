@@ -1,4 +1,4 @@
-<test-database execution-time-sec="18.49" date="Wed May 28 08:33:04 2014">
+<test-database execution-time-sec="18.50" date="Wed Jun  4 06:29:45 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>
@@ -210,11 +210,11 @@
                <choice name="9" result="OK" time_sec="0.16" crc="-453590974"/>
             </choice-list>
         </test>
-        <test title="Backward Input Position Detection" time-sum-sec="0.13"> 
+        <test title="Backward Input Position Detection" time-sum-sec="0.11"> 
             <application file-name="paths_analysis-backward-input-position-detection.py" info-request-time="1394777886L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.13" crc="-2138885543"/>
+               <choice name="" result="FAIL" time_sec="0.11" crc="-2138885543"/>
             </choice-list>
         </test>
         <test title="Special Loops and Forks" time-sum-sec="1.45"> 
@@ -226,7 +226,7 @@
                <choice name="2" result="OK" time_sec="0.15" crc="1905782956"/>
                <choice name="3" result="OK" time_sec="0.19" crc="-1175775546"/>
                <choice name="4" result="OK" time_sec="0.15" crc="628525475"/>
-               <choice name="5" result="FAIL" time_sec="0.16" crc="-362967331"/>
+               <choice name="5" result="FAIL" time_sec="0.15" crc="-362967331"/>
                <choice name="6" result="OK" time_sec="0.18" crc="-1176722235"/>
                <choice name="7" result="OK" time_sec="0.16" crc="-1173929581"/>
             </choice-list>
@@ -244,12 +244,12 @@
                <choice name="3-diff" result="OK" time_sec="0.09" crc="78032644"/>
             </choice-list>
         </test>
-        <test title="prune" time-sum-sec="0.53"> 
+        <test title="prune" time-sum-sec="0.54"> 
             <application file-name="transition_map_tools-prune.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
                <choice name="1" result="OK" time_sec="0.11" crc="-2106415539"/>
-               <choice name="2" result="OK" time_sec="0.27" crc="184295023"/>
+               <choice name="2" result="OK" time_sec="0.28" crc="184295023"/>
                <choice name="3" result="OK" time_sec="0.15" crc="1418772995"/>
             </choice-list>
         </test>
