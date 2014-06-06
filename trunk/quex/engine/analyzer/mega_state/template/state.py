@@ -105,6 +105,7 @@ class PseudoTemplateState(MegaState):
     def __init__(self, Represented_AnalyzerState, DropOutCatcher):
         assert not isinstance(Represented_AnalyzerState, MegaState)
         state_index            = Represented_AnalyzerState.index
+        print "#state_index:", state_index
         transition_map         = Represented_AnalyzerState.transition_map
 
         adapted_transition_map = transition_map.relate_to_TargetByStateKeys(state_index, 

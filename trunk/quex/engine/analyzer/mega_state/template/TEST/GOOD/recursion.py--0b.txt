@@ -3,14 +3,14 @@
 ________________________________________________________________________________
 State A: [0L]
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [0]]
-  [-oo, 9]   None        **(s=0, d=DROP_OUT)
+  [-oo, 9]   None        TargetByStateKey:DropOut
   [10]       None        **(s=0, d=0)
-  [11, oo]   None        **(s=0, d=DROP_OUT)
+  [11, oo]   None        TargetByStateKey:DropOut
 State B: [1L]
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [1]]
-  [-oo, 10]  None        **(s=1, d=DROP_OUT)
+  [-oo, 10]  None        TargetByStateKey:DropOut
   [11]       None        **(s=1, d=0)
-  [12, oo]   None        **(s=1, d=DROP_OUT)
+  [12, oo]   None        TargetByStateKey:DropOut
 
 _ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
 State A: [0L]
@@ -18,10 +18,10 @@ State B: [1L]
 Result:
 
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1]]
-  [-oo, 9]   0           (s=0, d=DROP_OUT), (s=1, d=DROP_OUT)
-  [10]       1           (s=2, d=0), (s=1, d=DROP_OUT)
-  [11]       2           (s=0, d=DROP_OUT), (s=2, d=0)
-  [12, oo]   0           (s=0, d=DROP_OUT), (s=1, d=DROP_OUT)
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       0           (s=2, d=0), (s=DROP_OUT, d=1)
+  [11]       1           (s=DROP_OUT, d=1), (s=2, d=0)
+  [12, oo]   None        TargetByStateKey:DropOut
 
   BorderN = 3
 
@@ -30,14 +30,14 @@ Result:
 ________________________________________________________________________________
 State A: [1L]
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [1]]
-  [-oo, 10]  None        **(s=1, d=DROP_OUT)
+  [-oo, 10]  None        TargetByStateKey:DropOut
   [11]       None        **(s=1, d=0)
-  [12, oo]   None        **(s=1, d=DROP_OUT)
+  [12, oo]   None        TargetByStateKey:DropOut
 State B: [0L]
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [0]]
-  [-oo, 9]   None        **(s=0, d=DROP_OUT)
+  [-oo, 9]   None        TargetByStateKey:DropOut
   [10]       None        **(s=0, d=0)
-  [11, oo]   None        **(s=0, d=DROP_OUT)
+  [11, oo]   None        TargetByStateKey:DropOut
 
 _ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
 State A: [1L]
@@ -45,10 +45,10 @@ State B: [0L]
 Result:
 
   [INTERVAL] [SCHEME_ID] [TARGET/STATE [1, 0]]
-  [-oo, 9]   0           (s=1, d=DROP_OUT), (s=0, d=DROP_OUT)
-  [10]       1           (s=1, d=DROP_OUT), (s=3, d=0)
-  [11]       2           (s=3, d=0), (s=0, d=DROP_OUT)
-  [12, oo]   0           (s=1, d=DROP_OUT), (s=0, d=DROP_OUT)
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       0           (s=DROP_OUT, d=1), (s=3, d=0)
+  [11]       1           (s=3, d=0), (s=DROP_OUT, d=1)
+  [12, oo]   None        TargetByStateKey:DropOut
 
   BorderN = 3
 

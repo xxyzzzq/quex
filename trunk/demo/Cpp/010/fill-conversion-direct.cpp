@@ -31,6 +31,7 @@ main(int argc, char** argv)
                                          qlex.buffer_conversion_fill_region_size());
 
         // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
+        //    (fschaef: "What please? It must be the number of bytes!")
         qlex.buffer_conversion_fill_region_finish(receive_n);
 
         // -- Loop until the 'termination' token arrives

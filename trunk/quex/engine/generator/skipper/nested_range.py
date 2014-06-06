@@ -166,7 +166,6 @@ def get_skipper(OpenerSequence, CloserSequence, CloserPattern, ModeName, OnSkipR
     closer_length = len(CloserSequence)
 
     variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
-    # variable_db.enter(local_variable_db, "text_end")
     variable_db.require("counter")
     variable_db.require_array("Skipper%i_Opener", Initial="{ %s }" % opener_str, ElementN=opener_length, Index = skipper_index)
     variable_db.require("Skipper%i_OpenerEnd", "Skipper%i_Opener + (ptrdiff_t)%i" % (skipper_index, opener_length), Index = skipper_index) 

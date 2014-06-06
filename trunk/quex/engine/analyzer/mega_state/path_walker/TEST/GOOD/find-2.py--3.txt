@@ -15,10 +15,10 @@ node [shape = circle];
 # start    = 10;
 # path     = (10)--'b'-->(11)--'c'-->[11];
 # skeleton = {
-#    [-oo, '`'] -> DoorID(s=10, d=DROP_OUT)
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=1)
 #    'a'        -> DoorID(s=12, d=0)
 #    'b'        -> DoorID(s=13, d=0)
-#    ['c', oo]  -> DoorID(s=10, d=DROP_OUT)
+#    ['c', oo]  -> DoorID(s=DROP_OUT, d=1)
 # }
 # wildcard = False;
 # 

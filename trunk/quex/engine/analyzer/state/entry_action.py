@@ -39,7 +39,7 @@ class TransitionID(namedtuple("TransitionID_tuple", ("target_state_index", "sour
         if self.trigger_id == 0:
             return "TransitionID(to=%s, from=%s)" % (self.target_state_index, source_state_str)
         else:
-            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, source_state_str, self.gtrigger_id)
+            return "TransitionID(to=%s, from=%s, trid=%s)" % (self.target_state_index, source_state_str, self.trigger_id)
 
 class TransitionAction(object):
     """Object containing information about commands to be executed upon

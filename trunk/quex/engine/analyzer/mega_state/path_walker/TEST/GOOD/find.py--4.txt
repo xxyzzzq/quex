@@ -70,10 +70,10 @@ node [shape = circle];
 # start    = 4;
 # path     = (4)--'c'-->(5)--'c'-->(6)--'b'-->[7];
 # skeleton = {
-#    [-oo, 'a'] -> DoorID(s=DROP_OUT, d=4)
+#    [-oo, 'a'] -> DoorID(s=DROP_OUT, d=3)
 #    'b'        -> DoorID(s=2, d=0)
 #    'c'        -> DoorID(s=8, d=0)
-#    ['d', oo]  -> DoorID(s=DROP_OUT, d=4)
+#    ['d', oo]  -> DoorID(s=DROP_OUT, d=3)
 # }
 # wildcard = False;
 # 
@@ -100,20 +100,20 @@ node [shape = circle];
 # start    = 4;
 # path     = (4)--'c'-->(5)--'b'-->[2];
 # skeleton = {
-#    [-oo, 'a'] -> DoorID(s=DROP_OUT, d=4)
+#    [-oo, 'a'] -> DoorID(s=DROP_OUT, d=3)
 #    'b'        -> DoorID(s=2, d=0)
 #    'c'        -> DoorID(s=6, d=0)
-#    ['d', oo]  -> DoorID(s=DROP_OUT, d=4)
+#    ['d', oo]  -> DoorID(s=DROP_OUT, d=3)
 # }
 # wildcard = False;
 # 
 # start    = 5;
 # path     = (5)--'c'-->(6)--'b'-->[7];
 # skeleton = {
-#    [-oo, 'a'] -> DoorID(s=5, d=DROP_OUT)
+#    [-oo, 'a'] -> DoorID(s=DROP_OUT, d=3)
 #    'b'        -> DoorID(s=2, d=0)
 #    'c'        -> DoorID(s=8, d=0)
-#    ['d', oo]  -> DoorID(s=5, d=DROP_OUT)
+#    ['d', oo]  -> DoorID(s=DROP_OUT, d=3)
 # }
 # wildcard = False;
 # 

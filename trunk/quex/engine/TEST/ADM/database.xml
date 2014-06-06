@@ -1,4 +1,4 @@
-<test-database execution-time-sec="54.16" date="Wed Jun  4 06:29:44 2014">
+<test-database execution-time-sec="54.16" date="Wed Jun  4 08:49:48 2014">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.10"> 
@@ -30,13 +30,6 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.05" crc="2115164504"/>
-            </choice-list>
-        </test>
-        <test title="Union" time-sum-sec="0.05"> 
-            <application file-name="test-NumberSet-union.py" info-request-time="1393744558L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Massive Mutual Consistency Check" time-sum-sec="33.84"> 
@@ -75,25 +68,11 @@
                <choice name="some" result="OK" time_sec="0.08" crc="735638535"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.82"> 
-            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
+        <test title="Union" time-sum-sec="0.05"> 
+            <application file-name="test-NumberSet-union.py" info-request-time="1393744558L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <choice-list number="7" same_result="False">
-               <choice name="10" result="OK" time_sec="0.14" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.68" crc="-646722016"/>
-               <choice name="2000" result="OK" time_sec="2.45" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="5.87" crc="843858714"/>
-               <choice name="100" result="OK" time_sec="0.14" crc="-2005431878"/>
-               <choice name="250" result="OK" time_sec="0.20" crc="1443580919"/>
-               <choice name="500" result="OK" time_sec="0.34" crc="-352222672"/>
-            </choice-list>
-        </test>
-        <test title="Algebraic Relations" time-sum-sec="5.06"> 
-            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="2" same_result="False">
-               <choice name="unary" result="OK" time_sec="0.11" crc="1792904643"/>
-               <choice name="binary" result="OK" time_sec="4.95" crc="983993768"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Cut" time-sum-sec="0.45"> 
@@ -107,6 +86,27 @@
                <choice name="1b" result="OK" time_sec="0.06" crc="1415502275"/>
                <choice name="2b" result="OK" time_sec="0.06" crc="1842878511"/>
                <choice name="3b" result="OK" time_sec="0.07" crc="-1227968480"/>
+            </choice-list>
+        </test>
+        <test title="Algebraic Relations" time-sum-sec="5.06"> 
+            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="2" same_result="False">
+               <choice name="unary" result="OK" time_sec="0.11" crc="1792904643"/>
+               <choice name="binary" result="OK" time_sec="4.95" crc="983993768"/>
+            </choice-list>
+        </test>
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="9.82"> 
+            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="7" same_result="False">
+               <choice name="10" result="OK" time_sec="0.14" crc="1378888075"/>
+               <choice name="1000" result="OK" time_sec="0.68" crc="-646722016"/>
+               <choice name="2000" result="OK" time_sec="2.45" crc="1205044615"/>
+               <choice name="3000" result="OK" time_sec="5.87" crc="843858714"/>
+               <choice name="100" result="OK" time_sec="0.14" crc="-2005431878"/>
+               <choice name="250" result="OK" time_sec="0.20" crc="1443580919"/>
+               <choice name="500" result="OK" time_sec="0.34" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Interval comparison" time-sum-sec="0.12"> 
