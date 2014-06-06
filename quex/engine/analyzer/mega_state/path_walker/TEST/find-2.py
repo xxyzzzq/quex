@@ -132,7 +132,7 @@ else:
                 sm.create_new_state(acceptance_f, state_index_by_node(layer_i, node_i, NodeNperLayer))
             # Let each state at the end be a different acceptance state
             state_index = state_index_by_node(layer_i, NodeNperLayer - 1, NodeNperLayer)
-            sm.states[state_index].mark_self_as_origin(AcceptanceID=layer_i, StateIndex=state_index) 
+            sm.states[state_index].mark_self_as_origin(AcceptanceID=long(layer_i), StateIndex=state_index) 
 
         for layer_i in xrange(LayerN):
             # Fork into the different lines 

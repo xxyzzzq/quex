@@ -147,7 +147,8 @@ class StateCoreInfo(object):
         return self.__pattern_id
 
     def set_pattern_id(self, AcceptanceID):
-        assert AcceptanceID in E_IncidenceIDs_SubsetAcceptanceIDs or (isinstance(AcceptanceID, long)    and AcceptanceID >= 0) 
+        assert    AcceptanceID in E_IncidenceIDs_SubsetAcceptanceIDs \
+               or (isinstance(AcceptanceID, long) and AcceptanceID >= 0) 
         self.__pattern_id = AcceptanceID
 
     def is_acceptance(self):

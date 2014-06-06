@@ -20,6 +20,7 @@ from   quex.engine.state_machine.core                       import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
 from   quex.engine.tools                                    import typed
 
+from   copy        import copy
 from   operator    import attrgetter
 from   collections import defaultdict
 from   quex.blackboard import E_StateIndices, E_Compression
@@ -89,6 +90,13 @@ def get_Analyzer(StatesDescription):
 
     for state in analyzer.state_db.itervalues():
         state.entry.categorize(state.index)
+
+    # Make sure that every state has its entry into drop-out
+    empty_cl = CommandList()
+    for i in analyzer.state_db.iterkeys():
+        print "#state_index:", i
+        analyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, i, copy(empty_cl))
+    analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     analyzer.prepare_DoorIDs()
 

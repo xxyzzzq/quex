@@ -152,21 +152,6 @@ E_IncidenceIDs_SubsetAcceptanceIDs = [
     E_IncidenceIDs.VOID,
 ]
 
-E_IncidenceIDs_Subset_Terminals = [
-    E_IncidenceIDs.BIPD_TERMINATED,
-    E_IncidenceIDs.END_OF_STREAM,
-    E_IncidenceIDs.EXIT_LOOP,
-    E_IncidenceIDs.MATCH_FAILURE,
-    E_IncidenceIDs.INDENTATION_HANDLER,
-    E_IncidenceIDs.INDENTATION_BAD,
-    E_IncidenceIDs.INDENTATION_ERROR,
-    E_IncidenceIDs.INDENTATION_NEWLINE, 
-    E_IncidenceIDs.SKIP, 
-    E_IncidenceIDs.SKIP_NESTED_RANGE, 
-    E_IncidenceIDs.SKIP_RANGE, 
-    E_IncidenceIDs.SKIP_RANGE_OPEN,
-]
-
 E_IncidenceIDs_Subset_Special = [
     E_IncidenceIDs.INDENTATION_HANDLER,
     E_IncidenceIDs.SKIP, 

@@ -485,7 +485,8 @@ class Mode:
 
     def check_consistency(self):
         # (*) Modes that are inherited must allow to be inherited
-        for base_mode in self.__base_mode_sequence:
+        #     __base_mode_sequence[-1] == the mode itself.
+        for base_mode in self.__base_mode_sequence[:-1]:
             if base_mode.option_db.value("inheritable") == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
                           (self.name, base_mode.name), self.sr.file_name, self.sr.line_n)

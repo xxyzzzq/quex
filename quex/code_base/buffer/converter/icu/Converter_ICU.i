@@ -17,14 +17,15 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter_ICU)* me, 
-                                  const char* FromCodingName, const char* ToCodingName)
+                                  const char*               FromCodingName, 
+                                  const char*               ToCodingName)
     {
         __quex_assert(me != 0x0);
 
-        /* Default: assume input encoding to have dynamic character sizes. */
+        /* Default: assume input encoding to have dynamic character sizes.   */
         me->base.dynamic_character_size_f = true;
 
-        /* Open conversion handles */
+        /* Open conversion handles                                           */
         me->from_handle = ucnv_open(FromCodingName, &me->status);
 
         if( ! U_SUCCESS(me->status) ) 
@@ -35,8 +36,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         } else {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
             case 4:  
-                /* Please, use the ICU converter utility to find correct ICU coding names:
-                 * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
+                /* Please, use the ICU converter utility to find correct ICU 
+                 * coding names:
+                 * http://demo.icu-project.org/icu-bin/convexp?s=IANA        */
 #               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
                 me->to_handle = ucnv_open("UTF32-PlatformEndian", &me->status); 
 #               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
@@ -46,9 +48,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 #               endif
                 break;
             case 2:  
-                /* Currently no concept exists to handle this case. See feature request 2749855 */
+                /* Currently no concept exists to handle this case. See 
+                 * feature request 2749855                                   */
 #               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
-                me->to_handle = 0x0; /* 2 byte encoding may use the 'direct converter for UChar' */
+                /* 2 byte encoding may use the 'direct converter for UChar'  */
+                me->to_handle = 0x0; 
 #               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
                 me->to_handle = ucnv_open("UTF16-LE", &me->status); 
 #               elif defined(__QUEX_OPTION_BIG_ENDIAN)
@@ -74,24 +78,26 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         /* RETURNS: 'true'  if the drain was completely filled.
-         *          'false' if the drain could not be filled completely and more source
-         *                  bytes are required.                                          */
+         *          'false' if the drain could not be filled completely and 
+         *                  more source bytes are required.                  */
         __quex_assert(me != 0x0);
         me->status = U_ZERO_ERROR;
 
         if( me->to_handle == 0x0 ) {
             /* Convert according to QUEX_TYPE_CHARACTER:
              *
-             * NOTE: The author did not find a better way to do non-16bit conversion than
-             *       converting 'normally' and then shifting according to the size
-             *       of QUEX_TYPE_CHARACTER. If you read these lines and know of a better
-             *       method, please, let me know (email: fschaef@users.sourceforge.net).   
+             * NOTE: The author did not find a better way to do non-16bit 
+             *       conversion than converting 'normally' and then shifting
+             *       according to the size of QUEX_TYPE_CHARACTER. If you 
+             *       read these lines and know of a better method, please, 
+             *       let me know (email: fschaef@users.sourceforge.net).   
              *
-             * NOTE: 'UChar' is defined to be wchar_t, if sizeof(wchar_t) == 2 byte, 
-             *       otherwise it as defined as uint16_t.                        
+             * NOTE: 'UChar' is defined to be wchar_t, if sizeof(wchar_t) is 
+             *       2 byte, otherwise it as defined as uint16_t.                        
              *
-             * We need to cast to UChar, since otherwise the code would not compile for sizeof() != 2.
-             * Nevertheless, in this case the code would never be executed.                            */
+             * We need to cast to UChar, since otherwise the code would not 
+             * compile for sizeof() != 2. Nevertheless, in this case the code 
+             * would never be executed.                                      */
             __quex_assert( sizeof(QUEX_TYPE_CHARACTER) == 2 );
 
             /* 16 bit --> nothing to be done */

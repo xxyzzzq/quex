@@ -1,4 +1,4 @@
-<history date="Wed Jun  4 06:29:50 2014" element-n="109">
+<history date="Fri Jun  6 01:28:40 2014" element-n="114">
     <day year="2011" month="09" day="28">
         <history-init time="20:08:52"/>
     </day>
@@ -143,5 +143,12 @@
         <crc-error time="06:29:09" application="recursion.py" choice="0" database-crc="517904786" real-crc="412753535"/>
         <crc-error time="06:29:42" application="recursion.py" choice="0b" database-crc="1597115840" real-crc="-1393433161"/>
         <crc-error time="06:43:22" application="recursion.py" choice="1b" database-crc="0" real-crc="-748825646"/>
+    </day>
+    <day year="2014" month="06" day="05">
+        <crc-error time="23:26:36" application="combine-simple.py" choice="plain" database-crc="-1936121256" real-crc="-1161485993"/>
+        <crc-error time="23:27:22" application="combine-simple.py" choice="recursive" database-crc="1077674044" real-crc="287197039"/>
+        <crc-error time="23:27:33" application="combine-simple.py" choice="distinguished" database-crc="1951953792" real-crc="-1963706776"/>
+        <crc-error time="23:27:55" application="recursion.py" choice="0" database-crc="412753535" real-crc="1560569670"/>
+        <crc-error time="23:28:28" application="recursion.py" choice="0b" database-crc="-1393433161" real-crc="1104360742"/>
     </day>
 </history>

@@ -277,7 +277,6 @@ class Lng_Cpp(dict):
             return result
 
         elif Cmd.id == E_Cmd.RouterOnStateKey:
-            print "#ms:index:language:", Cmd.content.mega_state_index
             case_list = [
                 (state_key, self.GOTO(door_id)) for state_key, door_id in Cmd.content
             ]

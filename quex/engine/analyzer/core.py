@@ -118,72 +118,80 @@ class Analyzer:
         self.drop_out           = Processor(E_StateIndices.DROP_OUT, Entry())
 
     @classmethod
+    @typed(SM=StateMachine, EngineType=engine.Base)
     def from_StateMachine(cls, SM, EngineType, ReloadStateExtern=None):
         """ReloadStateExtern is only to be specified if the analyzer needs
         to be embedded in another one.
         """
         result = cls(EngineType, SM.init_state_index)
-        assert isinstance(EngineType, engine.Base), EngineType.__class__.__name__
-        assert isinstance(SM, StateMachine)
+        result._prepare_state_information(SM)
+        result._prepare_reload_state(ReloadStateExtern, EngineType)
+        result._prepare_entries_and_drop_out(EngineType, SM)
+        return result
 
-        result.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
-        result.__state_machine_id            = SM.get_id()
+    @typed(SM=StateMachine)
+    def _prepare_state_information(self, SM):
+        self.__acceptance_state_index_list = SM.get_acceptance_state_index_list()
+        self.__state_machine_id            = SM.get_id()
 
         # (*) From/To Databases
         #
         #     from_db:  state_index --> states from which it is entered.
         #     to_db:    state_index --> states which it enters
         #
-        result.__from_db, result.__to_db = SM.get_from_to_db()
+        self.__from_db, self.__to_db = SM.get_from_to_db()
 
         # (*) Prepare AnalyzerState Objects
-        result.__state_db.update(
-            (state_index, result.prepare_state(state, state_index))
+        self.__state_db.update(
+            (state_index, self.prepare_state(state, state_index))
             for state_index, state in SM.states.iteritems()
         )
 
+        self.__mega_state_list          = []
+        self.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
+
+    def _prepare_reload_state(self, ReloadStateExtern, EngineType):
         if ReloadStateExtern is None:
-            result.reload_state          = ReloadState(EngineType=result.__engine_type)
-            result.reload_state_extern_f = False
+            self.reload_state          = ReloadState(EngineType=EngineType)
+            self.reload_state_extern_f = False
         else:
-            result.reload_state          = ReloadStateExtern
-            result.reload_state_extern_f = True
+            self.reload_state          = ReloadStateExtern
+            self.reload_state_extern_f = True
 
-        result.__mega_state_list          = []
-        result.__non_mega_state_index_set = set(state_index for state_index in SM.states.iterkeys())
-
+    def _prepare_entries_and_drop_out(self, EngineType, SM):
         if not EngineType.requires_detailed_track_analysis():
             for state_index, state in SM.states.iteritems():
-                result.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index,
+                self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index,
                                                         EngineType.create_DropOut(state))
+            self.__position_register_map = None
 
-            result.__position_register_map = None
-            return result
         else:
             # (*) PathTrace database, Successor database
-            result.__trace_db,       \
-            result.__path_element_db = track_analysis.do(SM, result.__to_db)
+            self.__trace_db, \
+            path_element_db    = track_analysis.do(SM, self.__to_db)
 
             # (*) Drop Out Behavior
             #     The PathTrace objects tell what to do at drop_out. From this, the
             #     required entry actions of states can be derived.
-            result.__require_acceptance_storage_db = defaultdict(list)
-            result.__require_position_storage_db   = defaultdict(list)
-            for state_index, trace_list in result.__trace_db.iteritems():
-                cl = result.drop_out_configure(state_index, trace_list)
-                result.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index, cl)
+            acceptance_storage_db = defaultdict(list)
+            position_storage_db   = defaultdict(list)
+            for state_index, trace_list in self.__trace_db.iteritems():
+                cl = self.drop_out_configure(state_index, trace_list, 
+                                             acceptance_storage_db,
+                                             position_storage_db)
+                self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index, cl)
 
             # (*) Entry Behavior
             #     Implement the required entry actions.
-            result.configure_entries(SM)
+            self.configure_entries(acceptance_storage_db, position_storage_db,
+                                     path_element_db)
 
             if EngineType.requires_position_register_map():
                 # (*) Position Register Map (Used in 'optimizer.py')
-                result.__position_register_map = position_register_map.do(result)
+                self.__position_register_map = position_register_map.do(self)
             else:
-                result.__position_register_map = None
-
-        return result
+                self.__position_register_map = None
+        return 
 
     def add_mega_states(self, MegaStateList):
         """Add MegaState-s into the analyzer and remove the states which are 
@@ -353,7 +361,7 @@ class Analyzer:
         return False
 
     @typed(TraceList=PathsToState)
-    def drop_out_configure(self, StateIndex, TraceList):
+    def drop_out_configure(self, StateIndex, TraceList, acceptance_storage_db, position_storage_db):
         """____________________________________________________________________
         Every analysis step ends with a 'drop-out'. At this moment it is
         decided what pattern has won. Also, the input position pointer must be
@@ -412,7 +420,7 @@ class Analyzer:
 
             # Dependency: Related states are required to store acceptance at state entry.
             for accepting_state_index in TraceList.accepting_state_index_list():
-                self.__require_acceptance_storage_db[accepting_state_index].append(StateIndex)
+                acceptance_storage_db[accepting_state_index].append(StateIndex)
 
             # Later, a function will use the '__require_acceptance_storage_db' to 
             # implement the acceptance storage.
@@ -426,15 +434,15 @@ class Analyzer:
 
             # Request the storage of the position from related states.
             for state_index in x.positioning_state_index_set:
-                self.__require_position_storage_db[state_index].append(
+                position_storage_db[state_index].append(
                         (StateIndex, x.pre_context_id, x.acceptance_id))
 
-            # Later, a function will use the '__require_position_storage_db' to 
-            # implement the position storage.
+            # Later, a function will use the 'position_storage_db' to implement
+            # the position storage.
 
         return drop_out.get_CommandList(accepter, terminal_router)
 
-    def configure_entries(self, SM):
+    def configure_entries(self, acceptance_storage_db, position_storage_db, PathElementDb):
         """DropOut objects may rely on acceptances and input positions being 
            stored. This storage happens at state entries.
            
@@ -442,17 +450,17 @@ class Analyzer:
            the input position and which ones have to store acceptances. These
            tasks are specified in the two members:
 
-                 self.__require_acceptance_storage_db
-                 self.__require_position_storage_db
+                 require_acceptance_storage_db
+                 position_storage_db
 
            It is tried to postpone the storing as much as possible along the
            state paths from store to restore. Thus, some states may not have to
            store, and thus the lexical analyzer becomes a little faster.
         """
-        self.implement_required_acceptance_storage(SM)
-        self.implement_required_position_storage()
+        self.implement_required_acceptance_storage(acceptance_storage_db)
+        self.implement_required_position_storage(position_storage_db, PathElementDb)
 
-    def implement_required_acceptance_storage(self, SM):
+    def implement_required_acceptance_storage(self, acceptance_storage_db):
         """
         Storing Acceptance / Postpone as much as possible.
         
@@ -505,7 +513,7 @@ class Analyzer:
         # preceed the already mentioned ones. Since they all trigger on lexemes of the
         # same length, the only precendence criteria is the acceptance_id.
         # 
-        for state_index in self.__require_acceptance_storage_db.iterkeys():
+        for state_index in acceptance_storage_db.iterkeys():
             entry = self.__state_db[state_index].entry
             # Only the trace content that concerns the current state is filtered out.
             # It should be the same for all traces through 'state_index'
@@ -516,13 +524,12 @@ class Analyzer:
                 entry.add_Accepter_on_all(x.pre_context_id, x.acceptance_id)
 
     def acceptance_storage_post_pone_do(self, StateIndex, PatternId):
-
         pass 
 
     def acceptance_storage_post_pone_can_be_delegate(self, StateIndex, PatternId, MotherAcceptSequence):
         pass
             
-    def implement_required_position_storage(self):
+    def implement_required_position_storage(self, position_storage_db, PathElementDb):
         """
         Store Input Position / Postpone as much as possible.
 
@@ -536,7 +543,7 @@ class Analyzer:
         any state that has undetermined positioning restores the input position.
         Thus 'restore_position_f(register)' is enough to catch this case.
         """
-        for state_index, info_list in self.__require_position_storage_db.iteritems():
+        for state_index, info_list in position_storage_db.iteritems():
             target_state_index_list = self.__to_db[state_index]
             for end_state_index, pre_context_id, acceptance_id in info_list:
                 # state_index      --> state that stores the input position
@@ -545,7 +552,7 @@ class Analyzer:
                 # acceptance_id       --> pattern which is concerned
                 # Only consider target states which guide to the 'end_state_index'.
                 index_iterable = (i for i in target_state_index_list 
-                                    if i in self.__path_element_db[end_state_index])
+                                    if i in PathElementDb[end_state_index])
                 for target_index in index_iterable: # target_state_index_list: # index_iterable:
                     if target_index == state_index: # Position is stored upon entry in *other*
                         continue                    # state--not the state itself. 
