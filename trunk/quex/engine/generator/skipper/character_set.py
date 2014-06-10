@@ -69,11 +69,11 @@ def do(Data, TheAnalyzer):
     character_set = Data["character_set"]
 
     if Setup.buffer_based_analyzis_f:
-        reload_f     = False
         reload_state = None
+        reload_f     = False
     else:
-        reload_f     = True
         reload_state = TheAnalyzer.reload_state
+        reload_f     = True
         
     result, \
     door_id_beyond = loop.do(CountCmdFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 

@@ -74,6 +74,7 @@ def basic_setup(Triggers):
 
 def set_recursive_command_list(State, CmdList):
     State.entry.enter_CommandList(State.index, State.index, CommandList.from_iterable(CmdList))
+    State.entry.categorize(State.index)
 
 if "0" in sys.argv:
     analyzer, a, b = basic_setup([10, 10]) # Recursion on trigger = 10 in both states

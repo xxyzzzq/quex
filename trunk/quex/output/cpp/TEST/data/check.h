@@ -4,6 +4,7 @@
 
 typedef DEF_CHARACTER_TYPE   QUEX_TYPE_CHARACTER;
 typedef QUEX_TYPE_CHARACTER* QUEX_TYPE_CHARACTER_POSITION;
+typedef long                 QUEX_TYPE_GOTO_LABEL;
 
 typedef struct {
     struct {
@@ -17,6 +18,8 @@ typedef struct {
         QUEX_TYPE_CHARACTER_POSITION _lexeme_start_p;
     } buffer;
 } QUEX_TYPE_ANALYZER;
+
+#define QUEX_GOTO_LABEL_VOID    ((QUEX_TYPE_GOTO_LABEL)(-1))
 
 
 #ifdef DEF_DEBUG_TRACE

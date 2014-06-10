@@ -77,9 +77,7 @@ class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr")
         )
         return cl
 
-
 CountInfo = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
-
 
 class CountCmdMap(object):
     """Association of character sets with triggered count commands.
@@ -211,7 +209,7 @@ class CountCmdMap(object):
         if not remaining_set.is_empty():
             self.__map.append((remaining_set, else_cmd))
 
-    def pruned_cgl_iterable(self, CharacterSet):
+    def column_grid_line_iterable_pruned(self, CharacterSet):
         """Iterate over count command map. It is assumed that anything in the map
         is 'valid'. 
         """
@@ -223,14 +221,15 @@ class CountCmdMap(object):
                 if info.cc_type not in considered_set: continue
                 yield character_set.intersection(CharacterSet), info
 
-    def column_grid_bad_count_iterable(self):
+    def column_grid_bad_iterable(self):
         """Iterate over count command map. Only 'COLUMN' and 'GRID' are reported. 
         This is for indentation counting.
         """
+        considered_set = (E_CharacterCountType.COLUMN, 
+                          E_CharacterCountType.GRID, 
+                          E_CharacterCountType.BAD)
         for character_set, info in self.__map:
-            if    info.cc_type == E_CharacterCountType.COLUMN \
-               or info.cc_type == E_CharacterCountType.GRID \
-               or info.cc_type == E_CharacterCountType.BAD:
+            if info.cc_type in considered_set:
                 yield character_set, info
 
     @typed(CharacterSet=NumberSet)
@@ -245,7 +244,7 @@ class CountCmdMap(object):
         """
         column_incr_per_character = None
         number_set                = None
-        for character_set, info in self.pruned_cgl_iterable(CharacterSet):
+        for character_set, info in self.column_grid_line_iterable_pruned(CharacterSet):
             if info.cc_type != E_CharacterCountType.COLUMN: 
                 continue
             elif column_incr_per_character is None:       

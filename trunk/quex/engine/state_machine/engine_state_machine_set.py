@@ -11,6 +11,7 @@ from   quex.engine.tools                               import all_isinstance, \
                                                               none_is_None, \
                                                               concatinate, \
                                                               typed
+from   quex.engine.analyzer.door_id_address_label      import dial_db
 from   quex.blackboard import setup as Setup, \
                               Lng
 from   itertools       import ifilter
@@ -63,7 +64,8 @@ class EngineStateMachineSet:
 class CharacterSetStateMachine:
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
     def __init__(self, IncidenceIdMap, MaintainLexemeF, ParallelSmList=None, 
-                 OnBegin=None, OnEnd=None, OnBeforeReload=None, OnAfterReload=None):
+                 OnBegin=None, OnEnd=None, OnBeforeReload=None, OnAfterReload=None, 
+                 BeyondIid=None):
         """Brief: Generates a state machine that implements the transition
         to terminals upon the input falling into a number set. 
             
@@ -102,6 +104,26 @@ class CharacterSetStateMachine:
 
         self.__prepare_begin_and_putback(OnBegin, OnEnd)
         self.__prepare_before_and_after_reload(OnBeforeReload, OnAfterReload)
+
+        self.incidence_id_beyond = BeyondIid
+
+    @staticmethod
+    def from_CountCmdFactory(ccfactory, LexemeMaintainedF, ParallelSmList=None):
+        """The function 'get_terminal_list' returns a list of termins which 
+        fit the incidence ids of the counting actions.
+        """
+        beyond_iid = dial_db.new_incidence_id()
+        # Build a state machine based on (character set, incidence_id) pairs.
+        return CharacterSetStateMachine(
+                   ccfactory.get_incidence_id_map(beyond_iid), 
+                   LexemeMaintainedF, 
+                   ParallelSmList, 
+                   OnBegin        = ccfactory.on_begin, 
+                   OnEnd          = ccfactory.on_end,
+                   OnBeforeReload = ccfactory.on_before_reload,
+                   OnAfterReload  = ccfactory.on_after_reload, 
+                   BeyondIid      = beyond_iid)
+
 
     def __prepare_begin_and_putback(self, OnBegin, OnEnd):
         """If we deal with variable character sizes, the begin of the letter is stored
