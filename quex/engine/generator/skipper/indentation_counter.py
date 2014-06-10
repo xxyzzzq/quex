@@ -1,4 +1,5 @@
 import quex.engine.state_machine.index              as     sm_index
+from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
@@ -14,7 +15,7 @@ from   quex.blackboard                              import Lng, \
                                                            setup as Setup
 import quex.blackboard                              as     blackboard
 
-def do(Data, Mode=None):
+def do(Data, TheAnalyzer):
     """________________________________________________________________________
     Counting whitespace at the beginning of a line.
 
@@ -32,9 +33,9 @@ def do(Data, Mode=None):
                  |         |          .---------.               |
                  |         +----->----| newline |---------------'
                  |         |          '---------'
-                 |         |
-                 |         |----->-------------------------------> RESTART
-                 '---------'   else
+                 |         |          .----------------.
+                 |         |----->----| on_indentation |---------> RESTART
+                 '---------'   else   '----------------'
                                            
 
     Generate an indentation counter. An indentation counter is entered upon 
@@ -79,39 +80,24 @@ def do(Data, Mode=None):
     if Setup.buffer_based_analyzis_f: reload_state = None
     else:                             reload_state = TheAnalyzer.reload_state
 
-    ih_call = IndentationHandlerCall(default_ih_f, mode_name)
+    parallel_sm_terminal_list = [
+        (isetup.sm_newline.get(),            get_action_on_newline()), 
+        (isetup.sm_newline_suppressor.get(), get_action_on_newline_supressor())
+    ]
 
-    # -- Determine actions upon 'newline', 'newline suppressor' and on the
-    #    event of a 'bad character' occurring.
-    action_on_newline            = get_action_on_newline()
-    action_on_newline_suppressor = get_action_on_newline_supressor()
-    action_on_bad                = get_action_on_bad_character()
+    # -- 'on_indentation' == 'on_beyond': 
+    #     A handler is called as soon as an indentation has been detected.
+    action_on_indentation = [ 
+        IndentationHandlerCall(default_ih_f, mode_name),
+        GotoDoorId(DoorID.global_reentry())
+    ]
 
-    # -- Collect all state machines together with the actions that they trigger.
-    sm_action_list = get_state_machine_action_pair_list(isetup.count_command_map, 
-                                                        action_on_bad)
-    sm_action_list.extend([
-        (isetup.sm_newline.get(),            action_on_newline),
-        (isetup.sm_newline_suppressor.get(), action_on_newline_suppressor),
-    ])
-
-    # -- On DropOut: No state machine accepted.
-    #
-    # As soon, as a character appears which is neither a 'whitespace to be
-    # counted' or a newline, or a newline suppressor followed by newline, the
-    # indentation counter stops. Then, the lexical analyzer is re-entered
-    # again. 
-    on_drop_out = get_action_on_beyond()
+    return loop.do()
 
     return generator.do_mini(sm_action_list, 
                              on_drop_out, 
                              engine.FORWARD(), 
                              ReloadState=reload_state)
-
-    CsSm, beyond_iid = CcFactory.get_CharacterSetStateMachine(False, [
-        sm_newline,
-        sm_newline_suppressor_plus_newline,
-    ])
 
     analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadState)
     analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorID.global_reentry()))
@@ -127,7 +113,7 @@ def do(Data, Mode=None):
         )
 
     terminal_beyond = loop.get_terminal_beyond(CcSm, CcFactory, DoorID.global_reentry(), 
-                                               beyond_iid, [ih_call])
+                                               beyond_iid, action_on_indentation)
     terminal_list.append(terminal_beyond)
 
     Mode = None

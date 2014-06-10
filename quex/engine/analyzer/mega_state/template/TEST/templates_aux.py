@@ -94,7 +94,6 @@ def get_Analyzer(StatesDescription):
     # Make sure that every state has its entry into drop-out
     empty_cl = CommandList()
     for i in analyzer.state_db.iterkeys():
-        print "#state_index:", i
         analyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, i, copy(empty_cl))
     analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 

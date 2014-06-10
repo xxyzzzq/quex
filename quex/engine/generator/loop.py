@@ -1,3 +1,4 @@
+from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 from   quex.engine.generator.languages.variable_db     import variable_db
 import quex.engine.generator.base                      as     generator
 from   quex.engine.analyzer.terminal.core              import Terminal
@@ -5,8 +6,11 @@ from   quex.engine.generator.code.core                 import CodeTerminal
 from   quex.engine.analyzer.state.entry_action         import TransitionAction
 import quex.engine.analyzer.core                       as     analyzer_generator
 import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.engine.analyzer.commands.core                   import E_R, \
+from   quex.engine.analyzer.commands.core              import E_R, \
                                                               CommandList, \
+                                                              GotoDoorIdIfInputPNotEqualPointer, \
+                                                              ColumnCountReferencePDeltaAdd, \
+                                                              GotoDoorId, \
                                                               Assign, \
                                                               GotoDoorId
 import quex.engine.state_machine.index                 as     index
@@ -14,13 +18,16 @@ from   quex.engine.tools                               import typed
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               dial_db
 from   quex.blackboard import E_StateIndices, \
+                              E_CharacterCountType, \
                               setup as Setup, \
                               Lng, \
                               E_Cmd
 
 
+
 @typed(ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
-def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False):
+def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,
+       ParallelSmTerminalPairList=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
        Else              --> Exit Loop
@@ -72,35 +79,62 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
 
     # (*) Construct State Machine and Terminals _______________________________
     #
-    CsSm, beyond_iid = CcFactory.get_CharacterSetStateMachine(LexemeMaintainedF)
+    CsSm = CharacterSetStateMachine.from_CountCmdFactory(CcFactory, LexemeMaintainedF)
 
     analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
                                      OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
                                      OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
+    print "#entry:", analyzer.drop_out.entry.get_string()
 
+    # Drop-Out may still occur during when a character transformation
+    # change the state machine.
+    on_beyond = [ GotoDoorId(DoorIdExit) ]
     analyzer.drop_out.entry.enter_CommandList(
         E_StateIndices.DROP_OUT, analyzer.init_state_index, 
-        CommandList(GotoDoorId(DoorIdExit))
+        CommandList.from_iterable(on_beyond)
     )
     analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
-
-    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
-
-    if not LexemeEndCheckF: door_id_on_lexeme_end = None
-    else:                   door_id_on_lexeme_end = DoorIdExit
+    print "#entry:", analyzer.drop_out.entry.get_string()
 
     # -- The terminals 
     #
-    terminal_list = CcFactory.get_terminal_list(CsSm.on_end, beyond_iid,
-                                                DoorIdExit,
-                                                DoorIdOk          = door_id_loop, 
-                                                DoorIdOnLexemeEnd = door_id_on_lexeme_end)
+    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
+    if not LexemeEndCheckF: door_id_on_lexeme_end = None
+    else:                   door_id_on_lexeme_end = DoorIdExit
+
+    def get_appendix(CC_Type):
+        if not LexemeEndCheckF: 
+            return [ GotoDoorId(door_id_loop) ]
+        #     .---------------.        ,----------.   no
+        #---->| Count Command |-------< LexemeEnd? >------> DoorIdOk
+        #     '---------------'        '----+-----'
+        #                                   | yes
+        #                            .---------------.
+        #                            |  Lexeme End   |
+        #                            | Count Command |----> DoorIdOnLexemeEnd
+        #                            '---------------'
+        #
+        elif CcFactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
+            return [
+                GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                ColumnCountReferencePDeltaAdd(E_R.InputP, CcFactory.column_count_per_chunk),
+                GotoDoorId(door_id_on_lexeme_end)
+            ]
+        else:
+            return [
+                GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                GotoDoorId(door_id_on_lexeme_end)
+            ]
+
+    terminal_list = CcFactory.get_terminal_list(CsSm.on_end + on_beyond,
+                                                CsSm.incidence_id_beyond,
+                                                get_appendix)
 
     # (*) Generate Code _______________________________________________________
     txt = _get_source_code(CcFactory, analyzer, terminal_list)
     
-    return txt, DoorID.incidence(beyond_iid)
+    return txt, DoorID.incidence(CsSm.incidence_id_beyond)
 
 def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     """Prepare the entry and re-entry doors into the initial state

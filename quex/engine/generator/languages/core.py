@@ -311,15 +311,11 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
             pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
             offset       = Cmd.content.offset
-            if offset != 0:
-                return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (pointer_name, offset) 
-            else:
-                return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % pointer_name 
+            return self.REFERENCE_P_RESET(pointer_name, offset)
 
         elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
-            delta_str = "(%s - reference_p)" % self.REGISTER_NAME(Cmd.content.pointer)
-            return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
-                   % self.MULTIPLY_WITH(delta_str, Cmd.content.column_n_per_chunk) 
+            return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Cmd.content.pointer), 
+                                               Cmd.content.column_n_per_chunk) 
 
         elif Cmd.id == E_Cmd.GotoDoorId:
             return self.GOTO(Cmd.content.door_id)
@@ -338,19 +334,12 @@ class Lng_Cpp(dict):
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
 
         elif Cmd.id == E_Cmd.ColumnCountGridAdd:
-            txt = self.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                 Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS") 
-            return "".join(txt)
+            return "".join(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
+                           Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
 
         elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
-            txt = [] 
-            self.REFERENCE_P_COLUMN_ADD(txt, self.REGISTER_NAME(Cmd.content.pointer), 
-                                        Cmd.content.column_n_per_chunk, 
-                                        SubtractOneF=True)
-            txt.extend(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                                      Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS")) 
-            self.REFERENCE_P_RESET(txt, self.REGISTER_NAME(Cmd.content.pointer)) 
-            return "".join(txt)
+            assert False, "replaced by sequence of commands"
+            return ""
 
         elif Cmd.id == E_Cmd.LineCountAdd:
             txt = []
@@ -359,16 +348,9 @@ class Lng_Cpp(dict):
             txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
             return "".join(txt)
 
-        ##elif Cmd.id == E_Cmd.GotoDoorId:
-        ##    txt.append(self.GOTO(Cmd.content.door_id))
-
         elif Cmd.id == E_Cmd.LineCountAddWithReferenceP:
-            txt = []
-            if Cmd.content.value != 0:
-                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
-            txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
-            self.REFERENCE_P_RESET(txt, self.REGISTER_NAME(Cmd.content.pointer)) 
-            return "".join(txt)
+            assert False, "replaced by sequence of commands"
+            return ""
 
         elif Cmd.id == E_Cmd.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
@@ -545,15 +527,20 @@ class Lng_Cpp(dict):
         else:
             return "%s" % NameOrValue
 
-    def REFERENCE_P_COLUMN_ADD(self, txt, IteratorName, ColumnCountPerChunk, SubtractOneF=False):
-        if SubtractOneF: minus_one = " - 1"
-        else:            minus_one = ""
+    def REFERENCE_P_COLUMN_ADD(self, IteratorName, ColumnCountPerChunk, SubtractOneF=False):
+        minus_one = { True: " - 1", False: "" }[SubtractOneF]
         delta_str = "(%s - reference_p%s)" % (IteratorName, minus_one)
-        txt.append("__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
-                   % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk))
+        return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \
+               % self.MULTIPLY_WITH(delta_str, ColumnCountPerChunk)
 
-    def REFERENCE_P_RESET(self, txt, IteratorName, AddOneF=False):
-        txt.append("__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName)
+    def REFERENCE_P_RESET(self, IteratorName, Offset=0):
+        if   Offset > 0:
+            return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s + %i);\n" % (IteratorName, Offset) 
+        elif Offset < 0:
+            return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s - %i);\n" % (IteratorName, - Offset) 
+        else:
+            return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName 
+
     
     def MODE_GOTO(self, Mode):
         return "QUEX_NAME(enter_mode)(&self, &%s);" % Mode

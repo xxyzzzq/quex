@@ -15,13 +15,9 @@ from   quex.engine.analyzer.commands.core         import E_R, \
                                                          ColumnCountGridAdd, \
                                                          ColumnCountReferencePDeltaAdd, \
                                                          ColumnCountReferencePSet, \
-                                                         ColumnCountGridAddWithReferenceP, \
                                                          LineCountAdd, \
-                                                         LineCountAddWithReferenceP, \
                                                          GotoDoorId, \
                                                          GotoDoorIdIfInputPNotEqualPointer
-
-from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 
 from   quex.engine.tools import typed
 from   quex.blackboard   import E_CharacterCountType, \
@@ -29,7 +25,7 @@ from   quex.blackboard   import E_CharacterCountType, \
                                 Lng
 
 from   collections import namedtuple, defaultdict
-from   itertools   import izip
+from   itertools   import izip, chain
 from   operator    import itemgetter
 
 import sys
@@ -94,6 +90,14 @@ def _is_admissible(db, DefaultChar, AllCharSet, Bad):
     else:                                               return True
 
 class CountCmdFactory:
+    """________________________________________________________________________
+    Produces Count Commands
+
+    The factory is setup with basic parameters which are used later to produce
+    count commands. 
+
+    ___________________________________________________________________________
+    """
     def __init__(self, CMap, ColumnNPerChunk, InputPName, CharacterSet):
         self.__map                  = CMap
         self.column_count_per_chunk = ColumnNPerChunk
@@ -112,7 +116,7 @@ class CountCmdFactory:
         """
         cmap = [
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
-            for intersection, info in CounterDb.count_command_map.pruned_cgl_iterable(CharacterSet)
+            for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
 
         ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(CharacterSet)
@@ -121,18 +125,19 @@ class CountCmdFactory:
 
     @staticmethod
     @typed(CounterDb=ParserDataIndentation)
-    def from_ParserDataIndentation(CounterDb, InputPName):
+    def from_ParserDataIndentation(CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(NumberSet_All())
-
         cmap = [
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, character_set)
-            for character_set, info in CounterDb.count_command_map.column_grid_bad_count_iterable()
+            for character_set, info in CounterDb.count_command_map.column_grid_bad_iterable()
         ]
 
-        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, NumberSet_All()) 
+        ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(NumberSet_All())
 
+        result = CountCmdFactory(result, cmap, ColumnNPerChunk, InputPName, NumberSet_All()) 
+        result.door_id_on_bad_indentation = DoorIdBad
+        return result
 
     def is_equal(self, Other):
         if len(self.__map) != len(Other.__map):
@@ -168,133 +173,81 @@ class CountCmdFactory:
             result.append((beyond_set, BeyondIncidenceId))
         return result
         
-    def get_CharacterSetStateMachine(self, LexemeMaintainedF, ParallelSmList=None):
-        """RETURNS: [0] CharacterSetStateMachine which accepts on counting 
-                        actions. Each counting action has an incidence id 
-                        associated with it. 
+    def get_terminal_list(self, OnBeyond, BeyondIncidenceId, get_appendix):
 
-           The function 'get_terminal_list' returns a list of termins which 
-           fit the incidence ids of the counting actions.
-        """
-        beyond_iid = dial_db.new_incidence_id()
+        def _get_terminal(X, get_appendix):
+            cl       = self._command(X.cc_type, X.parameter) 
+            appendix = get_appendix(X.cc_type)
+            terminal = Terminal(CodeTerminal([
+                Lng.COMMAND(cmd) for cmd in chain(cl, appendix)
+            ]), Name="%s" % X.cc_type)
+            terminal.set_incidence_id(X.incidence_id)
+            return terminal
 
-        # Build a state machine based on (character set, incidence_id) pairs.
-        cssm = CharacterSetStateMachine(
-                   self.get_incidence_id_map(beyond_iid), 
-                   LexemeMaintainedF, 
-                   ParallelSmList, 
-                   OnBegin        = self.on_begin, 
-                   OnEnd          = self.on_end,
-                   OnBeforeReload = self.on_before_reload,
-                   OnAfterReload  = self.on_after_reload)
-
-        return cssm, beyond_iid
-
-    def get_terminal_list(self, OnEnd, BeyondIncidenceId, DoorIdExit, DoorIdOk, DoorIdOnLexemeEnd=None):
-        # _get_terminal() --> _do_with_lexeme_end_check()
-        #             '-----> _do()
-        #
-        # In the '_do' functions the 'door_id_ok' and 'door_id_on_lexeme_end'
-        # are required.
-        self.door_id_ok            = DoorIdOk
-        self.door_id_on_lexeme_end = DoorIdOnLexemeEnd
-        result = [ self._get_terminal(x) for x in self.__map ] 
+        result = [ 
+            _get_terminal(x, get_appendix) for x in self.__map 
+        ] 
         if BeyondIncidenceId is not None:
-            result.append(self.__get_terminal_beyond(OnEnd, DoorIdExit, BeyondIncidenceId))
+            result.append(self.__get_terminal_beyond(OnBeyond, BeyondIncidenceId))
         return result
 
     @staticmethod
-    def __get_terminal_beyond(OnEnd, DoorIdExit, BeyondIid, AdditionalCommandList=None):
+    def __get_terminal_beyond(OnBeyond, BeyondIid):
         """Generate Terminal to be executed upon exit from the 'loop'.
         
-           DoorIdExit -- DoorId where to go after the terminal has finished.
            BeyondIid  -- 'Beyond Incidence Id', that is the incidencen id if of
                          the terminal to be generated.
         """
-        on_beyond = []
-        on_beyond.extend(OnEnd)
-        if AdditionalCommandList is not None:
-            on_beyond.extend(AdditionalCommandList)
-        on_beyond.append(GotoDoorId(DoorIdExit))
-
-        code_on_beyond  = CodeTerminal([Lng.COMMAND(cmd) for cmd in on_beyond])
-
+        code_on_beyond = CodeTerminal([Lng.COMMAND(cmd) for cmd in OnBeyond])
         result = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
         result.set_incidence_id(BeyondIid)
-
         return result
-
-
-    def _get_terminal(self, X):
-        assert self.door_id_ok is not None
-
-        if self.door_id_on_lexeme_end is not None:
-            cl = self._do_with_lexeme_end_check(X.cc_type, X.parameter)
-        else:
-            cl = self._do(X.cc_type, X.parameter)
-
-        terminal = Terminal(CodeTerminal([Lng.COMMAND(cmd) for cmd in cl]))
-        terminal.set_incidence_id(X.incidence_id)
-        return terminal
-
-    def _do(self, CC_Type, Parameter):
-        """                   .---------------.
-                         ---->| Count Command |----> DoorIdOk
-                              '---------------'
-        """
-        cl = self._command(CC_Type, Parameter) 
-        cl.append(GotoDoorId(self.door_id_ok))
-        return cl
-
-    def _do_with_lexeme_end_check(self, CC_Type, Parameter):
-        """     .---------------.    ,----------.   no
-           ---->| Count Command |---< LexemeEnd? >------> DoorIdOk
-                '---------------'    '----+-----'
-                                          | yes
-                                   .---------------.
-                                   |  Lexeme End   |
-                                   | Count Command |----> DoorIdOnLexemeEnd
-                                   '---------------'
-        """
-        assert self.door_id_ok is not None
-        assert self.door_id_on_lexeme_end is not None
-
-        cl = self._command(CC_Type, Parameter)
-        cl.append(
-            GotoDoorIdIfInputPNotEqualPointer(self.door_id_ok, E_R.LexemeEnd),
-        )
-
-        check_cmd = self._command_on_lexeme_end(CC_Type, Parameter)
-        if check_cmd is not None:
-            cl.append(check_cmd)
-
-        cl.append(
-            GotoDoorId(self.door_id_on_lexeme_end)
-        )
-        return cl
 
     def _command(self, CC_Type, Parameter):
         if self.column_count_per_chunk is None:
-            cmd = {
-                E_CharacterCountType.COLUMN: ColumnCountAdd,
-                E_CharacterCountType.GRID:   ColumnCountGridAdd,
-                E_CharacterCountType.LINE:   LineCountAdd,
-            }[CC_Type](Parameter)
+
+            if CC_Type == E_CharacterCountType.BAD:
+                return [ 
+                    GotoDoorId(self.door_id_on_bad_indentation) 
+                ]
+            elif CC_Type == E_CharacterCountType.COLUMN:
+                return [
+                    ColumnCountAdd(Parameter),
+                ]
+            elif CC_Type == E_CharacterCountType.GRID:
+                return [
+                    ColumnCountGridAdd(Parameter),
+                ]
+            elif CC_Type == E_CharacterCountType.LINE:
+                return [ 
+                    LineCountAdd(Parameter),
+                ]
         else:
-            cmd = {
-                E_CharacterCountType.COLUMN: return_None,
-                E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP,
-                E_CharacterCountType.LINE:   LineCountAddWithReferenceP,
-            }[CC_Type](Parameter, E_R.InputP, self.column_count_per_chunk)
 
-        if cmd is None: return []
-        else:           return [ cmd ]
+            if CC_Type == E_CharacterCountType.BAD:
+                return [ 
+                    ColumnCountReferencePSet(E_R.InputP),
+                    GotoDoorId(self.door_id_on_bad_indentation) 
+                ]
+            elif CC_Type == E_CharacterCountType.COLUMN:
+                return [
+                ]
+            elif CC_Type == E_CharacterCountType.GRID:
+                return [
+                    ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                  self.column_count_per_chunk),
+                    ColumnCountGridAdd(Parameter),
+                    ColumnCountReferencePSet(E_R.InputP)
+                ]
+            elif CC_Type == E_CharacterCountType.LINE:
+                return [ 
+                    LineCountAdd(Parameter),
+                    ColumnCountReferencePSet(E_R.InputP)
+                ]
 
-    def _command_on_lexeme_end(self, CC_Type, Parameter):
-        if   self.column_count_per_chunk is None:    return None
-        elif CC_Type != E_CharacterCountType.COLUMN: return None
+    def _command_on_lexeme_end(self, CC_Type):
 
-        return ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk)
+        return 
 
     @staticmethod
     def __prepare(ColumnNPerChunk):
@@ -334,4 +287,5 @@ class CountCmdFactory:
         on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk) ]
 
         return on_begin, on_end, on_before_reload, on_after_reload
+
 

@@ -227,8 +227,8 @@ class Entry(object):
 
     def itervalues(self):
         for tid, ta in self.__db.iteritems():
-            if ta.door_id is None: 
-                print "!! ", str(tid)
+            if ta.door_id is None: print "!! ", str(tid)
+
         for ta in self.__db.itervalues():
             assert ta.door_id is not None, ".categorize() needs to be called before this!"
             yield ta

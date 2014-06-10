@@ -776,7 +776,7 @@ def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     """FH and LineN follow format of 'error_msg(...)'"""
     directory = os.path.dirname(FileName)
     if directory == "": directory = os.path.normpath("./"); suffix = "."
-    else:               suffix = "in directory\n'%s'." % directory
+    else:               suffix = " in directory\n'%s'." % directory
     comment = ""
     if Comment != "": comment = "(%s) " % Comment
     try:
