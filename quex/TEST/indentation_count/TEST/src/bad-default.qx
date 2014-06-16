@@ -4,11 +4,14 @@ token {
 }
 
 mode X :
-<indentation: 
-    (\r\n)|\n => newline; 
+<counter: 
     [\t]      => grid 4; 
     [ ]       => space; 
-    [\:]       => bad;
+>
+<indentation: 
+    (\r\n)|\n => newline; 
+    [ \t]     => whitespace;
+    [\:]      => bad;
 >
 <skip: [ \t] >
 {

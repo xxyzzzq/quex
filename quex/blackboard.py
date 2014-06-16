@@ -102,8 +102,10 @@ E_CharacterCountType = Enum("COLUMN",
                             "GRID", 
                             "BEGIN_NEWLINE_SUPPRESSOR",
                             "BEGIN_NEWLINE",
+                            "BEGIN_COMMENT_TO_NEWLINE",
                             "END_NEWLINE",
                             "BAD", 
+                            "WHITESPACE", 
                             "_DEBUG_CharacterCountType")
 
 E_Commonality = Enum("NONE", "BOTH", "A_IN_B", "B_IN_A")

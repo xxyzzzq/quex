@@ -208,7 +208,8 @@ class IncidenceDB(dict):
     mandatory_list = [
         E_IncidenceIDs.MATCH_FAILURE, 
         E_IncidenceIDs.END_OF_STREAM,
-        E_IncidenceIDs.SKIP_RANGE_OPEN
+        E_IncidenceIDs.SKIP_RANGE_OPEN,
+        E_IncidenceIDs.INDENTATION_BAD,
     ]
 
     @staticmethod
@@ -240,7 +241,8 @@ class IncidenceDB(dict):
         mode_name = BaseModeSequence[-1].name
         for incidence_id in IncidenceDB.mandatory_list:
             if incidence_id in result: continue
-            result[incidence_id] = IncidenceDB.__default_code_fragment(incidence_id, mode_name)
+            result[incidence_id] = IncidenceDB.__default_code_fragment(incidence_id, 
+                                                                       mode_name)
 
         return result
 
@@ -251,7 +253,6 @@ class IncidenceDB(dict):
 
     @staticmethod
     def __default_code_fragment(IncidenceId, ModeName):
-        
         if IncidenceId == E_IncidenceIDs.MATCH_FAILURE:
             return CodeFragment([
                   "QUEX_ERROR_EXIT(\"\\n    Match failure in mode '%s'.\\n\"\n" % ModeName \
@@ -272,7 +273,12 @@ class IncidenceDB(dict):
                '                "End of file occurred before closing skip range delimiter!\\n"\n' + \
                '                "The \'on_skip_range_open\' handler has not been specified.");'
             ])
-        assert False
+
+        elif IncidenceId == E_IncidenceIDs.INDENTATION_BAD:
+            return   'QUEX_ERROR_EXIT("Mode \'%s\': bad indentation character detected!\\n"' % ModeName \
+                   + '                "No \'on_indentation_bad\' handler has been specified.\\n");'
+        else:
+            assert False
 
     @typed(factory=TerminalFactory)
     def extract_terminal_db(self, factory):
@@ -306,7 +312,6 @@ class IncidenceDB(dict):
 
     def default_indentation_handler_f(self):
         return not (   self.has_key(E_IncidenceIDs.INDENTATION_ERROR) \
-                    or self.has_key(E_IncidenceIDs.INDENTATION_BAD)   \
                     or self.has_key(E_IncidenceIDs.INDENTATION_INDENT)   \
                     or self.has_key(E_IncidenceIDs.INDENTATION_DEDENT)   \
                     or self.has_key(E_IncidenceIDs.INDENTATION_N_DEDENT) \
@@ -501,8 +506,6 @@ class Mode:
                       "<inheritable: only>.", \
                       self.sr.file_name, self.sr.line_n)
 
-        self.assert_indentation_setup()
-
     def unique_pattern_pair_iterable(self):
         """Iterates over pairs of patterns:
 
@@ -572,26 +575,6 @@ class Mode:
         for high, low in self.unique_pattern_pair_iterable():
             if outrun_checker.do(high.sm, low.sm):
                 c_error_message(low, high, ExitF=False, ThisComment="may outrun")
-
-    def assert_indentation_setup(self):
-        # (*) Indentation: Newline Pattern and Newline Suppressor Pattern
-        #     shall never trigger on common lexemes.
-        indentation_setup = self.__indentation_setup
-        if indentation_setup is None: return
-
-        # The newline pattern shall not have intersections with other patterns!
-        newline_info            = indentation_setup.newline_state_machine
-        newline_suppressor_info = indentation_setup.newline_suppressor_state_machine
-        assert newline_info is not None
-        if newline_suppressor_info.get() is None: return
-
-        # Newline and newline suppressor should never have a superset/subset relation
-        if    superset_check.do(newline_info.get(), newline_suppressor_info.get()) \
-           or superset_check.do(newline_suppressor_info.get(), newline_info.get()):
-
-            c_error_message(newline_info, newline_suppressor_info,
-                            ThisComment="matches on some common lexemes as",
-                            ThatComment="") 
 
     def get_documentation(self):
         L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))

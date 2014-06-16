@@ -1,5 +1,5 @@
 from quex.engine.state_machine.core import StateMachine
-from quex.blackboard import E_Commonality
+from quex.blackboard                import E_Commonality
 
 class Checker:
     def __init__(self, A, B):

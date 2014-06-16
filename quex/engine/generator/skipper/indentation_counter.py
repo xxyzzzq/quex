@@ -73,338 +73,150 @@ def do(Data, TheAnalyzer):
     ___________________________________________________________________________
     """
     global variable_db
-    isetup       = Data["indentation_setup"]
-    default_ih_f = Data["default_indentation_handler_f"]
-    mode_name    = Data["mode_name"]
+    counter_db            = Data["counter_db"]
+    isetup                = Data["indentation_setup"]
+    incidence_db          = Data["incidence_db"]
+    self_iid              = Data["incidence_id"]
+    default_ih_f          = Data["default_indentation_handler_f"]
+    mode_name             = Data["mode_name"]
+    sm_suppressed_newline = Data["suppressed_newline"]
+
+    # -- 'on_indentation' == 'on_beyond': 
+    #     A handler is called as soon as an indentation has been detected.
+    on_indentation_iid  = dial_db.new_incidence_id()
+    # -- 'on_bad_indentation' is invoked if a character appeared that has been
+    #    explicitly disallowed to be used as indentation.
+    bad_indentation_iid = dial_db.new_incidence_id() 
 
     if Setup.buffer_based_analyzis_f: reload_state = None
     else:                             reload_state = TheAnalyzer.reload_state
 
-    parallel_sm_terminal_list = [
-        (isetup.sm_newline.get(),            get_action_on_newline()), 
-        (isetup.sm_newline_suppressor.get(), get_action_on_newline_supressor())
-    ]
+    sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
+                                                           isetup.sm_newline.get(),
+                                                           isetup.comment.get(),
+                                                           DoorID.incidence(self_iid))
 
-    # -- 'on_indentation' == 'on_beyond': 
-    #     A handler is called as soon as an indentation has been detected.
-    action_on_indentation = [ 
-        IndentationHandlerCall(default_ih_f, mode_name),
+    # 'whitespace' --> normal counting
+    # 'bad'        --> goto bad character indentation handler
+    # else         --> non-whitespace detected => handle indentation
+    ccfactory = CountCmdFactory.from_ParserDataIndentation(isetup, 
+                                                           counter_db, 
+                                                           Lng.INPUT_P(), 
+                                                           DoorID.incidence(bad_indentation_iid))
+
+    # (*) Generate Code
+    code = loop.do(ccfactory, 
+                   DoorID.incidence(on_indentation_iid), 
+                   EngineType                 = TheAnalyzer.engine_type,
+                   ReloadStateExtern          = reload_state,
+                   LexemeMaintainedF          = True,
+                   ParallelSmTerminalPairList = parallel_sm_terminal_list)
+
+    _code_terminal_on_indentation(code, door_id_on_indentation)
+    _code_terminal_on_bad_indentation_character(code, ModeName, incidence_db, 
+                                                bad_indentation_iid)
+
+    return code
+
+def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmComment, 
+                                        DoorIdIndentationHandler):
+    """Get a list of pairs (state machine, terminal) for the newline, suppressed
+    newline and comment:
+
+    newline --> 'eat' newline state machine, then RESTART counting the
+                columns of whitespace.
+    newline_suppressor + newline --> 'eat' newline suppressor + newline
+                     then CONTNIUE with column count of whitespace.
+    comment --> 'eat' anything until the next newline, then RESTART
+                 counting columns of whitespace.
+    """
+    result = []
+    _add_suppressed_newline(result, SmSuppressedNewline, DoorIdIndentationHandler)
+    _add_newline(result, SmNewline)
+    _add_comment(result, SmComment, DoorIdIndentationHandler)
+    return result
+
+def _add_suppressed_newline(psml, SmSuppressedNewline, DoorIdIndentationHandler):
+    """Add a pair (suppressed newline, terminal on suppressed newline to 'psml'.
+
+    A suppresed newline is not like a newline--the next line is considered as 
+    being appended to the current line. Nevertheless the line number needs to
+    incremented, just the column number is not reset to 1. Then, it continues
+    with indentation counting.
+    """
+    if SmSuppressedNewline is None:
+        return
+    cl = [
+        LineCountAdd(1),
+        GotoDoorId(DoorIdIndentationHandler),
+    ]
+    terminal = Terminal(Lng.COMMAND_LIST(cl), "<INDENTATION SUPPRESSED NEWLINE>")
+    terminal.set_incidence_id(SmNewline.get_id())
+
+    psml.append(SmSuppressedNewline, terminal)
+
+def _add_newline(psml, SmNewline):
+    """Add a pair (newline state machine, terminal on newline) to 'psml'.
+
+    When a newline occurs, the column cout can be set to 1 and the line number
+    is incremented. Then the indentation counting restarts.
+    """
+    assert SmNewline is not None
+
+    cl = [
+        ColumnCountSet(1),
+        LineCountAdd(1),
         GotoDoorId(DoorID.global_reentry())
     ]
+    terminal = Terminal(Lng.COMMAND_LIST(cl), "<INDENTATION NEWLINE>")
+    terminal.set_incidence_id(SmNewline.get_id())
 
-    return loop.do()
+    psml.append(SmNewline, terminal)
 
-    return generator.do_mini(sm_action_list, 
-                             on_drop_out, 
-                             engine.FORWARD(), 
-                             ReloadState=reload_state)
+def _add_comment(psml, SmComment, DoorIdIndentationHandler):
+    """On matching the comment state machine goto a terminal that does the 
+    following:
+    """
+    assert SmNewline is not None
 
-    analyzer = analyzer_generator.do(CsSm.sm, engine.FORWARD, ReloadState)
-    analyzer.init_state().drop_out = CommandList(GotoDoorId(DoorID.global_reentry()))
+    comment_skip_iid = dial_db.new_incidence_id()
+    door_id_comment  = DoorID.incidence(comment_skip_iid)
 
-    door_id_loop = loop.prepare_entry_and_reentry(analyzer, CcFactory, CsSm) 
+    if SmComment.last_character_set().contains_only(ord('\n')):
+        code = Lng.COMMAND_LIST([
+            ColumnCountSet(1),
+            LineCountAdd(1),
+        ])
+    else:
+        count_info = CountInfo.from_StateMachine(SmComment, 
+                                                 CounterDb,
+                                                 CodecTrafoInfo=Setup.buffer_codec_transformation_info)
+        code = [
+            Lng.COMMAND(Assign(E_R.ReferenceP, E_R.LexemeStartP)),
+            counter.do_CountInfo(count_info),
+            Lng.COMMAND(Assign(E_R.LexemeStartP, E_R.ReferenceP))
+        ]
+        variable_db.require("reference_p")
 
-    terminal_list = CcFactory.get_terminal_list(Lng.INPUT_P(), 
-                                                DoorIdOk = door_id_loop) 
-    terminal_list.append(get_terminal_newline(sm_newline.get_id()))
-    if sm_newline_suppressor is not None:
-        terminal_list.append(
-            get_terminal_newline_suppressor(sm_newline_suppressor.get_id())
-        )
+    code.append(Lng.GOTO(DoorIdIndentationHandler))
 
-    terminal_beyond = loop.get_terminal_beyond(CcSm, CcFactory, DoorID.global_reentry(), 
-                                               beyond_iid, action_on_indentation)
-    terminal_list.append(terminal_beyond)
+    terminal = Terminal(code, "INDENTATION COMMENT")
+    terminal.set_incidence_id(comment_skip_iid)
 
-    Mode = None
-    if IndentationSetup.containing_mode_name() != "":
-        Mode = blackboard.mode_db[IndentationSetup.containing_mode_name()]
+    psml.append(SmComment, terminal)
 
-    # The 'TransitionCode -> DoorID' has to be circumvented, because this state
-    # is not officially part of the state machine.
-    counter_adr          = dial_db.new_address()
-    counter_label        = dial_db.get_label_by_address(counter_adr)
-    counter_adr_str      = "%i" % counter_adr
-    transition_block_str = __get_transition_block(IndentationSetup, counter_adr)
-    end_procedure        = __get_end_procedure(IndentationSetup, Mode)
+def _code_terminal_on_indentation(code, OnIndentationIid):
+    code.extend(Lng.COMMAND_LIST([ 
+        IndentationHandlerCall(default_ih_f, mode_name),
+        GotoDoorId(DoorID.global_reentry())
+    ]))
 
-    dial_db.mark_address_as_routed(counter_adr) 
-
-    # The finishing touch
-    prolog = blue_print(prolog_txt, [
-        ["$$INPUT_GET$$",         Lng.ACCESS_INPUT()],
-        ["$$INPUT_P_INCREMENT$$", Lng.INPUT_P_INCREMENT()],
-        ["$$LABEL$$",             counter_label],
-        ["$$ADDRESS$$",           counter_adr_str], 
+def _code_terminal_on_bad_indentation_character(code, ModeName, incidence_db):
+    code, eol_f = incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
+    code.extend([
+        "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n",
+        "%s\n" % code,
+        "#undef  BadCharacter\n",
+        "%s\n" % Lng.GOTO(DoorID.global_reentry())
     ])
-
-    # The finishing touch
-    teof_address = dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
-    dial_db.mark_address_as_routed(teof_address)
-
-    epilog = blue_print(epilog_txt, [
-        ["$$ADDRESS$$",                 counter_adr_str], 
-        ["$$END_PROCEDURE$$",           "".join(end_procedure)],
-        ["$$GOTO_REENTRY$$",            Lng.GOTO(DoorID.global_reentry())],
-        ["$$BAD_CHARACTER_HANDLING$$",  __get_bad_character_handler(Mode, IndentationSetup, counter_adr)],
-    ])
-
-    txt = [prolog]
-    txt.extend(transition_block_str)
-    txt.append(epilog)
-
-    variable_db.require("reference_p")
-
-    return txt
-
-def get_state_machine_action_pair_list(CountMap):
-    """RETURNS: list of (StateMachine, CodeFragment)
-
-    which means that 'CodeFragment' is to be executed when the 'StateMachine'
-    accepts--for all pairs in the list.
-    """
-    return [
-        (StateMachine.from_character_set(character_set), info.get_command_list())
-        for character_set, info in CountMap.column_grid_count_bad_iterable()
-    ]
-
-prolog_txt = """
-    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-    __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= 1);
-
-    /* Indentation Counter:
-     * Skip whitespace at line begin; Count indentation. */
-
-    reference_p              = me->buffer._input_p;
-    me->counter._indentation = (QUEX_TYPE_INDENTATION)0;
-
-    goto _ENTRY_$$ADDRESS$$;
-
-$$LABEL$$:
-    $$INPUT_P_INCREMENT$$ 
-_ENTRY_$$ADDRESS$$:
-$$INPUT_GET$$ 
-"""
-
-epilog_txt = """
-    /* Here's where the first non-whitespace appeared after newline. 
-     * 
-     * NOTE: The entry into the indentation counter happens by matching the pattern:
-     * 
-     *                   newline ([space]* newline)*'
-     *
-     * Thus, it is not possible that here a newline appears. All empty lines have 
-     * been eaten by the pattern match.                                            */
-$$END_PROCEDURE$$                           
-    /* No need for re-entry preparation. Acceptance flags and modes are untouched. */
-    $$GOTO_REENTRY$$
-
-$$BAD_CHARACTER_HANDLING$$
-"""
-
-class IndentationCounter(TransitionCode):
-    """________________________________________________________________________
-    
-    Base class for indentation counter actions which are placed in a transition
-    map of a state.
-
-    When counting indentation after newline, a state is implemented that 
-    loops to itself until a non-whitespace character occurs. During the
-    iteration to itself the indentation is counted. Characters after newline
-    may be spaces or tabulators (grid triggers).
-
-                IndentationCounter <---+---- Count_Space
-                                       |
-                                       +---- Count_Grid
-                                       |
-                                       '---- Detect_Bad
-    
-    The two derived classes 'Count_Space' and 'Count_Grid' can implement code
-    that increments '_indentation' according to a space or a grid value. The
-    derived class 'Detect_Bad' implements code that transits to the 'indentation
-    bad' code fragment.
-    ___________________________________________________________________________
-    """
-    def __init__(self, Type, Number, CounterAdr):
-        self.type        = Type
-        self.number      = Number
-        self.counter_adr = CounterAdr
-
-    def __ne__(self, Other):
-        return not (self == Other)
-
-    def drop_out_f(self):
-        return False
-
-    def __str__(self):
-        return self.code
-
-class Count_Space(IndentationCounter):
-    """________________________________________________________________________
-    
-    Implement the 'space count' action upon the detection of a space character.
-    The '_indentation' is incremented by a fixed number.
-    ___________________________________________________________________________
-    """
-    def __init__(self, Number, CounterAdr):
-        self.number        = Number
-        self.counter_adr   = CounterAdr
-        self.variable_name = None        # not yet implemented
-
-    def __eq__(self, Other):
-        if Other.__class__ != Count_Space: return False
-        return self.number == Other.number and self.variable_name == Other.variable_name
-
-    @property
-    def code(self):
-        """Indentation counters may count as a consequence of a 'triggering'."""
-        
-
-        # Spaces simply increment
-        if self.number != -1: add_str = "%i" % self.number
-        else:                 add_str = "me->" + self.variable_name
-        return "me->counter._indentation += %s;" % add_str + Lng.GOTO_door_id(self.counter_door_id)
-
-class Count_Grid(IndentationCounter):
-    """________________________________________________________________________
-    
-    Implement the 'grid count' action upon the detection of a grid character.
-    The '_indentation' is incremented to the next value on a grid.
-    ___________________________________________________________________________
-    """
-    def __init__(self, Number, CounterAdr):
-        self.number        = Number
-        self.counter_adr   = CounterAdr
-        self.variable_name = None        # not yet implemented
-
-    def __eq__(self, Other):
-        if Other.__class__ != Count_Grid: return False
-        return self.number == Other.number and self.variable_name == Other.variable_name
-
-    @property
-    def code(self):
-        """Indentation counters may count as a consequence of a 'triggering'."""
-        
-        
-        txt = Lng.GRID_STEP("me->counter._indentation", "QUEX_TYPE_INDENTATION", self.number)
-        Lng.REPLACE_INDENT(txt)
-
-        return   "".join(txt) \
-               + Lng.GOTO_DOOR_ID(self.counter_door_id)
-
-class Detect_Bad(IndentationCounter):
-    """________________________________________________________________________
-    
-    Implement the 'transit to bad indentation character' region upon the 
-    detection of a grid character. 
-    ___________________________________________________________________________
-    """
-    def __init__(self, CounterAdr):
-        assert CounterAdr != -1
-        self.counter_adr = CounterAdr
-        
-    def __eq__(self, Other):
-        if Other.__class__ != Detect_Bad: return False
-        return self.counter_adr == Other.counter_adr
-
-    @property
-    def code(self):
-        return "goto _BAD_CHARACTER_%i;\n" % self.counter_adr
-
-def __get_bad_character_handler(Mode, IndentationSetup, CounterIdx):
-    if Mode is None: 
-        return ""
-
-    if IndentationSetup.bad_character_set.get().is_empty(): 
-        return ""
-
-    txt  = "_BAD_CHARACTER_%i:\n" % CounterIdx
-    if not Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_BAD):
-        txt += 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': bad indentation character detected!\\n"' \
-                                % Mode.name + \
-               '                "No \'on_indentation_bad\' handler has been specified.\\n");'
-    else:
-        code, eol_f = Mode.incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
-        txt += "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n"
-        txt += code
-        txt += "#undef  BadCharacter\n"
-
-    return txt
-
-def __get_transition_block(IndentationSetup, CounterAdr):
-    """Generate the transition block.
-    
-    The transition code MUST circumvent the 'TransitionID --> DoorID' mapping.
-    This is so, since the implemented state is not 'officially' part of the
-    analyzer state machine. The transition_map relies on 'TransitionCode'
-    objects as target.
-    """
-    
-
-    def extend(transition_map, character_set, Target):
-        interval_list = character_set.get().get_intervals(PromiseToTreatWellF=True)
-        transition_map.extend((interval, Target) for interval in interval_list)
-
-    transition_map = TransitionMap()
-    if IndentationSetup.homogeneous_spaces():
-        # If the indentation consists only of spaces, than it is 'uniform' ...
-        # Count indentation/column at end of run;
-        # simply: current position - reference_p
-        character_set  = IndentationSetup.space_db.values()[0]
-        counter_door_id = dial_db.get_door_id_by_address(CounterAdr)
-        extend(transition_map, character_set, TransitionCode(Lng.GOTO(counter_door_id)))
-
-    else:
-        # Add the space counters
-        for count, character_set in IndentationSetup.space_db.items():
-            extend(transition_map, character_set, Count_Space(count, CounterAdr))
-
-        # Add the grid counters
-        for count, character_set in IndentationSetup.grid_db.items():
-            extend(transition_map, character_set, Count_Grid(count, CounterAdr))
-
-    # Bad character detection
-    if IndentationSetup.bad_character_set.get().is_empty() == False:
-        extend(transition_map, IndentationSetup.bad_character_set, 
-               Detect_Bad(CounterAdr))
-
-    transition_map.sort()
-    transition_map.fill_gaps(DoorID.drop_out(CounterAdr))
-
-    reload_cl = CommandList()
-    reload_cl.append(Assign(E_R.ReferenceP, E_R.LexemeStartP))
-    reload_cl.append(PrepareAfterReload_InitState(state)) # This causes 'Terminal End-of-File' upon reload failure.
-    analyzer.reload_state.add_state(CounterState, reload_cl)
-
-    txt = []
-    tm = relate_to_TransitionCode(transition_map)
-    transition_block.do(txt, tm) 
-    txt.append("\n")
-
-    return txt
-
-def __get_end_procedure(IndentationSetup, Mode):
-    # NOTE: Line and column number counting is off
-    #       -- No newline can occur
-    #       -- column number = indentation at the end of the process
-    indent_str = "    "
-    txt = []
-    if IndentationSetup.homogeneous_spaces():
-        # Reference Pointer: Define Variable, Initialize, determine how to subtact.
-        txt.append(indent_str + "me->counter._indentation = (size_t)(me->buffer._input_p - reference_p);\n")
-    else:
-        # Reference Pointer: Not required.
-        #                    No subtraction 'current_position - reference_p'.
-        #                    (however, we pass 'reference_p' to indentation handler)
-        pass
-
-    txt.append(indent_str + "__QUEX_IF_COUNT_COLUMNS_ADD(me->counter._indentation);\n")
-    if Mode is None or Mode.default_indentation_handler_sufficient():
-        txt.append(indent_str + "QUEX_NAME(on_indentation)(me, me->counter._indentation, reference_p);\n")
-    else:
-        # Definition of '%s_on_indentation' in mode_classes.py.
-        txt.append(indent_str + "QUEX_NAME(%s_on_indentation)(me, me->counter._indentation, reference_p);\n" \
-                   % Mode.name)
-
-    return txt
 

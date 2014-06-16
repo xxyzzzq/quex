@@ -125,17 +125,20 @@ class CountCmdFactory:
 
     @staticmethod
     @typed(CounterDb=ParserDataIndentation)
-    def from_ParserDataIndentation(CounterDb, InputPName, DoorIdBad):
+    def from_ParserDataIndentation(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        cmap = [
-            CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, character_set)
-            for character_set, info in CounterDb.count_command_map.column_grid_bad_iterable()
-        ]
-
-        ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(NumberSet_All())
-
-        result = CountCmdFactory(result, cmap, ColumnNPerChunk, InputPName, NumberSet_All()) 
+        result = CountCmdFactory.from_ParserDataIndentation(CounterDb, 
+                                                            ISetup.whitespace.get(), 
+                                                            InputPName)
+        # Up to now, the '__map' contains only character sets which intersect with the 
+        # defined whitespace. Add the 'bad indentation characters'.
+        bad_character_set = ISetup.bad_character_set.get()
+        if bad_character_set is not None:
+            self.__map.append(
+                CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.BAD, None, 
+                          bad_character_set)
+            )
         result.door_id_on_bad_indentation = DoorIdBad
         return result
 
@@ -177,10 +180,9 @@ class CountCmdFactory:
 
         def _get_terminal(X, get_appendix):
             cl       = self._command(X.cc_type, X.parameter) 
-            appendix = get_appendix(X.cc_type)
-            terminal = Terminal(CodeTerminal([
-                Lng.COMMAND(cmd) for cmd in chain(cl, appendix)
-            ]), Name="%s" % X.cc_type)
+            appendix = get_appendix(self, X.cc_type)
+            terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(chain(cl, appendix))), 
+                                Name="%s" % X.cc_type)
             terminal.set_incidence_id(X.incidence_id)
             return terminal
 
@@ -198,7 +200,7 @@ class CountCmdFactory:
            BeyondIid  -- 'Beyond Incidence Id', that is the incidencen id if of
                          the terminal to be generated.
         """
-        code_on_beyond = CodeTerminal([Lng.COMMAND(cmd) for cmd in OnBeyond])
+        code_on_beyond = CodeTerminal(Lng.COMMAND_LIST(OnBeyond))
         result = Terminal(code_on_beyond, "<BEYOND>") # Put last considered character back
         result.set_incidence_id(BeyondIid)
         return result
@@ -226,6 +228,8 @@ class CountCmdFactory:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
+                    ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                                                  self.column_count_per_chunk),
                     ColumnCountReferencePSet(E_R.InputP),
                     GotoDoorId(self.door_id_on_bad_indentation) 
                 ]

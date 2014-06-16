@@ -18,26 +18,13 @@ from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(SourceRef.from_FileHandle(fh)))
-
-    # Assign the 'else' command to all the remaining places in the character map.
-    result.count_command_map.assign_else_count_command(0, 
-                                                       Setup.get_character_value_limit(), 
-                                                       result.sr)
-    result.consistency_check(fh)
+    result.finalize()
     return result
 
 def parse_indentation(fh):
     result = __parse(fh, ParserDataIndentation(SourceRef.from_FileHandle(fh)), 
                      IndentationSetupF=True)
-
-    # Define newline, if it is not defined yet.
-    result.sm_newline_defaultize()
-
-    # Assign the 'else' command to all the remaining places in the character map.
-    result.count_command_map.assign_else_count_command(0, 
-                                                       Setup.get_character_value_limit(), 
-                                                       result.sr)
-    result.consistency_check(fh)
+    result.finalize(fh)
     return result
 
 def __parse_definition_head(fh, result):
@@ -54,12 +41,11 @@ def __parse_definition_head(fh, result):
 
     skip_whitespace(fh)
     identifier = read_identifier(fh, OnMissingStr="Missing identifier for indentation element definition.")
-
     verify_word_in_list(identifier, result.identifier_list, 
                         "Unrecognized specifier '%s'." % identifier, fh)
     skip_whitespace(fh)
 
-    return pattern, identifier
+    return pattern, identifier, SourceRef.from_FileHandle(fh)
 
 def __parse(fh, result, IndentationSetupF=False):
     """Parses pattern definitions of the form:
@@ -81,36 +67,17 @@ def __parse(fh, result, IndentationSetupF=False):
             break
         
         # A regular expression state machine
-        pattern, identifier = __parse_definition_head(fh, result)
+        pattern, identifier, sr = __parse_definition_head(fh, result)
         if pattern is None and IndentationSetupF:
             error_msg("Keyword '\\else' cannot be used in indentation setup.", fh)
 
-        sr = SourceRef.from_FileHandle(fh)
-        # The following treats ALL possible identifiers, including those which may be 
-        # inadmissible for a setup. 'verify_word_in_list()' would abort in case that
-        # an inadmissible identifier has been found--so there is no harm.
-        if identifier == "space":
+        # '__parse_definition_head()' ensures that only identifiers mentioned in 
+        # 'result' are accepted. 
+        if not IndentationSetupF:
             value = read_value_specifier(fh, identifier, 1)
             result.specify(identifier, pattern, value, sr)
-        elif identifier == "grid":
-            value = read_value_specifier(fh, identifier)
-            result.check_grid_specification(value, sr)
-            result.specify(identifier, pattern, value, sr)
-        elif IndentationSetupF:
-            if identifier == "bad":
-                result.specify_bad(pattern, sr)
-            elif identifier == "newline":
-                result.specify_newline(pattern.sm, sr)
-            elif identifier == "suppressor":
-                result.specify_suppressor(pattern.sm, sr)
-            else:
-                assert False, "Unreachable code reached."
         else:
-            if identifier == "newline":
-                value = read_value_specifier(fh, identifier, 1)
-                result.specify(identifier, pattern, value, sr)
-            else:
-                assert False, "Unreachable code reached."
+            result.specify(identifier, pattern, sr)
 
         if not check(fh, ";"):
             error_msg("Missing ';' after '%s' specification." % identifier, fh)

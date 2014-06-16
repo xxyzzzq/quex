@@ -74,10 +74,7 @@ def code_action(txt, Node, ActionDb, GotoParentF):
     
     txt.append(IfDoorIdReferencedLabel(Node.door_id))
     comment_door(txt, Node, ActionDb)
-    txt.extend([ 
-        Lng.COMMAND(command) 
-        for command in Node.command_list 
-    ])
+    txt.extend(Lng.COMMAND_LIST(Node.command_list))
     if Node.parent is not None and GotoParentF: 
         txt.append("    %s\n" % Lng.GOTO(Node.parent.door_id))
     txt.append("\n")
