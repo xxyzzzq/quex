@@ -1,5 +1,6 @@
 from   quex.input.files.mode_option                    import SkipRangeData
 from   quex.input.regular_expression.construct         import Pattern           
+from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.counter                             import CountCmdFactory
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
@@ -312,7 +313,10 @@ def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, te
     ISetup = OptionsDb.value("indentation")
     if ISetup is None: return [], []
 
+    check_indentation_setup(ISetup)
+
     data = { 
+        "counter_db":                    CounterDb,
         "indentation_setup":             ISetup,
         "default_indentation_handler_f": IncidenceDb.default_indentation_handler_f(),
         "mode_name":                     ModeName,
@@ -323,14 +327,12 @@ def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, te
         PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_factory)
     ]
 
-    if ISetup.sm_newline_suppressor.get() is None:
-        return [], ppt_list
-
-    ppt_list.append(
-        # 'newline-suppressor' followed by 'newline' is ignored (skipped)
-        PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, 
-                                                   terminal_factory)
-    )
+    if ISetup.sm_newline_suppressor.get() is not None:
+        ppt_list.append(
+            # 'newline-suppressor' followed by 'newline' is ignored (skipped)
+            PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, 
+                                                       terminal_factory)
+        )
 
     return [], ppt_list
 
@@ -523,4 +525,27 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
     terminal.set_name("indentation counter: on_suppressed_newline")
 
     return PPT(PatternPriority(MHI, 1), pattern, terminal)
+
+def check_indentation_setup(isetup):
+    """None of the elements 'comment', 'newline', 'newline_suppressor' should 
+       not match some subsets of each other. Otherwise, the behavior would be 
+       too confusing.
+    """
+    sm_newline            = isetup.sm_newline
+    sm_newline_suppressor = isetup.sm_newline_suppressor
+    sm_comment            = isetup.sm_comment
+    candidates            = (sm_newline, sm_newline_suppressor, sm_comment)
+
+    def mutually_subset(Sm1, Sm2):
+        if   Sm1 is None or Sm2 is None:                           return False
+        elif superset_check.do(sm_newline, sm_newline_suppressor): return True
+        elif superset_check.do(sm_newline_suppressor, sm_newline): return True
+        return False
+
+    for i, candidate1 in enumerate(candidates):
+        for candidate2 in candidates[i+1:]:
+            if not mutually_subset(candidates1.get(), candidate2.get()): continue
+            c_error_message(candidate1, candidate2,
+                            ThisComment="matches on some common lexemes as",
+                            ThatComment="") 
 

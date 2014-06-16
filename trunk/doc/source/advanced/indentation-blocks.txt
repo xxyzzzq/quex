@@ -77,21 +77,22 @@ Inside the ``indentation`` option the character of those can be specified, e.g.
 .. code-block:: cpp
 
           <indentation:
-             [ ]        => space 1;
-             [\t]       => grid 4;
+             [ \t]      => whitespace;
              (\r\n)|\n  => newline;
              \\[ \t]*   => suppressor;
           >
 
-specifies that a normal space is counted as 1 ``space`` and tabulators span a
-``grid`` of width 4. Both, the Unix (``\\n``) and the DOS Version of newline
-(``\\r\\n``) are accepted as ``newline``. A newline suppressor is defined as a
-backslash. Since whitespace between the backslash and newline is hardly
-identified, possible whitespace is packed into the definition of the
-suppressor. The above setup is a *safe* setup to work on many environments
-and it helps to avoid confusion. It is indeed the default setup which is
-in place, if nothing is specified. The following section explains in detail
-the setting of the above parameters.
+specifies that a normal space and tabulators count as white space. Thus, the
+indentation will be counted as long as the incoming characters after newline
+are either space or tabulator. The column number increment can be specified by
+the ``<counter ...>`` for a mode (:ref:`sec-counter`). Both, the Unix (``\\n``)
+and the DOS Version of newline (``\\r\\n``) are accepted as ``newline``. A
+newline suppressor is defined as a backslash. Since whitespace between the
+backslash and newline is hardly identified, possible whitespace is packed into
+the definition of the suppressor. The above setup is a *safe* setup to work on
+many environments and it helps to avoid confusion. It is indeed the default
+setup which is in place, if nothing is specified. The following section
+explains in detail the setting of the above parameters.
 
 Indentation Parameters
 ======================
@@ -108,88 +109,22 @@ The allowed parameter names are ``space``, ``grid``, ``bad``, ``newline``, and
 pattern. For ``newline`` and ``suppressor`` any regular expression can 
 by given. The following list explains the different parameters.
 
-   .. describe :: space [number|variable]
+   .. describe :: whitespace
 
-      This defines what characters are accepted as a 'space'. A space is
-      something that always increments the column counter by a distinct number.
-      The argument following ``space`` can either be a number or a variable
-      name is specified, it will become a member of the lexical analyzer with
-      the type 'size_t' as defined in 'stddef.h'. Then the increment value can
-      be changed at runtime by setting the member variable. 
-      
-      Multiple definitions of ``space`` are possible in order to define 
-      different space counts. Note, that in Unicode the following 
-      code points exist to represent different forms of whitespace:
-
-          * ``0x0020``: Normal Space.
-          * ``0x00A0``: Normal space, no line break allowed after it.
-          * ``0x1680``: Ogham (Irish) Space Mark.
-          * ``0x2002``: Space of the width of the letter 'n': 'En Space'.
-                        This is half the size of an Em Space.
-          * ``0x2003``: Space of the widht of the letter 'm': 'Em Space'.
-          * ``0x2004``: 1/3 of the width of an 'm': 'Three-Per-Em Space'. 
-          * ``0x2005``: 1/4 of the width of an 'm': 'Four-Per-Em Space'.
-          * ``0x2006``: 1/6 of the width of an 'm': 'Six-Per-Em Space'. 
-          * ``0x2007``: Size of a digit (in fonts with fixed digit size). 
-          * ``0x2008``: Punctuation Space that follows a Comma.
-          * ``0x2009``: 1/5 of the width of an 'm': 'Thin Space'.
-          * ``0x200A``: Something thinner than 0x2009: 'Hair Space'.
-          * ``0x200B``: Zero-Width Space.
-          * ``0x202F``: Narrow No-Break Space, no line break allowed after it.
-          * ``0x205F``: Medium Mathematical Space.
-          * ``0x2060``: Word Joiner (similar to 0x200B)
-          * ``0x2422``: Blank Symbol (``␢``).
-          * ``0x2423``: Open Box Symbol (``␣``). 
-          * ``0x3000``: Ideographic Space, size of a Chinese, Japanese, 
-                        or Korean letter.
-
-      Provided that the editor supports it the 'm' based spaces could for 
-      example be parameterized as:
-
-      .. code-block:: cpp
-
-          <indentation:
-              [\X2003] => space 60; /* Em Space           */
-              [\X2002] => space 30; /* En Space           */
-              [\X2004] => space 20; /* Three-Per-Em Space */
-              [\X2005] => space 15; /* Four-Per-Em Space  */
-              [\X2009] => space 12; /* Thin Space         */
-              [\X2006] => space 10; /* Six-Per-Em Space   */
-          >
-      
-   .. describe :: grid [number|variable]
-
-      Characters associated with a 'grid' set the column number according to a
-      grid of a certain width. Tabulators are modelled by grids. For example,
-      if the grid width is four and the current indentation count is 5, then a
-      tabulator will set the column count to 8, because 8 is the closest grid
-      value ahead.
-
-      As with 'space', a run-time modification of the grid value is possible
-      by specifying a variable name instead of a number. For example,
-
-      .. code-block:: cpp
-
-         [\t]  => grid  tabulator_width;
-
-      results in a member variable ``tabulator_width`` inside the analyzer that
-      can be changed at run-time, e.g.
-
-      .. code-block:: cpp
-
-         ...
-         MyLexer   qlex(...);
-         ...
-         if( file_format == MSVC ) qlex.tabulator_width = 8;
-         else                      qlex.tabulator_width = 4;
-         ...
+      Defines the set of allowed character in the indentation. As soon as 
+      a character appears that is not whitespace, the indentation is 
+      equal to the column number. Note, that the indentation level is 
+      determined by the number of open indentation blocks and not by 
+      means of the column number directly.
 
    .. describe :: bad
 
-      By this specifier characters can be defined which are explicitly 'bad'.
-      There are very rational arguments for 'spaces are bad' and so there
-      are arguments for 'tabulators are bad'. The latter philosophy can be 
-      expressed by
+      There is some philosophical discussion whether both spaces and grids or
+      tabulators shal be allowed as indentation characters.  There are very
+      rational arguments for 'spaces are bad' and so there are arguments for
+      'tabulators are bad'.  If some characters are specifically to be
+      considered bad, then they may be specified as such by the ``bad``
+      keyword.  The philosophy of 'tabs are bad' can be expressed by
 
       .. code-block:: cpp
          
@@ -248,6 +183,31 @@ by given. The following list explains the different parameters.
          \\[ \t]*   => suppressor;
 
       eats any amount of non-newline whitespace after the suppressor '\\'.
+
+   .. describe :: comment
+  
+      Allows for the definition of a comment-until-newline region. When a
+      comment is reached it will not be treated as indentation. If the
+      detection of comments is left to patterns inside the mode, it would be
+      triggering an indentation event. For example:
+
+            while 1 + 1 == 2:
+                do something
+            # this is a comment
+                do more
+
+      When comment handling is left to the mode itself, then the comment in the
+      ``#`` would trigger a ``DEDENT`` event, because a lower indentation has
+      been detected. If it was defined inside the indentation handler as
+
+         #((\\[^\n])|[^\n])+ => comment
+
+      then no ``DEDENT`` is triggered. This is a more pythonic behavior.
+                
+
+          
+
+
       
 
 When an indention option is specified, the generated lexical analyzer

@@ -2,6 +2,8 @@
 (C) 2013 Frank-Rene Schaefer
 _______________________________________________________________________________
 """
+import quex.engine.state_machine.character_counter as character_counter
+from   quex.engine.tools import typed
 from   quex.blackboard import E_Count, \
                               E_IncidenceIDs, \
                               Lng
@@ -40,7 +42,7 @@ def get(ThePattern, ShiftF=True):
     depending on how many '\n' it matches at runtime. These considerations
     where done by means of 
 
-              quex.engine.state_machine.character_counter.do(...)
+      quex.engine.state_machine.character_counter.CountInfo.from_StateMachine(...)
 
     It is called inside the 'prepare_count_info()' member function of the
     pattern at the time when it is communicated to the 'Mode' object from the
@@ -65,8 +67,10 @@ def get(ThePattern, ShiftF=True):
         # 'on_failure' ... count any appearing character
         return True, [ Lng.DEFAULT_COUNTER_CALL() ]
 
-    counter = ThePattern.count_info()
+    return do_CountInfo(ThePattern.count_info(), ShiftF)
 
+@typed(counter=character_counter.CountInfo)
+def do_CountInfo(counter, ShiftF=True):
     # (*) Default Character Counter ___________________________________________
     #
     #     Used when the increments and/or setting cannot be derived from the 

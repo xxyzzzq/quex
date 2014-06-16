@@ -21,8 +21,10 @@ cc_type_db = {
     "newline":                   E_CharacterCountType.LINE,
     "begin(newline_suppressor)": E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR,
     "begin(newline)":            E_CharacterCountType.BEGIN_NEWLINE,
+    "begin(comment to newline)": E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE,
     "end(newline)":              E_CharacterCountType.END_NEWLINE,
     "bad":                       E_CharacterCountType.BAD,
+    "whitespace":                E_CharacterCountType.WHITESPACE,
 }
 
 cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
@@ -121,6 +123,8 @@ class CountCmdMap(object):
         global cc_type_db
         if CharSet.is_empty(): 
             error_msg("Empty character set found for '%s'." % Identifier, sr)
+        elif Identifier == "grid":
+            self.check_grid_specification(Value, sr)
         cc_type = cc_type_db[Identifier]
         self.check_intersection(cc_type, CharSet, sr)
         self.__map.append((CharSet, CountCmdMapEntry(cc_type, Value, sr)))
@@ -173,6 +177,8 @@ class CountCmdMap(object):
                                                             E_CharacterCountType.END_NEWLINE),
             E_CharacterCountType.END_NEWLINE:              (E_CharacterCountType.BAD,
                                                             E_CharacterCountType.BEGIN_NEWLINE),
+            E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE: (), 
+            E_CharacterCountType.WHITESPACE:               (),
             E_CharacterCountType.BAD:                      (E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR, 
                                                             E_CharacterCountType.BEGIN_NEWLINE, 
                                                             E_CharacterCountType.END_NEWLINE)
@@ -196,8 +202,6 @@ class CountCmdMap(object):
         """After all count commands have been assigned to characters, the 
         remaining character set can be associated with the 'else-CountCmdMapEntry'.
         """
-        remaining_set = self.get_remaining_set(GlobalMin, GlobalMax)
-
         if self.__else is None: 
             else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
             error_msg("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
@@ -206,6 +210,7 @@ class CountCmdMap(object):
         else:                   
             else_cmd = self.__else
         
+        remaining_set = self.get_remaining_set(GlobalMin, GlobalMax)
         if not remaining_set.is_empty():
             self.__map.append((remaining_set, else_cmd))
 
@@ -365,6 +370,14 @@ class CountCmdMap(object):
                   DontExitF=True, WarningF=True, 
                   SuppressCode=NotificationDB.warning_counter_setup_without_newline)
 
+    def check_grid_specification(self, Value, sr):
+        if   Value == 0: 
+            error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", sr)
+        elif Value == 1:
+            error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
+                      "count of '1'. The latter is faster to compute.",
+                          sr, DontExitF=True)
+
     def __str__(self):
         def _db_to_text(title, CountCmdInfoList):
             txt = "%s:\n" % title
@@ -404,14 +417,6 @@ class Base:
             self.count_command_map.add(extract_trigger_set(sr, Identifier, Pattern), 
                                        Identifier, Count, sr)
 
-    def check_grid_specification(self, Value, sr):
-        if   Value == 0: 
-            error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", sr)
-        elif Value == 1:
-            error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
-                      "count of '1'. The latter is faster to compute.",
-                          sr, DontExitF=True)
-
     def consistency_check(self, fh):
         self.count_command_map.check_grid_values_integer_multiples()
         self.count_command_map.check_homogenous_space_counts()
@@ -434,6 +439,12 @@ class ParserDataLineColumn(Base):
     @typed(sr=SourceRef)
     def __init__(self, sr, TheCountCmdMap=None):
         Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
+
+    def finalize(self, fh):
+        # Assign the 'else' command to all the remaining places in the character map.
+        self.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), 
+                                                         self.sr)
+        self.consistency_check(fh)
 
 class ParserDataIndentation(Base):
     """Indentation counter specification.
@@ -461,17 +472,36 @@ class ParserDataIndentation(Base):
     """
     @typed(sr=SourceRef)
     def __init__(self, sr):
-        self.bad_character_set     = SourceRefObject("bad", None)
-        self.sm_newline            = SourceRefObject("newline", None)
-        self.sm_newline_suppressor = SourceRefObject("suppressor", None)
+        self.whitespace_character_set = SourceRefObject("whitespace", None)
+        self.bad_character_set        = SourceRefObject("bad", None)
+        self.sm_newline               = SourceRefObject("newline", None)
+        self.sm_newline_suppressor    = SourceRefObject("suppressor", None)
+        self.sm_comment               = SourceRefObject("comment", None)
 
-        Base.__init__(self, sr, "Indentation counter", ("space", "grid", "newline", "suppressor", "bad"))
+        Base.__init__(self, sr, "Indentation counter", ("whitespace", "comment", "newline", "suppressor", "bad"))
+
+    def specify():
+        if   identifier == "whitespace": 
+            self.__specify_character_set(self.whitespace_character_set, 
+                                         "whitespace", pattern, sr)
+        elif identifier == "bad":        
+            self.__specify_character_set(self.bad_character_set, 
+                                         "bad", pattern, sr)
+        elif identifier == "newline":    
+            self.specify_newline(pattern.sm, sr)
+        elif identifier == "suppressor": 
+            self.specify_suppressor(pattern.sm, sr)
+        elif identifier == "comment":    
+            self.specify_comment(pattern.sm, sr)
+        else:                            
+            return False
+        return True
 
     @typed(sr=SourceRef)
-    def specify_bad(self, Pattern, sr):
-        bad_set = extract_trigger_set(sr, "bad", Pattern)
-        self.count_command_map.add(bad_set, "bad", None, sr)
-        self.bad_character_set.set(bad_set, sr)
+    def __specify_character_set(self, ref, Name, Pattern, sr):
+        cset = extract_trigger_set(sr, Name, Pattern)
+        self.count_command_map.add(cset, Name, None, sr)
+        ref.set(cset, sr)
 
     @typed(sr=SourceRef)
     def specify_newline(self, SmNewline, sr):
@@ -490,12 +520,20 @@ class ParserDataIndentation(Base):
         self.sm_newline.set(SmNewline, sr)
 
     @typed(sr=SourceRef)
-    def specify_suppressor(self, SmNewlineSuppressor, sr):
+    def specify_suppressor(self, Sm, sr):
         _error_if_defined_before(self.sm_newline_suppressor, sr)
 
-        self.count_command_map.add(SmNewlineSuppressor.get_beginning_character_set(), 
+        self.count_command_map.add(Sm.get_beginning_character_set(), 
                                    "begin(newline supressor)", None, sr)
-        self.sm_newline_suppressor.set(SmNewlineSuppressor, sr)
+        self.sm_newline_suppressor.set(Sm, sr)
+
+    @typed(sr=SourceRef)
+    def specify_comment(self, Sm, sr):
+        _error_if_defined_before(self.sm_comment, sr)
+
+        self.count_command_map.add(Sm.get_beginning_character_set(), 
+                                   "begin(comment to newline)", None, sr)
+        self.sm_newline_suppressor.set(Sm, sr)
 
     def sm_newline_defaultize(self):
         """Default newline: '(\n)|(\r\n)'
@@ -535,6 +573,10 @@ class ParserDataIndentation(Base):
             sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
             all_set.unite_with(retour_set)
         return sm
+
+    def finalize(self, fh):
+        self.sm_newline_defaultize()
+        self.consistency_check(fh)
 
     def __repr__(self):
         txt = Base.__repr__(self)

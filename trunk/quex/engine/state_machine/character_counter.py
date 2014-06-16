@@ -3,6 +3,235 @@ from   quex.engine.misc.tree_walker             import TreeWalker
 import quex.engine.state_machine.transformation as     transformation
 from   quex.blackboard                          import E_Count
 
+class CountInfo:
+    chunk_n_per_char = None
+
+    def __init__(self, Result, CodecTrafoInfo, SM):
+        self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
+        self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
+        self.column_index                        = CountInfo.get_real(Result.column_index, 
+                                                                      ValueOfVirginity=E_Count.VOID)
+        self.grid_step_n                         = CountInfo.get_real(Result.grid_step_n)
+        self.column_n_increment_by_lexeme_length = CountInfo.get_real(Count.column_n_increment_by_lexeme_length)
+        self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
+        self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
+
+        if CodecTrafoInfo in ["utf8-state-split", "utf16-state-split"]: 
+            self._consider_variable_character_sizes(SM, CodecTrafoInfo)
+
+    @staticmethod
+    def from_StateMachine(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
+        """LINE AND COLUMN NUMBER ANALYSIS ________________________________________
+        
+        Given a pattern as a state machine 'SM' this function analyses the 
+        increments of line and column numbers. Depending on whether those 
+        values can be determined from the state machine or only during run-
+        time, a CountInfo object is provided that provides basic information:
+
+          .line_n_increment   
+            
+             The number of lines that appear in the pattern.
+             
+             E_Count.VOID => cannot be determined from the pattern off-line.
+
+          .line_n_increment_by_lexeme_length 
+
+             If the line number increment is proportional to the length of the
+             lexeme which is matched, then this variable contains the factor. 
+             
+             E_Count.VOID => lexeme length not proportional to line_n_increment.
+
+          .column_index
+          
+             If the column index after match has a specific value, then this 
+             member variable contains its value. If it has not, it contains
+             E_Count.VOID.
+
+             (This makes sense for pattern that have a 'begin-of-line' pre-
+             context. Or, when it contains a newline such as "\\notto".)
+
+          .column_n_increment 
+          
+             The number of columns that appear in the pattern It is E_Count.VOID if
+             it cannot be determined from the pattern off-line.
+
+          .column_n_increment_by_lexeme_length 
+
+             If the column number increment is proportional to the length of the
+             lexeme which is matched, then this variable contains the factor. It
+             is E_Count.VOID if there is no relation between lexeme length and
+             column number increment.
+
+        NOTES _____________________________________________________________________
+
+        State machine shall not contain pre- or post-contexts.
+        
+        DEPENDS ON: CounterDB providing three databases:
+
+                    .newline
+                    .grid
+                    .column 
+
+        RESTRICTION _______________________________________________________________
+
+        * The current approach does consider the column count to be void as soon  *
+        * as a state is reached with two different column counts.                 *
+
+        Disadvantage:
+
+        Sub-optimal results for a very restricted amount of patterns.  In these
+        cases, a 'count' is implemented where a plain addition or setting would be
+        sufficient.
+
+        Sub-Optimal Scenario:
+        
+        If there is more than one path to one node in the state machine with
+        different column counts AND after that node there comes a newline from
+        whereon the pattern behaves 'deterministic'.
+
+        Reason for restriction left in place:
+
+        To fix this, another approach would have to be implemented where the state
+        machine is inverted and then the column counts starts from rear to front
+        until the first newline. This tremendous computation time overhead is shied
+        away from, because of the aforementioned low expected value add.
+
+        ___________________________________________________________________________
+        """
+        tracer  = CharacterCountTracer(SM)
+        state   = SM.get_init_state()
+        count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = E_Count.VIRGIN)
+        # Next Node: [0] state index of target state
+        #            [1] character set that triggers to it
+        #            [2] count information
+        initial = [ (state_index, character_set, count.clone()) \
+                    for state_index, character_set in state.target_map.get_map().iteritems() ]
+
+        Count.init(CounterDB)
+        tracer.do(initial)
+
+        # If there was an acceptance state, the result cannot be None
+        assert tracer.result is not None
+
+        # (*) Determine detailed count information
+        if tracer.abort_f and Count.grid_step_size_by_lexeme_length.value == E_Count.VIRGIN:
+            # If the count procedure was aborted, possibly NOT all character
+            # transitions have been investigated. So the value for 'grid' must
+            # determined now, independently of the 'tracer.do()'.
+            Count.grid_step_size_by_lexeme_length <<= _get_grid_step_size_by_lexeme_length(SM, CounterDB)
+
+        return CountInfo(tracer.result, CodecTrafoInfo, SM)
+
+    @staticmethod
+    def get_real(Object, ValueOfVirginity=0):
+        if   Object.value == E_Count.VIRGIN: return ValueOfVirginity
+        elif Object.value == E_Count.NONE:   return 0
+        return Object.value
+
+    def is_partly_determined(self):
+        # Note, that 'grid' only tells about grid sizes being homogeneous.
+        if   self.line_n_increment                    != E_Count.VOID: return True
+        elif self.column_n_increment                  != E_Count.VOID: return True
+        elif self.grid_step_n                         != E_Count.VOID: return True
+        elif self.line_n_increment_by_lexeme_length   != E_Count.VOID: return True
+        elif self.column_n_increment_by_lexeme_length != E_Count.VOID: return True
+        elif self.grid_step_size_by_lexeme_length     != E_Count.VOID: return True
+        return False
+
+    @staticmethod
+    def _get_chunk_n_per_character(SM, CodecTrafoInfo):
+        if CountInfo.chunk_n_per_char != -1:
+            return CountInfo.chunk_n_per_char
+        CountInfo.chunk_n_per_char = transformation.homogeneous_chunk_n_per_character(
+                                                    SM, CodecTrafoInfo)
+        return CountInfo.chunk_n_per_char
+
+    def _consider_variable_character_sizes(self, SM, CodecTrafoInfo):
+        """UTF8 and UTF16 counters may have different numbers of chunks that
+        represent a single character. In such cases, it cannot be concluded from
+        the LexemeL to the number of involved characters. In such cases, column and
+        line number counter have to be done at run-time. This is signalized by
+
+                self.column_n_increment_by_lexeme_length = E_Count.VOID
+                self.grid_step_size_by_lexeme_length     = E_Count.VOID
+
+        and respectively
+
+               self.line_n_increment_by_lexeme_length  = E_Count.VOID
+
+        If the number of chunks per character is the same for all involved characters,
+        then the factor can be adapted by this number. For example, if all characters
+        involve 2 bytes and the buffer element is 'byte', then the character number
+        is equal to number of bytes divide by two, i.e.
+        
+                self.column_n_increment_by_lexeme_length /= 2.
+        """
+        CountInfo.chunk_n_per_char = -1
+
+        # If the internal engine is not running on Unicode, considerations
+        # may be made about the byte number per character (e.g. UTF8).
+        if    self.column_n_increment != E_Count.VOID \
+           or self.column_index       != E_Count.VOID:
+           # No problem in this case; increment does not depend on the lexeme length.
+           pass
+
+        elif    self.column_n_increment_by_lexeme_length != E_Count.VOID \
+             or self.grid_step_size_by_lexeme_length     != E_Count.VOID:
+            # In this case, the column number increment is a function of
+            # the lexeme length. This is only valid if all characters in the
+            # pattern actually have the same number of 'chunks' (e.g. bytes in UTF8).
+            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
+            if chunk_n_per_char is None:
+                # One cannot conclude from the number of bytes of a lexeme to 
+                # the number of columns to be incremented.
+                self.column_n_increment_by_lexeme_length = E_Count.VOID
+                self.grid_step_size_by_lexeme_length     = E_Count.VOID
+            else:
+                if self.column_n_increment_by_lexeme_length  != E_Count.VOID:
+                    self.column_n_increment_by_lexeme_length = float(self.column_n_increment_by_lexeme_length) / chunk_n_per_char
+                elif self.grid_step_size_by_lexeme_length    != E_Count.VOID:
+                    self.grid_step_size_by_lexeme_length     = float(self.grid_step_size_by_lexeme_length) / chunk_n_per_char
+
+        if self.line_n_increment != E_Count.VOID:
+            # No problem in this case; increment does not depend on the lexeme length.
+            pass
+        
+        elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
+            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
+            if chunk_n_per_char is None:
+                self.line_n_increment_by_lexeme_length  = E_Count.VOID
+            elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
+                self.line_n_increment_by_lexeme_length  = float(self.line_n_increment_by_lexeme_length) / chunk_n_per_char
+
+    def counting_required_f(self):
+        """Determine whether the line and column number increment needs to be
+        counted according to the content of a matching lexeme. If it is
+        constant or can be derived from the lexeme length, than it does not
+        need to be counted.  
+        """
+        return    (    self.line_n_increment_by_lexeme_length   == E_Count.VOID) \
+               or (    self.column_n_increment_by_lexeme_length == E_Count.VOID  \
+                   and self.grid_step_size_by_lexeme_length     == E_Count.VOID)
+
+    def __str__(self):
+        return \
+               "line_n_increment                    = %s;\n" \
+               "column_index                        = %s;\n" \
+               "column_n_increment                  = %s;\n" \
+               "grid_step_n                         = %s;\n" \
+               "line_n_increment_by_lexeme_length   = %s;\n" \
+               "column_n_increment_by_lexeme_length = %s;\n" \
+               "grid_step_size_by_lexeme_length     = %s;\n" \
+               % (
+                  self.line_n_increment,
+                  self.column_index,
+                  self.column_n_increment, 
+                  self.grid_step_n,
+                  self.line_n_increment_by_lexeme_length, 
+                  self.column_n_increment_by_lexeme_length,
+                  self.grid_step_size_by_lexeme_length
+               )
+
 class UniqueValue(object):
     """A simple class to hold a value that is:
 
@@ -67,111 +296,6 @@ class UniqueValue(object):
         if isinstance(self.value, (str, unicode)):
             return False
         return True
-
-def do(SM, CounterDB, BeginOfLineF=False, CodecTrafoInfo=None):
-    """LINE AND COLUMN NUMBER ANALYSIS ________________________________________
-    
-    Given a pattern as a state machine 'SM' this function analyses the 
-    increments of line and column numbers. Depending on whether those 
-    values can be determined from the state machine or only during run-
-    time, a CountInfo object is provided that provides basic information:
-
-      .line_n_increment   
-        
-         The number of lines that appear in the pattern.
-         
-         E_Count.VOID => cannot be determined from the pattern off-line.
-
-      .line_n_increment_by_lexeme_length 
-
-         If the line number increment is proportional to the length of the
-         lexeme which is matched, then this variable contains the factor. 
-         
-         E_Count.VOID => lexeme length not proportional to line_n_increment.
-
-      .column_index
-      
-         If the column index after match has a specific value, then this 
-         member variable contains its value. If it has not, it contains
-         E_Count.VOID.
-
-         (This makes sense for pattern that have a 'begin-of-line' pre-
-         context. Or, when it contains a newline such as "\\notto".)
-
-      .column_n_increment 
-      
-         The number of columns that appear in the pattern It is E_Count.VOID if
-         it cannot be determined from the pattern off-line.
-
-      .column_n_increment_by_lexeme_length 
-
-         If the column number increment is proportional to the length of the
-         lexeme which is matched, then this variable contains the factor. It
-         is E_Count.VOID if there is no relation between lexeme length and
-         column number increment.
-
-    NOTES _____________________________________________________________________
-
-    State machine shall not contain pre- or post-contexts.
-    
-    DEPENDS ON: CounterDB providing three databases:
-
-                .newline
-                .grid
-                .column 
-
-    RESTRICTION _______________________________________________________________
-
-    * The current approach does consider the column count to be void as soon  *
-    * as a state is reached with two different column counts.                 *
-
-    Disadvantage:
-
-    Sub-optimal results for a very restricted amount of patterns.  In these
-    cases, a 'count' is implemented where a plain addition or setting would be
-    sufficient.
-
-    Sub-Optimal Scenario:
-    
-    If there is more than one path to one node in the state machine with
-    different column counts AND after that node there comes a newline from
-    whereon the pattern behaves 'deterministic'.
-
-    Reason for restriction left in place:
-
-    To fix this, another approach would have to be implemented where the state
-    machine is inverted and then the column counts starts from rear to front
-    until the first newline. This tremendous computation time overhead is shied
-    away from, because of the aforementioned low expected value add.
-
-    ___________________________________________________________________________
-    """
-    #print "SM:", SM
-
-    counter = CharacterCountTracer(SM)
-    state   = SM.get_init_state()
-    count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = E_Count.VIRGIN)
-    # Next Node: [0] state index of target state
-    #            [1] character set that triggers to it
-    #            [2] count information
-    initial = [ (state_index, character_set, count.clone()) \
-                for state_index, character_set in state.target_map.get_map().iteritems() ]
-
-    Count.init(CounterDB)
-    counter.do(initial)
-
-    # If there was an acceptance state, the result cannot be None
-    assert counter.result is not None
-
-    # (*) Determine detailed count information
-    if counter.abort_f and Count.grid_step_size_by_lexeme_length.value == E_Count.VIRGIN:
-        # If the count procedure was aborted, possibly NOT all character
-        # transitions have been investigated. So the value for 'grid' must
-        # determined now, independently of the 'counter.do()'.
-        Count.grid_step_size_by_lexeme_length <<= _get_grid_step_size_by_lexeme_length(SM, CounterDB)
-
-    result = CountInfo(counter.result, CodecTrafoInfo, SM)
-    return result
 
 class CharacterCountTracer(TreeWalker):
     """________________________________________________________________________
@@ -481,133 +605,4 @@ class Count(object):
                   self.column_index,
                   self.column_n_increment, 
                   self.line_n_increment)
-
-class CountInfo:
-
-    chunk_n_per_char = None
-
-    def __init__(self, Result, CodecTrafoInfo, SM):
-        self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
-        self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
-        self.column_index                        = CountInfo.get_real(Result.column_index, 
-                                                                      ValueOfVirginity=E_Count.VOID)
-        self.grid_step_n                         = CountInfo.get_real(Result.grid_step_n)
-        self.column_n_increment_by_lexeme_length = CountInfo.get_real(Count.column_n_increment_by_lexeme_length)
-        self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
-        self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
-
-        #print "#Result:", Result
-        #print "#CountInfo:", self
-        if CodecTrafoInfo in ["utf8-state-split", "utf16-state-split"]: 
-            self._consider_variable_character_sizes(SM, CodecTrafoInfo)
-
-    @staticmethod
-    def get_real(Object, ValueOfVirginity=0):
-        if   Object.value == E_Count.VIRGIN: return ValueOfVirginity
-        elif Object.value == E_Count.NONE:   return 0
-        return Object.value
-
-    def is_partly_determined(self):
-        # Note, that 'grid' only tells about grid sizes being homogeneous.
-        if   self.line_n_increment                    != E_Count.VOID: return True
-        elif self.column_n_increment                  != E_Count.VOID: return True
-        elif self.grid_step_n                         != E_Count.VOID: return True
-        elif self.line_n_increment_by_lexeme_length   != E_Count.VOID: return True
-        elif self.column_n_increment_by_lexeme_length != E_Count.VOID: return True
-        elif self.grid_step_size_by_lexeme_length     != E_Count.VOID: return True
-        return False
-
-    @staticmethod
-    def _get_chunk_n_per_character(SM, CodecTrafoInfo):
-        if CountInfo.chunk_n_per_char != -1:
-            return CountInfo.chunk_n_per_char
-        CountInfo.chunk_n_per_char = transformation.homogeneous_chunk_n_per_character(
-                                                    SM, CodecTrafoInfo)
-        return CountInfo.chunk_n_per_char
-
-    def _consider_variable_character_sizes(self, SM, CodecTrafoInfo):
-        """UTF8 and UTF16 counters may have different numbers of chunks that
-        represent a single character. In such cases, it cannot be concluded from
-        the LexemeL to the number of involved characters. In such cases, column and
-        line number counter have to be done at run-time. This is signalized by
-
-                self.column_n_increment_by_lexeme_length = E_Count.VOID
-                self.grid_step_size_by_lexeme_length     = E_Count.VOID
-
-        and respectively
-
-               self.line_n_increment_by_lexeme_length  = E_Count.VOID
-
-        If the number of chunks per character is the same for all involved characters,
-        then the factor can be adapted by this number. For example, if all characters
-        involve 2 bytes and the buffer element is 'byte', then the character number
-        is equal to number of bytes divide by two, i.e.
-        
-                self.column_n_increment_by_lexeme_length /= 2.
-        """
-        CountInfo.chunk_n_per_char = -1
-
-        # If the internal engine is not running on Unicode, considerations
-        # may be made about the byte number per character (e.g. UTF8).
-        if    self.column_n_increment != E_Count.VOID \
-           or self.column_index       != E_Count.VOID:
-           # No problem in this case; increment does not depend on the lexeme length.
-           pass
-
-        elif    self.column_n_increment_by_lexeme_length != E_Count.VOID \
-             or self.grid_step_size_by_lexeme_length     != E_Count.VOID:
-            # In this case, the column number increment is a function of
-            # the lexeme length. This is only valid if all characters in the
-            # pattern actually have the same number of 'chunks' (e.g. bytes in UTF8).
-            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
-            if chunk_n_per_char is None:
-                # One cannot conclude from the number of bytes of a lexeme to 
-                # the number of columns to be incremented.
-                self.column_n_increment_by_lexeme_length = E_Count.VOID
-                self.grid_step_size_by_lexeme_length     = E_Count.VOID
-            else:
-                if self.column_n_increment_by_lexeme_length  != E_Count.VOID:
-                    self.column_n_increment_by_lexeme_length = float(self.column_n_increment_by_lexeme_length) / chunk_n_per_char
-                elif self.grid_step_size_by_lexeme_length    != E_Count.VOID:
-                    self.grid_step_size_by_lexeme_length     = float(self.grid_step_size_by_lexeme_length) / chunk_n_per_char
-
-        if self.line_n_increment != E_Count.VOID:
-            # No problem in this case; increment does not depend on the lexeme length.
-            pass
-        
-        elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
-            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
-            if chunk_n_per_char is None:
-                self.line_n_increment_by_lexeme_length  = E_Count.VOID
-            elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
-                self.line_n_increment_by_lexeme_length  = float(self.line_n_increment_by_lexeme_length) / chunk_n_per_char
-
-    def counting_required_f(self):
-        """Determine whether the line and column number increment needs to be
-        counted according to the content of a matching lexeme. If it is
-        constant or can be derived from the lexeme length, than it does not
-        need to be counted.  
-        """
-        return    (    self.line_n_increment_by_lexeme_length   == E_Count.VOID) \
-               or (    self.column_n_increment_by_lexeme_length == E_Count.VOID  \
-                   and self.grid_step_size_by_lexeme_length     == E_Count.VOID)
-
-    def __str__(self):
-        return \
-               "line_n_increment                    = %s;\n" \
-               "column_index                        = %s;\n" \
-               "column_n_increment                  = %s;\n" \
-               "grid_step_n                         = %s;\n" \
-               "line_n_increment_by_lexeme_length   = %s;\n" \
-               "column_n_increment_by_lexeme_length = %s;\n" \
-               "grid_step_size_by_lexeme_length     = %s;\n" \
-               % (
-                  self.line_n_increment,
-                  self.column_index,
-                  self.column_n_increment, 
-                  self.grid_step_n,
-                  self.line_n_increment_by_lexeme_length, 
-                  self.column_n_increment_by_lexeme_length,
-                  self.grid_step_size_by_lexeme_length
-               )
 

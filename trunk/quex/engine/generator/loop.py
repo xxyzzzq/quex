@@ -85,17 +85,6 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
                                      ReloadStateExtern,
                                      OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
                                      OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
-    print "#entry:", analyzer.drop_out.entry.get_string()
-
-    # Drop-Out may still occur during when a character transformation
-    # change the state machine.
-    on_beyond = [ GotoDoorId(DoorIdExit) ]
-    analyzer.drop_out.entry.enter_CommandList(
-        E_StateIndices.DROP_OUT, analyzer.init_state_index, 
-        CommandList.from_iterable(on_beyond)
-    )
-    analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
-    print "#entry:", analyzer.drop_out.entry.get_string()
 
     # -- The terminals 
     #
@@ -103,7 +92,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
     if not LexemeEndCheckF: door_id_on_lexeme_end = None
     else:                   door_id_on_lexeme_end = DoorIdExit
 
-    def get_appendix(CC_Type):
+    def get_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
             return [ GotoDoorId(door_id_loop) ]
         #     .---------------.        ,----------.   no
@@ -115,10 +104,10 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
         #                            | Count Command |----> DoorIdOnLexemeEnd
         #                            '---------------'
         #
-        elif CcFactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
+        elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
                 GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
-                ColumnCountReferencePDeltaAdd(E_R.InputP, CcFactory.column_count_per_chunk),
+                ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk),
                 GotoDoorId(door_id_on_lexeme_end)
             ]
         else:
@@ -127,7 +116,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
                 GotoDoorId(door_id_on_lexeme_end)
             ]
 
-    terminal_list = CcFactory.get_terminal_list(CsSm.on_end + on_beyond,
+    terminal_list = CcFactory.get_terminal_list(CsSm.on_end + [ GotoDoorId(DoorIdExit) ],
                                                 CsSm.incidence_id_beyond,
                                                 get_appendix)
 

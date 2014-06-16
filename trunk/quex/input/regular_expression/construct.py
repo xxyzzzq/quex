@@ -2,7 +2,7 @@ from   quex.input.files.parser_data.counter           import ParserDataLineColum
 from   quex.engine.interval_handling                  import UnicodeInterval, Interval
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.utf16_state_split    import ForbiddenRange
-import quex.engine.state_machine.character_counter    as     character_counter
+from   quex.engine.state_machine.character_counter    import CountInfo
 import quex.engine.state_machine.setup_post_context   as     setup_post_context
 import quex.engine.state_machine.setup_pre_context    as     setup_pre_context
 import quex.engine.state_machine.transformation       as     transformation
@@ -110,6 +110,9 @@ class Pattern(object):
         which is not concerned with the post context. The counting happens 
         on a UNICODE state machine--not on a possibly transformed codec state
         machine.
+
+        IDEA: It is done in here, so that it may be done once, even for derived 
+              modes--whenever the pattern's count needs to be determined. 
         """
         # Make sure that a pattern is NOT transformed before!
         assert self.__alarm_transformed_f == False
@@ -118,9 +121,9 @@ class Pattern(object):
         # If the pre-context is 'trivial begin of line', then the column number
         # starts counting at '1' and the column number may actually be set
         # instead of being added.
-        self.__count_info = character_counter.do(self.__sm, CsLC, 
-                                                 self.pre_context_trivial_begin_of_line_f, 
-                                                 CodecTrafoInfo)
+        self.__count_info = CountInfo.from_StateMachine(self.__sm, CsLC, 
+                                   self.pre_context_trivial_begin_of_line_f, 
+                                   CodecTrafoInfo)
         return self.__count_info
 
     def count_info(self):                          
@@ -131,6 +134,7 @@ class Pattern(object):
         """
         #assert self.__count_info is not None
         return self.__count_info
+
     @property
     def sm(self):                                  return self.__sm
     @property

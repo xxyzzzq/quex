@@ -250,6 +250,9 @@ class Lng_Cpp(dict):
             E_R.LexemeEnd:       "LexemeEnd",
         }[Register]
 
+    def COMMAND_LIST(self, CmdList):
+        return [self.COMMAND(cmd) for cmd in CmdList]
+
     def COMMAND(self, Cmd):
         if Cmd.id == E_Cmd.Accepter:
             else_str = ""

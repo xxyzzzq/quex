@@ -312,7 +312,7 @@ def get_on_indentation_handler(Mode):
         on_n_dedent_str = code_fragment.get_text()
         on_dedent_str   = ""
 
-    if len(on_dedent) == 0 and len(on_n_dedent) == 0:
+    if (not on_dedent_str) and (not on_n_dedent_str):
         # If no 'on_dedent' and no 'on_n_dedent' is defined ... 
         on_dedent_str    = ""
         on_n_dedent_str  = "#if defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)\n"
