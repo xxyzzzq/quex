@@ -185,6 +185,7 @@ E_DoorIdIndex = Enum("DROP_OUT",
 
 E_Cmd = Enum("Accepter",
              "Assign",
+             "ColumnCountSet",
              "ColumnCountAdd",
              "ColumnCountGridAdd",
              "ColumnCountGridAddWithReferenceP",

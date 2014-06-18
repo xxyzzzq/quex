@@ -1,7 +1,7 @@
-<test-database execution-time-sec="267.48" date="Mon Jun 16 08:44:45 2014">
+<test-database execution-time-sec="267.66" date="Tue Jun 17 00:27:51 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="5.99"> 
+        <test title="Single Mode Example" time-sum-sec="6.00"> 
             <application file-name="000.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -21,12 +21,12 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="1.20"> 
+        <test title="Indentation Based Scopes" time-sum-sec="1.16"> 
             <application file-name="002.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.59" crc="-1626426563"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.61" crc="-1626426563"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="0.58" crc="-1626426563"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.58" crc="-1626426563"/>
             </choice-list>
         </test>
     </group>
@@ -51,7 +51,7 @@
                <choice name="UTF16BE-BOM" result="OK" time_sec="2.94" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="17.40"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="17.41"> 
             <application file-name="003-icu.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -64,12 +64,12 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="11.03"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="11.04"> 
             <application file-name="004.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="6.90" crc="-1383033063"/>
-               <choice name="DEBUG" result="FAIL" time_sec="4.12" crc="-1383033063"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="6.84" crc="-1383033063"/>
+               <choice name="DEBUG" result="FAIL" time_sec="4.20" crc="-1383033063"/>
             </choice-list>
         </test>
     </group>
@@ -116,19 +116,19 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Standard Input (stdin/cin)" time-sum-sec="4.74"> 
+        <test title="Standard Input (stdin/cin)" time-sum-sec="4.79"> 
             <application file-name="009b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="4.74" crc="-828377416"/>
+               <choice name="" result="FAIL" time_sec="4.79" crc="-828377416"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.00"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.11"> 
             <application file-name="009.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="FAIL" time_sec="5.46" crc="1910061155"/>
-               <choice name="wlexer" result="FAIL" time_sec="5.53" crc="1910061155"/>
+               <choice name="lexer" result="FAIL" time_sec="5.54" crc="1910061155"/>
+               <choice name="wlexer" result="FAIL" time_sec="5.57" crc="1910061155"/>
             </choice-list>
         </test>
     </group>
@@ -182,7 +182,7 @@
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="17.65"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="17.66"> 
             <application file-name="012b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">

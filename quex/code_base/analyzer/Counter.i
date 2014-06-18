@@ -90,10 +90,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_fprintf(stdout, "   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
 #       endif
 #       ifdef  QUEX_OPTION_INDENTATION_TRIGGER
-        __QUEX_STD_fprintf(stdout, "   _indentation = %i;\n", (int)me->_indentation);
         __QUEX_STD_fprintf(stdout, "   _indentation_stack = {");
         for(it = me->_indentation_stack.front; it != me->_indentation_stack.back + 1; ++it) {
-            __QUEX_STD_fprintf(stdout, "%i, ", (int)me->_indentation);
+            __QUEX_STD_fprintf(stdout, "%i, ", (int)*it);
         }
         __QUEX_STD_fprintf(stdout, "}");
 #       endif

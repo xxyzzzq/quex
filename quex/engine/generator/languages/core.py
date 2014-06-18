@@ -308,18 +308,6 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.QuexAssertNoPassage:
             return self.UNREACHABLE
 
-        elif Cmd.id == E_Cmd.Assign:
-            return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
-
-        elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
-            pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
-            offset       = Cmd.content.offset
-            return self.REFERENCE_P_RESET(pointer_name, offset)
-
-        elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
-            return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Cmd.content.pointer), 
-                                               Cmd.content.column_n_per_chunk) 
-
         elif Cmd.id == E_Cmd.GotoDoorId:
             return self.GOTO(Cmd.content.door_id)
 
@@ -333,6 +321,12 @@ class Lng_Cpp(dict):
             # else:                    => specific indentation handler.
             return self.INDENTATION_HANDLER_CALL(Cmd.content.default_f, Cmd.content.mode_name)
 
+        elif Cmd.id == E_Cmd.Assign:
+            return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
+
+        elif Cmd.id == E_Cmd.ColumnCountSet:
+            return "__QUEX_IF_COUNT_COLUMNS_SET((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
+
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
 
@@ -343,6 +337,15 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
             assert False, "replaced by sequence of commands"
             return ""
+
+        elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
+            pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
+            offset       = Cmd.content.offset
+            return self.REFERENCE_P_RESET(pointer_name, offset)
+
+        elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
+            return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Cmd.content.pointer), 
+                                               Cmd.content.column_n_per_chunk) 
 
         elif Cmd.id == E_Cmd.LineCountAdd:
             txt = []

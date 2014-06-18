@@ -664,6 +664,8 @@ def __configure():
     c(E_Cmd.IndentationGridAddWithReferenceP, ("grid_size", "pointer_name", "indentation_n_per_chunk"),
                                               (E_R.Indentation,r+w), (E_R.ReferenceP,r+w))
     #
+    c(E_Cmd.ColumnCountSet,                   ("value",),
+                                              (E_R.Column,w))
     c(E_Cmd.ColumnCountAdd,                   ("value",),
                                               (E_R.Column,r+w))
     c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
@@ -812,6 +814,9 @@ def ColumnCountReferencePSet(Pointer, Offset=0):
 
 def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk):
     return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk)
+
+def ColumnCountSet(Value):
+    return Command(E_Cmd.ColumnCountSet, Value)
 
 def ColumnCountAdd(Value):
     return Command(E_Cmd.ColumnCountAdd, Value)

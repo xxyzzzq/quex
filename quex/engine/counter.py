@@ -124,13 +124,13 @@ class CountCmdFactory:
         return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
 
     @staticmethod
-    @typed(CounterDb=ParserDataIndentation)
+    @typed(ISetup=ParserDataIndentation, CounterDb=ParserDataLineColumn)
     def from_ParserDataIndentation(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = CountCmdFactory.from_ParserDataIndentation(CounterDb, 
-                                                            ISetup.whitespace.get(), 
-                                                            InputPName)
+        result = CountCmdFactory.from_ParserDataLineColumn(CounterDb, 
+                                                           ISetup.whitespace_character_set.get(), 
+                                                           InputPName)
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()

@@ -18,7 +18,7 @@ from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(SourceRef.from_FileHandle(fh)))
-    result.finalize()
+    result.finalize(fh)
     return result
 
 def parse_indentation(fh):

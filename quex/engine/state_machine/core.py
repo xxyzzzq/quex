@@ -198,10 +198,7 @@ class StateMachine(object):
         """
         assert type(Sequence) == list
         result = StateMachine()
-        idx    = result.init_state_index
-        for x in Sequence:
-            idx = result.add_transition(idx, x)
-        result.states[idx].set_acceptance(True)
+        result.add_transition_sequence(result.init_state_index, Sequence)
         return result
 
     @staticmethod
@@ -398,6 +395,15 @@ class StateMachine(object):
 
         return TargetStateIdx
             
+    def add_transition_sequence(self, StartIdx, Sequence, AcceptanceF=True):
+        """Add a sequence of transitions which is ending with acceptance--optionally.
+        """
+        idx = StartIdx
+        for x in Sequence:
+            idx = self.add_transition(idx, x)
+        if AcceptanceF:
+            self.states[idx].set_acceptance(True)
+
     def add_epsilon_transition(self, StartStateIdx, TargetStateIdx=None, RaiseAcceptanceF=False):
         assert TargetStateIdx is None or type(TargetStateIdx) == long
 

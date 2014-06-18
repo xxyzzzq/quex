@@ -1,5 +1,6 @@
 from   quex.engine.counter                        import CountCmdFactory
 from   quex.engine.analyzer.state.core            import Processor
+from   quex.engine.analyzer.commands.core         import GotoDoorId
 
 import quex.engine.generator.loop                 as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine
@@ -77,7 +78,7 @@ def do(Data, TheAnalyzer):
         
     result, \
     door_id_beyond = loop.do(CountCmdFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 
-                             DoorIdExit        = DoorID.continue_without_on_after_match(),
+                             AfterBeyond       = [ GotoDoorId(DoorID.continue_without_on_after_match()) ],
                              LexemeEndCheckF   = False,
                              LexemeMaintainedF = False,
                              EngineType        = engine.FORWARD,

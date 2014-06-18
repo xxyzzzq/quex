@@ -279,7 +279,6 @@ $$INDENTATION-ERROR-PROCEDURE$$
 """
 
 def get_on_indentation_handler(Mode):
-
     # 'on_dedent' and 'on_n_dedent cannot be defined at the same time.
     assert not (    E_IncidenceIDs.INDENTATION_DEDENT   in Mode.incidence_db \
                 and E_IncidenceIDs.INDENTATION_N_DEDENT in Mode.incidence_db)

@@ -1,3 +1,4 @@
+test-indentation-counter.py
 test-skip.py
 test-skip-2.py
 test-skip-utf8.py
