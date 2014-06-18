@@ -3,8 +3,15 @@ from   quex.engine.state_machine.engine_state_machine_set import CharacterSetSta
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
-from   quex.engine.analyzer.commands.core           import CommandList, IndentationHandlerCall
+from   quex.engine.analyzer.commands.core           import CommandList, \
+                                                           IndentationHandlerCall, \
+                                                           ColumnCountSet, \
+                                                           LineCountAdd, \
+                                                           GotoDoorId
 from   quex.engine.analyzer.door_id_address_label   import dial_db
+from   quex.engine.analyzer.terminal.core           import Terminal
+from   quex.engine.counter                          import CountCmdFactory
+from   quex.engine.generator.code.core              import CodeTerminal
 import quex.engine.generator.loop                   as     loop
 import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
 from   quex.engine.generator.state.transition.code  import TransitionCode
@@ -83,7 +90,11 @@ def do(Data, TheAnalyzer):
 
     # -- 'on_indentation' == 'on_beyond': 
     #     A handler is called as soon as an indentation has been detected.
-    on_indentation_iid  = dial_db.new_incidence_id()
+    after_beyond = [
+        IndentationHandlerCall(default_ih_f, mode_name),
+        GotoDoorId(DoorID.continue_without_on_after_match())
+    ]
+
     # -- 'on_bad_indentation' is invoked if a character appeared that has been
     #    explicitly disallowed to be used as indentation.
     bad_indentation_iid = dial_db.new_incidence_id() 
@@ -93,7 +104,7 @@ def do(Data, TheAnalyzer):
 
     sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
                                                            isetup.sm_newline.get(),
-                                                           isetup.comment.get(),
+                                                           isetup.sm_comment.get(),
                                                            DoorID.incidence(self_iid))
 
     # 'whitespace' --> normal counting
@@ -105,15 +116,14 @@ def do(Data, TheAnalyzer):
                                                            DoorID.incidence(bad_indentation_iid))
 
     # (*) Generate Code
-    code = loop.do(ccfactory, 
-                   DoorID.incidence(on_indentation_iid), 
-                   EngineType                 = TheAnalyzer.engine_type,
-                   ReloadStateExtern          = reload_state,
-                   LexemeMaintainedF          = True,
-                   ParallelSmTerminalPairList = parallel_sm_terminal_list)
+    code, beyond_iid = loop.do(ccfactory, 
+                               AfterBeyond       = after_beyond,
+                               EngineType        = TheAnalyzer.engine_type,
+                               ReloadStateExtern = reload_state,
+                               LexemeMaintainedF = True,
+                               ParallelSmTerminalPairList = sm_terminal_list)
 
-    _code_terminal_on_indentation(code, door_id_on_indentation)
-    _code_terminal_on_bad_indentation_character(code, ModeName, incidence_db, 
+    _code_terminal_on_bad_indentation_character(code, isetup, mode_name, incidence_db, 
                                                 bad_indentation_iid)
 
     return code
@@ -150,10 +160,10 @@ def _add_suppressed_newline(psml, SmSuppressedNewline, DoorIdIndentationHandler)
         LineCountAdd(1),
         GotoDoorId(DoorIdIndentationHandler),
     ]
-    terminal = Terminal(Lng.COMMAND_LIST(cl), "<INDENTATION SUPPRESSED NEWLINE>")
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), "<INDENTATION SUPPRESSED NEWLINE>")
     terminal.set_incidence_id(SmNewline.get_id())
 
-    psml.append(SmSuppressedNewline, terminal)
+    psml.append((SmSuppressedNewline, terminal))
 
 def _add_newline(psml, SmNewline):
     """Add a pair (newline state machine, terminal on newline) to 'psml'.
@@ -168,16 +178,16 @@ def _add_newline(psml, SmNewline):
         LineCountAdd(1),
         GotoDoorId(DoorID.global_reentry())
     ]
-    terminal = Terminal(Lng.COMMAND_LIST(cl), "<INDENTATION NEWLINE>")
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), "<INDENTATION NEWLINE>")
     terminal.set_incidence_id(SmNewline.get_id())
 
-    psml.append(SmNewline, terminal)
+    psml.append((SmNewline, terminal))
 
 def _add_comment(psml, SmComment, DoorIdIndentationHandler):
     """On matching the comment state machine goto a terminal that does the 
     following:
     """
-    assert SmNewline is not None
+    if SmComment is None: return
 
     comment_skip_iid = dial_db.new_incidence_id()
     door_id_comment  = DoorID.incidence(comment_skip_iid)
@@ -200,20 +210,17 @@ def _add_comment(psml, SmComment, DoorIdIndentationHandler):
 
     code.append(Lng.GOTO(DoorIdIndentationHandler))
 
-    terminal = Terminal(code, "INDENTATION COMMENT")
+    terminal = Terminal(CodeTerminal(code), "INDENTATION COMMENT")
     terminal.set_incidence_id(comment_skip_iid)
 
-    psml.append(SmComment, terminal)
+    psml.append((SmComment, terminal))
 
-def _code_terminal_on_indentation(code, OnIndentationIid):
-    code.extend(Lng.COMMAND_LIST([ 
-        IndentationHandlerCall(default_ih_f, mode_name),
-        GotoDoorId(DoorID.global_reentry())
-    ]))
-
-def _code_terminal_on_bad_indentation_character(code, ModeName, incidence_db):
+def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName, incidence_db, BadIndentationIid):
+    if ISetup.bad_character_set.get() is None:
+        return
     code, eol_f = incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
     code.extend([
+        "%s:\n" % Lng.LABEL(DoorID.incidence(BadIndentationIid)),
         "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n",
         "%s\n" % code,
         "#undef  BadCharacter\n",

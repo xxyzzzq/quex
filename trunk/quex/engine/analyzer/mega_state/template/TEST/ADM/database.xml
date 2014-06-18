@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.70" date="Mon Jun 16 08:47:47 2014">
+<test-database execution-time-sec="2.73" date="Tue Jun 17 00:28:14 2014">
     <last-used-diff-display-program name=""/>
     <test title="Combination of Two Transition Maps" time-sum-sec="0.49"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
@@ -32,7 +32,7 @@
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Get Best Matching Pair" time-sum-sec="0.51"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.52"> 
             <application file-name="best_matching_pair.py" info-request-time="1397789073L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -51,7 +51,7 @@
                <choice name="2" result="OK" time_sec="0.10" crc="-1615454940"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.68"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.70"> 
             <application file-name="metric.py" info-request-time="1398237111L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">

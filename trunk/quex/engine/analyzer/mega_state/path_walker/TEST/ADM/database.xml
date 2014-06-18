@@ -1,7 +1,7 @@
-<test-database execution-time-sec="3.04" date="Mon Jun 16 08:47:44 2014">
+<test-database execution-time-sec="3.05" date="Tue Jun 17 00:28:14 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="1.29"> 
+        <test title="select" time-sum-sec="1.30"> 
             <application file-name="select_longest_paths.py" info-request-time="1401225047L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="14" same_result="False">
@@ -21,19 +21,19 @@
                <choice name="12" result="OK" time_sec="0.09" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="collect" time-sum-sec="0.64"> 
+        <test title="collect" time-sum-sec="0.65"> 
             <application file-name="find.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.10" crc="-1505164111"/>
                <choice name="2" result="OK" time_sec="0.11" crc="1211733340"/>
-               <choice name="3" result="FAIL" time_sec="0.10" crc="2130855497"/>
+               <choice name="3" result="FAIL" time_sec="0.11" crc="2130855497"/>
                <choice name="4" result="OK" time_sec="0.11" crc="-2006970915"/>
                <choice name="5" result="OK" time_sec="0.11" crc="-1643133387"/>
                <choice name="6" result="OK" time_sec="0.11" crc="300088630"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.41"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.40"> 
             <application file-name="find-3.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -43,7 +43,7 @@
                <choice name="4" result="OK" time_sec="0.10" crc="1917712010"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.58"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.57"> 
             <application file-name="find-2.py" info-request-time="1402009615L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">

@@ -1,15 +1,17 @@
 # (C) Frank-Rene Schaefer
+from   quex.input.setup                           import NotificationDB
+from   quex.input.regular_expression.construct    import Pattern
+from   quex.engine.tools                          import typed
+from   quex.engine.misc.file_in                   import error_msg
+import quex.engine.state_machine.transformation   as     transformation
+from   quex.engine.state_machine.core             import StateMachine  
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_VOID
 from   quex.engine.interval_handling              import NumberSet, \
                                                          NumberSet_All
-from   quex.engine.tools                          import typed
 from   quex.blackboard                            import E_CharacterCountType
-from   quex.engine.misc.file_in                   import error_msg
-from   quex.input.setup                           import NotificationDB
-import quex.engine.state_machine.transformation   as     transformation
 
 from   quex.blackboard import setup as Setup
 from   collections     import namedtuple, defaultdict
@@ -184,7 +186,7 @@ class CountCmdMap(object):
                                                             E_CharacterCountType.END_NEWLINE)
         }[CcType]
 
-        interferer = self.__find_occupier(CharSet, Tolerated=intersection_tolerated)
+        interferer = self.find_occupier(CharSet, Tolerated=intersection_tolerated)
         if interferer is None:
             return
         _error_set_intersection(CcType, interferer, sr)
@@ -278,7 +280,7 @@ class CountCmdMap(object):
         else:
             return float(column_incr_per_character) / chunk_n_per_character
 
-    def __find_occupier(self, CharSet, Tolerated):
+    def find_occupier(self, CharSet, Tolerated):
         """Find a command that occupies the given CharSet, at least partly.
            RETURN: None, if no such occupier exists.
         """
@@ -309,7 +311,7 @@ class CountCmdMap(object):
         for character_set, info in self.__map:
             if info.cc_type != E_CharacterCountType.GRID: 
                 if info.cc_type == E_CharacterCountType.COLUMN: 
-                    column_n_f = True
+                    return
                 continue
             elif type(info.value) in (str, unicode): 
                 # If there is one single 'variable' grid value, 
@@ -319,7 +321,7 @@ class CountCmdMap(object):
             if min_info is None or info.value < min_info.value:
                 min_info = info
 
-        if column_n_f or info.value == 1:
+        if min_info is None:
             return
 
         # Are all grid values a multiple of the minimum?
@@ -340,7 +342,7 @@ class CountCmdMap(object):
         for character_set, info in self.__map:
             if info.cc_type != E_CharacterCountType.COLUMN: 
                 if info.cc_type == E_CharacterCountType.GRID: 
-                    grid_f = True
+                    return
                 continue
             elif type(info.value) in (str, unicode): 
                 # If there is one single 'variable' grid value, 
@@ -352,7 +354,7 @@ class CountCmdMap(object):
                 # space counts are not homogeneous
                 return
 
-        if grid_f or common.value == 1:
+        if common is None:
             return
             
         error_msg("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
@@ -480,7 +482,7 @@ class ParserDataIndentation(Base):
 
         Base.__init__(self, sr, "Indentation counter", ("whitespace", "comment", "newline", "suppressor", "bad"))
 
-    def specify():
+    def specify(self, identifier, pattern, sr):
         if   identifier == "whitespace": 
             self.__specify_character_set(self.whitespace_character_set, 
                                          "whitespace", pattern, sr)
@@ -542,39 +544,36 @@ class ParserDataIndentation(Base):
         if self.sm_newline.get() is not None:
             return
 
-        newline = ord('\n')
-        retour  = ord('\r')
+        newline_set = NumberSet(ord('\n'))
+        retour_set  = NumberSet(ord('\r'))
 
-        before  = self.count_command_map.get_command(newline)
+        before = self.count_command_map.find_occupier(newline_set, set())
         if before is not None:
             error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
-                      "The '\\n' option is not possible, since it has been occupied by '%s'." \
-                      % cc_type_name_db[Before.cc_type], Before.sr, DontExitF=True, 
+                      "The '\\n' option is not possible, since it has been occupied by '%s'.\n" \
+                      "No newline can be defined by default."
+                      % cc_type_name_db[before.cc_type], before.sr, DontExitF=True, 
                       SuppressCode=NotificationDB.warning_default_newline_0A_impossible)
+            # In this case, no newline can be defined!
+            return
 
-        before  = self.count_command_map.get_command(retour)
+        sm = StateMachine.from_character_set(newline_set)
+
+        before = self.count_command_map.find_occupier(retour_set, set())
         if before is not None:
             error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
                       "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." \
-                      % cc_type_name_db[Before.cc_type],
-                      Before.sr, DontExitF=True, 
+                      % cc_type_name_db[before.cc_type],
+                      before.sr, DontExitF=True, 
                       SuppressCode=NotificationDB.warning_default_newline_0D_impossible)
+        else:
+            sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
 
-        sm          = StateMachine()
-        end_idx     = None
-        if not all_set.contains(newline):
-            newline_set = NumberSet(newline)
-            end_idx     = sm.add_transition(sm.init_state_index, newline_set, AcceptanceF=True)
-            all_set.unite_with(newline_set)
-
-        if not all_set.contains(retour):
-            retour_set = NumberSet(retour)
-            mid_idx    = sm.add_transition(sm.init_state_index, retour_set, AcceptanceF=False)
-            sm.add_transition(mid_idx, newline_set, end_idx, AcceptanceF=True)
-            all_set.unite_with(retour_set)
-        return sm
+        self.specify("newline", Pattern(sm), SourceRef_VOID)
 
     def finalize(self, fh):
+        if self.whitespace_character_set.get() is None:
+            self.specify("whitespace", Pattern[" \n"], sr=SourceFileRef())
         self.sm_newline_defaultize()
         self.consistency_check(fh)
 

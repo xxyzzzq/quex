@@ -211,7 +211,6 @@ class CharacterSetStateMachine:
 
         return sm
 
-
 def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell
        process of all pattern passed as state machines in 

@@ -23,10 +23,8 @@ from   quex.blackboard import E_StateIndices, \
                               Lng, \
                               E_Cmd
 
-
-
-@typed(ReloadF=bool, LexemeEndCheckF=bool, DoorIdExit=DoorID)
-def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,
+@typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
+def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,
        ParallelSmTerminalPairList=None):
     """Buffer Limit Code --> Reload
        Skip Character    --> Loop to Skipper State
@@ -116,7 +114,7 @@ def do(CcFactory, DoorIdExit, LexemeEndCheckF=False, EngineType=None, ReloadStat
                 GotoDoorId(door_id_on_lexeme_end)
             ]
 
-    terminal_list = CcFactory.get_terminal_list(CsSm.on_end + [ GotoDoorId(DoorIdExit) ],
+    terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
                                                 CsSm.incidence_id_beyond,
                                                 get_appendix)
 

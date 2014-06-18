@@ -71,7 +71,6 @@ def do_node(txt, cmd_tree, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None)
         # assert none_is_None(txt)
 
 def code_action(txt, Node, ActionDb, GotoParentF):
-    
     txt.append(IfDoorIdReferencedLabel(Node.door_id))
     comment_door(txt, Node, ActionDb)
     txt.extend(Lng.COMMAND_LIST(Node.command_list))
