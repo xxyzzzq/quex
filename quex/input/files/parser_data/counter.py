@@ -363,12 +363,17 @@ class CountCmdMap(object):
                   "of 1 are the fastest to compute.", 
                   common.sr, DontExitF=True)
 
-    def check_newline_defined(self, SourceReference):
+    def check_defined(self, SourceReference, CCT):
+        """Checks whether the character counter type has been defined in the 
+        map.
+        
+        THROWS: Error in case that is has not been defined.
+        """
         for character_set, info in self.__map:
-            if info.cc_type == E_CharacterCountType.LINE: 
+            if info.cc_type == CCT: 
                 return
 
-        error_msg("Counter setup does not define newline.", SourceReference, 
+        error_msg("Setup does not define '%s'." % cc_type_name_db[CCT], SourceReference, 
                   DontExitF=True, WarningF=True, 
                   SuppressCode=NotificationDB.warning_counter_setup_without_newline)
 
@@ -419,10 +424,8 @@ class Base:
             self.count_command_map.add(extract_trigger_set(sr, Identifier, Pattern), 
                                        Identifier, Count, sr)
 
-    def consistency_check(self, fh):
-        self.count_command_map.check_grid_values_integer_multiples()
-        self.count_command_map.check_homogenous_space_counts()
-        self.count_command_map.check_newline_defined(self.sr)
+    def consistency_check(self):
+        assert False, "Derived class must implement this."
 
     def set_containing_mode_name(self, ModeName):
         assert isinstance(ModeName, (str, unicode))
@@ -442,11 +445,16 @@ class ParserDataLineColumn(Base):
     def __init__(self, sr, TheCountCmdMap=None):
         Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
 
-    def finalize(self, fh):
+    def finalize(self):
         # Assign the 'else' command to all the remaining places in the character map.
         self.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), 
                                                          self.sr)
-        self.consistency_check(fh)
+        self.consistency_check()
+
+    def consistency_check(self):
+        self.count_command_map.check_grid_values_integer_multiples()
+        self.count_command_map.check_homogenous_space_counts()
+        self.count_command_map.check_defined(self.sr, E_CharacterCountType.LINE)
 
 class ParserDataIndentation(Base):
     """Indentation counter specification.
@@ -541,8 +549,6 @@ class ParserDataIndentation(Base):
         """Default newline: '(\n)|(\r\n)'
         """
         global cc_type_name_db
-        if self.sm_newline.get() is not None:
-            return
 
         newline_set = NumberSet(ord('\n'))
         retour_set  = NumberSet(ord('\r'))
@@ -569,13 +575,18 @@ class ParserDataIndentation(Base):
         else:
             sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
 
-        self.specify("newline", Pattern(sm), SourceRef_VOID)
+        self.specify_newline(sm, SourceRef_VOID)
 
     def finalize(self, fh):
         if self.whitespace_character_set.get() is None:
             self.specify("whitespace", Pattern[" \n"], sr=SourceFileRef())
-        self.sm_newline_defaultize()
-        self.consistency_check(fh)
+        if self.sm_newline.get() is None:
+            self.sm_newline_defaultize()
+        self.consistency_check()
+
+    def consistency_check(self):
+        self.count_command_map.check_defined(self.sr, E_CharacterCountType.WHITESPACE)
+        self.count_command_map.check_defined(self.sr, E_CharacterCountType.BEGIN_NEWLINE)
 
     def __repr__(self):
         txt = Base.__repr__(self)

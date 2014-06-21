@@ -4,6 +4,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.engine.generator.skipper.character_set as character_set_skipper
 import quex.engine.generator.skipper.range         as range_skipper
 import quex.engine.generator.skipper.nested_range  as nested_range_skipper
+import quex.engine.generator.skipper.indentation_counter as     indentation_counter
 from   quex.engine.generator.TEST.generator_test   import *
 from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
@@ -13,15 +14,24 @@ from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
 from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
 from   quex.input.regular_expression.construct     import Pattern
+import quex.engine.analyzer.engine_supply_factory  as     engine
 
-class something:
-    pass
-Analyzer = something()
-Analyzer.reload_state = None
+class MiniAnalyzer:
+    def __init__(self):
+        self.reload_state = None
+        self.engine_type  = engine.FORWARD
 
-def __prepare(Language):
-    end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
+Analyzer = MiniAnalyzer()
+
+def __prepare(Language, TokenQueueF=False):
+    end_str  = '    printf("end\\n");\n'
+    if not TokenQueueF:
+        end_str += '    return false;\n'
+    else:
+        end_str += "#   define self (*me)\n"
+        end_str += "    self_send(QUEX_TKN_TERMINATION);\n"
+        end_str += "    return;\n"
+        end_str += "#   undef self\n"
 
     __Setup_init_language_database(Language)
     dial_db.clear()
@@ -109,12 +119,39 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
                                                MarkerCharList=[], LocalVariableDB=deepcopy(variable_db.get()), 
                                                DoorIdOnSkipRangeOpen=door_id_on_skip_range_open) 
 
+def create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, TokenQueueF):
+
+    end_str = __prepare(Language, TokenQueueF)
+
+    data = {
+        "indentation_setup":             ISetup,
+        "counter_db":                    CounterSetupLineColumn_Default(),
+        "incidence_db":                  {E_IncidenceIDs.INDENTATION_BAD: ""},
+        "incidence_id":                  dial_db.new_incidence_id(),
+        "default_indentation_handler_f": True,
+        "mode_name":                     "Test",
+        "suppressed_newline":            None,
+    }
+
+    code_str = indentation_counter.do(data, Analyzer)
+
+    return create_customized_analyzer_function(Language, TestStr, code_str, 
+                                               QuexBufferSize=BufferSize, 
+                                               CommentTestStrF="", ShowPositionF=False, 
+                                               EndStr=end_str, MarkerCharList=map(ord, " :\t"),
+                                               LocalVariableDB=deepcopy(variable_db.get()), 
+                                               IndentationSupportF=True,
+                                               TokenQueueF=TokenQueueF, 
+                                               ReloadF=True, 
+                                               CounterPrintF=False)
+
 def create_customized_analyzer_function(Language, TestStr, EngineSourceCode, 
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, 
                                         EndStr, MarkerCharList,
                                         LocalVariableDB, IndentationSupportF=False, 
                                         TokenQueueF=False, ReloadF=False, OnePassOnlyF=False, 
-                                        DoorIdOnSkipRangeOpen=None):
+                                        DoorIdOnSkipRangeOpen=None, 
+                                        CounterPrintF=True):
 
     txt  = create_common_declarations(Language, QuexBufferSize, TestStr, 
                                       IndentationSupportF = IndentationSupportF, 
@@ -124,7 +161,8 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     state_router_txt = do_state_router()
     EngineSourceCode.extend(state_router_txt)
     txt += my_own_mr_unit_test_function(EngineSourceCode, EndStr, LocalVariableDB, 
-                                        ReloadF, OnePassOnlyF, DoorIdOnSkipRangeOpen)
+                                        ReloadF, OnePassOnlyF, DoorIdOnSkipRangeOpen, 
+                                        CounterPrintF)
 
     txt += skip_irrelevant_character_function(MarkerCharList)
 
@@ -133,10 +171,11 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     txt = txt.replace(Lng.SOURCE_REFERENCE_END(), "")
+
     return txt
 
 def my_own_mr_unit_test_function(SourceCode, EndStr, 
-                                 LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True, DoorIdOnSkipRangeOpen=None):
+                                 LocalVariableDB={}, ReloadF=False, OnePassOnlyF=True, DoorIdOnSkipRangeOpen=None, CounterPrintF=True):
     
     if type(SourceCode) == list:
         plain_code = "".join(Lng.GET_PLAIN_STRINGS(SourceCode))
@@ -150,15 +189,22 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
     else:
         label_sro = dial_db.get_label_by_door_id(dial_db.new_door_id())
 
+    if CounterPrintF:
+        counter_print_str = "QUEX_NAME(Counter_print_this)(&self.counter);"
+    else:
+        counter_print_str = ""
+
 
     return blue_print(customized_unit_test_function_txt,
                       [
-                       
                        ("$$LOCAL_VARIABLES$$",        Lng.VARIABLE_DEFINITIONS(VariableDB(LocalVariableDB))),
                        ("$$SOURCE_CODE$$",            plain_code),
+                       ("$$COUNTER_PRINT$$",          counter_print_str),
                        ("$$TERMINAL_END_OF_STREAM$$", label_eos),
                        ("$$TERMINAL_FAILURE$$",       label_failure),
                        ("$$REENTRY$$",                label_reentry),
+                       ("$$LEXEME_MACRO_SETUP$$",     Lng.LEXEME_MACRO_SETUP()),
+                       ("$$LEXEME_MACRO_CLEAN_UP$$",  Lng.LEXEME_MACRO_CLEAN_UP()),
                        ("$$REENTRY2$$",               label_reentry2),
                        ("$$SKIP_RANGE_OPEN$$",        label_sro),
                        ("$$ONE_PASS_ONLY$$",          "true" if OnePassOnlyF else "false"),
@@ -195,12 +241,13 @@ QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #      define QUEX_TYPE_CHARACTER_POSITION (QUEX_TYPE_CHARACTER*)
 #   endif
 $$LOCAL_VARIABLES$$
-
+$$LEXEME_MACRO_SETUP$$
 ENTRY:
     if( skip_irrelevant_characters(me) == false ) {
         goto $$TERMINAL_END_OF_STREAM$$;
     }
-    QUEX_NAME(Counter_reset)(&me->counter);
+    /* QUEX_NAME(Counter_reset)(&me->counter); */
+    me->counter._column_number_at_end = 1;
 
 /*__BEGIN_________________________________________________________________________________*/
 $$SOURCE_CODE$$
@@ -212,7 +259,7 @@ $$REENTRY2$$:
      * Here, we use the chance to print the position where the skipper ended.
      * If we are at the border and there is still stuff to load, then load it so we can
      * see what the next character is coming in.                                          */
-    QUEX_NAME(Counter_print_this)(&self.counter);
+    $$COUNTER_PRINT$$ 
     if( ! show_next_character(&me->buffer) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
     goto ENTRY;
 
@@ -230,6 +277,7 @@ $$END_STR$$
         goto $$REENTRY$$;
         goto $$REENTRY2$$;
     }
+$$LEXEME_MACRO_CLEAN_UP$$
 }
 """
 

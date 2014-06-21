@@ -136,6 +136,16 @@ class Lng_Cpp(dict):
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
     def LEXEME_START_P(self):                      return "me->buffer._lexeme_start_p"
     def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
+
+    def LEXEME_MACRO_SETUP(self):
+        return blue_print(cpp.lexeme_macro_setup, [
+            ["$$LEXEME_LENGTH$$",  self.LEXEME_LENGTH()],
+            ["$$INPUT_P$$",        self.INPUT_P()],
+        ])
+
+    def LEXEME_MACRO_CLEAN_UP(self):
+        return cpp.lexeme_macro_clean_up
+
     def CHARACTER_BEGIN_P(self):                   return "character_begin_p"
     def INPUT_P(self):                             return "me->buffer._input_p"
     def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
@@ -153,7 +163,7 @@ class Lng_Cpp(dict):
     def INDENTATION_HANDLER_CALL(self, DefaultF, ModeName):
         if DefaultF: prefix = ""
         else:        prefix = "%s_" % ModeName
-        return "    QUEX_NAME(%son_indentation)(me, /*Indentation*/0, LexemeNull);\n" % prefix
+        return "    QUEX_NAME(%son_indentation)(me, me->counter._column_number_at_end, LexemeNull);\n" % prefix
     def STORE_LAST_CHARACTER(self, BeginOfLineSupportF):
         if not BeginOfLineSupportF: return ""
         # TODO: The character before lexeme start does not have to be written
