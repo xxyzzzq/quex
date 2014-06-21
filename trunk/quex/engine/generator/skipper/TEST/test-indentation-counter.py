@@ -6,8 +6,6 @@ from   quex.input.regular_expression.construct           import Pattern
 from   quex.engine.interval_handling                     import NumberSet, Interval
 from   quex.engine.counter                               import ParserDataIndentation
 from   quex.engine.analyzer.door_id_address_label        import dial_db
-import quex.engine.analyzer.engine_supply_factory   as     engine
-import quex.engine.generator.skipper.indentation_counter as     indentation_counter
 from   quex.engine.generator.code.base                   import SourceRef_VOID
 from   quex.engine.generator.languages.variable_db       import variable_db
 from   quex.engine.generator.TEST.generator_test         import __Setup_init_language_database
@@ -27,42 +25,10 @@ if len(sys.argv) < 2:
     print "Argument not acceptable, use --hwut-info"
     sys.exit(0)
 
-EndStr = \
-"""
-#   define self (*me)
-    self_send(QUEX_TKN_TERMINATION);
-    return;
-#   undef self
-"""
-class MiniAnalyzer:
-    def __init__(self):
-        self.reload_state = None
-        self.engine_type  = engine.FORWARD
-
-
 def test(TestStr, ISetup, BufferSize=1024):
-    ISetup.finalize(StringIO(""))
     Language = "Cpp"
-    __Setup_init_language_database("Cpp")
-    dial_db.clear()
-    code_str = indentation_counter.do({
-        "indentation_setup":             ISetup,
-        "counter_db":                    CounterSetupLineColumn_Default(),
-        "incidence_db":                  {E_IncidenceIDs.INDENTATION_BAD: ""},
-        "incidence_id":                  dial_db.new_incidence_id(),
-        "default_indentation_handler_f": True,
-        "mode_name":                     "Test",
-        "suppressed_newline":            None,
-    }, MiniAnalyzer())
-
-    txt = create_customized_analyzer_function("Cpp", TestStr, code_str, 
-                                              QuexBufferSize=1024, 
-                                              CommentTestStrF="", ShowPositionF=False, 
-                                              EndStr=EndStr, MarkerCharList=map(ord, " :\t"),
-                                              LocalVariableDB=deepcopy(variable_db.get()), 
-                                              IndentationSupportF=True,
-                                              TokenQueueF=True, 
-                                              ReloadF=True)
+    ISetup.finalize(StringIO(""))
+    txt = create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, TokenQueueF=True)
     compile_and_run(Language, txt)
 
 indent_setup = ParserDataIndentation(SourceRef_VOID)

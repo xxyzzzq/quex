@@ -197,7 +197,7 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "/*  'QUEX_GOTO_STATE' requires 'QUEX_LABEL_STATE_ROUTER' */\n",
         "#   define QUEX_LABEL_STATE_ROUTER %s\n" % dial_db.get_label_by_door_id(DoorID.global_state_router()),
         mode_definition_str,
-        lexeme_macro_setup(Lng),
+        Lng.LEXEME_MACRO_SETUP(),
         #
         variable_definitions,
         #
@@ -250,13 +250,7 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
     ])
     return txt
 
-def lexeme_macro_setup(Lng):
-    return blue_print(__lexeme_macro_setup, [
-        ["$$LEXEME_LENGTH$$",  Lng.LEXEME_LENGTH()],
-        ["$$INPUT_P$$",        Lng.INPUT_P()],
-    ])
-
-__lexeme_macro_setup = """
+lexeme_macro_setup = """
     /* Lexeme setup: 
      *
      * There is a temporary zero stored at the end of each lexeme, if the action 

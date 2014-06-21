@@ -8,8 +8,6 @@ import quex.engine.state_machine.check.same        as     same_check
 from   quex.blackboard import E_IncidenceIDs
 from   itertools import islice
 
-
-
 def do(ModeDB):
     """Consistency check of mode database
 

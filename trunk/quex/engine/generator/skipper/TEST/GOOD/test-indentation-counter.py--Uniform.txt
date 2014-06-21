@@ -1,10 +1,7 @@
-## (*) compiling generated engine code and test
-g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+## (2) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
-## IGNORED: ./tmp.cpp: In function ‘void TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
-## IGNORED: ./tmp.cpp:182: warning: label ‘STATE_0_DROP_OUT_DIRECT’ defined but not used
-## IGNORED: ./tmp.cpp: At global scope:
-## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## IGNORED: ./tmp.cpp:56:1: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 ## (*) running the test
 (*) test string: 
 '
@@ -19,13 +16,22 @@ g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggd
 '
 (*) result:
 next letter: <a>
+
 next letter: <b>
+
 next letter: <c>
+
 next letter: <d>
+
 next letter: <e>
+
 next letter: <h>
+
 next letter: <i>
+
 next letter: <j>
+
+end
 ---
 INDENT
 INDENT
@@ -35,4 +41,5 @@ NODENT
 NODENT
 DEDENT
 NODENT
+
 
