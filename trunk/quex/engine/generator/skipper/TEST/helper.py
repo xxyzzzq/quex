@@ -137,7 +137,7 @@ def create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, Token
 
     return create_customized_analyzer_function(Language, TestStr, code_str, 
                                                QuexBufferSize=BufferSize, 
-                                               CommentTestStrF="", ShowPositionF=False, 
+                                               CommentTestStrF="", ShowPositionF=True, 
                                                EndStr=end_str, MarkerCharList=map(ord, " :\t"),
                                                LocalVariableDB=deepcopy(variable_db.get()), 
                                                IndentationSupportF=True,
@@ -228,7 +228,7 @@ def show_next_character_function(ShowPositionF):
     return show_next_character_function_txt.replace("$$SHOW_POSITION$$", show_position_str)
 
 customized_unit_test_function_txt = """
-static bool show_next_character(QUEX_NAME(Buffer)* buffer);
+static bool show_next_character(QUEX_TYPE_ANALYZER* me);
 static bool skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me);
 
 __QUEX_TYPE_ANALYZER_RETURN_VALUE 
@@ -248,6 +248,7 @@ ENTRY:
     }
     /* QUEX_NAME(Counter_reset)(&me->counter); */
     me->counter._column_number_at_end = 1;
+    reference_p = me->buffer._input_p;
 
 /*__BEGIN_________________________________________________________________________________*/
 $$SOURCE_CODE$$
@@ -260,7 +261,7 @@ $$REENTRY2$$:
      * If we are at the border and there is still stuff to load, then load it so we can
      * see what the next character is coming in.                                          */
     $$COUNTER_PRINT$$ 
-    if( ! show_next_character(&me->buffer) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
+    if( ! show_next_character(me) || $$ONE_PASS_ONLY$$ ) goto $$TERMINAL_END_OF_STREAM$$; 
     goto ENTRY;
 
 $$TERMINAL_FAILURE$$:
@@ -283,8 +284,10 @@ $$LEXEME_MACRO_CLEAN_UP$$
 
 show_next_character_function_txt = """
 static bool
-show_next_character(QUEX_NAME(Buffer)* buffer) 
+show_next_character(QUEX_TYPE_ANALYZER* me) 
 {
+    QUEX_NAME(Buffer)* buffer = &me->buffer;
+
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
         buffer->_lexeme_start_p = buffer->_input_p;
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
@@ -295,15 +298,14 @@ show_next_character(QUEX_NAME(Buffer)* buffer)
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
         if( ((*buffer->_input_p) & 0x80) == 0 ) 
-            printf("next letter: <%c>\\n", (int)(buffer->_input_p[0]));
+            printf("next letter: <%c>", (int)(buffer->_input_p[0]));
         else
-            printf("next letter: <0x%02X>\\n", (int)(buffer->_input_p[0]));
+            printf("next letter: <0x%02X>", (int)(buffer->_input_p[0]));
+
 #       if $$SHOW_POSITION$$
-        printf(" position: %04X\\n", buffer->_input_p),
-               (int)(buffer->_input_p - buffer->_memory._front));
-#       else
-        printf("\\n");
+        printf(" column_n: %i", me->counter._column_number_at_end);
 #       endif
+        printf("\\n");
     }
     return true;
 }

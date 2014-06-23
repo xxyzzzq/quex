@@ -9,7 +9,7 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID, \
                                                            IfDoorIdReferencedCode
-from   quex.engine.analyzer.commands.core                import CommandList
+from   quex.engine.analyzer.commands.core                import CommandList, GotoDoorId
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.tools                            import typed
 
@@ -57,7 +57,7 @@ def get(CCFactory, Name):
     door_id_return = dial_db.new_door_id()
     code, \
     door_id_beyond = loop.do(CCFactory, 
-                             AfterBeyond     = GotoDoorId(door_id_return),
+                             AfterBeyond     = [ GotoDoorId(door_id_return) ],
                              LexemeEndCheckF = True,
                              EngineType      = engine.CHARACTER_COUNTER)
 
