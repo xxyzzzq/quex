@@ -294,6 +294,7 @@ def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False, ComputedGotoF=False):
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
+    test_str = test_str.replace("\t", "\\t")
 
     txt = test_program_db[Language]
     txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
