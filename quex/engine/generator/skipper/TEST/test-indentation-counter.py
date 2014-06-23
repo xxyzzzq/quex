@@ -66,8 +66,7 @@ elif "Uniform-Reloaded" in sys.argv:
          , indent_setup, BufferSize=10)
 
 elif "NonUniform" in sys.argv:
-    indent_setup.specify("whitespace", get_Pattern(" :"), SourceRef_VOID)
-    indent_setup.specify("grid", get_Pattern("\t"), SourceRef_VOID)
+    indent_setup.specify("whitespace", get_Pattern(" :\t"), SourceRef_VOID)
 
     test("\n"
          "    a\n"     # 4 spaces
@@ -81,8 +80,7 @@ elif "NonUniform" in sys.argv:
 
 
 elif "NonUniform-2" in sys.argv:
-    indent_setup.specify("whitespace", get_Pattern(" :"), SourceRef_VOID)
-    indent_setup.specify("grid", get_Pattern("\t"), SourceRef_VOID)
+    indent_setup.specify("whitespace", get_Pattern(" :\t"), SourceRef_VOID)
 
     test("\n"
          "        a\n" # 8 spaces

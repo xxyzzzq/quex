@@ -87,8 +87,6 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     # -- The terminals 
     #
     door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
-    if not LexemeEndCheckF: door_id_on_lexeme_end = None
-    else:                   door_id_on_lexeme_end = DoorIdExit
 
     def get_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
@@ -106,13 +104,11 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
             return [
                 GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
                 ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk),
-                GotoDoorId(door_id_on_lexeme_end)
-            ]
+            ] + AfterBeyond
         else:
             return [
                 GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
-                GotoDoorId(door_id_on_lexeme_end)
-            ]
+            ] + AfterBeyond
 
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
                                                 CsSm.incidence_id_beyond,
