@@ -156,6 +156,7 @@ def get_test_application(counter_db, ReferenceP, CT):
             found_f = True
             break
 
+
     # [RP] Verify that a reference pointer has been used or not used according 
     #      to what was specified.
     if ReferenceP:
@@ -204,7 +205,7 @@ def counter_db_wo_reference_p():
 fields  = sys.argv[1].split("-")
 codec   = fields[0]
 chunk_n = int(fields[1])
-without_reference_p_f = sys.argv[1].find("wo-ReferenceP")
+without_reference_p_f = (sys.argv[1].find("wo-ReferenceP") != -1)
 
 if without_reference_p_f:
     counter_db  = counter_db_wo_reference_p()
