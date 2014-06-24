@@ -355,10 +355,10 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
     if column_counter_per_chunk:
         txt.append(i+1)
         if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
-            txt += Lng.REFERENCE_P_COLUMN_ADD("me->buffer._input_p", 
+            txt += Lng.REEFERENCE_P_COLUMN_ADD("me->buffer._input_p", 
                                               column_counter_per_chunk) 
         else:
-            txt += Lng.REFERENCE_P_COLUMN_ADD("(me->buffer._input_p - %i)" % EndSequenceChunkN, 
+            txt += Lng.REEFERENCE_P_COLUMN_ADD("(me->buffer._input_p - %i)" % EndSequenceChunkN, 
                                               column_counter_per_chunk) 
             txt.append(i+1)
             txt.extend(counter_txt)

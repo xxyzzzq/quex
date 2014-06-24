@@ -229,7 +229,8 @@ class CountCmdFactory:
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
                     ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.column_count_per_chunk),
+                                                  self.column_count_per_chunk, 
+                                                  False),
                     ColumnCountReferencePSet(E_R.InputP),
                     GotoDoorId(self.door_id_on_bad_indentation) 
                 ]
@@ -239,7 +240,8 @@ class CountCmdFactory:
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
                     ColumnCountReferencePDeltaAdd(E_R.InputP, 
-                                                  self.column_count_per_chunk),
+                                                  self.column_count_per_chunk,
+                                                  True),
                     ColumnCountGridAdd(Parameter),
                     ColumnCountReferencePSet(E_R.InputP)
                 ]
@@ -287,8 +289,8 @@ class CountCmdFactory:
 
         on_begin         = [ ColumnCountReferencePSet(pointer) ]
         on_after_reload  = [ ColumnCountReferencePSet(pointer) ]
-        on_end           = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk) ]
-        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk) ]
+        on_end           = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
+        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, True) ]
 
         return on_begin, on_end, on_before_reload, on_after_reload
 

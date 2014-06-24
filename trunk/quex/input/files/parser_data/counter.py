@@ -73,7 +73,7 @@ class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr")
 
         if ColumnCountPerChunk is not None and self.cc_type == E_CharacterCountType.COLUMN:
             cl.append(
-                ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk)
+                ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk, False)
             )
 
         cl.append(
