@@ -1,11 +1,7 @@
-## (*) compiling generated engine code and test
-g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggdb  ##
+## (2) compiling generated engine code and test
+g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
-## IGNORED: ./tmp.cpp: In function ‘void TestAnalyzer_Mr_UnitTest_analyzer_function(quex::TestAnalyzer*)’:
-## IGNORED: ./tmp.cpp:162: warning: label ‘STATE_0’ defined but not used
-## IGNORED: ./tmp.cpp:191: warning: label ‘STATE_0_DROP_OUT_DIRECT’ defined but not used
-## IGNORED: ./tmp.cpp: At global scope:
-## IGNORED: ./tmp.cpp:32: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used
+## IGNORED: ./tmp.cpp:37:1: warning: ‘quex::Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 ## (*) running the test
 (*) test string: 
 '
@@ -18,13 +14,14 @@ g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe -ggd
         g
 '
 (*) result:
-next letter: <a>
-next letter: <b>
-next letter: <c>
-next letter: <d>
-next letter: <e>
-next letter: <f>
-next letter: <g>
+next letter: <a> column_n: 5
+next letter: <b> column_n: 5
+next letter: <c> column_n: 5
+next letter: <d> column_n: 5
+next letter: <e> column_n: 5
+next letter: <f> column_n: 9
+next letter: <g> column_n: 9
+end
 ---
 INDENT
 NODENT
@@ -33,4 +30,5 @@ NODENT
 NODENT
 INDENT
 NODENT
+
 

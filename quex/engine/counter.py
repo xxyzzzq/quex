@@ -290,7 +290,7 @@ class CountCmdFactory:
         on_begin         = [ ColumnCountReferencePSet(pointer) ]
         on_after_reload  = [ ColumnCountReferencePSet(pointer) ]
         on_end           = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
-        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, True) ]
+        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
 
         return on_begin, on_end, on_before_reload, on_after_reload
 

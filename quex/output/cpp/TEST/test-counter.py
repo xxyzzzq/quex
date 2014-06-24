@@ -150,19 +150,20 @@ def get_test_application(counter_db, ReferenceP, CT):
     counter_str = counter_str.replace("static void", "void")
 
     # Make sure that the counter is implemented using reference pointer
-    found_f = False
+    found_n = 0
     for i, line in enumerate(counter_str.split("\n")):
         if line.find("reference_p") != -1:
-            found_f = True
-            break
+            found_n += 1
+            if found_n == 3: break
 
 
     # [RP] Verify that a reference pointer has been used or not used according 
     #      to what was specified.
+    #      1. place: definition, 2. place: reference pointer set, 3. place: add.
     if ReferenceP:
-        assert found_f, "Counter has not been setup using a reference pointer."
+        assert found_n >= 3, "Counter has not been setup using a reference pointer."
     else:
-        assert not found_f, "Counter has been setup using a reference pointer."
+        assert found_n == 0, "Counter has been setup using a reference pointer."
 
     open("./data/test.c", "wb").write("#include <data/check.h>\n\n" + counter_str)
 

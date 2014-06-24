@@ -1,14 +1,14 @@
-<test-database execution-time-sec="15.60" date="Tue Jun 17 00:28:21 2014">
+<test-database execution-time-sec="15.68" date="Tue Jun 24 08:29:03 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.52"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.57"> 
         <application file-name="indentation_setup.py" info-request-time="1392920307L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.10" crc="-1913863679"/>
-           <choice name="twice" result="FAIL" time_sec="0.11" crc="1970468013"/>
-           <choice name="intersection" result="FAIL" time_sec="0.10" crc="395610589"/>
+           <choice name="basic" result="FAIL" time_sec="0.12" crc="-1913863679"/>
+           <choice name="twice" result="FAIL" time_sec="0.12" crc="1970468013"/>
+           <choice name="intersection" result="FAIL" time_sec="0.11" crc="395610589"/>
            <choice name="intersection-2" result="FAIL" time_sec="0.11" crc="373692848"/>
-           <choice name="non-numeric" result="FAIL" time_sec="0.10" crc="-1942671049"/>
+           <choice name="non-numeric" result="FAIL" time_sec="0.11" crc="-1942671049"/>
         </choice-list>
     </test>
     <test title="Case Folding based on Unicode Database" time-sum-sec="0.88"> 
@@ -23,11 +23,11 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.15" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.57"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.60"> 
         <application file-name="counter_setup.py" info-request-time="1394750611L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="basic" result="FAIL" time_sec="0.12" crc="1884688964"/>
+           <choice name="basic" result="FAIL" time_sec="0.15" crc="1884688964"/>
            <choice name="twice" result="OK" time_sec="0.11" crc="1601138060"/>
            <choice name="intersection" result="OK" time_sec="0.11" crc="-1216047975"/>
            <choice name="intersection-2" result="OK" time_sec="0.11" crc="1668066904"/>
