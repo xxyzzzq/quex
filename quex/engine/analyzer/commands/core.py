@@ -659,7 +659,7 @@ def __configure():
                                               (E_R.Indentation,r), (E_R.ReferenceP,r))
     c(E_Cmd.IndentationReferencePSet,         ("pointer_name", "offset"),
                                               (E_R.ReferenceP,w))
-    c(E_Cmd.IndentationReferencePDeltaAdd,    ("pointer_name", "indentation_n_per_chunk"),
+    c(E_Cmd.IndentationReferencePDeltaAdd,    ("pointer_name", "indentation_n_per_chunk", "subtract_one_f"),
                                               (E_R.Indentation,r+w), (E_R.ReferenceP,r))
     c(E_Cmd.IndentationGridAddWithReferenceP, ("grid_size", "pointer_name", "indentation_n_per_chunk"),
                                               (E_R.Indentation,r+w), (E_R.ReferenceP,r+w))
@@ -672,7 +672,7 @@ def __configure():
                                               (E_R.Column,r+w))
     c(E_Cmd.ColumnCountReferencePSet,         ("pointer", "offset"),
                                               (0,r), (E_R.ReferenceP,w))
-    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk"),
+    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk", "subtract_one_f"),
                                               (E_R.Column,r+w), (0,r), (E_R.ReferenceP,r))
     c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer", "column_n_per_chunk"),
                                               (E_R.Column,r+w), (1,r), (E_R.ReferenceP,r+w))
@@ -812,8 +812,8 @@ def LexemeResetTerminatingZero():
 def ColumnCountReferencePSet(Pointer, Offset=0):
     return Command(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
 
-def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk):
-    return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk)
+def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk, SubtractOneF):
+    return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
 
 def ColumnCountSet(Value):
     return Command(E_Cmd.ColumnCountSet, Value)

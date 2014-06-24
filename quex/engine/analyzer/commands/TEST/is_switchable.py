@@ -54,7 +54,7 @@ test(InputPDereference(),
      StoreInputPosition(0, 1, 0))
 test(Assign(E_R.InputP,       E_R.ReferenceP), 
      Assign(E_R.LexemeStartP, E_R.ReferenceP))
-test(ColumnCountReferencePDeltaAdd(E_R.InputP, 5), 
+test(ColumnCountReferencePDeltaAdd(E_R.InputP, 5, False), 
      Assign(E_R.CharacterBeginP, E_R.ReferenceP))
 print "(1.3) Commands with interferring access to registers, one read other write ___"
 print
@@ -62,7 +62,7 @@ test(Assign(E_R.InputP, E_R.CharacterBeginP),
      StoreInputPosition(0, 1, 0))                
 test(Assign(E_R.InputP,       E_R.ReferenceP), 
      Assign(E_R.LexemeStartP, E_R.InputP))
-test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5), 
+test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
      Assign(E_R.ReferenceP, E_R.InputP))
 print "(1.4) Commands with interferring access to registers, both write _____________"
 print
@@ -70,7 +70,7 @@ test(StoreInputPosition(0, 1, 0),
      StoreInputPosition(0, 1, 0))                
 test(Assign(E_R.InputP, E_R.ReferenceP), 
      Assign(E_R.InputP, E_R.InputP))
-test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5), 
+test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
      ColumnCountAdd(2))
 print "(2) Branchers: _______________________________________________________________"
 print

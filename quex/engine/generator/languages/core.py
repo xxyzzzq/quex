@@ -355,7 +355,8 @@ class Lng_Cpp(dict):
 
         elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
             return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Cmd.content.pointer), 
-                                               Cmd.content.column_n_per_chunk) 
+                                               Cmd.content.column_n_per_chunk, 
+                                               Cmd.content.subtract_one_f) 
 
         elif Cmd.id == E_Cmd.LineCountAdd:
             txt = []
@@ -543,7 +544,17 @@ class Lng_Cpp(dict):
         else:
             return "%s" % NameOrValue
 
-    def REFERENCE_P_COLUMN_ADD(self, IteratorName, ColumnCountPerChunk, SubtractOneF=False):
+    def REFERENCE_P_COLUMN_ADD(self, IteratorName, ColumnCountPerChunk, SubtractOneF):
+        """Add reference pointer count to current column. There are two cases:
+           (1) The character at the end is part of the 'constant column count region'.
+               --> We do not need to go one back. 
+           (2) The character at the end is NOT part of the 'constant column count region'.
+               --> We need to go one back (SubtractOneF=True).
+
+           The second case happens, for example, when a 'grid' (tabulator) character is
+           hit. Then, one needs to get before the tabulator before one jumps to the 
+           next position.
+        """
         minus_one = { True: " - 1", False: "" }[SubtractOneF]
         delta_str = "(%s - reference_p%s)" % (IteratorName, minus_one)
         return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)(%s));\n" \

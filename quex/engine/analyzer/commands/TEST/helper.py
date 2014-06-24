@@ -28,7 +28,7 @@ example_db = {
     E_Cmd.InputPDereference:                [ InputPDereference() ],
     E_Cmd.LexemeResetTerminatingZero:       [ LexemeResetTerminatingZero() ],
     E_Cmd.ColumnCountReferencePSet:         [ ColumnCountReferencePSet(E_R.CharacterBeginP, 1000) ],
-    E_Cmd.ColumnCountReferencePDeltaAdd:    [ ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555) ],
+    E_Cmd.ColumnCountReferencePDeltaAdd:    [ ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555, False) ],
     E_Cmd.ColumnCountAdd:                   [ ColumnCountAdd(1) ],
     E_Cmd.ColumnCountGridAdd: [ 
         ColumnCountGridAdd(1),

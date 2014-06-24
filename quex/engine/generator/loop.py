@@ -103,7 +103,7 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
         elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
                 GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
-                ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk),
+                ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk, False),
             ] + AfterBeyond
         else:
             return [
