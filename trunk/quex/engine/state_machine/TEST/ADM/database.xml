@@ -1,4 +1,4 @@
-<test-database execution-time-sec="55191.30" date="Tue Jun 17 00:28:20 2014">
+<test-database execution-time-sec="55191.31" date="Tue Jun 24 08:29:02 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -147,7 +147,7 @@
                <choice name="" result="OK" time_sec="0.90" crc="-263815900"/>
             </choice-list>
         </test>
-        <test title="Characters" time-sum-sec="1.40"> 
+        <test title="Characters" time-sum-sec="1.41"> 
             <application file-name="test-count_character_n.py" info-request-time="1390979655L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -155,7 +155,7 @@
                <choice name="BeginOfLine" result="OK" time_sec="0.70" crc="268888540"/>
             </choice-list>
         </test>
-        <test title="Characters of different horizontal sizes." time-sum-sec="2.70"> 
+        <test title="Characters of different horizontal sizes." time-sum-sec="2.71"> 
             <application file-name="test-count_character_n-2.py" info-request-time="1394950335L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -272,6 +272,13 @@
                <choice name="" result="OK" time_sec="0.07" crc="-77063234"/>
             </choice-list>
         </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
+            </choice-list>
+        </test>
         <test title="Cloning" time-sum-sec="0.06"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
@@ -284,13 +291,6 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.06" crc="638605976"/>
-            </choice-list>
-        </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.10"> 
