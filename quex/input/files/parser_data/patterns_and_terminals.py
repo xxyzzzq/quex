@@ -315,11 +315,19 @@ def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, te
 
     check_indentation_setup(ISetup)
 
+    if ISetup.sm_newline_suppressor.get() is not None:
+        sm_suppressed_newline = sequentialize.do([ISetup.sm_newline_suppressor.get(),
+                                                  ISetup.sm_newline.get()])
+    else:
+        sm_suppressed_newline = None
+
     data = { 
         "counter_db":                    CounterDb,
         "indentation_setup":             ISetup,
+        "incidence_db":                  IncidenceDb,
         "default_indentation_handler_f": IncidenceDb.default_indentation_handler_f(),
         "mode_name":                     ModeName,
+        "sm_suppressed_newline":         sm_suppressed_newline,
     }
 
     ppt_list = [
@@ -327,11 +335,12 @@ def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, te
         PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_factory)
     ]
 
-    if ISetup.sm_newline_suppressor.get() is not None:
+    if sm_suppressed_newline is not None:
         ppt_list.append(
             # 'newline-suppressor' followed by 'newline' is ignored (skipped)
             PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, 
-                                                       terminal_factory)
+                                                       terminal_factory,
+                                                       sm_suppressed_newline)
         )
 
     return [], ppt_list
@@ -503,7 +512,7 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_facto
 
     return PPT(PatternPriority(MHI, 0), pattern, terminal)
 
-def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_factory):
+def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_factory, SmSupressedNewline):
     """Generate a PPT for suppressed newline, that is:
 
         -- its PatternPriority.
@@ -512,12 +521,9 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
 
     The terminal simply jumpts to the re-entry of the lexical analyzer.
     """
-    assert ISetup.sm_newline_suppressor.get() is not None
+    assert SmSupressedNewline is not None
 
-    sm = sequentialize.do([ISetup.sm_newline_suppressor.get(),
-                           ISetup.sm_newline.get()])
-
-    pattern = Pattern(sm)
+    pattern = Pattern(SmSuppressedNewline)
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])
@@ -544,7 +550,7 @@ def check_indentation_setup(isetup):
 
     for i, candidate1 in enumerate(candidates):
         for candidate2 in candidates[i+1:]:
-            if not mutually_subset(candidates1.get(), candidate2.get()): continue
+            if not mutually_subset(candidate1.get(), candidate2.get()): continue
             c_error_message(candidate1, candidate2,
                             ThisComment="matches on some common lexemes as",
                             ThatComment="") 

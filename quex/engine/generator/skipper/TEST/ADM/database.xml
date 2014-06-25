@@ -1,12 +1,12 @@
-<test-database execution-time-sec="46.74" date="Tue Jun 24 08:29:02 2014">
+<test-database execution-time-sec="46.67" date="Thu Jun 26 00:44:32 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="2.87"> 
+    <test title="Indentation Counting" time-sum-sec="2.80"> 
         <application file-name="test-indentation-counter.py" info-request-time="1403384629L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
-           <choice name="Uniform" result="OK" time_sec="0.95" crc="1131795500"/>
-           <choice name="NonUniform" result="OK" time_sec="0.91" crc="1218462623"/>
-           <choice name="NonUniform-2" result="OK" time_sec="1.01" crc="2024468269"/>
+           <choice name="Uniform" result="OK" time_sec="0.93" crc="1131795500"/>
+           <choice name="NonUniform" result="OK" time_sec="0.93" crc="1218462623"/>
+           <choice name="NonUniform-2" result="OK" time_sec="0.94" crc="2024468269"/>
         </choice-list>
     </test>
     <group name="Skip-Characters">

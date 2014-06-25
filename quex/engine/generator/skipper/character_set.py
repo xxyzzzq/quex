@@ -76,7 +76,7 @@ def do(Data, TheAnalyzer):
         reload_state = TheAnalyzer.reload_state
         reload_f     = True
         
-    result, \
+    result,        \
     door_id_beyond = loop.do(CountCmdFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 
                              AfterBeyond       = [ GotoDoorId(DoorID.continue_without_on_after_match()) ],
                              LexemeEndCheckF   = False,

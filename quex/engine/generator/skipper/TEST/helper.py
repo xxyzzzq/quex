@@ -127,10 +127,9 @@ def create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, Token
         "indentation_setup":             ISetup,
         "counter_db":                    CounterSetupLineColumn_Default(),
         "incidence_db":                  {E_IncidenceIDs.INDENTATION_BAD: ""},
-        "incidence_id":                  dial_db.new_incidence_id(),
         "default_indentation_handler_f": True,
         "mode_name":                     "Test",
-        "suppressed_newline":            None,
+        "sm_suppressed_newline":         None,
     }
 
     code_str = indentation_counter.do(data, Analyzer)

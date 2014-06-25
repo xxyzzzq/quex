@@ -55,7 +55,7 @@ def get(CCFactory, Name):
     function_name  = Lng.DEFAULT_COUNTER_FUNCTION_NAME(Name) 
 
     door_id_return = dial_db.new_door_id()
-    code, \
+    code,          \
     door_id_beyond = loop.do(CCFactory, 
                              AfterBeyond     = [ GotoDoorId(door_id_return) ],
                              LexemeEndCheckF = True,
