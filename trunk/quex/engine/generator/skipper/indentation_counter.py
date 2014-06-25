@@ -83,10 +83,11 @@ def do(Data, TheAnalyzer):
     counter_db            = Data["counter_db"]
     isetup                = Data["indentation_setup"]
     incidence_db          = Data["incidence_db"]
-    self_iid              = Data["incidence_id"]
     default_ih_f          = Data["default_indentation_handler_f"]
     mode_name             = Data["mode_name"]
-    sm_suppressed_newline = Data["suppressed_newline"]
+    sm_suppressed_newline = Data["sm_suppressed_newline"]
+
+    loop_iid              = dial_db.new_incidence_id()
 
     # -- 'on_indentation' == 'on_beyond': 
     #     A handler is called as soon as an indentation has been detected.
@@ -102,10 +103,11 @@ def do(Data, TheAnalyzer):
     if Setup.buffer_based_analyzis_f: reload_state = None
     else:                             reload_state = TheAnalyzer.reload_state
 
+    loop_iid = dial_db.new_incidence_id()
     sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
                                                            isetup.sm_newline.get(),
                                                            isetup.sm_comment.get(),
-                                                           DoorID.incidence(self_iid))
+                                                           DoorID.incidence(loop_iid))
 
     # 'whitespace' --> normal counting
     # 'bad'        --> goto bad character indentation handler
@@ -116,12 +118,15 @@ def do(Data, TheAnalyzer):
                                                            DoorID.incidence(bad_indentation_iid))
 
     # (*) Generate Code
-    code, beyond_iid = loop.do(ccfactory, 
-                               AfterBeyond       = after_beyond,
-                               EngineType        = TheAnalyzer.engine_type,
-                               ReloadStateExtern = reload_state,
-                               LexemeMaintainedF = True,
-                               ParallelSmTerminalPairList = sm_terminal_list)
+    code,          \
+    door_id_beyond = loop.do(ccfactory, 
+                             AfterBeyond       = after_beyond,
+                             EngineType        = TheAnalyzer.engine_type,
+                             ReloadStateExtern = reload_state,
+                             LexemeMaintainedF = True,
+                             ParallelSmTerminalPairList = sm_terminal_list)
+
+    code = ["%s\n" % Lng.LABEL(DoorID.incidence(loop_iid))] + code
 
     _code_terminal_on_bad_indentation_character(code, isetup, mode_name, incidence_db, 
                                                 bad_indentation_iid)
@@ -142,7 +147,7 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
     """
     result = []
     _add_suppressed_newline(result, SmSuppressedNewline, DoorIdIndentationHandler)
-    _add_newline(result, SmNewline)
+    _add_newline(result, SmNewline, DoorIdIndentationHandler)
     _add_comment(result, SmComment, DoorIdIndentationHandler)
     return result
 
@@ -165,10 +170,10 @@ def _add_suppressed_newline(psml, SmSuppressedNewline, DoorIdIndentationHandler)
 
     psml.append((SmSuppressedNewline, terminal))
 
-def _add_newline(psml, SmNewline):
+def _add_newline(psml, SmNewline, DoorIdIndentationHandler):
     """Add a pair (newline state machine, terminal on newline) to 'psml'.
 
-    When a newline occurs, the column cout can be set to 1 and the line number
+    When a newline occurs, the column count can be set to 1 and the line number
     is incremented. Then the indentation counting restarts.
     """
     assert SmNewline is not None
@@ -176,7 +181,7 @@ def _add_newline(psml, SmNewline):
     cl = [
         ColumnCountSet(1),
         LineCountAdd(1),
-        GotoDoorId(DoorID.global_reentry())
+        GotoDoorId(DoorIdIndentationHandler)
     ]
     terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), "<INDENTATION NEWLINE>")
     terminal.set_incidence_id(SmNewline.get_id())
