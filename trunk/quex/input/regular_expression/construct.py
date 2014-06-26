@@ -1,5 +1,7 @@
 #from   quex.input.files.parser_data.counter           import ParserDataLineColumn
 from   quex.engine.interval_handling                  import UnicodeInterval, Interval
+from   quex.engine.generator.code.base                import SourceRef_VOID, \
+                                                             SourceRef
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.utf16_state_split    import ForbiddenRange
 from   quex.engine.state_machine.character_counter    import CountInfo
@@ -11,7 +13,6 @@ import quex.engine.state_machine.algebra.reverse      as     reverse
 from   quex.engine.misc.file_in                       import error_msg
 #                                                         
 from   quex.engine.tools               import typed
-from   quex.engine.generator.code.base import SourceRef
 from   quex.blackboard                 import setup     as Setup, deprecated
 import sys
 
@@ -27,20 +28,20 @@ class Pattern(object):
                  "__pattern_string",
                  "__count_info", 
                  "__alarm_transformed_f")
-    @typed(CoreSM=StateMachine, BeginOfLineF=bool, EndOfLineF=bool, AllowNothingIsNecessaryF=bool)
+    @typed(CoreSM=StateMachine, BeginOfLineF=bool, EndOfLineF=bool, AllowNothingIsNecessaryF=bool, Sr=SourceRef)
     def __init__(self, CoreSM, PreContextSM=None, PostContextSM=None, 
-                 BeginOfLineF=False, EndOfLineF=False, fh=-1, 
+                 BeginOfLineF=False, EndOfLineF=False, Sr=SourceRef_VOID, 
                  PatternString="",
                  AllowNothingIsNecessaryF=False):
         assert PreContextSM is None or isinstance(PreContextSM, StateMachine)
         Pattern.check_initial(CoreSM, 
                               BeginOfLineF, PreContextSM, 
                               EndOfLineF, PostContextSM, 
-                              fh,
+                              Sr,
                               AllowNothingIsNecessaryF)
 
         self.__pattern_string = PatternString
-        self.__sr             = SourceRef.from_FileHandle(fh)
+        self.__sr             = Sr
 
         # (*) Setup the whole pattern
         self.__sm                         = CoreSM
@@ -82,11 +83,11 @@ class Pattern(object):
         # Ensure, that the pattern is never transformed twice
         self.__alarm_transformed_f = False
 
-        self.__validate(fh)
+        self.__validate(Sr)
     
     @staticmethod
     def from_character_set(CharacterSet):
-        return Pattern(StateMachine.from_character_set(CharacterSet))
+        return Pattern(StateMachine.from_character_set(CharacterSet), "<character set>")
 
     @property
     def sr(self):             return self.__sr
@@ -224,12 +225,12 @@ class Pattern(object):
         # can be considered complete.
         return c0 and c1 and c2
 
-    def __validate(self, fh):
+    def __validate(self, Sr):
         # (*) It is essential that state machines defined as patterns do not 
         #     have origins.
         if self.__sm.has_origins():
             error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n", Sr)
 
         # (*) Acceptance states shall not store the input position when they are 'normally'
         #     post-conditioned. Post-conditioning via the backward search is a different 
@@ -242,11 +243,11 @@ class Pattern(object):
                and state.is_acceptance():
                 error_msg("Pattern with post-context: An irregularity occurred.\n" + \
                           "(end of normal post-contexted core pattern is an acceptance state)\n" 
-                          "Please, log a defect at the projects website quex.sourceforge.net.", fh)
+                          "Please, log a defect at the projects website quex.sourceforge.net.", Sr)
 
         if acceptance_f == False:
             error_msg("Pattern has no acceptance state and can never match.\n" + \
-                      "Aborting generation process.", fh)
+                      "Aborting generation process.", Sr)
 
         self.check_consistency()
 
@@ -286,10 +287,10 @@ class Pattern(object):
     def check_initial(core_sm, 
                       begin_of_line_f, pre_context, 
                       end_of_line_f,   post_context, 
-                      fh, 
+                      Sr, 
                       AllowNothingIsNecessaryF):
 
-        def check(Name, Sm, fh):
+        def check(Name, Sm, Sr):
             if Sm is None: 
                 return
 
@@ -297,18 +298,18 @@ class Pattern(object):
                 error_msg("Orphaned state(s) detected in %spattern (optimization lack).\n" % Name + \
                           "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
                           "Orphan state(s) = " + repr(Sm.get_orphaned_state_index_list()), 
-                          fh, DontExitF=True)
+                          Sr, DontExitF=True)
             elif Sm.is_empty():
-                error_msg("Empty %spattern." % Name, fh)
+                error_msg("Empty %spattern." % Name, Sr)
 
             elif not AllowNothingIsNecessaryF:
                 # 'Nothing is necessary' cannot be accepted. 
                 # See the discussion in the module "quex.output.cpp.core".
-                Pattern.detect_path_of_nothing_is_necessary(Sm,  Name.strip(),  post_context_f, fh)
+                Pattern.detect_path_of_nothing_is_necessary(Sm,  Name.strip(),  post_context_f, Sr)
 
         post_context_f = (post_context is not None)
         for name, sm in [("pre-context ", pre_context), ("", core_sm), ("post-context ", post_context)]:
-            check(name, sm, fh)
+            check(name, sm, Sr)
 
     @staticmethod
     def detect_path_of_nothing_is_necessary(sm, Name, PostContextPresentF, fh):

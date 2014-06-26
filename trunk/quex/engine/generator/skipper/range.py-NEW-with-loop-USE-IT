@@ -151,8 +151,7 @@ def get_skipper(ClosingSequence, ClosingCountInfo, ModeName, DoorIdOnSkipRangeOp
     character_set  = NumberSet(exit_character).inverse()
 
     result,         \
-    door_id_beyond, \
-    door_id_loop    = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 
+    door_id_beyond = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 
                              DoorIdExit        = door_id_remaining_characters,
                              LexemeEndCheckF   = False,
                              LexemeMaintainedF = False,

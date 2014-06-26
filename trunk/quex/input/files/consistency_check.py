@@ -84,10 +84,12 @@ def do(ModeDB):
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
     
     def get_name(P, AddSpaceF=True):
-        if P.incidence_id() in E_IncidenceIDs_Subset_Special: 
+        if P.pattern_string():
+            result = P.pattern_string()
+        elif P.incidence_id() in E_IncidenceIDs_Subset_Special: 
             result = repr(P.comment).replace("_", " ").lower()
         else:
-            result = P.pattern_string()
+            result = "<unnamed>"
 
         if AddSpaceF and len(result) != 0: result += " "
         return result
@@ -101,12 +103,17 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
     if len(ThatComment) != 0: Space = " "
     else:                     Space = ""
 
-    msg = "%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), That.pattern_string())
+    # msg = "%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), 
+    #                               That.pattern_string())
+    msg = "pattern '%s'." % That.pattern_string()
+
     if len(EndComment) == 0:
-        error_msg(msg,        FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, SuppressCode=SuppressCode)
+        error_msg(msg,        FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, 
+                  SuppressCode=SuppressCode)
     else:
         error_msg(msg,        FileName, LineN, DontExitF=True,      WarningF=not ExitF)
-        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, SuppressCode=SuppressCode)
+        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, 
+                  SuppressCode=SuppressCode)
 
 def __start_mode(implemented_mode_name_list, mode_name_list):
     """If more then one mode is defined, then that requires an explicit 

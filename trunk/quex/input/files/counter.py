@@ -5,7 +5,6 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
 from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.counter                        import CounterSetupIndentation
 from   quex.engine.misc.file_in                   import error_msg, \
                                                          check, \
                                                          check_or_die, \

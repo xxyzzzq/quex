@@ -19,6 +19,7 @@ from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.misc.string_handling             import blue_print
 from   quex.blackboard                              import Lng, \
                                                            E_StateIndices, \
+                                                           E_IncidenceIDs, \
                                                            setup as Setup
 import quex.blackboard                              as     blackboard
 
@@ -223,11 +224,11 @@ def _add_comment(psml, SmComment, DoorIdIndentationHandler):
 def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName, incidence_db, BadIndentationIid):
     if ISetup.bad_character_set.get() is None:
         return
-    code, eol_f = incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
+    on_bad_indentation_txt = incidence_db[E_IncidenceIDs.INDENTATION_BAD]
     code.extend([
         "%s:\n" % Lng.LABEL(DoorID.incidence(BadIndentationIid)),
         "#define BadCharacter ((QUEX_TYPE_CHARACTER)*(me->buffer._input_p))\n",
-        "%s\n" % code,
+        "%s\n" % on_bad_indentation_txt,
         "#undef  BadCharacter\n",
         "%s\n" % Lng.GOTO(DoorID.global_reentry())
     ])
