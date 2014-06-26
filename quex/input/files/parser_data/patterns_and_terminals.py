@@ -81,6 +81,7 @@ def get(BaseModeSequence, OptionsDb, CounterDb, IncidenceDb):
 
     # -- Pattern/Actions of the the mode
     ppt_list = _pattern_collect(BaseModeSequence, CounterDb, terminal_factory)
+
     extra_terminal_list = []
 
     # -- Collect patterns and terminals which are required to implement
@@ -501,7 +502,8 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_facto
     """
     sm = ISetup.sm_newline.get()
 
-    pattern = Pattern(sm)
+    pattern = Pattern(sm, PatternString="<newline>", 
+                      Sr = ISetup.sm_newline.sr)
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
 
@@ -523,7 +525,8 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
     """
     assert SmSupressedNewline is not None
 
-    pattern = Pattern(SmSuppressedNewline)
+    pattern = Pattern(SmSuppressedNewline, 
+                      PatternString="<suppressed newline>")
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])

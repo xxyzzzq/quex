@@ -3,8 +3,7 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.generator.code.base            import SourceRef_VOID, \
-                                                         SourceRef
+from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.generator.code.core            import CodeTerminal
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.tools                          import return_None
@@ -29,52 +28,6 @@ from   itertools   import izip, chain
 from   operator    import itemgetter
 
 import sys
-
-class CounterSetupIndentation(object):
-    __slots__ = ("sr",                     # Source Reference
-                 "count_command_map",      # Column N per Char --> CharacterSet
-                                           # Grid Step Size    --> CharacterSet
-                 "sm_newline",             # State machine detecting 'newline'
-                 "sm_newline_suppressor",  # State machine detecting 'newline suppressor'
-                 "bad_character_set")      # Set of characters which shall not appear in indentation
-    def __init__(self, IndSetup, SourceReference=SourceRef_VOID):
-        self.sr                    = SourceReference
-        self.count_command_map     = IndSetup.count_command_map
-        self.sm_newline            = IndSetup.sm_newline
-        self.sm_newline_suppressor = IndSetup.sm_newline_suppressor
-        self.bad_character_set     = IndSetup.bad_character_set
-
-        self.defaultize()
-
-    def homogeneous_spaces(self):
-        # Note, from about the grid_db does not accept grid values of '1'
-        if   len(self.grid) != 0:   return False
-        elif len(self.column) != 1 : return False
-        # Here, the column can have only one value. If it is '1' than 
-        # the indentation is based soley on single spaces.
-        return self.column.has_key(1)
-
-    def indentation_count_character_set(self):
-        """Returns the superset of all characters that are involved in
-        indentation counting. That is the set of character that can appear
-        between newline and the first non whitespace character.  
-        """
-        result = NumberSet()
-        for character_set in self.column.values():
-            result.unite_with(character_set)
-        for character_set in self.grid.values():
-            result.unite_with(character_set)
-        return result
-
-    def consistency_check(self, fh):
-        Base.consistency_check(self, fh)
-        assert not self.sm_newline.get().is_empty()
-
-    def defaultize(self):
-        all_set = _get_all_character_set(self.column, self.grid)
-        all_set.unite_with(self.bad_character_set)
-
-        self.sm_newline = self.defaultize_sm_newline(all_set)
 
 def _get_all_character_set(*DbList):
     result = NumberSet()
@@ -135,7 +88,7 @@ class CountCmdFactory:
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
         if bad_character_set is not None:
-            self.__map.append(
+            result.__map.append(
                 CountInfo(dial_db.new_incidence_id(), E_CharacterCountType.BAD, None, 
                           bad_character_set)
             )

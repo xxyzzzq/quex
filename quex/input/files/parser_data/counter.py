@@ -8,7 +8,7 @@ from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
-                                                         SourceRef_VOID
+                                                         SourceRef_DEFAULT
 from   quex.engine.interval_handling              import NumberSet, \
                                                          NumberSet_All
 from   quex.blackboard                            import E_CharacterCountType
@@ -205,7 +205,7 @@ class CountCmdMap(object):
         remaining character set can be associated with the 'else-CountCmdMapEntry'.
         """
         if self.__else is None: 
-            else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_VOID)
+            else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_DEFAULT)
             error_msg("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
                       DontExitF=True, WarningF=True, 
                       SuppressCode=NotificationDB.warning_counter_setup_without_else)
@@ -575,7 +575,7 @@ class ParserDataIndentation(Base):
         else:
             sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
 
-        self.specify_newline(sm, SourceRef_VOID)
+        self.specify_newline(sm, SourceRef_DEFAULT)
 
     def finalize(self, fh):
         if self.whitespace_character_set.get() is None:
@@ -679,13 +679,13 @@ def CounterSetupLineColumn_Default():
 
     if _CounterSetupLineColumn_Default is None:
         count_command_map = CountCmdMap()
-        count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_VOID)
-        count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_VOID)
-        count_command_map.define_else("space",   1, SourceRef_VOID)                       # Define: "\else"
+        count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_DEFAULT)
+        count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_DEFAULT)
+        count_command_map.define_else("space",   1, SourceRef_DEFAULT)                    # Define: "\else"
         count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
-                                                    SourceRef_VOID) 
+                                                    SourceRef_DEFAULT) 
 
-        _CounterSetupLineColumn_Default = ParserDataLineColumn(SourceRef_VOID, 
+        _CounterSetupLineColumn_Default = ParserDataLineColumn(SourceRef_DEFAULT, 
                                                                count_command_map)
 
     return _CounterSetupLineColumn_Default
