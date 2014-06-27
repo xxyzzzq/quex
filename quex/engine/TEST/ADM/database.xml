@@ -1,4 +1,4 @@
-<test-database execution-time-sec="45.58" date="Tue Jun 24 08:29:00 2014">
+<test-database execution-time-sec="45.58" date="Fri Jun 27 06:11:38 2014">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.10"> 
@@ -30,6 +30,19 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.05" crc="2115164504"/>
+            </choice-list>
+        </test>
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="7.91"> 
+            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="7" same_result="False">
+               <choice name="10" result="OK" time_sec="0.13" crc="1378888075"/>
+               <choice name="1000" result="OK" time_sec="0.66" crc="-646722016"/>
+               <choice name="2000" result="OK" time_sec="2.14" crc="1205044615"/>
+               <choice name="3000" result="OK" time_sec="4.40" crc="843858714"/>
+               <choice name="100" result="OK" time_sec="0.14" crc="-2005431878"/>
+               <choice name="250" result="OK" time_sec="0.17" crc="1443580919"/>
+               <choice name="500" result="OK" time_sec="0.27" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Massive Mutual Consistency Check" time-sum-sec="28.85"> 
@@ -109,19 +122,6 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="161038093"/>
-            </choice-list>
-        </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="7.91"> 
-            <application file-name="test-NumberSet-transform-x.py" info-request-time="1393744472L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="7" same_result="False">
-               <choice name="10" result="OK" time_sec="0.13" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.66" crc="-646722016"/>
-               <choice name="2000" result="OK" time_sec="2.14" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="4.40" crc="843858714"/>
-               <choice name="100" result="OK" time_sec="0.14" crc="-2005431878"/>
-               <choice name="250" result="OK" time_sec="0.17" crc="1443580919"/>
-               <choice name="500" result="OK" time_sec="0.27" crc="-352222672"/>
             </choice-list>
         </test>
     </group>

@@ -1,3 +1,9 @@
 ## commonalities of the suppressor are no longer forbidden.
-src/error-5.qx:11:error: The newline pattern '(\r\n)|(\n)' matches on some common lexemes as
-src/error-5.qx:8:error: suppressor pattern '\n'.
+src/error-5.qx:8:warning: Trying to implement default newline: '\n' or '\r\n'.
+src/error-5.qx:8:warning: The '\n' option is not possible, since it has been occupied by 'begin(newline suppressor)'.
+src/error-5.qx:8:warning: No newline can be defined by default.
+src/error-5.qx:8:warning: ('--suppress 13' to avoid this message)
+src/error-5.qx:8:warning: Setup does not define 'begin(newline)'.
+src/error-5.qx:8:warning: ('--suppress 11' to avoid this message)
+src/error-5.qx:8:error: A newline 'suppressor' has been defined.
+src/error-5.qx:8:error: But there is no 'newline' in indentation defintion.

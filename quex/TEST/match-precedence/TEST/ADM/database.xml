@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.98" date="Tue Jun 24 08:28:54 2014">
+<test-database execution-time-sec="13.95" date="Fri Jun 27 06:11:34 2014">
     <last-used-diff-display-program name=""/>
     <test title="Checking PRIORITY-MARK internally." time-sum-sec="3.15"> 
         <application file-name="priority.py" info-request-time="1387873736L" vanished="False"/>
@@ -25,7 +25,7 @@
            <choice name="subset" result="OK" time_sec="0.13" crc="726249666"/>
         </choice-list>
     </test>
-    <test title="Checking DELETE marks internally." time-sum-sec="2.66"> 
+    <test title="Checking DELETE marks internally." time-sum-sec="2.62"> 
         <application file-name="deletion.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="19" same_result="False">
@@ -34,14 +34,14 @@
            <choice name="3-end" result="OK" time_sec="0.14" crc="852389561"/>
            <choice name="2-begin" result="OK" time_sec="0.13" crc="1648925108"/>
            <choice name="2-end" result="OK" time_sec="0.13" crc="-426093245"/>
-           <choice name="1" result="FAIL" time_sec="0.14" crc="713290491"/>
+           <choice name="1" result="FAIL" time_sec="0.13" crc="713290491"/>
            <choice name="Nonsense" result="OK" time_sec="0.14" crc="-1578640120"/>
            <choice name="derived-3-begin" result="OK" time_sec="0.14" crc="-1726121148"/>
            <choice name="derived-3-mid" result="OK" time_sec="0.14" crc="220177272"/>
            <choice name="derived-3-end" result="OK" time_sec="0.14" crc="-947840278"/>
            <choice name="derived-2-begin" result="OK" time_sec="0.14" crc="-916642491"/>
            <choice name="derived-2-end" result="OK" time_sec="0.14" crc="1301277106"/>
-           <choice name="derived-1" result="FAIL" time_sec="0.15" crc="-546402800"/>
+           <choice name="derived-1" result="FAIL" time_sec="0.13" crc="-546402800"/>
            <choice name="derived-Nonsense" result="OK" time_sec="0.15" crc="-291449891"/>
            <choice name="before" result="OK" time_sec="0.14" crc="924503932"/>
            <choice name="derived-before" result="OK" time_sec="0.14" crc="1292324771"/>
@@ -50,14 +50,14 @@
            <choice name="subset" result="OK" time_sec="0.13" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.53"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.75"> 
         <application file-name="unvalid-marks.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.36" crc="-84057889"/>
-           <choice name="PRIORITY-fail" result="FAIL" time_sec="0.40" crc="2007608689"/>
+           <choice name="PRIORITY-fail" result="FAIL" time_sec="0.52" crc="2007608689"/>
            <choice name="DELETION-good" result="OK" time_sec="0.36" crc="-964384655"/>
-           <choice name="DELETION-fail" result="FAIL" time_sec="0.41" crc="-1786207579"/>
+           <choice name="DELETION-fail" result="FAIL" time_sec="0.51" crc="-1786207579"/>
         </choice-list>
     </test>
     <test title="Local variables." time-sum-sec="1.63"> 
@@ -68,11 +68,11 @@
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Derived before Base" time-sum-sec="2.11"> 
+        <test title="Derived before Base" time-sum-sec="1.89"> 
             <application file-name="derived-before-base.sh" info-request-time="1381662239L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="2.11" crc="1727262709"/>
+               <choice name="" result="FAIL" time_sec="1.89" crc="1727262709"/>
             </choice-list>
         </test>
         <test title="Larger Inheritance Tree" time-sum-sec="2.91"> 

@@ -12,6 +12,7 @@ from   quex.engine.misc.file_in             import error_msg, \
                                                    EndOfStreamException
 
 from   quex.blackboard import mode_description_db
+import quex.blackboard as     blackboard
 
 from   collections import namedtuple
 from   copy import deepcopy
@@ -263,6 +264,7 @@ def parse(fh, new_mode):
     elif identifier == "indentation":
         value = counter.parse_indentation(fh)
         value.set_containing_mode_name(new_mode.name)
+        blackboard.required_support_indentation_count_set()
 
     elif identifier == "counter":
         value = counter.parse_line_column_counter(fh)

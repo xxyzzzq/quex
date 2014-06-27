@@ -5,9 +5,8 @@ token {
 
 mode X :
 <indentation: 
-    \n   => suppressor; 
-    [\t] => grid 4; 
-    [ ]  => space; 
+    \n    => suppressor; 
+    [ \t] => whitespace; 
 >
 {
     _ => QUEX_TKN_A;
