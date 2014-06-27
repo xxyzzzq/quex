@@ -1,4 +1,4 @@
-<test-database execution-time-sec="46.94" date="Thu Jun 26 06:02:38 2014">
+<test-database execution-time-sec="46.98" date="Fri Jun 27 06:11:39 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting" time-sum-sec="2.81"> 
         <application file-name="test-indentation-counter.py" info-request-time="1403384629L" vanished="False"/>
@@ -10,7 +10,7 @@
         </choice-list>
     </test>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="8.18"> 
+        <test title="Large Buffer" time-sum-sec="8.19"> 
             <application file-name="test-skip.py" info-request-time="1394283215L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
@@ -20,7 +20,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="2.66" crc="-2098256826"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" time-sum-sec="3.78"> 
+        <test title="Varrying Buffer Size" time-sum-sec="3.79"> 
             <application file-name="test-skip-2.py" info-request-time="1394274498L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="True">
@@ -32,7 +32,7 @@
                <choice name="8" result="OK" time_sec="0.66" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.24"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.25"> 
             <application file-name="test-skip-utf8.py" info-request-time="1394277471L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
@@ -56,7 +56,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.23"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.24"> 
             <application file-name="test-skip_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">

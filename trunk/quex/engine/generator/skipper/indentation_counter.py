@@ -147,12 +147,12 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
                  counting columns of whitespace.
     """
     result = []
-    _add_suppressed_newline(result, SmSuppressedNewline, DoorIdIndentationHandler)
+    _add_suppressed_newline(result, SmNewline, SmSuppressedNewline, DoorIdIndentationHandler)
     _add_newline(result, SmNewline, DoorIdIndentationHandler)
     _add_comment(result, SmComment, DoorIdIndentationHandler)
     return result
 
-def _add_suppressed_newline(psml, SmSuppressedNewline, DoorIdIndentationHandler):
+def _add_suppressed_newline(psml, SmNewline, SmSuppressedNewline, DoorIdIndentationHandler):
     """Add a pair (suppressed newline, terminal on suppressed newline to 'psml'.
 
     A suppresed newline is not like a newline--the next line is considered as 
@@ -162,6 +162,11 @@ def _add_suppressed_newline(psml, SmSuppressedNewline, DoorIdIndentationHandler)
     """
     if SmSuppressedNewline is None:
         return
+
+    # The parser MUST ensure that if there is a newline suppressor, there MUST
+    # be a newline being defined.
+    assert SmNewline is not None
+
     cl = [
         LineCountAdd(1),
         GotoDoorId(DoorIdIndentationHandler),

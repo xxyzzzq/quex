@@ -514,7 +514,7 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_facto
 
     return PPT(PatternPriority(MHI, 0), pattern, terminal)
 
-def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_factory, SmSupressedNewline):
+def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_factory, SmSuppressedNewline):
     """Generate a PPT for suppressed newline, that is:
 
         -- its PatternPriority.
@@ -523,7 +523,7 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
 
     The terminal simply jumpts to the re-entry of the lexical analyzer.
     """
-    assert SmSupressedNewline is not None
+    assert SmSuppressedNewline is not None
 
     pattern = Pattern(SmSuppressedNewline, 
                       PatternString="<suppressed newline>")
@@ -540,9 +540,9 @@ def check_indentation_setup(isetup):
        not match some subsets of each other. Otherwise, the behavior would be 
        too confusing.
     """
-    sm_newline            = isetup.sm_newline
-    sm_newline_suppressor = isetup.sm_newline_suppressor
-    sm_comment            = isetup.sm_comment
+    sm_newline            = isetup.sm_newline.get()
+    sm_newline_suppressor = isetup.sm_newline_suppressor.get()
+    sm_comment            = isetup.sm_comment.get()
     candidates            = (sm_newline, sm_newline_suppressor, sm_comment)
 
     def mutually_subset(Sm1, Sm2):
@@ -552,8 +552,10 @@ def check_indentation_setup(isetup):
         return False
 
     for i, candidate1 in enumerate(candidates):
+        if candidate1 is None: continue
         for candidate2 in candidates[i+1:]:
-            if not mutually_subset(candidate1.get(), candidate2.get()): continue
+            if candidate2 is None: continue
+            elif not mutually_subset(candidate1, candidate2): continue
             c_error_message(candidate1, candidate2,
                             ThisComment="matches on some common lexemes as",
                             ThatComment="") 

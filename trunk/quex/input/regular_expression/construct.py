@@ -87,7 +87,8 @@ class Pattern(object):
     
     @staticmethod
     def from_character_set(CharacterSet):
-        return Pattern(StateMachine.from_character_set(CharacterSet), "<character set>")
+        return Pattern(StateMachine.from_character_set(CharacterSet), 
+                       PatternString="<character set>")
 
     @property
     def sr(self):             return self.__sr

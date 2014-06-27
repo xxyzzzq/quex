@@ -3,18 +3,12 @@ token {
     B;
 }
 
-start = X;
-
-mode X { 
-    [\n] => QUEX_TKN_B;
-}
-
-mode Y : X 
+mode X :
 <indentation: 
+    \n        => suppressor; 
     (\r\n)|\n => newline; 
     [ \t]     => whitespace; 
 >
 {
-    a => QUEX_TKN_A;
+    _ => QUEX_TKN_A;
 }
-

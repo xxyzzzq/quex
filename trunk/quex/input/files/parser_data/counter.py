@@ -10,7 +10,8 @@ from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
 from   quex.engine.interval_handling              import NumberSet, \
-                                                         NumberSet_All
+                                                         NumberSet_All, \
+                                                         Interval
 from   quex.blackboard                            import E_CharacterCountType
 
 from   quex.blackboard import setup as Setup
@@ -21,7 +22,7 @@ cc_type_db = {
     "space":                     E_CharacterCountType.COLUMN,
     "grid":                      E_CharacterCountType.GRID,
     "newline":                   E_CharacterCountType.LINE,
-    "begin(newline_suppressor)": E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR,
+    "begin(newline suppressor)": E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR,
     "begin(newline)":            E_CharacterCountType.BEGIN_NEWLINE,
     "begin(comment to newline)": E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE,
     "end(newline)":              E_CharacterCountType.END_NEWLINE,
@@ -508,8 +509,8 @@ class ParserDataIndentation(Base):
         return True
 
     @typed(sr=SourceRef)
-    def __specify_character_set(self, ref, Name, Pattern, sr):
-        cset = extract_trigger_set(sr, Name, Pattern)
+    def __specify_character_set(self, ref, Name, PatternOrNumberSet, sr):
+        cset = extract_trigger_set(sr, Name, PatternOrNumberSet)
         self.count_command_map.add(cset, Name, None, sr)
         ref.set(cset, sr)
 
@@ -534,7 +535,7 @@ class ParserDataIndentation(Base):
         _error_if_defined_before(self.sm_newline_suppressor, sr)
 
         self.count_command_map.add(Sm.get_beginning_character_set(), 
-                                   "begin(newline supressor)", None, sr)
+                                   "begin(newline suppressor)", None, sr)
         self.sm_newline_suppressor.set(Sm, sr)
 
     @typed(sr=SourceRef)
@@ -545,7 +546,7 @@ class ParserDataIndentation(Base):
                                    "begin(comment to newline)", None, sr)
         self.sm_newline_suppressor.set(Sm, sr)
 
-    def sm_newline_defaultize(self):
+    def __sm_newline_default(self):
         """Default newline: '(\n)|(\r\n)'
         """
         global cc_type_name_db
@@ -575,18 +576,29 @@ class ParserDataIndentation(Base):
         else:
             sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
 
-        self.specify_newline(sm, SourceRef_DEFAULT)
+        return sm
 
     def finalize(self, fh):
         if self.whitespace_character_set.get() is None:
-            self.specify("whitespace", Pattern[" \n"], sr=SourceFileRef())
+            whitespace = NumberSet([Interval(ord(" ")), Interval(ord("\t"))])
+            self.__specify_character_set(self.whitespace_character_set, 
+                                         "whitespace", whitespace, 
+                                         sr=SourceRef_DEFAULT)
         if self.sm_newline.get() is None:
-            self.sm_newline_defaultize()
+            sm_newline = self.__sm_newline_default()
+            if sm_newline is not None: 
+                self.specify_newline(sm_newline, SourceRef_DEFAULT)
+
         self.consistency_check()
 
     def consistency_check(self):
         self.count_command_map.check_defined(self.sr, E_CharacterCountType.WHITESPACE)
         self.count_command_map.check_defined(self.sr, E_CharacterCountType.BEGIN_NEWLINE)
+        if self.sm_newline_suppressor.get() is not None:
+            if self.sm_newline.get() is None:
+                error_msg("A newline 'suppressor' has been defined.\n"
+                          "But there is no 'newline' in indentation defintion.", 
+                          self.sm_newline_suppressor.sr)
 
     def __repr__(self):
         txt = Base.__repr__(self)
@@ -682,7 +694,7 @@ def CounterSetupLineColumn_Default():
         count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_DEFAULT)
         count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_DEFAULT)
         count_command_map.define_else("space",   1, SourceRef_DEFAULT)                    # Define: "\else"
-        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply: "\else"
+        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply:  "\else"
                                                     SourceRef_DEFAULT) 
 
         _CounterSetupLineColumn_Default = ParserDataLineColumn(SourceRef_DEFAULT, 

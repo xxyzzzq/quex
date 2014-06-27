@@ -102,7 +102,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 	QUEX_INLINE void
 	QUEX_NAME(IndentationStack_init)(QUEX_NAME(IndentationStack)* me)
 	{
-        *(me->front)   = 0;          /* first indentation at column = 0 */
+        *(me->front)   = 1;          /* first indentation at column = 1 */
         me->back       = me->front;
         me->memory_end = me->front + QUEX_SETTING_INDENTATION_STACK_SIZE;
 	}

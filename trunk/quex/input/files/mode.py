@@ -247,8 +247,6 @@ class IncidenceDB(dict):
         return result
 
     def __setitem__(self, Key, Value):
-        if Key == E_IncidenceIDs.INDENTATION_HANDLER:
-            blackboard.required_support_indentation_count_set()
         dict.__setitem__(self, Key, Value)
 
     @staticmethod
@@ -559,6 +557,7 @@ class Mode:
             if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
             elif low.incidence_id() not in E_IncidenceIDs_Subset_Special:  continue
 
+            print "#hl:", high.pattern_string, low.pattern_string()
             # A superset of B, or B superset of A => there are common matches.
             if not same_check.do(high.sm, low.sm): continue
 

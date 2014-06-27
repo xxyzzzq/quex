@@ -508,3 +508,15 @@ info  = {
     
 }
 
+expr. = (\r\n)|\n
+info  = {
+    line_n_increment                    = 1;
+    column_index                        = 0;
+    column_n_increment                  = VOID;
+    grid_step_n                         = 0;
+    line_n_increment_by_lexeme_length   = VOID;
+    column_n_increment_by_lexeme_length = VOID;
+    grid_step_size_by_lexeme_length     = 0;
+    
+}
+

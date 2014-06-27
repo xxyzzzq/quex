@@ -283,9 +283,8 @@ def get_on_indentation_handler(Mode):
     assert not (    E_IncidenceIDs.INDENTATION_DEDENT   in Mode.incidence_db \
                 and E_IncidenceIDs.INDENTATION_N_DEDENT in Mode.incidence_db)
 
-
     # A mode that deals only with the default indentation handler relies
-    # on what is defined in '$QUEX_PATH/analayzer/member/on_indentation.i'
+    # on what is defined in '$QUEX_PATH/analyzer/member/on_indentation.i'
     if Mode.incidence_db.default_indentation_handler_f():
         return "    return;"
 
@@ -320,7 +319,7 @@ def get_on_indentation_handler(Mode):
         on_n_dedent_str += "    while( start-- != stack->back ) self_send(__QUEX_SETTING_TOKEN_ID_DEDENT);\n"
         on_n_dedent_str += "#endif\n"
 
-    code_fragment = Mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_ERROR)
+    code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_ERROR)
     if code_fragment is not None:
         on_indentation_error = code_fragment.get_text() 
     else:

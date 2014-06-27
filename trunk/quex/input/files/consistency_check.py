@@ -83,19 +83,8 @@ def do(ModeDB):
 
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
     
-    def get_name(P, AddSpaceF=True):
-        if P.pattern_string():
-            result = P.pattern_string()
-        elif P.incidence_id() in E_IncidenceIDs_Subset_Special: 
-            result = repr(P.comment).replace("_", " ").lower()
-        else:
-            result = "<unnamed>"
-
-        if AddSpaceF and len(result) != 0: result += " "
-        return result
-
     file_name, line_n, mode_name = This.sr
-    error_msg("The %spattern '%s' %s" % (get_name(This), This.pattern_string(), ThisComment), 
+    error_msg("The pattern '%s' %s" % (This.pattern_string(), ThisComment), 
               file_name, line_n, 
               DontExitF=True, WarningF=not ExitF)
 
@@ -103,8 +92,6 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
     if len(ThatComment) != 0: Space = " "
     else:                     Space = ""
 
-    # msg = "%s%s%spattern '%s'." % (ThatComment, Space, get_name(That, AddSpaceF=True), 
-    #                               That.pattern_string())
     msg = "pattern '%s'." % That.pattern_string()
 
     if len(EndComment) == 0:

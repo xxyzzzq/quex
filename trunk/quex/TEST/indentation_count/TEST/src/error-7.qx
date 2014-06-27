@@ -6,8 +6,7 @@ token {
 mode X :
 <indentation: 
     (\r\n)|\n"Newline" => newline; 
-    [\t]      => grid 4; 
-    [ ]       => space; 
+    [ \t] => whitespace; 
 >
 {
     \n => QUEX_TKN_A;
