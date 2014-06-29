@@ -244,7 +244,7 @@ public:
     void        column_number_set(size_t X)       { counter._column_number_at_end = X; }
 #   endif
 #   ifdef   QUEX_OPTION_INDENTATION_TRIGGER
-    size_t      indentation()                    { return counter._indentation; }
+    size_t      indentation()                    { return counter._indentation_stack.back - counter._indentation_stack.front + 1; }
 #   endif
 
     // (*) Version information

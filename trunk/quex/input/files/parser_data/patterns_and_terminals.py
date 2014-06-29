@@ -2,6 +2,7 @@ from   quex.input.files.mode_option                    import SkipRangeData
 from   quex.input.regular_expression.construct         import Pattern           
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.counter                             import CountCmdFactory
+from   quex.engine.incidence_db                        import IncidenceDB
 from   quex.engine.analyzer.terminal.core              import Terminal
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
 from   quex.engine.analyzer.door_id_address_label        import DoorID, dial_db
@@ -213,6 +214,8 @@ def _pattern_delete_and_reprioritize(ppt_list, BaseModeSequence):
     # -- Re-sort and re-assign new incidence id which reflect the new order. 
     ppt_list.sort(key=attrgetter("priority"))
     for priority, pattern, terminal in ppt_list: 
+        if pattern.incidence_id() in IncidenceDB.unmutable_incidence_ids:
+            continue
         new_pattern_id = dial_db.new_incidence_id() # new id > any older id.
         pattern.set_incidence_id(new_pattern_id)
         terminal.set_incidence_id(new_pattern_id)

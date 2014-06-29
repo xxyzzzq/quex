@@ -92,7 +92,7 @@
 #   define  self_column_number()               (self_column_number_at_begin())
 #endif
 #ifdef      QUEX_OPTION_INDENTATION_TRIGGER
-#   define  self_indentation()            (self.counter._indentation)
+#   define  self_indentation()                 (counter._indentation_stack.back - counter._indentation_stack.front + 1)
 #endif
 
 /* Accumulator ______________________________________________________________*/

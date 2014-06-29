@@ -5,9 +5,8 @@ token {
 mode X :
 <indentation: 
     (\r\n)|\n => newline; 
-    [\t]      => grid 4; 
-    [ ]       => space; 
-    [\:]       => bad;
+    [ \t]     => whitespace; 
+    [\:]      => bad;
 >
 <skip: [ \t:] >
 {

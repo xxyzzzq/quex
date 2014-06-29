@@ -1,3 +1,7 @@
+src/bad-default.qx:8:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+src/bad-default.qx:8:warning: ('--suppress 12' to avoid this message)
+src/bad-default.qx:8:warning: Setup does not define 'newline'.
+src/bad-default.qx:8:warning: ('--suppress 11' to avoid this message)
 ## Disable this message by compile option
 ##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
 ##
@@ -13,5 +17,5 @@
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ,-----------------------------------------------------------------
 | [START]
-Lexical analyzer mode 'X': bad indentation character detected!
+EasyLexer.c:1631:	Mode 'X': bad indentation character detected!
 No 'on_indentation_bad' handler has been specified.

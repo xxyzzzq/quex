@@ -81,7 +81,6 @@ def do_CountInfo(counter, ShiftF=True):
            and counter.column_n_increment                  == E_Count.VOID \
            and counter.column_index                        == E_Count.VOID \
            and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
-        print "#DADA"
         return True, [ Lng.DEFAULT_COUNTER_CALL() ]
 
     # (*) Determine Line and Column Number Count ______________________________
