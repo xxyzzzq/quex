@@ -75,9 +75,13 @@ def do_CountInfo(counter, ShiftF=True):
     #
     #     Used when the increments and/or setting cannot be derived from the 
     #     pattern itself. That is, if one of the following is VOID:
-    if         counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
+    if    (    counter.line_n_increment_by_lexeme_length   == E_Count.VOID \
+           and counter.line_n_increment                    == E_Count.VOID)\
        or (    counter.column_n_increment_by_lexeme_length == E_Count.VOID \
+           and counter.column_n_increment                  == E_Count.VOID \
+           and counter.column_index                        == E_Count.VOID \
            and counter.grid_step_size_by_lexeme_length     == E_Count.VOID):
+        print "#DADA"
         return True, [ Lng.DEFAULT_COUNTER_CALL() ]
 
     # (*) Determine Line and Column Number Count ______________________________

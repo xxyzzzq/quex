@@ -285,9 +285,11 @@ def _pattern_deletion(ppt_list, BaseModeSequence):
 
     return history
 
-def match_indentation_counter_newline_pattern(IndentationSetup, Sequence):
+def _match_indentation_counter_newline_pattern(IndentationSetup, Sequence):
     if IndentationSetup is None: return False
-    return IndentationSetup.sm_newline.does_sequence_match(Sequence)
+    sm_newline = IndentationSetup.sm_newline.get()
+    if sm_newline is None: return False
+    return sm_newline.match_sequence(Sequence)
 
 def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory, MHI):
     """Prepare indentation counter. An indentation counter is implemented by 
@@ -461,8 +463,8 @@ def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, Inc
     #     + Normally: To the begin of the analyzer. Start again.
     #     + End(Sequence) == newline of indentation counter.
     #       => goto indentation counter.
-    if match_indentation_counter_newline_pattern(OptionsDb.value("indentation"), 
-                                                 data["closer_sequence"]):
+    if _match_indentation_counter_newline_pattern(OptionsDb.value("indentation"), 
+                                                  data["closer_sequence"]):
         door_id_after = DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)
     else:
         door_id_after = DoorID.continue_without_on_after_match()

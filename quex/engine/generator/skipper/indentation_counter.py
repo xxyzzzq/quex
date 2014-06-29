@@ -194,6 +194,7 @@ def _add_newline(psml, SmNewline, DoorIdIndentationHandler):
 
     psml.append((SmNewline, terminal))
 
+
 def _add_comment(psml, SmComment, DoorIdIndentationHandler):
     """On matching the comment state machine goto a terminal that does the 
     following:

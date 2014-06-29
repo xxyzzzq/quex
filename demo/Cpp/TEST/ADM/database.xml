@@ -1,4 +1,4 @@
-<test-database execution-time-sec="268.95" date="Fri Jun 27 06:11:15 2014">
+<test-database execution-time-sec="268.78" date="Sat Jun 28 09:54:06 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.00"> 
@@ -21,12 +21,12 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="1.90"> 
+        <test title="Indentation Based Scopes" time-sum-sec="1.97"> 
             <application file-name="002.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.32" crc="-1626426563"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.59" crc="-1626426563"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="1.35" crc="-1626426563"/>
+               <choice name="DEBUG" result="FAIL" time_sec="0.62" crc="-1626426563"/>
             </choice-list>
         </test>
     </group>
@@ -68,8 +68,8 @@
             <application file-name="004.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="7.03" crc="-1383033063"/>
-               <choice name="DEBUG" result="FAIL" time_sec="4.14" crc="-1383033063"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="6.99" crc="-1383033063"/>
+               <choice name="DEBUG" result="FAIL" time_sec="4.18" crc="-1383033063"/>
             </choice-list>
         </test>
     </group>
@@ -116,19 +116,19 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Standard Input (stdin/cin)" time-sum-sec="5.03"> 
+        <test title="Standard Input (stdin/cin)" time-sum-sec="4.81"> 
             <application file-name="009b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="5.03" crc="-828377416"/>
+               <choice name="" result="FAIL" time_sec="4.81" crc="-828377416"/>
             </choice-list>
         </test>
-        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.29"> 
+        <test title="Strings of 'char' and 'wchar_t'" time-sum-sec="11.27"> 
             <application file-name="009.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="FAIL" time_sec="5.63" crc="1910061155"/>
-               <choice name="wlexer" result="FAIL" time_sec="5.66" crc="1910061155"/>
+               <choice name="lexer" result="FAIL" time_sec="5.68" crc="1910061155"/>
+               <choice name="wlexer" result="FAIL" time_sec="5.59" crc="1910061155"/>
             </choice-list>
         </test>
     </group>

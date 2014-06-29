@@ -45,6 +45,8 @@ gcc \
     -DQUEX_SETTING_BUFFER_SIZE=$buffer_size          \
     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
+# -DQUEX_OPTION_DEBUG_SHOW 
+
 ./lexer $txt_file &> tmp.txt
 
 cat tmp.txt

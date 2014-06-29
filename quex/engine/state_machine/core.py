@@ -893,11 +893,14 @@ class StateMachine(object):
                 from_db[to_index].add(from_index)
         return from_db, to_db
 
-    def does_sequence_match(self, UserSequence):
-        """Returns: True, if the sequences ends in an acceptance state.
+    def match_sequence(self, UserSequence):
+        """RETURNS: True, if the sequences ends in an acceptance state.
                     False, if not.
 
-           Works for NFA and DFA.
+        Works for NFA and DFA.
+
+        '__dive' --> consider implementing with TreeWalker to avoid stack allocation
+        trouble.
         """
         assert type(UserSequence) == list
 
