@@ -695,7 +695,7 @@ class Lng_Cpp(dict):
             assert isinstance(TheState, Processor)
             if TheAnalyzer.is_init_state_forward(TheState.index): 
                 txt.append("__quex_debug(\"Init State\\n\");\n")
-                txt.append(1)
+                txt.append("__quex_debug_state(%i);\n" % TheState.index)
             elif TheState.index == E_StateIndices.DROP_OUT:
                 txt.append("__quex_debug(\"Drop-Out Catcher\\n\");\n")
             else:

@@ -1,4 +1,6 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
+import quex.engine.state_machine.parallelize           as     parallelize
+import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.generator.languages.variable_db     import variable_db
 import quex.engine.generator.base                      as     generator
 from   quex.engine.analyzer.terminal.core              import Terminal
@@ -79,7 +81,14 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     #
     CsSm = CharacterSetStateMachine.from_CountCmdFactory(CcFactory, LexemeMaintainedF)
 
-    analyzer = analyzer_generator.do(CsSm.sm, EngineType,
+    if ParallelSmTerminalPairList is not None:
+        parallel_sm_list = [ sm for sm, terminal in ParallelSmTerminalPairList ]
+        sm = parallelize.do([CsSm.sm] + parallel_sm_list, CommonTerminalStateF=False)
+        sm = beautifier.do(sm)
+    else:
+        sm = CsSm.sm
+
+    analyzer = analyzer_generator.do(sm, EngineType,
                                      ReloadStateExtern,
                                      OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
                                      OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
@@ -91,15 +100,16 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     def get_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
             return [ GotoDoorId(door_id_loop) ]
-        #     .---------------.        ,----------.   no
-        #---->| Count Command |-------< LexemeEnd? >------> DoorIdOk
-        #     '---------------'        '----+-----'
-        #                                   | yes
-        #                            .---------------.
-        #                            |  Lexeme End   |
-        #                            | Count Command |----> DoorIdOnLexemeEnd
-        #                            '---------------'
         #
+        #       .---------------.        ,----------.   no
+        #   --->| Count Command |-------< LexemeEnd? >------> DoorIdOk
+        #       '---------------'        '----+-----'
+        #                                     | yes
+        #                              .---------------.
+        #                              |  Lexeme End   |
+        #                              | Count Command |----> DoorIdOnLexemeEnd
+        #                              '---------------'
+        #  
         elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
                 GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),

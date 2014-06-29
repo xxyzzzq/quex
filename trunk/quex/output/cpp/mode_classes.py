@@ -300,15 +300,15 @@ def get_on_indentation_handler(Mode):
     else:
         on_nodent_str   = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
 
+    on_dedent_str   = ""
+    on_n_dedent_str = ""
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_DEDENT)
     if code_fragment is not None:
-        on_dedent_str   = code_fragment.get_text()
-        on_n_dedent_str = ""
+        on_dedent_str = code_fragment.get_text()
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_N_DEDENT)
     if code_fragment is not None:
         on_n_dedent_str = code_fragment.get_text()
-        on_dedent_str   = ""
 
     if (not on_dedent_str) and (not on_n_dedent_str):
         # If no 'on_dedent' and no 'on_n_dedent' is defined ... 
