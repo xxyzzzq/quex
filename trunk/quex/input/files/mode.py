@@ -11,6 +11,7 @@ import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.generator.code.core                 import CodeUser
 
+import quex.engine.state_machine.check.outrun          as     outrun_checker
 from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.index                 as     sm_index
 import quex.engine.state_machine.check.superset        as     superset_check
@@ -384,8 +385,8 @@ class Mode:
     def check_special_incidence_outrun(self, ErrorCode):
         for high, low in self.unique_pattern_pair_iterable():
             if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
-            elif not outrun_checker.do(this.sm, that.sm):                  continue
-            c_error_message(that, this, ExitF=True, 
+            elif not outrun_checker.do(high.sm, low.sm):                  continue
+            c_error_message(high, low, ExitF=True, 
                             ThisComment  = "has lower priority but",
                             ThatComment  = "may outrun",
                             SuppressCode = ErrorCode)

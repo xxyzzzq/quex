@@ -2,7 +2,6 @@ from   quex.engine.misc.file_in                    import error_msg, verify_word
 from   quex.input.setup                            import NotificationDB
 import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup, E_IncidenceIDs_Subset_Special
-import quex.engine.state_machine.check.outrun      as     outrun_checker
 import quex.engine.state_machine.check.superset    as     superset_check
 import quex.engine.state_machine.check.same        as     same_check
 from   quex.blackboard import E_IncidenceIDs

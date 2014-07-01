@@ -152,6 +152,7 @@ E_IncidenceIDs_SubsetAcceptanceIDs = [
     E_IncidenceIDs.PRE_CONTEXT_FULFILLED, 
     E_IncidenceIDs.BIPD_TERMINATED, 
     E_IncidenceIDs.VOID,
+    E_IncidenceIDs.INDENTATION_HANDLER,
 ]
 
 E_IncidenceIDs_Subset_Special = [
