@@ -124,8 +124,6 @@ def do(Data, TheAnalyzer):
                              LexemeMaintainedF = True,
                              ParallelSmTerminalPairList = sm_terminal_list)
 
-    code = [IfDoorIdReferencedLabel(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))] + code
-
     _code_terminal_on_bad_indentation_character(code, isetup, mode_name, incidence_db, 
                                                 bad_indentation_iid)
 
@@ -148,7 +146,7 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
     _add_comment(result, SmComment)
     return result
 
-def _add_suppressed_newline(psml, SmNewline, SmSuppressedNewline):
+def _add_suppressed_newline(psml, SmNewlineOriginal, SmSuppressedNewlineOriginal):
     """Add a pair (suppressed newline, terminal on suppressed newline to 'psml'.
 
     A suppresed newline is not like a newline--the next line is considered as 
@@ -156,46 +154,60 @@ def _add_suppressed_newline(psml, SmNewline, SmSuppressedNewline):
     incremented, just the column number is not reset to 1. Then, it continues
     with indentation counting.
     """
-    if SmSuppressedNewline is None:
+    if SmSuppressedNewlineOriginal is None:
         return
+    assert SmNewlineiOriginal is not None
+
+    # Disconnect from machines being used elsewhere.
+    SmNewline           = SmNewlineOriginal.clone()
+    SmSuppressedNewline = SmSuppressedNewlineOriginal.clone()
 
     # The parser MUST ensure that if there is a newline suppressor, there MUST
     # be a newline being defined.
-    assert SmNewline is not None
 
     cl = [
         LineCountAdd(1),
         GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)),
     ]
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), "<INDENTATION SUPPRESSED NEWLINE>")
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
+                                     "<INDENTATION SUPPRESSED NEWLINE>")
     terminal.set_incidence_id(SmNewline.get_id())
 
     psml.append((SmSuppressedNewline, terminal))
 
-def _add_newline(psml, SmNewline):
+def _add_newline(psml, SmNewlineOriginal):
     """Add a pair (newline state machine, terminal on newline) to 'psml'.
 
     When a newline occurs, the column count can be set to 1 and the line number
     is incremented. Then the indentation counting restarts.
     """
-    assert SmNewline is not None
+    assert SmNewlineOriginal is not None
+
+    # Disconnect from machines being used elsewhere.
+    SmNewline = SmNewlineOriginal.clone()
+
+    # The SmNewline has been used before in the main state machine with a 
+    # different incidence id. It is essential to clone!
 
     cl = [
         ColumnCountSet(1),
         LineCountAdd(1),
         GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))
     ]
-    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), "<INDENTATION NEWLINE>")
+    terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
+                        "<INDENTATION NEWLINE>")
     terminal.set_incidence_id(SmNewline.get_id())
 
     psml.append((SmNewline, terminal))
 
 
-def _add_comment(psml, SmComment):
+def _add_comment(psml, SmCommentOriginal):
     """On matching the comment state machine goto a terminal that does the 
     following:
     """
-    if SmComment is None: return
+    if SmCommentOriginal is None: return
+    # Disconnect from machines being used elsewhere.
+    SmComment = SmCommentOriginal.clone()
 
     comment_skip_iid = dial_db.new_incidence_id()
     door_id_comment  = DoorID.incidence(comment_skip_iid)
@@ -223,7 +235,8 @@ def _add_comment(psml, SmComment):
 
     psml.append((SmComment, terminal))
 
-def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName, incidence_db, BadIndentationIid):
+def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName, 
+                                                incidence_db, BadIndentationIid):
     if ISetup.bad_character_set.get() is None:
         return
     on_bad_indentation_txt = incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()

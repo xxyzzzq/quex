@@ -7,17 +7,13 @@ from   operator import itemgetter
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
-    
-    if len(StateRouterInfoList) == 0:
-        return []
-
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
              "%s\n" % Lng.LABEL(DoorID.global_state_router()) 
-
-    code   = __get_code(StateRouterInfoList)
-
     epilog = "#   endif /* QUEX_OPTION_COMPUTED_GOTOS */\n"
+    
+    if len(StateRouterInfoList) == 0: code = []
+    else:                             code = __get_code(StateRouterInfoList)
 
     result = [ prolog ] 
     result.extend(code)

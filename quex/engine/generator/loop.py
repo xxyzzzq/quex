@@ -123,6 +123,10 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
                                                 CsSm.incidence_id_beyond,
                                                 get_appendix)
+    if ParallelSmTerminalPairList is not None:
+        terminal_list.extend(
+            terminal for sm, terminal in ParallelSmTerminalPairList
+        )
 
     # (*) Generate Code _______________________________________________________
     txt = _get_source_code(CcFactory, analyzer, terminal_list)

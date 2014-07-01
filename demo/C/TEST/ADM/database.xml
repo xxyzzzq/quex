@@ -1,16 +1,16 @@
-<test-database execution-time-sec="197.28" date="Sat Jun 28 09:53:37 2014">
+<test-database execution-time-sec="199.39" date="Mon Jun 30 06:09:06 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.23"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.20"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="13" same_result="False">
-           <choice name="000" result="FAIL" time_sec="0.01" crc="-4803007"/>
+           <choice name="000" result="FAIL" time_sec="0.02" crc="-4803007"/>
            <choice name="001" result="FAIL" time_sec="0.01" crc="151857720"/>
            <choice name="002" result="FAIL" time_sec="0.01" crc="1797868308"/>
            <choice name="003" result="FAIL" time_sec="0.01" crc="-1882985958"/>
-           <choice name="005" result="FAIL" time_sec="0.02" crc="1834819860"/>
+           <choice name="005" result="FAIL" time_sec="0.01" crc="1834819860"/>
            <choice name="006" result="OK" time_sec="0.02" crc="1184240632"/>
-           <choice name="007" result="FAIL" time_sec="0.02" crc="-1232588069"/>
+           <choice name="007" result="FAIL" time_sec="0.01" crc="-1232588069"/>
            <choice name="008" result="OK" time_sec="0.02" crc="-881882195"/>
            <choice name="009" result="FAIL" time_sec="0.02" crc="-2030450797"/>
            <choice name="010" result="OK" time_sec="0.02" crc="70876815"/>
@@ -40,12 +40,12 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="4.28"> 
+        <test title="Indentation Based Scopes" time-sum-sec="4.51"> 
             <application file-name="002.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="2.56" crc="29925504"/>
-               <choice name="DEBUG" result="FAIL" time_sec="1.73" crc="29925504"/>
+               <choice name="NDEBUG" result="OK" time_sec="2.54" crc="29925504"/>
+               <choice name="DEBUG" result="OK" time_sec="1.97" crc="29925504"/>
             </choice-list>
         </test>
     </group>
@@ -83,12 +83,12 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="8.08"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="9.99"> 
             <application file-name="004.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="5.64" crc="-1383033063"/>
-               <choice name="DEBUG" result="FAIL" time_sec="2.44" crc="-1383033063"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="7.14" crc="-1383033063"/>
+               <choice name="DEBUG" result="FAIL" time_sec="2.84" crc="-1383033063"/>
             </choice-list>
         </test>
     </group>

@@ -106,15 +106,18 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
     )
     txt.append(
          "%s:\n" % dial_db.get_label_by_door_id(DoorIdReturn) \
-       + "    __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+       + "     __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
          % IteratorName \
-       + "   return;\n" \
+       + "    return;\n" \
        + "".join(generator.do_state_router()) \
-       + "#  undef self\n" \
-       + "#  undef QUEX_LABEL_STATE_ROUTER\n" 
+       + "#   undef self\n" \
+       + "#   undef QUEX_LABEL_STATE_ROUTER\n" 
        # If there is no MATCH_FAILURE, then DoorIdBeyond is still referenced as 'gotoed',
        # but MATCH_FAILURE is never implemented, later on, because its DoorId is not 
        # referenced.
+       + "#    if ! defined(QUEX_OPTION_COMPUTED_GOTOS)\n"
+       + "     %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO(DoorID.global_state_router())
+       + "#    endif\n"
        + "    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */\n" \
        + "    %s\n" % Lng.GOTO(DoorIdBeyond) \
        + "    (void)target_state_index;\n"

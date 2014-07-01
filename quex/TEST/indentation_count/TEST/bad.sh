@@ -2,6 +2,7 @@
 if [[ $1 == "--hwut-info" ]]; then
     echo "Bad character detection.;"
     echo "CHOICES: default, customized, customized-2;"
+    echo "HAPPY:   EasyLexer.c:[0-9]+:;"
     exit
 fi
 

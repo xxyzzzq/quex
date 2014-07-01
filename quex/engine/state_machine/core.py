@@ -620,11 +620,11 @@ class StateMachine(object):
             del self.states[target_index]
 
     def get_id(self):
-        assert isinstance(self.__id, long)
+        assert isinstance(self.__id, long) or self.__id == E_IncidenceIDs.INDENTATION_HANDLER
         return self.__id  # core.id()
 
     def set_id(self, Value):
-        assert isinstance(Value, long)
+        assert isinstance(Value, long) or Value == E_IncidenceIDs.INDENTATION_HANDLER
         self.__id = Value # core.set_id(Value)
 
     def get_init_state(self):

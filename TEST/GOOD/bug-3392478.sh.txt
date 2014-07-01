@@ -9,9 +9,10 @@
 (2, 4)  	NEWLINE ''
 (3, 1)  	REST 'a'
 (3, 2)  	REST '''
-(3, 3)  	REST 'aa'
+(3, 3)  	REST 'a'
+(3, 4)  	REST 'a'
 (3, 5)  	NEWLINE ''
 (4, 1)  	NEWLINE ''
 (5, 1)  	<TERMINATION> ''
-| [END] number of token = 13
+| [END] number of token = 14
 `------------------------------------------------------------------------------------

@@ -600,23 +600,28 @@ class ParserDataIndentation(Base):
                           "But there is no 'newline' in indentation defintion.", 
                           self.sm_newline_suppressor.sr)
 
-    def __repr__(self):
-        txt = Base.__repr__(self)
+    def __str__(self):
+        def cs_str(Name, Cs):
+            msg  = "%s:\n" % Name
+            if Cs is None: msg += "    <none>\n" 
+            else:          msg += "    %s\n" % Cs.get_utf8_string()
+            return msg
 
-        txt += "Bad:\n"
-        txt += "    %s\n" % self.bad_character_set.get().get_utf8_string()
+        def sm_str(Name, Sm):
+            msg = "%s:\n" % Name
+            if Sm is None: 
+                msg += "    <none>\n"
+            else:          
+                msg += "    %s\n" % Sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ").strip()
+            return msg
 
-        txt += "Newline:\n"
-        sm = self.sm_newline.get()
-        if sm is None: txt += "    <none>\n"
-        else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
-
-        txt += "Suppressor:\n"
-        sm = self.sm_newline_suppressor.get()
-        if sm is None: txt += "    <none>\n"
-        else:          txt += "    %s\n" % sm.get_string(NormalizeF=True, Option="utf8").replace("\n", "\n    ")
-
-        return txt
+        return "".join([
+            cs_str("Whitespace", self.whitespace_character_set.get()),
+            cs_str("Bad",        self.bad_character_set.get()),
+            sm_str("Newline",    self.sm_newline.get()),
+            sm_str("Suppressor", self.sm_newline_suppressor.get()),
+            sm_str("Comment",    self.sm_comment.get()),
+        ])
 
 def _error_set_intersection(CcType, Before, sr):
     global cc_type_name_db

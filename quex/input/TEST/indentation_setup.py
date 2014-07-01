@@ -42,70 +42,58 @@ def test(Text):
     if descr is not None: print descr
     print
 
-test("[\\v\\a] => grid 4;>")
-
 if "basic" in sys.argv:
 
     test("[\\v\\a]")
     test("[\\v\\a] >")
-    test("[\\v\\a] => grid")
-    test("[\\v\\a] => trid")
-    test("[\\v\\a] => grid>")
-    test("[\\v\\a] => grid 4;>")
+    test("[\\v\\a] => whitespace")
+    test("[\\v\\a] => bytespace")
     test("[\\v\\a] => space;>")
-    test("[\\v\\a] => space 0rXVI;>")
     test("[\\v\\a] => newline;>")
     test("[\\v\\a] => suppressor;>")
     test("[\\v\\a] => bad;>")
-    test("[\\v\\a] => space;\n[\\t] => grid 10;")
-    test("[\\v\\a] => space;\n[\\t] => grid 10;>")
+    test("[\\v\\a] => comment;>")
     test(">")
 
 elif "twice" in sys.argv:
-    test("[\\v\\a] => space 10;\n[\\t] => space 10;>")
-    test("[\\v\\a] => grid 10;\n[\\t] => grid 10;>")
+    test("[\\v\\a] => whitespace;\n[\\t] => whitespace;>")
     test("[\\v\\a] => newline;\n[\\t] => newline;>")
     test("[\\v\\a] => suppressor;\n[\\t] => suppressor;>")
     test("[\\v\\a] => bad;\n[\\t] => bad;>")
+    test("[\\v\\a] => comment;\n[\\t] => comment;>")
 
 elif "intersection" in sys.argv:
-    test("[abc] => space 10;\n[cde] => grid  4;>")
-    test("[abc] => space 10;\n[cde] => newline;>")
-    test("[abc] => space 10;\n[cde] => suppressor;>")
-    test("[abc] => space 10;\n[cde] => bad;>")
+    test("[abc] => whitespace;\n[cde] => newline;>")
+    test("[abc] => whitespace;\n[cde] => suppressor;>")
+    test("[abc] => whitespace;\n[cde] => bad;>")
+    test("[abc] => whitespace;\n[cde] => comment;>")
 
-    test("[abc] => grid 10;\n[cde] => space 1;>")
-    test("[abc] => grid 10;\n[cde] => newline;>")
-    test("[abc] => grid 10;\n[cde] => suppressor;>")
-    test("[abc] => grid 10;\n[cde] => bad;>")
-
-    test("[abc] => bad;\n[cde] => grid  10;>")
     test("[abc] => bad;\n[cde] => newline;>")
     test("[abc] => bad;\n[cde] => suppressor;>")
-    test("[abc] => bad;\n[cde] => space;>")
+    test("[abc] => bad;\n[cde] => whitespace;>")
+    test("[abc] => bad;\n[cde] => comment;>")
 
-    test("[abc] => newline;\n[cde] => grid  10;>")
-    test("[abc] => newline;\n[cde] => space;>")
-    test("[abc] => newline;\n[cde] => suppressor;>")
     test("[abc] => newline;\n[cde] => bad;>")
+    test("[abc] => newline;\n[cde] => suppressor;>")
+    test("[abc] => newline;\n[cde] => whitespace;>")
+    test("[abc] => newline;\n[cde] => comment;>")
 
-    test("[abc] => suppressor;\n[cde] => grid  10;>")
-    test("[abc] => suppressor;\n[cde] => newline;>")
-    test("[abc] => suppressor;\n[cde] => space;>")
     test("[abc] => suppressor;\n[cde] => bad;>")
+    test("[abc] => suppressor;\n[cde] => whitespace;>")
+    test("[abc] => suppressor;\n[cde] => newline;>")
+    test("[abc] => suppressor;\n[cde] => comment;>")
+
+    test("[abc] => comment;\n[cde] => bad;>")
+    test("[abc] => comment;\n[cde] => whitespace;>")
+    test("[abc] => comment;\n[cde] => newline;>")
+    test("[abc] => comment;\n[cde] => suppressor;>")
 
 elif "intersection-2" in sys.argv:
 
-    test("abc* => newline;\n[ce] => space;>")
-    test("abc* => newline;\n[be] => space;>")
-    test("ac*b? => newline;\n[ce] => space;>")
-    test("ac*b => newline;\n[ce] => space;>")
+    test("abc*  => newline;\n[ce] => whitespace;>")
+    test("abc*  => newline;\n[be] => whitespace;>")
+    test("ac*b? => newline;\n[ce] => whitespace;>")
+    test("ac*b  => newline;\n[ce] => whitespace;>")
 
 elif "non-numeric" in sys.argv:
-    test("[\\v\\a] => grid variable;>")
-    test("[\\v\\a] => grid variable kongo;>")
-    test("[\\v\\a] => space variable2;>")
-    test("[\\v\\a] => space variable 2;>")
-    test("\\default => space variable;>")
-    test(">")
     test("/* empty will do */>")

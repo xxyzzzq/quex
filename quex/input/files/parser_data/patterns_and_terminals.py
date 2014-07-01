@@ -456,7 +456,7 @@ def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_
     code             = CodeTerminal([ goto_terminal_str ])
     sub_terminal     = terminal_factory.do(E_TerminalType.MATCH_PATTERN, 
                                            code, pattern)
-    sub_terminal.set_name("Entry to 'skip': %s" % character_set.get_string("hex"))
+    sub_terminal.set_name("SKIP %s" % character_set.get_string("hex"))
     return PPT(priority, pattern, sub_terminal)
 
 def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory):
@@ -473,10 +473,10 @@ def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, Inc
         door_id_after = DoorID.continue_without_on_after_match()
 
     if NestedF:
-        name                = "skip nested range"
+        name                = "SKIP NESTED RANGE"
         code_generator_func = skip_nested_range.do
     else:
-        name                = "skip range"
+        name                = "SKIP RANGE"
         code_generator_func = skip_range.do
 
     # -- data for code generation
@@ -515,7 +515,9 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_facto
     terminal = terminal_factory.do_generator(pattern, 
                                              indentation_counter.do, 
                                              data, 
-                                             "indentation counter: on_newline")
+                                             "INDENTATION COUNTER: NEWLINE")
+    terminal.set_incidence_id(E_IncidenceIDs.INDENTATION_HANDLER)
+    pattern.set_incidence_id(E_IncidenceIDs.INDENTATION_HANDLER)
 
     return PPT(PatternPriority(MHI, 0), pattern, terminal)
 
@@ -536,7 +538,7 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
                                Setup.buffer_codec_transformation_info)
     code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])
     terminal = terminal_factory.do(E_TerminalType.PLAIN, code)
-    terminal.set_name("indentation counter: on_suppressed_newline")
+    terminal.set_name("INDENTATION COUNTER: SUPPRESSED_NEWLINE")
 
     return PPT(PatternPriority(MHI, 1), pattern, terminal)
 

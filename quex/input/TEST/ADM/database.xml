@@ -1,13 +1,13 @@
-<test-database execution-time-sec="15.57" date="Sat Jun 28 09:54:31 2014">
+<test-database execution-time-sec="15.97" date="Mon Jun 30 06:10:04 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.50"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.90"> 
         <application file-name="indentation_setup.py" info-request-time="1392920307L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="FAIL" time_sec="0.10" crc="-1913863679"/>
            <choice name="twice" result="FAIL" time_sec="0.10" crc="1970468013"/>
-           <choice name="intersection" result="FAIL" time_sec="0.10" crc="395610589"/>
-           <choice name="intersection-2" result="FAIL" time_sec="0.10" crc="373692848"/>
+           <choice name="intersection" result="FAIL" time_sec="0.48" crc="395610589"/>
+           <choice name="intersection-2" result="FAIL" time_sec="0.11" crc="373692848"/>
            <choice name="non-numeric" result="FAIL" time_sec="0.10" crc="-1942671049"/>
         </choice-list>
     </test>
