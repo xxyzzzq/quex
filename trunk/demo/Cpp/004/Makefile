@@ -23,7 +23,7 @@ COMPILER = g++ -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)              \
-	 -Wall -Wconversion -pedantic     \
+	 -Wall -Wconversion               \
 	 $(CCFLAG_ASSERTS)                \
 	 -DPRINT_TOKEN                    \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
@@ -49,7 +49,7 @@ example.o: ../example.cpp  EasyLexer.cpp
 	$(CC) -E $< -o $@ 
 
 EasyLexer.cpp: c.qx $(QUEX_CORE)
-	quex -i c.qx --engine EasyLexer --debug-exception
+	quex -i c.qx --engine EasyLexer
 
 # (*) HELPERS __________________________________________________________________
 clean:	

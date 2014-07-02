@@ -1,22 +1,22 @@
-<test-database execution-time-sec="199.39" date="Mon Jun 30 06:09:06 2014">
+<test-database execution-time-sec="197.00" date="Thu Jul  3 01:37:34 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.20"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.18"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="13" same_result="False">
-           <choice name="000" result="FAIL" time_sec="0.02" crc="-4803007"/>
-           <choice name="001" result="FAIL" time_sec="0.01" crc="151857720"/>
-           <choice name="002" result="FAIL" time_sec="0.01" crc="1797868308"/>
-           <choice name="003" result="FAIL" time_sec="0.01" crc="-1882985958"/>
-           <choice name="005" result="FAIL" time_sec="0.01" crc="1834819860"/>
-           <choice name="006" result="OK" time_sec="0.02" crc="1184240632"/>
-           <choice name="007" result="FAIL" time_sec="0.01" crc="-1232588069"/>
-           <choice name="008" result="OK" time_sec="0.02" crc="-881882195"/>
-           <choice name="009" result="FAIL" time_sec="0.02" crc="-2030450797"/>
+           <choice name="000" result="OK" time_sec="0.01" crc="-4803007"/>
+           <choice name="001" result="OK" time_sec="0.02" crc="151857720"/>
+           <choice name="002" result="OK" time_sec="0.02" crc="1797868308"/>
+           <choice name="003" result="OK" time_sec="0.02" crc="-1882985958"/>
+           <choice name="005" result="OK" time_sec="0.02" crc="1834819860"/>
+           <choice name="006" result="OK" time_sec="0.01" crc="1184240632"/>
+           <choice name="007" result="OK" time_sec="0.01" crc="-1232588069"/>
+           <choice name="008" result="OK" time_sec="0.01" crc="-881882195"/>
+           <choice name="009" result="OK" time_sec="0.01" crc="-2030450797"/>
            <choice name="010" result="OK" time_sec="0.02" crc="70876815"/>
-           <choice name="011" result="FAIL" time_sec="0.02" crc="1914536193"/>
-           <choice name="012" result="OK" time_sec="0.02" crc="-121149223"/>
-           <choice name="012b" result="OK" time_sec="0.02" crc="-894168725"/>
+           <choice name="011" result="OK" time_sec="0.01" crc="520291875"/>
+           <choice name="012" result="OK" time_sec="0.01" crc="-121149223"/>
+           <choice name="012b" result="OK" time_sec="0.01" crc="-894168725"/>
         </choice-list>
     </test>
     <group name="demo/000">
@@ -83,12 +83,12 @@
         </test>
     </group>
     <group name="demo/004">
-        <test title="A C-Lexical Analyser" time-sum-sec="9.99"> 
+        <test title="A C-Lexical Analyser" time-sum-sec="7.62"> 
             <application file-name="004.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="7.14" crc="-1383033063"/>
-               <choice name="DEBUG" result="FAIL" time_sec="2.84" crc="-1383033063"/>
+               <choice name="NDEBUG" result="OK" time_sec="5.18" crc="-1383033063"/>
+               <choice name="DEBUG" result="OK" time_sec="2.44" crc="-1383033063"/>
             </choice-list>
         </test>
     </group>

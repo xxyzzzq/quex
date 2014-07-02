@@ -1,7 +1,7 @@
 < ISO8859_7_Lex.cpp: greek.qx
 ---
 > iso8859-7-lexer: iso8859-7-lexer.c
-< 		 -o ISO8859_7_Lex
+< 		 -o ISO8859_7_Lex 
 < 
 < iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
 < 	g++ -c -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
@@ -30,7 +30,6 @@
 < 		UTF8Lex.cpp              \
 ---
 > 		UTF8Lex.c               \
-< 		# -DQUEX_OPTION_DEBUG_SHOW \
 < utf16-lexer: utf16-lexer.cpp 
 ---
 > utf16-lexer: utf16-lexer.c 

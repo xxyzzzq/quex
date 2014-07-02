@@ -28,11 +28,9 @@ def test(Text):
     sh.name = "test_string"
 
     descr = None
-    descr = counter.parse_indentation(sh)
+    #descr = counter.parse_indentation(sh)
     try:    
         descr = counter.parse_indentation(sh)
-        pass
-
     except EndOfStreamException:
         error_msg("End of file reached while parsing 'indentation' section.", sh, DontExitF=True, WarningF=False)
 
@@ -42,25 +40,30 @@ def test(Text):
     if descr is not None: print descr
     print
 
+if 0:
+    test("[abc] => bad;\n[cde] => newline;>")
+    sys.exit()
+
 if "basic" in sys.argv:
 
     test("[\\v\\a]")
     test("[\\v\\a] >")
     test("[\\v\\a] => whitespace")
     test("[\\v\\a] => bytespace")
-    test("[\\v\\a] => space;>")
     test("[\\v\\a] => newline;>")
     test("[\\v\\a] => suppressor;>")
     test("[\\v\\a] => bad;>")
     test("[\\v\\a] => comment;>")
     test(">")
+    test("[\\v\\a] =>")
+    test("[\\v\\a] =>>")
 
 elif "twice" in sys.argv:
     test("[\\v\\a] => whitespace;\n[\\t] => whitespace;>")
     test("[\\v\\a] => newline;\n[\\t] => newline;>")
     test("[\\v\\a] => suppressor;\n[\\t] => suppressor;>")
-    test("[\\v\\a] => bad;\n[\\t] => bad;>")
     test("[\\v\\a] => comment;\n[\\t] => comment;>")
+    test("[\\v\\a] => bad;\n[\\t] => bad;>")
 
 elif "intersection" in sys.argv:
     test("[abc] => whitespace;\n[cde] => newline;>")

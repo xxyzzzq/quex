@@ -1,17 +1,13 @@
 (1)
 ::
-[\v\a] => space 10;
-[\t] => space 10;>
+[\v\a] => whitespace;
+[\t] => whitespace;>
 ::
 
-test_string:1:warning: Indentation counter does not contain a grid but only homogeneous space counts of 10.
-test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
-test_string:1:warning: of 1 are the fastest to compute.
-Spaces:
-     10 by '\a', '\t', '\v'
-Grids:
+Whitespace:
+    '\a', '\t', '\v'
 Bad:
-    
+    <none>
 Newline:
     init-state = 0L
     00000 ()
@@ -21,45 +17,16 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
+    <none>
+Comment:
     <none>
 
 
 (2)
-::
-[\v\a] => grid 10;
-[\t] => grid 10;>
-::
-
-test_string:1:warning: Indentation counter setup does not contain spaces, only grids (tabulators). All grid
-test_string:1:warning: widths are multiples of 10. The grid setup 10
-test_string:1:warning: is equivalent to a setup with space counts 1.
-test_string:1:warning: Space counts are faster to compute.
-Spaces:
-Grids:
-     10 by '\a', '\t', '\v'
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
-    <none>
-
-
-(3)
 ::
 [\v\a] => newline;
 [\t] => newline;>
@@ -69,7 +36,7 @@ test_string:2:error: 'newline' has been defined before;
 test_string:1:error: at this place.
 Exception!
 
-(4)
+(3)
 ::
 [\v\a] => suppressor;
 [\t] => suppressor;>
@@ -79,13 +46,41 @@ test_string:2:error: 'suppressor' has been defined before;
 test_string:1:error: at this place.
 Exception!
 
+(4)
+::
+[\v\a] => comment;
+[\t] => comment;>
+::
+
+test_string:2:error: 'comment' has been defined before;
+test_string:1:error: at this place.
+Exception!
+
 (5)
 ::
 [\v\a] => bad;
 [\t] => bad;>
 ::
 
-test_string:2:error: 'bad' has been defined before;
-test_string:1:error: at this place.
-Exception!
+Whitespace:
+    ' '
+Bad:
+    '\a', '\t', '\v'
+Newline:
+    init-state = 0L
+    00000 ()
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+        
+    00001 (A)
+        
+    00002 ()
+         == '\n' ==> 00003
+        
+    00003 (A)
+Suppressor:
+    <none>
+Comment:
+    <none>
+
 

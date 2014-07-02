@@ -8,125 +8,40 @@ Exception!
 test_string:1:error: Missing '=>' after character set definition.
 Exception!
 
-(3) |[\v\a] => grid|
+(3) |[\v\a] => whitespace|
 
 test_string:1:error: End of file reached while parsing 'indentation' section.
 
-(4) |[\v\a] => trid|
+(4) |[\v\a] => bytespace|
 
-test_string:1:error: Unrecognized specifier 'trid'.
-test_string:1:error: Did you mean 'grid'?
+test_string:1:error: Unrecognized specifier 'bytespace'.
+test_string:1:error: Acceptable: whitespace, comment, newline, suppressor, bad.
 Exception!
 
-(5) |[\v\a] => grid>|
+(5) |[\v\a] => newline;>|
 
-test_string:1:error: Missing integer or variable name after keyword 'grid'.
-Exception!
-
-(6) |[\v\a] => grid 4;>|
-
-test_string:1:warning: Indentation counter setup does not contain spaces, only grids (tabulators). All grid
-test_string:1:warning: widths are multiples of 4. The grid setup 4
-test_string:1:warning: is equivalent to a setup with space counts 1.
-test_string:1:warning: Space counts are faster to compute.
-Spaces:
-Grids:
-      4 by '\a', '\v'
+Whitespace:
+    '\t', ' '
 Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
     <none>
-
-
-(7) |[\v\a] => space;>|
-
-Spaces:
-      1 by '\a', '\v'
-Grids:
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
-    <none>
-
-
-(8) |[\v\a] => space 0rXVI;>|
-
-test_string:1:warning: Indentation counter does not contain a grid but only homogeneous space counts of 16.
-test_string:1:warning: This setup is equivalent to a setup with space counts of 1. Space counts
-test_string:1:warning: of 1 are the fastest to compute.
-Spaces:
-     16 by '\a', '\v'
-Grids:
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
-    <none>
-
-
-(9) |[\v\a] => newline;>|
-
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
-Bad:
-    
 Newline:
     init-state = 0L
     00000 ()
          == '\a', '\v' ==> 00001
         
     00001 (A)
-        
-    
 Suppressor:
+    <none>
+Comment:
     <none>
 
 
-(10) |[\v\a] => suppressor;>|
+(6) |[\v\a] => suppressor;>|
 
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
+Whitespace:
+    '\t', ' '
 Bad:
-    
+    <none>
 Newline:
     init-state = 0L
     00000 ()
@@ -136,25 +51,23 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
     init-state = 0L
     00000 ()
          == '\a', '\v' ==> 00001
         
     00001 (A)
-        
-    
+Comment:
+    <none>
 
 
-(11) |[\v\a] => bad;>|
+(7) |[\v\a] => bad;>|
 
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
+Whitespace:
+    '\t', ' '
 Bad:
     '\a', '\v'
 Newline:
@@ -166,33 +79,21 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
+    <none>
+Comment:
     <none>
 
 
-(12)
-::
-[\v\a] => space;
-[\t] => grid 10;
-::
+(8) |[\v\a] => comment;>|
 
-test_string:2:error: End of file reached while parsing 'indentation' section.
-
-(13)
-::
-[\v\a] => space;
-[\t] => grid 10;>
-::
-
-Spaces:
-      1 by '\a', '\v'
-Grids:
-     10 by '\t'
+Whitespace:
+    '\t', ' '
 Bad:
-    
+    <none>
 Newline:
     init-state = 0L
     00000 ()
@@ -202,21 +103,25 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
     <none>
+Comment:
+    init-state = 0L
+    00000 ()
+         == '\a', '\v' ==> 00001
+        
+    00001 (A)
 
 
-(14) |>|
+(9) |>|
 
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
+Whitespace:
+    '\t', ' '
 Bad:
-    
+    <none>
 Newline:
     init-state = 0L
     00000 ()
@@ -226,10 +131,21 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
     <none>
+Comment:
+    <none>
 
+
+(10) |[\v\a] =>|
+
+test_string:1:error: End of file reached while parsing 'indentation' section.
+
+(11) |[\v\a] =>>|
+
+test_string:1:error: Missing identifier for indentation element definition.
+Exception!
 

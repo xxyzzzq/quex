@@ -11,7 +11,7 @@ iso8859-7-lexer: iso8859-7-lexer.c
 		 --codec iso8859_7   \
 		 --token-id-prefix TKN_ \
 		 -o ISO8859_7_Lex    \
-		 --language C --debug-exception
+		 --language C
 	gcc -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
 		-Wall              \
 		-I$(QUEX_PATH) -I. \
@@ -22,6 +22,7 @@ iso8859-7-lexer: iso8859-7-lexer.c
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+# -DQUEX_OPTION_DEBUG_SHOW 
 
 utf8-lexer: utf8-lexer.c 
 	quex -i greek.qx         \

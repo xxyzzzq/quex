@@ -65,12 +65,15 @@ elif "twice" in sys.argv:
     test("[\\v\\a] => newline;\n[\\t] => newline; \\else => space 66;>")
 
 elif "intersection" in sys.argv:
-    test("[abc] => space 10;\n[cde] => grid  4;>")
+    test("[abc] => space 1;\n[cde] => space 2;>")
+    test("[abc] => space 1;\n[cde]  => grid  4;>")
     test("[abc] => space 10;\n[cde] => newline;>")
 
+    test("[abc] => grid 10;\n[cde] => grid 1;>")
     test("[abc] => grid 10;\n[cde] => space 1;>")
     test("[abc] => grid 10;\n[cde] => newline;>")
 
+    test("[abc] => newline 1;\n[cde] => newline 5;>")
     test("[abc] => newline;\n[cde] => grid  10;>")
     test("[abc] => newline;\n[cde] => space;>")
 

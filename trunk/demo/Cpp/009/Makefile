@@ -25,7 +25,7 @@ else
 endif
 COMPILER = g++ -ggdb -Wall -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-     -DQUEX_OPTION_DEBUG_SHOW
+     #-DQUEX_OPTION_DEBUG_SHOW
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 		 
@@ -49,7 +49,7 @@ tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
 		 
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer \
-		 --token-policy single --debug-exception
+		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
 
 # -- wchar_t application

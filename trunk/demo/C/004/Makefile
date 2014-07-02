@@ -21,9 +21,10 @@ endif
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc -ggdb 
 
+# Note, when using '-pedantic' add '-std=c99' otherwise gcc defaults to 'c89'.
 CC = $(COMPILER) -c \
-	 -I./ -I$(QUEX_PATH)              \
-	 -Wall -Wconversion -pedantic     \
+	 -I./ -I$(QUEX_PATH)                   \
+	 -Wall -Wconversion -pedantic -std=c99 \
 	 $(CCFLAG_ASSERTS)                \
 	 -DPRINT_TOKEN                    \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
