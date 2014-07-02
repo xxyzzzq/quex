@@ -4,7 +4,7 @@
 [\t] => space 10; \else => space 66;>
 ::
 
-test_string:1:warning: Counter setup does not define newline.
+test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
      66 by [\0, \6], '\b', '\n', ['\f', oo]
@@ -18,7 +18,7 @@ space:
 [\t] => grid 10; \else => space 66;>
 ::
 
-test_string:1:warning: Counter setup does not define newline.
+test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 grid:
      10 by '\a', '\v'
@@ -33,9 +33,6 @@ space:
 [\t] => newline; \else => space 66;>
 ::
 
-test_string:2:warning: Setup does not contain a grid but only homogeneous space counts of 66.
-test_string:2:warning: This setup is equivalent to a setup with space counts of 1. Space counts
-test_string:2:warning: of 1 are the fastest to compute.
 newline:
       1 by '\a', '\v'
       1 by '\t'

@@ -1,14 +1,24 @@
 (1)
 ::
-[abc] => space 10;
-[cde] => grid  4;>
+[abc] => space 1;
+[cde] => space 2;>
+::
+
+test_string:2:error: The character set defined in 'space' intersects
+test_string:1:error: with 'space' at this place.
+Exception!
+
+(2)
+::
+[abc] => space 1;
+[cde]  => grid  4;>
 ::
 
 test_string:2:error: The character set defined in 'grid' intersects
 test_string:1:error: with 'space' at this place.
 Exception!
 
-(2)
+(3)
 ::
 [abc] => space 10;
 [cde] => newline;>
@@ -18,7 +28,19 @@ test_string:2:error: The character set defined in 'newline' intersects
 test_string:1:error: with 'space' at this place.
 Exception!
 
-(3)
+(4)
+::
+[abc] => grid 10;
+[cde] => grid 1;>
+::
+
+test_string:2:warning: Indentation grid counts of '1' are equivalent of to a space
+test_string:2:warning: count of '1'. The latter is faster to compute.
+test_string:2:error: The character set defined in 'grid' intersects
+test_string:1:error: with 'grid' at this place.
+Exception!
+
+(5)
 ::
 [abc] => grid 10;
 [cde] => space 1;>
@@ -28,7 +50,7 @@ test_string:2:error: The character set defined in 'space' intersects
 test_string:1:error: with 'grid' at this place.
 Exception!
 
-(4)
+(6)
 ::
 [abc] => grid 10;
 [cde] => newline;>
@@ -38,7 +60,17 @@ test_string:2:error: The character set defined in 'newline' intersects
 test_string:1:error: with 'grid' at this place.
 Exception!
 
-(5)
+(7)
+::
+[abc] => newline 1;
+[cde] => newline 5;>
+::
+
+test_string:2:error: The character set defined in 'newline' intersects
+test_string:1:error: with 'newline' at this place.
+Exception!
+
+(8)
 ::
 [abc] => newline;
 [cde] => grid  10;>
@@ -48,7 +80,7 @@ test_string:2:error: The character set defined in 'grid' intersects
 test_string:1:error: with 'newline' at this place.
 Exception!
 
-(6)
+(9)
 ::
 [abc] => newline;
 [cde] => space;>

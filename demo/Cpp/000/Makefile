@@ -54,7 +54,7 @@ example.o: ../example.cpp  EasyLexer.cpp
 EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     --engine           EasyLexer  \
-		 --token-id-offset  0x1000 --debug-exception
+		 --token-id-offset  0x1000
 
 source-package:
 	quex -i                 simple.qx  \

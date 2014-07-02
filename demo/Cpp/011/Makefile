@@ -31,7 +31,7 @@ iso8859-7-lexer: iso8859-7-lexer.o ISO8859_7_Lex.cpp
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
-#  -DQUEX_OPTION_DEBUG_SHOW 
+# -DQUEX_OPTION_DEBUG_SHOW 
 
 utf8-lexer: utf8-lexer.cpp 
 	quex -i greek.qx         \

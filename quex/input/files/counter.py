@@ -13,6 +13,7 @@ from   quex.engine.misc.file_in                   import error_msg, \
                                                          verify_word_in_list, \
                                                          read_integer
 
+from   quex.engine.tools import print_callstack
 from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
@@ -23,7 +24,7 @@ def parse_line_column_counter(fh):
 def parse_indentation(fh):
     result = __parse(fh, ParserDataIndentation(SourceRef.from_FileHandle(fh)), 
                      IndentationSetupF=True)
-    result.finalize(fh)
+    result.finalize()
     return result
 
 def __parse_definition_head(fh, result):
@@ -57,11 +58,8 @@ def __parse(fh, result, IndentationSetupF=False):
 
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
-    skip_whitespace(fh)
-
     while 1 + 1 == 2:
         skip_whitespace(fh)
-
         if check(fh, ">"): 
             break
         

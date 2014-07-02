@@ -55,7 +55,7 @@ EasyLexer.c: simple.qx $(QUEX_CORE)
 		 --token-id-offset  0x1000    \
 		 --post-categorizer           \
 		 --comment-state-machine --comment-mode-patterns \
-		 --language         C --debug-exception
+		 --language         C
 
 # (*) HELPERS __________________________________________________________________
 clean:	

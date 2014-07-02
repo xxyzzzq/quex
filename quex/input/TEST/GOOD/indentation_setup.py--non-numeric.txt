@@ -1,10 +1,9 @@
-(1) |[\v\a] => grid variable;>|
+(1) |/* empty will do */>|
 
-Spaces:
-Grids:
-    variable by '\a', '\v'
+Whitespace:
+    '\t', ' '
 Bad:
-    
+    <none>
 Newline:
     init-state = 0L
     00000 ()
@@ -14,96 +13,12 @@ Newline:
     00001 (A)
         
     00002 ()
-         == '\n' ==> 00001
+         == '\n' ==> 00003
         
-    
+    00003 (A)
 Suppressor:
     <none>
-
-
-(2) |[\v\a] => grid variable kongo;>|
-
-test_string:1:error: Missing ';' after 'grid' specification.
-Exception!
-
-(3) |[\v\a] => space variable2;>|
-
-Spaces:
-    variable2 by '\a', '\v'
-Grids:
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
-    <none>
-
-
-(4) |[\v\a] => space variable 2;>|
-
-test_string:1:error: Missing ';' after 'space' specification.
-Exception!
-
-(5) |\default => space variable;>|
-
-test_string:1:error: Keyword '\default' cannot be used in indentation setup.
-Exception!
-
-(6) |>|
-
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
-    <none>
-
-
-(7) |/* empty will do */>|
-
-Spaces:
-      1 by ' '
-Grids:
-      4 by '\t'
-Bad:
-    
-Newline:
-    init-state = 0L
-    00000 ()
-         == '\n' ==> 00001
-         == '\r' ==> 00002
-        
-    00001 (A)
-        
-    00002 ()
-         == '\n' ==> 00001
-        
-    
-Suppressor:
+Comment:
     <none>
 
 

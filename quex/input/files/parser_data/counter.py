@@ -175,16 +175,12 @@ class CountCmdMap(object):
             E_CharacterCountType.COLUMN:                   (),
             E_CharacterCountType.GRID:                     (),
             E_CharacterCountType.LINE:                     (),
-            E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR: (E_CharacterCountType.BAD,),
-            E_CharacterCountType.BEGIN_NEWLINE:            (E_CharacterCountType.BAD,
-                                                            E_CharacterCountType.END_NEWLINE),
-            E_CharacterCountType.END_NEWLINE:              (E_CharacterCountType.BAD,
-                                                            E_CharacterCountType.BEGIN_NEWLINE),
+            E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR: (),
+            E_CharacterCountType.BEGIN_NEWLINE:            (E_CharacterCountType.END_NEWLINE,),
+            E_CharacterCountType.END_NEWLINE:              (E_CharacterCountType.BEGIN_NEWLINE,),
             E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE: (), 
             E_CharacterCountType.WHITESPACE:               (),
-            E_CharacterCountType.BAD:                      (E_CharacterCountType.BEGIN_NEWLINE_SUPPRESSOR, 
-                                                            E_CharacterCountType.BEGIN_NEWLINE, 
-                                                            E_CharacterCountType.END_NEWLINE)
+            E_CharacterCountType.BAD:                      (), 
         }[CcType]
 
         interferer = self.find_occupier(CharSet, Tolerated=intersection_tolerated)
@@ -454,7 +450,9 @@ class ParserDataLineColumn(Base):
 
     def consistency_check(self):
         self.count_command_map.check_grid_values_integer_multiples()
-        self.count_command_map.check_homogenous_space_counts()
+        # The following is nonsense: We detect that we did not choose an alternative 
+        # which is worse?!
+        # self.count_command_map.check_homogenous_space_counts()
         self.count_command_map.check_defined(self.sr, E_CharacterCountType.LINE)
 
 class ParserDataIndentation(Base):
@@ -512,7 +510,9 @@ class ParserDataIndentation(Base):
     def __specify_character_set(self, ref, Name, PatternOrNumberSet, sr):
         cset = extract_trigger_set(sr, Name, PatternOrNumberSet)
         self.count_command_map.add(cset, Name, None, sr)
-        ref.set(cset, sr)
+        prev_cset = ref.get()
+        if prev_cset is None: ref.set(cset, sr)
+        else:                 prev_cset.unite_with(cset)
 
     @typed(sr=SourceRef)
     def specify_newline(self, SmNewline, sr):
@@ -544,7 +544,7 @@ class ParserDataIndentation(Base):
 
         self.count_command_map.add(Sm.get_beginning_character_set(), 
                                    "begin(comment to newline)", None, sr)
-        self.sm_newline_suppressor.set(Sm, sr)
+        self.sm_comment.set(Sm, sr)
 
     def __sm_newline_default(self):
         """Default newline: '(\n)|(\r\n)'
@@ -578,9 +578,26 @@ class ParserDataIndentation(Base):
 
         return sm
 
-    def finalize(self, fh):
+    def __whitespace_default(self):
+        """Try to define default whitespace ' ' or '\t' if their positions
+        are not yet occupied in the count_command_map.
+        """
+        cs0 = NumberSet(ord(" "))
+        cs1 = NumberSet(ord("\t"))
+        result = NumberSet()
+        if not self.count_command_map.find_occupier(cs0, set()):
+            result.unite_with(cs0)
+        if not self.count_command_map.find_occupier(cs1, set()):
+            result.unite_with(cs1)
+
+        if result.is_empty():
+            error_msg("Trying to implement default whitespace ' ' or '\\t' failed.\n"
+                      "Characters are occupied by other elements.", self.sr)
+        return result
+
+    def finalize(self):
         if self.whitespace_character_set.get() is None:
-            whitespace = NumberSet([Interval(ord(" ")), Interval(ord("\t"))])
+            whitespace = self.__whitespace_default()
             self.__specify_character_set(self.whitespace_character_set, 
                                          "whitespace", whitespace, 
                                          sr=SourceRef_DEFAULT)
@@ -639,6 +656,8 @@ def _error_set_intersection(CcType, Before, sr):
         E_CharacterCountType.BEGIN_NEWLINE:            "beginning ",
         E_CharacterCountType.END_NEWLINE:              "ending ",
         E_CharacterCountType.BAD:                      "",
+        E_CharacterCountType.WHITESPACE:               "",
+        E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE: "beginning ",
     }[CcType]
 
     error_msg("The %scharacter set defined in '%s' intersects" % (prefix, cc_type_name_db[CcType]),
