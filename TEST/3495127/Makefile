@@ -1,7 +1,7 @@
 all: Simple.c 
 	@echo "Compiling"
 	@gcc -I./ -I$(QUEX_PATH) \
-		Simple.c          \
+		Simple.c \
 		lexer.c  \
 		-ggdb \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \

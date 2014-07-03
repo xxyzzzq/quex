@@ -780,7 +780,12 @@ def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     comment = ""
     if Comment != "": comment = "(%s) " % Comment
     try:
-        files_in_directory = os.listdir(directory)
+        ext = os.path.splitext(FileName)[1]
+
+        files_in_directory = [
+            file for file in os.listdir(directory) 
+            if file.rfind(ext) == len(file) - len(ext)
+        ]
     except:
         error_msg("File '%s' (%s) not found." % (FileName, comment), FH, LineN)
     verify_word_in_list(FileName, files_in_directory, 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.87" date="Thu Jul  3 01:37:58 2014">
+<test-database execution-time-sec="15.10" date="Fri Jul  4 01:12:10 2014">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.58"> 
         <application file-name="indentation_setup.py" info-request-time="1404283486L" vanished="False"/>
@@ -35,11 +35,11 @@
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.90"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="1.13"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.90" crc="139565825"/>
+               <choice name="" result="FAIL" time_sec="1.13" crc="139565825"/>
             </choice-list>
         </test>
         <test title="Information about Properties" time-sum-sec="6.22"> 

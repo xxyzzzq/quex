@@ -1,6 +1,6 @@
 (1) without --token-class-file
 command line: File 'error.qx' (quex source file) not found.
-command line: Acceptable: Otto-token, .svn, simple.qx.
+command line: Acceptable: simple.qx.
 (2) --token-class-file with --token-class
 command line: Cannot open file 'Otto'
 (3) --token-class-file without --token-class

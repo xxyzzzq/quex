@@ -1,4 +1,16 @@
-error.qx:4:error: The pattern '"a"' matches a superset of what is matched by
-error.qx:7:error: pattern '"a"'.
-error.qx:7:error: The former has precedence and the latter can never match.
-error.qx:7:error: ('--suppress 2' to avoid this message)
+error.qx:2:warning: Detected implicit token identifier definitions. Proposal:
+error.qx:2:warning:    token {
+error.qx:2:warning:      B;
+error.qx:3:warning:      A;
+error.qx:5:warning:      C;
+error.qx:5:warning:    }
+error.qx:3:error: The pattern '"a"' matches a superset of what is matched by
+error.qx:6:error: pattern '"a"'.
+error.qx:6:error: The former has precedence and the latter can never match.
+error.qx:6:error: ('--suppress 2' to avoid this message)
+
+
+
+
+
+

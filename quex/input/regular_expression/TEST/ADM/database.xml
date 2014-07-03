@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.77" date="Thu Jul  3 01:37:59 2014">
+<test-database execution-time-sec="4.77" date="Fri Jul  4 01:12:10 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.12"> 
         <application file-name="test-pattern-matching.py" info-request-time="1387873736L" vanished="False"/>
