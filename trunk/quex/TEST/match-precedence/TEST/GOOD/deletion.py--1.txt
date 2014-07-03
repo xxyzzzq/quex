@@ -1,4 +1,4 @@
 <string>:1:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
-<string>:1:warning: <inheritable: only> has been added automatically.
-consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
+<string>:1:warning: <inheritable: only> has been set automatically.
+consistency check: There is no mode that can be implemented---all existing modes are 'inheritable only'.
 consistency check: modes are = 'X'
