@@ -39,7 +39,7 @@ def do(ModeDB):
 
     # (*) If a conversion or a codec engine is specified, then the 
     #     'on_codec_error' handler must be specified in every mode.
-    if Setup.buffer_codec != "unicode" or Setup.converter_f:
+    if False and (Setup.buffer_codec != "unicode" or Setup.converter_f):
         for mode in ModeDB.values():
             # Later ... 
             if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:

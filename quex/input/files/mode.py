@@ -70,12 +70,11 @@ class PatternActionInfo(object):
 
     def __repr__(self):         
         txt  = ""
-        txt += "self.mode_name      = %s\n" % repr(self.mode_name)
         if self.pattern() not in E_IncidenceIDs:
             txt += "self.pattern_string = %s\n" % repr(self.pattern().pattern_string())
         txt += "self.pattern        = %s\n" % repr(self.pattern()).replace("\n", "\n      ")
-        txt += "self.action         = %s\n" % self.action().get_code_string()
-        if self.action().__class__ == UserCodeFragment:
+        txt += "self.action         = %s\n" % self.action().get_text()
+        if hasattr(self.action(), "sr"):
             txt += "self.file_name  = %s\n" % repr(self.action().sr.file_name) 
             txt += "self.line_n     = %s\n" % repr(self.action().sr.line_n) 
         txt += "self.incidence_id = %s\n" % repr(self.pattern().incidence_id()) 
@@ -241,7 +240,8 @@ class Mode:
                                                                  incidence_db)
         
         # (*) Misc
-        self.__abstract_f           = self.__is_abstract(incidence_db, Origin.option_db)
+        self.__abstract_f           = self.__is_abstract(Origin.incidence_db, 
+                                                         Origin.option_db)
         self.__base_mode_sequence   = base_mode_sequence
         self.__entry_mode_name_list = options_db.value_list("entry") # Those can enter this mode.
         self.__exit_mode_name_list  = options_db.value_list("exit")  # This mode can exit to those.
@@ -285,14 +285,14 @@ class Mode:
         assert len(self.__base_mode_sequence) >= 1 # At least the mode itself is in there
         return [ mode.name for mode in self.__base_mode_sequence ]
 
-    def __is_abstract(self, IncidenceDb, OriginalOptionDb):
+    def __is_abstract(self, OriginalIncidenceDb, OriginalOptionDb):
         """If the mode has incidences and/or patterns defined it is free to be 
         abstract or not. If neither one is defined, it cannot be implemented and 
         therefore MUST be abstract.
         """
         abstract_f = (OriginalOptionDb.value("inheritable") == "only")
 
-        if len(IncidenceDb) != 0 or len(self.pattern_list) != 0:
+        if len(OriginalIncidenceDb) != 0 or len(self.pattern_list) != 0:
             return abstract_f
 
         elif abstract_f == False:
