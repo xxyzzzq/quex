@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.73" date="Thu Jul  3 08:13:39 2014">
+<test-database execution-time-sec="2.99" date="Fri Jul  4 01:12:07 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.34"> 
         <application file-name="customized_codec.sh" info-request-time="1381662239L" vanished="False"/>
@@ -14,22 +14,22 @@
            <choice name="" result="OK" time_sec="0.00" crc="-1164005888"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.56"> 
+    <test title="Test code comments" time-sum-sec="0.44"> 
         <application file-name="comment.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.56" crc="906796828"/>
+           <choice name="" result="FAIL" time_sec="0.44" crc="906796828"/>
         </choice-list>
     </test>
-    <test title="Inadmissible commonalities" time-sum-sec="1.83"> 
+    <test title="Inadmissible commonalities" time-sum-sec="2.21"> 
         <application file-name="commonality.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
-           <choice name="skip" result="FAIL" time_sec="0.26" crc="-988900836"/>
-           <choice name="skip_range" result="FAIL" time_sec="0.26" crc="-1273745838"/>
-           <choice name="skip_nested_range" result="FAIL" time_sec="0.60" crc="-1183535418"/>
-           <choice name="indentation-newline" result="FAIL" time_sec="0.23" crc="-795405737"/>
-           <choice name="mix" result="FAIL" time_sec="0.24" crc="-1434028629"/>
+           <choice name="skip" result="FAIL" time_sec="0.28" crc="-988900836"/>
+           <choice name="skip_range" result="FAIL" time_sec="0.54" crc="-1273745838"/>
+           <choice name="skip_nested_range" result="FAIL" time_sec="0.46" crc="-1183535418"/>
+           <choice name="indentation-newline" result="FAIL" time_sec="0.44" crc="-795405737"/>
+           <choice name="mix" result="FAIL" time_sec="0.25" crc="-1434028629"/>
            <choice name="mix2" result="FAIL" time_sec="0.24" crc="1994616582"/>
         </choice-list>
     </test>

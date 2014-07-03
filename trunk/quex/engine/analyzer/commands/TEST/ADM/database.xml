@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.03" date="Thu Jul  3 01:37:57 2014">
+<test-database execution-time-sec="5.04" date="Fri Jul  4 01:12:08 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -28,11 +28,11 @@
         </choice-list>
     </test>
     <group name="Command">
-        <test title="Basic" time-sum-sec="0.18"> 
+        <test title="Basic" time-sum-sec="0.19"> 
             <application file-name="basic.py" info-request-time="1395293270L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.18" crc="1248621088"/>
+               <choice name="" result="FAIL" time_sec="0.19" crc="1248621088"/>
             </choice-list>
         </test>
         <test title="is_switchable" time-sum-sec="0.10"> 

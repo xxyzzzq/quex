@@ -12,7 +12,7 @@ token {
 
 mode Y : 
 <indentation: 
- [\t] => space 1; 
+ [\t] => whitespace; 
  [\n] => newline;
 > 
 { "test" => QUEX_TKN_TEST; }

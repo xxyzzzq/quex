@@ -126,13 +126,19 @@ def analyzer_functions_get(ModeDB):
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
-    blackboard_mode_db_setup(ModeDB)
+    mode_name_list = ModeDB.keys()  
 
-    for mode in blackboard.mode_db.itervalues():
-        # Only modes that contain pattern-action pairs require an analyzer
-        # analyzer function to be implemented.
-        if   mode.abstract_f(): continue
-        elif len(mode.pattern_list) == 0: continue
+    for name, mode_descr in ModeDB.iteritems():        
+        dial_db.clear()
+
+        # -- Generate 'Mode' from 'ModeDescriptions'
+        mode = Mode(mode_descr)
+
+        blackboard.mode_db[name] = mode
+        if mode.abstract_f(): continue
+
+        # -- some modes only define event handlers that are inherited
+        if len(mode.pattern_list) == 0: continue
 
         txt_analyzer = cpp_generator.do(mode, mode_name_list)
 
@@ -154,6 +160,12 @@ def analyzer_functions_get(ModeDB):
                                  inheritance_info_str     + \
                                  "\nEND: MODE PATTERNS")
         code_analyzer.append(comment)
+
+    if not Setup.token_class_only_f:
+        determine_start_mode(blackboard.mode_db)
+
+    # (*) perform consistency check on newly generated mode_db
+    consistency_check.do(blackboard.mode_db)
 
     # generate frame for analyser code
     return cpp_generator.frame_this("".join(code_analyzer)), blackboard.mode_db
@@ -195,7 +207,6 @@ def do_token_class_info():
     comment.append("<<<QUEX-OPTIONS>>>")
     return Lng.ML_COMMENT("".join(comment), IndentN=0)
 
-
 def blackboard_mode_db_setup(ModeDescrDb):
     """Takes all ModeDescription-s from ModeDescrDb and generates Mode objects
     out of them. 
@@ -203,7 +214,6 @@ def blackboard_mode_db_setup(ModeDescrDb):
     RESULT: blackboard.mode_db containing appropriate Mode objects.
     """
     def enter(Name, ModeDescr):
-        dial_db.clear()
         mode = Mode(mode_descr)  # -- Generate 'Mode' from 'ModeDescriptions'
         blackboard.mode_db[name] = mode
         return mode
@@ -216,5 +226,4 @@ def blackboard_mode_db_setup(ModeDescrDb):
 
     # (*) perform consistency check on newly generated mode_db
     consistency_check.do(blackboard.mode_db)
-
     return 
