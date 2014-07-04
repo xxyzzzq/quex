@@ -367,23 +367,23 @@ def __warn_on_double_definition():
             clash_db[x.number].append(x)
             clash_db[x.number].append(y)
 
-    def find_meaningful_location(TokenList):
+    def find_source_reference(TokenList):
         for token in TokenList:
-            if len(token.sr.file_name) != 0:
-                return token.sr.file_name, token.sr.line_n
-        return None, None
+            if token.sr.is_void(): continue
+            return token.sr
+        return None
     
     if len(clash_db) != 0:
         item_list = clash_db.items()
         item_list.sort()
-        file_name, line_n = find_meaningful_location(item_list[0][1])
+        sr = find_source_reference(item_list[0][1])
         error_msg("Following token ids have the same numeric value assigned:", 
-                  file_name, line_n, DontExitF=True)
+                  sr, DontExitF=True)
         for x, token_id_list in item_list:
-            file_name, line_n = find_meaningful_location(token_id_list)
+            sr = find_source_reference(token_id_list)
             token_ids_sorted = sorted(list(set(token_id_list)), key=attrgetter("name")) # Ensure uniqueness
             error_msg("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
-                      file_name, line_n, DontExitF=True)
+                      sr, DontExitF=True)
                       
 def __warn_implicit_token_definitions():
     """Output a message on token_ids which have been generated automatically.

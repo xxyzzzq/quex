@@ -37,8 +37,8 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n", "mode_name
     def is_void(self):
         return (self.file_name == "<default>") and (self.line_n == 0) and len(self.mode_name) == 0
 
-SourceRef_VOID = SourceRef()
-SourceRef_DEFAULT = SourceRef("<default setting>", 0)
+SourceRef_VOID    = SourceRef("<default>", 0)
+SourceRef_DEFAULT = SourceRef("<default>", 0)
 
 class CodeFragment(object):
     """base class for all kinds of generated code and code which

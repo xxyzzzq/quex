@@ -67,12 +67,12 @@ def _do(Descr):
         # Default copy operation: Plain Copy of token memory
         copy_str = "__QUEX_STD_memcpy((void*)__this, (void*)__That, sizeof(QUEX_TYPE_TOKEN));\n"
     else:
-        copy_str = Descr.copy.get_text()
+        copy_str = Lng.SOURCE_REFERENCED(Descr.copy)
 
     if Descr.take_text is None:
         take_text_str = "return true;\n" 
     else:
-        take_text_str = Descr.take_text.get_text()
+        take_text_str = Lng.SOURCE_REFERENCED(Descr.take_text)
 
     include_guard_extension_str = get_include_guard_extension(
                                         Lng.NAMESPACE_REFERENCE(Descr.name_space) 
@@ -114,21 +114,21 @@ def _do(Descr):
             ])
     txt = blue_print(txt,
              [
-              ["$$BODY$$",                    Descr.body.get_text()],
-              ["$$CONSTRUCTOR$$",             Descr.constructor.get_text()],
+              ["$$BODY$$",                    Lng.SOURCE_REFERENCED(Descr.body)],
+              ["$$CONSTRUCTOR$$",             Lng.SOURCE_REFERENCED(Descr.constructor)],
               ["$$COPY$$",                    copy_str],
-              ["$$DESTRUCTOR$$",              Descr.destructor.get_text()],
+              ["$$DESTRUCTOR$$",              Lng.SOURCE_REFERENCED(Descr.destructor)],
               ["$$DISTINCT_MEMBERS$$",        get_distinct_members(Descr)],
-              ["$$FOOTER$$",                  Descr.footer.get_text()],
+              ["$$FOOTER$$",                  Lng.SOURCE_REFERENCED(Descr.footer)],
               ["$$FUNC_TAKE_TEXT$$",          take_text_str],
-              ["$$HEADER$$",                  Descr.header.get_text()],
+              ["$$HEADER$$",                  Lng.SOURCE_REFERENCED(Descr.header)],
               ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
               ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
               ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
               ["$$QUICK_SETTERS$$",           get_quick_setters(Descr)],
               ["$$SETTERS_GETTERS$$",         get_setter_getter(Descr)],
-              ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_text()],
-              ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_text()],
+              ["$$TOKEN_REPETITION_N_GET$$",  Lng.SOURCE_REFERENCED(Descr.repetition_get)],
+              ["$$TOKEN_REPETITION_N_SET$$",  Lng.SOURCE_REFERENCED(Descr.repetition_set)],
               ["$$UNION_MEMBERS$$",           get_union_members(Descr)],
               ["$$VIRTUAL_DESTRUCTOR$$",      virtual_destructor_str],
               ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
@@ -146,17 +146,17 @@ def _do(Descr):
             ])
     txt_i = blue_print(txt_i, 
                        [
-                        ["$$CONSTRUCTOR$$",             Descr.constructor.get_text()],
+                        ["$$CONSTRUCTOR$$",             Lng.SOURCE_REFERENCED(Descr.constructor)],
                         ["$$COPY$$",                    copy_str],
-                        ["$$DESTRUCTOR$$",              Descr.destructor.get_text()],
-                        ["$$FOOTER$$",                  Descr.footer.get_text()],
+                        ["$$DESTRUCTOR$$",              Lng.SOURCE_REFERENCED(Descr.destructor)],
+                        ["$$FOOTER$$",                  Lng.SOURCE_REFERENCED(Descr.footer)],
                         ["$$FUNC_TAKE_TEXT$$",          take_text_str],
                         ["$$TOKEN_CLASS_HEADER$$",      Setup.get_file_reference(blackboard.token_type_definition.get_file_name())],
                         ["$$INCLUDE_GUARD_EXTENSION$$", include_guard_extension_str],
                         ["$$NAMESPACE_OPEN$$",          Lng.NAMESPACE_OPEN(Descr.name_space)],
                         ["$$NAMESPACE_CLOSE$$",         Lng.NAMESPACE_CLOSE(Descr.name_space)],
-                        ["$$TOKEN_REPETITION_N_GET$$",  Descr.repetition_get.get_text()],
-                        ["$$TOKEN_REPETITION_N_SET$$",  Descr.repetition_set.get_text()],
+                        ["$$TOKEN_REPETITION_N_GET$$",  Lng.SOURCE_REFERENCED(Descr.repetition_get)],
+                        ["$$TOKEN_REPETITION_N_SET$$",  Lng.SOURCE_REFERENCED(Descr.repetition_set)],
                         ["$$TOKEN_CLASS_NAME_SAFE$$",   Descr.class_name_safe],
                        ])
 
@@ -172,7 +172,7 @@ def get_distinct_members(Descr):
     txt = ""
     for name, type_code in Descr.distinct_db.items():
         txt += __member(type_code, TL, name, NL)
-    txt += Lng.SOURCE_REFERENCE_END()
+    #txt += Lng._SOURCE_REFERENCE_END()
     return txt
 
 def get_union_members(Descr):
@@ -191,14 +191,15 @@ def get_union_members(Descr):
         else:
             txt += __member(type_descr, TL, name, NL, IndentationOffset=" " * 4) + "\n"
     txt += "    } content;\n"
-    txt += Lng.SOURCE_REFERENCE_END()
+    #txt += Lng._SOURCE_REFERENCE_END()
     return txt
 
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
-    my_def  = Lng.SOURCE_REFERENCE_BEGIN(TypeCode.sr)
+    my_def  = Lng._SOURCE_REFERENCE_BEGIN(TypeCode.sr)
     my_def += IndentationOffset
     my_def += Lng.CLASS_MEMBER_DEFINITION(TypeCode.get_pure_text(), MaxTypeNameL, 
                                           VariableName)
+    my_def += Lng._SOURCE_REFERENCE_END(TypeCode.sr)
     return my_def
 
 def get_setter_getter(Descr):
@@ -211,7 +212,7 @@ def get_setter_getter(Descr):
         type_code = info[0]
         access    = info[1]
         type_str  = type_code.get_pure_text()
-        txt += Lng.SOURCE_REFERENCE_BEGIN(type_code.sr)
+        txt += Lng._SOURCE_REFERENCE_BEGIN(type_code.sr)
         my_def = "    %s%s get_%s() const %s{ return %s; }" \
                  % (type_str,      " " * (TL - len(type_str)), 
                     variable_name, " " * ((NL + TL)- len(variable_name)), 
@@ -233,14 +234,14 @@ def get_setter_getter(Descr):
                             "size_t", "uintptr_t", "ptrdiff_t"]:
             type_str += "&"
 
-        txt += Lng.SOURCE_REFERENCE_BEGIN(type_code.sr)
+        txt += Lng._SOURCE_REFERENCE_BEGIN(type_code.sr)
         my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \
                % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)
         txt += my_def
 
-    txt += Lng.SOURCE_REFERENCE_END()
+    txt += Lng._SOURCE_REFERENCE_END()
     return txt
 
 def get_quick_setters(Descr):

@@ -85,16 +85,18 @@ class TerminalFactory:
            -- add the 'on_match' event handler in front, if match is relevant.
            -- adding source reference information.
         """
-        code_user                  = pretty_code(Code.get_code())
-        txt_source_reference_begin = Lng.SOURCE_REFERENCE_BEGIN(Code.sr)
-        txt_source_reference_end   = "\n%s" % Lng.SOURCE_REFERENCE_END()
+        code_user = "%s%s%s" % (
+            Lng._SOURCE_REFERENCE_BEGIN(Code.sr),
+            pretty_code(Code.get_code()),
+            Lng._SOURCE_REFERENCE_END()
+        )
 
         lexeme_begin_f, \
         terminating_zero_f = self.get_lexeme_flags(Code)
 
         txt_terminating_zero = Lng.LEXEME_TERMINATING_ZERO_SET(terminating_zero_f)
 
-        if MatchF: txt_on_match = self.on_match.get_text()
+        if MatchF: txt_on_match = Lng.SOURCE_REFERENCED(self.on_match)
         else:      txt_on_match = ""
 
         result = "".join([
@@ -102,11 +104,7 @@ class TerminalFactory:
             txt_terminating_zero,
             txt_on_match,
             "{\n",
-            txt_source_reference_begin,
-            #
             code_user,
-            #
-            txt_source_reference_end,
             "\n}\n",
         ])
 

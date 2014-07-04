@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.87" date="Fri Jul  4 01:12:04 2014">
+<test-database execution-time-sec="13.82" date="Fri Jul  4 07:11:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="Checking PRIORITY-MARK internally." time-sum-sec="3.15"> 
         <application file-name="priority.py" info-request-time="1387873736L" vanished="False"/>
@@ -50,14 +50,14 @@
            <choice name="subset" result="OK" time_sec="0.14" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.46"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.44"> 
         <application file-name="unvalid-marks.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
            <choice name="PRIORITY-good" result="OK" time_sec="0.36" crc="-84057889"/>
            <choice name="PRIORITY-fail" result="FAIL" time_sec="0.36" crc="2007608689"/>
            <choice name="DELETION-good" result="OK" time_sec="0.36" crc="-964384655"/>
-           <choice name="DELETION-fail" result="FAIL" time_sec="0.37" crc="-1786207579"/>
+           <choice name="DELETION-fail" result="FAIL" time_sec="0.36" crc="-1786207579"/>
         </choice-list>
     </test>
     <test title="Local variables." time-sum-sec="1.63"> 
@@ -68,11 +68,11 @@
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Derived before Base" time-sum-sec="1.99"> 
+        <test title="Derived before Base" time-sum-sec="1.95"> 
             <application file-name="derived-before-base.sh" info-request-time="1381662239L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.99" crc="1727262709"/>
+               <choice name="" result="FAIL" time_sec="1.95" crc="1727262709"/>
             </choice-list>
         </test>
         <test title="Larger Inheritance Tree" time-sum-sec="2.91"> 

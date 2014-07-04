@@ -239,7 +239,7 @@ def _code_terminal_on_bad_indentation_character(code, ISetup, ModeName,
                                                 incidence_db, BadIndentationIid):
     if ISetup.bad_character_set.get() is None:
         return
-    on_bad_indentation_txt = incidence_db[E_IncidenceIDs.INDENTATION_BAD].get_text()
+    on_bad_indentation_txt = Lng.SOURCE_REFERENCED(incidence_db[E_IncidenceIDs.INDENTATION_BAD])
     code.extend([
         "%s\n" % Lng.LABEL(DoorID.incidence(BadIndentationIid)),
         "#define BadCharacter (me->buffer._input_p[-1])\n",

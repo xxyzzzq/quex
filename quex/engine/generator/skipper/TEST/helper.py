@@ -171,7 +171,7 @@ def create_customized_analyzer_function(Language, TestStr, EngineSourceCode,
 
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
-    txt = txt.replace(Lng.SOURCE_REFERENCE_END(), "")
+    txt = txt.replace(Lng._SOURCE_REFERENCE_END(), "")
 
     return txt
 

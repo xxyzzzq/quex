@@ -13,7 +13,8 @@
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
 import quex.engine.generator.languages.cpp               as     cpp
-from   quex.engine.generator.code.base                   import SourceRef
+from   quex.engine.generator.code.base                   import SourceRef, \
+                                                                CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
 from   quex.engine.analyzer.commands.core                import E_R, \
                                                                 RouterContentElement
@@ -180,7 +181,15 @@ class Lng_Cpp(dict):
     def UNDEFINE(self, NAME):
         return "\n#undef %s\n" % NAME
 
-    def SOURCE_REFERENCE_BEGIN(self, SourceReference):
+    @typed(Txt=(CodeFragment))
+    def SOURCE_REFERENCED(self, Cf):
+        return "%s%s%s" % (
+            self._SOURCE_REFERENCE_BEGIN(Cf.sr),
+            Cf.get_text(),
+            self._SOURCE_REFERENCE_END(Cf.sr)
+        )
+
+    def _SOURCE_REFERENCE_BEGIN(self, SourceReference):
         """Return a code fragment that returns a source reference pragma. If 
         the source reference is void, no pragma is required. 
         """
@@ -193,7 +202,7 @@ class Lng_Cpp(dict):
         else:
             return ""
 
-    def SOURCE_REFERENCE_END(self, SourceReference=None):
+    def _SOURCE_REFERENCE_END(self, SourceReference=None):
         """Return a code fragment that returns a source reference pragma which
         tells about the file where the code has been pasted. If the SourceReference
         is provided, it may be checked wether the 'return pragma' is necessary.
@@ -830,7 +839,7 @@ class Lng_Cpp(dict):
 
     def straighten_open_line_pragmas(self, FileName):
         norm_filename   = Setup.get_file_reference(FileName)
-        line_pragma_txt = self.SOURCE_REFERENCE_END().strip()
+        line_pragma_txt = self._SOURCE_REFERENCE_END().strip()
 
         new_content = []
         line_n      = 1 # NOT: 0!
@@ -844,7 +853,7 @@ class Lng_Cpp(dict):
                 new_content.append(line)
             else:
                 line_n += 1
-                new_content.append(self.SOURCE_REFERENCE_BEGIN(SourceRef(norm_filename, line_n)))
+                new_content.append(self._SOURCE_REFERENCE_BEGIN(SourceRef(norm_filename, line_n)))
         fh.close()
         write_safely_and_close(FileName, "".join(new_content))
 

@@ -108,10 +108,7 @@ def parse_section(fh):
 
             elif not blackboard.initial_mode.sr.is_void():
                 error_msg("start mode defined more than once!", fh, DontExitF=True)
-                error_msg("previously defined here",
-                          blackboard.initial_mode.sr.file_name,
-                          blackboard.initial_mode.sr.line_n)
-        
+                error_msg("previously defined here", blackboard.initial_mode.sr)
              
             blackboard.initial_mode = CodeUser(mode_name, SourceRef.from_FileHandle(fh))
             return
@@ -294,8 +291,9 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
             error_msg("Missing ';' after token identifier '%s'." % candidate, fh)
 
         if not NamesOnlyF:
-            blackboard.token_id_db[candidate] = \
-                 TokenInfo(candidate, numeric_value, SourceRef.from_FileHandle(fh))
+            ti = TokenInfo(candidate, numeric_value, 
+                           SourceReference=SourceRef.from_FileHandle(fh))
+            blackboard.token_id_db[candidate] = ti
 
     if NamesOnlyF:
         return sorted(list(result))

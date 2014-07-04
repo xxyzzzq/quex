@@ -65,7 +65,7 @@ def do(ModeDB):
     txt = blue_print(template_code_txt,
             [
                 ["$$___SPACE___$$",                      " " * (len(LexerClassName) + 1)],
-                ["$$CLASS_BODY_EXTENSION$$",             blackboard.class_body_extension.get_text()],
+                ["$$CLASS_BODY_EXTENSION$$",             Lng.SOURCE_REFERENCED(blackboard.class_body_extension)],
                 ["$$CONVERTER_HELPER$$",                 Setup.get_file_reference(Setup.output_buffer_codec_header)],
                 ["$$INCLUDE_GUARD_EXTENSION$$",          include_guard_ext],
                 ["$$LEXER_CLASS_NAME$$",                 LexerClassName],
@@ -75,7 +75,7 @@ def do(ModeDB):
                 ["$$LEXER_DERIVED_CLASS_DECL$$",         derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",         analyzer_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",         mode_id_definition_str],
-                ["$$MEMENTO_EXTENSIONS$$",               blackboard.memento_class_extension.get_text()],
+                ["$$MEMENTO_EXTENSIONS$$",               Lng.SOURCE_REFERENCED(blackboard.memento_class_extension)],
                 ["$$MODE_CLASS_FRIENDS$$",               friend_txt],
                 ["$$MODE_OBJECTS$$",                     mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
@@ -87,7 +87,7 @@ def do(ModeDB):
                 ["$$TOKEN_CLASS_NAME_SAFE$$",            token_class_name_safe],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.get_file_reference(token_id_definition_file)],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_converter_coding_name_str],
-                ["$$USER_DEFINED_HEADER$$",              blackboard.header.get_text() + "\n"],
+                ["$$USER_DEFINED_HEADER$$",              Lng.SOURCE_REFERENCED(blackboard.header) + "\n"],
              ])
 
     return txt
@@ -101,11 +101,11 @@ def do_implementation(ModeDB):
 
     func_txt = blue_print(func_txt,
             [
-                ["$$CONSTRUCTOR_EXTENSTION$$",                  blackboard.class_constructor_extension.get_text()],
+                ["$$CONSTRUCTOR_EXTENSTION$$",                  Lng.SOURCE_REFERENCED(blackboard.class_constructor_extension)],
                 ["$$CONVERTER_HELPER_I$$",                      Setup.get_file_reference(Setup.output_buffer_codec_header_i)],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", get_constructor_code(ModeDB.values())],
-                ["$$MEMENTO_EXTENSIONS_PACK$$",                 blackboard.memento_pack_extension.get_text()],
-                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               blackboard.memento_unpack_extension.get_text()],
+                ["$$MEMENTO_EXTENSIONS_PACK$$",                 Lng.SOURCE_REFERENCED(blackboard.memento_pack_extension)],
+                ["$$MEMENTO_EXTENSIONS_UNPACK$$",               Lng.SOURCE_REFERENCED(blackboard.memento_unpack_extension)],
                 ])
     return func_txt
 
