@@ -120,30 +120,24 @@ class TokenTypeDescriptorCore:
         txt += "}\n"
 
         # constructor / copy / destructor
-        def sr_frame(Code):
-            stxt  = Lng.SOURCE_REFERENCE_BEGIN(Code.sr)
-            stxt += Code.get_text()
-            stxt += Lng.SOURCE_REFERENCE_END()
-            return stxt
-
         if not self.constructor.is_whitespace():
             txt += "constructor {\n"
-            txt += sr_frame(self.constructor)
+            txt += Lng.SOURCE_REFERENCED(self.constructor)
             txt += "}"
         
         if self.copy is not None:
             txt += "copy {\n"
-            txt += sr_frame(self.copy)
+            txt += Lng.SOURCE_REFERENCED(self.copy)
             txt += "}"
 
         if not self.destructor.is_whitespace():
             txt += "destructor {\n"
-            txt += sr_frame(self.destructor)
+            txt += Lng.SOURCE_REFERENCED(self.destructor)
             txt += "}"
 
         if not self.body.is_whitespace():
             txt += "body {\n"
-            txt += sr_frame(self.body)
+            txt += Lng.SOURCE_REFERENCED(self.body)
             txt += "}"
 
         return txt

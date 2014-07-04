@@ -121,7 +121,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     code_fragment = mode.incidence_db.get(E_IncidenceIDs.MODE_ENTRY)
     if code_fragment is not None:
-        on_entry_str += code_fragment.get_text()
+        on_entry_str += Lng.SOURCE_REFERENCED(code_fragment)
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
@@ -130,7 +130,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     on_exit_str += "#   endif\n"
     code_fragment = mode.incidence_db.get(E_IncidenceIDs.MODE_EXIT)
     if code_fragment is not None:
-        on_exit_str += code_fragment.get_text()
+        on_exit_str += Lng.SOURCE_REFERENCED(code_fragment)
 
     # (*) on indentation
     on_indentation_str = get_on_indentation_handler(mode)
@@ -290,13 +290,13 @@ def get_on_indentation_handler(Mode):
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_INDENT)
     if code_fragment is not None:
-        on_indent_str   = code_fragment.get_text()
+        on_indent_str   = Lng.SOURCE_REFERENCED(code_fragment)
     else:
         on_indent_str   = "self_send(__QUEX_SETTING_TOKEN_ID_INDENT);"
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_NODENT)
     if code_fragment is not None:
-        on_nodent_str   = code_fragment.get_text()
+        on_nodent_str   = Lng.SOURCE_REFERENCED(code_fragment)
     else:
         on_nodent_str   = "self_send(__QUEX_SETTING_TOKEN_ID_NODENT);"
 
@@ -304,11 +304,11 @@ def get_on_indentation_handler(Mode):
     on_n_dedent_str = ""
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_DEDENT)
     if code_fragment is not None:
-        on_dedent_str = code_fragment.get_text()
+        on_dedent_str = Lng.SOURCE_REFERENCED(code_fragment)
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_N_DEDENT)
     if code_fragment is not None:
-        on_n_dedent_str = code_fragment.get_text()
+        on_n_dedent_str = Lng.SOURCE_REFERENCED(code_fragment)
 
     if (not on_dedent_str) and (not on_n_dedent_str):
         # If no 'on_dedent' and no 'on_n_dedent' is defined ... 
@@ -321,7 +321,7 @@ def get_on_indentation_handler(Mode):
 
     code_fragment = Mode.incidence_db.get(E_IncidenceIDs.INDENTATION_ERROR)
     if code_fragment is not None:
-        on_indentation_error = code_fragment.get_text() 
+        on_indentation_error = Lng.SOURCE_REFERENCED(code_fragment) 
     else:
         # Default: Blow the program if there is an indentation error.
         on_indentation_error = 'QUEX_ERROR_EXIT("Lexical analyzer mode \'%s\': indentation error detected!\\n"' \

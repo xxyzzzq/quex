@@ -1,4 +1,4 @@
-<test-database execution-time-sec="12.49" date="Fri Jul  4 01:12:01 2014">
+<test-database execution-time-sec="12.49" date="Fri Jul  4 07:11:48 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="2.96"> 
         <application file-name="with-skip-range.sh" info-request-time="1381662239L" vanished="False"/>
@@ -46,7 +46,7 @@
            <choice name="3" result="FAIL" time_sec="0.29" crc="-241404934"/>
            <choice name="4" result="OK" time_sec="0.32" crc="774002524"/>
            <choice name="5" result="OK" time_sec="0.18" crc="72017042"/>
-           <choice name="6" result="FAIL" time_sec="0.18" crc="1833916996"/>
+           <choice name="6" result="OK" time_sec="0.18" crc="546786984"/>
            <choice name="5b" result="OK" time_sec="0.19" crc="894491002"/>
         </choice-list>
     </test>

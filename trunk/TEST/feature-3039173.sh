@@ -2,6 +2,7 @@
 bug=3039173
 if [[ $1 == "--hwut-info" ]]; then
     echo "fschaef: $bug On Mismatch: abort()"
+    echo "HAPPY: Simple.c:[0-9]+:;"
     exit
 fi
 

@@ -73,9 +73,9 @@ def get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=False):
 
     return "".join([
         txt_entry,
-        Lng.SOURCE_REFERENCE_BEGIN(OnSkipRangeOpen.sr),
+        Lng._SOURCE_REFERENCE_BEGIN(OnSkipRangeOpen.sr),
         pretty_code(OnSkipRangeOpen.get_code()),
-        "\n%s" % Lng.SOURCE_REFERENCE_END(),
+        "\n%s" % Lng._SOURCE_REFERENCE_END(),
         "%s\n" % Lng.PURE_RETURN,
         txt_exit
     ])

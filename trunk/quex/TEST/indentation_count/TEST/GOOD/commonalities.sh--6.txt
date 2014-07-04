@@ -1,2 +1,3 @@
-src/error-6.qx:8:error: No space or grid defined for indentation counting. Default
-src/error-6.qx:8:error: values ' ' and '\t' could not be used since they are specified as 'bad'.
+## commonalities of the suppressor are no longer forbidden.
+src/error-6.qx:8:error: Trying to implement default whitespace ' ' or '\t' failed.
+src/error-6.qx:8:error: Characters are occupied by other elements.

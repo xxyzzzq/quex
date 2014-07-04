@@ -324,11 +324,7 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
     unset_pre_context_flags_str = Lng.PRE_CONTEXT_RESET(PreConditionIDList)
 
     if OnAfterMatchCode is not None:
-        on_after_match_str = "".join([
-            Lng.SOURCE_REFERENCE_BEGIN(OnAfterMatchCode.sr),
-            OnAfterMatchCode.get_text(),
-            Lng.SOURCE_REFERENCE_END()
-        ])
+        on_after_match_str = Lng.SOURCE_REFERENCED(OnAfterMatchCode)
     else:
         on_after_match_str = ""
 
