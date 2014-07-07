@@ -186,27 +186,20 @@ E_DoorIdIndex = Enum("DROP_OUT",
 
 E_Cmd = Enum("Accepter",
              "Assign",
-             "ColumnCountSet",
+             "AssignConstant",
              "ColumnCountAdd",
              "ColumnCountGridAdd",
-             "ColumnCountGridAddWithReferenceP",
              "ColumnCountReferencePDeltaAdd",
              "ColumnCountReferencePSet",
              "GotoDoorId",
              "GotoDoorIdIfInputPNotEqualPointer",
              "IfPreContextSetPositionAndGoto",
-             "IndentationAdd",
-             "IndentationGridAdd",
-             "IndentationGridAddWithReferenceP",
-             "IndentationReferencePDeltaAdd",
-             "IndentationReferencePSet",
              "IndentationHandlerCall",
              "InputPDecrement",
              "InputPDereference",
              "InputPIncrement",
              "LexemeResetTerminatingZero",
              "LineCountAdd",
-             "LineCountAddWithReferenceP",
              "PathIteratorSet",
              "PreContextOK",
              "PrepareAfterReload",
@@ -361,15 +354,14 @@ token_repetition_token_id_list = ""
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.
 #
-#                        The first token_type section defines the variable as 
-#                        a real 'TokenTypeDescriptor'.
+# The first token_type section defines the variable as a real 'TokenTypeDescriptor'.
 #
-#                        Default = None is detected by the 'input/file/core.py' and
-#                        triggers the parsing of the default token type description. 
+# The setup_parser.py checks for the specification of a manually written token class file. 
+# If so then an object of type 'ManualTokenClassSetup' is assigned.
+#
+# Default = None is detected by the 'input/file/core.py' and triggers the parsing of the 
+# default token type description. 
 #          
-#                        The setup_parser.py checks for the specification of a manually
-#                        written token class file. If so then an object of type 
-#                        'ManualTokenClassSetup' is assigned.
 #-----------------------------------------------------------------------------------------
 token_type_definition = None
 

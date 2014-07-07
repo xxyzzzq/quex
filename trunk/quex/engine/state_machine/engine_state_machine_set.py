@@ -22,7 +22,6 @@ class EngineStateMachineSet:
         assert all_isinstance(PatternList, Pattern)
         assert all_true(PatternList, lambda p: p.incidence_id() is not None)
 
-
         # (*) Core SM, Pre-Context SM, ...
         #     ... and sometimes backward input position SMs.
         self.sm,                    \

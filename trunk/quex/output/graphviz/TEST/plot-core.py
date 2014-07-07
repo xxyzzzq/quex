@@ -14,12 +14,12 @@ if "--hwut-info" in sys.argv:
     print "Plot: Core state machine."
     sys.exit(0)
 
-
-sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {})
-pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
+pattern_list = [
+    regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {})
+]
 
 # HWUT consideres '##' as comment
-my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
+my_plotter = plotter.Generator(pattern_list, "test-plot")
 
 my_plotter.do()
 for line in open("test-plot.dot").readlines(): # .replace("#", "##")

@@ -4,10 +4,11 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
 from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.commands.core           import CommandList, \
+                                                           AssignConstant, \
                                                            IndentationHandlerCall, \
-                                                           ColumnCountSet, \
                                                            LineCountAdd, \
-                                                           GotoDoorId
+                                                           GotoDoorId, \
+                                                           E_R
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            IfDoorIdReferencedLabel
 from   quex.engine.analyzer.terminal.core           import Terminal
@@ -141,12 +142,12 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
                  counting columns of whitespace.
     """
     result = []
-    _add_suppressed_newline(result, SmNewline, SmSuppressedNewline)
+    _add_suppressed_newline(result, SmSuppressedNewline)
     _add_newline(result, SmNewline)
     _add_comment(result, SmComment)
     return result
 
-def _add_suppressed_newline(psml, SmNewlineOriginal, SmSuppressedNewlineOriginal):
+def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
     """Add a pair (suppressed newline, terminal on suppressed newline to 'psml'.
 
     A suppresed newline is not like a newline--the next line is considered as 
@@ -159,19 +160,20 @@ def _add_suppressed_newline(psml, SmNewlineOriginal, SmSuppressedNewlineOriginal
     assert SmNewlineiOriginal is not None
 
     # Disconnect from machines being used elsewhere.
-    SmNewline           = SmNewlineOriginal.clone()
     SmSuppressedNewline = SmSuppressedNewlineOriginal.clone()
+    SmSuppressedNewline.set_id(dial_db.new_incidence_id())
 
     # The parser MUST ensure that if there is a newline suppressor, there MUST
     # be a newline being defined.
 
     cl = [
         LineCountAdd(1),
+        AssignConstant(E_R.Column, 1),
         GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)),
     ]
     terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
                                      "<INDENTATION SUPPRESSED NEWLINE>")
-    terminal.set_incidence_id(SmNewline.get_id())
+    terminal.set_incidence_id(SmSuppressedNewline.get_id())
 
     psml.append((SmSuppressedNewline, terminal))
 
@@ -185,13 +187,14 @@ def _add_newline(psml, SmNewlineOriginal):
 
     # Disconnect from machines being used elsewhere.
     SmNewline = SmNewlineOriginal.clone()
+    SmNewline.set_id(dial_db.new_incidence_id())
 
     # The SmNewline has been used before in the main state machine with a 
     # different incidence id. It is essential to clone!
 
     cl = [
-        ColumnCountSet(1),
         LineCountAdd(1),
+        AssignConstant(E_R.Column, 1),
         GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))
     ]
     terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
@@ -206,16 +209,19 @@ def _add_comment(psml, SmCommentOriginal):
     following:
     """
     if SmCommentOriginal is None: return
-    # Disconnect from machines being used elsewhere.
-    SmComment = SmCommentOriginal.clone()
 
     comment_skip_iid = dial_db.new_incidence_id()
+
+    # Disconnect from machines being used elsewhere.
+    SmComment = SmCommentOriginal.clone()
+    SmComment.set_id(comment_skip_iid)
+
     door_id_comment  = DoorID.incidence(comment_skip_iid)
 
     if SmComment.last_character_set().contains_only(ord('\n')):
         code = Lng.COMMAND_LIST([
-            ColumnCountSet(1),
             LineCountAdd(1),
+            AssignConstant(E_R.Column, 1),
         ])
     else:
         count_info = CountInfo.from_StateMachine(SmComment, 

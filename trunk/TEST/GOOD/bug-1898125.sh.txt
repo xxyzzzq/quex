@@ -1,6 +1,4 @@
-consistency check: No single mode defined - bailing out
 
-consistency check: No single mode defined - bailing out
 
 command line: Cannot convert 'foo' into an integer for ''--token-id-offset''.
 command line: Use prefix '0x' for hexadecimal numbers.

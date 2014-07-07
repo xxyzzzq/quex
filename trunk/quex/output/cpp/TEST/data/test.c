@@ -28,7 +28,8 @@ _32:
 
 
     __quex_debug("Init State\n");
-        if( input < 0xC2 ) {
+__quex_debug_state(95);
+    if( input < 0xC2 ) {
         if( input < 0xB ) {
             switch( input ) {
                 case 0x0: 
@@ -139,25 +140,25 @@ _30: /* (95 from 140) */
 
 
     __quex_assert_no_passage();
-_26: /* (DROP_OUT from 96) */
-    goto _36;    goto _34;
+_25: /* (DROP_OUT from 98) (DROP_OUT from 133) (DROP_OUT from 136) (DROP_OUT from 130) (DROP_OUT from 99) (DROP_OUT from 134) (DROP_OUT from 109) (DROP_OUT from 137) (DROP_OUT from 128) (DROP_OUT from 97) (DROP_OUT from 95) (DROP_OUT from 123) (DROP_OUT from 120) (DROP_OUT from 101) (DROP_OUT from 129) */
+    me->buffer._input_p = me->buffer._lexeme_start_p + 1; 
 
-_27: /* (DROP_OUT from 104) */
+goto _36;    goto _34;
+
+_26: /* (DROP_OUT from 96) */
     goto _37;    goto _34;
 
-_28: /* (DROP_OUT from 105) */
+_27: /* (DROP_OUT from 104) */
     goto _38;    goto _34;
 
-_29: /* (DROP_OUT from 139) (DROP_OUT from 131) (DROP_OUT from 138) (DROP_OUT from 132) (DROP_OUT from 107) */
+_28: /* (DROP_OUT from 105) */
     goto _39;    goto _34;
 
-_25: /* (DROP_OUT from 98) (DROP_OUT from 133) (DROP_OUT from 136) (DROP_OUT from 130) (DROP_OUT from 99) (DROP_OUT from 134) (DROP_OUT from 109) (DROP_OUT from 137) (DROP_OUT from 128) (DROP_OUT from 97) (DROP_OUT from 95) (DROP_OUT from 123) (DROP_OUT from 120) (DROP_OUT from 101) (DROP_OUT from 129) */
+_29: /* (DROP_OUT from 139) (DROP_OUT from 131) (DROP_OUT from 138) (DROP_OUT from 132) (DROP_OUT from 107) */
     goto _35;
 
 _35:
-    me->buffer._input_p = me->buffer._lexeme_start_p + 1; 
-
-goto _40;    goto _34;
+    goto _40;    goto _34;
 
 _34:
 
@@ -653,35 +654,42 @@ __quex_assert_no_passage();
     /* (*) Terminal states _______________________________________________________
      *
      * States that implement actions of the 'winner patterns.                     */
-_36: __quex_debug("* TERMINAL LINE\n");
+_37: __quex_debug("* TERMINAL LINE\n");
 __QUEX_IF_COUNT_LINES_ADD((size_t)1);
 __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
 if( me->buffer._input_p != LexemeEnd ) goto _30;
 goto _1;
-_37: __quex_debug("* TERMINAL GRID\n");
+_38: __quex_debug("* TERMINAL GRID\n");
 __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
 __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
 __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4 + 1);
 if( me->buffer._input_p != LexemeEnd ) goto _30;
 goto _1;
-_38: __quex_debug("* TERMINAL COLUMN\n");
+_39: __quex_debug("* TERMINAL COLUMN\n");
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)10);
 if( me->buffer._input_p != LexemeEnd ) goto _30;
 goto _1;
-_39: __quex_debug("* TERMINAL COLUMN\n");
+_40: __quex_debug("* TERMINAL COLUMN\n");
 __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
 if( me->buffer._input_p != LexemeEnd ) goto _30;
 goto _1;
 _72: __quex_debug("* TERMINAL <BEYOND>\n");
     (me->buffer._input_p) = character_begin_p;
 goto _1;
-_40:
+_36:
     goto _72;
 _1:
-    __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
-   return;
-#  undef self
-#  undef QUEX_LABEL_STATE_ROUTER
+     __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+    return;
+#   ifndef QUEX_OPTION_COMPUTED_GOTOS
+    __quex_assert_no_passage();
+_73:
+#   endif /* QUEX_OPTION_COMPUTED_GOTOS */
+#   undef self
+#   undef QUEX_LABEL_STATE_ROUTER
+#    if ! defined(QUEX_OPTION_COMPUTED_GOTOS)
+     goto _73; /* in QUEX_GOTO_STATE       */
+#    endif
     /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */
     goto _72;
     (void)target_state_index;

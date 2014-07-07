@@ -29,7 +29,6 @@ def verify(A, TrafoInfo):
                     y      = target_begin + offset
                     result.quick_append_interval(Interval(y))
 
-    result.assert_consistency()
     result.clean()
     result.assert_consistency()
     return result
@@ -57,11 +56,11 @@ def create_random_number_set():
     result = NumberSet()
     for begin, end in create_random_interval_list(False):
         result.quick_append_interval(Interval(begin, end))
+    result.clean()
     return result
 
 def create_random_transformation_info():
     return create_random_interval_list(True)
-
 
 def test(Comment, A, TrafoInfo):
     global maximum
@@ -69,9 +68,9 @@ def test(Comment, A, TrafoInfo):
     x = deepcopy(A)
     ## print "#  A       = " + repr(x)
     ## print "#  Trafo   = " + repr(TrafoInfo)
-    x.transform(TrafoInfo)
     x.assert_consistency()
-    ## print "#  Result  = " + repr(x)
+    x.transform(TrafoInfo)
+    #print "#  Result  = " + repr(x)
     result = verify(A, TrafoInfo)
     ## print "#  Verify  = " + repr(result)
     print "#  CheckF  = " + repr(x.is_equal(result))

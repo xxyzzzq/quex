@@ -9,7 +9,7 @@
 #
 # DATE: May 26, 2006
 #
-# (C) Frank-Rene Schaefer
+# (C) 2006-2014 Frank-Rene Schaefer
 #
 # ABSOLUTELY NO WARRANTY
 ################################################################################
@@ -1007,7 +1007,7 @@ class NumberSet(object):
             return
         prev = self.__intervals[0]
         for x in self.__intervals[1:]:
-            assert x.begin > prev.end
+            assert x.begin > prev.end, "%s" % self.__intervals
             prev = x
 
 # Range of code points that are covered by Unicode

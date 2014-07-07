@@ -15,12 +15,14 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 
-sm  = regex.do("[Hh]ello" "[Ww]orld/a((b+ee(fe)*)+(b+cd)?)/", {})
-pap = PatternActionInfo(sm, "Don't worry, be happy!")
-pap.pattern().mount_pre_context_sm()
-pattern_action_pair_list = [ pap ]
+pattern = regex.do("[Hh]ello/a((b+ee(fe)*)+(b+cd)?)/", {})
+pattern.mount_pre_context_sm()
 
-my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot")
+pattern_list = [
+    pattern
+]
+
+my_plotter = plotter.Generator(pattern_list, "test-plot")
 
 my_plotter.do()
 

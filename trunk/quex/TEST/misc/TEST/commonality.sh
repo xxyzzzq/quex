@@ -7,7 +7,7 @@ case $1 in
         ;;
 
     *)
-        quex -i interfere-$1.qx >& tmp.txt
+        quex -i interfere-$1.qx >& tmp.txt # --debug-exception
         cat tmp.txt
         rm tmp.txt
         ;;
