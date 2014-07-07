@@ -1,5 +1,6 @@
 from   quex.engine.misc.string_handling  import blue_print
 from   quex.blackboard                   import setup as Setup, \
+                                                Lng, \
                                                 E_IncidenceIDs
 
 def do(Modes):

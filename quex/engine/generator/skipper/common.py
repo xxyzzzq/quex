@@ -2,8 +2,7 @@ import quex.engine.utf8                            as utf8
 from   quex.engine.interval_handling               import NumberSet
 from   quex.engine.misc.file_in                    import error_msg
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.misc.string_handling            import safe_string, \
-                                                          pretty_code
+from   quex.engine.misc.string_handling            import safe_string
 from   quex.blackboard                             import E_IncidenceIDs, \
                                                           setup as Setup, \
                                                           Lng
@@ -71,14 +70,12 @@ def get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=False):
         txt_entry += Lng.DEFINE("Counter", '0')
         txt_exit  += Lng.UNDEFINE("Counter")
 
-    return "".join([
+    return "%s/**/%s%s\n/**/%s" % (
         txt_entry,
-        Lng._SOURCE_REFERENCE_BEGIN(OnSkipRangeOpen.sr),
-        pretty_code(OnSkipRangeOpen.get_code()),
-        "\n%s" % Lng._SOURCE_REFERENCE_END(),
-        "%s\n" % Lng.PURE_RETURN,
+        Lng.SOURCE_REFERENCED(OnSkipRangeOpen, PrettyF=True),
+        Lng.PURE_RETURN,
         txt_exit
-    ])
+    )
 
 def get_character_sequence(Sequence):
     txt         = ""

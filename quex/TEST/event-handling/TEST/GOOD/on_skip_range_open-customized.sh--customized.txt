@@ -13,6 +13,6 @@
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 | [START]
-We miss the '*/'
+We miss the '"*/"'
 TOKEN: <TERMINATION> ''
 | [END]

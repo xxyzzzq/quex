@@ -24,7 +24,7 @@ received: TWO
 received: THREE
 received: FOUR
 received: _____NEXT_____
-terminate called after throwing an instance of 'std::runtime_error'
+/home/fschaef/prj/quex/trunk/quex/code_base/token/TokenQueue.i:137:	terminate called after throwing an instance of 'std::runtime_error'
   what():  Error: Token queue overflow. This happens if too many tokens are sent
        as a reaction to one single pattern match. Use quex's command line
        option --token-queue-safety-border, or define the macro

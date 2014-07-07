@@ -37,7 +37,7 @@ class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr")
     def __new__(self, CCType, Value, sr):
         return super(CountCmdMapEntry, self).__new__(self, CCType, Value, sr)
 
-    def get_command_list(self, ColumnCountPerChunk=None):
+    def DELETED_get_command_list(self, ColumnCountPerChunk=None):
         if self.column_count_per_chunk is None:
             cmd = {
                 E_CharacterCountType.COLUMN: ColumnCountAdd,
@@ -47,8 +47,8 @@ class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr")
         else:
             cmd = {
                 E_CharacterCountType.COLUMN: return_None,
-                E_CharacterCountType.GRID:   ColumnCountGridAddWithReferenceP,
-                E_CharacterCountType.LINE:   LineCountAddWithReferenceP,
+                E_CharacterCountType.GRID:   DELETED_ColumnCountGridAddWithReferenceP,
+                E_CharacterCountType.LINE:   DELETED_LineCountAddWithReferenceP,
             }[self.cc_type](self.value, E_R.InputP, ColumnCountPerChunk)
 
         if cmd is None: return []

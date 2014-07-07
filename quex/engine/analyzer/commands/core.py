@@ -84,7 +84,6 @@ import types
 
 E_R = Enum("AcceptanceRegister",
            "Buffer",
-           "Indentation",
            "Column",
            "Input",
            "Indentation",
@@ -632,6 +631,8 @@ def __configure():
                                               (E_R.PreContextFlags,r), (E_R.AcceptanceRegister,w))
     c(E_Cmd.Assign,                           ("target", "source"), 
                                               (0,w),     (1,r))
+    c(E_Cmd.AssignConstant,                   ("register", "value"), 
+                                              (0,w))
     c(E_Cmd.PreContextOK,                     ("pre_context_id",), 
                                               (E_R.PreContextFlags,w))
     #
@@ -651,21 +652,9 @@ def __configure():
     #
     c(E_Cmd.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r), (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
     #
-    c(E_Cmd.IndentationAdd,                   ("value",),
-                                              (E_R.Indentation,r+w))
-    c(E_Cmd.IndentationGridAdd,               ("grid_size",),
-                                              (E_R.Indentation,r+w))
     c(E_Cmd.IndentationHandlerCall,           ("default_f", "mode_name"),
-                                              (E_R.Indentation,r), (E_R.ReferenceP,r))
-    c(E_Cmd.IndentationReferencePSet,         ("pointer_name", "offset"),
-                                              (E_R.ReferenceP,w))
-    c(E_Cmd.IndentationReferencePDeltaAdd,    ("pointer_name", "indentation_n_per_chunk", "subtract_one_f"),
-                                              (E_R.Indentation,r+w), (E_R.ReferenceP,r))
-    c(E_Cmd.IndentationGridAddWithReferenceP, ("grid_size", "pointer_name", "indentation_n_per_chunk"),
-                                              (E_R.Indentation,r+w), (E_R.ReferenceP,r+w))
+                                              (E_R.Column,r), (E_R.Indentation,r+w), (E_R.ReferenceP,r))
     #
-    c(E_Cmd.ColumnCountSet,                   ("value",),
-                                              (E_R.Column,w))
     c(E_Cmd.ColumnCountAdd,                   ("value",),
                                               (E_R.Column,r+w))
     c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
@@ -674,12 +663,8 @@ def __configure():
                                               (0,r), (E_R.ReferenceP,w))
     c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk", "subtract_one_f"),
                                               (E_R.Column,r+w), (0,r), (E_R.ReferenceP,r))
-    c(E_Cmd.ColumnCountGridAddWithReferenceP, ("grid_size", "pointer", "column_n_per_chunk"),
-                                              (E_R.Column,r+w), (1,r), (E_R.ReferenceP,r+w))
     c(E_Cmd.LineCountAdd,                     ("value",),
                                               (E_R.Line,r+w))
-    c(E_Cmd.LineCountAddWithReferenceP,       ("value", "pointer", "column_n_per_chunk"),
-                                              (E_R.Line,r+w), (1,r), (E_R.ReferenceP,r+w))
     #
     c(E_Cmd.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
                                               (E_R.PathIterator,w))
@@ -815,9 +800,6 @@ def ColumnCountReferencePSet(Pointer, Offset=0):
 def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk, SubtractOneF):
     return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
 
-def ColumnCountSet(Value):
-    return Command(E_Cmd.ColumnCountSet, Value)
-
 def ColumnCountAdd(Value):
     return Command(E_Cmd.ColumnCountAdd, Value)
 
@@ -830,14 +812,8 @@ def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
 def ColumnCountGridAdd(GridSize):
     return Command(E_Cmd.ColumnCountGridAdd, GridSize)
 
-def ColumnCountGridAddWithReferenceP(Value, Pointer, ColumnNPerChunk):
-    return Command(E_Cmd.ColumnCountGridAddWithReferenceP, Value, Pointer,ColumnNPerChunk)
-
 def LineCountAdd(Value):
     return Command(E_Cmd.LineCountAdd, Value)
-
-def LineCountAddWithReferenceP(Value, PointerName, ColumnNPerChunk):
-    return Command(E_Cmd.LineCountAddWithReferenceP, Value, PointerName, ColumnNPerChunk)
 
 def GotoDoorId(DoorId):
     return Command(E_Cmd.GotoDoorId, DoorId)
@@ -847,6 +823,9 @@ def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
 
 def Assign(TargetRegister, SourceRegister):
     return Command(E_Cmd.Assign, TargetRegister, SourceRegister)
+
+def AssignConstant(Register, Value):
+    return Command(E_Cmd.AssignConstant, Register, Value)
 
 def Accepter():
     return Command(E_Cmd.Accepter)

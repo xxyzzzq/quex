@@ -3,6 +3,7 @@ from   quex.engine.analyzer.commands.core         import _cost_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
 import quex.engine.analyzer.commands.shared_tail  as command_list_shared_tail
 from   quex.engine.generator.languages.core       import db
+import quex.engine.analyzer.engine_supply_factory as     engine
 
 from   quex.blackboard import E_Cmd, \
                               setup as Setup, \
@@ -13,6 +14,8 @@ from   collections import defaultdict
 from   copy        import deepcopy
 from   random      import shuffle
 
+
+Setup.language_db = db[Setup.language]
 
 example_db = {
     E_Cmd.StoreInputPosition: [ 
@@ -37,20 +40,32 @@ example_db = {
         ColumnCountGridAdd(4),
         ColumnCountGridAdd(5),
     ],
-    E_Cmd.ColumnCountGridAddWithReferenceP: [ 
-        ColumnCountGridAddWithReferenceP(1, E_R.CharacterBeginP, 5551),
-        ColumnCountGridAddWithReferenceP(2, E_R.CharacterBeginP, 5552),
-        ColumnCountGridAddWithReferenceP(3, E_R.CharacterBeginP, 5553),
-        ColumnCountGridAddWithReferenceP(4, E_R.CharacterBeginP, 5554),
-        ColumnCountGridAddWithReferenceP(5, E_R.CharacterBeginP, 5555),
-    ],
     E_Cmd.LineCountAdd: [ LineCountAdd(1) ],
     ## The column number is set to 1 at the newline.
     ## So, no the delta add 'column += (p - reference_p) * c' is not necessary.
-    E_Cmd.LineCountAddWithReferenceP:        [ LineCountAddWithReferenceP(1, E_R.CharacterBeginP, 5555) ],
     E_Cmd.GotoDoorId:                        [ GotoDoorId(DoorID(33,44)) ],
     E_Cmd.GotoDoorIdIfInputPNotEqualPointer: [ GotoDoorIdIfInputPNotEqualPointer(DoorID(33,44), E_R.CharacterBeginP) ],
     E_Cmd.Assign:                            [ Assign(E_R.InputP, E_R.LexemeStartP) ],
+    E_Cmd.AssignConstant: [ 
+        AssignConstant(E_R.InputP, 0), 
+        AssignConstant(E_R.ReferenceP, 1), 
+        AssignConstant(E_R.Column, 2), 
+    ],
+    E_Cmd.IfPreContextSetPositionAndGoto: [
+        IfPreContextSetPositionAndGoto(24, RouterContentElement(66, 1)),
+    ],
+    E_Cmd.IndentationHandlerCall: [ 
+        IndentationHandlerCall(True, "SLEEPY"),
+        IndentationHandlerCall(False, "EXITED"),
+    ],
+    E_Cmd.QuexAssertNoPassage: [
+        QuexAssertNoPassage(),
+    ],
+    E_Cmd.QuexDebug: [
+        QuexDebug("Hello Bug!"),
+    ]
+
+
 }
 
 accepter_list = []
@@ -117,3 +132,9 @@ def string_cl(Name, Cl):
 
 def print_cl(Name, Cl):
     print string_cl(Name, Cl)
+
+class MiniAnalyzer:
+    def __init__(self):
+        self.engine_type = engine.FORWARD
+
+Lng.register_analyzer(MiniAnalyzer())

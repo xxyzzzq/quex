@@ -6,7 +6,7 @@ mode X :
 {
     . => TK_X;
     on_skip_range_open { 
-        printf("We miss the '%s'\n", (const char*)Closer); 
+        printf("We miss the '%s'\n", (const char*)Delimiter); 
     }
 }
 

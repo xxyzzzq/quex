@@ -27,7 +27,7 @@ if len(sys.argv) < 2:
 
 def test(TestStr, ISetup, BufferSize=1024):
     Language = "Cpp"
-    ISetup.finalize(StringIO(""))
+    ISetup.finalize() # StringIO(""))
     txt = create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, TokenQueueF=True)
     compile_and_run(Language, txt)
 

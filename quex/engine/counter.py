@@ -10,6 +10,7 @@ from   quex.engine.tools                          import return_None
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.commands.core         import E_R, \
                                                          Assign, \
+                                                         AssignConstant, \
                                                          ColumnCountAdd, \
                                                          ColumnCountGridAdd, \
                                                          ColumnCountReferencePDeltaAdd, \
@@ -176,6 +177,7 @@ class CountCmdFactory:
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
                     LineCountAdd(Parameter),
+                    AssignConstant(E_R.Column, 1),
                 ]
         else:
 
@@ -201,6 +203,7 @@ class CountCmdFactory:
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
                     LineCountAdd(Parameter),
+                    AssignConstant(E_R.Column, 1),
                     ColumnCountReferencePSet(E_R.InputP)
                 ]
 

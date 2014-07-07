@@ -24,7 +24,8 @@ from   quex.engine.analyzer.door_id_address_label        import DoorID, \
                                                                 dial_db, \
                                                                 get_plain_strings, \
                                                                 IfDoorIdReferencedCode
-from   quex.engine.misc.string_handling                  import blue_print
+from   quex.engine.misc.string_handling                  import blue_print, \
+                                                                pretty_code
 from   quex.engine.misc.file_in                          import open_file_or_die, \
                                                                 write_safely_and_close
 from   quex.engine.tools import typed, \
@@ -182,10 +183,13 @@ class Lng_Cpp(dict):
         return "\n#undef %s\n" % NAME
 
     @typed(Txt=(CodeFragment))
-    def SOURCE_REFERENCED(self, Cf):
+    def SOURCE_REFERENCED(self, Cf, PrettyF=False):
+        if not PrettyF: text = Cf.get_text()
+        else:           text = "".join(pretty_code(Cf.get_code()))
+
         return "%s%s%s" % (
             self._SOURCE_REFERENCE_BEGIN(Cf.sr),
-            Cf.get_text(),
+            text,
             self._SOURCE_REFERENCE_END(Cf.sr)
         )
 
@@ -266,6 +270,8 @@ class Lng_Cpp(dict):
     def REGISTER_NAME(self, Register):
         return {
             E_R.InputP:          "(me->buffer._input_p)",
+            E_R.Column:          "(me->counter._column_number_at_end)",
+            E_R.Line:            "(me->counter._line_number_at_end)",
             E_R.LexemeStartP:    "(me->buffer._lexeme_start_p)",
             E_R.CharacterBeginP: "character_begin_p",
             E_R.ReferenceP:      "reference_p",
@@ -346,8 +352,19 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.Assign:
             return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
 
-        elif Cmd.id == E_Cmd.ColumnCountSet:
-            return "__QUEX_IF_COUNT_COLUMNS_SET((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
+        elif Cmd.id == E_Cmd.AssignConstant:
+            register = Cmd.content.register
+            value    = Cmd.content.value 
+
+            if  register == E_R.Column:
+                assignment = "%s = (size_t)%s;\n" % (self.REGISTER_NAME(register), value)
+                return "    __QUEX_IF_COUNT_COLUMNS(%s);\n" % assignment
+            elif register == E_R.Line:
+                assignment = "%s = (size_t)%s;\n" % (self.REGISTER_NAME(register), value)
+                return "    __QUEX_IF_COUNT_LINES(%s);\n" % assignment
+            else:
+                assignment = "%s = %s;\n" % (self.REGISTER_NAME(register), value)
+                return "    %s;\n" % assignment
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
             return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
@@ -355,10 +372,6 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.ColumnCountGridAdd:
             return "".join(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
                            Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
-
-        elif Cmd.id == E_Cmd.ColumnCountGridAddWithReferenceP:
-            assert False, "replaced by sequence of commands"
-            return ""
 
         elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
             pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
@@ -374,12 +387,7 @@ class Lng_Cpp(dict):
             txt = []
             if Cmd.content.value != 0:
                 txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
-            txt.append("__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n")
             return "".join(txt)
-
-        elif Cmd.id == E_Cmd.LineCountAddWithReferenceP:
-            assert False, "replaced by sequence of commands"
-            return ""
 
         elif Cmd.id == E_Cmd.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
@@ -412,7 +420,7 @@ class Lng_Cpp(dict):
                   % (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
             return txt
 
-        elif   Cmd.id == E_Cmd.PrepareAfterReload:
+        elif Cmd.id == E_Cmd.PrepareAfterReload:
             on_success_door_id = Cmd.content.on_success_door_id 
             on_failure_door_id = Cmd.content.on_failure_door_id 
 
@@ -434,12 +442,6 @@ class Lng_Cpp(dict):
         elif Cmd.id == E_Cmd.InputPDecrement:
             return "    %s\n" % self.INPUT_P_DECREMENT()
 
-        #elif Cmd.id == E_Cmd.InputPIncrementThenDereference:
-        #    return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
-        #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
-        #elif Cmd.id == E_Cmd.InputPDecrementThenDereference:
-        #    return "    %s\n    %s\n" % (self.INPUT_P_INCREMENT(),
-        #                                 self.ASSIGN("input", self.INPUT_P_DEREFERENCE()))
         else:
             assert False, "Unknown command '%s'" % Cmd.id
 

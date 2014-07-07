@@ -217,7 +217,7 @@ class DialDB(object):
         address_label_pair   = AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
 
         if False: # True/False activates debug messages
-            self.__debug_address_generation(DoorId, self.__address_i, 119)
+            self.__debug_address_generation(DoorId, self.__address_i, 25)
 
         self.__d2la[DoorId] = address_label_pair
 

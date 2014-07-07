@@ -107,7 +107,7 @@ def create_nested_range_skipper_code(Language, TestStr, OpenerSequence, CloserSe
         "opener_sequence":    OpenerSequence, 
         "closer_sequence":    CloserSequence, 
         "closer_pattern":     Pattern(StateMachine.from_sequence(CloserSequence),
-                                      PatternString="<nested skip range closer>")),
+                                      PatternString="<nested skip range closer>"),
         "mode_name":          "MrUnitTest",
         "on_skip_range_open": CodeFragment([end_str]),
         "door_id_after":      DoorID.continue_without_on_after_match(),

@@ -26,7 +26,7 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n", "mode_name
     @staticmethod
     def from_FileHandle(Fh, ModeName=""):
         if Fh != -1:
-            if not hasattr(Fh, "name"): file_name = "<nameless stream>"
+            if not hasattr(Fh, "name"): file_name = "command line"
             else:                       file_name = Fh.name
             line_n = get_current_line_info_number(Fh) 
         else:

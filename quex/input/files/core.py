@@ -60,7 +60,7 @@ def do(file_list):
         except RegularExpressionException, x:
             error_msg(x.message, fh)
         
-    if Setup.token_class_only_f and blackboard.token_type_definition is None:
+    if blackboard.token_type_definition is None:
         parse_default_token_definition()
 
     return blackboard.mode_description_db
