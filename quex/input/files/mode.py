@@ -525,7 +525,7 @@ def determine_start_mode(mode_db):
             first_candidate = mode
 
     if first_candidate is None:
-        error_msg("No non-abstract mode found in source files.")
+        error_msg("No mode that can be implemented--all modes <inheritable: only>.")
     else:
         blackboard.initial_mode = CodeUser(first_candidate.name, SourceReference=first_candidate.sr)
 

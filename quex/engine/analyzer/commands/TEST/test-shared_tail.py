@@ -43,6 +43,9 @@ C = Assign(E_R.CharacterBeginP,  E_R.Line)
 D = Assign(E_R.TemplateStateKey, E_R.Line)
 
 x = [ remaining for i, remaining in generator() if remaining not in (A, B, C) ]
+x[2] = ColumnCountAdd(1)
+x[3] = ColumnCountGridAdd(1)
+
 
 def print_tail_vs_cmd_list(CutList, CmdList):
     t = 0

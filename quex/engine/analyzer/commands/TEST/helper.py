@@ -6,6 +6,7 @@ from   quex.engine.generator.languages.core       import db
 import quex.engine.analyzer.engine_supply_factory as     engine
 
 from   quex.blackboard import E_Cmd, \
+                              E_Compression, \
                               setup as Setup, \
                               Lng
 
@@ -63,16 +64,21 @@ example_db = {
     ],
     E_Cmd.QuexDebug: [
         QuexDebug("Hello Bug!"),
-    ]
-
-
+    ],
+    E_Cmd.RouterOnStateKey: [
+        RouterOnStateKey(E_Compression.PATH, 0x4711L, 
+                         [(1L, 100L), (2L, 200L), (3L, 300L)], 
+                         lambda x: DoorID(1,1)),
+    ],
 }
 
-accepter_list = []
 accepter = Accepter()
 accepter.content.add(55L, 66L)
-accepter_list.append(accepter)
-example_db[E_Cmd.Accepter] = accepter_list
+example_db[E_Cmd.Accepter] = [ accepter ]
+
+router = Router()
+router.content.add(66, 1)
+example_db[E_Cmd.Router] = [ router ]
 
 def generator():
     """Iterable over all commands from the example_db.

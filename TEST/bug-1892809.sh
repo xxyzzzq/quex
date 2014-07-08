@@ -2,6 +2,7 @@
 bug=1892809
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug 0.20.4 \\x, \\X, \\U accept too many digits"
+    echo "HAPPY: Simple.c:[0-9]+:;"
     exit
 fi
 

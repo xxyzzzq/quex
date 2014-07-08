@@ -65,8 +65,9 @@ def test(Cmd):
 
 
 for cmd_id in sorted(E_Cmd, key=lambda x: "%s" % x):
-    if cmd_id not in example_db:
-        print "#NO EXAMPLE FOR:", cmd_id
+    if cmd_id == E_Cmd._DEBUG_Commands: 
+        continue
+    elif cmd_id not in example_db:
         sys.exit()
     for cmd in example_db[cmd_id]:
         test(cmd)
