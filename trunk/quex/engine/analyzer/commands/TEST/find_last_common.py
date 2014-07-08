@@ -30,6 +30,7 @@ from   copy        import deepcopy
 if "--hwut-info" in sys.argv:
     print "Command.shared_tail: find_last_common;"
     print "CHOICES: EqualOp, no-common, 1-common, 2-common, 3-common, start-indices;"
+    print "HAPPY:   [0-9]+/[0-9]+;"
     sys.exit()
 
 shared_list     = []

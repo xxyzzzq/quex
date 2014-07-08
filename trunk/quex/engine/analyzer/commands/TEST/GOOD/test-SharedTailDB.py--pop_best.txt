@@ -185,31 +185,31 @@ ___ Initial ___
 
 ___ Step 1 ____
 
-        .--DoorID(s=0, d=3) [D G F]
-        .--DoorID(s=0, d=4) [E G F]
-            .--DoorID(s=0, d=1) [A]
-            .--DoorID(s=0, d=2) [B]
-        .--DoorID(s=4711, d=1) [C F]
+        .--DoorID(s=0, d=1) [A C F]
+        .--DoorID(s=0, d=2) [B C F]
+            .--DoorID(s=0, d=3) [D]
+            .--DoorID(s=0, d=4) [E]
+        .--DoorID(s=4711, d=1) [G F]
     .--DoorID(s=4711, d=0) []
 
 ___ Step 2 ____
 
-            .--DoorID(s=0, d=1) [A]
-            .--DoorID(s=0, d=2) [B]
-        .--DoorID(s=4711, d=1) [C F]
             .--DoorID(s=0, d=3) [D]
             .--DoorID(s=0, d=4) [E]
-        .--DoorID(s=4711, d=2) [G F]
+        .--DoorID(s=4711, d=1) [G F]
+            .--DoorID(s=0, d=1) [A]
+            .--DoorID(s=0, d=2) [B]
+        .--DoorID(s=4711, d=2) [C F]
     .--DoorID(s=4711, d=0) []
 
 ___ Step 3 ____
 
-                .--DoorID(s=0, d=1) [A]
-                .--DoorID(s=0, d=2) [B]
-            .--DoorID(s=4711, d=1) [C]
                 .--DoorID(s=0, d=3) [D]
                 .--DoorID(s=0, d=4) [E]
-            .--DoorID(s=4711, d=2) [G]
+            .--DoorID(s=4711, d=1) [G]
+                .--DoorID(s=0, d=1) [A]
+                .--DoorID(s=0, d=2) [B]
+            .--DoorID(s=4711, d=2) [C]
         .--DoorID(s=4711, d=3) [F]
     .--DoorID(s=4711, d=0) []
 

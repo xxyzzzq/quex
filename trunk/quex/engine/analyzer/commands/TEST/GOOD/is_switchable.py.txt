@@ -29,7 +29,7 @@
 
    is_switchable:  True
 
-   A: ColumnCountReferencePDeltaAdd: { pointer=InputP, column_n_per_chunk=5,  }
+   A: ColumnCountReferencePDeltaAdd: { pointer=InputP, column_n_per_chunk=5, subtract_one_f=False,  }
    B: Assign: { target=CharacterBeginP, source=ReferenceP,  }
 
    is_switchable:  True
@@ -46,7 +46,7 @@
 
    is_switchable:  False
 
-   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5,  }
+   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5, subtract_one_f=False,  }
    B: Assign: { target=ReferenceP, source=InputP,  }
 
    is_switchable:  False
@@ -63,7 +63,7 @@
 
    is_switchable:  False
 
-   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5,  }
+   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5, subtract_one_f=False,  }
    B: ColumnCountAdd: { value=2,  }
 
    is_switchable:  False

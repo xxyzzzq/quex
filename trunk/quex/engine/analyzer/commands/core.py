@@ -183,6 +183,9 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         elif self.id == E_Cmd.Router:
             return str(self.content)
 
+        elif self.id == E_Cmd.RouterOnStateKey:
+            return str(self.content)
+
         elif self.id == E_Cmd.PreContextOK:
             return "pre-context-fulfilled = %s;" % self.content.pre_context_id
 
@@ -527,7 +530,7 @@ class RouterOnStateKeyContent:
         ]
 
     def clone(self):
-        result = RouterOnStateKey()
+        result = RouterOnStateKeyContent()
         result.__list = [ deepcopy(x) for x in self.__list ]
         return result
     
