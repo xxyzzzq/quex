@@ -410,7 +410,8 @@ def _prepare_skip_character_set(ModeName, OptionsDb, CounterDb, IncidenceDb, ter
     ccfactory = CountCmdFactory.from_ParserDataLineColumn(CounterDb, total_set, Lng.INPUT_P())
 
     new_ppt_list = [
-        PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory)
+        PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory, 
+                                  source_reference)
         for character_set, incidence_id in ccfactory.get_incidence_id_map()
     ]
 
@@ -442,7 +443,7 @@ def _prepare_skip_nested_range(ModeName, OptionsDb, CounterDb, IncidenceDb,
         for i, data in enumerate(SrSetup)
     ]
 
-def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory):
+def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_terminal_str, terminal_factory, Sr):
     """Generate a PPT for a character set skipper. That is, 
         -- A PatternPriority based on a given MHI and the specified incidence id.
         -- A Pattern to be webbed into the lexical analyzer state machine.
@@ -450,6 +451,9 @@ def PPT_character_set_skipper(MHI, character_set, incidence_id, CounterDb, goto_
     """
     priority         = PatternPriority(MHI, incidence_id)
     pattern          = Pattern.from_character_set(character_set)
+    pattern.set_pattern_string("<skip>")
+    pattern.set_source_reference(Sr)
+
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     # NOTE: 'terminal_factory.do_plain()' does prepare the counting action.
@@ -489,6 +493,8 @@ def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, Inc
     # -- terminal and code generator
     priority = PatternPriority(MHI, i)
     pattern  = deepcopy(my_data["opener_pattern"])
+    pattern.set_incidence_id(dial_db.new_incidence_id())
+    pattern.set_pattern_string("<range skip>")
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     terminal = terminal_factory.do_generator(pattern, code_generator_func, 

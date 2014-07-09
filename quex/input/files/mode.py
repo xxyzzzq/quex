@@ -598,7 +598,7 @@ def __parse_element(new_mode, fh):
         fh.seek(position)
         description = "start of mode element: regular expression"
         pattern     = regular_expression.parse(fh)
-        pattern.set_source_reference(fh, position, new_mode.name)
+        pattern.set_source_reference(SourceRef.from_FileHandle(fh, new_mode.name))
 
         position    = fh.tell()
         description = "start of mode element: code fragment for '%s'" % pattern.pattern_string()
