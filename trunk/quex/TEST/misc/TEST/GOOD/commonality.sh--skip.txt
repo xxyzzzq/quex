@@ -1,3 +1,4 @@
-interfere-skip.qx:5:error: The pattern '[ ]+' has lower priority but
-interfere-skip.qx:4:error: may outrun skip pattern '<skip>'.
-interfere-skip.qx:4:error: ('--suppress 4' to avoid this message)
+interfere-skip.qx:3:error: The pattern '<skip>' matches a superset of what is matched by
+interfere-skip.qx:3:error: pattern '" "'.
+interfere-skip.qx:3:error: The former has precedence and the latter can never match.
+interfere-skip.qx:3:error: ('--suppress 2' to avoid this message)

@@ -93,13 +93,13 @@ class Pattern(object):
     @property
     def sr(self):             return self.__sr
 
-    def set_source_reference(self, fh, Position, ModeName):
-        current_position = fh.tell()
-        fh.seek(Position)
-        self.__sr = SourceRef.from_FileHandle(fh, ModeName)
-        fh.seek(current_position)
+    @typed(Sr=SourceRef)
+    def set_source_reference(self, Sr):
+        self.__sr = Sr
 
     def pattern_string(self): return self.__pattern_string
+
+    def set_pattern_string(self, Value): self.__pattern_string = Value
 
     def incidence_id(self):   return self.__sm.get_id()
 
