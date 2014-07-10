@@ -121,8 +121,8 @@ def analyzer_functions_get(ModeDB):
     IndentationSupportF = blackboard.required_support_indentation_count()
     BeginOfLineSupportF = blackboard.required_support_begin_of_line()
 
-    inheritance_info_str = ""
-    code_analyzer        = []
+    inheritance_info = [] # list of (mode name, inheritance info str)
+    code_analyzer    = []
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -152,12 +152,14 @@ def analyzer_functions_get(ModeDB):
         code_analyzer.extend(txt_analyzer)
 
         if Setup.comment_mode_patterns_f:
-            inheritance_info_str += mode.get_documentation()
+            inheritance_info.append((mode.name, mode.get_documentation()))
 
     # Bring the info about the patterns first
     if Setup.comment_mode_patterns_f:
+        inheritance_info.sort(key=lambda x: x[0]) # Sort by mode name
+        info_str = "".join(x[1] for x in inheritance_info)
         comment = Lng.ML_COMMENT("BEGIN: MODE PATTERNS\n" + \
-                                 inheritance_info_str     + \
+                                 info_str                 + \
                                  "\nEND: MODE PATTERNS")
         code_analyzer.append(comment)
 

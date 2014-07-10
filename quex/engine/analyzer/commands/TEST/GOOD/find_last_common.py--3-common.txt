@@ -1,181 +1,151 @@
 (1)   One with 3 elements ________________________________________
 
 [L1=3; L2=3; Common=3]
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 2)
 
 
 [L1=3; L2=4; Common=3]
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
-       [1] ColumnCountGridAdd: { grid_size=3,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
        [3] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
-       [2] ColumnCountGridAdd: { grid_size=3,  }
+       [2] ColumnCountAdd: { value=1,  }
        [3] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=3,  }
-       [1] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
        [3] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-       [3] ColumnCountGridAdd: { grid_size=3,  }
+       [3] ColumnCountAdd: { value=1,  }
     last common at: (2, 2)
 
 
 [L1=3; L2=5; Common=3]
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
-       [2] ColumnCountGridAdd: { grid_size=3,  }
+       [2] ColumnCountAdd: { value=1,  }
        [3] Assign: { target=InputP, source=LexemeStartP,  }
-       [4] ColumnCountGridAdd: { grid_size=4,  }
+       [4] ColumnCountGridAdd: { grid_size=1,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=3,  }
-       [1] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
-       [3] ColumnCountGridAdd: { grid_size=4,  }
+       [3] ColumnCountGridAdd: { grid_size=1,  }
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-       [3] ColumnCountGridAdd: { grid_size=3,  }
-       [4] ColumnCountGridAdd: { grid_size=4,  }
+       [3] ColumnCountAdd: { value=1,  }
+       [4] ColumnCountGridAdd: { grid_size=1,  }
     last common at: (2, 2)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
-       [1] ColumnCountGridAdd: { grid_size=3,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
-       [3] ColumnCountGridAdd: { grid_size=4,  }
+       [3] ColumnCountGridAdd: { grid_size=1,  }
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=3,  }
-       [1] ColumnCountGridAdd: { grid_size=2,  }
-       [2] ColumnCountGridAdd: { grid_size=4,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=1,  }
        [3] if PreContext_55:  last_acceptance = Pattern66
-
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
-       [1] ColumnCountGridAdd: { grid_size=3,  }
-       [2] ColumnCountGridAdd: { grid_size=4,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+       [2] ColumnCountGridAdd: { grid_size=1,  }
        [3] if PreContext_55:  last_acceptance = Pattern66
-
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=3,  }
-       [1] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
        [3] Assign: { target=InputP, source=LexemeStartP,  }
-       [4] ColumnCountGridAdd: { grid_size=4,  }
+       [4] ColumnCountGridAdd: { grid_size=1,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
-       [1] ColumnCountGridAdd: { grid_size=3,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
        [2] if PreContext_55:  last_acceptance = Pattern66
-
        [3] Assign: { target=InputP, source=LexemeStartP,  }
-       [4] ColumnCountGridAdd: { grid_size=4,  }
+       [4] ColumnCountGridAdd: { grid_size=1,  }
     last common at: (2, 3)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=3,  }
-       [1] ColumnCountGridAdd: { grid_size=4,  }
-       [2] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] AssignConstant: { register=Column, value=2,  }
        [3] if PreContext_55:  last_acceptance = Pattern66
-
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 
-    A: [0] ColumnCountGridAdd: { grid_size=2,  }
+    A: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
        [2] Assign: { target=InputP, source=LexemeStartP,  }
-    B: [0] ColumnCountGridAdd: { grid_size=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
        [1] if PreContext_55:  last_acceptance = Pattern66
-
-       [2] ColumnCountGridAdd: { grid_size=3,  }
-       [3] ColumnCountGridAdd: { grid_size=4,  }
+       [2] ColumnCountAdd: { value=1,  }
+       [3] ColumnCountGridAdd: { grid_size=1,  }
        [4] Assign: { target=InputP, source=LexemeStartP,  }
     last common at: (2, 4)
 

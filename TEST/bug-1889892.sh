@@ -2,6 +2,7 @@
 bug=1889892
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug x, X or followed by a non-hex digit crashes 0.19.4"
+    echo "HAPPY: qx:[0-9]+:;"
     exit
 fi
 

@@ -1,3 +1,4 @@
+token { A; }
 mode DERIVED {
 on_exit { foo(); }
 }
