@@ -5,30 +5,26 @@
      *       TWO
      *       ONE
      * 
-     *     PATTERN-ACTION PAIRS:
-     *       ON_END_OF_STREAM
-     *       ON_FAILURE
-     *       (285) ONE:  abc
-     *       (286) ONE:  bcd
-     *       (287) ONE:  cde
-     *       (288) ONE:  dfg
-     *       (289) TWO:  abcd?
-     *       (290) TWO:  bcde?
-     *       (291) TWO:  cdef?
-     *       (292) THREE:  abcd?e?
-     *       (293) THREE:  bcde?f?
-     *       (294) FOUR:  abcd?e?f?
+     *     PATTERN LIST:
+     *       (  0) ONE:   abc
+     *       (  1) ONE:   bcd
+     *       (  2) ONE:   cde
+     *       (  3) ONE:   dfg
+     *       (  4) TWO:   abcd?
+     *       (  5) TWO:   bcde?
+     *       (  6) TWO:   cdef?
+     *       (  7) THREE: abcd?e?
+     *       (  8) THREE: bcde?f?
+     *       (  9) FOUR:  abcd?e?f?
      * 
      * 
      * MODE: ONE
      * 
-     *     PATTERN-ACTION PAIRS:
-     *       ON_END_OF_STREAM
-     *       ON_FAILURE
-     *       (311) ONE: abc
-     *       (312) ONE: bcd
-     *       (313) ONE: cde
-     *       (314) ONE: dfg
+     *     PATTERN LIST:
+     *       (  0) ONE: abc
+     *       (  1) ONE: bcd
+     *       (  2) ONE: cde
+     *       (  3) ONE: dfg
      * 
      * 
      * MODE: THREE
@@ -37,18 +33,16 @@
      *       TWO
      *       ONE
      * 
-     *     PATTERN-ACTION PAIRS:
-     *       ON_END_OF_STREAM
-     *       ON_FAILURE
-     *       (295) ONE: abc
-     *       (296) ONE: bcd
-     *       (297) ONE: cde
-     *       (298) ONE: dfg
-     *       (299) TWO: abcd?
-     *       (300) TWO: bcde?
-     *       (301) TWO: cdef?
-     *       (302) THREE: abcd?e?
-     *       (303) THREE: bcde?f?
+     *     PATTERN LIST:
+     *       (  0) ONE:   abc
+     *       (  1) ONE:   bcd
+     *       (  2) ONE:   cde
+     *       (  3) ONE:   dfg
+     *       (  4) TWO:   abcd?
+     *       (  5) TWO:   bcde?
+     *       (  6) TWO:   cdef?
+     *       (  7) THREE: abcd?e?
+     *       (  8) THREE: bcde?f?
      * 
      * 
      * MODE: TWO
@@ -56,16 +50,14 @@
      *     BASE MODE SEQUENCE:
      *       ONE
      * 
-     *     PATTERN-ACTION PAIRS:
-     *       ON_END_OF_STREAM
-     *       ON_FAILURE
-     *       (304) ONE: abc
-     *       (305) ONE: bcd
-     *       (306) ONE: cde
-     *       (307) ONE: dfg
-     *       (308) TWO: abcd?
-     *       (309) TWO: bcde?
-     *       (310) TWO: cdef?
+     *     PATTERN LIST:
+     *       (  0) ONE: abc
+     *       (  1) ONE: bcd
+     *       (  2) ONE: cde
+     *       (  3) ONE: dfg
+     *       (  4) TWO: abcd?
+     *       (  5) TWO: bcde?
+     *       (  6) TWO: cdef?
      * 
      * 
      * END: MODE PATTERNS

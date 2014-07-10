@@ -9,9 +9,8 @@ error-2.qx:2:error: Regular expression parsing:
 error-2.qx:2:error: Missing hexadecimal number.
 (4)
 error-3.qx:4:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
-error-3.qx:4:warning: <inheritable: only> has been added automatically.
-consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
-consistency check: modes are = 'Hallo'
+error-3.qx:5:warning: <inheritable: only> has been set automatically.
+command line: No mode that can be implemented--all modes <inheritable: only>.
 (5)
 error-4.qx:5:error: Pattern becomes empty after deleting signal character 'Buffer Limit Code'.
 (6)

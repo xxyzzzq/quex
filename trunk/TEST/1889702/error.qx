@@ -1,3 +1,4 @@
+token { A; }
 mode BASE {
 "a" => QUEX_TKN_A;
 }

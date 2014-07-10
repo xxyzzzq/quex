@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.40" date="Thu Jul 10 00:37:20 2014">
+<test-database execution-time-sec="3.56" date="Thu Jul 10 08:25:27 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.34"> 
         <application file-name="customized_codec.sh" info-request-time="1381662239L" vanished="False"/>
@@ -14,20 +14,20 @@
            <choice name="" result="OK" time_sec="0.00" crc="-1164005888"/>
         </choice-list>
     </test>
-    <test title="Test code comments" time-sum-sec="0.49"> 
+    <test title="Test code comments" time-sum-sec="0.47"> 
         <application file-name="comment.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.49" crc="906796828"/>
+           <choice name="" result="FAIL" time_sec="0.47" crc="906796828"/>
         </choice-list>
     </test>
-    <test title="Inadmissible commonalities" time-sum-sec="1.41"> 
+    <test title="Inadmissible commonalities" time-sum-sec="1.59"> 
         <application file-name="commonality.sh" info-request-time="1404945178L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
            <choice name="skip" result="OK" time_sec="0.25" crc="1257072169"/>
-           <choice name="skip_range" result="FAIL" time_sec="0.25" crc="-1273745838"/>
-           <choice name="skip_nested_range" result="FAIL" time_sec="0.23" crc="-1183535418"/>
+           <choice name="skip_range" result="FAIL" time_sec="0.42" crc="-1273745838"/>
+           <choice name="skip_nested_range" result="FAIL" time_sec="0.24" crc="-1183535418"/>
            <choice name="indentation-newline" result="OK" time_sec="0.22" crc="1763144132"/>
            <choice name="mix" result="OK" time_sec="0.24" crc="1843237851"/>
            <choice name="mix2" result="OK" time_sec="0.22" crc="1967965428"/>

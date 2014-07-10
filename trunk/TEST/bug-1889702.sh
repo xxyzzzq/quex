@@ -2,6 +2,7 @@
 bug=1889702
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug 0.19.4 forbids derived modes that only add event handlers"
+    echo "HAPPY: ^error-3.qx:[0-9]+:;"
     exit
 fi
 
