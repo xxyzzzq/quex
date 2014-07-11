@@ -1,7 +1,6 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
-from   quex.engine.analyzer.door_id_address_label         import IfDoorIdReferencedCode, \
-                                                                 get_plain_strings
+from   quex.engine.analyzer.door_id_address_label         import get_plain_strings
 from   quex.engine.analyzer.terminal.core                 import Terminal
 from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.generator.base                         as     generator
@@ -13,7 +12,6 @@ import quex.output.cpp.counter                            as     counter
 from   quex.input.regular_expression.construct            import Pattern
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_IncidenceIDs, \
-                                                                 E_TerminalType, \
                                                                  Lng
 
 @typed(ModeNameList = [(str, unicode)])
@@ -103,64 +101,6 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
     function_body.extend(reentry_preparation)   
 
     return function_body, variable_definitions
-
-def do_mini(SmActionList, OnFailure, EngineType, ReloadState=None):
-    """Generate code that executes actions upon the acceptance of state 
-    machines.  A combined state machine is build out of all state machines 
-    in the list.  Additionally, all terminals are coded. 
-
-        THE ReloadState IS NOT CODED!
-    
-    ARGUMENTS:
-
-        SmActionList: is a list of (StateMachine, CodeFragment) pairs.
-        
-            A pair (sm, cf) means that 'cf' has to be executed if 'sm' accepts.
-
-        OnFailure: CodeFragment which is executed if NO state machine accepts.
-
-        ReloadState: is a reload state that can be 'adapted' to load for 
-                     any other state.  
-                    
-            If ReloadState is None -> no reload.
-    
-    TRANSITION MAP ADAPTION: 
-        
-        If and only if reload is required, then all states will contain a
-        transition to the ReloadState on the buffer limit code (BLC). 
-
-    RETURNS: 
-        
-        List of strings--the generated code.
-    """
-    # -- Build list of 'Terminal-s'.
-    # -- Associate 'StateMachine-s' with 'Terminal-s' based on 'id'
-    terminal_list = [
-        Terminal(sm.get_id(), action)
-        for sm, action in SmActionList
-    ]
-    terminal_list.append(
-        Terminal(OnFailureId, OnFailure)
-    )
-
-    # -- Combine all 'StateMachine-s' into a single one
-    sm_all = get_combined_state_machine([
-        sm for sm, action in SmActionList
-    ])
-
-    # -- Transform 'StateMachine' into 'Analyzer'
-    analyzer = analyzer_generator.do(sm, EngineType, 
-                                     ReloadStateExtern=ReloadState)
-
-    #    Prepare the reload if required
-    if ReloadState is not None:
-        analyzer_generator.XX_prepare_reload(analyzer)
-
-    # -- Generate code.
-    txt = do_comment(sm)
-    txt.extend(do_analyzer(analyzer))
-    txt.extend(do_terminals(terminal_list))
-    return txt
 
 def wrap_up(ModeName, FunctionBody, VariableDefs, ModeNameList):
     txt_function = Lng.ANALYZER_FUNCTION(ModeName, Setup, VariableDefs, 

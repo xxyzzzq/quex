@@ -8,12 +8,11 @@ from   quex.engine.analyzer.commands.core              import E_R, \
                                                               Assign
 from   quex.engine.tools                               import all_isinstance, \
                                                               all_true, \
-                                                              none_is_None, \
                                                               concatinate, \
                                                               typed
 from   quex.engine.analyzer.door_id_address_label      import dial_db
-from   quex.blackboard import setup as Setup, \
-                              Lng
+from   quex.engine.misc.file_in import error_msg
+from   quex.blackboard import setup as Setup
 from   itertools       import ifilter
 
 class EngineStateMachineSet:
@@ -175,15 +174,13 @@ class CharacterSetStateMachine:
         self.on_after_reload  = concatinate(on_after_reload, OnAfterReload)
 
     def __prepare_incidence_id_map(self, IncidenceIdMap):
-        sm = StateMachine()
         def add(sm, StateIndex, TriggerSet, IncidenceId):
             target_state_index = sm.add_transition(StateIndex, TriggerSet)
             target_state       = sm.states[target_state_index]
             target_state.mark_self_as_origin(IncidenceId, target_state_index)
             target_state.set_acceptance(True)
 
-        sm         = StateMachine()
-        init_state = sm.get_init_state()
+        sm = StateMachine()
         for character_set, incidence_id in IncidenceIdMap:
             # 'cliid' = unique command list incidence id.
             add(sm, sm.init_state_index, character_set, incidence_id)

@@ -1,10 +1,6 @@
-from   quex.engine.generator.state.transition.code      import TransitionCodeFactory
 import quex.engine.generator.state.transition.solution  as     solution
 import quex.engine.generator.state.transition.bisection as     bisection
-import quex.engine.analyzer.engine_supply_factory       as     engine
-from   quex.engine.analyzer.transition_map              import TransitionMap
-from   quex.engine.analyzer.door_id_address_label       import DoorID
-from   quex.blackboard                                  import setup as Setup, E_StateIndices, Lng
+from   quex.blackboard                                  import setup as Setup, Lng
 from   copy      import copy
 from   itertools import islice
 

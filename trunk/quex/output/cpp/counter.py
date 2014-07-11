@@ -9,14 +9,12 @@ import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID, \
                                                            IfDoorIdReferencedCode
-from   quex.engine.analyzer.commands.core                import CommandList, GotoDoorId
+from   quex.engine.analyzer.commands.core           import GotoDoorId
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.tools                            import typed
 
 from   quex.blackboard import Lng, \
-                              setup as Setup, \
                               DefaultCounterFunctionDB, \
-                              E_MapImplementationType, \
                               E_IncidenceIDs
 
 @typed(CCFactory=CountCmdFactory)

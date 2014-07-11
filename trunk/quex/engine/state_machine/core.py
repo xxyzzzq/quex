@@ -7,8 +7,7 @@ from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
 from   quex.blackboard                           import E_IncidenceIDs, \
                                                         E_PreContextIDs, \
-                                                        E_Border, \
-                                                        deprecated
+                                                        E_Border
 
 from   copy      import deepcopy
 from   operator  import attrgetter, itemgetter

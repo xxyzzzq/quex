@@ -1,37 +1,19 @@
 # (C) Frank Rene Schaefer
-from   quex.engine.misc.file_in                        import error_msg
 import quex.engine.generator.state_machine_coder       as     state_machine_coder
 import quex.engine.generator.state_router              as     state_router_generator
 from   quex.engine.generator.languages.variable_db     import variable_db
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               dial_db
-import quex.engine.state_machine.index                 as     index
-from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.transformation        as     transformation
-from   quex.engine.generator.state.transition.code     import TransitionCodeFactory
-import quex.engine.generator.state.transition.core     as     transition_block
 import quex.engine.generator.reload_state              as     reload_state_coder
 import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.terminal.core              import Terminal
-from   quex.engine.analyzer.transition_map             import TransitionMap
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.interval_handling                   import NumberSet, Interval, NumberSet_All
-from   quex.input.regular_expression.construct         import Pattern
-import quex.output.cpp.counter_for_pattern             as     counter_for_pattern
 
-from   quex.engine.tools                               import all_isinstance, \
-                                                              all_true, \
-                                                              none_is_None, \
-                                                              typed, \
-                                                              print_callstack
+from   quex.engine.tools                               import typed
 from   quex.blackboard import E_IncidenceIDs, \
-                              E_StateIndices, \
-                              E_MapImplementationType, \
                               setup as Setup, \
                               Lng
 
-from   copy        import copy, deepcopy
-from   collections import defaultdict
 # MAIN:      sm --> analyzer
 #            sm_txt --> code_analyzer
 #            terminal_txt --> code_terminals

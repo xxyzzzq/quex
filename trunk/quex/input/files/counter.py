@@ -1,10 +1,7 @@
 import quex.input.regular_expression.core         as     regular_expression
 from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
-                                                         ParserDataIndentation, \
-                                                         extract_trigger_set
+                                                         ParserDataIndentation
 from   quex.engine.generator.code.base            import SourceRef
-from   quex.engine.interval_handling              import NumberSet
-from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.misc.file_in                   import error_msg, \
                                                          check, \
                                                          check_or_die, \
@@ -12,9 +9,6 @@ from   quex.engine.misc.file_in                   import error_msg, \
                                                          read_identifier, \
                                                          verify_word_in_list, \
                                                          read_integer
-
-from   quex.engine.tools import print_callstack
-from   quex.blackboard import setup as Setup
 
 def parse_line_column_counter(fh):
     result = __parse(fh, ParserDataLineColumn(SourceRef.from_FileHandle(fh)))

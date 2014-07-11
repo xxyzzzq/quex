@@ -110,15 +110,10 @@ where the path iterator (~ state  key) is set to the appropriate position.
 
 (C) 2009-2013 Frank-Rene Schaefer
 """
-from   quex.engine.analyzer.commands.core                import RouterOnStateKey, \
-                                                                CommandList, \
-                                                                E_R
 import quex.engine.analyzer.mega_state.path_walker.find  as     find
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
-from   quex.blackboard                                   import E_Compression, \
-                                                                E_StateIndices
+from   quex.blackboard                                   import E_Compression
 
-from   collections import defaultdict
 from   copy        import copy
 
 def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
@@ -236,7 +231,6 @@ def select(path_list):
 
             cost = - len(lost_implementation_set)
             gain =   len(implemented_set)
-            total_gain = gain - cost
 
             # EXTRA COMPARISON KEYS, so that sorting becomes DETERMINISTIC in 
             # in case that two paths provide the SAME GAIN. Clearly, these keys

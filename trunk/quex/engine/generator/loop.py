@@ -3,27 +3,18 @@ import quex.engine.state_machine.parallelize           as     parallelize
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.generator.languages.variable_db     import variable_db
 import quex.engine.generator.base                      as     generator
-from   quex.engine.analyzer.terminal.core              import Terminal
-from   quex.engine.generator.code.core                 import CodeTerminal
-from   quex.engine.analyzer.state.entry_action         import TransitionAction
 import quex.engine.analyzer.core                       as     analyzer_generator
-import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.commands.core              import E_R, \
                                                               CommandList, \
                                                               GotoDoorIdIfInputPNotEqualPointer, \
                                                               ColumnCountReferencePDeltaAdd, \
-                                                              GotoDoorId, \
-                                                              Assign, \
                                                               GotoDoorId
 import quex.engine.state_machine.index                 as     index
+from   quex.engine.analyzer.door_id_address_label      import DoorID
 from   quex.engine.tools                               import typed
-from   quex.engine.analyzer.door_id_address_label      import DoorID, \
-                                                              dial_db
 from   quex.blackboard import E_StateIndices, \
                               E_CharacterCountType, \
-                              setup as Setup, \
-                              Lng, \
-                              E_Cmd
+                              setup as Setup
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
 def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,

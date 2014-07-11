@@ -1,11 +1,9 @@
-from   quex.engine.tools        import error_abstract_member, \
-                                       typed, \
+from   quex.engine.tools        import typed, \
                                        all_isinstance
 from   quex.engine.misc.file_in import get_current_line_info_number
 from   quex.engine.tools        import none_isinstance
 
 from   collections import namedtuple
-from   copy        import deepcopy
 
 import types
 import re

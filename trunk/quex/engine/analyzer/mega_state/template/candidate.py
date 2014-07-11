@@ -1,15 +1,8 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
-from   quex.engine.analyzer.mega_state.core                         import TargetByStateKey
 import quex.engine.analyzer.mega_state.template.gain_entry          as     gain_entry         
 import quex.engine.analyzer.mega_state.template.gain_transition_map as     gain_transition_map
-from   quex.engine.analyzer.door_id_address_label          import DoorID_Scheme
-from   quex.engine.analyzer.transition_map                 import TransitionMap       
 
-from   quex.blackboard import E_IncidenceIDs, \
-                              E_TransitionN, \
-                              E_StateIndices
-from   itertools import chain
 
 class TemplateStateCandidate(object):
     """________________________________________________________________________

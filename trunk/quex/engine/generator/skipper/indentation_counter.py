@@ -1,29 +1,21 @@
-import quex.engine.state_machine.index              as     sm_index
-from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import DoorID
-from   quex.engine.analyzer.transition_map          import TransitionMap
-from   quex.engine.analyzer.commands.core           import CommandList, \
+from   quex.engine.analyzer.commands.core           import \
                                                            AssignConstant, \
                                                            IndentationHandlerCall, \
                                                            LineCountAdd, \
                                                            GotoDoorId, \
+                                                           Assign, \
                                                            E_R
-from   quex.engine.analyzer.door_id_address_label   import dial_db, \
-                                                           IfDoorIdReferencedLabel
+from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.generator.code.core              import CodeTerminal
 import quex.engine.generator.loop                   as     loop
-import quex.engine.generator.state.transition.core  as     relate_to_TransitionCode
-from   quex.engine.generator.state.transition.code  import TransitionCode
 from   quex.engine.generator.languages.variable_db  import variable_db
-from   quex.engine.misc.string_handling             import blue_print
+from   quex.engine.state_machine.character_counter  import CountInfo
 from   quex.blackboard                              import Lng, \
-                                                           E_StateIndices, \
                                                            E_IncidenceIDs, \
                                                            setup as Setup
-import quex.blackboard                              as     blackboard
 
 def do(Data, TheAnalyzer):
     """________________________________________________________________________
@@ -106,7 +98,8 @@ def do(Data, TheAnalyzer):
 
     sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
                                                            isetup.sm_newline.get(),
-                                                           isetup.sm_comment.get())
+                                                           isetup.sm_comment.get(), 
+                                                           counter_db)
 
     # 'whitespace' --> normal counting
     # 'bad'        --> goto bad character indentation handler
@@ -130,7 +123,7 @@ def do(Data, TheAnalyzer):
 
     return code
 
-def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmComment): 
+def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmComment, CounterDb): 
     """Get a list of pairs (state machine, terminal) for the newline, suppressed
     newline and comment:
 
@@ -144,7 +137,7 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
     result = []
     _add_suppressed_newline(result, SmSuppressedNewline)
     _add_newline(result, SmNewline)
-    _add_comment(result, SmComment)
+    _add_comment(result, SmComment, CounterDb)
     return result
 
 def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
@@ -157,7 +150,6 @@ def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
     """
     if SmSuppressedNewlineOriginal is None:
         return
-    assert SmNewlineiOriginal is not None
 
     # Disconnect from machines being used elsewhere.
     SmSuppressedNewline = SmSuppressedNewlineOriginal.clone()
@@ -203,8 +195,7 @@ def _add_newline(psml, SmNewlineOriginal):
 
     psml.append((SmNewline, terminal))
 
-
-def _add_comment(psml, SmCommentOriginal):
+def _add_comment(psml, SmCommentOriginal, CounterDb):
     """On matching the comment state machine goto a terminal that does the 
     following:
     """
@@ -215,8 +206,6 @@ def _add_comment(psml, SmCommentOriginal):
     # Disconnect from machines being used elsewhere.
     SmComment = SmCommentOriginal.clone()
     SmComment.set_id(comment_skip_iid)
-
-    door_id_comment  = DoorID.incidence(comment_skip_iid)
 
     if SmComment.last_character_set().contains_only(ord('\n')):
         code = Lng.COMMAND_LIST([
@@ -229,7 +218,7 @@ def _add_comment(psml, SmCommentOriginal):
                                                  CodecTrafoInfo=Setup.buffer_codec_transformation_info)
         code = [
             Lng.COMMAND(Assign(E_R.ReferenceP, E_R.LexemeStartP)),
-            counter.do_CountInfo(count_info),
+            CounterDb.do_CountInfo(count_info),
             Lng.COMMAND(Assign(E_R.LexemeStartP, E_R.ReferenceP))
         ]
         variable_db.require("reference_p")

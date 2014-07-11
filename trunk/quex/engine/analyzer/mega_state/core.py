@@ -58,23 +58,18 @@ _______________________________________________________________________________
 """
 from quex.engine.analyzer.commands.core         import Command, \
                                                        CommandList, \
-                                                       RouterOnStateKey, \
-                                                       E_R
+                                                       RouterOnStateKey
+from quex.engine.analyzer.door_id_address_label import dial_db
 from quex.engine.analyzer.state.core            import AnalyzerState
-from quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from quex.engine.analyzer.state.entry           import Entry
-from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.transition_map        import TransitionMap
 from quex.engine.interval_handling              import Interval
 from quex.blackboard                            import setup as Setup, \
                                                        E_StateIndices, \
-                                                       E_Cmd, \
                                                        E_Compression
 
-from quex.engine.tools import typed, \
-                              TypedDict
+from quex.engine.tools import typed
 
-from copy     import copy
 from operator import itemgetter
 
 class MegaState_Entry(Entry):
@@ -206,7 +201,7 @@ class MegaState_Entry(Entry):
         same_address_db = {}
         for transition_id, transition_action in self.iteritems():
             original_door_id = original_door_id_db[transition_id]
-            same_address_db[original_door_id].append(transition_action_id.door_id)
+            same_address_db[original_door_id].append(transition_action.door_id)
 
         for door_id, door_id_list in same_address_db:
             dial_db.assign_same_address(door_id, door_id_list)
@@ -491,7 +486,6 @@ class MegaState(AnalyzerState):
         # Exceptions: replaced DoorID-s. No assumptions made on those targets.
         replaced_door_id_set = set(self.entry.transition_reassignment_db.itervalues())
         self_DoorID_drop_out = TheAnalyzer.drop_out_DoorID(self.index)
-        self_DoorID_reload   = TheAnalyzer.reload_state.entry.get_door_id(TheAnalyzer.reload_state.index, self.index)
 
         # Iterate over all represented states of the MegaState
         for state_index in self.implemented_state_index_set():

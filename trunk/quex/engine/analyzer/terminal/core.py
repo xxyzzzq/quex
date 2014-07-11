@@ -5,7 +5,7 @@ from   quex.engine.analyzer.state.entry import Entry
 import quex.engine.state_machine.index  as     index
 from   quex.engine.tools                import typed
 
-from   types import FunctionType, NoneType
+from   types import FunctionType
 from   copy  import copy
 
 #__________________________________________________________________________

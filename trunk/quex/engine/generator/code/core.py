@@ -2,8 +2,7 @@ from   quex.engine.generator.code.base import SourceRef, CodeFragment, SourceRef
 from   quex.blackboard import Lng
 from   quex.engine.tools import typed
 
-from   copy import copy
-
+from   copy import deepcopy
 
 class CodeUser(CodeFragment):
     """User code as it is taken from some input file. It contains:

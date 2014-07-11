@@ -1,19 +1,16 @@
 
 import quex.input.files.parser_data.patterns_and_terminals as patterns_and_terminals
-from   quex.input.files.parser_data.patterns_and_terminals import PatternPriority, PPT
 from   quex.input.setup                                import NotificationDB
 import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
 import quex.input.files.mode_option                    as     mode_option
-from   quex.input.files.mode_option                    import OptionDB, \
-                                                              SkipRangeData
+from   quex.input.files.mode_option                    import OptionDB
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.generator.code.core                 import CodeUser
 
+import quex.engine.state_machine.check.same            as     same_check
 import quex.engine.state_machine.check.outrun          as     outrun_checker
-from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.index                 as     sm_index
 import quex.engine.state_machine.check.superset        as     superset_check
 from   quex.engine.generator.code.base                 import SourceRef
 from   quex.engine.misc.file_in                        import EndOfStreamException, \
@@ -30,16 +27,13 @@ from   quex.engine.incidence_db                        import IncidenceDB
 from   quex.engine.tools import typed, all_isinstance
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
-                              Lng, \
                               standard_incidence_db, \
                               E_IncidenceIDs, \
                               E_IncidenceIDs_Subset_Special
 
-from   copy        import deepcopy, copy
+from   copy        import deepcopy
 from   collections import namedtuple
-from   operator    import itemgetter, attrgetter
 from   itertools   import islice
-import types
 
 #-----------------------------------------------------------------------------------------
 # ModeDescription/Mode Objects:
@@ -402,7 +396,7 @@ class Mode:
             elif low.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
             elif not superset_check.do(high.sm, low.sm):             continue
 
-            c_error_message(other_pattern, pattern, ExitF=True, 
+            c_error_message(high, low, ExitF=True, 
                             ThisComment  = "has higher priority and",
                             ThatComment  = "matches a subset of",
                             SuppressCode = ErrorCode)
@@ -424,7 +418,6 @@ class Mode:
             if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
             elif low.incidence_id() not in E_IncidenceIDs_Subset_Special:  continue
 
-            print "#hl:", high.pattern_string, low.pattern_string()
             # A superset of B, or B superset of A => there are common matches.
             if not same_check.do(high.sm, low.sm): continue
 

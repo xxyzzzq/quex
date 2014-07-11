@@ -15,7 +15,6 @@ from   quex.blackboard import mode_description_db
 import quex.blackboard as     blackboard
 
 from   collections import namedtuple
-from   copy import deepcopy
 import types
 
 def __get_mode_name_list():
@@ -166,7 +165,7 @@ class OptionDB(dict):
 
         if Name not in self:             dict.__setitem__(self, Name, [ Setting ])
         elif info.multiple_definition_f: dict.__getitem__(self, Name).append(Setting)
-        else:                            self.__error_double_definition(Name, setting)
+        else:                            self.__error_double_definition(Name, Setting)
 
     @typed(SettingList=[OptionSetting])
     def __enter_setting_list(self, Name, SettingList):

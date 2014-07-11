@@ -1,19 +1,10 @@
-from   quex.engine.analyzer.commands.core         import Accepter, StoreInputPosition, Command, CommandList
+from   quex.engine.analyzer.commands.core         import StoreInputPosition, Command, CommandList
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
-from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
+from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.tools                          import typed, \
                                                          TypedDict
-from   quex.blackboard                            import setup as Setup, \
-                                                         E_IncidenceIDs, \
-                                                         E_Cmd, \
-                                                         E_PostContextIDs, \
-                                                         E_PreContextIDs,  \
-                                                         E_StateIndices, \
-                                                         E_TransitionN, \
-                                                         E_TriggerIDs
-
-from   operator    import attrgetter
-from   collections import defaultdict
+from   quex.blackboard                            import E_Cmd, \
+                                                         E_StateIndices
 
 class Entry(object):
     """________________________________________________________________________

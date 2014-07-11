@@ -85,12 +85,8 @@ _______________________________________________________________________________
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 import quex.engine.analyzer.commands.shared_tail  as     shared_tail
 
-from quex.engine.tools import pair_combinations, typed, TypedDict
-from quex.blackboard   import E_StateIndices, \
-                              E_DoorIdIndex
+from quex.engine.tools import typed, TypedDict
 
-from collections      import defaultdict, namedtuple
-from itertools        import islice
 from operator         import attrgetter
 
 class CommandTree:
@@ -470,10 +466,13 @@ class SharedTailDB:
         return txt
     
 
-def get_string(DoorTreeRoot):
+def get_string_DELETED(DoorTreeRoot):
     """ActionDB can be received, for example from the 'entry' object.
        If it is 'None', then no transition-id information is printed.
     """
+    ActionDB = None
+    OnlyFromStateIndexF = None
+    dtr = DoorTreeRoot
     def door_id_to_transition_id_list(DoorId, ActionDB):
         if ActionDB is None:
             return None
@@ -483,20 +482,20 @@ def get_string(DoorTreeRoot):
         ]
 
     txt = []
-    if self.child_set is not None:
+    if dtr.child_set is not None:
         def sort_key(X, ActionDB):
             return (door_id_to_transition_id_list(X.door_id, ActionDB), X)
                 
-        for child in sorted(self.child_set, key=lambda x: sort_key(x, ActionDB)):
+        for child in sorted(dtr.child_set, key=lambda x: sort_key(x, ActionDB)):
             txt.append("%s\n" % child.get_string(ActionDB))
 
-    if self.door_id is not None: 
-        txt.append("[%s:%s]: " % (self.door_id.state_index, self.door_id.door_index))
+    if dtr.door_id is not None: 
+        txt.append("[%s:%s]: " % (dtr.door_id.state_index, dtr.door_id.door_index))
     else:                        
         txt.append("[None]: ")
 
     if ActionDB is not None:
-        transition_id_list = door_id_to_transition_id_list(self.door_id, ActionDB)
+        transition_id_list = door_id_to_transition_id_list(dtr.door_id, ActionDB)
        
         for transition_id in sorted(transition_id_list, key=attrgetter("target_state_index", "source_state_index")):
             if OnlyFromStateIndexF:
@@ -504,9 +503,9 @@ def get_string(DoorTreeRoot):
             else:
                 txt.append("(%s<-%s) " % (transition_id.target_state_index, transition_id.source_state_index))
 
-    if self.command_list is not None:
+    if dtr.command_list is not None:
         txt.append("\n")
-        for cmd in self.command_list:
+        for cmd in dtr.command_list:
             cmd_str = str(cmd)
             cmd_str = "    " + cmd_str.replace("\n", "\n    ") + "\n"
             txt.append(cmd_str)
@@ -515,10 +514,10 @@ def get_string(DoorTreeRoot):
     else:
         txt.append("\n")
 
-    if self.parent is None: txt.append("    parent: [None]\n")
-    else:                   txt.append("    parent: [%s:%s]\n" % \
-                                       (str(self.parent.door_id.state_index), 
-                                        str(self.parent.door_id.door_index)))
+    if dtr.parent is None: txt.append("    parent: [None]\n")
+    else:                  txt.append("    parent: [%s:%s]\n" % \
+                                       (str(dtr.parent.door_id.state_index), 
+                                        str(dtr.parent.door_id.door_index)))
     return "".join(txt)
 
 

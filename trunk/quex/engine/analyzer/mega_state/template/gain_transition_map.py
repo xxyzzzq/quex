@@ -1,7 +1,7 @@
 # vim:set encoding=utf8:
 # (C) 2010-2012 Frank-Rene Schäfer
-from   quex.engine.analyzer.mega_state.core       import TargetByStateKey
-from   quex.engine.analyzer.transition_map        import TransitionMap       
+from   quex.engine.analyzer.mega_state.target import TargetByStateKey
+from   quex.engine.analyzer.transition_map    import TransitionMap       
 
 from   itertools import chain
 

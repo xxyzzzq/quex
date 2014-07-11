@@ -1,16 +1,8 @@
-from   quex.engine.analyzer.state.core                   import AnalyzerState
-from   quex.engine.analyzer.door_id_address_label        import dial_db, \
-                                                                IfDoorIdReferencedLabel, \
+from   quex.engine.analyzer.door_id_address_label        import IfDoorIdReferencedLabel, \
                                                                 DoorID
-from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.commands.tree                import CommandTree
-from   quex.engine.tools                                 import none_is_None
+from   quex.blackboard import Lng
 
-from quex.blackboard import Lng, \
-                            E_StateIndices, \
-                            E_Cmd
-
-from operator import attrgetter
 
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
     cmd_tree = CommandTree.from_AnalyzerState(TheState)

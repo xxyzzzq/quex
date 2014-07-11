@@ -1,12 +1,7 @@
-from   quex.engine.misc.string_handling           import blue_print
 from   quex.engine.analyzer.door_id_address_label import DoorID, \
-                                                         dial_db, \
-                                                         IfDoorIdReferencedCode, \
-                                                         IfDoorIdReferencedLabel
+                                                         dial_db
 from   quex.engine.interval_handling              import NumberSet
-from   quex.blackboard import E_IncidenceIDs
 from   operator import itemgetter
-from   copy     import copy
 #
 
 def __nice(SM_ID): 
@@ -318,7 +313,6 @@ __return_if_mode_changed = """
 """
 
 def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
-    TerminalFailureRef = "QUEX_LABEL(%i)" % dial_db.get_address_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     unset_pre_context_flags_str = Lng.PRE_CONTEXT_RESET(PreConditionIDList)

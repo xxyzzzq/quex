@@ -1,18 +1,15 @@
 from   quex.engine.state_machine.core          import State
 from   quex.engine.analyzer.door_id_address_label  import dial_db
-import quex.engine.state_machine.index         as     state_index
 from   quex.engine.analyzer.transition_map     import TransitionMap
 from   quex.engine.analyzer.state.entry        import Entry
-from   quex.engine.analyzer.state.entry_action import TransitionID, TransitionAction
+from   quex.engine.analyzer.state.entry_action import TransitionAction
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.commands.core           import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference, \
                                                            RouterOnStateKey
-from   quex.engine.analyzer.mega_state.target  import TargetByStateKey_DROP_OUT
-from   quex.engine.tools import typed, print_callstack
+from   quex.engine.tools import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
-                               E_StateIndices, \
-                               E_InputActions
+                               E_StateIndices
 
 class Processor(object):
     __slots__ = ("_index", "entry")
