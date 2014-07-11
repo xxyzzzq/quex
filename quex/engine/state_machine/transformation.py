@@ -10,8 +10,6 @@ from   quex.blackboard                                 import setup as Setup
 
 from   quex.engine.tools import typed
 
-import types
-
 @typed(X=(StateMachine,None))
 def do_state_machine(X):
     """Transforms a given state machine from 'Unicode Driven' to another

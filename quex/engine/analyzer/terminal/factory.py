@@ -3,7 +3,6 @@ from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.analyzer.terminal.core          import Terminal, TerminalGenerated
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
-import quex.engine.state_machine.index             as     index
 from   quex.engine.tools                           import typed
 from   quex.engine.misc.string_handling            import safe_string, \
                                                           pretty_code
@@ -11,12 +10,11 @@ from   quex.engine.misc.string_handling            import safe_string, \
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
 import quex.blackboard as blackboard
-from   quex.blackboard import E_IncidenceIDs, setup as Setup, Lng, \
+from   quex.blackboard import Lng, \
+                              E_IncidenceIDs, \
                               E_TerminalType
 
-import re
 import types
-from   copy import copy
 
 class TerminalFactory:
     """Factory for Terminal-s

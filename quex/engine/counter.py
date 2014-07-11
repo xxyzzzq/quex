@@ -3,32 +3,23 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.generator.code.base            import SourceRef
 from   quex.engine.generator.code.core            import CodeTerminal
-from   quex.engine.interval_handling              import NumberSet
-from   quex.engine.tools                          import return_None
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.commands.core         import E_R, \
-                                                         Assign, \
                                                          AssignConstant, \
                                                          ColumnCountAdd, \
                                                          ColumnCountGridAdd, \
                                                          ColumnCountReferencePDeltaAdd, \
                                                          ColumnCountReferencePSet, \
                                                          LineCountAdd, \
-                                                         GotoDoorId, \
-                                                         GotoDoorIdIfInputPNotEqualPointer
+                                                         GotoDoorId
 
 from   quex.engine.tools import typed
 from   quex.blackboard   import E_CharacterCountType, \
                                 setup as Setup, \
                                 Lng
-
-from   collections import namedtuple, defaultdict
 from   itertools   import izip, chain
-from   operator    import itemgetter
 
-import sys
 
 def _get_all_character_set(*DbList):
     result = NumberSet()

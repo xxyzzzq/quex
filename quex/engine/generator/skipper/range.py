@@ -1,6 +1,5 @@
-from   quex.engine.analyzer.door_id_address_label  import dial_db, DoorID
-import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
+import quex.engine.analyzer.engine_supply_factory  as     engine
 from   quex.engine.generator.languages.variable_db import variable_db
 from   quex.engine.generator.skipper.common        import line_counter_in_loop, \
                                                           get_character_sequence, \
@@ -15,8 +14,6 @@ from   quex.engine.tools                           import r_enumerate, \
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
 from   quex.blackboard                             import setup as Setup, Lng
-from   quex.blackboard                             import E_StateIndices, \
-                                                          E_IncidenceIDs
 from   copy                                        import copy
 
 
@@ -205,9 +202,6 @@ def get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAft
 
     # Line and column number counting
     code_str, reference_p_f = __lc_counting_replacements(code_str, EndSequence)
-
-    on_before_reload = [
-    ]
 
     # The finishing touch
     code_str = blue_print(code_str,

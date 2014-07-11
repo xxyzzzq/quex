@@ -548,7 +548,7 @@ class _Trace(object):
         
         return True
 
-    def __ne__(self):
+    def __ne__(self, Other):
         return not (self == Other)
 
     def __repr__(self):

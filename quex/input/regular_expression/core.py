@@ -46,7 +46,7 @@ def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None,
 
         if pattern.has_pre_or_post_context() or result is None:
             sh.seek(start_position)
-            pattern_str = pattern_str.strip()
+            pattern_str = pattern.pattern_string().strip()
             txt = "Regular expression '%s' cannot be interpreted as plain %s." % (pattern_str, Name) 
             if len(pattern_str) != 0 and pattern_str[-1] == Terminator:
                 txt += "\nMissing delimiting whitespace ' ' between the regular expression and '%s'.\n" % Terminator

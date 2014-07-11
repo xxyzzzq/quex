@@ -1,15 +1,11 @@
 from   quex.engine.analyzer.state.core            import AnalyzerState
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands.core         import PathIteratorSet
-from   quex.engine.analyzer.mega_state.core       import MegaState_Entry
 from   quex.engine.analyzer.transition_map        import TransitionMap       
-import quex.engine.state_machine.index            as     index
 
 from   quex.engine.tools                       import UniformObject
 
 from   quex.blackboard                         import E_Compression, E_StateIndices
 
-from   itertools   import ifilter
 from   collections import namedtuple
 
 from   copy import deepcopy
@@ -86,7 +82,6 @@ class TransitionMapData(object):
 
     def get_string(self):
         L   = max(len(x[0].get_utf8_string()) for x in self.transition_map)
-        txt = []
         def stringify(interval, target_door_id):
             interval_str  = interval.get_utf8_string()
             return "   %s%s -> %s\n" % (interval_str, " " * (L - len(interval_str)), target_door_id)

@@ -4,13 +4,10 @@ from   quex.engine.generator.skipper.common         import get_character_sequenc
                                                            line_column_counter_in_loop
 import quex.engine.state_machine.index              as     sm_index
 from   quex.engine.analyzer.door_id_address_label   import __nice, \
-                                                           dial_db, \
-                                                           DoorID
+                                                           dial_db
 from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.tools                            import typed
-from   quex.blackboard                              import setup as Setup, \
-                                                           Lng, \
-                                                           E_StateIndices
+from   quex.blackboard                              import Lng
 
 def do(Data, TheAnalyzer):
 

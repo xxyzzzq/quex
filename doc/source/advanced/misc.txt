@@ -81,7 +81,8 @@ the line number of the occurence of the opening ``/*``.
       void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, 
                                   const QUEX_TYPE_CHARACTER* End);
 
-   even if the added element is only one letter.
+   even if the added element is only one letter. This is so, since one
+   character may consist of more than one 'chunk'.
 
 
 

@@ -1,12 +1,12 @@
 from   quex.engine.interval_handling              import Interval
-from   quex.blackboard                            import E_StateIndices, E_IncidenceIDs
 from   quex.engine.tools                          import r_enumerate
 from   quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.state.entry_action    import TransitionID
-from   quex.blackboard                            import E_StateIndices
+from   quex.blackboard                            import E_StateIndices, \
+                                                         E_IncidenceIDs
 
-from   copy      import deepcopy, copy
+from   copy      import copy
 from   itertools import izip
 import sys
 
@@ -544,7 +544,6 @@ class TransitionMap(list):
             action.extend(Action)
 
     def add_command_to_NotNone_targets(self, TheCommand):
-        assert isinstance(Action, list)
         done_set = set()
         for interval, command_list in self:
             if command_list is None: continue

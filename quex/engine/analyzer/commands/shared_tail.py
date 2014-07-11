@@ -29,8 +29,6 @@ lists can be implemented as
 """
 import quex.engine.analyzer.commands.core as commands
 
-from   itertools import islice
-from   copy import copy
 
 def r_find_last_common(CL0_r, DoneSet0, CL1_r, DoneSet1):
     """CL0_r, CL1_r -- reversed versions of the command lists CL1 and CL0.

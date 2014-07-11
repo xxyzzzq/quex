@@ -22,7 +22,6 @@
 from quex.engine.misc.enum           import Enum
 from quex.engine.generator.code.base import CodeFragment_NULL
 from quex.input.setup                import QuexSetup, SETUP_INFO
-from copy                            import deepcopy
 
 #------------------------------------------------------------------------------
 # setup: All information of the user's desired setup.

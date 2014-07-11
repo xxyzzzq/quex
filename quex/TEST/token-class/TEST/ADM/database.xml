@@ -1,27 +1,27 @@
-<test-database execution-time-sec="0.62" date="Thu Jul 10 08:25:27 2014">
+<test-database execution-time-sec="0.80" date="Fri Jul 11 15:03:06 2014">
     <last-used-diff-display-program name=""/>
-    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="simple-queue.exe" info-request-time="1404553726L" vanished="False"/>
+    <test title="With token policy 'queue'." make-dependent="True" time-sum-sec="0.00"> 
+        <application file-name="simple-queue.exe" info-request-time="1405083783L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="False" time_sec="2.109521"/>
+        <make-procedure success="True" time_sec="2.124996"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.01" crc="1902503654"/>
+           <choice name="" result="OK" time_sec="0.00" crc="1902503654"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" time-sum-sec="0.61"> 
+    <test title="Miscellaneous Sample Runs" time-sum-sec="0.79"> 
         <application file-name="misc.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.14" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.18" crc="-883994886"/>
-           <choice name="double-colon" result="OK" time_sec="0.14" crc="-223322448"/>
+           <choice name="empty" result="OK" time_sec="0.31" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.19" crc="-883994886"/>
+           <choice name="double-colon" result="OK" time_sec="0.15" crc="-223322448"/>
            <choice name="token" result="OK" time_sec="0.15" crc="-26357094"/>
         </choice-list>
     </test>
     <test title="With token policy 'simple'." make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1404553728L" vanished="False"/>
+        <application file-name="simple.exe" info-request-time="1405083785L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="False" time_sec="2.027674"/>
+        <make-procedure success="True" time_sec="2.054468"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="120585915"/>
         </choice-list>

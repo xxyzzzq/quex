@@ -1,17 +1,13 @@
 # (C) Frank-Rene Schaefer
 from   quex.input.setup                           import NotificationDB
-from   quex.input.regular_expression.construct    import Pattern
 from   quex.engine.tools                          import typed
 from   quex.engine.misc.file_in                   import error_msg
 import quex.engine.state_machine.transformation   as     transformation
 from   quex.engine.state_machine.core             import StateMachine  
-from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
-from   quex.engine.interval_handling              import NumberSet, \
-                                                         NumberSet_All, \
-                                                         Interval
+from   quex.engine.interval_handling              import NumberSet
 from   quex.blackboard                            import E_CharacterCountType
 
 from   quex.blackboard import setup as Setup
@@ -36,51 +32,6 @@ cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))):
     def __new__(self, CCType, Value, sr):
         return super(CountCmdMapEntry, self).__new__(self, CCType, Value, sr)
-
-    def DELETED_get_command_list(self, ColumnCountPerChunk=None):
-        if self.column_count_per_chunk is None:
-            cmd = {
-                E_CharacterCountType.COLUMN: ColumnCountAdd,
-                E_CharacterCountType.GRID:   ColumnCountGridAdd,
-                E_CharacterCountType.LINE:   LineCountAdd,
-            }[self.cc_type](self.value)
-        else:
-            cmd = {
-                E_CharacterCountType.COLUMN: return_None,
-                E_CharacterCountType.GRID:   DELETED_ColumnCountGridAddWithReferenceP,
-                E_CharacterCountType.LINE:   DELETED_LineCountAddWithReferenceP,
-            }[self.cc_type](self.value, E_R.InputP, ColumnCountPerChunk)
-
-        if cmd is None: return []
-        else:           return [ cmd ]
-
-    def get_command_list_with_lexeme_end_check(self, ColumnCountPerChunk, DoorIdOk, DoorIdOnLexemeEnd):
-        """     .---------------.    ,----------.   no
-           ---->| Count Command |---< LexemeEnd? >------> DoorIdOk
-                '---------------'    '----+-----'
-                                          | yes
-                                   .---------------.
-                                   |  Lexeme End   |
-                                   | Count Command |----> DoorIdOnLexemeEnd
-                                   '---------------'
-        """
-        assert DoorIdOk is not None
-        assert DoorIdOnLexemeEnd is not None
-
-        cl = self._command(self.cc_type, self.value)
-        cl.append(
-            GotoDoorIdIfInputPNotEqualPointer(DoorIdOk, E_R.LexemeEnd),
-        )
-
-        if ColumnCountPerChunk is not None and self.cc_type == E_CharacterCountType.COLUMN:
-            cl.append(
-                ColumnCountReferencePDeltaAdd(E_R.InputP, self.column_count_per_chunk, False)
-            )
-
-        cl.append(
-            GotoDoorId(DoorIdOnLexemeEnd)
-        )
-        return cl
 
 CountInfo = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
 
@@ -304,7 +255,6 @@ class CountCmdMap(object):
         """
         grid_value_list = []
         min_info        = None
-        column_n_f      = False
         for character_set, info in self.__map:
             if info.cc_type != E_CharacterCountType.GRID: 
                 if info.cc_type == E_CharacterCountType.COLUMN: 
@@ -335,7 +285,6 @@ class CountCmdMap(object):
 
     def check_homogenous_space_counts(self):
         common = None
-        grid_f = False
         for character_set, info in self.__map:
             if info.cc_type != E_CharacterCountType.COLUMN: 
                 if info.cc_type == E_CharacterCountType.GRID: 

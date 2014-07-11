@@ -31,13 +31,11 @@ from   quex.engine.misc.file_in                          import open_file_or_die
 from   quex.engine.tools import typed, \
                                 none_isinstance
 from   quex.blackboard   import setup as Setup, \
-                                Lng, \
                                 E_StateIndices,  \
                                 E_IncidenceIDs, \
                                 E_InputActions,  \
                                 E_TransitionN,   \
                                 E_PreContextIDs, \
-                                E_DoorIdIndex, \
                                 E_Cmd
 from   copy      import copy
 from   itertools import islice
@@ -604,6 +602,7 @@ class Lng_Cpp(dict):
 
     def IF_MULTI_OR(self, LOR_List):
         L = len(LOR_List)
+        decision = []
         for i, info in enumerate(LOR_List): 
             lvalue, operator, rvalue = info
             if i == 0: 

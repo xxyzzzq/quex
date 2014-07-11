@@ -1,4 +1,3 @@
-from   quex.input.files.mode_option                    import SkipRangeData
 from   quex.input.regular_expression.construct         import Pattern           
 from   quex.input.files.consistency_check              import __error_message as c_error_message
 from   quex.engine.counter                             import CountCmdFactory
@@ -14,9 +13,7 @@ from   quex.engine.generator.code.core                 import CodeTerminal, \
                                                               CodeTerminalOnMatch
 import quex.engine.state_machine.check.superset        as     superset_check
 import quex.engine.state_machine.check.identity        as     identity_checker
-import quex.engine.state_machine.repeat                as     repeat
 import quex.engine.state_machine.sequentialize         as     sequentialize
-import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 
 from   quex.engine.tools import typed
 import quex.blackboard as blackboard
@@ -25,7 +22,6 @@ from   quex.blackboard import setup as Setup, \
                               E_IncidenceIDs, \
                               E_TerminalType
 from   quex.engine.misc.file_in import error_msg
-import types
 from   copy        import deepcopy
 from   collections import namedtuple
 from   operator    import attrgetter
@@ -185,7 +181,6 @@ def _pattern_collect(BaseModeSequence, CounterDb, terminal_factory):
                 yield mode_hierarchy_index, pap
 
     result   = []
-    mhi_self = len(BaseModeSequence) - 1
     for mhi, pap in pap_iterator(BaseModeSequence):
         # ALWAYS 'deepcopy' (even in the mode itself), because:
         # -- derived patterns may relate to the pattern.

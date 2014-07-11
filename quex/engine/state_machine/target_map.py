@@ -1,9 +1,5 @@
 from   quex.engine.interval_handling import NumberSet, Interval
-from   quex.engine.misc.enum         import Enum
-from   quex.blackboard               import E_StateIndices, \
-                                            E_IncidenceIDs, \
-                                            E_Border
-import sys
+from   quex.blackboard               import E_Border
 from   operator import attrgetter
 
 class TargetMap:

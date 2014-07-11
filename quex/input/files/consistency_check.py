@@ -1,11 +1,8 @@
 from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
 from   quex.input.setup                            import NotificationDB
 import quex.blackboard                             as     blackboard
-from   quex.blackboard                             import setup as Setup, E_IncidenceIDs_Subset_Special
-import quex.engine.state_machine.check.superset    as     superset_check
-import quex.engine.state_machine.check.same        as     same_check
+from   quex.blackboard                             import setup as Setup
 from   quex.blackboard import E_IncidenceIDs
-from   itertools import islice
 
 def do(ModeDB):
     """Consistency check of mode database
@@ -88,8 +85,6 @@ def __error_message(This, That, ThisComment, ThatComment="", EndComment="", Exit
               DontExitF=True, WarningF=not ExitF)
 
     FileName, LineN, mode_name  = That.sr
-    if len(ThatComment) != 0: Space = " "
-    else:                     Space = ""
 
     msg = "pattern '%s'." % That.pattern_string()
 
@@ -166,5 +161,3 @@ def __entry_exit_transitions(mode, mode_name_list):
                       "or any of its base modes.",
                       that_mode.sr.file_name, that_mode.sr.line_n)
            
-def __get_non_abstract_mode_name_list(ModeDB):
-    return result

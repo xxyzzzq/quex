@@ -69,7 +69,6 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 from   quex.engine.misc.enum import Enum
-from   quex.engine.tools     import typed, print_callstack
 from   quex.blackboard       import E_Cmd, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \
@@ -79,7 +78,7 @@ from   quex.blackboard       import E_Cmd, \
 
 from   collections import namedtuple
 from   operator    import attrgetter
-from   copy        import deepcopy, copy
+from   copy        import deepcopy
 import types
 
 E_R = Enum("AcceptanceRegister",
@@ -560,27 +559,6 @@ class RouterOnStateKeyContent:
 
     def __len__(self):
         return len(self.__list)
-
-#______________________________________________________________________________
-# CommandInfo: Information about a command. CommandInfo-s provide information
-#     about commands based on the command identifier. That is:
-#
-#     .cost         -- The computational cost of the operation.
-#     .access       -- What it access and whether it is read or write.
-#     .content_type -- Information so that the 'CommandFactory' can generate
-#                      a command based on the command identifier.
-#______________________________________________________________________________
-class CommandInfo(namedtuple("CommandInfo_tuple", ("cost", "access", "content_type"))):
-    def __new__(self, Cost, Access, ContentType=None):
-        if type(ContentType) == tuple: content_type = namedtuple("Command_tuple", ContentType)
-        else:                          content_type = ContentType
-        return super(CommandInfo, self).__new__(self, Cost, Access, content_type)
-
-    @property
-    def read_f(self):  return self.access == E_InputPAccess.READ
-
-    @property
-    def write_f(self): return self.access == E_InputPAccess.WRITE
 
 def __configure():
     """Configure the database for commands.

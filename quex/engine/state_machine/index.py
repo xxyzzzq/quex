@@ -1,4 +1,3 @@
-from quex.blackboard import E_IncidenceIDs
 
 # special states:
 def clear():

@@ -346,8 +346,6 @@ def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx,
     global FullRange
     assert L <= 6
 
-    bad_range = FullRange.inverse()
-
     s_idx = StartStateIdx
     # For the common bytes it is not essential what list is considered, take list no. 0.
     for trigger_set in XList[0][:DIdx]:

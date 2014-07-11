@@ -1,5 +1,4 @@
 from   quex.engine.counter                        import CountCmdFactory
-from   quex.engine.analyzer.state.core            import Processor
 from   quex.engine.analyzer.commands.core         import GotoDoorId
 
 import quex.engine.generator.loop                 as     loop
@@ -71,10 +70,8 @@ def do(Data, TheAnalyzer):
 
     if Setup.buffer_based_analyzis_f:
         reload_state = None
-        reload_f     = False
     else:
         reload_state = TheAnalyzer.reload_state
-        reload_f     = True
         
     result,        \
     door_id_beyond = loop.do(CountCmdFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 

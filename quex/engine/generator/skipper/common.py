@@ -1,9 +1,8 @@
 import quex.engine.utf8                            as utf8
 from   quex.engine.interval_handling               import NumberSet
 from   quex.engine.misc.file_in                    import error_msg
-from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.misc.string_handling            import safe_string
-from   quex.blackboard                             import E_IncidenceIDs, \
+from   quex.blackboard                             import \
                                                           setup as Setup, \
                                                           Lng
 

@@ -1,9 +1,7 @@
 #from   quex.input.files.parser_data.counter           import ParserDataLineColumn
-from   quex.engine.interval_handling                  import UnicodeInterval, Interval
 from   quex.engine.generator.code.base                import SourceRef_VOID, \
                                                              SourceRef
 from   quex.engine.state_machine.core                 import StateMachine
-from   quex.engine.state_machine.utf16_state_split    import ForbiddenRange
 from   quex.engine.state_machine.character_counter    import CountInfo
 import quex.engine.state_machine.setup_post_context   as     setup_post_context
 import quex.engine.state_machine.setup_pre_context    as     setup_pre_context
@@ -13,8 +11,6 @@ import quex.engine.state_machine.algebra.reverse      as     reverse
 from   quex.engine.misc.file_in                       import error_msg
 #                                                         
 from   quex.engine.tools               import typed
-from   quex.blackboard                 import setup     as Setup, deprecated
-import sys
 
 class Pattern(object):
     __slots__ = ("__sr", # Source Reference (filename, line_n)

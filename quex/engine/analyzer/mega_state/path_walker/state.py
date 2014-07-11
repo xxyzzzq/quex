@@ -1,12 +1,7 @@
-# (C) 2010-2013 Frank-Rene Schaefer
-from   quex.engine.analyzer.transition_map        import TransitionMap   
-from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands.core         import PathIteratorSet, \
-                                                         E_R
+# (C) 2010-2014 Frank-Rene Schaefer
+from   quex.engine.analyzer.commands.core         import PathIteratorSet
 from   quex.engine.analyzer.mega_state.core       import MegaState, \
-                                                         TargetByStateKey, \
-                                                         StateKeyIndexDB, \
-                                                         MegaState_Entry
+                                                         StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \
                                                                   DropOutConsideration_relate
 import quex.engine.state_machine.index             as     index

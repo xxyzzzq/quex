@@ -2,11 +2,9 @@
 import quex.engine.analyzer.mega_state.template.core    as     template_analyzer
 from   quex.engine.analyzer.mega_state.template.state   import TemplateState
 import quex.engine.analyzer.mega_state.path_walker.core as     path_analyzer
-from   quex.engine.analyzer.mega_state.core             import MegaState
 from   quex.engine.analyzer.mega_state.target           import TargetByStateKey
 from   quex.blackboard                                  import setup as Setup, \
-                                                               E_Compression, \
-                                                               E_StateIndices
+                                                               E_Compression
 
 def do(TheAnalyzer):
     """MegaState Analysis _____________________________________________________
@@ -54,7 +52,6 @@ def do(TheAnalyzer):
     remainder = set(TheAnalyzer.state_db.iterkeys())
     remainder.remove(TheAnalyzer.init_state_index)
 
-    implemented_check_set = set()
     for ctype in Setup.compression_type_list:
         # -- MegaState-s by Path-Compression
         if ctype in (E_Compression.PATH, E_Compression.PATH_UNIFORM):

@@ -28,7 +28,6 @@ def print_callstack(BaseNameF=False):
     except:
         pass
 
-    L = len(name_list)
     prev_file_name = ""
     i = - 1
     for x in reversed(name_list):

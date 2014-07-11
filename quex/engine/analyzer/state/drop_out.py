@@ -1,18 +1,5 @@
-from   quex.engine.analyzer.commands.core         import repr_acceptance_id, \
-                                                         repr_pre_context_id, \
-                                                         repr_positioning, \
-                                                         Accepter, \
-                                                         Router, \
-                                                         Command, \
-                                                         CommandList, \
-                                                         IfPreContextSetPositionAndGoto
-from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.tools                          import typed, E_Values
-from   quex.blackboard                            import E_PreContextIDs, \
-                                                         E_IncidenceIDs, \
-                                                         E_TransitionN, \
-                                                         E_Cmd
-from   itertools                                  import ifilter, imap
+from   quex.engine.analyzer.commands.core import CommandList, \
+                                                 IfPreContextSetPositionAndGoto
 
 def get_CommandList(TheAccepter, TheTerminalRouter):
     """If there is no stored acceptance involved, then one can directly

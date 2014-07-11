@@ -43,9 +43,7 @@ from   quex.engine.analyzer.state.core            import Processor, \
                                                          AnalyzerState, \
                                                          ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
-from   quex.engine.analyzer.state.entry_action    import TransitionID, \
-                                                         TransitionAction
-from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
+from   quex.engine.analyzer.state.entry_action    import TransitionAction
 from   quex.engine.analyzer.commands.core         import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \
@@ -56,10 +54,8 @@ import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 from   quex.engine.analyzer.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
-from   quex.engine.misc.tree_walker               import TreeWalker
-import quex.engine.state_machine.index            as     sm_index
 from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.tools                          import typed, print_callstack
+from   quex.engine.tools                          import typed
 from   quex.blackboard  import setup as Setup
 from   quex.blackboard  import E_IncidenceIDs, \
                                E_TransitionN, \
@@ -249,8 +245,6 @@ class Analyzer:
     def prepare_state(self, OldState, StateIndex):
         """REQUIRES: 'self.init_state_forward_f', 'self.engine_type', 'self.__from_db'.
         """
-        init_state_forward_f  = self.is_init_state_forward(StateIndex)
-
         state = AnalyzerState.from_State(OldState, StateIndex, self.engine_type)
 
         cmd_list = []
