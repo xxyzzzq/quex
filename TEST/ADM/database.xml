@@ -1,4 +1,4 @@
-<test-database execution-time-sec="352.23" date="Fri Jul 11 08:33:56 2014">
+<test-database execution-time-sec="351.09" date="Fri Jul 11 15:22:05 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.54"> 
@@ -67,7 +67,7 @@
                <choice name="" result="OK" time_sec="2.27" crc="658489232"/>
             </choice-list>
         </test>
-        <test title="2002474 Segmentation Fault while UTF-8 Decoding" time-sum-sec="8.85"> 
+        <test title="2002474 Segmentation Fault while UTF-8 Decoding" time-sum-sec="8.84"> 
             <application file-name="bug-2002474.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="True">
@@ -120,11 +120,11 @@
                <choice name="" result="OK" time_sec="0.23" crc="992805729"/>
             </choice-list>
         </test>
-        <test title="3479354 Reversed (right to left) Pattern Definition" time-sum-sec="0.42"> 
+        <test title="3479354 Reversed (right to left) Pattern Definition" time-sum-sec="0.00"> 
             <application file-name="bug-3479354.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.42" crc="905706180"/>
+               <choice name="" result="OK" time_sec="0.00" crc="722879612"/>
             </choice-list>
         </test>
         <test title="3504730 0.61.2 Post condition with OR causes crash" time-sum-sec="3.40"> 
@@ -291,7 +291,7 @@
                <choice name="" result="OK" time_sec="1.40" crc="1090359452"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.82"> 
+        <test title="2161098 0.32.1 Nested-Range Skipper Line Number Counter" time-sum-sec="5.83"> 
             <application file-name="bug-2161098-x.sh" info-request-time="1381662253L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
@@ -323,7 +323,7 @@
                <choice name="" result="OK" time_sec="0.25" crc="None"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Range Skipper Line Number Counter" time-sum-sec="5.91"> 
+        <test title="2161098 0.32.1 Range Skipper Line Number Counter" time-sum-sec="5.92"> 
             <application file-name="bug-2161098.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
@@ -341,7 +341,7 @@
                <choice name="good" result="OK" time_sec="2.38" crc="None"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="39.46"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="39.47"> 
             <application file-name="bug-1952133.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -399,7 +399,7 @@
                <choice name="undo-line-colum-count" result="OK" time_sec="1.14" crc="-415264187"/>
             </choice-list>
         </test>
-        <test title="3307919 Support for more general Unicode categories" time-sum-sec="6.83"> 
+        <test title="3307919 Support for more general Unicode categories" time-sum-sec="6.82"> 
             <application file-name="feature-3307919.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="10" same_result="False">
@@ -522,16 +522,16 @@
                <choice name="lexer" result="OK" time_sec="2.21" crc="-194156373"/>
             </choice-list>
         </test>
-        <test title="2841726 0.44.2 Unknown exception on unicode properties" time-sum-sec="0.23"> 
+        <test title="2841726 0.44.2 Unknown exception on unicode properties" time-sum-sec="0.14"> 
             <application file-name="bug-2841726.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.23" crc="1790920770"/>
+               <choice name="" result="FAIL" time_sec="0.14" crc="1790920770"/>
             </choice-list>
         </test>
     </group>
     <group name="ollydbg">
-        <test title="3403249 0.61.2 Non UTF8 encoding for *.qx files not detected." time-sum-sec="1.09"> 
+        <test title="3403249 0.61.2 Non UTF8 encoding for *.qx files not detected." time-sum-sec="1.07"> 
             <application file-name="bug-3403249.sh" info-request-time="1381662253L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -550,7 +550,7 @@
                <choice name="" result="OK" time_sec="0.65" crc="1152736058"/>
             </choice-list>
         </test>
-        <test title="3402386 Option --language dot" time-sum-sec="0.44"> 
+        <test title="3402386 Option --language dot" time-sum-sec="0.43"> 
             <application file-name="feature-3402386.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -605,11 +605,11 @@
         </test>
     </group>
     <group name="remcobloemen1">
-        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="1.04"> 
+        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="1.11"> 
             <application file-name="bug-3295781.sh" info-request-time="1399869672L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.04" crc="None"/>
+               <choice name="" result="FAIL" time_sec="1.11" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -734,7 +734,7 @@
                <choice name="" result="OK" time_sec="0.28" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="1.10"> 
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" time-sum-sec="1.09"> 
             <application file-name="bug-2796383.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -846,11 +846,11 @@
                <choice name="" result="OK" time_sec="0.74" crc="None"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.68"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.68" crc="1312568048"/>
+               <choice name="" result="OK" time_sec="0.00" crc="2136098309"/>
             </choice-list>
         </test>
         <test title="1969629 0.25.4 token list with just TERMINATION treated empty" time-sum-sec="0.18"> 
@@ -888,7 +888,7 @@
                <choice name="" result="OK" time_sec="0.32" crc="-1268709998"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="9.54"> 
+        <test title="2095970 0.31.3 Mode change without immediate return" time-sum-sec="9.53"> 
             <application file-name="bug-2095970.sh" info-request-time="1404102129L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="Simple.cpp:[0-9]+:"/>
@@ -982,7 +982,7 @@
         </test>
     </group>
     <group name="wryun">
-        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="7.19"> 
+        <test title="2819022 0.41.2 Pre-condition match causes issues" time-sum-sec="7.20"> 
             <application file-name="bug-2819022.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">

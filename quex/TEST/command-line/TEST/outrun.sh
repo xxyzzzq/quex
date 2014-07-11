@@ -3,6 +3,7 @@
 case $1 in
     --hwut-info)
         echo "Detect lower prio-patterns outrun higher-prio patterns;"
+        echo "HAPPY: outrun.qx:[0-9]+:;"
         ;;
 
     *)

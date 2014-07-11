@@ -1,38 +1,57 @@
-<             continue;/* ['\v', 'ÿ'] */
+<         goto _4;/* ['\v', 'ÿ'] */
 < 
->             continue;
-<             continue;/* '\n' */
+>         goto _4;
+<         goto _2;/* '\n' */
 < 
->             continue;
-<             continue;/* '\t' */
+>         goto _2;
+<         goto _3;/* '\t' */
 < 
->             continue;
-<             continue;/* [\0, '\b'] */
+>         goto _3;
+<         goto _4;/* [\0, '\b'] */
 < 
->             continue;
+>         goto _4;
+< goto _7;/* [\0, 'ÿ'] */
+< 
+> goto _7;
+< goto _8;/* [\0, 'ÿ'] */
+< 
+> goto _8;
+< goto _9;/* [\0, 'ÿ'] */
+< 
+> goto _9;
+< goto _10;/* [\0, 'ÿ'] */
+< 
+> goto _10;
 <     /* BEGIN: STATE MACHINE
-<      * init-state = 10L
-<      * 00010 (4, 2)
-<      *      == 'a' ==> 00011
+<      * init-state = 12L
+<      * 00012 (0, 2)
+<      *      == 'a' ==> 00013
 <      *     
-<      * 00011 (4, 3, A)
+<      * 00013 (0, 3, A)
 <      *     
 <      * END: STATE MACHINE
 <      */
-<         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);/* \0 */
+<         case 0x0: goto _9;/* \0 */
 < 
-<         case 0x61: goto _14;/* 'a' */
+>         case 0x0: goto _9;
+<         case 0x60: goto _5;/* [\1, '`'] */
 < 
->         case 0x0: QUEX_GOTO_RELOAD(__RELOAD_FORWARD, 10, 13);
->         case 0x61: goto _14;
+<         case 0x61: goto _4;/* 'a' */
+< 
+>         case 0x60: goto _5;
+>         case 0x61: goto _4;
+<         case 0xFF: goto _5;/* ['b', 'ÿ'] */
+< 
+>         case 0xFF: goto _5;
+< goto _6;/* [\0, 'ÿ'] */
+< 
+> goto _6;
 <     /* BEGIN: MODE PATTERNS
 <      * 
 <      * MODE: X
 <      * 
-<      *     PATTERN-ACTION PAIRS:
-<      *       ON_END_OF_STREAM
-<      *       ON_FAILURE
-<      *       (  4) X: a
+<      *     PATTERN LIST:
+<      *       (  0) X: a
 <      * 
 <      * 
 <      * END: MODE PATTERNS
