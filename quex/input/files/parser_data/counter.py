@@ -347,8 +347,8 @@ class CountCmdMap(object):
             db_by_name[name].append((character_set, info))
 
         txt = [
-            _db_to_text(name, count_command_info_list)
-            for name, count_command_info_list in sorted(db_by_name.iteritems(), key=itemgetter(0))
+            _db_to_text(cname, count_command_info_list)
+            for cname, count_command_info_list in sorted(db_by_name.iteritems(), key=itemgetter(0))
         ]
         return "".join(txt)
 

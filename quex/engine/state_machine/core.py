@@ -1101,7 +1101,7 @@ class StateMachine(object):
                 return (trigger_set_min, target_branch_n, target_tm_min, A)
 
             tm = state.target_map.get_map()
-            target_state_index_list = [ i for i in tm.iterkeys() if i not in done_set ]
+            target_state_index_list = [ k for k in tm.iterkeys() if k not in done_set ]
             target_state_index_list.sort(key=lambda x: comparison_key(self.states, tm, x), reverse=True)
 
             work_stack.extend(target_state_index_list)

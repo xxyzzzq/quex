@@ -145,9 +145,9 @@ def get(CL0, CL1):
     if len(i_moved_to_tail) == 0: 
         return None, None, None
     else:
-        i_cut_list = sorted([Li-1-i for i in i_moved_to_tail])               # 'small' first
-        tail = tuple(CL0[i] for i in i_cut_list)                             # 'small' first
+        i_cut_list = sorted([Li-1-p for p in i_moved_to_tail])               # 'small' first
+        tail = tuple(CL0[p] for p in i_cut_list)                             # 'small' first
         i_cut_list.sort(reverse=True)                                        # 'great' first
-        k_cut_list = sorted([Lk-1-k for k in k_moved_to_tail], reverse=True) # 'great' first
+        k_cut_list = sorted([Lk-1-p for p in k_moved_to_tail], reverse=True) # 'great' first
         return tail, i_cut_list, k_cut_list
 

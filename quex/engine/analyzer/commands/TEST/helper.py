@@ -68,7 +68,7 @@ example_db = {
     E_Cmd.RouterOnStateKey: [
         RouterOnStateKey(E_Compression.PATH, 0x4711L, 
                          [(1L, 100L), (2L, 200L), (3L, 300L)], 
-                         lambda x: DoorID(1,1)),
+                         lambda x: DoorID(x,1)),
     ],
 }
 
