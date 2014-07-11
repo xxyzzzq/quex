@@ -442,8 +442,8 @@ class SharedTailDB:
             ".shared_tails: {\n"
         ]
         
-        for shared_tail, candidate_set in sorted(self._tail_db.iteritems()):
-            txt.append("  (%s) -> {\n" % ("".join("%s " % CommandAliasDb[cmd] for cmd in shared_tail)).strip())
+        for tail, candidate_set in sorted(self._tail_db.iteritems()):
+            txt.append("  (%s) -> {\n" % ("".join("%s " % CommandAliasDb[cmd] for cmd in tail)).strip())
             txt.append(str(candidate_set))
         txt.append("  }\n")
 

@@ -739,7 +739,7 @@ demo/Cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Miscellaneous Basic Tests
-Fri Jul 11 08:42:51 2014
+Fri Jul 11 23:02:01 2014
 quex/TEST
 ------------------------------------------------------------------------------------------
  -- (*) Exceptions during 'import'
@@ -747,7 +747,7 @@ quex/TEST
  -- < #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
         check-default-configuration.sh ....................................[OK]
  -- Code Check with pyflakes
-        pyflakes-check.sh ...............................................[FAIL]
+        pyflakes-check.sh .................................................[OK]
  -- Propper undefinition of configuration parameters.
         macro-check.py ....................................................[OK]
  -- The Lexeme macro does some safety checks when compiled with
@@ -768,7 +768,6 @@ quex/TEST
                                                                       | |_|/ - \ | | | |_
                                                                       |_|  |_|_| |_| |___| 
 ------------------------------------------------------------------------------------------
-    [FAIL] pyflakes-check.sh
     [FAIL] no-use-of-lexeme-macro.sh
     [FAIL] test-token_id_file-find_ids.py
 ==========================================================================================
@@ -1776,7 +1775,7 @@ quex/engine/analyzer/TEST
     [FAIL] paths_analysis-loops.py _ 5
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Fri Jul 11 15:05:19 2014
+Fri Jul 11 23:17:52 2014
 quex/engine/analyzer/commands/TEST
 ------------------------------------------------------------------------------------------
  -- SharedTailDB
@@ -1786,7 +1785,7 @@ quex/engine/analyzer/commands/TEST
  -- Command:
 
     Basic
-        basic.py ........................................................[FAIL]
+        basic.py ..........................................................[OK]
     is_switchable
         is_switchable.py ..................................................[OK]
 
@@ -1807,12 +1806,10 @@ quex/engine/analyzer/commands/TEST
                             2-common ......................................[OK]
                             3-common ......................................[OK]
                             start-indices .................................[OK]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] basic.py
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 Compression: Path and Table
 Fri Jul 11 15:05:22 2014
@@ -2769,7 +2766,7 @@ SUMMARY:
      2   [FAIL]  TEST
            [OK]  demo/C/TEST
            [OK]  ..../Cpp/TEST
-     3   [FAIL]  quex/TEST
+     2   [FAIL]  quex/TEST
            [OK]  ..../TEST/command-line/TEST
            [OK]  ........./did-you-mean/TEST
            [OK]  ........./errors-warnings/TEST
@@ -2791,7 +2788,7 @@ SUMMARY:
            [OK]  ............../converter_helper/TEST
            [OK]  ..../engine/TEST
      2   [FAIL]  .........../analyzer/TEST
-     1   [FAIL]  ..................../commands/TEST
+           [OK]  ..................../commands/TEST
      1   [FAIL]  ..................../mega_state/path_walker/TEST
            [OK]  .............................../template/TEST
            [OK]  .........../generator/TEST
@@ -2807,10 +2804,10 @@ SUMMARY:
            [OK]  ..../output/cpp/TEST
            [OK]  .........../graphviz/TEST
 ------------------------------------------------------------------------------------------
-     _____     _ _          _  _  _            
-    |  ___|_ _(_) |___     / || || |     __  __
-    | |_ / _` | | / __|    | || || |_    \ \/ /
-    |  _| (_| | | \__ \    | ||__   _     >  < 
-    |_|  \__,_|_|_|___/    |_|   |_|     /_/\_\
+     _____     _ _          _  ____            
+    |  ___|_ _(_) |___     / ||___ \     __  __
+    | |_ / _` | | / __|    | |  __) |    \ \/ /
+    |  _| (_| | | \__ \    | | / __/      >  < 
+    |_|  \__,_|_|_|___/    |_||_____|    /_/\_\
                       
 ==========================================================================================

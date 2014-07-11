@@ -355,13 +355,13 @@ class Lng_Cpp(dict):
             value    = Cmd.content.value 
 
             if  register == E_R.Column:
-                assignment = "%s = (size_t)%s;\n" % (self.REGISTER_NAME(register), value)
+                assignment = "%s = (size_t)%s" % (self.REGISTER_NAME(register), value)
                 return "    __QUEX_IF_COUNT_COLUMNS(%s);\n" % assignment
             elif register == E_R.Line:
-                assignment = "%s = (size_t)%s;\n" % (self.REGISTER_NAME(register), value)
+                assignment = "%s = (size_t)%s" % (self.REGISTER_NAME(register), value)
                 return "    __QUEX_IF_COUNT_LINES(%s);\n" % assignment
             else:
-                assignment = "%s = %s;\n" % (self.REGISTER_NAME(register), value)
+                assignment = "%s = %s" % (self.REGISTER_NAME(register), value)
                 return "    %s;\n" % assignment
 
         elif Cmd.id == E_Cmd.ColumnCountAdd:
