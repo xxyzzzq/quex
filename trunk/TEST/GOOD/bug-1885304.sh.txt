@@ -615,24 +615,24 @@ QUEX_NAME(ONE_AND_ONLY_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lex
     __quex_assert(LexemeBegin <= LexemeEnd);
     if(LexemeBegin == LexemeEnd) return;
     me->buffer._input_p = LexemeBegin;
- /* (272 from NONE) */
+ /* (271 from NONE) */
     input = *(me->buffer._input_p);
 __QUEX_IF_COUNT_COLUMNS(reference_p = (me->buffer._input_p));
 
 _12:
 
     __quex_debug("Init State\n");
-__quex_debug_state(272);
+__quex_debug_state(271);
     if( input >= 0xB ) {
-        goto _4;
+        goto _3;
     
 } else if( input == 0xA ) {
-        goto _2;
+        goto _1;
     
 } else if( input == 0x9 ) {
-        goto _3;
+        goto _2;
     } else {
-        goto _4;
+        goto _3;
     
 }
 
@@ -640,27 +640,27 @@ __quex_assert_no_passage();
 
 
     __quex_assert_no_passage();
-_11: /* (272 from 277) */
+_11: /* (271 from 276) */
     goto _12;
 
 
 
     __quex_assert_no_passage();
- /* (DROP_OUT from 272) */
+ /* (DROP_OUT from 271) */
     me->buffer._input_p = me->buffer._lexeme_start_p + 1; 
 
 goto _15;    goto _14;
 
-_7: /* (DROP_OUT from 273) */
+_7: /* (DROP_OUT from 272) */
     goto _16;    goto _14;
 
-_8: /* (DROP_OUT from 274) */
+_8: /* (DROP_OUT from 273) */
     goto _17;    goto _14;
 
-_9: /* (DROP_OUT from 275) */
+_9: /* (DROP_OUT from 274) */
     goto _18;    goto _14;
 
-_10: /* (DROP_OUT from 276) */
+_10: /* (DROP_OUT from 275) */
     goto _19;    goto _14;
 
 _14:
@@ -671,47 +671,47 @@ __quex_assert_no_passage();
 
 
     __quex_assert_no_passage();
-_2: /* (273 from 272) */
+_1: /* (272 from 271) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     goto _20;
 
 _20:
 
-    __quex_debug_state(273);
+    __quex_debug_state(272);
 goto _7;
 
     __quex_assert_no_passage();
-_3: /* (274 from 272) */
+_2: /* (273 from 271) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     goto _21;
 
 _21:
 
-    __quex_debug_state(274);
+    __quex_debug_state(273);
 goto _8;
 
     __quex_assert_no_passage();
-_4: /* (275 from 272) */
+_3: /* (274 from 271) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     goto _22;
 
 _22:
 
-    __quex_debug_state(275);
+    __quex_debug_state(274);
 goto _9;
 
     __quex_assert_no_passage();
- /* (276 from 272) */
+ /* (275 from 271) */
     ++(me->buffer._input_p);
     input = *(me->buffer._input_p);
     goto _23;
 
 _23:
 
-    __quex_debug_state(276);
+    __quex_debug_state(275);
 goto _10;
     /* (*) Terminal states _______________________________________________________
      *

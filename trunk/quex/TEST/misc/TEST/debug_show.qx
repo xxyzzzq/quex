@@ -5,9 +5,11 @@ token {
   FOREST;
   FORESTER;
   FORMIDABLE;
+  FAIL;
 }
 
 mode X { 
+    on_failure => QUEX_TKN_FAIL(Lexeme);
     [a-eg-z]+  => QUEX_TKN_IDENTIFIER;
     " "+       => QUEX_TKN_WHITESPACE;
     for        => QUEX_TKN_FOR;
