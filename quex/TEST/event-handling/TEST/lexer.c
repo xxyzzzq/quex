@@ -18,6 +18,7 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf(__TEST_DESCRIPTION ";\n");
         printf("CHOICES: " __TEST_CHOICES ";\n");
+        printf("HAPPY: EHLexer.c:[0-9]+:;");
         return 0;
     }
 
