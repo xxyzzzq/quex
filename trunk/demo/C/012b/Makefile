@@ -13,7 +13,7 @@ lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
 	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
 	 
 %.o: %.c $(ENGINE_SOURCES)
-	gcc -c $< -ggdb -Wall -o $@ \
+	gcc -c $< -ggdb -Wall -Werror -o $@ \
 		-I$(QUEX_PATH) \
 		$(CCFLAG_ASSERTS) 
 

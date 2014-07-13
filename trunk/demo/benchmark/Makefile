@@ -34,7 +34,7 @@ SOURCES = $(addprefix in/, lexer.cpp report.cpp main.cpp)
 # PROFILE_ENABLE = -fprofile-arcs -fprofile-values
 # PROFILE_USE    = -fbranch-probabilities
 INCLUDE = -I. -I$(QUEX_PATH)  
-WARNING = -Wno-deprecated -Wall -Wimplicit 
+WARNING = -Wno-deprecated -Wall -Werror -Wimplicit 
 DEFINES = \
 		 -DNDEBUG \
 		 -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \

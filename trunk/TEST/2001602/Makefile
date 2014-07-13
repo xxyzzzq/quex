@@ -8,13 +8,13 @@ lex_iconv:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
-		-Wall                         \
-		../lexer.cpp                     \
-		-ggdb \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                 \
+		../lexer.cpp                  \
+		-ggdb                         \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-		-o $@
+		-o $@ 
 
 #-DQUEX_OPTION_DEBUG_SHOW \
 #-D__QUEX_OPTION_UNIT_TEST \
@@ -27,7 +27,7 @@ lex_icu:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
-		-Wall                         \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                 \
 		../lexer.cpp                  \
 		$(LIB_CONV)                   \
 		-ggdb                         \
@@ -42,7 +42,7 @@ lex_codec:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH)              \
 		$(X).cpp                         \
-		-Wall                            \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                            \
 		../lexer.cpp                     \
 		-ggdb                            \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64    \

@@ -656,8 +656,7 @@ __quex_assert_no_passage();
      * States that implement actions of the 'winner patterns.                     */
 _39: __quex_debug("* TERMINAL LINE\n");
 __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-    __QUEX_IF_COUNT_COLUMNS((me->counter._column_number_at_end) = (size_t)1;
-);
+    __QUEX_IF_COUNT_COLUMNS((me->counter._column_number_at_end) = (size_t)1);
 if( me->buffer._input_p != LexemeEnd ) goto _30;
 goto _1;
 _37: __quex_debug("* TERMINAL GRID\n");

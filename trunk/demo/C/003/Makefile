@@ -39,7 +39,7 @@ COMPILER = gcc -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -W -Wconversion -pedantic                 \
+	 -Wall -Werror -W -Wconversion -pedantic                 \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         

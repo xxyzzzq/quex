@@ -68,7 +68,7 @@ $INCLUDE_CONVERTER_DECLARATION
 #       if 0
         /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
         {
-            const QUEX_TYPE_CHARACTER* it = 0x0;
+            const QUEX_TYPE_CHARACTER* it = (void*)0x0;
             printf("previous:  '");
             if( self.text != LexemeNull ) {
                 for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
@@ -98,7 +98,7 @@ $INCLUDE_CONVERTER_DECLARATION
         }
 
 #       if 0
-        /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
+        /* Hint for debug: To check take_text change "#if 0" to "#if 1"       */
         {
             const QUEX_TYPE_CHARACTER* it = 0x0;
             printf("after:     '");
@@ -111,7 +111,7 @@ $INCLUDE_CONVERTER_DECLARATION
 #       endif
 
         /* This token copied the text from the chunk into the string, 
-         * so we do not claim owneship over it.                       */
+         * so we do not claim ownership over it.                             */
         return false;
    }
 

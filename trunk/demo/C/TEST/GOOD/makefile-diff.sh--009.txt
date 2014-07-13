@@ -9,9 +9,9 @@
 > WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
 > 		   tiny_wlexer-token.h tiny_wlexer-token.c \
 > 		   tiny_wlexer-configuration.h
-< COMPILER = g++ -ggdb -Wall -pedantic 
+< COMPILER = g++ -ggdb -Wall -Werror -pedantic 
 ---
-> COMPILER = gcc -ggdb -Wall -pedantic 
+> COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 < stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
 ---
 > stdinlexer: stdinlexer.c tiny_lexer_st.c 

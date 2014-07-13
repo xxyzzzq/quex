@@ -173,6 +173,8 @@ def _get_source_code(CcFactory, analyzer, terminal_list):
     if analyzer.engine_type.subject_to_reload():
         txt.extend(generator.do_reload_procedure(analyzer))
 
-    if CcFactory.requires_reference_p():   variable_db.require("reference_p")
-    if Setup.variable_character_sizes_f(): variable_db.require("character_begin_p")
+    if CcFactory.requires_reference_p():   
+        variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")
+    if Setup.variable_character_sizes_f(): 
+        variable_db.require("character_begin_p")
     return txt

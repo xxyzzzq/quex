@@ -1,5 +1,5 @@
 ## (2) compiling generated engine code and test
-g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
+g++ -Wall -Werror   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
 ## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
 ## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]
@@ -44,7 +44,7 @@ end
   ''
 
 ## (2) compiling generated engine code and test
-g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
+g++ -Wall -Werror   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
 ## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
 ## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]
@@ -77,7 +77,7 @@ end
   ''
 
 ## (2) compiling generated engine code and test
-g++ -Wall   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
+g++ -Wall -Werror   ./tmp.cpp -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.cpp.exe  ##
 
 ## IGNORED: ./tmp.cpp: In function ‘uint32_t TestAnalyzer_Mr_analyzer_function(quex::TestAnalyzer*)’:
 ## IGNORED: ./tmp.cpp:239:1: warning: label ‘_20’ defined but not used [-Wunused-label]

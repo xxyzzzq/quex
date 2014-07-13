@@ -7,6 +7,9 @@ from   operator import itemgetter
 def do(StateRouterInfoList):
     """Create code that allows to jump to a state based on an integer value.
     """
+
+    # NOTE: Do not use 'IfDoorIdReferencedCode' because the state router may 
+    #       possibly not be tagged as 'gotoed', event if it is used.
     prolog = "#   ifndef QUEX_OPTION_COMPUTED_GOTOS\n" \
              "    __quex_assert_no_passage();\n"       \
              "%s\n" % Lng.LABEL(DoorID.global_state_router()) 

@@ -1,9 +1,9 @@
 < COMPILER = g++ -ggdb -W -pedantic 
 ---
 > COMPILER = gcc -ggdb 
-< 	 -Wall -Wconversion                              \
+< 	 -Wall -Werror -Wconversion                              \
 ---
-> 	 -Wall -W -Wconversion -pedantic                 \
+> 	 -Wall -Werror -W -Wconversion -pedantic                 \
 > #    -- Intel's icpc (tm)
 <              $(findstring $(COMPILER),cl dmc)))
 ---

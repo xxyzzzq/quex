@@ -59,7 +59,7 @@ echo "(0) Running Quex (no output is good output)"
 quex -o EasyLexer --source-package pkg $option --language C --debug-exception
 
 echo "(1) Running gcc (no output is good output)"
-gcc  -Ipkg pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -W
+gcc  -Ipkg pkg/EasyLexer.c -o pkg/EasyLexer.o -c -Wall -Werror -W
 
 echo "(2) Double check that output file exists"
 ls    pkg/EasyLexer.o 2> tmp.txt

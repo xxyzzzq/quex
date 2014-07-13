@@ -11,6 +11,7 @@ import quex.input.command_line.core   as     command_line
 
 if "--hwut-info" in sys.argv:
     print "User defined token id file: __parse_token_id_file"
+    print "HAPPY: data/example-x-x.h:[0-9]+:;"
     sys.exit(0)
 
 CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]

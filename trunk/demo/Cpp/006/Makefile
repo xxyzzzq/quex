@@ -29,7 +29,7 @@ COMPILER = g++ -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion -pedantic                    \
+	 -Wall -Werror -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DPRINT_TOKEN                                   \
 	 -DPRINT_LINE_COLUMN_NUMBER

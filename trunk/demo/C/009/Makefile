@@ -25,7 +25,7 @@ ifdef ASSERTS_ENABLED_F
 else 
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
-COMPILER = gcc -ggdb -Wall -pedantic 
+COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
      # -DQUEX_OPTION_DEBUG_SHOW
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

@@ -42,6 +42,7 @@ valgrind $lexer_name $args_to_lexer > tmp-stdout0.txt 2> tmp-stderr0.txt
 cat tmp-make0.txt | awk '(  /[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ \
                           || /[Ee][Rr][Rr][Oo][Rr]/)        \
                           && ! /ASSERTS/                    \
+                          && ! /-Werror/                    \
                           && ! /deprecated since quex/      \
                           && ! /QUEX_ERROR_EXIT/            \
                           && ! /QUEX_ERROR_DEPRECATED/' > tmp-make.txt

@@ -14,7 +14,7 @@ ISO8859_7_Lex.cpp: greek.qx
 
 iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
 	g++ -c -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
-		-Wall              \
+		-Wall -Werror              \
 		-I$(QUEX_PATH) -I. \
 		$<                 \
 		$(CCFLAG_ASSERTS)  \
@@ -22,7 +22,7 @@ iso8859-7-lexer.o: iso8859-7-lexer.cpp ISO8859_7_Lex.cpp
 
 iso8859-7-lexer: iso8859-7-lexer.o ISO8859_7_Lex.cpp
 	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
-		-Wall              \
+		-Wall -Werror              \
 		$(CCFLAG_ASSERTS)  \
 		-I$(QUEX_PATH) -I. \
 		iso8859-7-lexer.o  \
@@ -39,7 +39,7 @@ utf8-lexer: utf8-lexer.cpp
 		 --token-id-prefix TKN_ \
 		 -o UTF8Lex 
 	g++ -ggdb \
-		-Wall                    \
+		-Wall -Werror                    \
 		-I$(QUEX_PATH) -I.       \
 		$<                       \
 		$(CCFLAG_ASSERTS)        \
@@ -56,7 +56,7 @@ utf16-lexer: utf16-lexer.cpp
 		 -o             UTF16Lex  \
 	     -b             2
 	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
-		-Wall                   \
+		-Wall -Werror                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
@@ -70,7 +70,7 @@ utf16-lexer-other: utf16-lexer-other.cpp
 		 -o             UTF16Lex  \
 	     -b             2
 	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
-		-Wall                   \
+		-Wall -Werror                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
@@ -83,7 +83,7 @@ utf16-lexer-other: utf16-lexer-other.cpp
 			
 %.E: %.cpp
 	g++ -E -D__QUEX_TEST_OPTION_ISO8859_7 \
-		-Wall \
+		-Wall -Werror \
 		-I$(QUEX_PATH) -I. \
 		$< -o $@
 	

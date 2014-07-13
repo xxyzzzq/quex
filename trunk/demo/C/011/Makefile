@@ -13,7 +13,7 @@ iso8859-7-lexer: iso8859-7-lexer.c
 		 -o ISO8859_7_Lex    \
 		 --language C
 	gcc -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
-		-Wall              \
+		-Wall -Werror              \
 		-I$(QUEX_PATH) -I. \
 		$<                 \
 		$(CCFLAG_ASSERTS)  \
@@ -31,7 +31,7 @@ utf8-lexer: utf8-lexer.c
 		 --language C        \
 		 -o UTF8Lex
 	gcc -ggdb \
-		-Wall                   \
+		-Wall -Werror                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
@@ -49,7 +49,7 @@ utf16-lexer: utf16-lexer.c
 	     -b             2         \
 		 --language C 
 	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
-		-Wall                   \
+		-Wall -Werror                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
@@ -64,7 +64,7 @@ utf16-lexer-other: utf16-lexer-other.c
 	     -b             2         \
 		 --language     C  
 	gcc -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
-		-Wall                   \
+		-Wall -Werror                   \
 		-I$(QUEX_PATH) -I.      \
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
@@ -77,7 +77,7 @@ utf16-lexer-other: utf16-lexer-other.c
 			
 %.E: %.c
 	gcc -E -D__QUEX_TEST_OPTION_ISO8859_7 \
-		-Wall \
+		-Wall -Werror \
 		-I$(QUEX_PATH) -I. \
 		$< -o $@
 	

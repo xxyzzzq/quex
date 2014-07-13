@@ -1,5 +1,10 @@
 ## Buffer Size = 29
 clean
+simple.qx:129:warning: Detected implicit token identifier definitions. Proposal:
+simple.qx:129:warning:    token {
+simple.qx:129:warning:      DOT;
+simple.qx:130:warning:      COMMENT;
+simple.qx:130:warning:    }
 BRACKET_O '' 
 BRACKET_C '' 
 LESS '' 
@@ -475,3 +480,4 @@ SEMICOLON ''
 Buffer Size = 29
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 clean
+

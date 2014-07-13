@@ -7,7 +7,7 @@ lex_iconv:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
-		-Wall                         \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                         \
 		lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
@@ -21,7 +21,7 @@ lex_icu:
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \
-		-Wall                         \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED                         \
 		lexer.cpp                     \
 		$(LIB_CONV)                   \
 		-ggdb                         \

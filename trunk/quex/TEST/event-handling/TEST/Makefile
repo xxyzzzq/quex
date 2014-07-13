@@ -20,7 +20,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = gcc
-LD = $(COMPILER) -Wno-deprecated -Wall \
+LD = $(COMPILER) -Wno-deprecated -Wall -Werror \
 	 -I./ -I$(QUEX_PATH) \
 	 -DQUEX_OPTION_DEBUG_SHOW_MODES                \
 	 -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \

@@ -1,4 +1,4 @@
-## gcc -Wall -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"data/input.txt"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test
+## gcc -Wall -Werror -I. -ggdb ./data/check.c ./data/test.c  -D__QUEX_OPTION_COUNTER -DDEF_COUNTER_FUNCTION='QUEX_NAME(TEST_MODE_counter)'  -DDEF_FILE_NAME='"data/input.txt"'  -DDEF_CHARACTER_TYPE=uint8_t  -o test
 -------------------------------------------------
 ( 0) Test String: []
 

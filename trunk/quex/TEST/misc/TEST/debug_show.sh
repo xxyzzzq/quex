@@ -15,12 +15,12 @@ case $1 in
         gcc -I$QUEX_PATH Simple.c $q/TEST/lexer.c -I. -DQUEX_OPTION_DEBUG_SHOW -DQUEX_SETTING_BUFFER_SIZE=15 -o debug_show
         ./debug_show debug_show.txt 2>&1 \
             | sed -e 's/:[0-9]\+:/:LineNumber:/g' > tmp.txt
-        cat tmp.txt | awk '! (/state_key/ || /template/ || /path/) { print $0; }'
+        # cat tmp.txt | awk '! (/state_key/ || /template/ || /path/) { print $0; }'
         echo "____________________________________________________________________"
         echo "Extracted (path_walker, state_index, template, etc.)"
         echo "This only proves that there were MegaStates involved."
         echo
-        cat tmp.txt | awk '/state_key/ || /template/ || /path/ { print $0; }' | sort -u
+        cat tmp.txt | awk '/state_key/ || /template/ || /path/ || /number of token/ { print $0; }' | sort -u
         rm ./debug_show Simple* tmp.txt
         ;;
 esac

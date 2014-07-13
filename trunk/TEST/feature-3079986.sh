@@ -23,7 +23,7 @@ awk ' /TKN_/ { print; }' Lexer.cpp >& tmp.txt
 cat tmp.txt
 
 echo "(2) compile -- no output is good output"
-g++ -I$QUEX_PATH -c Lexer.cpp -I. -Wall -Wconversion >& tmp.txt
+g++ -I$QUEX_PATH -c Lexer.cpp -I. -Wall -Werror -Wconversion >& tmp.txt
 cat tmp.txt
 
 # cleanup

@@ -1,4 +1,4 @@
-interfere-mix.qx:4:error: The pattern '<skip>' matches a superset of what is matched by
-interfere-mix.qx:3:error: pattern '<newline>'.
-interfere-mix.qx:3:error: The former has precedence and the latter can never match.
-interfere-mix.qx:3:error: ('--suppress 2' to avoid this message)
+interfere-mix.qx:4:error: The pattern '<skip>' matches on some common lexemes as
+interfere-mix.qx:3:error: pattern '<indentation newline>'.
+interfere-mix.qx:3:error: ('--suppress 3' to avoid this message)
+

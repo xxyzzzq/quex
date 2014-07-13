@@ -715,6 +715,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
+#include <quex/code_base/buffer/Buffer.i>
 #if defined(__QUEX_OPTION_CONVERTER)
 #   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #else

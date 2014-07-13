@@ -29,7 +29,7 @@ hwut-end: clean
 
 %.exe: %.cpp $(QUEX_CORE)
 	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
-		-Wall \
+		-Wall -Werror \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 %.E: %.cpp $(QUEX_CORE)
@@ -37,7 +37,7 @@ hwut-end: clean
 
 %-32.exe: %.cpp $(QUEX_CORE)
 	g++ -DQUEX_TYPE_CHARACTER=uint32_t \
-		-Wall \
+		-Wall -Werror \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 clean: 

@@ -19,7 +19,7 @@ lexer: $(OBJS)
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 %.o: %.cpp $(ENGINE_SOURCES)
-	g++ -c $< -ggdb -Wall -o $@ \
+	g++ -c $< -ggdb -Wall -Werror -o $@ \
 		-I$(QUEX_PATH) \
 		$(CCFLAG_ASSERTS) 
 

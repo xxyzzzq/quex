@@ -39,7 +39,7 @@ COMPILER = g++ -ggdb -W -pedantic
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion                              \
+	 -Wall -Werror -Wconversion                              \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         

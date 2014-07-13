@@ -10,7 +10,7 @@ ENGINE = TPLex.cpp
 
 all: $(TESTS)
 
-CCX = g++ -ggdb -Wall \
+CCX = g++ -ggdb -Wall -Werror \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=5 #
 

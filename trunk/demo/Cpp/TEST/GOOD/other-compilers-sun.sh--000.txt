@@ -1,10 +1,10 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=/opt/sun/sunstudio12/bin/sunCC ##
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
 executing ...

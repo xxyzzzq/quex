@@ -11,7 +11,7 @@ lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
 	gcc $^ -ggdb -o  $@ `icu-config --ldflags` -I$(QUEX_PATH) 
 	 
 %.o: %.c $(ENGINE_SOURCES)
-	gcc -c $< -ggdb -Wall -o $@ \
+	gcc -c $< -ggdb -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -o $@ \
 		-I$(QUEX_PATH)          \
 		$(CCFLAG_ASSERTS) 
 

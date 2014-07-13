@@ -246,14 +246,15 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str="", StrangeStr
 
 def compile(Language, SourceCode, AssertsActionvation_str="", StrangeStream_str=""):
     print "## (2) compiling generated engine code and test"    
+    we_str = "-Wall -Werror -Wno-error=unused-function"
     if Language.find("ANSI-C") != -1:
         extension = ".c"
         # The '-Wvariadic-macros' shall remind us that we do not want use variadic macroes.
         # Because, some compilers do not swallow them!
-        compiler  = "gcc -ansi -Wvariadic-macros -Wall"
+        compiler  = "gcc -ansi -Wvariadic-macros %s" % we_str
     else:
         extension = ".cpp"
-        compiler  = "g++ -Wall"
+        compiler  = "g++ %s" % we_str
 
     fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
 

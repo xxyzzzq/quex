@@ -13,7 +13,7 @@ lexer: $(ENGINE:.cpp=.o) lexer.o A_B_C-token.o
 	g++ $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
 	 
 %.o: %.cpp $(ENGINE_SOURCES)
-	g++ -c $< -ggdb -Wall -o $@ \
+	g++ -c $< -ggdb -Wall -Werror -o $@ \
 		-I$(QUEX_PATH) \
 		$(CCFLAG_ASSERTS) 
 

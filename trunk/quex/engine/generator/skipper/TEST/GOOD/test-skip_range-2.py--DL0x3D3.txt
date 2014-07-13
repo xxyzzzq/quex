@@ -1,5 +1,5 @@
 ## (2) compiling generated engine code and test
-gcc -ansi -Wvariadic-macros -Wall   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+gcc -ansi -Wvariadic-macros -Wall -Werror   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
 
 ## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
 (*) test string: 

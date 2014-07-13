@@ -8,6 +8,7 @@ error-0.qx:14:warning:      OTHER;
 error-0.qx:15:warning:      NEWLINE;
 error-0.qx:15:warning:    }
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 ----------------------------------
 dog's 'silly' 
 ----------------------------------
@@ -18,3 +19,4 @@ WORD 'silly'
 OTHER ''' 
 NEWLINE '
 ' 
+

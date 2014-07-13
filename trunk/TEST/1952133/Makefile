@@ -14,8 +14,8 @@ endif
 #     
 #     Buffer sizes:   28 --> buffer overflow
 #                     29 --> OK
-COMPILER = g++
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
+COMPILER = @g++
+CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      -DQUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE) \
 	 -DQUEX_OPTION_ACTIVATE_ASSERTS \
@@ -35,10 +35,10 @@ lexer: lexer.o Simple.o
 
 # -- engine and object files
 lexer.o: ../lexer.cpp Simple.cpp
-	$(CC) -Wall $< -ggdb -o $@
+	$(CC) -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED $< -ggdb -o $@
 
 %.o: %.cpp Simple.cpp
-	$(CC) -Wall $< -ggdb -o $@
+	$(CC) -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED $< -ggdb -o $@
 
 Simple.cpp: simple.qx
 	@quex -i simple.qx --engine Simple --debug-exception > tmp.txt 2>&1

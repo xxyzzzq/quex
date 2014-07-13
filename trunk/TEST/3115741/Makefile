@@ -25,7 +25,7 @@ COMPILER = gcc -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                            \
-	 -Wall -Wconversion -pedantic                   \
+	 -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -Wconversion -pedantic                   \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DPRINT_TOKEN                                  \
 	 $(ADD_DEFINES)

@@ -23,7 +23,7 @@ COMPILER = g++ -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)              \
-	 -Wall -Wconversion               \
+	 -Wall -Werror -Wconversion               \
 	 $(CCFLAG_ASSERTS)                \
 	 -DPRINT_TOKEN                    \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

@@ -1,4 +1,4 @@
-interfere-mix2.qx:4:error: The pattern '<skip>' matches a superset of what is matched by
-interfere-mix2.qx:3:error: pattern '<range skip>'.
-interfere-mix2.qx:3:error: The former has precedence and the latter can never match.
-interfere-mix2.qx:3:error: ('--suppress 2' to avoid this message)
+interfere-mix2.qx:4:error: The pattern '<skip>' matches on some common lexemes as
+interfere-mix2.qx:3:error: pattern '<skip_range>'.
+interfere-mix2.qx:3:error: ('--suppress 3' to avoid this message)
+

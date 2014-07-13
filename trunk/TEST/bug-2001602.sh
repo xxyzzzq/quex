@@ -10,7 +10,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 make lex_$1 > tmp.txt
-cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
+cat tmp.txt | awk '(/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ && !/Wall/'
 rm tmp.txt
 
 ./lex_$1 test.utf8

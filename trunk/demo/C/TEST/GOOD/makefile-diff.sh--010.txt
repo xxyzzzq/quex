@@ -1,6 +1,6 @@
-< COMPILER = g++ -ggdb -Wall -pedantic 
+< COMPILER = g++ -ggdb -Wall -Werror -pedantic 
 ---
-> COMPILER = gcc -ggdb -Wall -pedantic -std=c89
+> COMPILER = gcc -ggdb -Wall -Werror -pedantic -std=c89
 < copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 ---
 > copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
