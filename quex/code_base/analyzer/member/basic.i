@@ -263,5 +263,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
+#include <quex/code_base/buffer/Buffer.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC_I */

@@ -56,7 +56,7 @@ echo "(0) Running Quex (no output is good output)"
 quex $option -o EasyLexer --source-package pkg 
 
 echo "(1) Running g++ (no output is good output)"
-g++  -Ipkg pkg/EasyLexer.cpp -o pkg/EasyLexer.o -c -Wall -W
+g++  -Ipkg pkg/EasyLexer.cpp -o pkg/EasyLexer.o -c -Wall -Werror -W
 
 echo "(2) Double check that output file exists"
 ls    pkg/EasyLexer.o 2> tmp.txt

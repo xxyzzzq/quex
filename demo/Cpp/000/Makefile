@@ -19,7 +19,7 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
+COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -Werror -W
 ADD_FLAGS :=#
 
 ifneq (,$(findstring sun, $(COMPILER)))

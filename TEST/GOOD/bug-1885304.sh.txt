@@ -718,8 +718,7 @@ goto _10;
      * States that implement actions of the 'winner patterns.                     */
 _16: __quex_debug("* TERMINAL LINE\n");
 __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-    __QUEX_IF_COUNT_COLUMNS((me->counter._column_number_at_end) = (size_t)1;
-);
+    __QUEX_IF_COUNT_COLUMNS((me->counter._column_number_at_end) = (size_t)1);
 __QUEX_IF_COUNT_COLUMNS(reference_p = (me->buffer._input_p));
 if( me->buffer._input_p != LexemeEnd ) goto _11;
 goto _0;
@@ -2445,4 +2444,4 @@ _104:
         case 0x84: 
         case 0x85: 
         case 0x86: 
-        
+        ca

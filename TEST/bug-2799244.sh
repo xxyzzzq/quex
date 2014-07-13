@@ -22,7 +22,7 @@ else
         echo "# Compilation error on return 'Token' instead 'bool'"
         echo "# is intended and correctly expected behavior."
     fi
-    g++ -I$QUEX_PATH -I. -c *.cpp -Wall >& tmp.txt
+    g++ -I$QUEX_PATH -I. -c *.cpp -Wall -Werror >& tmp.txt
     cat tmp.txt
     rm  tmp.txt
 fi

@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.29" date="Fri Jul 11 08:42:56 2014">
+<test-database execution-time-sec="0.23" date="Sun Jul 13 03:49:38 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Token identifier definition and orthography." time-sum-sec="0.29"> 
+    <test title="Token identifier definition and orthography." time-sum-sec="0.23"> 
         <application file-name="token_identifier.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.29" crc="-1411631102"/>
+           <choice name="" result="OK" time_sec="0.23" crc="-1411631102"/>
         </choice-list>
     </test>
 </test-database>

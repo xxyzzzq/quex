@@ -13,7 +13,7 @@
 < 
 < iso8859-7-lexer: iso8859-7-lexer.o ISO8859_7_Lex.cpp
 < 	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
-< 		-Wall              \
+< 		-Wall -Werror              \
 < 		$(CCFLAG_ASSERTS)  \
 < 		-I$(QUEX_PATH) -I. \
 < 		iso8859-7-lexer.o  \

@@ -37,7 +37,7 @@ endif
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
 # -- compiler
-CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
+CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall -Werror \
 	 -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS)      \
 	 -DINDENTATION_STACK_SIZE=64
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \

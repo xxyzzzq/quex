@@ -2,10 +2,10 @@
 makefile = Makefile
 cleaning ...
 make ASSERTS_ENABLED_F=YES COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
-sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
 executing ...

@@ -41,6 +41,7 @@ valgrind $lexer_name $args_to_lexer > tmp-stdout0.txt 2> tmp-stderr0.txt
 # -- filter make results
 cat tmp-make0.txt | awk '(  /[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ \
                           || /[Ee][Rr][Rr][Oo][Rr]/)        \
+                          && ! /-Werror/                    \
                           && ! /ASSERTS/                    \
                           && ! /deprecated since quex/      \
                           && ! /QUEX_ERROR_EXIT/            \

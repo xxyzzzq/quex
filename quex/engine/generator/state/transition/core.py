@@ -229,17 +229,13 @@ def __get_comparison_sequence(txt, TriggerMap):
         interval, target = entry
 
         if i != 0: txt.append("\n")
-        txt.append(0)
         if   i == LastI:           txt.append(Lng.ELSE)
         elif interval.size() == 1: txt.append(Lng.IF_INPUT("==", interval.begin, i==0))
         else:                      txt.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
 
         __get_transition(txt, entry, IndentF=True)
 
-    txt.append("\n")
-    txt.append(0)
-    txt.append(Lng.END_IF(LastF=True))
-    txt.append("\n")
+    txt.append("\n%s\n" % Lng.END_IF(LastF=True))
     return True
 
 def __get_transition(txt, TriggerMapEntry, IndentF=False):

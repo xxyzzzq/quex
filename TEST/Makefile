@@ -17,7 +17,7 @@ hwut-info:
 	@echo $(TEST_FILES) 
 
 %.exe: %.cpp  $(QUEX_CORE)
-	g++ -Wall $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
+	g++ -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
 
 clean:
 	rm -f $(TEST_FILES)

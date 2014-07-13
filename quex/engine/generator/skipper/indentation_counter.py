@@ -221,7 +221,6 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
             CounterDb.do_CountInfo(count_info),
             Lng.COMMAND(Assign(E_R.LexemeStartP, E_R.ReferenceP))
         ]
-        variable_db.require("reference_p")
 
     code.append(Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)))
 

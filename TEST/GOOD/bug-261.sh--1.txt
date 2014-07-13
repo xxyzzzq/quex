@@ -1,16 +1,3 @@
-## Disable this message by compile option
-##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
-##
-## Asserts activated! Lexical analyzer is 'paranoid'!
-## => Even smallest misbehavior causes program exit.
-##    This helps to find subtile errors.
-##
-## Note however: the paranoia is a heavy load on performance!
-##
-## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
-##
-## Report any bug at
-##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ,------------------------------------------------------------------------------------
 | [START]
 (1, 1)  	UNUSED
@@ -20,3 +7,4 @@
 (2, 1)  	<TERMINATION>
 | [END] number of token = 5
 `------------------------------------------------------------------------------------
+

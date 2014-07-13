@@ -489,7 +489,7 @@ def PPT_range_skipper(NestedF, MHI, i, data, ModeName, OptionsDb, CounterDb, Inc
     priority = PatternPriority(MHI, i)
     pattern  = deepcopy(my_data["opener_pattern"])
     pattern.set_incidence_id(dial_db.new_incidence_id())
-    pattern.set_pattern_string("<range skip>")
+    pattern.set_pattern_string("<skip_range>")
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     terminal = terminal_factory.do_generator(pattern, code_generator_func, 
@@ -508,7 +508,7 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb, terminal_facto
     """
     sm = ISetup.sm_newline.get()
 
-    pattern = Pattern(sm, PatternString="<newline>", 
+    pattern = Pattern(sm, PatternString="<indentation newline>", 
                       Sr = ISetup.sm_newline.sr)
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
@@ -534,7 +534,7 @@ def PPT_indentation_handler_suppressed_newline(MHI, ISetup, CounterDb, terminal_
     assert SmSuppressedNewline is not None
 
     pattern = Pattern(SmSuppressedNewline, 
-                      PatternString="<suppressed newline>")
+                      PatternString="<indentation suppressed newline>")
     pattern.prepare_count_info(CounterDb, 
                                Setup.buffer_codec_transformation_info)
     code     = CodeTerminal([Lng.GOTO(DoorID.global_reentry())])

@@ -29,7 +29,7 @@ DEFS = -DQUEX_OPTION_ASSERTS \
 CC = \
 	g++ -I$(QUEX_PATH) $(DEFS) \
 		-ggdb  \
-		-Wall \
+		-Wall -Werror \
 		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
 
 HEADER        = \<quex\/code_base\/buffer\/converter\/iconv\/Converter_IConv\.i\>

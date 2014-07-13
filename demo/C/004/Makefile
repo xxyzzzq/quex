@@ -24,7 +24,7 @@ COMPILER = gcc -ggdb
 # Note, when using '-pedantic' add '-std=c99' otherwise gcc defaults to 'c89'.
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                   \
-	 -Wall -Wconversion -pedantic -std=c99 \
+	 -Wall -Werror -Wconversion -pedantic -std=c99 \
 	 $(CCFLAG_ASSERTS)                \
 	 -DPRINT_TOKEN                    \
 	 # -DQUEX_OPTION_ASSERTS_DISABLED

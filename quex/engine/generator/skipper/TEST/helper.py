@@ -278,6 +278,13 @@ $$END_STR$$
         goto $$SKIP_RANGE_OPEN$$;
         goto $$REENTRY$$;
         goto $$REENTRY2$$;
+#       if ! defined(QUEX_OPTION_COMPUTED_GOTOS)
+        QUEX_GOTO_STATE(0);
+#       endif
+        /* Avoid unused variable error */
+        (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);
+        (void)target_state_else_index;
+        (void)target_state_index;
     }
 $$LEXEME_MACRO_CLEAN_UP$$
 }

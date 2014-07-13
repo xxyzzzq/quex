@@ -13,7 +13,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -W
+COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -W
 
 CC = $(COMPILER)        \
 	 -DPRINT_LINE_COLUMN_NUMBER \

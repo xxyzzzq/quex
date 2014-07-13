@@ -35,7 +35,7 @@ all: $(FILES)
 CC = \
 	g++ -I$(QUEX_PATH) $(DEFS) \
 		-ggdb  \
-		-Wall \
+		-Wall -Werror \
         -Werror-implicit-function-declaration \
 		-DQUEX_OPTION_CONVERTER_ICU
 

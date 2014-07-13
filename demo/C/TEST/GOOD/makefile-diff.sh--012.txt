@@ -14,13 +14,13 @@
 ---
 > 	gcc $(OBJS) -ggdb -o  $@ -I$(QUEX_PATH) 
 < %.o: %.cpp $(ENGINE_SOURCES)
-< 	g++ -c $< -ggdb -Wall -o $@ \
+< 	g++ -c $< -ggdb -Wall -Werror -o $@ \
 < 		-I$(QUEX_PATH) \
 < 		$(CCFLAG_ASSERTS) 
 < 
 ---
 > %.o: %.c 
-> 	gcc -c $< -ggdb -Wall -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+> 	gcc -c $< -ggdb -Wall -Werror -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 < %.E: %.cpp
 < 	g++ -E $< -o  $@ \
 < 		-I$(QUEX_PATH) 

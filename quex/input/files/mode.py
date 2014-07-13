@@ -28,8 +28,7 @@ from   quex.engine.tools import typed, all_isinstance
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               standard_incidence_db, \
-                              E_IncidenceIDs, \
-                              E_IncidenceIDs_Subset_Special
+                              E_IncidenceIDs
 
 from   copy        import deepcopy
 from   collections import namedtuple
@@ -197,6 +196,8 @@ class Mode:
      indentation setup.
     ____________________________________________________________________________
     """
+    focus = ("<skip>", "<skip_range>", "<skip_nested_range>", "<indentation newline>")
+
     def __init__(self, Origin):
         """Translate a ModeDescription into a real Mode. Here is the place were 
         all rules of inheritance mechanisms and pattern precedence are applied.
@@ -378,8 +379,11 @@ class Mode:
 
     def check_special_incidence_outrun(self, ErrorCode):
         for high, low in self.unique_pattern_pair_iterable():
-            if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
-            elif not outrun_checker.do(high.sm, low.sm):                  continue
+            if     high.pattern_string() not in Mode.focus \
+               and low.pattern_string()  not in Mode.focus: continue
+            
+            elif not outrun_checker.do(high.sm, low.sm):                  
+                continue
             c_error_message(high, low, ExitF=True, 
                             ThisComment  = "has lower priority but",
                             ThatComment  = "may outrun",
@@ -392,9 +396,11 @@ class Mode:
         """
         global special_pattern_list
         for high, low in self.unique_pattern_pair_iterable():
-            if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
-            elif low.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
-            elif not superset_check.do(high.sm, low.sm):             continue
+            if     high.pattern_string() not in Mode.focus \
+               and low.pattern_string() not in Mode.focus: continue
+
+            if not superset_check.do(high.sm, low.sm):             
+                continue
 
             c_error_message(high, low, ExitF=True, 
                             ThisComment  = "has higher priority and",
@@ -415,8 +421,8 @@ class Mode:
     def check_match_same(self, ErrorCode):
         """Special patterns shall never match on some common lexemes."""
         for high, low in self.unique_pattern_pair_iterable():
-            if   high.incidence_id() not in E_IncidenceIDs_Subset_Special: continue
-            elif low.incidence_id() not in E_IncidenceIDs_Subset_Special:  continue
+            if     high.pattern_string() not in Mode.focus \
+               and low.pattern_string() not in Mode.focus: continue
 
             # A superset of B, or B superset of A => there are common matches.
             if not same_check.do(high.sm, low.sm): continue

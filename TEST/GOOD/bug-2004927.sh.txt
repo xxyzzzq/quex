@@ -7,3 +7,4 @@ THING 'di'
 THING 'Parigi' 
 NONE ',' 
 THING 'dipinse' 
+

@@ -198,8 +198,12 @@ class Lng_Cpp(dict):
         if not SourceReference.is_void(): 
             norm_file_name = Setup.get_file_reference(SourceReference.file_name) 
             line_n = SourceReference.line_n
-            if   line_n <= 0:     line_n = 1
-            elif line_n >= 2**31: line_n = 2**31 - 1
+            if   line_n <= 0:     
+                line_n = 1
+            elif line_n >= 2**15: 
+                line_n = 2**15 - 1  # ISO 89: line number <= 32767
+                return '\n#   line %i "%s" /* ISO C89: line number <= 32767 */\n' % (line_n, norm_file_name) 
+
             return '\n#   line %i "%s"\n' % (line_n, norm_file_name) 
         else:
             return ""

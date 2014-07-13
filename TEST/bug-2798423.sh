@@ -12,7 +12,7 @@ cat tmp.txt
 rm -f tmp.txt
 
 echo "No error -- is just fine"
-gcc -c -Wall -I$QUEX_PATH -I. *.cpp >& tmp.txt
+gcc -c -Wall -Werror -I$QUEX_PATH -I. *.cpp >& tmp.txt
 cat tmp.txt
 rm -f tmp.txt
 ls -f *.o

@@ -13,7 +13,7 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 # (*) COMPILER SETTINGS ________________________________________________________
 CC = gcc                              \
 	 -I./ -I$(QUEX_PATH)              \
-	 -Wall -Wconversion -pedantic     \
+	 -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -Wconversion -pedantic     \
 	 $(CCFLAG_ASSERTS) 
      # -DQUEX_OPTION_ASSERTS_DISABLED
      # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

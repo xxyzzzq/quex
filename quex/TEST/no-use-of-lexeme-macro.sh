@@ -2,6 +2,7 @@
 
 if [[ $1 == "--hwut-info" ]]; then
     echo "Check that 'Lexeme' macro is not used."
+    echo "HAPPY: py:[0-9]+:;"
     exit
 fi
 
@@ -10,6 +11,16 @@ echo "QUEX_OPTION_ASSERTS. These checks are sometimes nonsense in"
 echo "generated code. This test checks that no code is generated"
 echo "that referes to the Lexeme macros."
 echo
-
-grep -sHIne '\bLexeme[^N]' $QUEX_PATH/quex -r --exclude-dir .svn --exclude-dir TEST --include "*.py" | awk ' ! /define/ && ! /undef/' | sed -e 's/:[0-9]+://g' > tmp.txt
-$QUEX_PATH/TEST/quex_pathify.sh tmp.txt | sed -e 's/:[0-9]\+:/:LineN:/'
+echo "Following lines are suppossed to be accepted:"
+echo
+pushd $QUEX_PATH/quex
+tmp0_file=$(mktemp)
+tmp1_file=$(mktemp)
+grep -sHIne '\(\bLexeme\b\)\|\(\bLexemeBegin\b\)\|\(\bLexemeEnd\b\)\|\(\bLexemeN\b\)' \
+     . -r --exclude-dir TEST --exclude-dir .svn \
+     --include "*.py" \
+     >> $tmp1_file
+$QUEX_PATH/TEST/quex_pathify.sh $tmp1_file 
+rm -f $tmp0_file
+rm -f $tmp1_file
+popd

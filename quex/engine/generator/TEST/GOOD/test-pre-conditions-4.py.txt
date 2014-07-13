@@ -6,7 +6,7 @@
                  [ ] --> [ ]
 ## (1) code generation
 ## (*) compiling generated engine code and test
-gcc -ansi -Wvariadic-macros -Wall  -DQUEX_OPTION_ASSERTS ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+gcc -ansi -Wvariadic-macros -Wall -Werror  -DQUEX_OPTION_ASSERTS ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
 
 ## (*) running the test
 (*) test string: 

@@ -29,7 +29,7 @@ COMPILER = gcc -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion -pedantic                    \
+	 -Wall -Werror -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DPRINT_TOKEN
      # -DQUEX_OPTION_ASSERTS_DISABLED

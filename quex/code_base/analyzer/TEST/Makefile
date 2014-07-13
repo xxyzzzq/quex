@@ -18,7 +18,7 @@ hwut-info:
 
 MYFLAGS = \
      -ggdb \
-	 -Wall \
+	 -Wall -Werror \
 	 -I$(QUEX_PATH) \
      -DQUEX_OPTION_LINE_NUMBER_COUNTING  \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING 

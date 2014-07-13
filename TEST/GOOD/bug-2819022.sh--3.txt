@@ -6,9 +6,11 @@ error-3.qx:6:warning:      QUOTE_S_PRE_COND;
 error-3.qx:7:warning:      OTHER;
 error-3.qx:7:warning:    }
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 ----------------------------------
 'silly's
 ----------------------------------
 OTHER ''' 
 WORD 'silly' 
 QUOTE_S_PRE_COND ''s' 
+

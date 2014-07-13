@@ -11,7 +11,7 @@ quex -i test.qx -o Simple --path-compression-uniform --template-compression --te
 awk '(/QUEX_NAME/ && /_analyzer_function/ && ! /=/) || /__quex_debug_path_walker_state/ || /__quex_debug_template_state/' Simple.c
 
 echo "## Compile: No output is good output"
-gcc -I${QUEX_PATH} -c Simple.c -Wall 2>&1
+gcc -I${QUEX_PATH} -c Simple.c -Wall -Werror 2>&1
 
 # cleansening
 rm Simple*

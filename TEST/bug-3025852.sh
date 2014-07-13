@@ -16,7 +16,7 @@ grep THE_INHERITABLE_ONLY_MODE_XYZ_4711 Simple Simple.cpp
 echo
 echo "Compilation _____________________________________________________________"
 echo " (No output is good output)"
-g++ -Wall -c Simple.cpp -o Simple.o -I. -I$QUEX_PATH
+g++ -Wall -Werror -c Simple.cpp -o Simple.o -I. -I$QUEX_PATH
 echo
 echo "Result of: > ls Simple.o ________________________________________________"
 ls Simple.o

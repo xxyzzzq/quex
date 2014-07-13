@@ -23,7 +23,7 @@ COMPILER = g++ -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Wconversion -pedantic                    \
+	 -Wall -Werror -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=10              \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4      

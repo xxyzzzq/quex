@@ -24,7 +24,7 @@ APPLICATION    = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = gcc -ggdb -Wall
+COMPILER = gcc -ggdb -Wall -Werror -Wno-error=conversion -Wno-error=sign-conversion
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -33,7 +33,7 @@ else
 endif
 
 CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-       -Wall -Wconversion
+       -Wall -Werror -Wconversion
        # -DQUEX_OPTION_ASSERTS_DISABLED
        # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 

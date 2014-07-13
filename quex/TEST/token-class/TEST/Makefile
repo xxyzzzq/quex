@@ -8,7 +8,7 @@ ENGINE = Simple.cpp
 
 all: $(TESTS)
 
-CC = g++ -ggdb -Wall \
+CC = g++ -ggdb -Wall -Werror \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=3 \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=0 \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
