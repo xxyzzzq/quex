@@ -91,7 +91,7 @@ void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)<FILE>& filler, size_
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 
     filler.base.seek_character_index(&filler.base, Position);
-    __quex_assert(filler.raw_buffer.iterators_character_index == Position);
+    __quex_assert((size_t)filler.raw_buffer.iterators_character_index == Position);
     size_t loaded_n = filler.base.read_characters(&filler.base, memory, MemorySize);
 
     if( loaded_n != 0 ) {

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.96" date="Mon Jul 14 07:00:07 2014">
+<test-database execution-time-sec="2.97" date="Mon Jul 14 09:13:18 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
         <test title="select" time-sum-sec="1.25"> 
@@ -33,7 +33,7 @@
                <choice name="6" result="OK" time_sec="0.10" crc="300088630"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.39"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.40"> 
             <application file-name="find-3.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">

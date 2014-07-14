@@ -1,6 +1,6 @@
-<test-database execution-time-sec="200.32" date="Mon Jul 14 06:51:44 2014">
+<test-database execution-time-sec="205.93" date="Mon Jul 14 09:12:36 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.17"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.16"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="13" same_result="False">
@@ -11,7 +11,7 @@
            <choice name="005" result="OK" time_sec="0.01" crc="1834819860"/>
            <choice name="006" result="OK" time_sec="0.01" crc="1184240632"/>
            <choice name="007" result="OK" time_sec="0.02" crc="-1232588069"/>
-           <choice name="008" result="FAIL" time_sec="0.02" crc="-881882195"/>
+           <choice name="008" result="FAIL" time_sec="0.01" crc="-881882195"/>
            <choice name="009" result="OK" time_sec="0.01" crc="-2030450797"/>
            <choice name="010" result="OK" time_sec="0.01" crc="70876815"/>
            <choice name="011" result="OK" time_sec="0.02" crc="520291875"/>
@@ -30,7 +30,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="3.54"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="3.55"> 
             <application file-name="001.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -50,7 +50,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.99"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="10.98"> 
             <application file-name="003.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -105,7 +105,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="4.11"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="4.10"> 
             <application file-name="006.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -152,7 +152,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="83.80"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="83.81"> 
             <application file-name="010.sh" info-request-time="1405229740L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -169,14 +169,14 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="2.16"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="7.78"> 
             <application file-name="011.sh" info-request-time="1405229310L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="iso8859-7" result="FAIL" time_sec="0.48" crc="1096578666"/>
-               <choice name="utf8" result="FAIL" time_sec="0.75" crc="1096578666"/>
-               <choice name="utf16-be" result="FAIL" time_sec="0.46" crc="1096578666"/>
-               <choice name="utf16-le" result="FAIL" time_sec="0.47" crc="1096578666"/>
+               <choice name="iso8859-7" result="OK" time_sec="1.85" crc="1096578666"/>
+               <choice name="utf8" result="OK" time_sec="2.20" crc="1096578666"/>
+               <choice name="utf16-be" result="OK" time_sec="1.87" crc="1096578666"/>
+               <choice name="utf16-le" result="OK" time_sec="1.86" crc="1096578666"/>
             </choice-list>
         </test>
     </group>
@@ -191,7 +191,7 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="13.67"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="13.68"> 
             <application file-name="012.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
