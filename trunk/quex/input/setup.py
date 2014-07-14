@@ -29,14 +29,26 @@ class QuexSetup:
 
         file_in.specify_setup_object(self)
 
-    def get_character_value_limit(self):
-        """RETURNS: Integer = supremum of possible character range, i.e.
-                              one character behind the last possible.
+    def get_buffer_element_value_limit(self):
+        """A buffer element is a chunk of memory of the size of the 
+        granularity of which the input point increases. For fixed size
+        codecs, such as ASCII or UCS32, the BUFFER ELEMENT VALUE LIMIT
+        is exactly the same as the CHARACTER VALUE LIMIT. 
+
+        However, for dynamic sized codecs, such as UTF8 or UTF16, they
+        are different. In UTF8, the input pointer increments by one byte
+        on each state transition. However, a character may consist out
+        of multiple bytes. The buffer element value limit is 256, but
+        the character value limit is the whole range.
+        
+        RETURNS: Integer = supremum of possible buffer element value, 
+                           i.e. one character behind the last possible.
 
                     sys.maxint, if no such limit exists.
         """
-        if   self.buffer_element_size == -1:      return sys.maxint
-        elif self.buffer_element_size_irrelevant: return sys.maxint
+
+        if   self.buffer_element_size == -1:    return sys.maxint
+        elif self.variable_character_sizes_f(): return sys.maxint
 
         try:
             result = 256 ** self.buffer_element_size
@@ -48,6 +60,21 @@ class QuexSetup:
 
         if result > sys.maxint: return sys.maxint
         else:                   return result
+
+    def get_character_value_limit(self):
+        """For the difference between CHARACTER VALUE LIMIT and BUFFER ELEMENT
+        VALUE LIMIT see function 'get_buffer_element_value_limit()'.
+        
+        RETURNS: Integer = supremum of possible character range, i.e.
+                           one character behind the last possible.
+
+                 sys.maxint, if no such limit exists.
+        """
+        if self.variable_character_sizes_f():   
+            return sys.maxint
+        else:
+            return self.get_buffer_element_value_limit()
+
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"

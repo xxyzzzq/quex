@@ -44,8 +44,6 @@ def get(CCFactory, Name):
                                        by the 'function name'.
     ---------------------------------------------------------------------------
     """
-    # assert CCFactory.covers(0, Setup.get_character_value_limit())
-
     function_name = DefaultCounterFunctionDB.get_function_name(CCFactory)
     if function_name is not None:
         return function_name, None # Implementation has been done before.

@@ -8,19 +8,18 @@ def do(txt, TM):
     assert TM is not None
     assert len(TM) != 0
 
+    # The range of possible characters may be restricted. It must be ensured,
+    # that the occurring characters only belong to the admissible range.
+    TM.prune(0, Setup.get_buffer_element_value_limit())
+
     if len(TM) == 1:
         # If there is only one entry,
         # then it MUST cover the the whole range (or more).
-        TM.prune(0, Setup.get_character_value_limit())
         entry = TM[0]
         assert entry[0].begin == 0, "%s" % entry[0]
-        assert entry[0].end   == Setup.get_character_value_limit(), "%s" % entry[0]
+        assert entry[0].end   == Setup.get_buffer_element_value_limit(), "%s<->%s" % (entry[0].end, Setup.get_buffer_element_value_limit())
         __get_transition(txt, entry)
         return
-
-    # The range of possible characters may be restricted. It must be ensured,
-    # that the occurring characters only belong to the admissible range.
-    TM.prune(0, Setup.get_character_value_limit())
 
     # (*) Determine 'outstanding' characters. For example, if 'e' appears
     #     exceptionally often, then it makes sense to check:
@@ -225,17 +224,20 @@ def __get_comparison_sequence(txt, TriggerMap):
     L = len(trigger_map)
 
     LastI = L - 1
+    code = []
     for i, entry in enumerate(trigger_map):
         interval, target = entry
 
-        if i != 0: txt.append("\n")
-        if   i == LastI:           txt.append(Lng.ELSE)
-        elif interval.size() == 1: txt.append(Lng.IF_INPUT("==", interval.begin, i==0))
-        else:                      txt.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
+        if i != 0: code.append("\n")
+        if   i == LastI:           code.append(Lng.ELSE)
+        elif interval.size() == 1: code.append(Lng.IF_INPUT("==", interval.begin, i==0))
+        else:                      code.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
 
-        __get_transition(txt, entry, IndentF=True)
+        __get_transition(code, entry, IndentF=True)
 
-    txt.append("\n%s\n" % Lng.END_IF(LastF=True))
+    code.append("\n%s\n" % Lng.END_IF(LastF=True))
+
+    txt.extend(code)
     return True
 
 def __get_transition(txt, TriggerMapEntry, IndentF=False):
