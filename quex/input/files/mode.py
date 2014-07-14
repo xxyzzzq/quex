@@ -427,6 +427,10 @@ class Mode:
             # A superset of B, or B superset of A => there are common matches.
             if not same_check.do(high.sm, low.sm): continue
 
+            # The 'match what remains' is exempted from check.
+            if high.pattern_string() == "." or low.pattern_string() == ".":
+                continue
+
             c_error_message(high, low, 
                             ThisComment  = "matches on some common lexemes as",
                             ThatComment  = "",

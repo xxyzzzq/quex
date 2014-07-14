@@ -1,4 +1,4 @@
-<test-database execution-time-sec="39.07" date="Mon Jul 14 06:56:55 2014">
+<test-database execution-time-sec="38.56" date="Mon Jul 14 09:13:13 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.63"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -21,11 +21,11 @@
            <choice name="" result="OK" time_sec="0.02" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="37.62"> 
+    <test title="Code Check with pyflakes" time-sum-sec="37.12"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="37.62" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="37.12" crc="176785168"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 

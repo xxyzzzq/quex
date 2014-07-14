@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.21" date="Mon Jul 14 06:58:08 2014">
+<test-database execution-time-sec="0.23" date="Mon Jul 14 09:13:17 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.01"> 
@@ -19,10 +19,10 @@
         </test>
     </group>
     <group name="StrangeStream">
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_wstream.exe" info-request-time="1405313887L" vanished="False"/>
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="strange_stream.exe" info-request-time="1405313886L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.701215"/>
+            <make-procedure success="True" time_sec="0.494122"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>
@@ -30,10 +30,10 @@
                <choice name="5" result="OK" time_sec="0.01" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_stream.exe" info-request-time="1405313886L" vanished="False"/>
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.04"> 
+            <application file-name="strange_wstream.exe" info-request-time="1405313887L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.494122"/>
+            <make-procedure success="True" time_sec="0.701215"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="2006234070"/>
                <choice name="3" result="OK" time_sec="0.01" crc="725477678"/>

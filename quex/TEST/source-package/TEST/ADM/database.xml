@@ -1,7 +1,7 @@
-<test-database execution-time-sec="28.14" date="Mon Jul 14 06:57:52 2014">
+<test-database execution-time-sec="28.12" date="Mon Jul 14 09:13:17 2014">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="10.51"> 
+        <test title="C++" time-sum-sec="10.49"> 
             <application file-name="test-cpp.sh" info-request-time="1405121002L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
@@ -10,7 +10,7 @@
                <choice name="icu" result="OK" time_sec="0.99" crc="1735895320"/>
                <choice name="codec" result="OK" time_sec="0.89" crc="1735895320"/>
                <choice name="codec-utf8" result="OK" time_sec="0.93" crc="1735895320"/>
-               <choice name="codec-utf16" result="FAIL" time_sec="0.87" crc="1735895320"/>
+               <choice name="codec-utf16" result="FAIL" time_sec="0.86" crc="1735895320"/>
                <choice name="post-categorizer" result="FAIL" time_sec="0.86" crc="1735895320"/>
                <choice name="no-string-accumulator" result="OK" time_sec="0.81" crc="1735895320"/>
                <choice name="no-include-stack" result="OK" time_sec="0.99" crc="1735895320"/>
@@ -37,7 +37,7 @@
                <choice name="customized-token-class" result="NO GOOD FILE" time_sec="0.75" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="8.37"> 
+        <test title="C" time-sum-sec="8.36"> 
             <application file-name="test-c.sh" info-request-time="1405121002L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
@@ -46,7 +46,7 @@
                <choice name="icu" result="OK" time_sec="0.92" crc="-21726970"/>
                <choice name="codec" result="OK" time_sec="0.80" crc="-21726970"/>
                <choice name="codec-utf8" result="OK" time_sec="0.80" crc="-21726970"/>
-               <choice name="codec-utf16" result="FAIL" time_sec="0.41" crc="-21726970"/>
+               <choice name="codec-utf16" result="FAIL" time_sec="0.39" crc="-21726970"/>
                <choice name="post-categorizer" result="FAIL" time_sec="0.45" crc="-21726970"/>
                <choice name="no-string-accumulator" result="FAIL" time_sec="0.39" crc="-21726970"/>
                <choice name="no-include-stack" result="OK" time_sec="0.90" crc="-21726970"/>

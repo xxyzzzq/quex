@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.86" date="Mon Jul 14 07:00:04 2014">
+<test-database execution-time-sec="4.84" date="Mon Jul 14 09:13:18 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -62,7 +62,7 @@
                <choice name="with-exceptions" result="OK" time_sec="0.09" crc="-1859076765"/>
             </choice-list>
         </test>
-        <test title="find_last_common" time-sum-sec="0.63"> 
+        <test title="find_last_common" time-sum-sec="0.62"> 
             <application file-name="find_last_common.py" info-request-time="1404800601L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+/[0-9]+"/>
