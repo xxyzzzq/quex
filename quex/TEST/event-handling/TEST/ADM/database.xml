@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.52" date="Mon Jul 14 09:13:13 2014">
+<test-database execution-time-sec="0.52" date="Tue Jul 15 08:21:54 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1405321645L" vanished="False"/>
@@ -6,7 +6,7 @@
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
-        <make-procedure success="True" time_sec="0.918531"/>
+        <make-procedure success="False" time_sec="0.918531"/>
         <choice-list number="1" same_result="False">
            <choice name="customized" result="OK" time_sec="0.02" crc="-682143504"/>
         </choice-list>
@@ -17,7 +17,7 @@
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
-        <make-procedure success="True" time_sec="0.909719"/>
+        <make-procedure success="False" time_sec="0.909719"/>
         <choice-list number="1" same_result="False">
            <choice name="default" result="OK" time_sec="0.03" crc="1103554026"/>
         </choice-list>
@@ -29,7 +29,7 @@
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
-            <make-procedure success="True" time_sec="1.639561"/>
+            <make-procedure success="False" time_sec="1.639561"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.03" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
@@ -43,7 +43,7 @@
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
-            <make-procedure success="True" time_sec="1.452163"/>
+            <make-procedure success="False" time_sec="1.452163"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.02" crc="140187343"/>
                <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>

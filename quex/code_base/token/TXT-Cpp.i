@@ -75,6 +75,8 @@ QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this,
                            QUEX_TYPE_ANALYZER*        __analyzer, 
                            const QUEX_TYPE_CHARACTER* Begin, 
                            const QUEX_TYPE_CHARACTER* End)
+/* RETURNS: true -- if the token claims ownership over the given memory.
+ *          false -- if no ownership is claimed.                             */
 {
 #   define self      (*__this)
 #   define analyzer  (*__analyzer)
@@ -83,6 +85,8 @@ QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this,
 $$FUNC_TAKE_TEXT$$
 #   undef analyzer
 #   undef self
+    /* Default: no ownership.                                                */
+    return false;
 }
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT

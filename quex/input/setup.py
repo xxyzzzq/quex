@@ -47,8 +47,8 @@ class QuexSetup:
                     sys.maxint, if no such limit exists.
         """
 
-        if   self.buffer_element_size == -1:    return sys.maxint
-        elif self.variable_character_sizes_f(): return sys.maxint
+        if self.buffer_element_size == -1:    
+            return sys.maxint
 
         try:
             result = 256 ** self.buffer_element_size
