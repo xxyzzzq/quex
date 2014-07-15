@@ -1,4 +1,4 @@
-<test-database execution-time-sec="17.24" date="Mon Jul 14 09:13:18 2014">
+<test-database execution-time-sec="17.24" date="Tue Jul 15 08:21:55 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>

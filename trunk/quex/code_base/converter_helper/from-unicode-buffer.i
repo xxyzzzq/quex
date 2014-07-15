@@ -52,7 +52,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-/* (2) Route the converters from 'unicode' to the implementing converter. */
+/* (2) Route the converters from 'unicode' to the implementing converter.    */
 QUEX_INLINE void
 QUEX_CONVERTER_CHAR_DEF(unicode, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
                                        uint8_t**                    output_pp)

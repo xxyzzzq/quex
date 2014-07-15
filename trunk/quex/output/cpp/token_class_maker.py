@@ -488,7 +488,7 @@ def lexeme_null_implementation():
               ])
 
 local_strlen_str = """
-static size_t 
+QUEX_INLINE size_t 
 %s_strlen(const %s* Str)
 {
     const %s* iterator = Str;

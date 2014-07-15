@@ -11,7 +11,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*        me, 
+QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*      me, 
                                              QUEX_NAME(DictionaryNode)*  branch);
 
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 
@@ -70,8 +70,8 @@ QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me,
 
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
-                                   const QUEX_TYPE_CHARACTER*  EntryName, 
-                                   const QUEX_TYPE_TOKEN_ID    TokenID)
+                                 const QUEX_TYPE_CHARACTER*  EntryName, 
+                                 const QUEX_TYPE_TOKEN_ID    TokenID)
 {
     QUEX_TYPE_CHARACTER           FirstCharacter = EntryName[0];
     const QUEX_TYPE_CHARACTER*    Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
@@ -86,9 +86,9 @@ QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)* me,
     while( node != 0x0 ) {
         prev_node = node;
         result    = QUEX_NAME(PostCategorizer_compare)(node, FirstCharacter, Remainder);
-        if     ( result > 0 )  node = node->greater;
+        if     ( result > 0 ) node = node->greater;
         else if( result < 0 ) node = node->lesser;
-        else                    return; /* Node with that name already exists */
+        else                  return; /* Node with that name already exists */
     }
     __quex_assert( prev_node != 0x0 );
     __quex_assert( result != 0 );
@@ -240,7 +240,31 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
     __QUEX_STD_printf("/\n");
 
     for(i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
-    __QUEX_STD_printf("[%c]%s: %i\n", node->name_first_character, node->name_remainder, (int)node->token_id);
+    {
+        uint8_t  drain[256];
+        uint8_t* drain_p = &drain[0];
+        uint8_t* remainder_p = (uint8_t*)0; 
+        const QUEX_TYPE_CHARACTER* source_p     = &node->name_first_character;
+        const QUEX_TYPE_CHARACTER* source_end_p = &source_p[1];
+
+        /* Convert the first character                                       */
+        QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,utf8)(
+                       &source_p, source_end_p, &drain_p, &drain[256]);
+        *drain_p++   = '\0';
+        remainder_p  = drain_p;
+        source_p     = node->name_remainder;
+        source_end_p = source_p;
+        /* Set 'source_end_p' behind terminating zero.                       */
+        while( *source_end_p ) ++source_end_p; 
+        ++source_end_p;
+
+        /* Convert the remainder                                             */
+        QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,utf8)(
+                       &source_p, source_end_p, &drain_p, &drain[256]);
+
+        __QUEX_STD_printf("[%s]%s: %i\n", &drain[0], remainder_p, 
+                          (int)node->token_id);
+    }
 
     for(i=0; i<Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("\\\n");
