@@ -1,6 +1,6 @@
-<test-database execution-time-sec="6.07" date="Tue Jul 15 08:21:56 2014">
+<test-database execution-time-sec="6.29" date="Wed Jul 16 07:49:57 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.01"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.10"> 
         <application file-name="test-subset_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="7" same_result="False">
@@ -8,33 +8,33 @@
            <choice name="FalseCases" result="OK" time_sec="0.22" crc="-2100744066"/>
            <choice name="GoodCases" result="OK" time_sec="0.16" crc="1129454882"/>
            <choice name="FalseCasesII" result="OK" time_sec="0.29" crc="1052189149"/>
-           <choice name="GoodCasesII" result="OK" time_sec="0.57" crc="-1943706133"/>
-           <choice name="Misc" result="OK" time_sec="0.49" crc="239663837"/>
+           <choice name="GoodCasesII" result="OK" time_sec="0.61" crc="-1943706133"/>
+           <choice name="Misc" result="OK" time_sec="0.54" crc="239663837"/>
            <choice name="Pre-Post-Conditions" result="OK" time_sec="0.13" crc="-752691781"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="1.53"> 
+    <test title="Commonality Checker" time-sum-sec="1.68"> 
         <application file-name="test-outrun.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.53" crc="293006875"/>
+           <choice name="" result="OK" time_sec="1.68" crc="293006875"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="1.37"> 
+    <test title="Commonality Checker" time-sum-sec="1.38"> 
         <application file-name="test-commonality.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.37" crc="360428126"/>
+           <choice name="" result="OK" time_sec="1.38" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="1.16"> 
+    <test title="Pattern Identity Determination" time-sum-sec="1.14"> 
         <application file-name="test-identity_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.59" crc="-390242573"/>
-           <choice name="False" result="OK" time_sec="0.30" crc="554533910"/>
+           <choice name="True" result="OK" time_sec="0.58" crc="-390242573"/>
+           <choice name="False" result="OK" time_sec="0.29" crc="554533910"/>
            <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.13" crc="-138569557"/>
-           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.14" crc="38876760"/>
+           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.13" crc="38876760"/>
         </choice-list>
     </test>
 </test-database>

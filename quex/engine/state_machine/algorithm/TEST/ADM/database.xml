@@ -1,15 +1,15 @@
-<test-database execution-time-sec="0.73" date="Tue Jul 15 08:21:56 2014">
+<test-database execution-time-sec="0.70" date="Wed Jul 16 07:49:51 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.25"> 
             <application file-name="test-hopcroft-minimization-2.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NEW" result="OK" time_sec="0.13" crc="-2137376588"/>
+               <choice name="NEW" result="OK" time_sec="0.12" crc="-2137376588"/>
                <choice name="ADAPT" result="OK" time_sec="0.12" crc="-2137376588"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.16"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.15"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -17,12 +17,12 @@
                <choice name="ADAPT" result="OK" time_sec="0.08" crc="320921215"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.14"> 
+        <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.13"> 
             <application file-name="test-hopcroft-minimization-3.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
                <choice name="NEW" result="OK" time_sec="0.07" crc="-323018526"/>
-               <choice name="ADAPT" result="OK" time_sec="0.07" crc="-323018526"/>
+               <choice name="ADAPT" result="OK" time_sec="0.06" crc="-323018526"/>
             </choice-list>
         </test>
     </group>
