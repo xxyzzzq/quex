@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.51" date="Tue Jul 15 08:21:56 2014">
+<test-database execution-time-sec="0.52" date="Wed Jul 16 07:50:27 2014">
     <last-used-diff-display-program name=""/>
     <group name="Plot">
         <test title="Core state machine." time-sum-sec="0.15"> 
@@ -15,11 +15,11 @@
                <choice name="" result="OK" time_sec="0.21" crc="1475873564"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." time-sum-sec="0.15"> 
+        <test title="Pre-Context." time-sum-sec="0.16"> 
             <application file-name="plot-pre-context.py" info-request-time="1404544422L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.15" crc="1468655571"/>
+               <choice name="" result="OK" time_sec="0.16" crc="1468655571"/>
             </choice-list>
         </test>
     </group>
