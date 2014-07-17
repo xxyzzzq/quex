@@ -522,6 +522,9 @@
 #ifdef    __QUEX_PURE_RETURN
 #   undef __QUEX_PURE_RETURN   
 #endif
+#ifdef    QUEX_CHARACTER_CONVERTER_DECLARED
+#   undef QUEX_CHARACTER_CONVERTER_DECLARED
+#endif
 
 
 

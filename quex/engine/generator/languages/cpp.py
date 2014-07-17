@@ -353,7 +353,9 @@ def __frame_of_all(Code, Setup):
     implementation_header_str = ""
     if Setup.language == "C":
         implementation_header_str += "#if defined(__QUEX_OPTION_CONVERTER_HELPER)\n"
-        implementation_header_str += "#   include \"%s\"\n" % Setup.get_file_reference(Setup.output_buffer_codec_header_i)
+        implementation_header_str += "#    include \"%s\"\n" % Setup.get_file_reference(Setup.output_buffer_codec_header_i)
+        implementation_header_str += "#else\n"
+        implementation_header_str += "#    include \"quex/code_base/converter_helper/from-unicode-buffer.i\"\n"
         implementation_header_str += "#endif\n"
         implementation_header_str += "#include <quex/code_base/analyzer/headers.i>\n"
         implementation_header_str += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
