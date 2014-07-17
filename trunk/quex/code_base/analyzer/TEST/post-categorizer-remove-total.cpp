@@ -1,4 +1,5 @@
 #include <quex/code_base/analyzer/TEST/post-categorizer-common.h>
+#include <quex/code_base/converter_helper/from-unicode-buffer.i>
 
 
 using namespace quex;

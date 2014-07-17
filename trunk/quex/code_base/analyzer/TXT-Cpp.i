@@ -133,6 +133,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #if defined(__QUEX_OPTION_CONVERTER_HELPER)
 #   include "$$CONVERTER_HELPER_I$$"
+#else
+#   include "quex/code_base/converter_helper/from-unicode-buffer.i"
 #endif
 #include <quex/code_base/analyzer/headers.i>
 

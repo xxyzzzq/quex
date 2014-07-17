@@ -16,6 +16,8 @@
 #endif
 #undef   QUEX_OPTION_INCLUDE_STACK
 #define  QUEX_OPTION_STRING_ACCUMULATOR
+#include <quex/code_base/converter_helper/from-unicode-buffer>
+#include <quex/code_base/converter_helper/from-unicode-buffer.i>
 #include <quex/code_base/aux-string.i>
 #include <quex/code_base/definitions>
 

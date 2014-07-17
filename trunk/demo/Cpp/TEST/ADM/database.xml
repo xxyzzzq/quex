@@ -1,4 +1,4 @@
-<test-database execution-time-sec="262.26" date="Wed Jul 16 07:39:29 2014">
+<test-database execution-time-sec="277.03" date="Fri Jul 18 00:28:21 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.07"> 
@@ -11,12 +11,12 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="1.74"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="6.69"> 
             <application file-name="001.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.07" crc="1133630677"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.67" crc="1133630677"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.60" crc="1133630677"/>
+               <choice name="DEBUG" result="OK" time_sec="3.09" crc="1133630677"/>
             </choice-list>
         </test>
     </group>
@@ -86,22 +86,22 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="1.85"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.64"> 
             <application file-name="006.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.23" crc="67355700"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.61" crc="67355700"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.65" crc="67355700"/>
+               <choice name="DEBUG" result="OK" time_sec="2.99" crc="67355700"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="2.12"> 
+        <test title="Miscellaneous Features" time-sum-sec="7.14"> 
             <application file-name="007.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.54" crc="-1744057875"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.58" crc="-1744057875"/>
+               <choice name="NDEBUG" result="OK" time_sec="4.04" crc="-1744057875"/>
+               <choice name="DEBUG" result="OK" time_sec="3.10" crc="-1744057875"/>
             </choice-list>
         </test>
     </group>
@@ -162,7 +162,7 @@
         </test>
     </group>
     <group name="demo/011b">
-        <test title="Engine Encoding UTF16" time-sum-sec="6.30"> 
+        <test title="Engine Encoding UTF16" time-sum-sec="6.31"> 
             <application file-name="011b.sh" info-request-time="1405229349L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">

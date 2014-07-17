@@ -4,9 +4,9 @@
 < PARSER_SOURCES = $(PARSER_NAME).tab.cpp	 Calc_parser.tab.hpp
 ---
 > PARSER_SOURCES = $(PARSER_NAME).tab.c Calc_parser.tab.h
-< COMPILER = g++ -ggdb -Wall -Werror
+< COMPILER = g++ -ggdb -Wall -Werror -Wno-error=conversion
 ---
-> COMPILER = gcc -ggdb -Wall -Werror
+> COMPILER = gcc -ggdb -Wall -Werror -Wno-error=conversion -Wno-error=sign-conversion
 < 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o
 ---
 > 	$(LD) -o $(APPLICATION) main.o $(LEXER_NAME).o $(PARSER_NAME).tab.o -lm
