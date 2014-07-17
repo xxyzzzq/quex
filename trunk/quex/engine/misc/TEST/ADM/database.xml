@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.48" date="Wed Jul 16 07:48:51 2014">
+<test-database execution-time-sec="0.50" date="Fri Jul 18 01:04:35 2014">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1387873735L" vanished="False"/>
@@ -31,14 +31,14 @@
         </test>
     </group>
     <group name="Integer conversion">
-        <test title="read_integer(...)" time-sum-sec="0.27"> 
+        <test title="read_integer(...)" time-sum-sec="0.28"> 
             <application file-name="test-read_integer.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
-               <choice name="hex" result="OK" time_sec="0.04" crc="952788026"/>
-               <choice name="octal" result="OK" time_sec="0.04" crc="1921488222"/>
+               <choice name="hex" result="OK" time_sec="0.05" crc="952788026"/>
+               <choice name="octal" result="OK" time_sec="0.05" crc="1921488222"/>
                <choice name="decimal" result="OK" time_sec="0.05" crc="-1709956949"/>
-               <choice name="binary" result="OK" time_sec="0.04" crc="245398371"/>
+               <choice name="binary" result="OK" time_sec="0.05" crc="245398371"/>
                <choice name="roman" result="OK" time_sec="0.05" crc="832665557"/>
                <choice name="misc" result="OK" time_sec="0.05" crc="731748549"/>
             </choice-list>

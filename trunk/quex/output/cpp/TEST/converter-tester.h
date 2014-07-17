@@ -42,7 +42,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__ */
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__cp1256__                */
 
 /* -*- C++ -*- vim: set syntax=cpp:
  * PURPOSE: 
