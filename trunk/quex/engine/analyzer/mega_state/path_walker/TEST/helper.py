@@ -23,6 +23,8 @@ def find_core(sm, SelectF=False):
                      CompressionType=CompressionType, 
                      AvailableStateIndexSet=AvailableStateIndexSet)
 
+    print "## A character path does (not yet) produce a common door in the global drop-out"
+    print "## (this happens in '.finalize()' of the MegaState."
     if SelectF:
         result = paths.select(result)
         paths.path_list_assert_consistency(result, analyzer, AvailableStateIndexSet, CompressionType)
