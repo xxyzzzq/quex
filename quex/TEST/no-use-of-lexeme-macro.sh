@@ -16,11 +16,13 @@ echo
 pushd $QUEX_PATH/quex
 tmp0_file=$(mktemp)
 tmp1_file=$(mktemp)
+echo "|||| potpourri begin"
 grep -sHIne '\(\bLexeme\b\)\|\(\bLexemeBegin\b\)\|\(\bLexemeEnd\b\)\|\(\bLexemeN\b\)' \
      . -r --exclude-dir TEST --exclude-dir .svn \
      --include "*.py" \
-     >> $tmp1_file
+  | awk " ! /define Lexeme/ && ! /undef Lexeme/ && ! /\"Lexeme/ && ! /'Lexeme/ "
 $QUEX_PATH/TEST/quex_pathify.sh $tmp1_file 
+echo "|||| potpourri end"
 rm -f $tmp0_file
 rm -f $tmp1_file
 popd

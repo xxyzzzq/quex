@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.52" date="Fri Jul 18 00:57:23 2014">
+<test-database execution-time-sec="0.54" date="Fri Jul 18 06:56:55 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1405637838L" vanished="False"/>
@@ -27,7 +27,7 @@
         </choice-list>
     </test>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.25"> 
+        <test title="transition-x.qx" make-dependent="True" time-sum-sec="0.26"> 
             <application file-name="transition-x.sh" info-request-time="1405637840L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
@@ -43,7 +43,7 @@
                <choice name="error" result="OK" time_sec="0.17" crc="-1605736885"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-dependent="True" time-sum-sec="0.22"> 
+        <test title="transition.qx" make-dependent="True" time-sum-sec="0.23"> 
             <application file-name="transition.sh" info-request-time="1405637842L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>

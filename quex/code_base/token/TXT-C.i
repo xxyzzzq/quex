@@ -129,4 +129,7 @@ $TOKEN_CLASS_repetition_n_set($TOKEN_CLASS* __this, size_t N)
 $$FOOTER$$
 
 $$EXTRA_AT_END$$
+
+#include <quex/code_base/MemoryManager.i>
+
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I */

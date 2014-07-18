@@ -11,7 +11,6 @@ from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountCmdFactory
 from   quex.engine.generator.code.core              import CodeTerminal
 import quex.engine.generator.loop                   as     loop
-from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.state_machine.character_counter  import CountInfo
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
@@ -74,7 +73,6 @@ def do(Data, TheAnalyzer):
     the analyzer will immediately be back to the indentation counter state.
     ___________________________________________________________________________
     """
-    global variable_db
     counter_db            = Data["counter_db"]
     isetup                = Data["indentation_setup"]
     incidence_db          = Data["incidence_db"]

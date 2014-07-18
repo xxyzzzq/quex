@@ -114,4 +114,6 @@ $$NAMESPACE_CLOSE$$
 
 $$EXTRA_AT_END$$
 
+#include <quex/code_base/MemoryManager.i>
+
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$INCLUDE_GUARD_EXTENSION$$_I */
