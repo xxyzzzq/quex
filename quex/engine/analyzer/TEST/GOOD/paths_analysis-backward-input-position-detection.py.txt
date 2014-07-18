@@ -10,19 +10,23 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-<unreachable>
+    .from NONE: 
+
+.drop_out:
+QuexAssertNoPassage
 
 State 1:
   .entry:
-    .from 0:
-  .drop_out:
-<unreachable>
+    .from 0: 
+
+.drop_out:
+QuexAssertNoPassage
 
 State 2:
   .entry:
-    .from 1:
-  .drop_out:
-<backward input position detected>
+    .from 1: 
 
+.drop_out:
+QuexDebug: { string=pattern 0: backward input position detected\n,  }
+InputPIncrement
+GotoDoorId: DoorID(s=21, d=ACCEPTANCE)

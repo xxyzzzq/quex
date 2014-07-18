@@ -10,12 +10,16 @@ node [shape = circle];
 }
 
 
+## A character path does (not yet) produce a common door in the global drop-out
+## (this happens in '.finalize()' of the MegaState.
 # start    = 1;
 # path     = (1)--'c'-->(3)--'a'-->[4];
 # skeleton = {
-#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=0)
-#    'a'        -> DoorID(s=2, d=1)
-#    ['b', oo]  -> DoorID(s=DROP_OUT, d=0)
+#    [-oo, '`'] -> DoorID(s=DROP_OUT, d=1)
+#    'a'        -> DoorID(s=2, d=0)
+#    'b'        -> DoorID(s=DROP_OUT, d=1)
+#    'c'        -> DoorID(s=DROP_OUT, d=3)
+#    ['d', oo]  -> DoorID(s=DROP_OUT, d=1)
 # }
 # wildcard = False;
 # 

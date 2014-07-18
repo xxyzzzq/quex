@@ -68,7 +68,7 @@ def get_drop_out_string(analyzer, StateIndex):
         elif cmd.id == E_Cmd.GotoDoorId:
             txt += "GotoDoorId: %s" % str(cmd.content.door_id)
         else:
-            txt += str(cmd.content) + "\n"
+            txt += str(cmd) + "\n"
     return txt
 
 def get_state_text(TheAnalyzer, state):

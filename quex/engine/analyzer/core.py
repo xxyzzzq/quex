@@ -157,8 +157,10 @@ class Analyzer:
     def _prepare_entries_and_drop_out(self, EngineType, SM):
         if not EngineType.requires_detailed_track_analysis():
             for state_index, state in SM.states.iteritems():
-                self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, state_index,
-                                                        EngineType.create_DropOut(state))
+                cl = EngineType.create_DropOut(state)
+                self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, 
+                                                      state_index, cl)
+                                                      
             self.__position_register_map = None
 
         else:
