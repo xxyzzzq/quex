@@ -1,4 +1,4 @@
-<test-database execution-time-sec="30.23" date="Fri Jul 18 00:58:23 2014">
+<test-database execution-time-sec="30.56" date="Fri Jul 18 06:56:55 2014">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
         <test title="C++" time-sum-sec="10.99"> 
@@ -37,7 +37,7 @@
                <choice name="customized-token-class" result="NO GOOD FILE" time_sec="0.75" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="9.97"> 
+        <test title="C" time-sum-sec="10.30"> 
             <application file-name="test-c.sh" info-request-time="1405121002L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
@@ -48,7 +48,7 @@
                <choice name="codec-utf8" result="OK" time_sec="0.87" crc="-21726970"/>
                <choice name="codec-utf16" result="OK" time_sec="0.76" crc="-21726970"/>
                <choice name="post-categorizer" result="OK" time_sec="0.99" crc="-21726970"/>
-               <choice name="no-string-accumulator" result="FAIL" time_sec="0.49" crc="-21726970"/>
+               <choice name="no-string-accumulator" result="OK" time_sec="0.82" crc="-21726970"/>
                <choice name="no-include-stack" result="OK" time_sec="0.92" crc="-21726970"/>
                <choice name="no-counter" result="OK" time_sec="0.84" crc="-21726970"/>
                <choice name="manual-token-class" result="OK" time_sec="0.78" crc="-21726970"/>

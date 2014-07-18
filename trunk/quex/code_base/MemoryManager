@@ -29,12 +29,10 @@ QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(const size_t ByteN);
 QUEX_INLINE void      
 QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory);
 
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
 QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_NAME(MemoryManager_Text_allocate)(const size_t ByteN);
 QUEX_INLINE void
 QUEX_NAME(MemoryManager_Text_free)(QUEX_TYPE_CHARACTER* memory);
-#   endif
 
 QUEX_INLINE void*  QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN);
 QUEX_INLINE void   QUEX_NAME(MemoryManager_Converter_free)(void* memory);

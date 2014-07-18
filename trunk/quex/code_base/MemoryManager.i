@@ -83,7 +83,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #   endif
 
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     QUEX_NAME(MemoryManager_Text_allocate)(const size_t ByteN)
     { return (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_Default_allocate)(ByteN); }
@@ -98,7 +97,6 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_NAME(MemoryManager_Default_free)((void*)memory); 
         }
     }
-#   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_INLINE  QUEX_NAME(DictionaryNode)*  

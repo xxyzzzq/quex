@@ -3,7 +3,7 @@ bug=2799244
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug 0.39.5 attempts to call unimplemented token set() function;"
     echo "CHOICES: error, good-1, good-2;"
-    echo "HAPPY: [a-z0-9.]+:[0-9]+:;"
+    echo "HAPPY: :[0-9]+;"
     exit
 fi
 

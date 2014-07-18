@@ -1,5 +1,4 @@
 from copy import copy
-from quex.engine.tools import print_callstack
 
 class Variable:
     def __init__(self, Name, Type, ElementN, InitialValue, Condition=None, ConditionNegatedF=False, PriorityF=False):
