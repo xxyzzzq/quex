@@ -8,57 +8,29 @@
 #endif
 
 #include <quex/code_base/temporary_macros_on>
+
+typedef enum {
+    QUEX_MEMORY_OBJECT_BUFFER,
+    QUEX_MEMORY_OBJECT_BUFFER_FILLER,
+    QUEX_MEMORY_OBJECT_BUFFER_RAW,
+    QUEX_MEMORY_OBJECT_CONVERTER,
+    QUEX_MEMORY_OBJECT_MEMENTO,
+    QUEX_MEMORY_OBJECT_POST_CATEGORIZER_NODE,
+    QUEX_MEMORY_OBJECT_TEXT,
+    QUEX_MEMORY_OBJECT_TOKEN_ARRAY
+} QUEX_MEMORY_OBJECT;
  
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE uint8_t*
-QUEX_NAME(MemoryManager_Default_allocate)(const size_t ByteN);
+QUEX_NAME(MemoryManager_allocate)(const size_t ByteN, QUEX_MEMORY_OBJECT);
 
 QUEX_INLINE void 
-QUEX_NAME(MemoryManager_Default_free)(void* Obj);
-
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(MemoryManager_BufferMemory_allocate)(const size_t ByteN);
-
-QUEX_INLINE void
-QUEX_NAME(MemoryManager_BufferMemory_free)(QUEX_TYPE_CHARACTER* memory);
-
-QUEX_INLINE void*
-QUEX_NAME(MemoryManager_BufferFiller_allocate)(const size_t ByteN);
-
-QUEX_INLINE void
-QUEX_NAME(MemoryManager_BufferFiller_free)(void* memory);
-
-QUEX_INLINE uint8_t*  
-QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_allocate)(const size_t ByteN);
-
-QUEX_INLINE void      
-QUEX_NAME(MemoryManager_BufferFiller_RawBuffer_free)(uint8_t* memory);
-
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(MemoryManager_Text_allocate)(const size_t ByteN);
-QUEX_INLINE void
-QUEX_NAME(MemoryManager_Text_free)(QUEX_TYPE_CHARACTER* memory);
-
-QUEX_INLINE void*  QUEX_NAME(MemoryManager_Converter_allocate)(const size_t ByteN);
-QUEX_INLINE void   QUEX_NAME(MemoryManager_Converter_free)(void* memory);
-
-#   ifdef QUEX_OPTION_POST_CATEGORIZER
-QUEX_INLINE  QUEX_NAME(DictionaryNode)*  QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(size_t RemainderSize);
-QUEX_INLINE  void                        QUEX_NAME(MemoryManager_PostCategorizerNode_free)(QUEX_NAME(DictionaryNode)*);
-#   endif
+QUEX_NAME(MemoryManager_free)(void* Obj, QUEX_MEMORY_OBJECT);
 
 QUEX_INLINE size_t
 QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                 uint8_t* source_begin_p, uint8_t* source_end_p);
-
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-QUEX_INLINE void* 
-QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t N);
-
-QUEX_INLINE void 
-QUEX_NAME(MemoryManager_TokenArray_free)(void* memory);
-#endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
  
