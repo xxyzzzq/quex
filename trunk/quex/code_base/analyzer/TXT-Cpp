@@ -85,6 +85,14 @@ $$MEMENTO_EXTENSIONS$$
 /* END: _______________________________________________________________________*/
 } QUEX_NAME(Memento);
 
+#if defined(QUEX_OPTION_INCLUDE_STACK)
+    QUEX_INLINE  struct QUEX_NAME(Memento_tag)*
+    QUEX_NAME(MemoryManager_Memento_allocate)();
+
+    QUEX_INLINE void
+    QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_NAME(Memento_tag)* memory);
+#endif
+
 QUEX_NAMESPACE_MAIN_CLOSE 
 
 #include <quex/code_base/temporary_macros_on>

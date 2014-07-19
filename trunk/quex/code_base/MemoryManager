@@ -11,6 +11,12 @@
  
 QUEX_NAMESPACE_MAIN_OPEN
 
+QUEX_INLINE uint8_t*
+QUEX_NAME(MemoryManager_Default_allocate)(const size_t ByteN);
+
+QUEX_INLINE void 
+QUEX_NAME(MemoryManager_Default_free)(void* Obj);
+
 QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_NAME(MemoryManager_BufferMemory_allocate)(const size_t ByteN);
 
@@ -52,14 +58,6 @@ QUEX_NAME(MemoryManager_TokenArray_allocate)(const size_t N);
 
 QUEX_INLINE void 
 QUEX_NAME(MemoryManager_TokenArray_free)(void* memory);
-#endif
-
-#ifdef QUEX_OPTION_INCLUDE_STACK
-QUEX_INLINE  struct QUEX_NAME(Memento_tag)*
-QUEX_NAME(MemoryManager_Memento_allocate)();
-
-QUEX_INLINE void
-QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_NAME(Memento_tag)* memory);
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

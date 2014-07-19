@@ -22,8 +22,9 @@ def do(MapTokenIDToNameFunctionStr):
     if Setup.token_class_only_f:
         txt   = clean_for_independence(txt)
         txt_i = clean_for_independence(txt_i)
-        map_token_id_to_name_function_str =   get_helper_definitions() \
-                                            + clean_for_independence(MapTokenIDToNameFunctionStr)
+        map_token_id_to_name_function_str =   \
+                  get_helper_definitions() \
+                + clean_for_independence(MapTokenIDToNameFunctionStr) \
 
     if Setup.language.upper() == "C++":
         # In C++ we do inline, so we can do everything in the header file
@@ -481,7 +482,6 @@ def lexeme_null_implementation():
     namespace_open, namespace_close = __namespace_brackets()
 
     return "".join([
-                "#include \"%s\"\n" % Setup.get_file_reference(Setup.output_token_class_file),
                 "%s\n" % namespace_open,
                 "%s  %s = (%s)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str(), Setup.buffer_element_type),
                 "%s\n\n" % namespace_close,
@@ -586,6 +586,7 @@ helper_definitions = """
 #endif
 #define QUEX_TYPE_TOKEN_ID             %s
 #include "%s"
+#include "%s" 
 """
 def get_helper_definitions():
     namespace_open, namespace_close = __namespace_brackets(DefineF=True)
@@ -601,6 +602,7 @@ def get_helper_definitions():
               namespace_close,        \
               token_descr.class_name_safe, 
               Setup.token_id_type,
+              Setup.get_file_reference(Setup.output_token_class_file),
               token_id_definition_file)
                        
 
