@@ -160,19 +160,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
 #endif
 
-#if defined(QUEX_OPTION_INCLUDE_STACK)
-    QUEX_INLINE QUEX_NAME(Memento)*
-    QUEX_NAME(MemoryManager_Memento_allocate)()
-    {
-        const size_t     MemorySize = sizeof(QUEX_NAME(Memento));
-        return (QUEX_NAME(Memento)*)QUEX_NAME(MemoryManager_Default_allocate)(MemorySize);
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(MemoryManager_Memento_free)(struct QUEX_NAME(Memento_tag)* memory)
-    { if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
-#endif
-
 QUEX_NAMESPACE_MAIN_CLOSE
  
 #include <quex/code_base/temporary_macros_off>

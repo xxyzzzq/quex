@@ -1,5 +1,5 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
- * (C) 2005-2010 Frank-Rene Schaefer
+ * (C) Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                      */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
 #define __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS
