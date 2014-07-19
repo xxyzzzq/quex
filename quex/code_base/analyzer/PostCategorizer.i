@@ -13,12 +13,43 @@ QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*      me, 
                                              QUEX_NAME(DictionaryNode)*  branch);
 
+QUEX_INLINE  QUEX_NAME(DictionaryNode)*  
+QUEX_NAME(PostCategorizer_allocate_node)(size_t RemainderL)
+{
+    /* Allocate in one beat: base and remainder: 
+     *
+     *   [Base   |Remainder             ]
+     *
+     * Then bend the base->name_remainder to the Remainder part of the allocated
+     * memory. Note, that this is not very efficient, since one should try to allocate
+     * the small node objects and refer to the remainder only when necessary. This
+     * would reduce cache misses.                                                      */
+    const size_t   BaseSize      = sizeof(QUEX_NAME(DictionaryNode));
+    /* Length + 1 == memory size (terminating zero) */
+    const size_t   RemainderSize = sizeof(QUEX_TYPE_CHARACTER) * (RemainderL + 1);
+    uint8_t*       base          = 
+                      (uint8_t*)
+                      QUEX_NAME(MemoryManager_allocate)(BaseSize + RemainderSize, 
+                                                        QUEX_MEMORY_OBJECT_POST_CATEGORIZER_NODE);
+    ((QUEX_NAME(DictionaryNode)*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
+    return (QUEX_NAME(DictionaryNode)*)base;
+}
+
+QUEX_INLINE  void 
+QUEX_NAME(PostCategorizer_free_node)(QUEX_NAME(DictionaryNode)* node)
+{ 
+    if( node != 0x0 ) return;
+    
+    QUEX_NAME(MemoryManager_free)((void*)node, 
+                                  QUEX_MEMORY_OBJECT_POST_CATEGORIZER_NODE); 
+}
+
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 
 QUEX_NAME(DictionaryNode_new)(QUEX_TYPE_CHARACTER         FirstCharacter,
                               const QUEX_TYPE_CHARACTER*  Remainder,
                               QUEX_TYPE_TOKEN_ID          TokenID)
 {
-    QUEX_NAME(DictionaryNode)* me = QUEX_NAME(MemoryManager_PostCategorizerNode_allocate)(QUEX_NAME(strlen)(Remainder));
+    QUEX_NAME(DictionaryNode)* me = QUEX_NAME(PostCategorizer_allocate_node)(QUEX_NAME(strlen)(Remainder));
     me->name_first_character = FirstCharacter;
     me->name_remainder       = Remainder;
     me->token_id             = TokenID;
@@ -45,9 +76,9 @@ QUEX_INLINE int
 QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*        me, 
                                    QUEX_TYPE_CHARACTER        FirstCharacter, 
                                    const QUEX_TYPE_CHARACTER* Remainder)
-/* Returns: '0'   if both strings are the same
-            '< 0' string 0 < string 1
-            '> 0' string 0 > string 1           */
+    /* Returns: '0'   if both strings are the same
+       '< 0' string 0 < string 1
+       '> 0' string 0 > string 1           */
 {
     const QUEX_TYPE_CHARACTER* it0 = 0x0;
     const QUEX_TYPE_CHARACTER* it1 = 0x0;
@@ -112,7 +143,7 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
     __quex_assert( found != 0x0 );
     while( 1 + 1 == 2 ) {
         result = QUEX_NAME(PostCategorizer_compare)(found, FirstCharacter, Remainder);
-       
+
         /* result == 0: found's name == EntryName 
          * On 'break': If found == root then parent = 0x0 which triggers a special treatment. */
         if( result == 0 ) break;
@@ -175,7 +206,7 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
             parent->greater = found->greater;
         }
     }
-    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(found);
+    QUEX_NAME(PostCategorizer_free_node)(found);
 }
 
 QUEX_INLINE QUEX_NAME(DictionaryNode)*
@@ -204,7 +235,7 @@ QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me,
 
     if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
     if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
-    QUEX_NAME(MemoryManager_PostCategorizerNode_free)(branch);
+    QUEX_NAME(PostCategorizer_free_node)(branch);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN_ID 
@@ -216,14 +247,14 @@ QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
     return found->token_id;
 }
 
-QUEX_INLINE void
+    QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
 {
     if( me->root == 0x0 ) return;
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
 }
 
-QUEX_INLINE void
+    QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth)
 {
     int i = 0;
@@ -267,7 +298,7 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
     QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
 }
 
-QUEX_INLINE void
+    QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_this)(QUEX_NAME(Dictionary)* me)
 {
     QUEX_NAME(PostCategorizer_print_tree)(me->root, 0);

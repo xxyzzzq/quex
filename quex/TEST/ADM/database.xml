@@ -1,38 +1,38 @@
-<test-database execution-time-sec="40.99" date="Sat Jul 19 02:32:56 2014">
+<test-database execution-time-sec="42.84" date="Sat Jul 19 11:53:27 2014">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.51"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.52" crc="1069820642"/>
+           <choice name="" result="OK" time_sec="0.51" crc="1069820642"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.02"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.05"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1405659373L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="1396417238"/>
+           <choice name="" result="OK" time_sec="0.05" crc="1396417238"/>
         </choice-list>
     </test>
-    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
+    <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.02"> 
         <application file-name="check-default-configuration.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.01" crc="1977758644"/>
+           <choice name="" result="OK" time_sec="0.02" crc="1977758644"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="39.64"> 
+    <test title="Code Check with pyflakes" time-sum-sec="41.43"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="39.64" crc="176785168"/>
+           <choice name="" result="FAIL" time_sec="41.43" crc="176785168"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.06"> 
         <application file-name="macro-check.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.04" crc="-1814146736"/>
+           <choice name="" result="OK" time_sec="0.06" crc="-1814146736"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.08"> 
@@ -43,22 +43,22 @@
         </choice-list>
     </test>
     <group name="## file">
-        <test title="Include Guards for C/C++" time-sum-sec="0.51"> 
+        <test title="Include Guards for C/C++" time-sum-sec="0.55"> 
             <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="convention" result="OK" time_sec="0.26" crc="706574512"/>
-               <choice name="undefinition" result="OK" time_sec="0.25" crc="1307575207"/>
+               <choice name="convention" result="OK" time_sec="0.28" crc="706574512"/>
+               <choice name="undefinition" result="OK" time_sec="0.27" crc="1307575207"/>
             </choice-list>
         </test>
     </group>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.16"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.14"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1405262265L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.16" crc="-865470313"/>
+               <choice name="" result="OK" time_sec="0.14" crc="-865470313"/>
             </choice-list>
         </test>
     </group>

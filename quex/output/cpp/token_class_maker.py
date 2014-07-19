@@ -396,8 +396,6 @@ def __get_converter_configuration(IncludeGuardExtension):
 
     return declaration_include, implementation_include, string, wstring
 
-QUEX_MEMORY_ALLOC_re          = re.compile("QUEX_NAME\\(MemoryManager_Text_allocate\\)", re.UNICODE)
-QUEX_MEMORY_FREE_re           = re.compile("QUEX_NAME\\(MemoryManager_Text_free\\)", re.UNICODE)
 QUEX_strlen_re                = re.compile("QUEX_NAME\\(strlen\\)", re.UNICODE)
 QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
 QUEX_LEXEME_NULL_re           = re.compile("\\bQUEX_LEXEME_NULL\\b", re.UNICODE)
@@ -479,6 +477,7 @@ def lexeme_null_declaration():
                   ])
 
 def lexeme_null_implementation():
+    print "#lexeme_null_implementation"
     namespace_open, namespace_close = __namespace_brackets()
 
     return "".join([
@@ -579,10 +578,14 @@ helper_definitions = """
 #   define QUEX_NAME_TOKEN(NAME)       %s_ ## NAME
 #   define QUEX_NAMESPACE_TOKEN_OPEN   %s
 #   define QUEX_NAMESPACE_TOKEN_CLOSE  %s
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN    %s
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE   %s
 #else
 #   define QUEX_NAME_TOKEN(NAME)       %s_ ## NAME
 #   define QUEX_NAMESPACE_TOKEN_OPEN  
 #   define QUEX_NAMESPACE_TOKEN_CLOSE 
+#   define QUEX_NAMESPACE_LEXEME_NULL_OPEN     
+#   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    
 #endif
 #define QUEX_TYPE_TOKEN_ID             %s
 #include "%s"
@@ -596,10 +599,15 @@ def get_helper_definitions():
     else:
         token_id_definition_file = Setup.output_token_id_file
 
+    ln_namespace_open  = Lng.NAMESPACE_OPEN(Setup.lexeme_null_namespace).replace("\n", "\\\n")
+    ln_namespace_close = Lng.NAMESPACE_CLOSE(Setup.lexeme_null_namespace).replace("\n", "\\\n")
+
     return helper_definitions \
-           % (token_descr.class_name, \
-              namespace_open,         \
-              namespace_close,        \
+           % (token_descr.class_name, 
+              namespace_open,         
+              namespace_close,        
+              ln_namespace_open,      
+              ln_namespace_close,      
               token_descr.class_name_safe, 
               Setup.token_id_type,
               Setup.get_file_reference(Setup.output_token_class_file),

@@ -35,17 +35,6 @@ $$CONSTRUCTOR_EXTENSTION$$
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-QUEX_INLINE QUEX_NAME(Memento)*
-QUEX_NAME(MemoryManager_Memento_allocate)()
-{
-    const size_t     MemorySize = sizeof(QUEX_NAME(Memento));
-    return (QUEX_NAME(Memento)*)QUEX_NAME(MemoryManager_Default_allocate)(MemorySize);
-}
-
-QUEX_INLINE void
-QUEX_NAME(MemoryManager_Memento_free)(QUEX_NAME(Memento)* memory)
-{ if( memory != 0x0 ) QUEX_NAME(MemoryManager_Default_free)((void*)memory); }
-
 #ifndef __QUEX_OPTION_PLAIN_C
 TEMPLATE_IN(InputHandleT)
 #endif
@@ -55,7 +44,8 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
                         InputHandleT**        input_handle)
 {
 #   define self  (*me)
-    QUEX_NAME(Memento)* memento = QUEX_NAME(MemoryManager_Memento_allocate)();
+    QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEX_NAME(MemoryManager_allocate)(
+                                     sizeof(QUEX_NAME(Memento)), QUEX_MEMORY_OBJECT_MEMENTO);
     
     (void)InputName;
     (void)input_handle;
@@ -133,7 +123,8 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
     memento->~QUEX_NAME(Memento_tag)();
 #   endif
 
-    QUEX_NAME(MemoryManager_Memento_free)(memento);
+    QUEX_NAME(MemoryManager_free)((void*)memento, 
+                                  QUEX_MEMORY_OBJECT_MEMENTO); 
 #   undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */

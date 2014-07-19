@@ -138,7 +138,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         ucnv_close(me->from_handle);
         ucnv_close(me->to_handle);
 
-        QUEX_NAME(MemoryManager_Converter_ICU_free)(me);
+        QUEX_NAME(MemoryManager_free)((void*)me, QUEX_MEMORY_OBJECT_CONVERTER);
 
         /* There should be a way to call 'ucnv_flushCache()' as soon as all converters
          * are freed automatically.                                                       */
@@ -147,7 +147,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QuexConverter*
     QuexConverter_ICU_new()
     {
-        QuexConverter_ICU*  me = QUEX_NAME(MemoryManager_Converter_allocate)();
+        QuexConverter_ICU*  me = \
+             (QUEX_NAME(Converter_ICU)*)QUEX_NAME(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_ICU)),
+                                                                          QUEX_MEMORY_OBJECT_CONVERTER);
 
         me->base.open        = QuexConverter_ICU_open;
         me->base.convert     = QuexConverter_ICU_convert;

@@ -40,7 +40,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         TEMPLATED(BufferFiller_Plain)*  me = \
              (TEMPLATED(BufferFiller_Plain)*) \
-              QUEX_NAME(MemoryManager_BufferFiller_allocate)(sizeof(TEMPLATED(BufferFiller_Plain)));
+              QUEX_NAME(MemoryManager_allocate)(sizeof(TEMPLATED(BufferFiller_Plain)),
+                                                QUEX_MEMORY_OBJECT_BUFFER_FILLER);
         __quex_assert(me != 0x0);
         __quex_assert(input_handle != 0x0);
 
@@ -76,7 +77,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(__BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego) 
     {
         TEMPLATED(BufferFiller_Plain)* me = (TEMPLATED(BufferFiller_Plain)*)alter_ego;
-        QUEX_NAME(MemoryManager_BufferFiller_free)((void*)me);
+        QUEX_NAME(MemoryManager_free)((void*)me, QUEX_MEMORY_OBJECT_BUFFER_FILLER);
 
     }
 
