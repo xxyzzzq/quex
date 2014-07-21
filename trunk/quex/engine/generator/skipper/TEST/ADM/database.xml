@@ -1,6 +1,6 @@
-<test-database execution-time-sec="53.45" date="Sat Jul 19 12:02:54 2014">
+<test-database execution-time-sec="53.46" date="Mon Jul 21 15:47:10 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="2.86"> 
+    <test title="Indentation Counting" time-sum-sec="2.85"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -10,7 +10,7 @@
         </choice-list>
     </test>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="8.23"> 
+        <test title="Large Buffer" time-sum-sec="8.24"> 
             <application file-name="test-skip.py" info-request-time="1394283215L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
@@ -20,7 +20,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="2.50" crc="-2098256826"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" time-sum-sec="4.02"> 
+        <test title="Varrying Buffer Size" time-sum-sec="4.04"> 
             <application file-name="test-skip-2.py" info-request-time="1394274498L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="True">
@@ -32,7 +32,7 @@
                <choice name="8" result="OK" time_sec="0.68" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.31"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.30"> 
             <application file-name="test-skip-utf8.py" info-request-time="1394277471L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">

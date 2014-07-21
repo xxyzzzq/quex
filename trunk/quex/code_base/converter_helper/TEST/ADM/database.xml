@@ -1,19 +1,19 @@
-<test-database execution-time-sec="1.44" date="Sat Jul 19 11:55:43 2014">
+<test-database execution-time-sec="1.45" date="Mon Jul 21 15:47:10 2014">
     <last-used-diff-display-program name=""/>
-    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="utf8 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="from-utf8" info-request-time="1405730156L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="1.228414"/>
+        <make-procedure success="False" time_sec="1.228414"/>
         <choice-list number="3" same_result="False">
            <choice name="Source_Empty" result="OK" time_sec="0.01" crc="-975538654"/>
            <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="294941333"/>
            <choice name="Drain_ToSmall" result="OK" time_sec="0.01" crc="834269970"/>
         </choice-list>
     </test>
-    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
+    <test title="utf32 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="from-utf32" info-request-time="1405730159L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="1.225186"/>
+        <make-procedure success="False" time_sec="1.225186"/>
         <choice-list number="3" same_result="False">
            <choice name="Source_Empty" result="OK" time_sec="0.01" crc="490986972"/>
            <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="1201958385"/>
@@ -23,7 +23,7 @@
     <test title="Test of complete character set on base converters (utf8, utf16, utf32)" make-dependent="True" time-sum-sec="1.37"> 
         <application file-name="characters" info-request-time="1405730157L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="0.519204"/>
+        <make-procedure success="False" time_sec="0.519204"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="1.37" crc="705934895"/>
         </choice-list>
@@ -31,7 +31,7 @@
     <test title="utf16 to utf8, utf16, and utf32" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="from-utf16" info-request-time="1405730157L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="1.174895"/>
+        <make-procedure success="False" time_sec="1.174895"/>
         <choice-list number="3" same_result="False">
            <choice name="Source_Empty" result="OK" time_sec="0.01" crc="-434085329"/>
            <choice name="Source_TestFile" result="OK" time_sec="0.01" crc="38892956"/>

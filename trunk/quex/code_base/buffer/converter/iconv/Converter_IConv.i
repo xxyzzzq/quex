@@ -137,7 +137,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Converter_IConv_delete_self)(QUEX_NAME(Converter_IConv)* me)
     {
         iconv_close(me->handle); 
-        QUEX_NAME(MemoryManager_free)((void*)me, QUEX_MEMORY_OBJECT_CONVERTER);
+        QUEXED(MemoryManager_free)((void*)me, QUEXED(MemoryObjectType_CONVERTER));
     }
 
     QUEX_INLINE QUEX_NAME(Converter)*
@@ -145,8 +145,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_NAME(Converter_IConv)*  me = \
            (QUEX_NAME(Converter_IConv)*)
-           QUEX_NAME(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_IConv)),
-                                             QUEX_MEMORY_OBJECT_CONVERTER);
+           QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_IConv)),
+                                          QUEXED(MemoryObjectType_CONVERTER));
 
         me->base.open        = (QUEX_NAME(ConverterFunctionP_open))QUEX_NAME(Converter_IConv_open);
         me->base.convert     = (QUEX_NAME(ConverterFunctionP_convert))QUEX_NAME(Converter_IConv_convert);

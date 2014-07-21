@@ -1,4 +1,4 @@
-<test-database execution-time-sec="330.80" date="Sat Jul 19 11:57:52 2014">
+<test-database execution-time-sec="366.30" date="Mon Jul 21 15:47:09 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="7.54"> 
@@ -11,12 +11,12 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="2.50"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="7.32"> 
             <application file-name="001.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.57" crc="1133630677"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.93" crc="1133630677"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.88" crc="1133630677"/>
+               <choice name="DEBUG" result="OK" time_sec="3.44" crc="1133630677"/>
             </choice-list>
         </test>
     </group>
@@ -31,7 +31,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="23.87"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="23.86"> 
             <application file-name="003.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -86,22 +86,22 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="2.95"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="6.86"> 
             <application file-name="006.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="1.92" crc="67355700"/>
-               <choice name="DEBUG" result="FAIL" time_sec="1.03" crc="67355700"/>
+               <choice name="NDEBUG" result="OK" time_sec="3.82" crc="67355700"/>
+               <choice name="DEBUG" result="OK" time_sec="3.04" crc="67355700"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" time-sum-sec="3.29"> 
+        <test title="Miscellaneous Features" time-sum-sec="8.01"> 
             <application file-name="007.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="2.28" crc="-1744057875"/>
-               <choice name="DEBUG" result="FAIL" time_sec="1.01" crc="-1744057875"/>
+               <choice name="NDEBUG" result="OK" time_sec="4.47" crc="-1744057875"/>
+               <choice name="DEBUG" result="OK" time_sec="3.54" crc="-1744057875"/>
             </choice-list>
         </test>
     </group>
@@ -172,22 +172,22 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="12.56"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="16.25"> 
             <application file-name="012.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="8.42" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="4.14" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="10.17" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="6.08" crc="-62717966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="0.63"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="19.00"> 
             <application file-name="012b.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.31" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.32" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="11.26" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="7.74" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

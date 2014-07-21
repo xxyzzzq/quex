@@ -1,4 +1,4 @@
-<test-database execution-time-sec="243.41" date="Sat Jul 19 12:06:18 2014">
+<test-database execution-time-sec="255.98" date="Mon Jul 21 15:47:09 2014">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.22"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
@@ -50,7 +50,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="14.55"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="14.54"> 
             <application file-name="003.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -152,7 +152,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="109.65"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="109.64"> 
             <application file-name="010.sh" info-request-time="1405229740L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -191,22 +191,22 @@
         </test>
     </group>
     <group name="demo/012">
-        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="10.64"> 
+        <test title="Single Application/Multiple Lexical Analyzers" time-sum-sec="11.78"> 
             <application file-name="012.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="7.77" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="2.87" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="7.99" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="3.79" crc="-62717966"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="0.69"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="12.13"> 
             <application file-name="012b.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="0.36" crc="-62717966"/>
-               <choice name="DEBUG" result="FAIL" time_sec="0.33" crc="-62717966"/>
+               <choice name="NDEBUG" result="OK" time_sec="8.05" crc="-62717966"/>
+               <choice name="DEBUG" result="OK" time_sec="4.08" crc="-62717966"/>
             </choice-list>
         </test>
     </group>

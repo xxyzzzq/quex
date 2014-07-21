@@ -37,8 +37,8 @@ $INCLUDE_CONVERTER_DECLARATION
 
    destructor {
        if( self.text != LexemeNull ) {
-           QUEX_NAME(MemoryManager_free)((void*)self.text,
-                                          QUEX_MEMORY_OBJECT_TEXT);
+           QUEXED(MemoryManager_free)((void*)self.text,
+                                          QUEXED(MemoryObjectType_TEXT));
            self.text = LexemeNull;
        }
    }
@@ -47,15 +47,15 @@ $INCLUDE_CONVERTER_DECLARATION
         self._id  = Other._id;
 
         if( self.text != LexemeNull ) {
-            QUEX_NAME(MemoryManager_free)((void*)self.text,
-                                           QUEX_MEMORY_OBJECT_TEXT);
+            QUEXED(MemoryManager_free)((void*)self.text,
+                                       QUEXED(MemoryObjectType_TEXT));
         }
         if( Other.text != LexemeNull ) {
             self.text = \
                (QUEX_TYPE_CHARACTER*)
-               QUEX_NAME(MemoryManager_allocate)(
+               QUEXED(MemoryManager_allocate)(
                       sizeof(QUEX_TYPE_CHARACTER) * (QUEX_NAME(strlen)(Other.text) + 1),
-                      QUEX_MEMORY_OBJECT_TEXT);
+                      QUEXED(MemoryObjectType_TEXT));
             __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
                                 sizeof(QUEX_TYPE_CHARACTER) 
                               * (QUEX_NAME(strlen)(Other.text) + 1));
@@ -87,16 +87,16 @@ $INCLUDE_CONVERTER_DECLARATION
 #       endif
 
         if( self.text != LexemeNull ) {
-            QUEX_NAME(MemoryManager_free)((void*)self.text,
-                                          QUEX_MEMORY_OBJECT_TEXT);
+            QUEXED(MemoryManager_free)((void*)self.text,
+                                          QUEXED(MemoryObjectType_TEXT));
         }
         if( Begin != LexemeNull ) {
             __quex_assert(End >= Begin);
             self.text = \
                  (QUEX_TYPE_CHARACTER*)
-                 QUEX_NAME(MemoryManager_allocate)(
+                 QUEXED(MemoryManager_allocate)(
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1), 
-                              QUEX_MEMORY_OBJECT_TEXT);
+                              QUEXED(MemoryObjectType_TEXT));
             __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin));
             /* The string is not necessarily zero terminated, so terminate it here. */

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.98" date="Sat Jul 19 12:04:09 2014">
+<test-database execution-time-sec="0.99" date="Mon Jul 21 15:47:11 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.32"> 

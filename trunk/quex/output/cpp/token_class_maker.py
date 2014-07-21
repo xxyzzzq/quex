@@ -30,16 +30,14 @@ def do(MapTokenIDToNameFunctionStr):
         # In C++ we do inline, so we can do everything in the header file
         header_txt         = "".join([txt, "\n", txt_i])
         implementation_txt = ""
-        if Setup.token_class_only_f: 
-            implementation_txt =   lexeme_null_implementation() \
-                                 + map_token_id_to_name_function_str
     else:
         # In C, there's a separate file in any case
         header_txt         = txt
         implementation_txt = txt_i 
-        if Setup.token_class_only_f: 
-            implementation_txt +=  lexeme_null_implementation() \
-                                 + map_token_id_to_name_function_str
+
+    if Setup.token_class_only_f: 
+        implementation_txt +=  map_token_id_to_name_function_str \
+                             + lexeme_null_implementation() 
 
     return header_txt, implementation_txt
 
@@ -421,8 +419,8 @@ def clean_for_independence(txt):
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub(common_lexeme_null_str(), txt)
-    txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
-    txt = QUEX_MEMORY_FREE_re.sub("free", txt)
+    # txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
+    # txt = QUEX_MEMORY_FREE_re.sub("free", txt)
     txt = QUEX_TYPE_CHARACTER_safe_re.sub("QUEX_TYPE_CHARACTER", txt)
     txt = QUEX_strlen_re.sub("%s_strlen" % token_descr.class_name_safe, txt)
     txt = QUEX_LEXEME_NULL_re.sub(common_lexeme_null_str(), txt)
@@ -477,7 +475,6 @@ def lexeme_null_declaration():
                   ])
 
 def lexeme_null_implementation():
-    print "#lexeme_null_implementation"
     namespace_open, namespace_close = __namespace_brackets()
 
     return "".join([

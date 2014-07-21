@@ -9,13 +9,16 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
+CC := g++ -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
+
 lexer: $(ENGINE:.cpp=.o) lexer.o A_B_C-token.o
-	g++ $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
+	$(CC) $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
 	 
-%.o: %.cpp $(ENGINE_SOURCES)
-	g++ -c $< -ggdb -Wall -Werror -o $@ \
-		-I$(QUEX_PATH) \
-		$(CCFLAG_ASSERTS) 
+lexer.o: lexer.cpp $(ENGINE)
+	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+
+%.o: %.cpp $(ENGINE)
+	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

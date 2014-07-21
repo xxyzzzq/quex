@@ -3,7 +3,7 @@ ENGINE = \
 		max_Lexer.cpp                \
 		moritz_Lexer.cpp             
 
-OBJS = $(ENGINE:.cpp=.o) lexer.o
+OBJS =  lexer.o $(ENGINE:.cpp=.o)
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -11,18 +11,20 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
+CC := g++ -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
+
 lexer: $(OBJS)
-	g++ $(OBJS) -ggdb -o  $@ \
-		-I$(QUEX_PATH) 
+	g++ $(OBJS) -ggdb -o $@ 
 	 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+#
+lexer.o: lexer.cpp $(ENGINE)
+	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 
-%.o: %.cpp $(ENGINE_SOURCES)
-	g++ -c $< -ggdb -Wall -Werror -o $@ \
-		-I$(QUEX_PATH) \
-		$(CCFLAG_ASSERTS) 
-
+%.o: %.cpp 
+	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+	
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 

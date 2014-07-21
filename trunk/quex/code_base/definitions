@@ -11,12 +11,23 @@
 #include<quex/code_base/compatibility/stdint.h>
 #include<quex/code_base/compatibility/stdbool-pseudo.h>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#   define QUEX_NAMESPACE_QUEX_OPEN   namespace quex {
+#ifndef    QUEX_NAMESPACE_QUEX 
+#   define QUEX_NAMESPACE_QUEX         quex
+#endif
+#if defined __cplusplus
+#   define QUEX_NAMESPACE_QUEX_OPEN   namespace QUEX_NAMESPACE_QUEX {
 #   define QUEX_NAMESPACE_QUEX_CLOSE  }
+#   define QUEXED_AUX2(NSP, X)        ::NSP::X
+#   define QUEXED_AUX(NSP, X)         QUEXED_AUX2(NSP,X)
+#   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX,X)
+#   define QUEXED_DEF(X)              X
 #else
 #   define QUEX_NAMESPACE_QUEX_OPEN
 #   define QUEX_NAMESPACE_QUEX_CLOSE
+#   define QUEXED_AUX2(NSP, X)        NSP ## _ ## X
+#   define QUEXED_AUX(NSP, X)         QUEXED_AUX2(NSP, X)
+#   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
+#   define QUEXED_DEF(X)              QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1600

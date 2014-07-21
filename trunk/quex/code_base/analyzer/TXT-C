@@ -22,6 +22,9 @@
 #   ifdef   __QUEX_SIGNAL_DEFINED_LEXER_IN_NAMESPACE_$$LEXER_NAME_SPACE$$
 #      error "More than one lexical analyzer have been generated in the same name space. Read documentation on command line option '-o'."
 #   endif
+#   ifndef  QUEX_OPTION_MULTI
+#      error "Multiple lexical analyzers detected. QUEX_OPTION_MULTI must be defined and 'quex/code_base/Multi.i' must be included in one single file!"
+#   endif
 #   include <quex/code_base/include-guard-undef>
 #   include <quex/code_base/analyzer/member/token-sending-undef.i>
 #   undef   __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$

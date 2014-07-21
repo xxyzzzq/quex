@@ -209,8 +209,8 @@ QUEX_NAME(TokenQueueRemainder_save)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_NAM
         QUEX_TYPE_TOKEN* iterator = 0x0;
         
         /* Step 1: allocate plain chunk of memory.                              */
-        me->token_list = (QUEX_TYPE_TOKEN*)QUEX_NAME(MemoryManager_allocate)(sizeof(QUEX_TYPE_TOKEN) * me->size, 
-                                                                             QUEX_MEMORY_OBJECT_TOKEN_ARRAY);
+        me->token_list = (QUEX_TYPE_TOKEN*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_TYPE_TOKEN) * me->size, 
+                                                                          QUEXED(MemoryObjectType_TOKEN_ARRAY));
         if( me->token_list == 0x0 ) {
             QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
         }
@@ -262,7 +262,7 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
         /* Step 3: De-Allocate the remainder objects                                 
          *         NO explicit destructor calls, since the referred objects are now
          *         referred from inside the 'real' token queue.                      */
-        QUEX_NAME(MemoryManager_free)(me->token_list, QUEX_MEMORY_OBJECT_TOKEN_ARRAY);
+        QUEXED(MemoryManager_free)(me->token_list, QUEXED(MemoryObjectType_TOKEN_ARRAY));
     }
     /* Reset the read and write iterators */
     token_queue->read_iterator  = token_queue->begin;

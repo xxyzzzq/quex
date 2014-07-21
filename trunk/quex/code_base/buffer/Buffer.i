@@ -507,8 +507,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( Memory == 0x0 ) { 
             /* The actual 'memory chunk' is an 'owned member resource' accessed by pointer.
              * Thus, it is allocated in the constructor.                                    */
-            chunk = (QUEX_TYPE_CHARACTER*)QUEX_NAME(MemoryManager_allocate)(Size * sizeof(QUEX_TYPE_CHARACTER), 
-                                                    QUEX_MEMORY_OBJECT_BUFFER);
+            chunk = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(Size * sizeof(QUEX_TYPE_CHARACTER), 
+                                                 QUEXED(MemoryObjectType_BUFFER));
             end_of_file_p = 0x0;
             external_f    = false; /* We own the memory, not someone outside. */
         } 
@@ -589,7 +589,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
     {
         if( me->_external_owner_f == false && me->_front != (QUEX_TYPE_CHARACTER*)0x0 ) {
-            QUEX_NAME(MemoryManager_free)((void*)me->_front, QUEX_MEMORY_OBJECT_BUFFER);
+            QUEXED(MemoryManager_free)((void*)me->_front, QUEXED(MemoryObjectType_BUFFER));
             /* me->_external_owner_f = false; */
         }
 

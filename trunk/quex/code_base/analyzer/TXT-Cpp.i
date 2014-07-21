@@ -44,8 +44,8 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
                         InputHandleT**        input_handle)
 {
 #   define self  (*me)
-    QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEX_NAME(MemoryManager_allocate)(
-                                     sizeof(QUEX_NAME(Memento)), QUEX_MEMORY_OBJECT_MEMENTO);
+    QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
+                                     sizeof(QUEX_NAME(Memento)), QUEXED(MemoryObjectType_MEMENTO));
     
     (void)InputName;
     (void)input_handle;
@@ -123,8 +123,7 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
     memento->~QUEX_NAME(Memento_tag)();
 #   endif
 
-    QUEX_NAME(MemoryManager_free)((void*)memento, 
-                                  QUEX_MEMORY_OBJECT_MEMENTO); 
+    QUEXED(MemoryManager_free)((void*)memento, QUEXED(MemoryObjectType_MEMENTO)); 
 #   undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */

@@ -4,10 +4,9 @@
 #include "max_Lexer"
 #include "boeck_Lexer"
 
-/* We do not need to cut the BOM. I include it here only
- * to make sure that it remains 'multi-lexer-safe'.        */
-#include <quex/code_base/bom>
-#include <quex/code_base/bom.i>
+/* When using multiple lexical analyzers, it must be compiled with 
+ * QUEX_OPTION_MULTI and 'Multi.i' must be included in one single file.      */
+#include <quex/code_base/Multi.i>
 
 using namespace std;
 

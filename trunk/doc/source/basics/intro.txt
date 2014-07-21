@@ -18,3 +18,4 @@ scenarios and how they are to be handled.
    sections.txt
    usage-scenarios.txt
    number_format.txt
+   multiple_analyzers.txt

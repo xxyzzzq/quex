@@ -141,7 +141,7 @@ def get_transition_function(iid_map, Codec):
 main_template = """
 /* From '.begin' the target map targets to '.target' until the next '.begin' is
  * reached.                                                                  */
-#include <inttypes.h> 
+#include <quex/code_base/compatibility/stdint.h> 
 #include <stdio.h>
 #define QUEX_TYPE_CHARACTER              $$QUEX_TYPE_CHARACTER$$
 #define __QUEX_OPTION_PLAIN_C

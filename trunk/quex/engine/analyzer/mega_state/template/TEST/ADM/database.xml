@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.16" date="Sat Jul 19 11:57:02 2014">
+<test-database execution-time-sec="3.18" date="Mon Jul 21 15:47:10 2014">
     <last-used-diff-display-program name=""/>
     <test title="Combination of Two Transition Maps" time-sum-sec="0.60"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
@@ -20,7 +20,7 @@
            <choice name="distinguished" result="OK" time_sec="0.12" crc="-1963706776"/>
         </choice-list>
     </test>
-    <test title="Template states handling recursion" time-sum-sec="0.55"> 
+    <test title="Template states handling recursion" time-sum-sec="0.54"> 
         <application file-name="recursion.py" info-request-time="1402122029L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -43,7 +43,7 @@
                <choice name="recursive" result="OK" time_sec="0.10" crc="961507194"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.24"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.25"> 
             <application file-name="combine-maps-2.py" info-request-time="1398189189L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -51,7 +51,7 @@
                <choice name="2" result="OK" time_sec="0.12" crc="-1615454940"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.83"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.84"> 
             <application file-name="metric.py" info-request-time="1398237111L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">

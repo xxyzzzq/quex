@@ -4,17 +4,22 @@
 #include "max_Lexer.h"
 #include "boeck_Lexer.h"
 
+/* When using multiple lexical analyzers, it must be compiled with 
+ * QUEX_OPTION_MULTI and 'Multi.i' must be included in one single file.      */
+#include <quex/code_base/Multi.i>
+
 
 int 
 main(int argc, char** argv) 
 {        
-    /* we want to have error outputs in stdout, so that the unit test could see it. */
+    /* We want to have error outputs in stdout, so that the unit test could 
+     * see it.                                                               */
     max_Lexer     max_lex;
     moritz_Lexer  moritz_lex;
     boeck_Lexer   boeck_lex;
-    A_B_C_Token* max_token    = 0x0;
-    A_B_C_Token* moritz_token = 0x0;
-    A_B_C_Token* boeck_token  = 0x0;
+    A_B_C_Token*  max_token    = 0x0;
+    A_B_C_Token*  moritz_token = 0x0;
+    A_B_C_Token*  boeck_token  = 0x0;
     const size_t  BufferSize = 1024;
     char          buffer[1024];
     size_t        i = 0;
@@ -23,8 +28,8 @@ main(int argc, char** argv)
     moritz_Lexer_construct_file_name(&moritz_lex, "ucs4.txt", "UCS4", false);
     boeck_Lexer_construct_file_name(&boeck_lex,   "ucs4.txt", "UCS4", false);
 
-    // Each lexer reads one token, since the grammars are similar the lexeme 
-    // is always the same.                                                    
+    /* Each lexer reads one token, since the grammars are similar the lexeme 
+     * is always the same.                                                   */
     printf("                Max:        Moritz:      Boeck:\n");
 
     max_token    = max_Lexer_token_p(&max_lex);
@@ -36,8 +41,9 @@ main(int argc, char** argv)
         (void)moritz_Lexer_receive(&moritz_lex);
         (void)boeck_Lexer_receive(&boeck_lex);
 
-        /* Lexeme is same for all three. */
-        printf("%s", A_B_C_Token_pretty_char_text(boeck_token, buffer, BufferSize));
+        /* Lexeme is same for all three.                                     */
+        printf("%s", A_B_C_Token_pretty_char_text(boeck_token, buffer, 
+                                                  BufferSize));
 
         size_t      preL   = (size_t)strlen((const char*)boeck_token->text);
         size_t      L      = preL < 10 ? preL : 10;
