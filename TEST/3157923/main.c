@@ -25,4 +25,6 @@ main(int argc, char** argv)
     QUEX_NAME(reset)(&qlex, dummy_fh, 0x0);
     QUEX_NAME(destruct)(&qlex);
     fclose(dummy_fh);
+
+    return 0;
 }

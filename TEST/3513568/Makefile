@@ -7,15 +7,15 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
+CC := gcc -Wall -Werror -ggdb -DQUEX_OPTION_MULTI
+
 lexer: $(ENGINE:.c=.o) lexer.o Common-token.o
-	gcc $^ -ggdb -o  $@ `icu-config --ldflags` -I$(QUEX_PATH) 
+	$(CC) $^ -o  $@ `icu-config --ldflags` -I$(QUEX_PATH) 
 	 
-%.o: %.c $(ENGINE_SOURCES)
-	gcc -c $< -ggdb -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -o $@ \
+%.o: %.c 
+	$(CC) -c $< -ggdb -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -o $@ \
 		-I$(QUEX_PATH)          \
 		$(CCFLAG_ASSERTS) 
-
-		# `icu-config --cflags` \
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

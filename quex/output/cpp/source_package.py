@@ -27,6 +27,7 @@ base = """
 /include-guard-undef
 /MemoryManager
 /MemoryManager.i
+/Multi.i
 /temporary_macros_off
 /temporary_macros_on
 """

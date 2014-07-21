@@ -1,4 +1,6 @@
 #include "boeck_Lexer.h"
+#include <quex/code_base/Multi.i>
+
 int 
 main(int argc, char** argv) 
 {        

@@ -18,12 +18,16 @@
 #ifdef    __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I
 #   undef __QUEX_INCLUDE_GUARD__ANALYZER__HEADERS_I
 #endif
-#ifdef    __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
+#if 0
+/* The memory manager is the same for all analyzers.                        
+ * Thus, it is never ever included twice with different parameters.          */
+#   ifdef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #   undef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
-#endif 
-#ifdef    __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
+#   endif 
+#   ifdef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
 #   undef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
-#endif 
+#   endif 
+#endif
 #ifdef    __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
 #   undef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
 #endif

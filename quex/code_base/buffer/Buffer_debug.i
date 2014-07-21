@@ -13,10 +13,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void QUEX_NAME(Buffer_x_show_content)(QUEX_NAME(Buffer)*); 
-    QUEX_INLINE void QUEX_NAME(Buffer_show_brief_content)(QUEX_NAME(Buffer)*);
-    QUEX_INLINE void QUEX_NAME(Buffer_show_content)(QUEX_NAME(Buffer)*); 
-
     QUEX_INLINE void 
     QUEX_NAME(Buffer_show_brief_content)(QUEX_NAME(Buffer)* buffer) 
     {

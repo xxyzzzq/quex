@@ -2,38 +2,35 @@
 #ifndef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 #define __QUEX_INCLUDE_GUARD__MEMORY_MANAGER
 
+#include <stddef.h>
+#include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/definitions>
-#ifdef QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/analyzer/PostCategorizer>
-#endif
 
-#include <quex/code_base/temporary_macros_on>
+QUEX_NAMESPACE_QUEX_OPEN
 
 typedef enum {
-    QUEX_MEMORY_OBJECT_BUFFER,
-    QUEX_MEMORY_OBJECT_BUFFER_FILLER,
-    QUEX_MEMORY_OBJECT_BUFFER_RAW,
-    QUEX_MEMORY_OBJECT_CONVERTER,
-    QUEX_MEMORY_OBJECT_MEMENTO,
-    QUEX_MEMORY_OBJECT_POST_CATEGORIZER_NODE,
-    QUEX_MEMORY_OBJECT_TEXT,
-    QUEX_MEMORY_OBJECT_TOKEN_ARRAY
-} QUEX_MEMORY_OBJECT;
+    QUEXED_DEF(MemoryObjectType_BUFFER),
+    QUEXED_DEF(MemoryObjectType_BUFFER_FILLER),
+    QUEXED_DEF(MemoryObjectType_BUFFER_RAW),
+    QUEXED_DEF(MemoryObjectType_CONVERTER),
+    QUEXED_DEF(MemoryObjectType_MEMENTO),
+    QUEXED_DEF(MemoryObjectType_POST_CATEGORIZER_NODE),
+    QUEXED_DEF(MemoryObjectType_TEXT),
+    QUEXED_DEF(MemoryObjectType_TOKEN_ARRAY)
+} QUEXED_DEF(MemoryObjectType);
  
-QUEX_NAMESPACE_MAIN_OPEN
+extern uint8_t*
+QUEXED_DEF(MemoryManager_allocate)(const size_t ByteN, 
+                                   QUEXED_DEF(MemoryObjectType));
 
-QUEX_INLINE uint8_t*
-QUEX_NAME(MemoryManager_allocate)(const size_t ByteN, QUEX_MEMORY_OBJECT);
+extern void 
+QUEXED_DEF(MemoryManager_free)(void* Obj, 
+                               QUEXED_DEF(MemoryObjectType));
 
-QUEX_INLINE void 
-QUEX_NAME(MemoryManager_free)(void* Obj, QUEX_MEMORY_OBJECT);
+extern size_t
+QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
+                                 uint8_t* source_begin_p, uint8_t* source_end_p);
 
-QUEX_INLINE size_t
-QUEX_NAME(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
-                                uint8_t* source_begin_p, uint8_t* source_end_p);
-
-QUEX_NAMESPACE_MAIN_CLOSE
+QUEX_NAMESPACE_QUEX_CLOSE
  
-#include <quex/code_base/temporary_macros_off>
-
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__ */

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="20.22" date="Sat Jul 19 11:56:52 2014">
+<test-database execution-time-sec="20.21" date="Mon Jul 21 15:47:10 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>
@@ -36,7 +36,7 @@
            <choice name="10" result="NO GOOD FILE" time_sec="0.09" crc="1511814662"/>
         </choice-list>
     </test>
-    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.84"> 
+    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.83"> 
         <application file-name="test-position_register_map.py" info-request-time="1399871052L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -78,7 +78,7 @@
                <choice name="10" result="FAIL" time_sec="0.08" crc="None"/>
             </choice-list>
         </test>
-        <test title="Single Pattern" time-sum-sec="1.23"> 
+        <test title="Single Pattern" time-sum-sec="1.24"> 
             <application file-name="paths_analysis-single-pattern.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="11" same_result="False">
@@ -166,7 +166,7 @@
                <choice name="10" result="OK" time_sec="0.17" crc="-703072557"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="2.49"> 
+        <test title="With Pre-Contexts" time-sum-sec="2.47"> 
             <application file-name="paths_analysis-pre.py" info-request-time="1392275165L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="15" same_result="False">
@@ -195,7 +195,7 @@
                <choice name="1" result="OK" time_sec="0.15" crc="-509218225"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="1.61"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="1.60"> 
             <application file-name="paths_analysis-pre-post.py" info-request-time="1392275226L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -253,7 +253,7 @@
                <choice name="3" result="OK" time_sec="0.19" crc="1418772995"/>
             </choice-list>
         </test>
-        <test title="fill_gaps" time-sum-sec="0.55"> 
+        <test title="fill_gaps" time-sum-sec="0.56"> 
             <application file-name="transition_map_tools-fill_gaps.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -271,7 +271,7 @@
                <choice name="" result="OK" time_sec="0.10" crc="833975462"/>
             </choice-list>
         </test>
-        <test title="set" time-sum-sec="0.42"> 
+        <test title="set" time-sum-sec="0.43"> 
             <application file-name="transition_map_tools.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">

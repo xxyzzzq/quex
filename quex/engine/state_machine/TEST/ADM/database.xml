@@ -1,4 +1,4 @@
-<test-database execution-time-sec="23.68" date="Sat Jul 19 12:03:15 2014">
+<test-database execution-time-sec="23.66" date="Mon Jul 21 15:47:11 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -53,7 +53,7 @@
                <choice name="" result="OK" time_sec="0.08" crc="-1738167192"/>
             </choice-list>
         </test>
-        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.69"> 
+        <test title="Get Trigger Map (intervals --&gt; target states)" time-sum-sec="0.70"> 
             <application file-name="test-get_trigger_map.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
@@ -132,7 +132,7 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Codec Engine" time-sum-sec="0.72"> 
+        <test title="Codec Engine" time-sum-sec="0.73"> 
             <application file-name="test-count_character_n-codec.py" info-request-time="1392791830L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -147,7 +147,7 @@
                <choice name="" result="OK" time_sec="0.91" crc="-1309288583"/>
             </choice-list>
         </test>
-        <test title="Characters" time-sum-sec="1.73"> 
+        <test title="Characters" time-sum-sec="1.74"> 
             <application file-name="test-count_character_n.py" info-request-time="1390979655L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -350,7 +350,7 @@
                <choice name="" result="OK" time_sec="1.06" crc="-544662156"/>
             </choice-list>
         </test>
-        <test title="Intervals" time-sum-sec="0.31"> 
+        <test title="Intervals" time-sum-sec="0.30"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -360,7 +360,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.07" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="0.94"> 
+        <test title="Plug Intermediate States" time-sum-sec="0.93"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="False">

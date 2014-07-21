@@ -1,7 +1,7 @@
 ENGINE = \
 		boeck_Lexer.c   \
 		max_Lexer.c     \
-		moritz_Lexer.c             
+		moritz_Lexer.c  
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -9,13 +9,13 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
+CC := gcc -DQUEX_OPTION_MULTI -Wall -Werror
+
 lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
-	gcc $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
+	$(CC) $^ -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
 	 
 %.o: %.c $(ENGINE_SOURCES)
-	gcc -c $< -ggdb -Wall -Werror -o $@ \
-		-I$(QUEX_PATH) \
-		$(CCFLAG_ASSERTS) 
+	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 

@@ -4,6 +4,8 @@
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BUFFER_ACCESS_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BUFFER_ACCESS_I
 
+#include <quex/code_base/definitions>
+#include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/buffer/Buffer>
 
@@ -21,10 +23,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         (void)me;
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, (QUEX_TYPE_CHARACTER*)ContentEnd);
-        CopiedByteN = QUEX_NAME(MemoryManager_insert)((uint8_t*)*insertion_p,  
-                                                      (uint8_t*)BufferEnd,
-                                                      (uint8_t*)ContentBegin, 
-                                                      (uint8_t*)ContentEnd);
+        CopiedByteN = QUEXED(MemoryManager_insert)((uint8_t*)*insertion_p,  
+                                                   (uint8_t*)BufferEnd,
+                                                   (uint8_t*)ContentBegin, 
+                                                   (uint8_t*)ContentEnd);
 
         *insertion_p += (CopiedByteN / sizeof(QUEX_TYPE_CHARACTER)); 
 
@@ -172,10 +174,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         /*     -- Move away passed buffer content.                                      */
         QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
 
-        CopiedByteN = QUEX_NAME(MemoryManager_insert)(me->raw_buffer.end, 
-                                                      me->raw_buffer.memory_end,
-                                                      (uint8_t*)ContentBegin, 
-                                                      (uint8_t*)ContentEnd);
+        CopiedByteN = QUEXED(MemoryManager_insert)(me->raw_buffer.end, 
+                                                   me->raw_buffer.memory_end,
+                                                   (uint8_t*)ContentBegin, 
+                                                   (uint8_t*)ContentEnd);
 
         me->raw_buffer.end += CopiedByteN;
 

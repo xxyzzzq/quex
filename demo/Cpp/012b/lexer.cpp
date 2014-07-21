@@ -4,12 +4,16 @@
 #include "max_Lexer"
 #include "boeck_Lexer"
 
-using namespace std;
+/* When using multiple lexical analyzers, it must be compiled with 
+ * QUEX_OPTION_MULTI and 'Multi.i' must be included in one single file.      */
+#include <quex/code_base/Multi.i>
 
 
 int 
 main(int argc, char** argv) 
 {        
+    using namespace std;
+
     // we want to have error outputs in stdout, so that the unit test could see it.
     max::Lexer     max_lex("ucs4.txt", "UCS4");
     A::B::C::Token* max_token    = 0x0;

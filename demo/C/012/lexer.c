@@ -4,10 +4,15 @@
 #include "max_Lexer.h"
 #include "boeck_Lexer.h"
 
+/* When using multipl lexical analyzers, it must be compiled with 
+ * QUEX_OPTION_MULTI and 'Multi.i' must be included in one single file.      */
+#include <quex/code_base/Multi.i>
+
 int 
 main(int argc, char** argv) 
 {        
-    /* we want to have error outputs in stdout, so that the unit test could see it.  */
+    /* We want to have error outputs in stdout, so that the unit test could 
+     * see it.                                                               */
     max_Lexer     max_lex;
     moritz_Lexer  moritz_lex;
     boeck_Lexer   boeck_lex;
@@ -22,7 +27,7 @@ main(int argc, char** argv)
     boeck_Lexer_construct_file_name(&boeck_lex,   "example-utf8.txt",  0x0,     false);
 
     /* Each lexer reads one token, since the grammars are similar the lexeme 
-     * is always the same.                                                           */
+     * is always the same.                                                   */
     printf("                Max:        Moritz:      Boeck:\n");
 
     max_token    = max_Lexer_token_p(&max_lex);

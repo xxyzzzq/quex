@@ -1,6 +1,6 @@
-<test-database execution-time-sec="55.56" date="Sat Jul 19 12:04:08 2014">
+<test-database execution-time-sec="55.58" date="Mon Jul 21 15:47:11 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Complementary State Machines" time-sum-sec="2.48"> 
+    <test title="Complementary State Machines" time-sum-sec="2.49"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -11,7 +11,7 @@
            <choice name="Misc" result="OK" time_sec="1.05" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="27.89"> 
+    <test title="Algebraic Relations" time-sum-sec="27.90"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -39,7 +39,7 @@
            <choice name="" result="OK" time_sec="1.03" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Intersection" time-sum-sec="3.96"> 
+    <test title="Intersection" time-sum-sec="3.97"> 
         <application file-name="test-intersection.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -63,7 +63,7 @@
         </choice-list>
     </test>
     <group name="Complement Begin">
-        <test title="Cut patterns from P that contain Q." time-sum-sec="3.19"> 
+        <test title="Cut patterns from P that contain Q." time-sum-sec="3.18"> 
             <application file-name="test-complement_in.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -103,7 +103,7 @@
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="2.32"> 
+        <test title="Cut P so that it does not start with Q." time-sum-sec="2.33"> 
             <application file-name="test-cut_begin.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
