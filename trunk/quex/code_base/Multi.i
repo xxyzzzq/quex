@@ -41,13 +41,11 @@
  * implementations required.
  *
  * (C) Frank-Rene Schaefer                                                   */
-#ifndef  QUEX_OPTION_MULTI
+#if ! defined(QUEX_OPTION_MULTI) && ! defined(QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION)
 #    error "This file can only be included if option 'QUEX_OPTION_MULTI' has been set."
 #endif
 
-#define  QUEX_OPTION_MULTI_SHARED
 #include <quex/code_base/bom.i>
 #include <quex/code_base/MemoryManager.i>
-#undef   QUEX_OPTION_MULTI_SHARED
 
 #endif /* QUEX_INCLUDE_GUARD_MULTI_I__ */

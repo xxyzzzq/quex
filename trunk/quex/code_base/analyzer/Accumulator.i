@@ -192,5 +192,4 @@ QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/MemoryManager.i>
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I */

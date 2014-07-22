@@ -196,6 +196,5 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/BufferFiller.i>
-#include <quex/code_base/MemoryManager.i>
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN_I__ */

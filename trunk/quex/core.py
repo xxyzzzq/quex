@@ -80,7 +80,8 @@ def do():
          analyzer_implementation += class_token_implementation + "\n" 
 
     # Engine (Source Code)
-    engine_txt =   mode_implementation                    + "\n" \
+    engine_txt =   Lng.ENGINE_TEXT_EPILOG()               + "\n" \
+                 + mode_implementation                    + "\n" \
                  + function_analyzers_implementation      + "\n" \
                  + function_map_id_to_name_implementation + "\n" 
 

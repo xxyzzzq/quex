@@ -7,6 +7,11 @@
 #include <quex/code_base/converter_helper/from-utf32.i>
 #include <quex/code_base/converter_helper/from-unicode-buffer>
 #include <quex/code_base/converter_helper/from-unicode-buffer.i>
+#if ! defined(QUEX_OPTION_MULTI)
+#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#   include <quex/code_base/Multi.i>
+#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#endif
 using namespace std;
 using namespace quex;
 
