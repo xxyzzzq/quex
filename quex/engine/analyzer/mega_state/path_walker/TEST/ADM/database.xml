@@ -1,7 +1,7 @@
-<test-database execution-time-sec="3.54" date="Tue Jul 22 15:31:35 2014">
+<test-database execution-time-sec="3.53" date="Wed Jul 23 00:22:22 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="1.48"> 
+        <test title="select" time-sum-sec="1.47"> 
             <application file-name="select_longest_paths.py" info-request-time="1401225047L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="14" same_result="False">

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="328.07" date="Tue Jul 22 15:26:51 2014">
+<test-database execution-time-sec="328.05" date="Wed Jul 23 00:22:21 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="7.15"> 
@@ -51,7 +51,7 @@
                <choice name="UTF16BE-BOM" result="OK" time_sec="3.55" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="20.44"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="20.43"> 
             <application file-name="003-icu.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -74,7 +74,7 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" time-sum-sec="14.64"> 
+        <test title="Including Files" time-sum-sec="14.63"> 
             <application file-name="005.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -133,7 +133,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="120.48"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="120.47"> 
             <application file-name="010.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">

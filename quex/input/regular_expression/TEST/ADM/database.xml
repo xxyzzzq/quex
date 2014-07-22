@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.94" date="Tue Jul 22 15:39:43 2014">
+<test-database execution-time-sec="4.96" date="Wed Jul 23 00:22:22 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.11"> 
         <application file-name="test-pattern-matching.py" info-request-time="1387873736L" vanished="False"/>
@@ -21,7 +21,7 @@
            <choice name="" result="OK" time_sec="0.10" crc="1009211750"/>
         </choice-list>
     </test>
-    <test title="Case Folding" time-sum-sec="0.32"> 
+    <test title="Case Folding" time-sum-sec="0.33"> 
         <application file-name="test-case_fold.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
@@ -29,7 +29,7 @@
            <choice name="pattern" result="OK" time_sec="0.18" crc="577634184"/>
         </choice-list>
     </test>
-    <test title="Operations" time-sum-sec="0.78"> 
+    <test title="Operations" time-sum-sec="0.79"> 
         <application file-name="test-operations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">

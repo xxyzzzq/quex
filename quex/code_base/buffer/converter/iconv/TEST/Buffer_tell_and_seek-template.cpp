@@ -1,11 +1,7 @@
 #include <quex/code_base/buffer/TEST/Buffer_test_common.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
-#if ! defined(QUEX_OPTION_MULTI)
-#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#   include <quex/code_base/Multi.i>
-#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#endif
+#include <quex/code_base/single.i>
 #include ___HEADER___
 
 using namespace std;

@@ -25,9 +25,12 @@ base = """
 /aux-string.i
 /definitions
 /include-guard-undef
+/bom
+/bom.i
 /MemoryManager
 /MemoryManager.i
-/Multi.i
+/single.i
+/multi.i
 /temporary_macros_off
 /temporary_macros_on
 """

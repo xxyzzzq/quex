@@ -1,4 +1,4 @@
-<test-database execution-time-sec="46.99" date="Tue Jul 22 16:00:36 2014">
+<test-database execution-time-sec="46.96" date="Wed Jul 23 00:22:22 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting" time-sum-sec="2.77"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
@@ -32,7 +32,7 @@
                <choice name="8" result="OK" time_sec="0.64" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.11"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.10"> 
             <application file-name="test-skip-utf8.py" info-request-time="1394277471L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
@@ -44,7 +44,7 @@
         </test>
     </group>
     <group name="Skip-NestedRange">
-        <test title="Delimiter Sizes 1 and 2" time-sum-sec="18.17"> 
+        <test title="Delimiter Sizes 1 and 2" time-sum-sec="18.16"> 
             <application file-name="test-skip_nested_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
@@ -56,7 +56,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.50"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.49"> 
             <application file-name="test-skip_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
