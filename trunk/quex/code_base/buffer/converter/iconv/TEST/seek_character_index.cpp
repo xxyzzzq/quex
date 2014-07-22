@@ -4,11 +4,7 @@
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
-#if ! defined(QUEX_OPTION_MULTI)
-#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#   include <quex/code_base/Multi.i>
-#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#endif
+#include <quex/code_base/single.i>
 
 using namespace std;
 

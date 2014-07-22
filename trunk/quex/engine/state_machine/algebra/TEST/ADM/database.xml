@@ -1,4 +1,4 @@
-<test-database execution-time-sec="54.07" date="Tue Jul 22 15:39:10 2014">
+<test-database execution-time-sec="54.08" date="Wed Jul 23 00:22:22 2014">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="2.19"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
@@ -11,7 +11,7 @@
            <choice name="Misc" result="OK" time_sec="0.80" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="28.66"> 
+    <test title="Algebraic Relations" time-sum-sec="28.67"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -39,7 +39,7 @@
            <choice name="" result="OK" time_sec="0.98" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Intersection" time-sum-sec="3.69"> 
+    <test title="Intersection" time-sum-sec="3.70"> 
         <application file-name="test-intersection.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">

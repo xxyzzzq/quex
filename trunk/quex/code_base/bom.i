@@ -1,5 +1,5 @@
 /* This file contains an implementation which can potentially be shared between
- * multiple different lexical analyzers. See 'Multi.i' for further info.     */
+ * multiple different lexical analyzers. See 'multi.i' for further info.     */
 
 /* -*- C++ -*- vim:set syntax=cpp: 
  *

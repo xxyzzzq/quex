@@ -13,11 +13,11 @@
  *
  * must be defined. In one single file include
  *
- *                     #include <quex/code_base/Multi.i>
+ *                     #include <quex/code_base/multi.i>
  *
  * Option 'QUEX_OPTION_MULTI' avoids the inclusion of some critical files 
  * during the implementation of all files. Instead, the explicit inclusion of 
- * 'Multi.i' in one file delivers the reqired implementations. A good candidate
+ * 'multi.i' in one file delivers the reqired implementations. A good candidate
  * for '#includ'-ing is the interface module where the lexical analyzers are 
  * called.
  *

@@ -460,9 +460,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #   include <quex/code_base/token/TokenQueue.i>
 #endif
 
-#define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#include <quex/code_base/Multi.i>
-#undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#include <quex/code_base/single.i>
 
 #if ! defined (__QUEX_OPTION_PLAIN_C)
     using namespace quex;

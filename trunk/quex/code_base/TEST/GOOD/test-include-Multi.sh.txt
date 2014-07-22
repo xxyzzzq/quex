@@ -1,4 +1,4 @@
-#List of files which include files from Multi.i:
+#List of files which include files from multi.i:
 #-----------------------------------------------------
 # (No output is good output)
 Terminated: Considered 122 files.

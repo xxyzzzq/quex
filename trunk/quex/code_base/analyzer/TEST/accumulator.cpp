@@ -28,11 +28,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/Accumulator>
 
-#if ! defined(QUEX_OPTION_MULTI)
-#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#   include <quex/code_base/Multi.i>
-#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#endif
+#include <quex/code_base/single.i>
 
 QUEX_NAMESPACE_LEXEME_NULL_OPEN
 QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;
