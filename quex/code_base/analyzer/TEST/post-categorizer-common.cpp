@@ -1,5 +1,11 @@
 #include <quex/code_base/analyzer/TEST/post-categorizer-common.h>
 
+#if ! defined(QUEX_OPTION_MULTI)
+#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#   include <quex/code_base/Multi.i>
+#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#endif
+
 using namespace quex;
 
 void post_categorizer_setup(QUEX_NAME(Dictionary)* me, int Seed)

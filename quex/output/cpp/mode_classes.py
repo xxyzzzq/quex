@@ -4,14 +4,8 @@ from   quex.blackboard                   import setup as Setup, \
                                                 E_IncidenceIDs
 
 def do(Modes):
-    LexerClassName              = Setup.analyzer_class_name
-    DerivedClassName            = Setup.analyzer_derived_class_name
-    DerivedClassHeaderFileName  = Setup.analyzer_derived_class_file
-
-    if DerivedClassHeaderFileName != "": txt = "#include <" + Setup.get_file_reference(DerivedClassHeaderFileName) +">\n"
-    else:                                txt = "#include \"" + Setup.get_file_reference(Setup.output_header_file) +"\"\n"
-
-    txt += "#include <quex/code_base/analyzer/C-adaptions.h>\n"
+    LexerClassName   = Setup.analyzer_class_name
+    DerivedClassName = Setup.analyzer_derived_class_name
 
     # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
     mode_class_member_functions_txt = write_member_functions(Modes.values())
@@ -21,10 +15,12 @@ def do(Modes):
         if mode.abstract_f(): continue
         mode_objects_txt += "/* Global */QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode_name
 
-    txt += "QUEX_NAMESPACE_MAIN_OPEN\n"
-    txt += mode_objects_txt
-    txt += mode_class_member_functions_txt
-    txt += "QUEX_NAMESPACE_MAIN_CLOSE\n"
+    txt  = "%s%s%s%s" % (
+        "QUEX_NAMESPACE_MAIN_OPEN\n",
+        mode_objects_txt,
+        mode_class_member_functions_txt,
+        "QUEX_NAMESPACE_MAIN_CLOSE\n"
+    )
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])

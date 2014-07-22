@@ -584,6 +584,12 @@ class Lng_Cpp(dict):
         else:
             return "__QUEX_IF_COUNT_COLUMNS(reference_p = %s);\n" % IteratorName 
 
+    def ENGINE_TEXT_EPILOG(self):
+        if Setup.analyzer_derived_class_file: 
+            header = "<" + Setup.get_file_reference(Setup.analyzer_derived_class_file) +">\n"
+        else:                                 
+            header = "\"" + Setup.get_file_reference(Setup.output_header_file) +"\"\n"
+        return cpp_include_Multi_i_str.replace("$$HEADER$$", header)
     
     def MODE_GOTO(self, Mode):
         return "QUEX_NAME(enter_mode)(&self, &%s);" % Mode
@@ -627,10 +633,8 @@ class Lng_Cpp(dict):
             if FirstF: return "if( %s ) "      % decision
             else:      return "else if( %s ) " % decision
 
-
     def IF_GOTO(self, LValue, Condition, RValue, DoorId, FirstF=True):
         return "%s %s\n" % (self.IF(LValue, Condition, RValue, FirstF, True), self.GOTO(DoorId))
-                
 
     def IF_INPUT(self, Condition, Value, FirstF=True):
         return self.IF("input", Condition, Value, FirstF)
@@ -879,6 +883,20 @@ class Lng_Cpp(dict):
             positioning_str, "\n" if len(positioning_str) != 0 else "",
             goto_terminal_str
         ]
+
+cpp_include_Multi_i_str = """
+#include <quex/code_base/analyzer/C-adaptions.h>
+#include $$HEADER$$
+/* The file 'Multi.i' contains implementations which are the same for all 
+ * possibly generated analyzers. If QUEX_OPTION_MULTI is defined, it is
+ * NOT supposed to be included here. If not--in which case we have a single
+ * analzer--then it is included.                                             */
+#if ! defined(QUEX_OPTION_MULTI)
+#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#   include <quex/code_base/Multi.i>
+#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#endif
+"""
 
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);

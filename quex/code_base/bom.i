@@ -1,3 +1,6 @@
+/* This file contains an implementation which can potentially be shared between
+ * multiple different lexical analyzers. See 'Multi.i' for further info.     */
+
 /* -*- C++ -*- vim:set syntax=cpp: 
  *
  * Byte Order Mark (BOM) Handling.
@@ -12,9 +15,6 @@
  *
  * (C) 2010 Frank-Rene Schaefer    
  * ABSOLUTELY NO WARRANTY                                                    */
-/* This file contains an implementation which can potentially be shared between
- * multiple different lexical analyzers. See 'Shared.i' for further info. i  */
-#if ! defined(QUEX_OPTION_MULTI) || defined(QUEX_OPTION_MULTI_SHARED)
 
 #ifndef __QUEX_INCLUDE_GUARD__BOM_I
 #define __QUEX_INCLUDE_GUARD__BOM_I
@@ -180,5 +180,4 @@ QUEX_NAMESPACE_QUEX_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__BOM_I */
 
-#endif /* ! defined(QUEX_OPTION_MULTI) || defined(QUEX_OPTION_MULTI_SHARED) */
 

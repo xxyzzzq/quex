@@ -496,7 +496,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #ifdef QUEX_OPTION_CONVERTER_ICU
 #   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #endif
-#include <quex/code_base/MemoryManager.i>
 
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I */

@@ -93,7 +93,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/aux-string.i>
 
 #include    <quex/code_base/analyzer/member/basic.i>
-#include    <quex/code_base/MemoryManager.i>
 
 #include    <quex/code_base/buffer/Buffer.i>
 #include    <quex/code_base/buffer/BufferFiller.i>

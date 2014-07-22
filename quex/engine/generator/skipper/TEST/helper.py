@@ -232,6 +232,12 @@ customized_unit_test_function_txt = """
 static bool show_next_character(QUEX_TYPE_ANALYZER* me);
 static bool skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me);
 
+#if ! defined(QUEX_OPTION_MULTI)
+#   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#   include <quex/code_base/Multi.i>
+#   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
+#endif
+
 __QUEX_TYPE_ANALYZER_RETURN_VALUE 
 QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 {

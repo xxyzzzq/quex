@@ -1,13 +1,13 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#if ! defined(QUEX_OPTION_MULTI) || defined(QUEX_OPTION_MULTI_SHARED)
+
+/* This file contains an implementation which can potentially be shared between
+ * multiple different lexical analyzers. See 'Multi.i' for further info.     */
 
 #ifndef __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
 #define __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I
 
-/* This file contains an implementation which can potentially be shared between
- * multiple different lexical analyzers. See 'Shared.i' for further info. i  */
-
 #include <quex/code_base/definitions>
+#include <quex/code_base/MemoryManager>
 
 QUEX_NAMESPACE_QUEX_OPEN
 
@@ -65,5 +65,4 @@ QUEX_NAMESPACE_QUEX_CLOSE
  
 #endif /*  __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I */
 
-#endif /* ! defined(QUEX_OPTION_MULTI) || defined(QUEX_OPTION_MULTI_SHARED) */
 

@@ -331,7 +331,6 @@ QUEX_NAME(Dictionary)::print_this()
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/aux-string.i>
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */

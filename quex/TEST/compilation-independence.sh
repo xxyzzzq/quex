@@ -2,6 +2,7 @@
 
 if [[ $1 == "--hwut-info" ]]; then
     echo "Do code base file compile independently?"
+    exit
 fi
 
 here=`pwd`

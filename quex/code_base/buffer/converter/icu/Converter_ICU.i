@@ -191,6 +191,5 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 
 #include <quex/code_base/buffer/BufferFiller.i>
-#include <quex/code_base/MemoryManager.i>
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__ */
