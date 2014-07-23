@@ -1,13 +1,15 @@
 #! /usr/bin/env bash 
 # PURPOSE: Creating a release of Quex
-#   $1  version of the quex release
+#   $1  QUEX_PATH
+#   $2  version of the quex release
 #
 # (C) 2005-2008 Frank-Rene Schaefer  fschaef@users.sourceforge.net
 # 
 # ABSOLUTELY NO WARRANTY
 #
 ###########################################################################
-
+export QUEX_PATH=$1
+shift
 cd ~/prj/quex/trunk
 mkdir -p /tmp/quex-packages
 
@@ -31,7 +33,7 @@ function update_version_information()
 {
     # (*) Update the version information inside the application
     cd $QUEX_PATH;
-
+    pwd
     echo "-- Update Version Information"
     awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
         ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt

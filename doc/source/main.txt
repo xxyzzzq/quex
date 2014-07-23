@@ -1,7 +1,7 @@
 .. Quex documentation master file
 
-Quex Manual
-===========
+The Quex Manual
+===============
 
 Contents:
 
