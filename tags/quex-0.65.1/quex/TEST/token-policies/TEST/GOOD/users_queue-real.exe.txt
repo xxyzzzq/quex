@@ -1,0 +1,29 @@
+NOTE: The production of an assertion error might be part of the test.
+---------------------------------------------------------------------
+    received: ONE
+    received: TWO
+    received: THREE
+    received: FOUR
+---- 
+    received: FIVE
+    received: ONE
+    received: TWO
+    received: THREE
+---- 
+    received: FOUR
+    received: FIVE
+    received: ONE
+    received: TWO
+---- 
+    received: THREE
+    received: FOUR
+    received: FIVE
+    received: ONE
+---- 
+    received: TWO
+    received: THREE
+    received: FOUR
+    received: FIVE
+---- 
+    received: <TERMINATION>
+---- 

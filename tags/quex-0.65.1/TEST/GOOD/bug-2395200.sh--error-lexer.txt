@@ -1,0 +1,27 @@
+/home/fschaef/prj/quex/trunk/quex/code_base/buffer/BufferFiller.i:161:	terminate called after throwing an instance of 'std::runtime_error'
+  what():  
+The provided input stream behaves strangely. Number of read
+characters is not proportional to the stream position increase.
+The buffer filler type which you are using might be able to
+deal with those cases. Try compile option:
+
+-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
+
+However, those mechanisms imply a trade-off in terms of speed.
+Please, consider using a 'binary' for your input stream, or use
+a different implementation of the standard I/O library (e.g.
+not Microsoft(tm)).
+
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112

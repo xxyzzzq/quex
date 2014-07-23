@@ -1,0 +1,2 @@
+command line: Quex requires ASCII or UTF8 input character format.
+command line: File 'utf8-error.qx' is not ASCII or UTF8 encoded. Or, it contains encoding errors.

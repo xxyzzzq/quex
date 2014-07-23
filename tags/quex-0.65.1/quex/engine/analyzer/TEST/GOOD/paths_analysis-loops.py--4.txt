@@ -1,0 +1,158 @@
+init-state = 0L
+00000 (1)
+     == 'a' ==> 00001
+    
+00001 (1, A)
+     == 'b' ==> 00002
+    
+00002 (1)
+     == 'c' ==> 00003
+     == 'e' ==> 00006
+    
+00003 (1)
+     == 'c' ==> 00004
+     == 'd' ==> 00002
+    
+00004 (1)
+     == 'c' ==> 00005
+     == 'd' ==> 00003
+    
+00005 (1)
+     == 'd' ==> 00004
+    
+00006 (1, A)
+     == 'f' ==> 00007
+    
+00007 (1)
+     == 'g' ==> 00008
+    
+00008 (1, A)
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0:
+  .drop_out:
+     goto Pattern1;
+
+
+State 2:
+  .entry:
+    .from 1: position[PostContext_1]  = input_p;
+    .from 3:
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern1;
+
+
+State 3:
+  .entry:
+    .from 2:
+    .from 4:
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern1;
+
+
+State 4:
+  .entry:
+    .from 3:
+    .from 5:
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern1;
+
+
+State 5:
+  .entry:
+    .from 4:
+  .drop_out:
+    pos = position[PostContext_1] ; goto Pattern1;
+
+
+State 6:
+  .entry:
+    .from 2:
+  .drop_out:
+     goto Pattern1;
+
+
+State 7:
+  .entry:
+    .from 6:
+  .drop_out:
+    pos -= 1;  goto Pattern1;
+
+
+State 8:
+  .entry:
+    .from 7:
+  .drop_out:
+     goto Pattern1;
+
+
+State 0:
+        [MATCH_FAILURE]: NONE/set([0L])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+    (*) [      1]: NONE/set([1L])
+
+State 3:
+    (*) [      1]: NONE/set([1L])
+
+State 4:
+    (*) [      1]: NONE/set([1L])
+
+State 5:
+    (*) [      1]: NONE/set([1L])
+
+State 6:
+        [      1]: NONE/set([6L])
+
+State 7:
+        [      1]: NONE/set([6L])
+
+State 8:
+        [      1]: NONE/set([8L])
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1: position[PostContext_0]  = input_p;
+    .from 3:
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern1;
+
+
+State 3:
+  .entry:
+    .from 2:
+    .from 4:
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern1;
+
+
+State 4:
+  .entry:
+    .from 3:
+    .from 5:
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern1;
+
+
+State 5:
+  .entry:
+    .from 4:
+  .drop_out:
+    pos = position[PostContext_0] ; goto Pattern1;
+
+

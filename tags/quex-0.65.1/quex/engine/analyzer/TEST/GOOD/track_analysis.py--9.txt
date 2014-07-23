@@ -1,0 +1,36 @@
+init-state = 0L
+00000 (1), (2)
+     == ['a', 'h'], ['j', 'z'] ==> 00001
+     == 'i' ==> 00002
+    
+00001 (2, A)
+     == ['a', 'z'] ==> 00001
+    
+00002 (1), (2, A)
+     == ['a', 'e'], ['g', 'z'] ==> 00001
+     == 'f' ==> 00003
+    
+00003 (1, A), (2, A)
+     == ['a', 'z'] ==> 00001
+    
+
+#State 0
+    p-id     pre-id   as-i     ps-i     tnsp
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 1
+    p-id     pre-id   as-i     ps-i     tnsp
+    2        NONE     1        1        0        
+
+
+#State 2
+    p-id     pre-id   as-i     ps-i     tnsp
+    2        NONE     2        2        0        
+
+
+#State 3
+    p-id     pre-id   as-i     ps-i     tnsp
+    1        NONE     3        3        0        
+
+

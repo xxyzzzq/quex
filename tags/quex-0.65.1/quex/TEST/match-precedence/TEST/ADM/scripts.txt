@@ -1,0 +1,3 @@
+*.sh
+deletion.py
+priority.py

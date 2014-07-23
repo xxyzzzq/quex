@@ -1,0 +1,10 @@
+rm -f Simple*
+rm -f *.o
+rm -f *.bak
+rm -f *.E
+rm -f lexer
+test2.qx:2:error: The core pattern contains in a 'nothing is necessary' path in the state machine.
+test2.qx:2:error: This means, that without reading a character the analyzer drops into
+test2.qx:2:error: an acceptance state. The analyzer would then stall.
+test2.qx:2:error: Note: A post context does not change anything to that fact.
+make: *** [Simple.c] Error 255

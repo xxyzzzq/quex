@@ -1,0 +1,64 @@
+<history date="Wed Jul 23 09:54:07 2014" element-n="44">
+    <day year="2013" month="01" day="10">
+        <history-init time="17:49:13"/>
+        <crc-error time="18:15:31" application="test-intersection.py" choice="GoodCases" database-crc="1437481811" real-crc="-1865021134"/>
+        <crc-error time="18:31:54" application="test-intersection.py" choice="Misc" database-crc="1493496514" real-crc="-465546396"/>
+        <crc-error time="20:27:42" application="test-intersection.py" choice="Misc" database-crc="-465546396" real-crc="-600778506"/>
+        <crc-error time="20:29:27" application="test-intersection.py" choice="Misc" database-crc="-600778506" real-crc="1452230016"/>
+    </day>
+    <day year="2013" month="01" day="15">
+        <crc-error time="21:16:48" application="test-cut.py" choice="1" database-crc="1638107857" real-crc="-1476797981"/>
+        <crc-error time="21:19:28" application="test-cut.py" choice="1" database-crc="-1476797981" real-crc="1030393153"/>
+    </day>
+    <day year="2013" month="01" day="16">
+        <crc-error time="07:03:01" application="test-cut.py" choice="5" database-crc="1904416893" real-crc="-1788447866"/>
+    </day>
+    <day year="2013" month="01" day="20">
+        <crc-error time="07:38:07" application="test-complement_begin.py" choice="0" database-crc="524545483" real-crc="-1763215802"/>
+        <crc-error time="21:00:26" application="test-complement_end.py" choice="4" database-crc="-479395952" real-crc="1035714646"/>
+        <crc-error time="21:52:55" application="test-complement_end.py" choice="4" database-crc="1035714646" real-crc="1070628383"/>
+        <crc-error time="22:10:06" application="test-complement_end.py" choice="5" database-crc="1560071604" real-crc="1616529064"/>
+        <crc-error time="22:11:29" application="test-complement_end.py" choice="5" database-crc="1616529064" real-crc="-235045262"/>
+        <crc-error time="22:11:48" application="test-complement_end.py" choice="5" database-crc="-235045262" real-crc="1535852030"/>
+        <crc-error time="22:15:32" application="test-complement_end.py" choice="5" database-crc="1535852030" real-crc="-1997246813"/>
+        <crc-error time="22:17:06" application="test-complement_end.py" choice="5" database-crc="-1997246813" real-crc="-1571425050"/>
+        <crc-error time="22:24:39" application="test-complement_end.py" choice="5" database-crc="-1571425050" real-crc="-907666158"/>
+    </day>
+    <day year="2013" month="01" day="27">
+        <crc-error time="08:31:24" application="test-complement_in.py" choice="0" database-crc="-1223238412" real-crc="599940312"/>
+        <crc-error time="08:39:50" application="test-complement_in.py" choice="0" database-crc="599940312" real-crc="1057279868"/>
+        <crc-error time="08:48:07" application="test-complement_in.py" choice="1" database-crc="2000170035" real-crc="1931409293"/>
+    </day>
+    <day year="2013" month="02" day="02">
+        <crc-error time="06:54:22" application="test-cut_begin.py" choice="5" database-crc="2064171527" real-crc="-459425627"/>
+        <crc-error time="07:39:28" application="test-cut_begin.py" choice="1" database-crc="-1432263840" real-crc="-1989997111"/>
+        <crc-error time="07:40:05" application="test-complement_begin.py" choice="0" database-crc="-1763215802" real-crc="-1500109119"/>
+        <crc-error time="07:40:06" application="test-complement_begin.py" choice="2" database-crc="-1367604962" real-crc="1095692780"/>
+        <crc-error time="07:40:07" application="test-complement_begin.py" choice="4" database-crc="856671848" real-crc="1093303991"/>
+        <crc-error time="07:40:08" application="test-complement_begin.py" choice="5" database-crc="1559033400" real-crc="-769609219"/>
+        <crc-error time="07:49:17" application="test-complement_begin.py" choice="0" database-crc="-1500109119" real-crc="-970334341"/>
+        <crc-error time="07:53:46" application="test-complement_begin.py" choice="4" database-crc="1093303991" real-crc="346515061"/>
+        <crc-error time="07:54:36" application="test-complement_begin.py" choice="0" database-crc="-970334341" real-crc="-1750052441"/>
+        <crc-error time="07:55:55" application="test-complement_begin.py" choice="0" database-crc="-1750052441" real-crc="1789440613"/>
+    </day>
+    <day year="2013" month="02" day="07">
+        <crc-error time="20:26:38" application="test-cut_end.py" choice="5" database-crc="-171994326" real-crc="2020845673"/>
+    </day>
+    <day year="2013" month="10" day="05">
+        <crc-error time="01:48:49" application="test-complement_begin.py" choice="0" database-crc="1789440613" real-crc="-104592043"/>
+        <crc-error time="01:48:49" application="test-complement_begin.py" choice="1" database-crc="2015253662" real-crc="155036287"/>
+        <crc-error time="01:48:49" application="test-complement_begin.py" choice="2" database-crc="1095692780" real-crc="1485782694"/>
+        <crc-error time="01:48:50" application="test-complement_begin.py" choice="3" database-crc="-2015255373" real-crc="-1105919275"/>
+        <crc-error time="01:48:50" application="test-complement_begin.py" choice="4" database-crc="346515061" real-crc="-848501124"/>
+        <crc-error time="01:48:51" application="test-complement_begin.py" choice="5" database-crc="-769609219" real-crc="1450785644"/>
+        <crc-error time="01:48:51" application="test-complement_end.py" choice="0" database-crc="-1018463777" real-crc="-1892553389"/>
+        <crc-error time="01:48:52" application="test-complement_end.py" choice="1" database-crc="175432071" real-crc="-1738916121"/>
+        <crc-error time="01:48:52" application="test-complement_end.py" choice="2" database-crc="-1606437308" real-crc="2112001947"/>
+        <crc-error time="01:48:52" application="test-complement_end.py" choice="3" database-crc="595489109" real-crc="-1953797760"/>
+        <crc-error time="01:48:53" application="test-complement_end.py" choice="4" database-crc="1070628383" real-crc="2023946967"/>
+        <crc-error time="01:48:54" application="test-complement_end.py" choice="5" database-crc="-907666158" real-crc="393778705"/>
+    </day>
+    <day year="2013" month="12" day="30">
+        <crc-error time="07:23:23" application="test-algebraic-relations.py" choice="unary" database-crc="-106769247" real-crc="1858791790"/>
+    </day>
+</history>

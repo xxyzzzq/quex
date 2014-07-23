@@ -1,0 +1,7 @@
+command line: No token id beyond the standard token ids are defined. Found:
+command line:     QUEX_TKN_DEDENT
+command line:     QUEX_TKN_INDENT
+command line:     QUEX_TKN_NODENT
+command line:     QUEX_TKN_TERMINATION
+command line:     QUEX_TKN_UNINITIALIZED
+command line: Refused to proceed.

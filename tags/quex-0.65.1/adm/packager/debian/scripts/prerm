@@ -1,0 +1,18 @@
+#!/bin/sh
+
+#Remove pyc 
+find /opt/quex/quex-##QUEX_VERSION/ -iname "*.pyc" -exec rm {} \;
+
+UBUNTU=`cat /etc/lsb-release 2> /dev/null | grep -i "ubuntu"`
+if [ "$UBUNTU" ]; then
+  #Ubuntu
+  rm /etc/profile.d/quex.sh
+else
+  #Debian
+  sed "s/export QUEX_PATH.*$//" -i /etc/profile
+fi
+
+#Remove the link to the executable
+rm '##BIN_DIRECTORY/quex'
+
+exit 0

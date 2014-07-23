@@ -1,0 +1,56 @@
+(1)
+::
+c+ => newline;
+[ce] => space;>
+::
+
+test_string:1:error: For 'newline' only patterns are addmissible which
+test_string:1:error: can be matched by a single character, e.g. " " or [a-z].
+Exception!
+
+(2)
+::
+e+ => newline;
+[be] => space;>
+::
+
+test_string:1:error: For 'newline' only patterns are addmissible which
+test_string:1:error: can be matched by a single character, e.g. " " or [a-z].
+Exception!
+
+(3)
+::
+a? => newline;
+[ce] => space;>
+::
+
+test_string:1:error: The core pattern contains in a 'nothing is necessary' path in the state machine.
+test_string:1:error: This means, that without reading a character the analyzer drops into
+test_string:1:error: an acceptance state. The analyzer would then stall.
+Exception!
+
+(4)
+::
+ae* => newline;
+[ce] => space;>
+::
+
+test_string:1:error: For 'newline' only patterns are addmissible which
+test_string:1:error: can be matched by a single character, e.g. " " or [a-z].
+Exception!
+
+(5)
+::
+a => newline;
+c => space;>
+::
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+newline:
+      1 by 'a'
+space:
+      1 by [\0, '`'], 'b', ['d', oo]
+      1 by 'c'
+
+
