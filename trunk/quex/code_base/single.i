@@ -21,10 +21,10 @@
  * (C) Frank-Rene Schaefer                                                   */
 
 #if ! defined(QUEX_OPTION_MULTI)
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__SINGLE_I__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__SINGLE_I__
+#ifndef __QUEX_INCLUDE_GUARD__SINGLE_I
+#define __QUEX_INCLUDE_GUARD__SINGLE_I
 #   define  QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
 #   include <quex/code_base/multi.i>
 #   undef   QUEX_OPTION_MULTI_ALLOW_IMPLEMENTATION
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__SINGLE_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__SINGLE_I */
 #endif

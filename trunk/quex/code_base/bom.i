@@ -23,7 +23,7 @@
 
 QUEX_NAMESPACE_QUEX_OPEN
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(bom_snap)(__QUEX_STD_FILE* InputHandle)
 /* This function can **only** be used with **normally** behaving streams
  * where the position increases by one with every character being read. If
@@ -46,7 +46,7 @@ QUEXED_DEF(bom_snap)(__QUEX_STD_FILE* InputHandle)
 }
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-template <class InputStream> QUEX_INLINE QUEX_TYPE_BOM
+template <class InputStream> extern QUEX_TYPE_BOM
 QUEXED_DEF(bom_snap)(InputStream* p_input_stream)
 /* This function can **only** be used with **normally** behaving streams
  * where the position increases by one with every character being read. If
@@ -72,7 +72,7 @@ QUEXED_DEF(bom_snap)(InputStream* p_input_stream)
 }
 #endif
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(__bom_snap_core)(uint8_t buffer[4], size_t read_n, size_t* byte_n)
 {
     /* For non-existing bytes fill 0x77, because it does not occur
@@ -87,7 +87,7 @@ QUEXED_DEF(__bom_snap_core)(uint8_t buffer[4], size_t read_n, size_t* byte_n)
     return QUEXED_DEF(bom_identify)(buffer, byte_n);
 }
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(bom_identify)(const uint8_t* const Buffer, size_t* n)
     /* Assume, that the buffer contains at least 4 elements!                 */
 {
@@ -145,7 +145,7 @@ QUEXED_DEF(bom_identify)(const uint8_t* const Buffer, size_t* n)
     return x;
 }           
 
-QUEX_INLINE const char*
+extern const char*
 QUEXED_DEF(bom_name)(QUEX_TYPE_BOM BOM)
 {
     switch( BOM ) {

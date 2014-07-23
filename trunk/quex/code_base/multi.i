@@ -1,5 +1,5 @@
-#ifndef QUEX_INCLUDE_GUARD_MULTI_I__
-#define QUEX_INCLUDE_GUARD_MULTI_I__
+#ifndef __QUEX_INCLUDE_GUARD__MULTI_I
+#define __QUEX_INCLUDE_GUARD__MULTI_I
 /* PURPOSE: 
  *
  * Solving the problem of multiple definitions of same functions when multiple
@@ -48,4 +48,4 @@
 #include <quex/code_base/bom.i>
 #include <quex/code_base/MemoryManager.i>
 
-#endif /* QUEX_INCLUDE_GUARD_MULTI_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__MULTI_I__ */

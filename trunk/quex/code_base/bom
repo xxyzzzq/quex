@@ -75,21 +75,21 @@ typedef enum {
 
 QUEX_NAMESPACE_QUEX_OPEN
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(bom_snap)(__QUEX_STD_FILE* InputHandle);
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
+#ifdef __cplusplus
 template <class InputStream> QUEX_INLINE QUEX_TYPE_BOM
 QUEXED_DEF(bom_snap)(InputStream* p_input_stream);
 #endif
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(__bom_snap_core)(uint8_t buffer[4], size_t read_n, size_t* byte_n);
 
-QUEX_INLINE QUEX_TYPE_BOM
+extern QUEX_TYPE_BOM
 QUEXED_DEF(bom_identify)(const uint8_t* const Buffer, size_t* n);
 
-QUEX_INLINE const char*
+extern const char*
 QUEXED_DEF(bom_name)(QUEX_TYPE_BOM BOM);
 
 QUEX_NAMESPACE_QUEX_CLOSE

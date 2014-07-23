@@ -5,8 +5,8 @@
 #include "boeck_Lexer"
 
 /* When using multiple lexical analyzers, it must be compiled with 
- * QUEX_OPTION_MULTI and 'Multi.i' must be included in one single file.      */
-#include <quex/code_base/Multi.i>
+ * QUEX_OPTION_MULTI and 'multi.i' must be included in one single file.      */
+#include <quex/code_base/multi.i>
 
 using namespace std;
 
