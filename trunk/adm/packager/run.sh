@@ -193,14 +193,17 @@ EOF
 
 function repository_update() {
     cd $QUEX_PATH;
+    pwd
 
+    echo "-- get unit test report"
     hwut i > unit_test_results.txt
 
     # make sure that the new version information is checked in
     echo "-- Update repository / Create tag for $1"
-    svn commit -m "Version Info / Prepare Release $1"
+    svn ci -m "Version Info / Prepare Release $1"
 
     # branch on sourceforge subversion
+    echo "-- copy old version from trunk to tags"
     svn copy --username=fschaef \
              svn+ssh://fschaef@svn.code.sf.net/p/quex/code/trunk \
              svn+ssh://fschaef@svn.code.sf.net/p/quex/code/tags/quex-$1 \
