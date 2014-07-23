@@ -6,7 +6,7 @@
  *       compiler package (e.g. a major Redmondian Company). For this
  *       reason this header creates som adaptions. */
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -20,7 +20,7 @@ extern "C" {
 #   include <stdint.h>
 #endif
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
+#ifdef __cplusplus
 } /* extern "C" */
 #endif
 

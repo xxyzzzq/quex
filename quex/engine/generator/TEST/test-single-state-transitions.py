@@ -154,6 +154,7 @@ main_template = """
 #define QUEX_CONVERTER_STRING_DEF(X, Y)  QUEX_CONVERTER_STRING_DEFi(X, Y)
 #define QUEX_CONVERTER_STRING(X, Y)      QUEX_CONVERTER_STRING_DEFi(X, Y)
 #include <quex/code_base/converter_helper/from-utf32.i>
+#include <quex/code_base/single.i>
 
 typedef struct {
     struct {

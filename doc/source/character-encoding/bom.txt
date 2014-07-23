@@ -13,10 +13,12 @@ character stream. To access the following files must be included:
 .. code-block:: cpp
 
     #include <quex/code_base/bom>
-    #include <quex/code_base/bom.i>
 
-These files declare and implement BOM related functions in in the quex
-namespace. The list of available functions in C++ is 
+Note, that the corresponding implementation 'bom.i' file is only to be included
+manually, if no generated lexer is used. Otherwise, its implementation is part
+of the quex-core which is linked anyway.  These files declare and implement BOM
+related functions in in the quex namespace. The list of available functions in
+C++ is 
 
 .. code-block:: cpp
 

@@ -4,7 +4,6 @@
 // (*) include lexical analyser header
 #include "EasyLexer"
 #include <quex/code_base/bom>
-#include <quex/code_base/bom.i>
 
 int 
 main(int argc, char** argv) 

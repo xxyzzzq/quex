@@ -5,22 +5,22 @@
 > 		boeck_Lexer.c    \
 > 		max_Lexer.c      \
 > 		moritz_Lexer.c             
-< OBJS = $(ENGINE:.cpp=.o) lexer.o
+< OBJS =  lexer.o $(ENGINE:.cpp=.o)
 ---
 > OBJS = $(ENGINE:.c=.o) lexer.o
-< 	g++ $(OBJS) -ggdb -o  $@ \
-< 		-I$(QUEX_PATH) 
+< CC := g++ -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
+---
+> CC := gcc -ggdb -Wall -Werror -DQUEX_OPTION_MULTI
+< 	g++ $(OBJS) -ggdb -o $@ 
 < 	 
 ---
 > 	gcc $(OBJS) -ggdb -o  $@ -I$(QUEX_PATH) 
-< %.o: %.cpp $(ENGINE_SOURCES)
-< 	g++ -c $< -ggdb -Wall -Werror -o $@ \
-< 		-I$(QUEX_PATH) \
-< 		$(CCFLAG_ASSERTS) 
-< 
+< #
+< lexer.o: lexer.cpp $(ENGINE)
+< 	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+< %.o: %.cpp 
 ---
 > %.o: %.c 
-> 	gcc -c $< -ggdb -Wall -Werror -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 < %.E: %.cpp
 < 	g++ -E $< -o  $@ \
 < 		-I$(QUEX_PATH) 

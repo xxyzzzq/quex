@@ -885,8 +885,8 @@ class Lng_Cpp(dict):
         ]
 
 cpp_include_Multi_i_str = """
-#include <quex/code_base/analyzer/C-adaptions.h>
 #include $$HEADER$$
+#include <quex/code_base/analyzer/C-adaptions.h>
 /* The file 'multi.i' contains implementations which are the same for all 
  * possibly generated analyzers. If QUEX_OPTION_MULTI is defined, it is
  * NOT supposed to be included here. If not--in which case we have a single
