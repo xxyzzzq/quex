@@ -1,0 +1,240 @@
+---------------------------
+Original = abc("123"+)xyz
+Cutter   = abcyz
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == '1' ==> 00004
+    
+00004 ()
+     == '2' ==> 00005
+    
+00005 ()
+     == '3' ==> 00006
+    
+00006 ()
+     == '1' ==> 00004
+     == 'x' ==> 00007
+    
+00007 ()
+     == 'y' ==> 00008
+    
+00008 ()
+     == 'z' ==> 00009
+    
+00009 (A)
+    
+
+
+Original = abcyz
+Cutter   = abc("123"+)xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == 'y' ==> 00004
+    
+00004 ()
+     == 'z' ==> 00005
+    
+00005 (A)
+    
+
+---------------------------
+Original = abc("123"|"ABC")xyz
+Cutter   = abc1B3xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == '1' ==> 00004
+     == 'A' ==> 00010
+    
+00004 ()
+     == '2' ==> 00005
+    
+00005 ()
+     == '3' ==> 00006
+    
+00006 ()
+     == 'x' ==> 00007
+    
+00007 ()
+     == 'y' ==> 00008
+    
+00008 ()
+     == 'z' ==> 00009
+    
+00009 (A)
+    
+00010 ()
+     == 'B' ==> 00011
+    
+00011 ()
+     == 'C' ==> 00006
+    
+
+
+Original = abc1B3xyz
+Cutter   = abc("123"|"ABC")xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == '1' ==> 00004
+    
+00004 ()
+     == 'B' ==> 00005
+    
+00005 ()
+     == '3' ==> 00006
+    
+00006 ()
+     == 'x' ==> 00007
+    
+00007 ()
+     == 'y' ==> 00008
+    
+00008 ()
+     == 'z' ==> 00009
+    
+00009 (A)
+    
+
+---------------------------
+Original = abc("123"|"ABCD")xyz
+Cutter   = abcABCxyc
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == '1' ==> 00004
+     == 'A' ==> 00010
+    
+00004 ()
+     == '2' ==> 00005
+    
+00005 ()
+     == '3' ==> 00006
+    
+00006 ()
+     == 'x' ==> 00007
+    
+00007 ()
+     == 'y' ==> 00008
+    
+00008 ()
+     == 'z' ==> 00009
+    
+00009 (A)
+    
+00010 ()
+     == 'B' ==> 00011
+    
+00011 ()
+     == 'C' ==> 00012
+    
+00012 ()
+     == 'D' ==> 00006
+    
+
+
+Original = abcABCxyc
+Cutter   = abc("123"|"ABCD")xyz
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 ()
+     == 'a' ==> 00001
+    
+00001 ()
+     == 'b' ==> 00002
+    
+00002 ()
+     == 'c' ==> 00003
+    
+00003 ()
+     == 'A' ==> 00004
+    
+00004 ()
+     == 'B' ==> 00005
+    
+00005 ()
+     == 'C' ==> 00006
+    
+00006 ()
+     == 'x' ==> 00007
+    
+00007 ()
+     == 'y' ==> 00008
+    
+00008 ()
+     == 'c' ==> 00009
+    
+00009 (A)
+    
+

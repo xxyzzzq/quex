@@ -1,0 +1,36 @@
+// -*- C++ -*-
+
+start = HEADER;
+
+header 
+{
+#include <stdlib.h>  /* for: atoi() */
+}
+
+token {
+    TAB;
+    DHASH;
+    HASH;
+    KEY;
+    EQUALS;
+    VALUE;
+}
+
+// Adapting the internal engine Pro: Faster run-time performance, since no conversion needs to be done.
+
+mode HEADER {
+    on_failure { printf("HEADER: something is wrong: [%s]\n",Lexeme); }
+    <<EOF>>    => QUEX_TKN_TERMINATION(LexemeNull);
+    ^##        { printf("hashes, entering HEADER_LINE\n"); self_enter_mode(&HEADER_LINE); }
+    \r?\n      { printf("newline in header\n"); }
+
+}
+mode HEADER_LINE 
+{
+    on_failure      { printf("HEADER_LINE: something is wrong: %s\n",Lexeme); }
+    \r?\n           { printf("leaving HEADER_LINE\n"); self_enter_mode(&HEADER); }
+    [^=\r\n]+       { self_send1(QUEX_TKN_KEY,Lexeme); }
+    "="             => QUEX_TKN_EQUALS(Lexeme);
+}
+
+

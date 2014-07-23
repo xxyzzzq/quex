@@ -1,0 +1,14 @@
+Search for THE_INHERITABLE_ONLY_MODE_XYZ_4711 ___________________________
+ (No output is good output. '*' indicates that it appears in comment)
+Simple.cpp:#   define THE_INHERITABLE_ONLY_MODE_XYZ_4711    (QUEX_NAME(THE_INHERITABLE_ONLY_MODE_XYZ_4711))
+Simple.cpp:#   undef THE_INHERITABLE_ONLY_MODE_XYZ_4711
+Simple.cpp:     *       THE_INHERITABLE_ONLY_MODE_XYZ_4711
+Simple.cpp:     *       (  0) THE_INHERITABLE_ONLY_MODE_XYZ_4711: z
+
+Compilation _____________________________________________________________
+ (No output is good output)
+
+Result of: > ls Simple.o ________________________________________________
+Simple.o
+
+_________________________________________________________________________

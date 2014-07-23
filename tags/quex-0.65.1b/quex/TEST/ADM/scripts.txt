@@ -1,0 +1,4 @@
+dash *.sh
+*.py
+--not compilation-independence.sh
+

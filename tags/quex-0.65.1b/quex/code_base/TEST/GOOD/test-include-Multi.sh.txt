@@ -1,0 +1,8 @@
+#List of files which include files from multi.i:
+#-----------------------------------------------------
+# (No output is good output)
+file single.i includes multi.i
+only 'single.i' is allowed to do so.
+Terminated: Considered 122 files.
+
+

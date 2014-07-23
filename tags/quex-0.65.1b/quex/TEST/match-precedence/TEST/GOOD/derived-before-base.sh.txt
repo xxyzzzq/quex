@@ -1,0 +1,6 @@
+## An Assert-Abortion might be an intended element of the experiment.
+B_WORD 'word' 
+A_IDENTIFIER 'otto' 
+A_IDENTIFIER 'wordy' 
+<TERMINATION>
+

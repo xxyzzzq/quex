@@ -1,0 +1,20 @@
+Border:              9
+NumberSet:           [[10]]
+cut_lesser           --> [[10]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              10
+NumberSet:           [[10]]
+cut_lesser           --> [[10]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              11
+NumberSet:           [[10]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              12
+NumberSet:           [[10]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10]]
+______________________________________

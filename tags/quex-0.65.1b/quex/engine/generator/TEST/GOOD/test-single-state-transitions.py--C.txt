@@ -1,0 +1,4 @@
+No output is good output!
+Intervals:  13124
+Characters: 131071
+Oll Korrekt

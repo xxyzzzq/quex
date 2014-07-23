@@ -1,0 +1,2 @@
+test.qx:5:error: Pattern 'mode' is a quex section title. Has the closing '}' of mode ONE 
+test.qx:5:error: been forgotten? Else use quotes, i.e. "mode".

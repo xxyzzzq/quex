@@ -1,0 +1,11 @@
+digraph state_machine {
+rankdir=LR;
+size="8,5"
+node [shape = doublecircle]; 5;
+node [shape = circle];
+0 -> 1 [label ="'o'"];
+1 -> 2 [label ="'l'"];
+2 -> 3 [label ="'l'"];
+3 -> 4 [label ="'e'"];
+4 -> 5 [label ="'H', 'h'"];
+}

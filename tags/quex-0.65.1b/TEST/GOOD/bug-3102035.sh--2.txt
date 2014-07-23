@@ -1,0 +1,15 @@
+## In this test we try to avoid issues with some 'weird' cases that
+## produced duplicate state labels. The the compiler warnings such as
+## 
+##   Case3.c:154: error: duplicate label ‘STATE_39’
+##   Case3.c:151: error: previous definition of ‘STATE_39’ was here
+##
+## would appear. If they do not, then everything is fine.
+## Case2 causes an error message which we want to see: no '--debug-exception'
+quex -i case2.qx  --engine Case2 --language C 
+case2.qx:10:error: The pre-context contains in a 'nothing is necessary' path in the state machine.
+case2.qx:10:error: This means, that without reading a character the analyzer drops into
+case2.qx:10:error: an acceptance state. E.g., pattern 'x*/y/' means that zero or more 'x' are a pre-
+case2.qx:10:error: condition for 'y'. If zero appearances of 'x' are enough, then obviously
+case2.qx:10:error: there is no pre-context for 'y'! Most likely the author intended 'x+/y/'.
+make: *** [Case2.c] Error 255

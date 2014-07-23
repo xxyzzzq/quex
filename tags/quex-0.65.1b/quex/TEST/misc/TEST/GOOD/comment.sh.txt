@@ -1,0 +1,58 @@
+<         goto _4;/* ['\v', 'ÿ'] */
+< 
+>         goto _4;
+<         goto _2;/* '\n' */
+< 
+>         goto _2;
+<         goto _3;/* '\t' */
+< 
+>         goto _3;
+<         goto _4;/* [\0, '\b'] */
+< 
+>         goto _4;
+< goto _7;/* [\0, 'ÿ'] */
+< 
+> goto _7;
+< goto _8;/* [\0, 'ÿ'] */
+< 
+> goto _8;
+< goto _9;/* [\0, 'ÿ'] */
+< 
+> goto _9;
+< goto _10;/* [\0, 'ÿ'] */
+< 
+> goto _10;
+<     /* BEGIN: STATE MACHINE
+<      * init-state = 12L
+<      * 00012 (0, 2)
+<      *      == 'a' ==> 00013
+<      *     
+<      * 00013 (0, 3, A)
+<      *     
+<      * END: STATE MACHINE
+<      */
+<         case 0x0: goto _9;/* \0 */
+< 
+>         case 0x0: goto _9;
+<         case 0x60: goto _5;/* [\1, '`'] */
+< 
+<         case 0x61: goto _4;/* 'a' */
+< 
+>         case 0x60: goto _5;
+>         case 0x61: goto _4;
+<         case 0xFF: goto _5;/* ['b', 'ÿ'] */
+< 
+>         case 0xFF: goto _5;
+< goto _6;/* [\0, 'ÿ'] */
+< 
+> goto _6;
+<     /* BEGIN: MODE PATTERNS
+<      * 
+<      * MODE: X
+<      * 
+<      *     PATTERN LIST:
+<      *       (  0) X: a
+<      * 
+<      * 
+<      * END: MODE PATTERNS
+<      */

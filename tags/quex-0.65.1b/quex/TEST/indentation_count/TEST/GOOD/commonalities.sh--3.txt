@@ -1,0 +1,4 @@
+## commonalities of the suppressor are no longer forbidden.
+src/error-3.qx:11:error: The pattern '<skip>' matches on some common lexemes as
+src/error-3.qx:8:error: pattern '<indentation newline>'.
+src/error-3.qx:8:error: ('--suppress 3' to avoid this message)

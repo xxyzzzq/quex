@@ -1,0 +1,23 @@
+,-----------------------------------------------------------------
+| [START]
+[[INDENT]] 5
+[[INDENT]] 9
+WORD 'one' 
+<INDENT> '' 
+WORD 'two' 
+<NODENT> '' 
+<NODENT> '' 
+WORD 'three' 
+<INDENT> '' 
+WORD 'four' 
+<NODENT> '' 
+<NODENT> '' 
+WORD 'five' 
+<DEDENT> '' 
+WORD 'six' 
+<DEDENT> '' 
+WORD 'seven' 
+<NODENT> '' 
+<TERMINATION> '' 
+| [END] number of token = 17
+`-----------------------------------------------------------------
