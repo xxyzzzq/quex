@@ -1,0 +1,63 @@
+< 		boeck_Lexer.cpp   \
+< 		max_Lexer.cpp     \
+< 		moritz_Lexer.cpp             
+---
+> 		boeck_Lexer.c   \
+> 		max_Lexer.c     \
+> 		moritz_Lexer.c  
+< CC := g++ -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
+---
+> CC := gcc -DQUEX_OPTION_MULTI -Wall -Werror
+< lexer: $(ENGINE:.cpp=.o) lexer.o A_B_C-token.o
+< 	$(CC) $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
+---
+> lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
+> 	$(CC) $^ -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
+< lexer.o: lexer.cpp $(ENGINE)
+< 	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+< 
+< %.o: %.cpp $(ENGINE)
+---
+> %.o: %.c $(ENGINE_SOURCES)
+< 	 --token-class-file A_B_C-token \
+---
+> 	 --token-class-file A_B_C-token.h \
+< %.E: %.cpp
+< 	g++ -E $< -o  $@ -I$(QUEX_PATH) 
+---
+> %.E: %.c
+> 	gcc -E $< -o  $@ -I$(QUEX_PATH)
+< boeck_Lexer.cpp:  boeck.qx A_B_C-token.cpp A_B_C-token_ids
+< 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
+---
+> boeck_Lexer.c:  boeck.qx A_B_C-token.c A_B_C-token_ids.h
+> 	quex -i $< -o boeck::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C
+< max_Lexer.cpp:    max.qx A_B_C-token.cpp A_B_C-token_ids
+< 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
+---
+> max_Lexer.c:    max.qx A_B_C-token.c A_B_C-token_ids.h
+> 	quex -i $< -o max::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
+< moritz_Lexer.cpp: moritz.qx A_B_C-token.cpp A_B_C-token_ids
+< 	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) 
+---
+> moritz_Lexer.c: moritz.qx A_B_C-token.c A_B_C-token_ids.h
+> 	quex -i $< -o moritz::Lexer --icu -b 4 $(COMMON_TOKEN_OPTIONS) --language C 
+< A_B_C-token_ids \
+< A_B_C-token.cpp: 
+---
+> A_B_C-token_ids.h \
+> A_B_C-token.c: 
+< 		 --token-class-only 
+---
+> 		 --token-class-only            --language C
+< 	rm -rf $(ENGINE:.cpp=.o)
+< 	rm -rf $(ENGINE:.cpp=)
+< 	rm -rf $(ENGINE:.cpp=-token_ids)
+< 	rm -rf $(ENGINE:.cpp=-token)
+< 	rm -rf $(ENGINE:.cpp=-configuration)
+---
+> 	rm -rf $(ENGINE:.c=.o)
+> 	rm -rf $(ENGINE:.c=.h)
+> 	rm -rf $(ENGINE:.c=-token_ids.h)
+> 	rm -rf $(ENGINE:.c=-token.h)
+> 	rm -rf $(ENGINE:.c=-configuration.h)

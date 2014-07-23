@@ -1,0 +1,36 @@
+Hex Numbers I:
+    characters      = "\xA\xAB"
+    character codes = ['000A', '00AB']
+Hex Numbers II:
+    characters      = "\X1\X12\X123\X1234"
+    character codes = ['0001', '0012', '0123', '1234']
+Hex Numbers III:
+    characters      = "\UA\UAB\UABC\UABCD\UABCDE\U11A001"
+    character codes = ['000A', '00AB', '0ABC', 'ABCD', 'ABCDE', '11A001']
+Hex Numbers IV:
+    characters      = "\x0\X0\U0"
+    character codes = ['0000', '0000', '0000']
+Hex Numbers V a:
+    characters      = "\x041"
+[end of sequence]
+    character codes = ['0004']
+Hex Numbers V b:
+    characters      = "\X00041"
+[end of sequence]
+    character codes = ['0004']
+Hex Numbers V c:
+    characters      = "\U0000041"
+[end of sequence]
+    character codes = ['0004']
+Octal Numbers:
+    characters      = "\1\01\20\100"
+    character codes = ['0001', '0001', '0010', '0040']
+ANSI-C 'Bells':
+    characters      = "\a\b\f\n\r\t\v"
+    character codes = ['0007', '0008', '000C', '000A', '000D', '0009', '000B']
+Control Characters I:
+    characters      = "\\\"\+\*\?\/\|\$"
+    character codes = ['005C', '0022', '002B', '002A', '003F', '002F', '007C', '0024']
+Control Characters II:
+    characters      = "\^\-\[\]\(\{\}"
+    character codes = ['005E', '002D', '005B', '005D', '0028', '007B', '007D']

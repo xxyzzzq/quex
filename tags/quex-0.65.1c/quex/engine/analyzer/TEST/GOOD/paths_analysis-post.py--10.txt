@@ -1,0 +1,127 @@
+init-state = 0L
+00000 (1), (2), (3)
+     == 'x' ==> 00001
+    
+00001 (1, S), (2), (3)
+     == 'y' ==> 00002
+    
+00002 (1), (2, S), (3)
+     == 'a' ==> 00003
+     == 'b' ==> 00007
+    
+00003 (1, A, R), (3)
+     == 'a' ==> 00003
+     == 'c' ==> 00004
+    
+00004 (3)
+     == 'd' ==> 00005
+    
+00005 (3)
+     == 'e' ==> 00006
+    
+00006 (3, A)
+    
+00007 (2, A, R), (3)
+     == 'c' ==> 00004
+    
+
+State 0:
+  .entry:
+    .from NONE: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 1:
+  .entry:
+    .from 0: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 2:
+  .entry:
+    .from 1: position[PostContext_1]  = input_p;
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 3:
+  .entry:
+    .from 2: last_acceptance = Pattern1
+    .from 3: last_acceptance = Pattern1
+
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
+
+State 4:
+  .entry:
+    .from 3: 
+    .from 7: 
+
+.drop_out:
+on last_acceptance:
+
+
+case 1: pos = position[PostContext_1] ; goto Pattern1;
+  case 2: pos -= 2;  goto Pattern2;
+    State 5: 
+
+.entry:
+.from 4:
+.drop_out:
+on last_acceptance:
+    case 1: pos = position[PostContext_1] ; goto Pattern1; 
+
+case 2: pos -= 3;  goto Pattern2;
+State 6:
+
+.entry:
+  .from 5:
+    .drop_out:
+
+goto Pattern3;
+State 7:
+
+
+.entry:
+
+.from 2: last_acceptance = Pattern2
+  .drop_out:
+    pos -= 1;  goto Pattern2;
+
+--- Optimized States ---
+State 2:
+
+.entry:
+  .from 1: position[PostContext_0]  = input_p;
+    .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+State 3:
+.entry:
+
+.from 2: last_acceptance = Pattern1
+  .from 3: last_acceptance = Pattern1
+    .drop_out: 
+    pos = position[PostContext_0] ; goto Pattern1; 
+
+State 4:
+.entry:
+.from 3:
+.from 7:
+
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos -= 2; goto Pattern2;
+State 5:
+
+
+.entry:
+.from 4:
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos -= 3;  goto Pattern2;

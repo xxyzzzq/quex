@@ -1,0 +1,12 @@
+#---------------------------------------------------------------------------
+mode X { A {a} Nonsense PRIORITY-MARK; }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}
+#---------------------------------------------------------------------------
+mode X {       Nonsense PRIORITY-MARK; A {a} }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) A {a}

@@ -1,0 +1,41 @@
+token {
+    ABPLUS________;
+    BAPLUS________;
+    ELSE__________;
+    ON_MATCH______;
+    ON_AFTER_MATCH;
+    ON_FAILURE____;
+}
+
+body {
+    size_t  my_number;
+}
+
+init {
+    self.my_number = 0;
+}
+
+mode MINE {
+    on_failure => QUEX_TKN_ON_FAILURE____(Lexeme);
+    on_match {
+        self_write_token_p()->number = self.my_number;
+        self_send(QUEX_TKN_ON_MATCH______);
+        printf("before: Lexeme: %s; LexemeBegin: %s; LexemeEnd - LexemeBegin: %i; LexemeL: %i\n",
+               (const char*)Lexeme, (const char*)LexemeBegin, 
+               (int)(LexemeEnd-LexemeBegin), (int)LexemeL);
+        printf("       at begin: line_n = %i; column_n = %i;\n", (int)me->counter._line_number_at_begin, (int)me->counter._column_number_at_begin);
+        printf("       at end:   line_n = %i; column_n = %i;\n", (int)me->counter._line_number_at_end, (int)me->counter._column_number_at_end);
+    }
+    on_after_match {
+        self_write_token_p()->number = self.my_number;
+        self_send(QUEX_TKN_ON_AFTER_MATCH);
+        printf("after:  Lexeme: %s; LexemeBegin: %s; LexemeEnd - LexemeBegin: %i; LexemeL: %i\n",
+               (const char*)Lexeme, (const char*)LexemeBegin, 
+               (int)(LexemeEnd-LexemeBegin), (int)LexemeL);
+        printf("       at begin: line_n = %i; column_n = %i;\n", (int)me->counter._line_number_at_begin, (int)me->counter._column_number_at_begin);
+        printf("       at end:   line_n = %i; column_n = %i;\n", (int)me->counter._line_number_at_end, (int)me->counter._column_number_at_end);
+    }
+    ab+/ba { self_send1(QUEX_TKN_ABPLUS________, Lexeme); self.my_number += 1; }
+    ba+/ab { self_send1(QUEX_TKN_BAPLUS________, Lexeme); self.my_number += 1; }
+    .      { self_send1(QUEX_TKN_ELSE__________, Lexeme); self.my_number += 1; }
+}
