@@ -2,7 +2,7 @@
 #include<cstring>
 
 #include "TPLex"
-#if defined(__cplusplus)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 using namespace std;
 using namespace quex;
 #endif

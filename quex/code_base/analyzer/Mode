@@ -12,18 +12,16 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-#    if defined(QUEX_OPTION_ASSERTS)
-#       include<quex/code_base/buffer/MemoryPositionMimiker>
-#    endif
+#if ! defined(__QUEX_OPTION_PLAIN_C) && defined(QUEX_OPTION_ASSERTS)
+#    include<quex/code_base/buffer/MemoryPositionMimiker>
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN
     
-#   ifdef __QUEX_OPTION_PLAIN_C
-    QUEX_TYPE0_ANALYZER;   
-#   else
+#   if ! defined(__QUEX_OPTION_PLAIN_C)
     class QUEX_TYPE0_ANALYZER;
+#   else
+    QUEX_TYPE0_ANALYZER;   
 #   endif
 
     typedef struct QUEX_NAME(Mode_tag) {  

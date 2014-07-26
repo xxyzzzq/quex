@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [[ $1 == "--hwut-info" ]]; then
+if [[ $1 = "--hwut-info" ]]; then
     echo "Check if the default configuration has been updated."
     # Use "generate-TestAnalyzer-configuration.py" in directory
     #

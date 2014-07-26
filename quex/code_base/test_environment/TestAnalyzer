@@ -13,7 +13,18 @@
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 
-#if defined(__QUEX_OPTION_PLAIN_C)
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+    QUEX_NAMESPACE_MAIN_OPEN 
+    class QUEX_NAME(Engine);
+    class QUEX_NAME(Memento);
+    class TestAnalyzer;
+    typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(TestAnalyzer*);
+
+    /* Token Class Declaration must preceed the user's header, so that the user
+     * can refer to it at ease.                                                    */
+    class QUEX_TYPE0_TOKEN;
+    QUEX_NAMESPACE_MAIN_CLOSE
+#else
     struct  QUEX_NAME(Engine_tag);
     struct  QUEX_NAME(Memento_tag);
     struct  quex_TestAnalyzer_tag;    
@@ -22,33 +33,21 @@
     /* Token Class Declaration must preceed the user's header, so that the user
      * can refer to it at ease.                                                    */
     QUEX_TYPE0_TOKEN;
-#else
-    QUEX_NAMESPACE_MAIN_OPEN 
-        struct QUEX_NAME(Engine_tag);
-        struct QUEX_NAME(Memento_tag);
-        struct TestAnalyzer;
-        typedef __QUEX_TYPE_ANALYZER_RETURN_VALUE  (*QUEX_NAME(AnalyzerFunctionP))(TestAnalyzer*);
-    QUEX_NAMESPACE_MAIN_CLOSE
-
-    /* Token Class Declaration must preceed the user's header, so that the user
-     * can refer to it at ease.                                                    */
-    QUEX_NAMESPACE_TOKEN_OPEN
-        struct QUEX_TYPE0_TOKEN;
-    QUEX_NAMESPACE_TOKEN_CLOSE
 #endif
    
 #include <quex/code_base/analyzer/headers>
 
 QUEX_NAMESPACE_TOKEN_OPEN
-#   if defined(__QUEX_OPTION_PLAIN_C)
-        typedef struct quex_Token_tag { 
-            size_t _id; 
-        } quex_Token;
-#   else
-        struct Token { 
+#   if ! defined(__QUEX_OPTION_PLAIN_C)
+        class Token { 
+        public:
             QUEX_TYPE_TOKEN_ID _id; 
             QUEX_TYPE_TOKEN_ID type_id() { return _id; } 
         };
+#   else
+        typedef struct quex_Token_tag { 
+            size_t _id; 
+        } quex_Token;
 #   endif
     void QUEX_NAME_TOKEN(construct)(QUEX_TYPE_TOKEN* me) { (void)me; }
     void QUEX_NAME_TOKEN(destruct)(QUEX_TYPE_TOKEN* me) { (void)me; }
@@ -65,20 +64,21 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     struct QUEX_NAME(Mode_tag);
 
-#  if defined(__QUEX_OPTION_PLAIN_C)
-   typedef struct quex_TestAnalyzer_tag { 
-#      include <quex/code_base/analyzer/Engine_body>
-   } quex_TestAnalyzer;
-#  else
-   struct TestAnalyzer {
+#  if ! defined(__QUEX_OPTION_PLAIN_C)
+   class TestAnalyzer {
       /* Most compilers put the virtual function table in front of the object.
        * So, if the derived class has a virtual function, and therefore a v-table,
        * the cast towards the base class and back might not work. Thus let us
        * ensure that all related objects contain a v-table by having one virtual
        * function.                                                                      */
+      public:
       virtual ~TestAnalyzer() {}
 #     include <quex/code_base/analyzer/Engine_body>
    };
+#  else
+   typedef struct quex_TestAnalyzer_tag { 
+#      include <quex/code_base/analyzer/Engine_body>
+   } quex_TestAnalyzer;
 #  endif
 
 

@@ -223,8 +223,11 @@ class Lng_Cpp(dict):
         return "".join(("    " * i + "namespace %s {\n" % name) for i, name in enumerate(NameList))
     def NAMESPACE_CLOSE(self, NameList):
         return "".join("} /* Closing Namespace '%s' */\n" % name for name in NameList)
-    def NAMESPACE_REFERENCE(self, NameList):
-        return reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::"
+    def NAMESPACE_REFERENCE(self, NameList, TrailingDelimiterF=True):
+        result = reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::"
+        if TrailingDelimiterF: return result
+        else:                  return result[:-2]
+
     def COMMENT(self, Comment):
         """Eliminated Comment Terminating character sequence from 'Comment'
            and comment it into a single line comment.
@@ -952,8 +955,10 @@ db["C++"] = Lng_Cpp(CppBase)
 class Lng_C(Lng_Cpp):
     def __init__(self, DB):      
         Lng_Cpp.__init__(self, DB)
-    def NAMESPACE_REFERENCE(self, NameList):
-        return "".join("%s_" % name for name in NameList)
+    def NAMESPACE_REFERENCE(self, NameList, TrailingDelimiterF=True):
+        result = "".join("%s_" % name for name in NameList)
+        if TrailingDelimiterF: return result
+        else:                  return result[:-1]
 
 db["C"] = Lng_C(CppBase)
 db["C"].update([

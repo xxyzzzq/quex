@@ -411,12 +411,6 @@
 #ifdef    QUEX_NAMESPACE_MAIN_CLOSE_BACKUP
 #   undef QUEX_NAMESPACE_MAIN_CLOSE_BACKUP
 #endif
-#ifdef    ____QUEX_APPEND
-#   undef ____QUEX_APPEND
-#endif
-#ifdef    __QUEX_APPEND
-#   undef __QUEX_APPEND
-#endif
 #ifdef    QUEX_FUNCTION_DEF
 #   undef QUEX_FUNCTION_DEF
 #endif

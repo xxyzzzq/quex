@@ -20,7 +20,7 @@
             uint8_t            __memory_token_queue[sizeof(QUEX_TYPE_TOKEN)*QUEX_SETTING_TOKEN_QUEUE_SIZE];
 #           endif
 #       else
-        QUEX_TYPE_TOKEN*       token;         
+            QUEX_TYPE_TOKEN*   token;         
 #           if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
             QUEX_TYPE_TOKEN    __memory_token;
 #           endif

@@ -82,7 +82,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             /* NOTE: 'position_before == (stream_position)-1' indicated an error, i.e. 
              *       there is no position that can be determined (e.g. user interaction streams. */
             
-            me->read((character_type*)buffer_position, ByteNToRead / CharacterSize);
+            me->read((character_type*)buffer_position, (std::streamsize)(ByteNToRead / CharacterSize));
             
             const size_t Result = (size_t)(me->gcount());
 

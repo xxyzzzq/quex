@@ -1,7 +1,7 @@
 import quex.engine.generator.state.transition.solution  as solution
 
 def get_index(TriggerMap):
-    """Returns the best considered index in TriggerMap where the trigger map
+    """RETURNS: The best considered index in TriggerMap where the trigger map
        is to be split. This includes the considerations about elegant switch 
        cases. It is tried to avoid cuts in between switch-case regions.
     """
@@ -25,7 +25,7 @@ def get_index(TriggerMap):
             best_dist          = abs(candidate - preferred_section_index)
 
     if best_section_index not in [-1, 0, L-1]: return best_section_index
-    else:                                      return preferred_section_index; 
+    else:                                      return preferred_section_index
 
 def __get_switch_cases_info(TriggerMap):
     L = len(TriggerMap)

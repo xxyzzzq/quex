@@ -47,8 +47,6 @@ class TransitionCodeFactory:
             variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
             return TransitionCode(Lng.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
         else:
-            print "#Target.class:", Target.__class__
-            print "#Target:", Target
             assert False
 
 class TransitionCode:
@@ -71,8 +69,9 @@ class TransitionCode:
 class TransitionCodeByDoorId(TransitionCode):
     """The purpose of this class is to delay the reference of a DoorID until
     it is really used. It may be, that the code generation for a transition
-    map implements the transition as a 'drop-into'. In that case, the label
-    is not used. A definition of an unused label would cause a compiler warning.
+    map implements the transition as a 'drop-into' (i.e. else-case, or default
+    switch case). In that case, the label is not used. A definition of an unused 
+    label would cause a compiler warning.
     """
     def __init__(self, DoorId):
         self.__door_id = DoorId
@@ -92,14 +91,17 @@ def require_scheme_variable(SchemeID, SchemeIterable, TState, StateDB):
     door_id_list = list(SchemeIterable)
     
     def quex_label(DoorId, LastF):
-        address = dial_db.get_address_by_door_id(door_id, RoutedF=True)
+        address = dial_db.get_address_by_door_id(DoorId, RoutedF=True)
         if not LastF: return "QUEX_LABEL(%s), " % address
-        else:         return "QUEX_LABEL(%s) }" % address
+        else:         return "QUEX_LABEL(%s) "  % address
 
     txt = ["{ "]
     LastI = len(door_id_list) - 1
-    for i, door_id in enumerate(door_id_list):
-        txt.append(quex_label(door_id, LastF=(i==LastI)))
+    txt.extend(
+        quex_label(door_id, LastF=(i==LastI))
+        for i, door_id in enumerate(door_id_list)
+    )
+    txt.append("}")
 
     return variable_db.require_array("template_%i_target_%i", 
                                      ElementN = len(TState.state_index_sequence()), 
