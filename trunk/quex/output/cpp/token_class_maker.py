@@ -571,7 +571,7 @@ frame_end = """
 """
 
 helper_definitions = """
-#ifdef __cplusplus
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_NAME_TOKEN(NAME)       %s_ ## NAME
 #   define QUEX_NAMESPACE_TOKEN_OPEN   %s
 #   define QUEX_NAMESPACE_TOKEN_CLOSE  %s

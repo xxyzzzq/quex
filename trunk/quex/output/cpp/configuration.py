@@ -90,14 +90,14 @@ def do(ModeDescriptionDB):
     character_size_str = "%i" % Setup.buffer_element_size
 
     def namespace(NameSpaceList):
-        result = Lng.NAMESPACE_REFERENCE(NameSpaceList)
+        result = Lng.NAMESPACE_REFERENCE(NameSpaceList, TrailingDelimiterF=False)
 
-        if result == "::": return ""
+        if len(result) == 0: return ""
 
         assert Setup.language.upper() != "C++" or len(result) > 2, \
                "Error while generating namespace reference '%s'" % result
 
-        return result[:-2]
+        return result
 
     txt = blue_print(txt, 
             [

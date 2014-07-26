@@ -14,7 +14,7 @@
 #ifndef    QUEX_NAMESPACE_QUEX 
 #   define QUEX_NAMESPACE_QUEX         quex
 #endif
-#if defined __cplusplus
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_NAMESPACE_QUEX_OPEN   namespace QUEX_NAMESPACE_QUEX {
 #   define QUEX_NAMESPACE_QUEX_CLOSE  }
 #   define QUEXED_AUX2(NSP, X)        ::NSP::X
@@ -349,6 +349,9 @@
 #define QUEX_ERROR_DEPRECATED(NAME, REPLACEMENT) \
         QUEX_ERROR_EXIT(NAME " has been deprecated\n"   \
                         "Please, use " REPLACEMENT ".")
+
+#define ____QUEX_APPEND(X, Y)  X ## Y
+#define __QUEX_APPEND(X, Y)    ____QUEX_APPEND(X, Y)
 
 #define QUEX_STRING(X)            #X
 #define QUEX_NUMBER_TO_STRING(x)  QUEX_STRING(x)

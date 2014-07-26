@@ -312,9 +312,6 @@
 #   define    QUEX_SETTING_CHAR_CODEC   utf8
 #endif
 
-#define ____QUEX_APPEND(X, Y)  X ## Y
-#define __QUEX_APPEND(X, Y)    ____QUEX_APPEND(X, Y)
-
 #if ! defined(__QUEX_OPTION_PLAIN_C)
     /* Cannot/must not go through '__QUEX_APPEND'. QUEX_FUNCTION_PREFIX ends 
      * with '::'. No '##' is required for concatination.                     */
