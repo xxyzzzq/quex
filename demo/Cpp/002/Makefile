@@ -58,13 +58,13 @@ example%.o: ../example.cpp  Easy%.cpp
 	$(CC) -E $< -o $@ 
 
 EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine EasyLexer
+	quex -i simple.qx -o EasyLexer
 
 EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple_bad_space.qx --engine EasyLexer_bad_space  
+	quex -i simple_bad_space.qx -o EasyLexer_bad_space  
 
 EasyLexer_bad_tab EasyLexer_bad_tab.cpp: simple.qx $(QUEX_CORE)
-	quex -i simple_bad_tab.qx --engine EasyLexer_bad_tab  
+	quex -i simple_bad_tab.qx -o EasyLexer_bad_tab  
 
 # (*) HELPERS __________________________________________________________________
 clean:	

@@ -96,7 +96,7 @@ example-bom.o: example-bom.cpp  EasyLexer.cpp
 
 EasyLexer.cpp: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
 	quex -i                 definitions.qx end_of_file.qx program.qx \
-	     --engine           EasyLexer  \
+	     -o           EasyLexer  \
 		 --token-id-offset     0x1000     \
 	     -b $(BYTES_PER_CHARACTER)     \
 		 $(QUEX_FLAG)

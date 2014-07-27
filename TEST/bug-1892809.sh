@@ -8,7 +8,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx --engine Simple --language C --token-policy single
+quex -i error.qx -o Simple --language C --token-policy single
 gcc -I./ -I$QUEX_PATH Simple.c ../lexer.c -o lexer \
     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 

@@ -296,6 +296,7 @@ class NotificationDB:
     warning_default_newline_0A_impossible            = 13
     warning_default_newline_0D_impossible            = 14
     warning_on_no_token_class_take_text              = 15
+    warning_on_no_warning_on_missing_take_text       = 16
 
 DEPRECATED = { 
   "XX_input_pattern_file": 

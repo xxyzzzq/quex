@@ -50,7 +50,7 @@ example.o: example.c  EasyLexer.c
 
 EasyLexer.c: example.qx $(QUEX_CORE)
 	quex -i         example.qx   \
-	     --engine   EasyLexer    \
+	     -o   EasyLexer    \
 		 --comment-state-machine \
 		 --language C          --debug-exception
 

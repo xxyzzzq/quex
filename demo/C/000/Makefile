@@ -53,13 +53,13 @@ example.o: ../example.c  EasyLexer.c
 
 EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
-	     --engine           EasyLexer  \
+	     -o           EasyLexer  \
 		 --token-id-offset  0x1000     \
 		 --language         C
 
 source-package:
 	quex -i                 simple.qx  \
-	     --engine           EasyLexer  \
+	     -o           EasyLexer  \
 		 --token-id-offset  0x1000     \
 		 --post-categorizer            \
 		 --language         C          \

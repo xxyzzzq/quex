@@ -49,7 +49,7 @@ example.o: $(QUEX_PATH)/TEST/lexer.c  Simple.c
 	$(CC) -E $< -o $@ 
 
 Simple.c: $(QX_FILE) $(QUEX_CORE)
-	quex -i $(QX_FILE) --engine Simple --language C --token-policy single --debug-exception
+	quex -i $(QX_FILE) -o Simple --language C --token-policy single --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	

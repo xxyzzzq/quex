@@ -237,7 +237,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         # Is 'take_text' section defined
         if self.take_text is not None: return
 
-        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True, 
+        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True, WarningF=True,
                   SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]

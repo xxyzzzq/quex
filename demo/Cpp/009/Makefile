@@ -42,13 +42,13 @@ stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp
 	$(CC) -o $@  $^
           
 tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
-	quex -i hello.qx --engine tiny_lexer_st \
+	quex -i hello.qx -o tiny_lexer_st \
 		 --token-memory-management-by-user   \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
 		 
 $(SOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer \
+	quex -i simple.qx -o tiny_lexer \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
 
@@ -57,7 +57,7 @@ wlexer: wlexer.o tiny_wlexer.o
 	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
 $(WSOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_wlexer \
+	quex -i simple.qx -o tiny_wlexer \
 		 --bet wchar_t \
 		 --token-policy single
 

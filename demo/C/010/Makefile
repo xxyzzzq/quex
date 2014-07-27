@@ -82,7 +82,7 @@ NON_UTF8: simple.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
 	quex -i             simple.qx          \
-		 --engine       tiny_lexer         \
+		 -o       tiny_lexer         \
 		 --token-policy single             \
 		 --language     C                  \
 		 --token-memory-management-by-user 
@@ -91,7 +91,7 @@ UTF8: simple_utf8.qx $(QUEX_CORE)
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
 	quex -i                    simple_utf8.qx   \
-		 --engine              tiny_lexer_utf8  \
+		 -o              tiny_lexer_utf8  \
 		 --token-policy        single           \
 		 --language            C                \
 		 --buffer-element-type wchar_t          \

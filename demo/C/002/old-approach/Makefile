@@ -73,7 +73,7 @@ $(ENGINE_NAME).o: $(ENGINE_SOURCES)
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex --mode-files $(MODE_FILES)    \
-	     --engine     $(ENGINE_NAME)   \
+	     -o     $(ENGINE_NAME)   \
 		 --language C
 
 

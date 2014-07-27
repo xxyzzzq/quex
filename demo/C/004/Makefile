@@ -50,7 +50,7 @@ example.o: ../example.c  EasyLexer.c
 	$(CC) -E $< -o $@ 
 
 EasyLexer.c: c.qx $(QUEX_CORE)
-	quex -i c.qx --engine EasyLexer \
+	quex -i c.qx -o EasyLexer \
 		 --language C
 
 # (*) HELPERS __________________________________________________________________

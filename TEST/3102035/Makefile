@@ -39,21 +39,21 @@ Case%: Case%.c
 	$(CC) -E $< -o $@ 
 
 Case4: $(QUEX_PATH)/TEST/lexer.c
-	quex -i case4.qx  --engine Simple --language C --debug-exception
+	quex -i case4.qx  -o Simple --language C --debug-exception
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 Case5: $(QUEX_PATH)/TEST/lexer.c
-	quex -i case5.qx  --engine Simple --language C --debug-exception
+	quex -i case5.qx  -o Simple --language C --debug-exception
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 Case2.c: case2.qx $(QUEX_CORE)
 	## Case2 causes an error message which we want to see: no '--debug-exception'
-	quex -i $<  --engine $(@:.c=) --language C 
+	quex -i $<  -o $(@:.c=) --language C 
 
 Case%.c: case%.qx $(QUEX_CORE)
-	quex -i $<  --engine $(@:.c=) --language C --debug-exception
+	quex -i $<  -o $(@:.c=) --language C --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	

@@ -51,7 +51,7 @@ example.o: ../example.cpp  EasyLexer.cpp
 
 EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx \
-	     --engine           EasyLexer \
+	     -o           EasyLexer \
 		 --token-id-offset  0x1000    \
 		 --post-categorizer           \
 		 --comment-state-machine --comment-mode-patterns 

@@ -196,10 +196,12 @@ def do(setup, command_line, argv):
 
     if setup.string_accumulator_f:
         error_n = NotificationDB.warning_on_no_token_class_take_text
-        if setup.suppressed_notification_list: 
-           error_msg("The warning upon missing 'take_text' in token type definition\n"
-                     "cannot be deactivated (by '--suppress %i') if there is a string\n" % error_n
-                     + "accumulator. Use '--no-string-accumulator' or activate warning.")
+        if error_n in setup.suppressed_notification_list: 
+           error_msg("The warning upon missing 'take_text' in token type definition is de-\n"
+                     + "activated by '--suppress %i'. This is dangerous, if there is a string\n" % error_n
+                     + "accumulator. May be, use '--no-string-accumulator'.", 
+                    DontExitF=True, WarningF=True, 
+                    SuppressCode=NotificationDB.warning_on_no_warning_on_missing_take_text)
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]

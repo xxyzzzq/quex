@@ -101,7 +101,7 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 	quex -i $< \
          --foreign-token-id-file  in/token-ids.h \
 	     --output-directory       out            \
-		 --engine                 quex_scan      \
+		 -o                 quex_scan      \
 		 --token-id-offset        3              \
 		 --token-id-prefix           TKN_           \
 	     --token-policy           single         \
@@ -112,7 +112,7 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 out/quex_hey_scan.cpp: in/quex/hey.qx $(QUEX_CORE)
 	quex -i $< \
 	     --output-directory       out            \
-		 --engine                 quex_scan      \
+		 -o                 quex_scan      \
 		 --no-string-accumulator                 \
 		 --token-id-offset        3              \
 		 --token-id-prefix        TKN_           \

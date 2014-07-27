@@ -97,7 +97,7 @@ example-bom.o: example-bom.c EasyLexer.c
 
 EasyLexer.c: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
 	quex -i                 definitions.qx end_of_file.qx program.qx \
-	     --engine           EasyLexer  \
+	     -o           EasyLexer  \
 		 --token-id-offset     0x1000     \
 	     -b $(BYTES_PER_CHARACTER)     \
 		 --language C                  \

@@ -58,15 +58,15 @@ example%.o: ../example.c  Easy%.c
 	$(CC) -E $< -o $@ 
 
 EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine EasyLexer \
+	quex -i simple.qx -o EasyLexer \
 		 --language C
 
 EasyLexer_bad_space EasyLexer_bad_space.c: simple.qx $(QUEX_CORE)
-	quex -i simple_bad_space.qx --engine EasyLexer_bad_space \
+	quex -i simple_bad_space.qx -o EasyLexer_bad_space \
 	     --language C
 
 EasyLexer_bad_tab EasyLexer_bad_tab.c: simple.qx $(QUEX_CORE)
-	quex -i simple_bad_tab.qx --engine EasyLexer_bad_tab \
+	quex -i simple_bad_tab.qx -o EasyLexer_bad_tab \
 		 --language C
 
 # (*) HELPERS __________________________________________________________________
