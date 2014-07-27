@@ -1,4 +1,4 @@
-<test-database execution-time-sec="52.20" date="Thu Jul 24 07:27:25 2014">
+<test-database execution-time-sec="52.18" date="Sun Jul 27 10:49:50 2014">
     <last-used-diff-display-program name=""/>
     <test title="Complementary State Machines" time-sum-sec="2.40"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
@@ -11,7 +11,7 @@
            <choice name="Misc" result="OK" time_sec="1.03" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="27.00"> 
+    <test title="Algebraic Relations" time-sum-sec="26.99"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -39,7 +39,7 @@
            <choice name="" result="OK" time_sec="0.97" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Intersection" time-sum-sec="3.72"> 
+    <test title="Intersection" time-sum-sec="3.71"> 
         <application file-name="test-intersection.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -63,7 +63,7 @@
         </choice-list>
     </test>
     <group name="Complement Begin">
-        <test title="Cut patterns from P that contain Q." time-sum-sec="2.78"> 
+        <test title="Cut patterns from P that contain Q." time-sum-sec="2.79"> 
             <application file-name="test-complement_in.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -75,7 +75,7 @@
                <choice name="5" result="OK" time_sec="0.68" crc="1705816098"/>
             </choice-list>
         </test>
-        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.78"> 
+        <test title="Cut patterns from P that begin with Q." time-sum-sec="3.77"> 
             <application file-name="test-complement_begin.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -89,7 +89,7 @@
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="3.56"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="3.55"> 
             <application file-name="test-complement_end.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -103,7 +103,7 @@
         </test>
     </group>
     <group name="Cut Begin">
-        <test title="Cut P so that it does not start with Q." time-sum-sec="1.97"> 
+        <test title="Cut P so that it does not start with Q." time-sum-sec="1.96"> 
             <application file-name="test-cut_begin.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">

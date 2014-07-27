@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.17" date="Thu Jul 24 07:19:46 2014">
+<test-database execution-time-sec="5.18" date="Sun Jul 27 10:49:49 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -19,7 +19,7 @@
            <choice name="set_path_iterator" result="FAIL" time_sec="0.17" crc="None"/>
         </choice-list>
     </test>
-    <test title="SharedTailDB" time-sum-sec="0.23"> 
+    <test title="SharedTailDB" time-sum-sec="0.22"> 
         <application file-name="test-SharedTailDB.py" info-request-time="1396616916L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
@@ -44,7 +44,7 @@
         </test>
     </group>
     <group name="Command.shared_tail">
-        <test title="find_last_common" time-sum-sec="0.46"> 
+        <test title="find_last_common" time-sum-sec="0.45"> 
             <application file-name="test-shared_tail.py" info-request-time="1404859620L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -62,7 +62,7 @@
                <choice name="with-exceptions" result="OK" time_sec="0.12" crc="-1859076765"/>
             </choice-list>
         </test>
-        <test title="find_last_common" time-sum-sec="0.74"> 
+        <test title="find_last_common" time-sum-sec="0.75"> 
             <application file-name="find_last_common.py" info-request-time="1404800601L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+/[0-9]+"/>

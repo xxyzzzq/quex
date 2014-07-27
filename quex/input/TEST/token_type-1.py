@@ -5,11 +5,12 @@ import os
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.blackboard         
 from quex.input.files.token_type import *
+from   quex.input.setup import NotificationDB         
 from StringIO import StringIO
 import quex.engine.generator.languages.core as     languages
 quex.blackboard.setup.language_db = languages.db["C++"]
 
-quex.blackboard.setup.token_class_take_text_check_f = False
+quex.blackboard.setup.suppressed_notification_list = [ NotificationDB.warning_on_no_token_class_take_text ]
 quex.blackboard.setup.output_token_class_file = ""
 quex.blackboard.setup.token_class_name_space  = ""
 quex.blackboard.setup.token_class_name        = "Token"

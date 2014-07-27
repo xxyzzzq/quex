@@ -188,6 +188,13 @@ def do(setup, command_line, argv):
                   "flag' generates a token class considered to be externally\n"
                   "shared. Both flags are mutually exclusive.")
 
+    if setup.string_accumulator_f:
+        error_n = NotificationDB.warning_on_no_token_class_take_text
+        if Setup.suppressed_notification_list: 
+           error_msg("The warning upon missing 'take_text' in token type definition\n"
+                     "cannot be deactivated (by '--suppress %i') if there is a string\n" % error_n
+                     "accumulator. Use '--no-string-accumulator' or activate warning.")
+
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     if is_identifier(value): return

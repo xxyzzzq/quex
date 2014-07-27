@@ -1,6 +1,6 @@
-<test-database execution-time-sec="240.42" date="Thu Jul 24 07:09:03 2014">
+<test-database execution-time-sec="240.42" date="Sun Jul 27 10:49:48 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Makefile Differences to C++ Version" time-sum-sec="0.21"> 
+    <test title="Makefile Differences to C++ Version" time-sum-sec="0.22"> 
         <application file-name="makefile-diff.sh" info-request-time="1381662250L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="13" same_result="False">
@@ -30,7 +30,7 @@
         </test>
     </group>
     <group name="demo/001">
-        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.51"> 
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.52"> 
             <application file-name="001.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -61,7 +61,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.32" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="8.40"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="8.39"> 
             <application file-name="003-bom.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
@@ -70,7 +70,7 @@
                <choice name="UTF16BE-BOM" result="OK" time_sec="2.13" crc="591404884"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="12.92"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" time-sum-sec="12.91"> 
             <application file-name="003-icu.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -125,7 +125,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.64"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" time-sum-sec="5.63"> 
             <application file-name="008.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -201,7 +201,7 @@
         </test>
     </group>
     <group name="demo/012b">
-        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="13.90"> 
+        <test title="Multiple Lexical Analyzers -- shared token" time-sum-sec="13.89"> 
             <application file-name="012b.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">

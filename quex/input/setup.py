@@ -146,7 +146,7 @@ SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
     "_debug_exception_f":             [["--debug-exception"],                  SetupParTypes.FLAG], 
-    "analyzer_class":                 [["-o", "--engine", "--analyzer-class"], "Lexer"],    
+    "analyzer_class":                 [["-o", "--analyzer-class"], "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            "unicode"],
@@ -176,12 +176,11 @@ SETUP_INFO = {
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
     "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
-    "input_mode_files":               [["-i", "--mode-files"],                 SetupParTypes.LIST],
+    "input_mode_files":               [["-i"],                 SetupParTypes.LIST],
     "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
-    "token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
     "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         SetupParTypes.LIST],  
     "token_id_foreign_definition_file_show_f": [["--foreign-token-id-file-show"], SetupParTypes.FLAG],
     "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
@@ -270,6 +269,9 @@ SETUP_INFO = {
     "XX_error_on_special_pattern_subset_f": [["--no-error-on-special-pattern-subset", "--neospsu"], SetupParTypes.NEGATED_FLAG],
     "XX_warning_disabled_no_token_queue_f": [["--no-warning-on-no-token-queue"], SetupParTypes.FLAG],
     "XX_state_entry_analysis_complexity_limit": [["--state-entry-analysis-complexity-limit", "--seacl"], 1000],
+    "XX_mode_files":                        [["--mode-files"], None],
+    "XX_engine":                            [["--engine"], None],
+    "XX_token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
 }
 
 class NotificationDB:
@@ -293,6 +295,7 @@ class NotificationDB:
     warning_counter_setup_without_else               = 12
     warning_default_newline_0A_impossible            = 13
     warning_default_newline_0D_impossible            = 14
+    warning_on_no_token_class_take_text              = 15
 
 DEPRECATED = { 
   "XX_input_pattern_file": 
@@ -429,6 +432,16 @@ DEPRECATED = {
   "XX_state_entry_analysis_complexity_limit":
       ("Option '--state-entry-analysis-complexity-limit' is no longer necessary.\n"
        "The related algorithm has been improved.", "0.65.1"),
+  "XX_mode_files":
+      ("Option '--mode-files' is no longer supported, use '-i' instead.",
+       "0.65.1"),
+  "XX_engine":
+      ("Option '--engine' is no longer supported, use '-o' or '--analyzer-class' instead.",
+       "0.65.1"),
+  "XX_token_class_take_text_check_f":  
+      ("Option '--token-type-no-take_text-check' or '--ttnttc' is replaced by '--suppress %i'."
+       % NotificationDB.warning_on_no_token_class_take_text,
+       "0.65.1"),
 }
  
 global_character_type_db = {
@@ -527,7 +540,6 @@ DOC = {
     "token_class_file":               ("", ""),
     "token_class":                    ("", ""),
     "token_class_only_f":             ("", ""),
-    "token_class_take_text_check_f":  ("", ""),
     "token_id_foreign_definition_file":  ("", ""),
     "token_id_counter_offset":        ("", ""),
     "token_id_type":                  ("", ""),

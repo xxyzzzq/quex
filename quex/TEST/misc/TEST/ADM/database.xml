@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.01" date="Thu Jul 24 07:16:18 2014">
+<test-database execution-time-sec="4.02" date="Sun Jul 27 10:49:48 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized codec files (option --codec-file)" time-sum-sec="0.36"> 
         <application file-name="customized_codec.sh" info-request-time="1381662239L" vanished="False"/>
@@ -21,7 +21,7 @@
            <choice name="" result="OK" time_sec="0.41" crc="-181975399"/>
         </choice-list>
     </test>
-    <test title="Inadmissible commonalities" time-sum-sec="1.70"> 
+    <test title="Inadmissible commonalities" time-sum-sec="1.71"> 
         <application file-name="commonality.sh" info-request-time="1404945178L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
