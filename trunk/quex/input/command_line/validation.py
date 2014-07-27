@@ -1,7 +1,13 @@
 from   quex.DEFINITIONS              import QUEX_PATH
-import quex.input.command_line.query as query
-from   quex.input.setup              import SETUP_INFO, DEPRECATED, global_character_type_db, command_line_args_defined, command_line_args_string, command_line_args, SetupParTypes
-import quex.engine.codec_db.core     as codec_db
+import quex.input.command_line.query as     query
+from   quex.input.setup              import SETUP_INFO, DEPRECATED, \
+                                            global_character_type_db, \
+                                            command_line_args_defined, \
+                                            command_line_args_string, \
+                                            command_line_args, \
+                                            SetupParTypes, \
+                                            NotificationDB
+import quex.engine.codec_db.core     as     codec_db
 from   quex.engine.misc.file_in      import is_identifier, \
                                             error_msg, \
                                             verify_word_in_list, \
@@ -190,10 +196,10 @@ def do(setup, command_line, argv):
 
     if setup.string_accumulator_f:
         error_n = NotificationDB.warning_on_no_token_class_take_text
-        if Setup.suppressed_notification_list: 
+        if setup.suppressed_notification_list: 
            error_msg("The warning upon missing 'take_text' in token type definition\n"
                      "cannot be deactivated (by '--suppress %i') if there is a string\n" % error_n
-                     "accumulator. Use '--no-string-accumulator' or activate warning.")
+                     + "accumulator. Use '--no-string-accumulator' or activate warning.")
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
