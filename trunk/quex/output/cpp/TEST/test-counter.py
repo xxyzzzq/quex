@@ -229,3 +229,5 @@ character_type = {
 get_test_application(counter_db, reference_p, character_type)
 run(codec, chunk_n)
     
+os.remove("data/input.txt")
+os.remove("test")
