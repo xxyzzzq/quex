@@ -23,13 +23,13 @@ CC = $(COMPILER)        \
    
 case1:
 	quex -i                 case1.qx  \
-	     --engine           Simple  \
+	     -o           Simple  \
 		 --token-id-offset  0x1000     --debug-exception --language C
 	$(CC) -o $@ ../lexer.c Simple.c 
           
 case2:
 	quex -i                 case2.qx  \
-	     --engine           Simple  \
+	     -o           Simple  \
 		 --token-id-offset  0x1000     --debug-exception --language C
 	$(CC) -o $@ ../lexer.c Simple.c 
 

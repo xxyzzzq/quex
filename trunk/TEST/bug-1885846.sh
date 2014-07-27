@@ -7,5 +7,5 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i missing-regex-in-define.qx --engine Simple
+quex -i missing-regex-in-define.qx -o Simple
 cd $tmp

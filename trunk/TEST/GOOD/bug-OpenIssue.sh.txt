@@ -1,3 +1,3 @@
 No Error, is good output!
-quex -i masm.qx  --engine  EasyLexer --language C 
+quex -i masm.qx  -o  EasyLexer --language C 
 gcc  -c -I./ -I/home/fschaef/prj/quex/trunk -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -Wconversion -pedantic  -DPRINT_TOKEN -DPRINT_LINE_COLUMN_NUMBER EasyLexer.c -o EasyLexer.o 

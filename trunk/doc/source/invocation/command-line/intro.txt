@@ -841,14 +841,39 @@ At the time of this writing the following suppress codes may be used:
    suppressed by code '9'.
 
 .. describe::    10
-    warning_codec_error_with_non_unicode             = 
+
+   Suppresses a warning if there is no 'on_codec_error' handler while a codec
+   different from unicode is used.
+
 .. describe::    11
-    warning_counter_setup_without_newline            = 
+
+   If a counter setup is defined without specifying a newline behavior, a
+   warning is issued--which is suppressed by this code.
+
 .. describe::    12
-    warning_counter_setup_without_else               = 
+
+   This code suppresses a warning that occurs if a counter setup is defined 
+   without an 'else' section.
+
 .. describe::    13
-    warning_default_newline_0A_impossible            = 
+
+   If there is a counter setup without newline defined, quex tries to implement
+   a default newline as hexadecimal 0A or 0D.0A. This code suppresses a warning
+   that occurs if 0A is already occupied. 
+
 .. describe::    14
-    warning_default_newline_0D_impossible            = 
+ 
+   Same as 13, except with hexadecimal 0D.
+
 .. describe::    15
-    warning_on_no_token_class_take_text              = 
+
+    Disable the 'string-less check' for customized token types. If the user
+    defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
+    quex posts a warning. By means of this flag the warning is disabled.
+
+.. describe::    16
+
+   It is really dangerous to not have a string member in a token when using 
+   a string accumulator. If the previous warning is enabled while a string
+   accumulator is used, as warning is reported--which can be disabled by 
+   suppress code 16.

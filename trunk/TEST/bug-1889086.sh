@@ -10,11 +10,11 @@ cd $bug
 ../quex_pathify.sh --string `pwd`
 echo "tokens in .qx files _____________________________________"
 echo '(1)'
-quex -i error-1.qx --engine Simple
+quex -i error-1.qx -o Simple
 echo '(2)'
-quex -i error-2.qx --engine Simple
+quex -i error-2.qx -o Simple
 echo '(3)'
-quex -i error-3.qx --engine Simple
+quex -i error-3.qx -o Simple
 echo 
 echo "tokens on command line __________________________________"
 echo '(1)'

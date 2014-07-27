@@ -24,7 +24,7 @@ LD = $(COMPILER)
 # (*) RULES ____________________________________________________________________
 simple: $(QUEX_PATH)/TEST/lexer.c  
 	quex -i                 simple.qx  \
-	     --engine           Simple     \
+	     -o           Simple     \
 		 --token-id-offset  0x1000     \
 		 --language         C          \
 		 --debug-exception
@@ -32,7 +32,7 @@ simple: $(QUEX_PATH)/TEST/lexer.c
 
 more: $(QUEX_PATH)/TEST/lexer.c 
 	quex -i                 more.qx  \
-	     --engine           Simple   \
+	     -o           Simple   \
 		 --token-id-offset  0x1000   \
 		 --language         C        \
 		 --debug-exception

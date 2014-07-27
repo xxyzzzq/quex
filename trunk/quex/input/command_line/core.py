@@ -352,7 +352,7 @@ def __setup_analyzer_class(setup):
     setup.analyzer_name_space, \
     setup.analyzer_name_safe   = \
          read_namespaced_name(setup.analyzer_class, 
-                              "analyzer engine (options -o, --engine, --analyzer-class)")
+                              "analyzer class (options -o, --analyzer-class)")
 
     if setup.show_name_spaces_f:
         print "Analyzer: {"

@@ -18,12 +18,12 @@ hwut-info:
 
 simple-queue.exe: lexer.cpp $(QUEX_CORE) token.qx send-via-name.qx
 	quex -i token.qx send-via-name.qx -o Simple --token-policy queue \
-		 --ttnttc
+		 --suppress 15
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 simple.exe:       lexer.cpp $(QUEX_CORE) token.qx send-via-overload.qx
 	quex -i token.qx send-via-overload.qx -o Simple --token-policy single \
-		 --token-type-no-take_text-check
+		 --suppress 15
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 %.E: %.cpp

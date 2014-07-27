@@ -27,14 +27,14 @@ rm -f Dos* Unix* tmp*.txt
 # Generate code from a dos formatted file
 echo "Confirm, that 'dos.qx' contains 0x0A 0x0D as newline characters"
 cat dos.qx | awk 'BEGIN { RS="--never--" } /\x0d\x0a/ { print; }' | wc
-quex -i dos.qx  --engine Xanther
+quex -i dos.qx  -o Xanther
 for file in $(ls Xanther*); do cp $file $(echo $file | sed -e 's/Xanther/Dos/g'); done
 rm Xanther*
 
 # Generate code from a unix formatted file
 echo "Confirm, that 'unix' contains NO 0x0A 0x0D as newline characters"
 cat unix.qx | awk 'BEGIN { RS="--never--" } /\x0d\x0a/ { print; }' | wc
-quex -i unix.qx --engine Xanther
+quex -i unix.qx -o Xanther
 for file in $(ls Xanther*); do cp $file $(echo $file | sed -e 's/Xanther/Unix/g'); done
 rm Xanther*
 

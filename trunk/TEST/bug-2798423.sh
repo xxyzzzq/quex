@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --nsacc --token-type-no-take_text-check >& tmp.txt
+quex -i simple.qx -o Simple --nsacc --suppress 15 >& tmp.txt
 cat tmp.txt
 rm -f tmp.txt
 

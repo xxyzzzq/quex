@@ -44,14 +44,14 @@ stdinlexer: stdinlexer.c tiny_lexer_st.c
 	$(CC) -o $@  $^
           
 tiny_lexer_st.c: hello.qx $(QUEX_CORE)
-	quex -i hello.qx --engine tiny_lexer_st \
+	quex -i hello.qx -o tiny_lexer_st \
 		 --language C                        \
 		 --token-memory-management-by-user   \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
 	
 $(SOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer \
+	quex -i simple.qx -o tiny_lexer \
 		 --language C                     \
 		 # CERTAINLY NOT: "--bet wchar_t" 
 
@@ -60,7 +60,7 @@ wlexer: wlexer.o tiny_wlexer.o
 	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
 $(WSOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_wlexer \
+	quex -i simple.qx -o tiny_wlexer \
 		 --language C                      \
 	  	 --bet wchar_t 
 

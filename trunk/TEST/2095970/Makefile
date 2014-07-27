@@ -33,7 +33,7 @@ Simple.E: Simple.cpp
 	$(CC) -E $< -o $@ 
 
 $(ENGINE_SOURCES): $(EXT_MODE_FILE)
-	@quex -i $(EXT_MODE_FILE) --engine $(ENGINE_NAME) $(EXT_TOKEN_QUEUE_FLAG) > tmp.txt 2>&1
+	@quex -i $(EXT_MODE_FILE) -o $(ENGINE_NAME) $(EXT_TOKEN_QUEUE_FLAG) > tmp.txt 2>&1
 
 
 # (*) HELPERS __________________________________________________________________

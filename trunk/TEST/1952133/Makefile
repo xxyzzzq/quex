@@ -41,7 +41,7 @@ lexer.o: ../lexer.cpp Simple.cpp
 	$(CC) -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED $< -ggdb -o $@
 
 Simple.cpp: simple.qx
-	@quex -i simple.qx --engine Simple --debug-exception > tmp.txt 2>&1
+	@quex -i simple.qx -o Simple --debug-exception > tmp.txt 2>&1
 
 # (*) HELPERS __________________________________________________________________
 mostlyclean:

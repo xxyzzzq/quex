@@ -40,7 +40,7 @@ $(APPLICATION): ../lexer-simply.cpp $(ENGINE_NAME).cpp
 		  ../lexer-simply.cpp $(ENGINE_NAME).cpp 
           
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
+	quex -i $(MODE_FILES) -o $(ENGINE_NAME) 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
