@@ -6,15 +6,16 @@ generated lexical analyzer. Strings following these options must be either
 without whitespaces or in quotes. Numbers are specified in C-like format 
 as described in :ref:`sec-number-format`.
 
-.. cmdoption:: -i, --mode-files file-list
+.. cmdoption:: -i [file name]+
         
-        ``file-list`` = list of files of the file containing mode definitions
-        (see sections <<sec-practical-modes>>, <<sec-practical-pattern-action-pairs>>, 
-         and <<sec-formal-generated-class-mode-handling>>). 
+        The names following ``-i`` indicate the files containing quex source
+        code to be used as input (see sections <<sec-practical-modes>>,
+        <<sec-practical-pattern-action-pairs>>, and
+        <<sec-formal-generated-class-mode-handling>>). 
         
         DEFAULT = ``<empty>``
 
-.. cmdoption:: `-o`, `--engine`, `--analyzer-class` name
+.. cmdoption:: `-o`, `--analyzer-class` name
         
         ``name`` = Name of the lexical analyser class that is to be created
         inside the namespace`quex`. This name also determines the
@@ -44,7 +45,7 @@ as described in :ref:`sec-number-format`.
         
         DEFAULT = ``Lexer``
 
-.. cmdoption:: --output-dir, --odir directory
+.. cmdoption:: --output-directory, --odir directory
 
         ``directory`` = name of the output directory where generated files are 
         to be written. This does more than merely copying the sources to another
@@ -276,13 +277,6 @@ following command line options can be used.
 
         DEFAULT = ``16``
 
-.. cmdoption:: --no-warning-on-no-token-queue
-
-        If set, this option disables the warning in case that an incidence handler 
-        is specified without having set ``--token-policy queue``. Without a token
-        queue no tokens can be propperly sent from inside incidence handlers. There
-        might be other things the user decides to do without receiving any warning. 
-
 .. cmdoption:: --token-id-offset number
         
         ``number`` = Number where the numeric values for the token ids start
@@ -353,12 +347,6 @@ The following options support the definition of a independently customized token
         token class is defined. The types of Standard C99 'stdint.h' are encouraged.
 
         DEFAULT = ``uint32_t``
-
-.. cmdoption:: --token-type-no-take_text-check, --ttnttc
-
-        Disable the 'stringless check' for customized token types. If the user
-        defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
-        quex posts a warning. By means of this flag the warning is disabled.
 
 .. cmdoption:: ``--token-class-only``, ``--tco``
 
@@ -621,8 +609,8 @@ Template and Path Compression can be controlled with the following command line 
 
    DEFAULT = ``0x1``.
 
-For version information pass option `--version`' or `-v`'. The options `--help`
-and `-h`' are reserved for requesting a help text.  Those are the options for
+For version information pass option `--version` or `-v`. The options `--help`
+and `-h` are reserved for requesting a help text.  Those are the options for
 using quex in the 'normal' mode where it creates lexical analyzers. However,
 quex provides some services to query and test character sets. If one of
 those options is called, then quex does not create a lexical analyzer but
@@ -774,33 +762,6 @@ patterns outrunning high-priority patterns. The following flag supports these co
    due to longer length of the matching lower priority pattern. See section 
    :ref:`usage-context-free-pitfalls`.
 
-.. cmdoption:: --no-error-on-dominated-pattern, --neodp
- 
-   Disables the error check on dominated patterns, i.e. patterns that
-   may never match due to higher precedence patterns which cover a
-   superset of lexemes.
-
-.. cmdoption:: --no-error-on-special-pattern-same, --neosps
-
-   Allows special patterns (skipper, indentation, etc.) to be the
-   same without notifying an error. 
-
-.. cmdoption:: --no-error-on-special-pattern-outrun, --neospo
-
-   Allows lower precedence patterns which may outrun a special pattern
-   due to length issue. To allow this opens the door to very confusing
-   situations. For example, a comment skipper on "/*" may not trigger
-   because a lower precedence pattern matches on "/**" which is longer
-   and therefore wins.
-
-.. cmdoption:: --no-error-on-special-pattern-subset, --neospsu
-
-   Alows higher precedence patterns to match on a subset of lexemes that a
-   special pattern (skipper, indentation, etc.) matches. Again, this may cause
-   confusing situations. If this is allowed a pattern may win against a
-   skipper, for example. It is the expectation, though, that a skipper shall
-   skip--which it could not if such scenerios are allowed.
-
 The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
 of this information for further processing. For example, the Unix command 'awk' can be used:
 
@@ -812,10 +773,82 @@ Some warnings, notes, or error messages might not be interesting or even
 be disturbing for the user. For such cases, quex provides an interface to 
 avoid prints on the standard output.
 
-.. cmdoption:: --suppress, -s integer(s)
+.. cmdoption:: --suppress, -s [integer]+
 
     Any integer following this options stands for a message output to be
     dismissed by quex.  Any note, warning, or error message which may be
     suppressed notes the correspondent code for the '--suppress' command line
     option.
 
+At the time of this writing the following suppress codes may be used:
+
+.. describe:: 0
+
+   When foreign token id file is parsed, quex tries to dive into included
+   files. If it cannot find the included files, is posts a warning. This 
+   warning is suppressed if the above code is specified.
+
+.. describe:: 1
+
+   When a token class file is specified (``--token-class-file``) then this file
+   may contain a section with extra command line arguments. If this suppress code
+   is specified quex does not report on those extra argument. 
+
+.. describe:: 2
+
+   Disables the error check on dominated patterns, i.e. patterns that may never
+   match due to higher precedence patterns which cover a superset of lexemes.
+
+.. describe:: 3
+
+   Allows special patterns (skipper, indentation, etc.) to be the same without
+   notifying an error. 
+
+.. describe:: 4
+
+   Allows lower precedence patterns which may outrun a special pattern due to
+   length issue. To allow this opens the door to very confusing situations. For
+   example, a comment skipper on "/*" may not trigger because a lower
+   precedence pattern matches on "/**" which is longer and therefore wins.
+
+.. describe:: 5
+
+   Alows higher precedence patterns to match on a subset of lexemes that a
+   special pattern (skipper, indentation, etc.) matches. Again, this may cause
+   confusing situations. If this is allowed a pattern may win against a
+   skipper, for example. It is the expectation, though, that a skipper shall
+   skip--which it could not if such scenerios are allowed.
+
+.. describe::    6
+
+   Some functionality makes only sense, if a token queue is used. Any warning
+   about not using a token queue is omitted when this code is specified.
+
+.. describe::    7
+
+   This code disables warnings when token ids are used without being explicitly
+   defined. Then quex generates them silently.
+
+.. describe::    8
+
+   If a token id is mentioned as 'repeated token' but has not been defined,
+   then a warning is issued, except if the above suppress code is specified.
+
+.. describe::    9
+
+   A token name is automatically prefixed by the token prefix. If the token
+   name starts with a token prefix, a warning is reported. The warning is 
+   suppressed by code '9'.
+
+.. describe::    10
+    warning_codec_error_with_non_unicode             = 
+.. describe::    11
+    warning_counter_setup_without_newline            = 
+.. describe::    12
+    warning_counter_setup_without_else               = 
+.. describe::    13
+    warning_default_newline_0A_impossible            = 
+.. describe::    14
+    warning_default_newline_0D_impossible            = 
+.. describe::    15
+    warning_on_no_token_class_take_text              = 

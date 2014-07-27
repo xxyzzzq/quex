@@ -1,4 +1,4 @@
-<test-database execution-time-sec="53.10" date="Thu Jul 24 07:26:16 2014">
+<test-database execution-time-sec="53.11" date="Sun Jul 27 10:49:49 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting" time-sum-sec="3.19"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
@@ -20,7 +20,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="2.94" crc="-2098256826"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" time-sum-sec="4.44"> 
+        <test title="Varrying Buffer Size" time-sum-sec="4.45"> 
             <application file-name="test-skip-2.py" info-request-time="1394274498L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="True">
@@ -56,7 +56,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.99"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="9.00"> 
             <application file-name="test-skip_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">

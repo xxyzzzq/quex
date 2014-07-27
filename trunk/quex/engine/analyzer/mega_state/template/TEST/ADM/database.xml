@@ -1,6 +1,6 @@
-<test-database execution-time-sec="3.06" date="Thu Jul 24 07:19:53 2014">
+<test-database execution-time-sec="3.06" date="Sun Jul 27 10:49:49 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Combination of Two Transition Maps" time-sum-sec="0.54"> 
+    <test title="Combination of Two Transition Maps" time-sum-sec="0.53"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -32,7 +32,7 @@
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Get Best Matching Pair" time-sum-sec="0.58"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.57"> 
             <application file-name="best_matching_pair.py" info-request-time="1397789073L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">

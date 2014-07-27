@@ -13,9 +13,10 @@ from   quex.engine.generator.code.core import CodeUser, \
 from   quex.engine.generator.code.base import SourceRef, \
                                               SourceRef_VOID
 import quex.input.files.code_fragment  as     code_fragment
+from   quex.input.setup                import E_Files, \
+                                              NotificationDB
 from   quex.blackboard                 import setup as Setup, \
                                               Lng
-from   quex.input.setup                import E_Files
 
 token_type_code_fragment_db = { 
         "constructor":    CodeUser_NULL, 
@@ -233,17 +234,11 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         return self.__member_db[MemberName][1]
 
     def consistency_check(self):
-        # If the 'accumulator' feature is active there *must* be a 'take_text' section
-
-        if not Setup.token_class_take_text_check_f: return
-
         # Is 'take_text' section defined
         if self.take_text is not None: return
 
-        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True)
-
-        if Setup.string_accumulator_f == True:
-            error_msg(_warning_msg2, self.sr.file_name, self.sr.line_n, DontExitF=True)
+        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True, 
+                  SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
@@ -537,19 +532,5 @@ def __validate_definition(TheCodeFragment, NameStr,
 
 _warning_msg = \
 """Section token_type does not contain a 'take_text' section. It would be
-necessary if the analyzer uses the string accumulator. To disable this warning
-set the command line flag: --token-type-no-take_test-check or --ttnttc."""
+necessary if the analyzer uses the string accumulator."""
 
-_warning_msg2 = \
-"""
-The 'Accumulator' feature is activated, which mandatorily
-requires the 'take_text' section to be defined. Please, do one of
-the following:
-
--- Set the command line option: --token-type-no-stringless-check or 
-   --ttnsc.
-
--- deactivate the accumulator feature using command line options:
-   --no-string-accumulator or  --nsacc.
-
--- consult the documentatoin and specify a 'take_text' section."""
