@@ -267,8 +267,7 @@ fh.write("".join(txt))
 fh.close()
 os.system("gcc -I$QUEX_PATH test.c -o test")
 os.system("./test")
-os.remove("./test")
-#os.remove("./test.c")
+os.remove("./test.c")
 
 
 
