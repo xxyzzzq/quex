@@ -1,4 +1,4 @@
-<test-database execution-time-sec="389.63" date="Sun Jul 27 10:49:48 2014">
+<test-database execution-time-sec="387.38" date="Sun Jul 27 12:41:14 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.73"> 
@@ -135,12 +135,12 @@
                <choice name="more" result="OK" time_sec="1.57" crc="-977054981"/>
             </choice-list>
         </test>
-        <test title="3495127 Event Handler on_after_match" time-sum-sec="2.47"> 
+        <test title="3495127 Event Handler on_after_match" time-sum-sec="0.22"> 
             <application file-name="feature-3495127.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="single" result="OK" time_sec="1.11" crc="973232293"/>
-               <choice name="queue" result="OK" time_sec="1.36" crc="-988638050"/>
+               <choice name="single" result="FAIL" time_sec="0.12" crc="973232293"/>
+               <choice name="queue" result="FAIL" time_sec="0.10" crc="-988638050"/>
             </choice-list>
         </test>
         <test title="3485516 0.60.1 0.60.1 Exception Handling Disorder" time-sum-sec="0.19"> 

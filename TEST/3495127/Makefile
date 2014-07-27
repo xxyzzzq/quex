@@ -21,4 +21,4 @@ Simple.c: $(TOKEN_POLICY).qx
 clean:
 	rm -rf Simple*
 	rm -rf a.out
-	touch test.qx
+	# touch test.qx
