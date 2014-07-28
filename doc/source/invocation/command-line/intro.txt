@@ -780,100 +780,74 @@ avoid prints on the standard output.
     suppressed notes the correspondent code for the '--suppress' command line
     option.
 
-At the time of this writing the following suppress codes may be used:
+The following suppress codes may be used.
 
-.. describe:: 0
+   +---------------+-----------------------------------------------------------+
+   | Suppress code | Error, warning, or note being suppressed                  |
+   +===============+===========================================================+
+   |       0       | Warning if quex cannot find an included file while        |
+   |               | diving into a 'foreign token id file'.                    |
+   +---------------+-----------------------------------------------------------+
+   |       1       | A token class file (``--token-class-file``) may           |
+   |               | contain a section with extra command line arguments       |
+   |               | which are reported in a note.                             |
+   +---------------+-----------------------------------------------------------+
+   |       2       | Error check on dominated patterns,                        |
+   |               | i.e. patterns that may never match due to higher          |
+   |               | precedence patterns which cover a superset of lexemes.    |
+   +---------------+-----------------------------------------------------------+
+   |       3       | Error check on special patterns (skipper, indentation,    |
+   |               | etc.) whether they are the same.                          |
+   +---------------+-----------------------------------------------------------+
+   |       4       | Warning or error on 'outrun' of special patterns due to   |
+   |               | lexeme length. Attention: To allow this opens the door to |
+   |               | very confusing situations. For example, a comment skipper |
+   |               | on "/*" may not trigger because a lower precedence pattern|
+   |               | matches on "/**" which is longer and therefore wins.      |
+   +---------------+-----------------------------------------------------------+
+   |       5       | Detect whether higher precedence patterns match on a      |
+   |               | subset of lexemes that a special pattern (skipper,        |
+   |               | indentation, etc.) matches. Attention: Allowing such      |
+   |               | behavior may cause confusing situations. If this is       |
+   |               | allowed a pattern may win against a skipper, for example. |
+   |               | It is the expectation, though, that a skipper shall skip  |
+   |               | --which it cannot if such scenarios are allowed.          |
+   +---------------+-----------------------------------------------------------+
+   |       6       | Warning if no token queue is used while some              |
+   |               | functionality might not work properly.                    |
+   +---------------+-----------------------------------------------------------+
+   |       7       | Warning if token ids are used without being explicitly    |
+   |               | defined.                                                  |
+   +---------------+-----------------------------------------------------------+
+   |       8       | Warning if a token id is mentioned as a 'repeated token'  |
+   |               | but has not been defined.                                 |
+   +---------------+-----------------------------------------------------------+
+   |       9       | Warning if a prefix-less token name starts with the       |
+   |               | token prefix.                                             |
+   +---------------+-----------------------------------------------------------+
+   |       10      | Warning if there is no 'on_codec_error' handler while a   |
+   |               | codec different from unicode is used.                     |
+   +---------------+-----------------------------------------------------------+
+   |       11      | Warning a counter setup is defined without specifying a   |
+   |               | newline behavior.                                         |
+   +---------------+-----------------------------------------------------------+
+   |       12      | Warning if a counter setup is defined without an          |
+   |               | ``\else`` section.                                        |
+   +---------------+-----------------------------------------------------------+
+   |       13      | If there is a counter setup without newline defined, quex |
+   |               | tries to implement a default newline as hexadecimal 0A or |
+   |               | 0D.0A.                                                    |
+   +---------------+-----------------------------------------------------------+
+   |       14      | Same as 13, except with hexadecimal '0D'.                 |
+   +---------------+-----------------------------------------------------------+
+   |       15      | Warning if a token type has no 'take_text' member         |
+   |               | function. It means, that the token type has no interface  |
+   |               | to automatically accept a lexeme or and accumulated       |
+   |               | string.                                                   |
+   +---------------+-----------------------------------------------------------+
+   |       16      | Warning if there is a string accumulator while            |
+   |               | '--suppress 15' has been used.                            |
+   +---------------+-----------------------------------------------------------+
 
-   When foreign token id file is parsed, quex tries to dive into included
-   files. If it cannot find the included files, is posts a warning. This 
-   warning is suppressed if the above code is specified.
 
-.. describe:: 1
 
-   When a token class file is specified (``--token-class-file``) then this file
-   may contain a section with extra command line arguments. If this suppress code
-   is specified quex does not report on those extra argument. 
-
-.. describe:: 2
-
-   Disables the error check on dominated patterns, i.e. patterns that may never
-   match due to higher precedence patterns which cover a superset of lexemes.
-
-.. describe:: 3
-
-   Allows special patterns (skipper, indentation, etc.) to be the same without
-   notifying an error. 
-
-.. describe:: 4
-
-   Allows lower precedence patterns which may outrun a special pattern due to
-   length issue. To allow this opens the door to very confusing situations. For
-   example, a comment skipper on "/*" may not trigger because a lower
-   precedence pattern matches on "/**" which is longer and therefore wins.
-
-.. describe:: 5
-
-   Alows higher precedence patterns to match on a subset of lexemes that a
-   special pattern (skipper, indentation, etc.) matches. Again, this may cause
-   confusing situations. If this is allowed a pattern may win against a
-   skipper, for example. It is the expectation, though, that a skipper shall
-   skip--which it could not if such scenerios are allowed.
-
-.. describe::    6
-
-   Some functionality makes only sense, if a token queue is used. Any warning
-   about not using a token queue is omitted when this code is specified.
-
-.. describe::    7
-
-   This code disables warnings when token ids are used without being explicitly
-   defined. Then quex generates them silently.
-
-.. describe::    8
-
-   If a token id is mentioned as 'repeated token' but has not been defined,
-   then a warning is issued, except if the above suppress code is specified.
-
-.. describe::    9
-
-   A token name is automatically prefixed by the token prefix. If the token
-   name starts with a token prefix, a warning is reported. The warning is 
-   suppressed by code '9'.
-
-.. describe::    10
-
-   Suppresses a warning if there is no 'on_codec_error' handler while a codec
-   different from unicode is used.
-
-.. describe::    11
-
-   If a counter setup is defined without specifying a newline behavior, a
-   warning is issued--which is suppressed by this code.
-
-.. describe::    12
-
-   This code suppresses a warning that occurs if a counter setup is defined 
-   without an 'else' section.
-
-.. describe::    13
-
-   If there is a counter setup without newline defined, quex tries to implement
-   a default newline as hexadecimal 0A or 0D.0A. This code suppresses a warning
-   that occurs if 0A is already occupied. 
-
-.. describe::    14
- 
-   Same as 13, except with hexadecimal 0D.
-
-.. describe::    15
-
-    Disable the 'string-less check' for customized token types. If the user
-    defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
-    quex posts a warning. By means of this flag the warning is disabled.
-
-.. describe::    16
-
-   It is really dangerous to not have a string member in a token when using 
-   a string accumulator. If the previous warning is enabled while a string
-   accumulator is used, as warning is reported--which can be disabled by 
-   suppress code 16.
