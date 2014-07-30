@@ -515,15 +515,16 @@ class ParserDataIndentation(Base):
 
         sm = StateMachine.from_character_set(newline_set)
 
-        before = self.count_command_map.find_occupier(retour_set, set())
-        if before is not None:
-            error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
-                      "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." \
-                      % cc_type_name_db[before.cc_type],
-                      before.sr, DontExitF=True, 
-                      SuppressCode=NotificationDB.warning_default_newline_0D_impossible)
-        else:
-            sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
+        if Setup.dos_carriage_return_newline_f:
+            before = self.count_command_map.find_occupier(retour_set, set())
+            if before is not None:
+                error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                          "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." \
+                          % cc_type_name_db[before.cc_type],
+                          before.sr, DontExitF=True, 
+                          SuppressCode=NotificationDB.warning_default_newline_0D_impossible)
+            else:
+                sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
 
         return sm
 
