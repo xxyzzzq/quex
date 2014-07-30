@@ -135,9 +135,6 @@ def __perform_setup(command_line, argv):
     elif setup.buffer_codec != "unicode":
         setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(setup.buffer_codec)
 
-    #  The following statement is definitely NOT true:
-    #if setup.buffer_codec != "unicode": setup.buffer_element_size_irrelevant = True
-    
     # (*) Output files
     if setup.language not in ["DOT"]:
         prepare_file_names(setup)

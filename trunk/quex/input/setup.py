@@ -153,7 +153,6 @@ SETUP_INFO = {
     "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
-    "buffer_element_size_irrelevant": [["--buffer-element-size-irrelevant"],   SetupParTypes.FLAG],  
     "buffer_element_type":            [["--buffer-element-type", "--bet"],     ""],
     "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             SetupParTypes.FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
@@ -514,7 +513,6 @@ DOC = {
     "buffer_codec_file":              ("Codec file describing mapping to unicode code points.", ""),
     "buffer_limit_code":              ("Buffer limit code.", ""),
     "buffer_element_size":            ("Buffer element size.", ""),
-    "buffer_element_size_irrelevant": ("Indicates that buffer element size is irrelevant.", ""),
     "buffer_element_type":            ("Buffer element type.", ""),
     "buffer_based_analyzis_f":        ("No reload required. Analysis is buffer based.", ""),
     "buffer_byte_order":              ("Byte order of buffer elements.", ""),
