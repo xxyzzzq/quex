@@ -1,6 +1,7 @@
 Command Line Options
 ====================
 description = [
+Section("Code Generation"),
 """
 This section lists the command line options to control the behavior of the
 generated lexical analyzer. Strings following these options must be either
@@ -39,14 +40,14 @@ Option("analyzer_class", "[name ::]+ name"
     """generates a lexical analyzer class ``Lexer`` in default namespace ``quex``.
     """
     ),
-Item("output_directory", "directory",
+Option("output_directory", "directory",
     """
      ``directory`` = name of the output directory where generated files are 
      to be written. This does more than merely copying the sources to another
      place in the file system. It also changes the include file references
      inside the code to refer to the specified ``directory`` as a base.
     """),
-Item("output_file_naming_scheme", "scheme",
+Option("output_file_naming_scheme", "scheme",
     """
     Specifies the filestem and extensions of the output files. The provided
     argument identifies the naming scheme. 
@@ -76,69 +77,69 @@ Item("output_file_naming_scheme", "scheme",
     """
     For ``C`` there is currently no different naming scheme supported.
     """),
-Item("language", "name"
+Option("language", "name"
      DescribeList("Defines the programming language of the output. ``name`` can be",
      "``C`` for plain C code.",
      "``C++`` for C++ code.",
      "``dot`` for plotting information in graphviz format.")),
 
-Item("character_display", "hex|utf8"
+Option("character_display", "hex|utf8"
      DescribeList("""Specifies how the character of the state transition are to be displayed
      when `--language dot` is used.
      """,
      "``hex`` displays the Unicode code point in hexadecimal notation.",
      "``utf8`` is specified the character will be displayed 'as is' in UTF8 notation."),
-Item("normalize_f", None,
+Option("normalize_f", None,
     """
     If this option is set, the output of '--language dot' will be a normalized
     state machine. That is, the state numbers will start from zero. If this flag 
     is not set, the state indices are the same as in the generated code.
     """),
-Item(["buffer_based_analyzis_f", None,
+Option("buffer_based_analyzis_f", None,
     """
     Generates an analyzer that does not read from an input stream, but runs instead
     only on a buffer. 
     """),
-Item("user_application_version_id", "string",
+Option("user_application_version_id", "string",
     """
     ``string`` = arbitrary name of the version that was generated. This string
     is reported by the `version()` member function of the lexical analyser. 
     """),
-Item("mode_transition_check_f", None,
+Option("mode_transition_check_f", None,
     """
     Turns off the mode transition check and makes the engine a little faster.
     During development this option should not be used. But the final lexical
     analyzer should be created with this option set. 
     """),
-Item("single_mode_analyzer_f",  None,
+Option("single_mode_analyzer_f",  None,
     """
     In case that there is only one mode, this flag can be used to inform quex
     that it is not intended to refer to the mode at all. In that case no
     instance of the mode is going to be implemented. This reduces memory 
     consumption a little and may possibly increase performance slightly.
     """),
-Item("string_accumulator_f",  None,
+Option("string_accumulator_f",  None,
      """
      Turns the string accumulator option off. This disables the use of the string 
      accumulator to accumulate lexemes. See ':ref:`Accumulator`'.
      """),
-Item("include_stack_support_f", None,
+Option("include_stack_support_f", None,
      """
      Disables the support of include stacks where the state of the lexical 
      analyzer can be saved and restored before diving into included files.
      Setting this flag may speed up a bit compile time
      """),
-Item("post_categorizer_f", None, 
+Option("post_categorizer_f", None, 
      """
      Turns the post categorizer option on. This allows a 'secondary'
      mapping from lexemes to token ids based on their name. See 
      ':ref:`PostCategorizer`'.
      """),
-Item("count_line_number_f", None,
+Option("count_line_number_f", None,
      """
      Lets quex generate an analyzer without internal line counting.
      """),
-Item("count_column_number_f", None,
+Option("count_column_number_f", None,
      """
      Lets quex generate an analyzer without internal column counting.
      """),
@@ -146,7 +147,7 @@ Item("count_column_number_f", None,
 If an independent source package is required that can be compiled without an 
 installation of quex, the following option may be used
 """,
-Item("source_package_directory",  None,
+Option("source_package_directory",  None,
      """
      Creates all source code that is required to compile the produced
      lexical analyzer. Only those packages are included which are actually
@@ -161,7 +162,7 @@ Item("source_package_directory",  None,
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
 """,
-Item("analyzer_derived_class_name", "name",
+Option("analyzer_derived_class_name", "name",
     """
     ``name`` = If specified, the name of the derived class that the user intends to provide
     (see section <<sec-formal-derivation>>). Note, specifying this option
@@ -171,13 +172,13 @@ Item("analyzer_derived_class_name", "name",
     specification for `--analyzer-class`, as mentioned above.
     """
         
-Item("analyzer_derived_class_file", "file name",
+Option("analyzer_derived_class_file", "file name",
     """
     ``file-name`` = If specified, the name of the file where the derived class is
     defined.  This option only makes sense in the context of optioin
     ``--derived-class``. 
     """),
-Item("token_id_prefix", "prefix",
+Option("token_id_prefix", "prefix",
      """
      ``prefix`` = Name prefix to prepend to the name
      given in the token-id files. For example, if a token section contains
@@ -187,13 +188,13 @@ Item("token_id_prefix", "prefix",
      The token prefix can contain name space delimiters, i.e. ``::``. In
      the brief token senders the name space specifier can be left out.
      """),
-Item("token_policy", "single|queue",
+Option("token_policy", "single|queue",
      """
      Determines the policy for passing tokens from the analyzer to the user. 
      It can be either 'single' or 'queue'.
      """), 
 
-Item("token_memory_management_by_user_f", None,
+Option("token_memory_management_by_user_f", None,
      """
      Enables the token memory management by the user. This command line
      option is equivalent to the compile option
@@ -205,7 +206,7 @@ Item("token_memory_management_by_user_f", None,
      'single'.
      """),
 
-Item("token_queue_size", "number", 
+Option("token_queue_size", "number", 
      """
      In conjunction with token passing policy 'queue', ``number`` specifies
      the number of tokens in the token queue. This determines the maximum
@@ -213,7 +214,7 @@ Item("token_queue_size", "number",
      function.
      """), 
 
-Item("token_queue_safety_border", "number", 
+Option("token_queue_safety_border", "number", 
      """
      Specifies the number of tokens that can be sent at maximum as reaction to
      one single pattern match. More precisely, it determines the number of 
@@ -221,7 +222,7 @@ Item("token_queue_safety_border", "number",
      full.
      """),
 
-Item("token_id_counter_offset", "number",
+Option("token_id_counter_offset", "number",
      """
      ``number`` = Number where the numeric values for the token ids start
      to count. Note, that this does not include the standard token ids
@@ -243,7 +244,7 @@ Block("""
 """
 A file with token ids can be provided by the option
 """,
-Item("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
+Option("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
        """
        ``file-name`` = Name of the file that contains an alternative definition
        of the numerical values for the token-ids.
@@ -260,7 +261,7 @@ Item("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
        reads only the token ids from the enum in the code fragment ``yytokentype``.
        """),
 
-Item("token_id_foreign_definition_file_show_f", None,
+Option("token_id_foreign_definition_file_show_f", None,
      """
      If this option is specified, then Quex prints out the token ids which have
      been found in a foreign token id file.
@@ -268,26 +269,26 @@ Item("token_id_foreign_definition_file_show_f", None,
 """
 The following options support the definition of a independently customized token class:
 """,
-Item("token_class_file", "file name",
+Option("token_class_file", "file name",
      """
      ``file name`` = Name of file that contains the definition of the
      token class. Note, that the setting provided here is possibly 
      overwritten if the ``token_type`` section defines a file name
      explicitly.
      """),
-Item("token_class", "[name ::]+ name"
+Option("token_class", "[name ::]+ name"
      """
      ``name`` is the name of the token class. Using '::'-separators it is possible
      to defined the exact name space as mentioned for the `--analyzer-class` command
      line option.
      """),
-Item("token_id_type", "type name",
+Option("token_id_type", "type name",
      """
      ``type-name`` defines the type of the token id. This defines internally the 
      macro ``QUEX_TYPE_TOKEN_ID``. This macro is to be used when a customized
      token class is defined. The types of Standard C99 'stdint.h' are encouraged.
      """),
-Item("token_class_only_f", None,
+Option("token_class_only_f", None,
      """
      When specified, quex only creates a token class. This token class differs
      from the normally generated token classes in that it may be shared between
@@ -298,7 +299,7 @@ Item("token_class_only_f", None,
      with the token class. In this case all analyzers that use the token class, 
      shall define ``--lexeme-null-object`` according the token name space.
      """),
-Item("external_lexeme_null_object", "variable", 
+Option("external_lexeme_null_object", "variable", 
      """
      The 'name' is the name of the ``LexemeNull`` object. If the option is
      not specified, then this object is created along with the analyzer
@@ -315,7 +316,7 @@ be a good design decision. But, when other, alien, non-unicode codings are to
 be used, this case is conceivable.].  The following option allows modification
 of the buffer limit code:
 """,
-Item("buffer_limit_code", "number", 
+Option("buffer_limit_code", "number", 
      """Numberic value used to mark buffer borders. This should be a number that
      does not occur as an input character."""),
 """
@@ -327,7 +328,7 @@ that the DOS tradition is not relevant, some performance improvements might
 be achieved, if the '0x0D, 0x0A' is disabled. This can be done by the 
 following flag.
 """,
-Item("dos_carriage_return_newline_f", None, 
+Option("dos_carriage_return_newline_f", None, 
      """If specified, the DOS newline (0x0D, 0x0A) is not considered whenever
      newline is required."""),
 """
@@ -337,7 +338,7 @@ the correspondent library must be installed on your system. On Unix systems, the
 is usually present. Relying on IConv or ICU lets is a flexible solution. The generated
 analyzer runs on converted content. The converter can be adapted dynamically. 
 """,
-Item("converter_iconv_f", None, 
+Option("converter_iconv_f", None, 
      """
      Enable the use of the iconv library for character stream decoding.
      This is equivalent to defining '-DQUEX_OPTION_CONVERTER_ICONV'
@@ -345,7 +346,7 @@ Item("converter_iconv_f", None,
      to set the '-liconv' flag explicitly in order to link against the IConv
      library.
      """),
-Item("converter_icu_f", None,
+Option("converter_icu_f", None,
      """
      Enable the use of IBM's ICU library for character stream decoding.
      This is equivalent to defining '-DQUEX_OPTION_CONVERTER_ICU'
@@ -358,7 +359,7 @@ Item("converter_icu_f", None,
 Alternatively, the engine can run directly on a specific coded, i.e. without a conversion
 to Unicode. This approach is less flexible, but may be faster.
 """,
-Item("buffer_codec", "codec name",
+Option("buffer_codec", "codec name",
      """
      Specifies a codec for the generated engine. By default the internal
      engine runs on Unicode code points. That is, the analyzer engine is
@@ -373,7 +374,7 @@ Item("buffer_codec", "codec name",
      of two bytes, while the length of an encoding for a character varries.
      For UTF16, only ``-b 2`` makes sense.
      """),
-Item("buffer_codec_file", "file name", 
+Option("buffer_codec_file", "file name", 
      """
      By means of this option a freely customized codec can be defined. The
      ``file name`` determines at the same time the file where
@@ -423,7 +424,7 @@ dynamic, e.g. UTF8, then state transitions happen on parts of a character.
 The check mark sign is coded in three bytes 0xE2, 0x9C, and 0x93. Each
 byte is read separately and causes a separate state transition.
 """,
-Item("buffer_element_size", "1|2|4",
+Option("buffer_element_size", "1|2|4",
      """
      With this option the number of bytes is specified that a buffer 
      element occupies. 
@@ -445,198 +446,114 @@ Item("buffer_element_size", "1|2|4",
         does not result in a nicely printable UTF8 string. Use
         the member ``.utf8_text()`` instead."""),
 
-Item(["--bet, --buffer-element-type"],  name
+Option("buffer_element_type", "type name",
+     """
+     A flexible approach to specify the buffer element size and type is by
+     specifying the name of the buffer element's type, which is the purpose
+     of this option. Note, that there are some 'well-known' types such as
+     ``uint*_t`` (C99 Standard), ``u*`` (Linux Kernel), ``unsigned*`` (OSAL)
+     where the ``*`` stands for 8, 16, or 32. Quex can derive its size 
+     automatically.
+
+     Quex tries to determine the size of the buffer element type. This size is
+     important to determine the target codec when converters are used. That
+     is, if the size is 4 byte a different Unicode codec is used then if it
+     was 2 byte. If quex fails to determine the size of a buffer element from
+     the given name of the buffer element type, then the Unicode codec must
+     be specified explicitly by '--converter-ucs-coding-name'.
+
+     By default, the buffer element type is determined by the buffer element 
+     size.
+     """),
+
+Option("buffer_byte_order", "little|big|<system>",
        """
-
-       A flexible approach to specify the buffer element size and type is by
-       specifying the name of the buffer element's type, which is the purpose
-       of this option. Note, that there are some 'well-known' types such as
-       ``uint*_t`` (C99 Standard), ``u*`` (Linux Kernel), ``unsigned*`` (OSAL)
-       where the ``*`` stands for 8, 16, or 32. Quex can derive its size 
-       automatically.
-
-       Note, that if a converter is specified (``--iconv``, ``--icu``, or 
-       ``--converter-new``) and the buffer element type does not allow to 
-       deduce the unicode coding name that the converter requires, then it 
-       must be explicitly specified by '--converter-ucs-coding-name'.
-
-
-       DEFAULT: Determined by buffer element size.
-
-Item(["--endian  [little, big, <system"],>]
-       """
-        
         There are two types of byte ordering for integer number for different CPUs.
         For creating a lexical analyzer engine on the same CPU type as quex runs
         then this option is not required, since quex finds this out by its own.
         If you create an engine for a different plattform, you must know its byte ordering
         scheme, i.e. little endian or big endian, and specify it after ``--endian``. 
-
+        """,
+        DescribeList("""
         According to the setting of this option one of the three macros is defined 
         in the header files:
-
-            * ``__QUEX_OPTION_SYSTEM_ENDIAN`` 
-            * ``__QUEX_OPTION_LITTLE_ENDIAN``
-            * ``__QUEX_OPTION_BIG_ENDIAN``
-
+        """,
+        "``__QUEX_OPTION_SYSTEM_ENDIAN``",
+        "``__QUEX_OPTION_LITTLE_ENDIAN`",
+        "``__QUEX_OPTION_BIG_ENDIAN`",
+        ),
+        """
         Those macros are of primary use for character code converters. The
         converters need to know what the analyser engines number representation
         is. However, the user might want to use them for his own special
         purposes (using ``#ifdef __QUEX_OPTION_BIG_ENDIAN ... #endif``).
-        
-        DEFAULT=`"<system>"`
-
+        """),
+"""
 The implementation of customized converters is supported by the following options.
+""",
+Option("converter_user_new_func", "function name",
+     """
+     With the command line option above the user may specify his own
+     converter. The string that follows the option is the name of the
+     converter's ``_New`` function. When this option is set, automatically
+     customized user conversion is turned on.
+     """),
+Option("converter_ucs_coding_name", "name", 
+     """
+     Determines what string is passed to the converter so that it converters
+     a codec into unicode. In general, this is not necessary. But, if a 
+     unknown user defined type is specified via '--buffer-element-type' then
+     this option must be specified.
 
-Item(["--converter-new"], String
-       """
-
-        Section :ref:`sec-customized-converters` explains how to implement
-        customized converters. With the command line option above the
-        user may specify his own converter. The string that follows the
-        option is the name of the converter's ``_New`` function. When this
-        option is set, automatically customized user conversion is turned
-        on.
-
-Item(["--converter-ucs-coding-name, --"],cucn
-       """
-
-        Determines what string is passed to the converter so that it converters
-        a codec into unicode. In general, this is not necessary. But, if a 
-        unknown user defined type is specified via '--buffer-element-type' then
-        this option must be specified.
-
-        DEFAULT: Determined by buffer element type.
-
-
+     By default it is defined based on the buffer element type.
+     """),
+"""
 Template and Path Compression can be controlled with the following command line options:
-
-Item(["--template-compression"],
-       """
-
-   If this option is set, then template compression is activated.
-
-Item(["--template-compression-min-gain 'number"],'
-       """
-
-   The number following this option specifies the template compression coefficient.
-   It indicates the relative cost of routing to a target state compared to a simple
-   'goto' statement. The optimal value may vary from processor platform to processor
-   platform, and from compiler to compiler.
-
-   DEFAULT = 1
-
-Item(["--path-compression"],
-       """
-
-   This flag activates path compression. By default, it compresses any sequence
-   of states that allow to be lined up as a 'path'. This includes states of 
-   different acceptance values, store input positions, etc.
-
-Item(["--path-compression-uniform"],
-       """
-
-   This flag enables path compression. In contrast to the previous flag it 
-   compresses such states into a path which are uniform. This simplifies
-   the structure of the correspondent pathwalkers. In some cases this might
-   result in smaller code size and faster execution speed.
-
-Item(["--path-termination 'number"],'
-       """
-
-   Path compression requires a 'pathwalker' to determine quickly the end of 
-   a path. For this, each path internally ends with a signal character, the
-   'path termination code'. It must be different from the buffer limit code
-   in order to avoid ambiguities. 
-   
-   Modification of the 'path termination code' makes only sense if the input
-   stream to be analyzed contains the default value.
-
-   DEFAULT = ``0x1``.
-
-For version information pass option `--version` or `-v`. The options `--help`
-and `-h` are reserved for requesting a help text.  Those are the options for
-using quex in the 'normal' mode where it creates lexical analyzers. However,
-quex provides some services to query and test character sets. If one of
-those options is called, then quex does not create a lexical analyzer but
-responds with some information requested by the user. Those options are
-the following.
-
-Item(["--codec-info [name"],]
-       """
-
-   Displays the characters that are covered by the given codec's name. If the
-   name is omitted, a list of all supported codecs is printed. Engine internal
-   character encoding is discussed in section :ref:`sec-engine-internal-coding`.
-
-Item(["--codec-file-info filenname.dat"],
-       """
-
-   Displays the characters that are covered by the codec provided in the
-   given file. This makes sense in conjunction with ``--codec-file`` where 
-   customized codecs can be defined.
-
-Item(["--codec-for-language [language"],]
-       """
-
-   Displays the codecs that quex supports for the given human language. If the
-   language argument is omitted, all available languages are listed.
-
-Item(["--property"], name
-       """
-
-   If ``name`` is specified, then information about the property with the given
-   name is displayed. Note, that ``name`` can also be a property alias. If ``name``
-   is not specified, then brief information about all available unicode
-   properties is displayed.
-
-Item(["--set-by-property"], setting
-       """
-
-   For binary properties only the property name has to be specified. All other
-   properties require a term of the form ``property-name = value``. Quex then
-   displays the set of character that has this particular property.
-
-Item(["--set-by-expression"], expression
-       """
-
-   Character set expressions that are ususally specified in ``[: ... :]`` brackets
-   can be specified as expression. Quex then displays the set of characters that results
-   from it.
-
-Item(["--property-match wildcard-expression"],
-       """
-
-   Quex allows the use of wildcards in property values. Using this option allows
-   display of the list of values to which the given wildcard expression 
-   expands. Example: The wildcard-expression ``Name=*LATIN*`` gives all settings of property ``Name`` that
-   contain the string ``LATIN``.
-
-Item(["--"],numeric
-       """
-
-   If this option is specified the numeric character codes are displayed rather
-   then the utf8 characters.
-
-Item(["--"],intervals
-       """
-
-   This option disables the display of single character or single character codes.
-   In this case sets of adjacent characters are displayed as intervals. This provides
-   a somewhat more abbreviated display.
-
-
+""",
+Option("compression_template_f", None, 
+     """
+     If this option is set, then template compression is activated.
+     """),
+Option("compression_template_min_gain", "number", 
+     """
+     The number following this option specifies the template compression coefficient.
+     It indicates the relative cost of routing to a target state compared to a simple
+     'goto' statement. The optimal value may vary from processor platform to processor
+     platform, and from compiler to compiler.
+     """), 
+Option("compression_path_f", None, 
+     """
+     This flag activates path compression. By default, it compresses any sequence
+     of states that allow to be lined up as a 'path'. This includes states of 
+     different acceptance values, store input positions, etc.
+     """),
+Option("compression_path_uniform_f", None, 
+     """
+     This flag enables path compression. In contrast to the previous flag it 
+     compresses such states into a path which are uniform. This simplifies
+     the structure of the correspondent pathwalkers. In some cases this might
+     result in smaller code size and faster execution speed.
+     """),
+Option("path_limit_code", "number",
+     """
+     Path compression requires a 'pathwalker' to determine quickly the end of 
+     a path. For this, each path internally ends with a signal character, the
+     'path termination code'. It must be different from the buffer limit code
+     in order to avoid ambiguities. 
+       
+     Modification of the 'path termination code' makes only sense if the input
+     stream to be analyzed contains the default value.
+     """),
+"""
 The following options control the comment which is added to the generated code:
-
-Item(["--comment-state-machine"],
-       """
-
-        With this option set a comment is generated that shows all state transitions
-        of the analyzer in a comment at the begin of the analyzer function. The format
-        follows the scheme presented in the following example
-
-        .. code-block:: cpp
-
+""",
+Option("comment_state_machine_f", None, 
+     """
+     With this option set a comment is generated that shows all state transitions
+     of the analyzer in a comment at the begin of the analyzer function. The format
+     follows the scheme presented in the following example
+     """,
+     Block("""
             /* BEGIN: STATE MACHINE
              ...
              * 02353(A, S) <~ (117, 398, A, S)
@@ -647,167 +564,269 @@ Item(["--comment-state-machine"],
              ...
              * END: STATE MACHINE
              */
-
-        It means that state 2369 is an acceptance state (flag 'A') and it should store
-        the input position ('S'), if no backtrack elimination is applied. It originates
-        from pattern '394' which is also an acceptance state and '384'. It transits to
-        state 2400 on the incidence of a '=' character.
-
-Item(["--comment-transitions"],
-       """
-
-        Adds to each transition in a transition map information about the characters 
-        which trigger the transition, e.g. in a transition segment implemented in a 
-        C-switch case construct
-
-        .. code-block:: cpp
-
-               ...
-               case 0x67: 
-               case 0x68: goto _2292;/* ['g', 'h'] */
-               case 0x69: goto _2295;/* 'i' */
-               case 0x6A: 
-               case 0x6B: goto _2292;/* ['j', 'k'] */
-               case 0x6C: goto _2302;/* 'l' */
-               case 0x6D:
-               ...
-
-        The output of the characters happens in UTF8 format.
-
-Item(["--comment-mode-patterns"],
-       """
-
-        If this option is set a comment is printed that shows what pattern is present 
-        in a mode and from what mode it is inherited. The comment follows the following
-        scheme:
-
-        .. code-block:: cpp
-
-               /* BEGIN: MODE PATTERNS 
-                ...
-                * MODE: PROGRAM
-                * 
-                *     PATTERN-ACTION PAIRS:
-                *       (117) ALL:     [ \r\n\t]
-                *       (119) CALC_OP: "+"|"-"|"*"|"/"
-                *       (121) PROGRAM: "//"
-                ...
-                * END: MODE PATTERNS
-                */
-
-        This means, that there is a mode ``PROGRAM``. The first three pattern are related
-        to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was
-        inherited from mode `ALL`. The math operator pattern was inherited from mode
-        ``CALC_OP`` and the comment start pattern "//" was implemented in ``PROGRAM`` 
-        itself.
-
-The following option allows to verify that the correct name spaces have been specified
-for the analyzer and the token.
-
-Item(["--show-name-spaces, --"],sns
-       """
-
-   If specified short information about the name space of the analyzer and the
-   token are printed on the console. 
-
-When the analyzer behaves unexpectedly, it may make sense to ponder over low-priority
-patterns outrunning high-priority patterns. The following flag supports these considerations.
-
-Item(["--warning-on-outrun, --"],woo
-       """
-
-   When specified, each mode is investigated whether there are patterns of lower
-   priority that potentially outrun patterns of higher priority. This may happen
-   due to longer length of the matching lower priority pattern. See section 
-   :ref:`usage-context-free-pitfalls`.
-
+     """, "cpp"),
+     """
+     It means that state 2369 is an acceptance state (flag 'A') and it should store
+     the input position ('S'), if no backtrack elimination is applied. It originates
+     from pattern '394' which is also an acceptance state and '384'. It transits to
+     state 2400 on the incidence of a '=' character.
+     """,
+Option("comment_transitions_f", None, 
+     """
+     Adds to each transition in a transition map information about the characters 
+     which trigger the transition, e.g. in a transition segment implemented in a 
+     C-switch case construct
+     """,
+     Block("""
+           ...
+           case 0x67: 
+           case 0x68: goto _2292;/* ['g', 'h'] */
+           case 0x69: goto _2295;/* 'i' */
+           case 0x6A: 
+           case 0x6B: goto _2292;/* ['j', 'k'] */
+           case 0x6C: goto _2302;/* 'l' */
+           case 0x6D:
+           ...
+     """),
+     """
+     The output of the characters happens in UTF8 format.
+     """),
+Option("comment_mode_patterns_f", None, 
+     """
+     If this option is set a comment is printed that shows what pattern is present 
+     in a mode and from what mode it is inherited. The comment follows the following
+     scheme:
+     """,
+     Block("""
+           /* BEGIN: MODE PATTERNS 
+            ...
+            * MODE: PROGRAM
+            * 
+            *     PATTERN-ACTION PAIRS:
+            *       (117) ALL:     [ \r\n\t]
+            *       (119) CALC_OP: "+"|"-"|"*"|"/"
+            *       (121) PROGRAM: "//"
+            ...
+            * END: MODE PATTERNS
+            */
+     """, "cpp"),
+     """
+     This means, that there is a mode ``PROGRAM``. The first three pattern are related
+     to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was
+     inherited from mode `ALL`. The math operator pattern was inherited from mode
+     ``CALC_OP`` and the comment start pattern "//" was implemented in ``PROGRAM`` 
+     itself.
+     """),
+"""
 The comment output is framed by ``BEGIN:`` and ``END:`` markers. This facilitates the extraction
 of this information for further processing. For example, the Unix command 'awk' can be used:
-
-.. code-block:: bash
-
+""",
+Block("""
    awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
-
+""", "bash"),
+"""When using multiple lexical analyzers it can be helpful to get precise 
+information about all related name spaces. Such short reports on the standard
+output are triggered by the following option.
+"""
+Option("show_name_spaces_f", None, 
+     """
+     If specified short information about the name space of the analyzer and the
+     token are printed on the console. 
+     """),
+Section("Errors and Warnings"),
+"""
+When the analyzer behaves unexpectedly, it may make sense to ponder over low-priority
+patterns outrunning high-priority patterns. The following flag supports these considerations.
+"""
+Option("warning_on_outrun_f", None, 
+     """
+     When specified, each mode is investigated whether there are patterns of lower
+     priority that potentially outrun patterns of higher priority. This may happen
+     due to longer length of the matching lower priority pattern. 
+     """),
+"""
 Some warnings, notes, or error messages might not be interesting or even
 be disturbing for the user. For such cases, quex provides an interface to 
 avoid prints on the standard output.
-
-Item(["--suppress, -s [integer"],]+
+""",
+Option("suppressed_notification_list", "[integer]+", 
+    """
+    By this option, errors, warnings, and notes may be suppressed. The 
+    option is followed by a list of integers--each integer represents
+    a suppressed message.
+    """),
+"""
+The following enumerates suppress codes together with their associated messages.
+""",
+Item("0", 
+     """
+     Warning if quex cannot find an included file while        
+     diving into a 'foreign token id file'.                    
+     """),
+Item("1",
+     """
+    A token class file (``--token-class-file``) may           
+    contain a section with extra command line arguments       
+    which are reported in a note.                             
+     """),
+Item("2",
+     """
+    Error check on dominated patterns,                        
+    i.e. patterns that may never match due to higher          
+    precedence patterns which cover a superset of lexemes.    
+     """),
+Item("3",
+     """
+    Error check on special patterns (skipper, indentation,    
+    etc.) whether they are the same.                          
+     """),
+Item("4",
+     """
+    Warning or error on 'outrun' of special patterns due to   
+    lexeme length. Attention: To allow this opens the door to 
+    very confusing situations. For example, a comment skipper 
+    on "/*" may not trigger because a lower precedence pattern
+    matches on "/**" which is longer and therefore wins.      
+     """),
+Item("5",
+     """
+    Detect whether higher precedence patterns match on a      
+    subset of lexemes that a special pattern (skipper,        
+    indentation, etc.) matches. Attention: Allowing such      
+    behavior may cause confusing situations. If this is       
+    allowed a pattern may win against a skipper, for example. 
+    It is the expectation, though, that a skipper shall skip  
+    --which it cannot if such scenarios are allowed.          
+     """),
+Item("6",
+     """
+    Warning if no token queue is used while some              
+    functionality might not work properly.                    
+     """),
+Item("7",
+     """
+    Warning if token ids are used without being explicitly    
+    defined.                                                  
+     """),
+Item("8",
+     """
+    Warning if a token id is mentioned as a 'repeated token'  
+    but has not been defined.                                 
+     """),
+Item("9",
+     """
+    Warning if a prefix-less token name starts with the       
+    token prefix.                                             
+     """),
+Item("10",
+     """
+    Warning if there is no 'on_codec_error' handler while a   
+    codec different from unicode is used.                     
+     """),
+Item("11",
+     """
+    Warning a counter setup is defined without specifying a   
+    newline behavior.                                         
+     """),
+Item("12",
+     """
+    Warning if a counter setup is defined without an          
+    ``\else`` section.                                        
+     """),
+Item("13",
+     """
+    If there is a counter setup without newline defined, quex 
+    tries to implement a default newline as hexadecimal 0A or 
+    0D.0A.                                                    
+     """),
+Item("14",
+     """
+    Same as 13, except with hexadecimal '0D'.                 
+     """),
+Item("15",
+     """
+    Warning if a token type has no 'take_text' member         
+    function. It means, that the token type has no interface  
+    to automatically accept a lexeme or and accumulated       
+    string.                                                   
+     """),
+Item("16",
+     """
+    Warning if there is a string accumulator while            
+    '--suppress 15' has been used.                            
+     """),
+Section("Queries"),
+"""
+The former command line options influenced the procedure of code generation.
+The options to solely query quex are listed in this section. First of all the two
+traditional options for help and version information are
+""",
+Option("query_help_f", None,
+       """Reports some help about the usage of quex on the console.
+       """),
+Option("query_version_f", None,
+       """Prints information on the version of quex.
+       """),
+"""
+The following options allow to query on character sets and the result
+of regular expressions.
+""",
+Option("query_codec", "name",
        """
+   Displays the characters that are covered by the given codec's name. If the
+   name is omitted, a list of all supported codecs is printed. Engine internal
+   character encoding is discussed in section :ref:`sec-engine-internal-coding`.
+       """),
+Option("query_codec_file", "file name", 
+       """
+   Displays the characters that are covered by the codec provided in the
+   given file. This makes sense in conjunction with ``--codec-file`` where 
+   customized codecs can be defined.
+       """),
 
-    Any integer following this options stands for a message output to be
-    dismissed by quex.  Any note, warning, or error message which may be
-    suppressed notes the correspondent code for the '--suppress' command line
-    option.
-
-The following suppress codes may be used.
-
-   +---------------+-----------------------------------------------------------+
-   | Suppress code | Error, warning, or note being suppressed                  |
-   +===============+===========================================================+
-   |       0       | Warning if quex cannot find an included file while        |
-   |               | diving into a 'foreign token id file'.                    |
-   +---------------+-----------------------------------------------------------+
-   |       1       | A token class file (``--token-class-file``) may           |
-   |               | contain a section with extra command line arguments       |
-   |               | which are reported in a note.                             |
-   +---------------+-----------------------------------------------------------+
-   |       2       | Error check on dominated patterns,                        |
-   |               | i.e. patterns that may never match due to higher          |
-   |               | precedence patterns which cover a superset of lexemes.    |
-   +---------------+-----------------------------------------------------------+
-   |       3       | Error check on special patterns (skipper, indentation,    |
-   |               | etc.) whether they are the same.                          |
-   +---------------+-----------------------------------------------------------+
-   |       4       | Warning or error on 'outrun' of special patterns due to   |
-   |               | lexeme length. Attention: To allow this opens the door to |
-   |               | very confusing situations. For example, a comment skipper |
-   |               | on "/*" may not trigger because a lower precedence pattern|
-   |               | matches on "/**" which is longer and therefore wins.      |
-   +---------------+-----------------------------------------------------------+
-   |       5       | Detect whether higher precedence patterns match on a      |
-   |               | subset of lexemes that a special pattern (skipper,        |
-   |               | indentation, etc.) matches. Attention: Allowing such      |
-   |               | behavior may cause confusing situations. If this is       |
-   |               | allowed a pattern may win against a skipper, for example. |
-   |               | It is the expectation, though, that a skipper shall skip  |
-   |               | --which it cannot if such scenarios are allowed.          |
-   +---------------+-----------------------------------------------------------+
-   |       6       | Warning if no token queue is used while some              |
-   |               | functionality might not work properly.                    |
-   +---------------+-----------------------------------------------------------+
-   |       7       | Warning if token ids are used without being explicitly    |
-   |               | defined.                                                  |
-   +---------------+-----------------------------------------------------------+
-   |       8       | Warning if a token id is mentioned as a 'repeated token'  |
-   |               | but has not been defined.                                 |
-   +---------------+-----------------------------------------------------------+
-   |       9       | Warning if a prefix-less token name starts with the       |
-   |               | token prefix.                                             |
-   +---------------+-----------------------------------------------------------+
-   |       10      | Warning if there is no 'on_codec_error' handler while a   |
-   |               | codec different from unicode is used.                     |
-   +---------------+-----------------------------------------------------------+
-   |       11      | Warning a counter setup is defined without specifying a   |
-   |               | newline behavior.                                         |
-   +---------------+-----------------------------------------------------------+
-   |       12      | Warning if a counter setup is defined without an          |
-   |               | ``\else`` section.                                        |
-   +---------------+-----------------------------------------------------------+
-   |       13      | If there is a counter setup without newline defined, quex |
-   |               | tries to implement a default newline as hexadecimal 0A or |
-   |               | 0D.0A.                                                    |
-   +---------------+-----------------------------------------------------------+
-   |       14      | Same as 13, except with hexadecimal '0D'.                 |
-   +---------------+-----------------------------------------------------------+
-   |       15      | Warning if a token type has no 'take_text' member         |
-   |               | function. It means, that the token type has no interface  |
-   |               | to automatically accept a lexeme or and accumulated       |
-   |               | string.                                                   |
-   +---------------+-----------------------------------------------------------+
-   |       16      | Warning if there is a string accumulator while            |
-   |               | '--suppress 15' has been used.                            |
-   +---------------+-----------------------------------------------------------+
-
+Option("query_codec_for_language", "language", 
+       """
+   Displays the codecs that quex supports for the given human language. If the
+   language argument is omitted, all available languages are listed.
+       """),
+Option("query_property", "property", 
+       """
+   Displays information about the specified Unicode property.
+   The ``property`` can also be a property alias. If ``property``
+   is not specified, then brief information about all available Unicode
+   properties is displayed.
+       """),
+Option("query_set_by_property", "setting", 
+       """
+   Displays the set of characters for the specified Unicode property setting. 
+   For query on binary properties only the name is required. All other
+   properties require a term of the form ``name=value``.
+       """),
+Option("query_property_match", "wildcard-expression", 
+       """
+       Displays property settings that match the given wildcard expression. This
+       helps to find correct identifiers in the large list of Unicode settings.
+       For example, the wildcard-expression ``Name=*LATIN*`` gives all settings
+       of property ``Name`` that contain the string ``LATIN``.
+       """),
+Option("query_set_by_expression", "regular expression", 
+       """
+       Displays the resulting character set for the given regular expression.
+   Character set expressions that are ususally specified in ``[: ... :]`` brackets
+   can be specified as expression. To display state machines, it may be best
+       to use the '--language dot' option mentioned in the previous section.
+       """),
+Option("query_numeric_f", None, 
+       """
+   If this option is specified the numeric character codes are displayed rather
+   then the utf8 characters.
+       """),
+Option("query_intervals_f", None, 
+       """
+   This option disables the display of single character or single character codes.
+   In this case sets of adjacent characters are displayed as intervals. This provides
+   a somewhat more abbreviated display.
+       """),
+]
 
 
