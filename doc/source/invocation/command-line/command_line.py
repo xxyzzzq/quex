@@ -1,7 +1,199 @@
-Command Line Options
-====================
+#Command Line Options
+#====================
+import os
+import sys
+import re
+sys.path.insert(0, os.environ["QUEX_PATH"])
+
+from   quex.input.setup import SETUP_INFO, SetupParTypes
+
+class SectionHeader:
+    def __init__(self, Title): self.title = Title
+    def do(self, visitor):     return visitor.do_SectionHeader(self.title)
+
+class Text:
+    def __init__(self, Text): self.text = Text
+    def do(self, visitor):    return visitor.do_Text(self.text)
+
+class Note:
+    def __init__(self, *Content): self.content_list = list(Content)
+    def do(self, visitor):        return visitor.do_Note(self.content_list)
+
+class Block:
+    def __init__(self, Content, Language="plain"):
+        self.content  = Content
+        self.language = Language
+    def do(self, visitor): return visitor.do_Block(self.content, self.language)
+
+class Option:
+    def __init__(self, Name, CallStr, *Paragraphs):
+        self.name           = Name
+        self.call_str       = CallStr
+        self.paragraph_list = list(Paragraphs)
+    def do(self, visitor):
+        info = SETUP_INFO[self.name]
+        option_list = info[0]
+        default     = info[1]
+        return visitor.do_Option(option_list, self.call_str, default, self.paragraph_list)
+
+class Item:
+    def __init__(self, Name, *Paragraphs):
+        self.name           = Name
+        self.paragraph_list = list(Paragraphs)
+    def do(self, visitor):
+        return visitor.do_Item(self.name, self.paragraph_list)
+
+class DescribeList:
+    def __init__(self, Epilog, *Items):
+        self.epilog    = Epilog
+        self.item_list = list(Items)
+    def do(self, visitor):
+        return visitor.do_DescribeList(self.epilog, self.item_list)
+
+class Visitor:
+    re_verbatim = re.compile(r"\\v{([a-zA-Z0-9_ ]+)}")
+    def __init__(self):
+        self.nesting_level = -1
+
+    def do(self, DescriptionList):
+        def adapt(X):
+            if isinstance(X, (str, unicode)): return Text(X)
+            else:                             return X
+        self.nesting_level += 1
+        print "#DescriptionList:", DescriptionList
+        adapted = [ adapt(x) for x in DescriptionList ]
+        result  = [ x.do(self) for x in adapted ]
+        for i, x in enumerate(result):
+            print "#result %i: %s" % (i, x)
+        self.nesting_level -= 1
+        return "".join(result)
+
+    def do_SectionHeader(self, Title): assert False
+    def do_Note(self, ContentList):          assert False
+    def do_Text(self, Text):          assert False
+    def do_Block(self, Content, Language):      assert False
+    def do_Option(self, OptionList, CallStr, Default, ParagraphList):        assert False
+    def do_Item(self, Name, ParagraphList):          assert False
+    def do_DescribeList(self, Epilog, ItemtList):  assert False
+
+    def format_default(self, Default):
+        if Default in SetupParTypes:
+            if   Default == SetupParTypes.FLAG: 
+                return "true (active)"
+            elif Default == SetupParTypes.NEGATED_FLAG:
+                return "false (inactive)"
+            elif Default == SetupParTypes.LIST:
+                return "empty list"
+            else:
+                assert False
+        return "%s" % Default
+
+    def format_block(self, Text):
+        def get_indentation(Line):
+            i = 0
+            for i, letter in enumerate(Line):
+                if not letter.isspace(): break
+            return i
+                
+        min_indentation = 1e37
+        line_list       = []
+        for line in Text.split("\n"):
+            line = line.replace("\t", "    ")
+            # measure indentation
+            indentation = get_indentation(line)
+            if indentation < min_indentation: min_indentation = indentation
+            line_list.append((indentation, line.strip()))
+
+        # Indent everything starting with an indentation of 'Indentation'
+        curr_indentation = 4 * self.nesting_level
+        return "".join(
+            " " * (indentation - min_indentation + curr_indentation) + line
+            for indentation, line in line_list
+        )
+
+    def format_text(self, Text):
+        """Separates paragraphs and reformats them so that they are
+        properly indented.
+        """
+        def append(pl, p):
+            if p is not None: 
+                pl.append("".join(p))
+        def clean(line):
+            """Delete any prepending or trailing whitespace, let the only
+            whitespace be ' '. Let all whitespace between words be ' '.
+            """
+            result = line.strip()
+            result = result.replace("\n", " ")
+            result = result.replace("\t", " ")
+            while result.find("  ") != -1:
+                result = result.replace("  ", " ")
+            return result
+        def add_line(p, line):
+            cl = self.__format_text(clean(line))
+            if p is None: p = [ cl ]
+            else:         p.append("%s " % cl)
+            return p
+
+        paragraph_list = []
+        paragraph      = None
+        for line in Text.split("\n"):
+            line = line.strip()
+            if len(line) == 0: 
+                append(paragraph_list, paragraph)
+                paragraph = None
+            else:              
+                paragraph = add_line(paragraph, line)
+        append(paragraph_list, paragraph)
+        return paragraph_list
+                
+    def __format_text(self, X):
+        """Replace text formatting markers by the language dependent
+        markers. For that the following replacement strings must be
+        defined.
+
+        .re_verbatim_replace --> print in 're_verbatim_replace' for variable and function 
+                      names.
+        """
+        result = X
+        result = Visitor.re_verbatim.sub(self.re_verbatim_replace, result)
+        return result
+
+class VisitorSphinx(Visitor):
+    """Produces code for 'sphinx documentation system'
+    """
+    re_verbatim_replace = r"``\1``"
+    def __init__(self):
+        Visitor.__init__(self)
+    def do_SectionHeader(self, Title):
+        return "%s\n%s" % (Title, "=" * len(Title))
+    def do_Text(self, Text):          
+        return "".join(self.format_text(Text))
+    def do_Note(self, ContentList):
+        return ".. note::\n%s\n" % self.do(ContentList)
+    def do_Block(self, Content, Language):
+        block = self.format_block(Content)
+        return ".. code-block:: %s\n%s\n" % (Language, block)
+    def do_Option(self, OptionList, CallStr, Default, ParagraphList):
+        options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
+        content     = self.do(ParagraphList)
+        default     = self.format_default(Default)
+        return ".. cmdoption:: %s %s\n%s\n    Default: %s\n" \
+               % (options_str, CallStr, content, default)
+    def do_Item(self, Name, ParagraphList):
+        content = self.do(ParagraphList)
+        return ".. describe:: %s\n%s\n" % (Name, content)
+    def do_DescribeList(self, Epilog, ItemtList):
+        content = "".join(
+            "* %s\n" % self.format_text(content)
+            for content in ItemtList
+        )
+        return "%s\n%s\n" % (Epilog, content)
+
+class VisitorManPage(Visitor):
+    re_verbatim_replace = r"\n.I \1\n"
+
 description = [
-Section("Code Generation"),
+SectionHeader("Code Generation"),
 """
 This section lists the command line options to control the behavior of the
 generated lexical analyzer. Strings following these options must be either
@@ -10,7 +202,7 @@ as described in :ref:`sec-number-format`.
 """,
 Option("input_mode_files", "[file name]+",
     """
-    The names following ``-i`` indicate the files containing quex source
+    The file names following ``-i`` are the files containing quex source
     code to be used as input.
     """),
 Option("analyzer_class", "[name ::]+ name"
@@ -77,18 +269,19 @@ Option("output_file_naming_scheme", "scheme",
     """
     For ``C`` there is currently no different naming scheme supported.
     """),
-Option("language", "name"
+Option("language", "name",
      DescribeList("Defines the programming language of the output. ``name`` can be",
      "``C`` for plain C code.",
      "``C++`` for C++ code.",
      "``dot`` for plotting information in graphviz format.")),
 
-Option("character_display", "hex|utf8"
+Option("character_display", "hex|utf8",
      DescribeList("""Specifies how the character of the state transition are to be displayed
      when `--language dot` is used.
      """,
      "``hex`` displays the Unicode code point in hexadecimal notation.",
      "``utf8`` is specified the character will be displayed 'as is' in UTF8 notation."),
+      ),
 Option("normalize_f", None,
     """
     If this option is set, the output of '--language dot' will be a normalized
@@ -157,7 +350,6 @@ Option("source_package_directory",  None,
      The string that follows is the directory where the source package is
      to be located.
      """),
-""",
 """
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
@@ -170,8 +362,7 @@ Option("analyzer_derived_class_name", "name",
     is not desired, this option, and the following, have to be left out. The 
     namespace of the derived analyzer class is specified analgously to the
     specification for `--analyzer-class`, as mentioned above.
-    """
-        
+    """),
 Option("analyzer_derived_class_file", "file name",
     """
     ``file-name`` = If specified, the name of the file where the derived class is
@@ -205,7 +396,6 @@ Option("token_memory_management_by_user_f", None,
      token policy 'queue' and ``token_p_switch(...)`` for token policy
      'single'.
      """),
-
 Option("token_queue_size", "number", 
      """
      In conjunction with token passing policy 'queue', ``number`` specifies
@@ -252,7 +442,7 @@ Option("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
        Note, that quex does not reflect on actual program code. It extracts the
        token ids by heuristics. The optional second and third arguments allow
        to restrict the region in the file to search for token ids. For example
-
+       """,
        Block("""
            > quex ... --foreign-token-id-file my_token_ids.hpp yytokentype   '};' \
                       --token-prefix          Example::BisonicParser::token::
@@ -260,7 +450,6 @@ Option("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
        """
        reads only the token ids from the enum in the code fragment ``yytokentype``.
        """),
-
 Option("token_id_foreign_definition_file_show_f", None,
      """
      If this option is specified, then Quex prints out the token ids which have
@@ -299,6 +488,7 @@ Option("token_class_only_f", None,
      with the token class. In this case all analyzers that use the token class, 
      shall define ``--lexeme-null-object`` according the token name space.
      """),
+),
 Option("external_lexeme_null_object", "variable", 
      """
      The 'name' is the name of the ``LexemeNull`` object. If the option is
@@ -374,6 +564,7 @@ Option("buffer_codec", "codec name",
      of two bytes, while the length of an encoding for a character varries.
      For UTF16, only ``-b 2`` makes sense.
      """),
+),
 Option("buffer_codec_file", "file name", 
      """
      By means of this option a freely customized codec can be defined. The
@@ -445,7 +636,7 @@ Option("buffer_element_size", "1|2|4",
         that particular type. This means, that ``.text().c_str()``
         does not result in a nicely printable UTF8 string. Use
         the member ``.utf8_text()`` instead."""),
-
+      ),
 Option("buffer_element_type", "type name",
      """
      A flexible approach to specify the buffer element size and type is by
@@ -570,7 +761,7 @@ Option("comment_state_machine_f", None,
      the input position ('S'), if no backtrack elimination is applied. It originates
      from pattern '394' which is also an acceptance state and '384'. It transits to
      state 2400 on the incidence of a '=' character.
-     """,
+     """),
 Option("comment_transitions_f", None, 
      """
      Adds to each transition in a transition map information about the characters 
@@ -627,17 +818,17 @@ Block("""
 """When using multiple lexical analyzers it can be helpful to get precise 
 information about all related name spaces. Such short reports on the standard
 output are triggered by the following option.
-"""
+""",
 Option("show_name_spaces_f", None, 
      """
      If specified short information about the name space of the analyzer and the
      token are printed on the console. 
      """),
-Section("Errors and Warnings"),
+SectionHeader("Errors and Warnings"),
 """
 When the analyzer behaves unexpectedly, it may make sense to ponder over low-priority
 patterns outrunning high-priority patterns. The following flag supports these considerations.
-"""
+""",
 Option("warning_on_outrun_f", None, 
      """
      When specified, each mode is investigated whether there are patterns of lower
@@ -755,7 +946,7 @@ Item("16",
     Warning if there is a string accumulator while            
     '--suppress 15' has been used.                            
      """),
-Section("Queries"),
+SectionHeader("Queries"),
 """
 The former command line options influenced the procedure of code generation.
 The options to solely query quex are listed in this section. First of all the two
@@ -783,7 +974,6 @@ Option("query_codec_file", "file name",
    given file. This makes sense in conjunction with ``--codec-file`` where 
    customized codecs can be defined.
        """),
-
 Option("query_codec_for_language", "language", 
        """
    Displays the codecs that quex supports for the given human language. If the
@@ -829,4 +1019,4 @@ Option("query_intervals_f", None,
        """),
 ]
 
-
+print VisitorSphinx().do(description)

@@ -201,9 +201,9 @@ SETUP_INFO = {
     "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
-    "version_information":               [["--version", "-v"],                SetupParTypes.FLAG],
-    "help":                              [["--help", "-h"],                   SetupParTypes.FLAG],
-    "warning_on_outrun_f":               [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
+    "query_version_f":                [["--version", "-v"],                SetupParTypes.FLAG],
+    "query_help_f":                   [["--help", "-h"],                   SetupParTypes.FLAG],
+    "warning_on_outrun_f":            [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_class_name":                       None,
