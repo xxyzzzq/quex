@@ -141,12 +141,12 @@ class QuexSetup:
         elif     self.buffer_codec_transformation_info.find("state-split") == -1:   return False
         return True
 
-SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG")
+SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG", "STRING")
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
     "_debug_exception_f":             [["--debug-exception"],                  SetupParTypes.FLAG], 
-    "analyzer_class":                 [["-o", "--analyzer-class"], "Lexer"],    
+    "analyzer_class":                 [["-o", "--analyzer-class"],             "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
     "buffer_codec":                   [["--codec"],                            "unicode"],
@@ -201,9 +201,13 @@ SETUP_INFO = {
     "single_mode_analyzer_f":         [["--single-mode-analyzer", "--sma"],  SetupParTypes.FLAG],
     "user_application_version_id":    [["--version-id"],                     "0.0.0-pre-release"],
     #
+    "warning_on_outrun_f":            [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
+    #
+    # QUERY MODE:
+    #
     "query_version_f":                [["--version", "-v"],                SetupParTypes.FLAG],
     "query_help_f":                   [["--help", "-h"],                   SetupParTypes.FLAG],
-    "warning_on_outrun_f":            [["--warning-on-outrun", "--woo"],   SetupParTypes.FLAG],
+    #__________________________________________________________________________
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
     "analyzer_class_name":                       None,

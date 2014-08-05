@@ -38,7 +38,6 @@ def get_supported_command_line_option_description():
     return txt
 
 def search_and_validate(CL, Option):
-
     if CL.search(Option) == False: return False
 
     # Validate command line
