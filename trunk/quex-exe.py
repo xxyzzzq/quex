@@ -71,12 +71,7 @@ if __name__ == "__main__":
             # Done: Tests about exceptions have been performed
             pass
 
-        # (*) Query ____________________________________________________________
-        elif query.do(sys.argv):    
-            # Done: Queries about unicode sets and regular expressions
-            pass
-
-        # (*) The Real Job _____________________________________________________
+        # (*) The Job __________________________________________________________
         elif command_line.do(sys.argv):
             # To do: Interpret input files and generate code or drawings.
             core.do() 

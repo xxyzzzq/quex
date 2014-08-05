@@ -240,6 +240,27 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True, WarningF=True,
                   SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
 
+class TokenTypeDescriptorManual:
+    """Class to mimik as 'real' TokenTypeDescriptor as defined in 
+       quex.input.files.token_type.py. Names and functions must remain
+       as they are for compatibility.
+    """
+    def __init__(self, FileName, ClassName, NameSpace, ClassNameSafe, TokenIDType):
+        self.__file_name       = FileName
+        self.class_name        = ClassName
+        self.name_space        = NameSpace
+        self.class_name_safe   = ClassNameSafe
+
+        self.column_number_type = CodeFragment("size_t")
+        self.line_number_type   = CodeFragment("size_t")
+        self.token_id_type      = CodeFragment(TokenIDType)
+
+    def get_file_name(self):
+        return self.__file_name
+
+    def manually_written(self):
+        return True
+
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
 __data_name_index_counter = -1
