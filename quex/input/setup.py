@@ -213,7 +213,7 @@ SETUP_INFO = {
     "query_property":                 [["--property", "--pr"],            ""],
     "query_set_by_property":          [["--set-by-property", "--sbpr"],   ""], 
     "query_set_by_expression":        [["--set-by-expression", "--sbe"],  ""],
-    "query_property_match":           [["--propert-match", "--prm"],      ""],
+    "query_property_match":           [["--property-match", "--prm"],     ""],
     "query_numeric_f":                [["--numeric", "--num"],            SetupParTypes.FLAG],
     "query_interval_f":               [["--intervals", "--itv"],          SetupParTypes.FLAG],
     "query_unicode_names":            [["--names"],                       ""],

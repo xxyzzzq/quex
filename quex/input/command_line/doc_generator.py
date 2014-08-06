@@ -6,7 +6,6 @@ import re
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.input.setup import SETUP_INFO, SetupParTypes
-from   quex.input.command_line.documentation import content 
 
 class SectionHeader:
     def __init__(self, Title): self.title = Title
@@ -56,16 +55,16 @@ class Visitor:
     def __init__(self):
         self.nesting_level = -1
 
+    def nesting_indent(self):
+        return "    " * self.nesting_level
+
     def do(self, DescriptionList):
         def adapt(X):
             if isinstance(X, (str, unicode)): return Text(X)
             else:                             return X
         self.nesting_level += 1
-        print "#DescriptionList:", DescriptionList
         adapted = [ adapt(x) for x in DescriptionList ]
         result  = [ x.do(self) for x in adapted ]
-        for i, x in enumerate(result):
-            print "#result %i: %s" % (i, x)
         self.nesting_level -= 1
         return "".join(result)
 
@@ -80,18 +79,21 @@ class Visitor:
     def format_default(self, Default):
         if Default in SetupParTypes:
             if   Default == SetupParTypes.FLAG: 
-                return "true (active)"
-            elif Default == SetupParTypes.NEGATED_FLAG:
                 return "false (inactive)"
+            elif Default == SetupParTypes.NEGATED_FLAG:
+                return "true (active)"
             elif Default == SetupParTypes.LIST:
                 return "empty list"
             elif Default == SetupParTypes.INT_LIST:
                 return "empty list"
+            elif Default == "":
+                return "undefined"
             else:
                 assert False
         return "%s" % Default
 
     def format_block(self, Text):
+        self.nesting_level += 1
         def get_indentation(Line):
             i = 0
             for i, letter in enumerate(Line):
@@ -109,8 +111,9 @@ class Visitor:
 
         # Indent everything starting with an indentation of 'Indentation'
         curr_indentation = 4 * self.nesting_level
+        self.nesting_level -= 1
         return "".join(
-            " " * (indentation - min_indentation + curr_indentation) + line
+            " " * (indentation - min_indentation + curr_indentation) + "%s\n" % line
             for indentation, line in line_list
         )
 
@@ -119,8 +122,8 @@ class Visitor:
         properly indented.
         """
         def append(pl, p):
-            if p is not None: 
-                pl.append("".join(p))
+            if p: pl.append("".join(p))
+
         def clean(line):
             """Delete any prepending or trailing whitespace, let the only
             whitespace be ' '. Let all whitespace between words be ' '.
@@ -131,21 +134,20 @@ class Visitor:
             while result.find("  ") != -1:
                 result = result.replace("  ", " ")
             return result
+
         def add_line(p, line):
-            cl = self.__format_text(clean(line))
-            if p is None: p = [ cl ]
-            else:         p.append("%s " % cl)
-            return p
+            p.append("%s " % self.__format_text(clean(line)))
 
         paragraph_list = []
-        paragraph      = None
+        paragraph      = []
         for line in Text.split("\n"):
             line = line.strip()
             if len(line) == 0: 
                 append(paragraph_list, paragraph)
-                paragraph = None
+                paragraph = []
             else:              
-                paragraph = add_line(paragraph, line)
+                add_line(paragraph, line)
+
         append(paragraph_list, paragraph)
         return paragraph_list
                 
@@ -168,31 +170,48 @@ class VisitorSphinx(Visitor):
     def __init__(self):
         Visitor.__init__(self)
     def do_SectionHeader(self, Title):
-        return "%s\n%s" % (Title, "=" * len(Title))
+        return "%s\n%s\n\n" % (Title, "=" * len(Title))
     def do_Text(self, Text):          
-        return "".join(self.format_text(Text))
+        width  = 4 * self.nesting_level
+        indent = self.nesting_indent()
+        text   = [ indent ]
+        for paragraph in self.format_text(Text):
+            for word in paragraph.split(" "):
+                text.append("%s " % word)
+                if len(word) + width > 80:
+                    text.append("\n")
+                    text.append(indent)
+                    width = 4 * self.nesting_level
+                width += len(word)
+            text.append("\n\n%s" % indent)
+        return "".join(text)
+
     def do_Note(self, ContentList):
-        return ".. note::\n%s\n" % self.do(ContentList)
+        self.nesting_level += 1
+        content = self.do(ContentList)
+        self.nesting_level -= 1
+        return "%s.. note::\n\n%s\n" % (self.nesting_indent(), content)
+
     def do_Block(self, Content, Language):
         block = self.format_block(Content)
-        return ".. code-block:: %s\n%s\n" % (Language, block)
+        return "%s.. code-block:: %s\n\n%s\n\n" % (self.nesting_indent(), Language, block)
+
     def do_Option(self, OptionList, CallStr, Default, ParagraphList):
         options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
         content     = self.do(ParagraphList)
         default     = self.format_default(Default)
-        return ".. cmdoption:: %s %s\n%s\n    Default: %s\n" \
-               % (options_str, CallStr, content, default)
+        return "%s.. cmdoption:: %s %s\n\n%s\n\n    Default: %s\n\n" \
+               % (self.nesting_indent(), options_str, CallStr, content, default)
     def do_Item(self, Name, ParagraphList):
         content = self.do(ParagraphList)
-        return ".. describe:: %s\n%s\n" % (Name, content)
+        return ".. describe:: %s\n\n%s\n" % (Name, content)
     def do_DescribeList(self, Epilog, ItemtList):
         content = "".join(
-            "* %s\n" % self.format_text(content)
+            "    %s* %s\n" % (self.nesting_indent(), self.format_text(content))
             for content in ItemtList
         )
-        return "%s\n%s\n" % (Epilog, content)
+        return "%s.. describe:: %s\n\n%s\n" % (self.nesting_indent(), Epilog, content)
 
 class VisitorManPage(Visitor):
     re_verbatim_replace = r"\n.I \1\n"
 
-print VisitorSphinx().do(content)
