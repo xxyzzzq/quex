@@ -13,6 +13,8 @@ import quex.engine.codec_db.core          as codec_db
 
 from quex.blackboard import setup as Setup
 
+def run(Cl):
+
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],
         "--codec-file-info":    ["Information about supported characters of a codec file."],
@@ -25,6 +27,38 @@ OPTION_DB = {
         "--intervals":          ["Display sets by intervals", ["--set-by-property", "--set-by-expression"]],
         "--names":              ["Display unicode names",     ["--set-by-property", "--set-by-expression"]],
 }
+
+def run(cl, Argv):
+
+    if   Setup.query_version_f: print_version()
+    elif Setup.query_help_f:    print_help()
+
+    # Regular Expressions extract the BufferLimitCode and the PathTerminatorCode
+    # from the sets. So let us define them outside the normal range.
+    backup_buffer_limit_code = Setup.buffer_limit_code
+    backup_path_limit_code   = Setup.path_limit_code
+    Setup.buffer_limit_code = -1
+    Setup.path_limit_code   = -1
+
+    try:
+        if   setup.query_codec:             __handle_codec(cl)
+        elif setup.query_codec_file:        __handle_codec_file(cl)
+        elif setup.query_codec_language:    __handle_codec_for_language(cl)
+        elif setup.query_property:          __handle_property(cl)
+        elif setup.query_set_by_property:   __handle_set_by_property(cl)
+        elif setup.query_set_by_expression: __handle_set_by_expression(cl)
+        elif setup.query_property_match:    __handle_property_match(cl)
+        else:
+            assert False # No query option(s) !
+
+    except RegularExpressionException, x:
+        error_msg(x.message)
+
+    Setup.buffer_limit_code = backup_buffer_limit_code
+    Setup.path_limit_code   = backup_path_limit_code
+    return success_f
+
+
 
 def get_supported_command_line_option_description():
     txt = ""
@@ -46,40 +80,6 @@ def search_and_validate(CL, Option):
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   get_supported_command_line_option_description())
     return True
-
-def do(ARGV):
-    """Performs a query based on the given command line arguments.
-       RETURNS: True if a query was performed.
-                False if not query was requested.
-    """
-    cl = GetPot(ARGV, SectionsEnabledF=False)
-
-    success_f = False
-
-    # Regular Expressions extract the BufferLimitCode and the PathTerminatorCode
-    # from the sets. So let us define them outside the normal range.
-    backup_buffer_limit_code = Setup.buffer_limit_code
-    backup_path_limit_code   = Setup.path_limit_code
-    Setup.buffer_limit_code = -1
-    Setup.path_limit_code   = -1
-
-    try:
-        success_f = True
-        if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)
-        elif search_and_validate(cl, "--codec-file-info"):    __handle_codec_file(cl)
-        elif search_and_validate(cl, "--codec-for-language"): __handle_codec_for_language(cl)
-        elif search_and_validate(cl, "--property"):           __handle_property(cl)
-        elif search_and_validate(cl, "--set-by-property"):    __handle_set_by_property(cl)
-        elif search_and_validate(cl, "--set-by-expression"):  __handle_set_by_expression(cl)
-        elif search_and_validate(cl, "--property-match"):     __handle_property_match(cl)
-        else:                                                 success_f = False
-
-    except RegularExpressionException, x:
-        error_msg(x.message)
-
-    Setup.buffer_limit_code = backup_buffer_limit_code
-    Setup.path_limit_code   = backup_path_limit_code
-    return success_f
 
 def __handle_codec(cl):
     codec_name = cl.follow("", "--codec-info")
@@ -346,5 +346,16 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
         last_start_character_of_line = start_character_of_line
         last_horizontal_offset       = horizontal_offset
         
-    
+def print_version():
+    print "Quex - Fast Universal Lexical Analyzer Generator"
+    print "Version " + QUEX_VERSION
+    print "(C) Frank-Rene Schaefer"
+    print "ABSOLUTELY NO WARRANTY"
+
+def print_help():
+    print "Quex - Fast Universal Lexical Analyzer Generator"
+    print "Please, consult the quex documentation for further help, or"
+    print "visit http://quex.org"
+    print "(C) Frank-Rene Schaefer"
+    print "ABSOLUTELY NO WARRANTY"
 
