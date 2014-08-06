@@ -896,7 +896,6 @@ class GetPot:
         return ufos
 
     def unidentified_flags(self, KnownFlags, ArgumentNumber=-1):
-
         ufos = ""
         if ArgumentNumber == -1:
             # (*) search through all options with one single '-'

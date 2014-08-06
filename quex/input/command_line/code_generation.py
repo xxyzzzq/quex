@@ -150,4 +150,205 @@ def setup(command_line, argv):
     # (*) return setup ___________________________________________________________________
     return True
 
+def __compile_regular_expression(Str, Name):
+    tmp = Str.replace("*", "\\*")
+    tmp = tmp.replace("?", "\\?")
+    tmp = tmp.replace("{", "\\{")
+    tmp = tmp.replace("}", "\\}")
+    try:
+        return re.compile(tmp)
+    except:
+        error_msg("Invalid %s: %s" % (Name, Str))
+
+def __setup_analyzer_class(setup):
+    """ X0::X1::X2::ClassName --> analyzer_class_name = ClassName
+                                  analyzer_name_space = ["X0", "X1", "X2"]
+        ::ClassName --> analyzer_class_name = ClassName
+                        analyzer_name_space = []
+        ClassName --> analyzer_class_name = ClassName
+                      analyzer_name_space = ["quex"]
+    """
+    if setup.analyzer_class.find("::") == -1:
+        setup.analyzer_class = "quex::%s" % setup.analyzer_class
+
+    setup.analyzer_class_name, \
+    setup.analyzer_name_space, \
+    setup.analyzer_name_safe   = \
+         read_namespaced_name(setup.analyzer_class, 
+                              "analyzer class (options -o, --analyzer-class)")
+
+    if setup.show_name_spaces_f:
+        print "Analyzer: {"
+        print "     class_name:  %s;" % setup.analyzer_class_name
+        print "     name_space:  %s;" % repr(setup.analyzer_name_space)[1:-1]
+        print "     name_prefix: %s;" % setup.analyzer_name_safe   
+        print "}"
+
+    setup.analyzer_derived_class_name,       \
+    setup.analyzer_derived_class_name_space, \
+    setup.analyzer_derived_class_name_safe = \
+         read_namespaced_name(setup.analyzer_derived_class_name, 
+                              "derived analyzer class (options --derived-class, --dc)",
+                              AllowEmptyF=True)
+
+def __setup_lexeme_null(setup):
+    if len(setup.external_lexeme_null_object) != 0:
+        lexeme_null_object = setup.external_lexeme_null_object
+        default_name_space = setup.analyzer_name_space
+    elif setup.token_class_only_f:
+        lexeme_null_object = "LexemeNullObject"
+        default_name_space = setup.token_class_name_space
+    else:
+        lexeme_null_object = "LexemeNullObject"
+        default_name_space = setup.analyzer_name_space
+
+    if lexeme_null_object.find("::") == -1:
+        # By default, setup the token in the analyzer's namespace
+        if len(setup.analyzer_name_space) != 0:
+            name_space = reduce(lambda x, y: "%s::%s" % (x, y), default_name_space)
+        else:
+            name_space = ""
+        lexeme_null_object = "%s::%s" % (name_space, lexeme_null_object)
+
+    setup.lexeme_null_name,        \
+    setup.lexeme_null_namespace,   \
+    setup.lexeme_null_name_safe  = \
+         read_namespaced_name(lexeme_null_object, 
+                              "lexeme null object (options --lexeme-null-object, --lno)")
+    setup.lexeme_null_full_name_cpp = "::" 
+    for name in setup.lexeme_null_namespace:
+        setup.lexeme_null_full_name_cpp += name + "::"
+    setup.lexeme_null_full_name_cpp += setup.lexeme_null_name
+
+def __setup_token_class(setup):
+    """ X0::X1::X2::ClassName --> token_class_name = ClassName
+                                  token_name_space = ["X0", "X1", "X2"]
+        ::ClassName --> token_class_name = ClassName
+                        token_name_space = []
+        ClassName --> token_class_name = ClassName
+                      token_name_space = analyzer_name_space
+    """
+    if setup.token_class.find("::") == -1:
+        # By default, setup the token in the analyzer's namespace
+        if len(setup.analyzer_name_space) != 0:
+            analyzer_name_space = reduce(lambda x, y: "%s::%s" % (x, y), setup.analyzer_name_space)
+        else:
+            analyzer_name_space = ""
+        setup.token_class = "%s::%s" % (analyzer_name_space, setup.token_class)
+
+    # Token classes and derived classes have the freedom not to open a namespace,
+    # thus no check 'if namespace == empty'.
+    setup.token_class_name,       \
+    setup.token_class_name_space, \
+    setup.token_class_name_safe = \
+         read_namespaced_name(setup.token_class, 
+                              "token class (options --token-class, --tc)")
+
+    if setup.show_name_spaces_f:
+        print "Token: {"
+        print "     class_name:  %s;" % setup.token_class_name
+        print "     name_space:  %s;" % repr(setup.token_class_name_space)[1:-1]
+        print "     name_prefix: %s;" % setup.token_class_name_safe   
+        print "}"
+
+    if setup.token_class_file != "":
+        blackboard.token_type_definition = \
+                TokenTypeDescriptorManual(setup.token_class_file,
+                                          setup.token_class_name,
+                                          setup.token_class_name_space,
+                                          setup.token_class_name_safe,
+                                          setup.token_id_type)
+
+    #if len(setup.token_class_name_space) == 0:
+    #    setup.token_class_name_space = deepcopy(setup.analyzer_name_space)
+
+def __setup_token_id_prefix(setup):
+    setup.token_id_prefix_plain,      \
+    setup.token_id_prefix_name_space, \
+    dummy                           = \
+         read_namespaced_name(setup.token_id_prefix, 
+                              "token prefix (options --token-id-prefix)", 
+                              AllowEmptyF=True)
+
+    if len(setup.token_id_prefix_name_space) != 0 and setup.language.upper() == "C":
+         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
+
+def prepare_file_names(setup):
+    setup.output_file_stem = ""
+    if setup.analyzer_name_space != ["quex"]:
+        for name in setup.analyzer_name_space:
+            setup.output_file_stem += name + "_"
+    setup.output_file_stem += setup.analyzer_class_name
+
+    setup.output_code_file          = __prepare_file_name("",               E_Files.SOURCE) 
+    setup.output_header_file        = __prepare_file_name("",               E_Files.HEADER)
+    setup.output_configuration_file = __prepare_file_name("-configuration", E_Files.HEADER)
+    setup.output_token_id_file      = __prepare_file_name("-token_ids",     E_Files.HEADER)
+    setup.output_token_class_file   = __prepare_file_name("-token",         E_Files.HEADER)
+    if setup.token_class_only_f == False:
+        setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.HEADER_IMPLEMTATION)
+    else:
+        setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.SOURCE)
+
+    if   setup.buffer_codec == "utf8":
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf8"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf8.i"
+
+    elif setup.buffer_codec == "utf16":
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf16"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf16.i"
+
+    elif setup.buffer_codec == "utf32":
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf32"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf32.i"
+
+    elif setup.buffer_codec != "unicode":
+        # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
+        # See Internal engine character encoding'
+        setup.output_buffer_codec_header = \
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, E_Files.HEADER)
+        setup.output_buffer_codec_header_i = \
+            __prepare_file_name("-converter-%s" % setup.buffer_codec, E_Files.HEADER_IMPLEMTATION)
+    else:
+        setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-unicode-buffer"
+        setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-unicode-buffer.i"
+
+def make_numbers(setup):
+    setup.compression_template_min_gain = __get_integer("compression_template_min_gain")
+    setup.buffer_limit_code             = __get_integer("buffer_limit_code")
+    setup.path_limit_code               = __get_integer("path_limit_code")
+
+    setup.token_id_counter_offset       = __get_integer("token_id_counter_offset")
+    setup.token_queue_size              = __get_integer("token_queue_size")
+    setup.token_queue_safety_border     = __get_integer("token_queue_safety_border")
+    setup.buffer_element_size           = __get_integer("buffer_element_size")
+
+def __get_integer(MemberName):
+    return __get_integer_core(MemberName, setup.__dict__[MemberName])
+
+def __get_integer_core(MemberName, ValueStr):
+    if type(ValueStr) == int: 
+        return ValueStr
+    result = read_integer(StringIO(ValueStr))
+    if result is None:
+        option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
+        error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, option_name) + \
+                  "Use prefix '0x' for hexadecimal numbers.\n" + \
+                  "           '0o' for octal numbers.\n"       + \
+                  "           '0b' for binary numbers.\n"      + \
+                  "           '0r' for roman numbers.\n"      + \
+                  "           and no prefix for decimal numbers.")
+    return result
+
+def __prepare_file_name(Suffix, ContentType):
+    global setup
+    assert ContentType in E_Files
+
+    # Language + Extenstion Scheme + ContentType --> name of extension
+    ext = setup.extension_db[setup.output_file_naming_scheme][ContentType]
+
+    file_name = setup.output_file_stem + Suffix + ext
+
+    if setup.output_directory == "": return file_name
+    else:                            return os.path.normpath(setup.output_directory + "/" + file_name)
 

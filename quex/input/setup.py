@@ -141,7 +141,7 @@ class QuexSetup:
         elif     self.buffer_codec_transformation_info.find("state-split") == -1:   return False
         return True
 
-SetupParTypes = Enum("LIST", "FLAG", "NEGATED_FLAG", "STRING")
+SetupParTypes = Enum("LIST", "INT_LIST", "FLAG", "NEGATED_FLAG", "STRING")
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
@@ -176,7 +176,7 @@ SETUP_INFO = {
     "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
     "input_mode_files":               [["-i"],                 SetupParTypes.LIST],
-    "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.LIST],
+    "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.INT_LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
@@ -205,8 +205,19 @@ SETUP_INFO = {
     #
     # QUERY MODE:
     #
-    "query_version_f":                [["--version", "-v"],                SetupParTypes.FLAG],
-    "query_help_f":                   [["--help", "-h"],                   SetupParTypes.FLAG],
+    "query_version_f":                [["--version", "-v"],               SetupParTypes.FLAG],
+    "query_help_f":                   [["--help", "-h"],                  SetupParTypes.FLAG],
+    "query_codec":                    [["--codec-info", "--ci"],          ""],
+    "query_codec_file":               [["--codec-info-file", "--cif"],    ""], 
+    "query_codec_language":           [["--codec-for-language", "--cil"], ""],
+    "query_property":                 [["--property", "--pr"],            ""],
+    "query_set_by_property":          [["--set-by-property", "--sbpr"],   ""], 
+    "query_set_by_expression":        [["--set-by-expression", "--sbe"],  ""],
+    "query_property_match":           [["--propert-match", "--prm"],      ""],
+    "query_numeric_f":                [["--numeric", "--num"],            SetupParTypes.FLAG],
+    "query_interval_f":               [["--intervals", "--itv"],          SetupParTypes.FLAG],
+    "query_unicode_names":            [["--names"],                       ""],
+    #
     #__________________________________________________________________________
     # Parameters not set on the command line:
     "byte_order_is_that_of_current_system_f":    True,
@@ -300,6 +311,7 @@ class NotificationDB:
     warning_default_newline_0D_impossible            = 14
     warning_on_no_token_class_take_text              = 15
     warning_on_no_warning_on_missing_take_text       = 16
+    error_ufo_on_command_line_f                      = 17
 
 DEPRECATED = { 
   "XX_input_pattern_file": 
