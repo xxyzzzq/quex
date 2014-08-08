@@ -228,4 +228,60 @@ class VisitorSphinx(Visitor):
 
 class VisitorManPage(Visitor):
     re_verbatim_replace = "\n.I \\1\n"
+    def __init__(self):
+        Visitor.__init__(self)
+
+    def do_SectionHeader(self, Title):
+        return ".SH %s\n\n" % Title.upper()
+
+    def do_Text(self, Text):          
+        width  = 4 * self.nesting_level
+        indent = self.nesting_indent()
+        text   = [ indent ]
+        for paragraph in self.format_text(Text):
+            for word in paragraph.split(" "):
+                text.append("%s " % word)
+                if len(word) + width > 80:
+                    text.append("\n")
+                    text.append(indent)
+                    width = 4 * self.nesting_level
+                width += len(word)
+            text.append("\n\n%s" % indent)
+        return "".join(text)
+
+    def do_Note(self, ContentList):
+        self.nesting_level += 1
+        content = self.do(ContentList)
+        self.nesting_level -= 1
+        return ".SH Note\n\n%s\n" % (self.nesting_indent(), content)
+
+    def do_Block(self, Content, Language):
+        self.nesting_level += 1
+        block = self.format_block(Content)
+        self.nesting_level -= 1
+        return "\n.nf\n%s\n\n%s\n\n\n.ni\n" % (self.nesting_indent(), Language, block)
+
+    def do_Option(self, OptionList, CallStr, Default, ParagraphList):
+        options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
+        content     = self.do(ParagraphList)
+        default     = self.format_default(Default)
+        if default is not None: default = "    Default: %s\n\n" % default
+        else:                   default = ""
+        if CallStr is not None: call_str = CallStr
+        else:                   call_str = ""
+        return "\n.IP %s %s\n\n%s\n\n%s" \
+               % (self.nesting_indent(), options_str, call_str, content, default)
+
+    def do_Item(self, Name, ParagraphList):
+        content = self.do(ParagraphList)
+        return "\n.IP %s\n\n%s\n" % (self.nesting_indent(), Name, content)
+
+    def do_List(self, ItemtList):
+        content = "".join(
+            "    %s* %s\n" % (self.nesting_indent(), "".join(self.format_text(content)))
+            for content in ItemtList
+        )
+        # First '\n' is to annulate previous indentations
+        return "\n%s\n" % content
+
 
