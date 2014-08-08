@@ -43,15 +43,16 @@ class Item:
     def do(self, visitor):
         return visitor.do_Item(self.name, self.paragraph_list)
 
-class DescribeList:
-    def __init__(self, Epilog, *Items):
-        self.epilog    = Epilog
+class List:
+    def __init__(self, *Items):
         self.item_list = list(Items)
+        
     def do(self, visitor):
-        return visitor.do_DescribeList(self.epilog, self.item_list)
+        return visitor.do_List(self.item_list)
 
 class Visitor:
-    re_verbatim = re.compile(r"\\v{([a-zA-Z0-9_ ]+)}")
+    re_verbatim = re.compile("\\\\v{([^}]+)}")
+
     def __init__(self):
         self.nesting_level = -1
 
@@ -74,14 +75,16 @@ class Visitor:
     def do_Block(self, Content, Language):      assert False
     def do_Option(self, OptionList, CallStr, Default, ParagraphList):        assert False
     def do_Item(self, Name, ParagraphList):          assert False
-    def do_DescribeList(self, Epilog, ItemtList):  assert False
+    def do_List(self, ItemtList):  assert False
 
     def format_default(self, Default):
+        if Default == "": return None
+
         if Default in SetupParTypes:
             if   Default == SetupParTypes.FLAG: 
-                return "false (inactive)"
+                return "false (disabled)"
             elif Default == SetupParTypes.NEGATED_FLAG:
-                return "true (active)"
+                return "true (not disabled)"
             elif Default == SetupParTypes.LIST:
                 return "empty list"
             elif Default == SetupParTypes.INT_LIST:
@@ -166,11 +169,13 @@ class Visitor:
 class VisitorSphinx(Visitor):
     """Produces code for 'sphinx documentation system'
     """
-    re_verbatim_replace = r"``\1``"
+    re_verbatim_replace = "``\\1``"
     def __init__(self):
         Visitor.__init__(self)
+
     def do_SectionHeader(self, Title):
         return "%s\n%s\n\n" % (Title, "=" * len(Title))
+
     def do_Text(self, Text):          
         width  = 4 * self.nesting_level
         indent = self.nesting_indent()
@@ -193,25 +198,34 @@ class VisitorSphinx(Visitor):
         return "%s.. note::\n\n%s\n" % (self.nesting_indent(), content)
 
     def do_Block(self, Content, Language):
+        self.nesting_level += 1
         block = self.format_block(Content)
+        self.nesting_level -= 1
         return "%s.. code-block:: %s\n\n%s\n\n" % (self.nesting_indent(), Language, block)
 
     def do_Option(self, OptionList, CallStr, Default, ParagraphList):
         options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
         content     = self.do(ParagraphList)
         default     = self.format_default(Default)
-        return "%s.. cmdoption:: %s %s\n\n%s\n\n    Default: %s\n\n" \
-               % (self.nesting_indent(), options_str, CallStr, content, default)
+        if default is not None: default = "    Default: %s\n\n" % default
+        else:                   default = ""
+        if CallStr is not None: call_str = CallStr
+        else:                   call_str = ""
+        return "%s.. cmdoption:: %s %s\n\n%s\n\n%s" \
+               % (self.nesting_indent(), options_str, call_str, content, default)
+
     def do_Item(self, Name, ParagraphList):
         content = self.do(ParagraphList)
-        return ".. describe:: %s\n\n%s\n" % (Name, content)
-    def do_DescribeList(self, Epilog, ItemtList):
+        return "\n%s.. describe:: %s\n\n%s\n" % (self.nesting_indent(), Name, content)
+
+    def do_List(self, ItemtList):
         content = "".join(
-            "    %s* %s\n" % (self.nesting_indent(), self.format_text(content))
+            "    %s* %s\n" % (self.nesting_indent(), "".join(self.format_text(content)))
             for content in ItemtList
         )
-        return "%s.. describe:: %s\n\n%s\n" % (self.nesting_indent(), Epilog, content)
+        # First '\n' is to annulate previous indentations
+        return "\n%s\n" % content
 
 class VisitorManPage(Visitor):
-    re_verbatim_replace = r"\n.I \1\n"
+    re_verbatim_replace = "\n.I \\1\n"
 
