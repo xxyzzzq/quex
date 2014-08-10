@@ -10,18 +10,24 @@ from   quex.engine.misc.file_in import read_integer
 
 if "--hwut-info" in sys.argv:
     print "Integer conversion: read_integer(...)"
-    print "CHOICES: hex, octal, decimal, binary, roman, misc;"
+    print "CHOICES: hex, octal, decimal, binary, roman, misc, Napier;"
     sys.exit(0)
 
-def test(Input, Cmp=None):
+def test(Input, Cmp=None, Base=10):
     print "%s%s --> " % (Input, " " * (10 - len(Input))),
+
     try:
         output = read_integer(StringIO(Input))
-        print output,
-        if Cmp is None: print
-        else:           print Cmp == output
     except:
-        pass
+        print
+        return
+
+    if Base == 10:
+        print output,
+    else:
+        print "%X" % output,
+    if Cmp is None: print
+    else:           print Cmp == output
 
 if "misc" in sys.argv:
     test("  Frank")
@@ -89,3 +95,15 @@ elif "decimal" in sys.argv:
     test("A")
     # Check that dots are not allowed
     test("10.20")
+
+elif "Napier" in sys.argv:
+    # Check that all digits are recognized
+    test("0n")
+    # The basis
+    for i in xrange(26):
+        test("0n%s" % chr(i + ord('a')), 2**i, 16)
+        test("0n%s" % chr(i + ord('A')), 2**i, 16)
+    # Multiple occurencies
+    test("0naa", 2, 16)
+    test("0naabb", 6, 16)
+

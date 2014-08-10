@@ -222,13 +222,13 @@ def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
 
     return new_content
 
-def read_integer(fh):
+def get_number_base(fh):
     pos = fh.tell()
 
     first = fh.read(1)
     if first == "" or first.isdigit() == False: 
         fh.seek(pos)
-        return None
+        return None, None, None
 
     txt  = ""
     base = None
@@ -239,6 +239,7 @@ def read_integer(fh):
         elif second == "o": base = 8;        digit_list = "01234567."
         elif second == "b": base = 2;        digit_list = "01."
         elif second == "r": base = "roman";  digit_list = "MCDXLIVmcdxliv"
+        elif second == "n": base = "Napier"; digit_list = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         elif second.isdigit(): txt = second; # base = None --> base = 10, see below
         elif second == ".":
             error_msg("Decimal integer number cannot contain '.'.", fh)
@@ -251,11 +252,22 @@ def read_integer(fh):
                       "           '0o' for octal numbers.\n"       + \
                       "           '0b' for binary numbers.\n"      + \
                       "           '0r' for roman numbers.\n"      + \
+                      "           '0n' for Napier numbers.\n"      + \
                       "           and no prefix for decimal numbers.", fh)
     else:
         txt = first
 
-    if base is None:        base = 10;       digit_list = "0123456789"
+    if base is None: 
+        base       = 10
+        digit_list = "0123456789"
+
+    return base, digit_list, txt
+
+def read_integer(fh):
+    pos = fh.tell()
+
+    base, digit_list, txt = get_number_base(fh)
+    if base is None: return None
 
     while 1 + 1 == 2:
         tmp = fh.read(1)
@@ -269,21 +281,20 @@ def read_integer(fh):
 
     txt = txt.replace(".", "")
     if len(txt) == 0:
-        if base in [2, 8, 16, "roman"]:
+        if base in [2, 8, 16, "roman", "Napier"]:
             error_msg("Missing digits after '0%s' base %s, found '%s'." % (second, repr(base), tmp), fh)
         fh.seek(pos)
         return None
 
     # Octal, decimal, and hexadecimal numbers
-    if base in [2, 8, 10, 16]:
-        return int(txt, base)
+    if   base in [2, 8, 10, 16]: return int(txt, base)
+    elif base == "roman":        return __roman_number(txt, fh)
+    elif base == "Napier":       return __napier_number(txt, fh)
+    else:                        return __binary_number(txt, fh)
 
-    elif base == "roman":
-        return __roman_number(txt, fh)
-
-    # Binary numbers
+def __binary_number(Text, fh):
     result = 0
-    for letter in txt:
+    for letter in Text:
         result <<= 1
         if letter == "1": result |= 1
     return result
@@ -316,6 +327,20 @@ def __roman_number(Text, fh):
         error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
 
     return result
+
+def __napier_number(Text, fh):
+    def value(C): 
+        Cv = ord(C)
+        if Cv >= ord('a') and Cv <= ord('z'):
+            return Cv - ord('a')
+        elif Cv >= ord('A') and Cv <= ord('Z'):
+            return Cv - ord('A')
+        else:
+            # Before this function is called, it must be safe to assume that 
+            # the text contains a valid Napier number.
+            assert False
+
+    return sum(2**value(c) for c in Text)
 
 def extract_identifiers_with_specific_sub_string(Content, SubString):
     L = len(Content)

@@ -30,3 +30,7 @@ extensions. Number formats are as follows:
 .. describe :: 0r as in "0rXMVIII" or "0rvii"
 
    Roman numbers must be preceeded by a '0r' prefix.
+
+.. describe :: 0n as in "0raabdea" or "0rABHJ"
+
+   Napier numbers (location arithmetric) must be preceeded by a '0n' prefix.

@@ -3,6 +3,7 @@ import sys
 import re
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.command_line.doc_generator import * 
+from   quex.DEFINITIONS import QUEX_VERSION
 
 content = [
 SectionHeader("Code Generation"),
@@ -834,7 +835,12 @@ Option("query_interval_f", None,
 ]
 
 # print VisitorSphinx().do(content)
-content = VisitorManPage().do(content)
-page = open("%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], "rb").read()
-print page.replace("$$OPTIONS$$", content)
+
+if True:
+    content = VisitorManPage().do(content)
+    page = open("%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], "rb").read()
+    page = page.replace("$$OPTIONS$$", content)
+    page = page.replace("$$VERSION$$", "%s" % QUEX_VERSION)
+    print page
+
 
