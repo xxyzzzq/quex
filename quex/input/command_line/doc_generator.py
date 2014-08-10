@@ -51,7 +51,8 @@ class List:
         return visitor.do_List(self.item_list)
 
 class Visitor:
-    re_verbatim = re.compile("\\\\v{([^}]+)}")
+    re_verbatim0 = re.compile("\\\\v{([^}]+)}([.,:!?])\s*")
+    re_verbatim  = re.compile("\\\\v{([^}]+)}\s*")
 
     def __init__(self):
         self.nesting_level = -1
@@ -139,7 +140,7 @@ class Visitor:
             return result
 
         def add_line(p, line):
-            p.append("%s " % self.__format_text(clean(line)))
+            p.append("%s " % clean(line))
 
         paragraph_list = []
         paragraph      = []
@@ -152,7 +153,10 @@ class Visitor:
                 add_line(paragraph, line)
 
         append(paragraph_list, paragraph)
-        return paragraph_list
+        return [
+            self.__format_text(paragraph)
+            for paragraph in paragraph_list
+        ]
                 
     def __format_text(self, X):
         """Replace text formatting markers by the language dependent
@@ -162,14 +166,17 @@ class Visitor:
         .re_verbatim_replace --> print in 're_verbatim_replace' for variable and function 
                       names.
         """
+        assert X.find("\n") == -1
         result = X
+        result = Visitor.re_verbatim0.sub(self.re_verbatim_replace0, result)
         result = Visitor.re_verbatim.sub(self.re_verbatim_replace, result)
         return result
 
 class VisitorSphinx(Visitor):
     """Produces code for 'sphinx documentation system'
     """
-    re_verbatim_replace = "``\\1``"
+    re_verbatim_replace0 = "``\\1``\\2 "
+    re_verbatim_replace  = "``\\1`` "
     def __init__(self):
         Visitor.__init__(self)
 
@@ -207,7 +214,7 @@ class VisitorSphinx(Visitor):
         options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
         content     = self.do(ParagraphList)
         default     = self.format_default(Default)
-        if default is not None: default = "    Default: %s\n\n" % default
+        if default is not None: default = "Default: %s\n\n" % default
         else:                   default = ""
         if CallStr is not None: call_str = CallStr
         else:                   call_str = ""
@@ -227,61 +234,56 @@ class VisitorSphinx(Visitor):
         return "\n%s\n" % content
 
 class VisitorManPage(Visitor):
-    re_verbatim_replace = "\n.I \\1\n"
+    re_verbatim_replace0 = "\n.BR \"\\1\" \\2\n"
+    re_verbatim_replace  = "\n.B \"\\1\"\n"
     def __init__(self):
         Visitor.__init__(self)
 
     def do_SectionHeader(self, Title):
-        return ".SH %s\n\n" % Title.upper()
+        return ".SS %s\n\n" % Title
 
     def do_Text(self, Text):          
         width  = 4 * self.nesting_level
-        indent = self.nesting_indent()
-        text   = [ indent ]
+        text   = [ ]
         for paragraph in self.format_text(Text):
-            for word in paragraph.split(" "):
-                text.append("%s " % word)
-                if len(word) + width > 80:
-                    text.append("\n")
-                    text.append(indent)
-                    width = 4 * self.nesting_level
-                width += len(word)
-            text.append("\n\n%s" % indent)
+            text.append(paragraph)
+            text.append("\n\n")
         return "".join(text)
 
     def do_Note(self, ContentList):
-        self.nesting_level += 1
-        content = self.do(ContentList)
-        self.nesting_level -= 1
-        return ".SH Note\n\n%s\n" % (self.nesting_indent(), content)
+        return self.do(ContentList)
 
     def do_Block(self, Content, Language):
         self.nesting_level += 1
         block = self.format_block(Content)
         self.nesting_level -= 1
-        return "\n.nf\n%s\n\n%s\n\n\n.ni\n" % (self.nesting_indent(), Language, block)
+        return "\n.nf\n\n%s\n\n\n.fi\n" % block
 
     def do_Option(self, OptionList, CallStr, Default, ParagraphList):
         options_str = reduce(lambda a, b: "%s, %s" % (a, b), OptionList)
+        #options_str = options_str.replace("--", "\\-\\^\\-")
+        #options_str = options_str.replace("-", "\\-")
         content     = self.do(ParagraphList)
         default     = self.format_default(Default)
-        if default is not None: default = "    Default: %s\n\n" % default
+        if default is not None: default = "\.RS\nDefault: %s\n.RE\n\n" % default
         else:                   default = ""
         if CallStr is not None: call_str = CallStr
         else:                   call_str = ""
-        return "\n.IP %s %s\n\n%s\n\n%s" \
-               % (self.nesting_indent(), options_str, call_str, content, default)
+        return ".TP\n.BI \"%s %s\"\n\n.RS\n%s\n.RE\n\n%s\n" \
+               % (options_str, call_str, content, default)
 
     def do_Item(self, Name, ParagraphList):
         content = self.do(ParagraphList)
-        return "\n.IP %s\n\n%s\n" % (self.nesting_indent(), Name, content)
+        if content and content[0] != "\n": 
+            content = "\n%s" % content
+        return "\n.RS\n.IP %s%s\n.RE\n" % (Name, content)
 
     def do_List(self, ItemtList):
         content = "".join(
-            "    %s* %s\n" % (self.nesting_indent(), "".join(self.format_text(content)))
+            " * %s\n" % "".join(self.format_text(content))
             for content in ItemtList
         )
         # First '\n' is to annulate previous indentations
-        return "\n%s\n" % content
+        return "\n.Bl -bullet\n%s\n.El\n" % content
 
 
