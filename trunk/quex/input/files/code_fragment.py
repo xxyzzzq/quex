@@ -9,7 +9,8 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 read_until_closing_bracket, \
                                                 skip_whitespace, \
                                                 verify_word_in_list
-from   quex.output.cpp.token_id_maker    import TokenInfo, cut_token_id_prefix
+from   quex.output.cpp.token_id_maker    import TokenInfo 
+from   quex.input.files.token_id_file    import cut_token_id_prefix
 import quex.blackboard                   as     blackboard
 from   quex.blackboard                   import setup as Setup, \
                                                 Lng

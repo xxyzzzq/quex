@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.55" date="Sun Aug 10 11:18:21 2014">
+<test-database execution-time-sec="0.54" date="Mon Aug 11 08:04:36 2014">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1387873735L" vanished="False"/>
@@ -15,11 +15,11 @@
                <choice name="" result="OK" time_sec="0.05" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" time-sum-sec="0.05"> 
+        <test title="Function delete_comment(...)" time-sum-sec="0.04"> 
             <application file-name="test-delete_comment.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.05" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.04" crc="1761513741"/>
             </choice-list>
         </test>
         <test title="Function extract_identifiers_with_specific_prefix(...)" time-sum-sec="0.05"> 
@@ -35,13 +35,13 @@
             <application file-name="test-read_integer.py" info-request-time="1407662299L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">
-               <choice name="hex" result="OK" time_sec="0.05" crc="952788026"/>
-               <choice name="octal" result="OK" time_sec="0.06" crc="1921488222"/>
+               <choice name="hex" result="FAIL" time_sec="0.04" crc="952788026"/>
+               <choice name="octal" result="OK" time_sec="0.05" crc="1921488222"/>
                <choice name="decimal" result="OK" time_sec="0.05" crc="-1709956949"/>
-               <choice name="binary" result="OK" time_sec="0.06" crc="245398371"/>
-               <choice name="roman" result="OK" time_sec="0.05" crc="832665557"/>
-               <choice name="misc" result="OK" time_sec="0.05" crc="731748549"/>
-               <choice name="Napier" result="OK" time_sec="0.00" crc="-75501315"/>
+               <choice name="binary" result="OK" time_sec="0.05" crc="245398371"/>
+               <choice name="roman" result="FAIL" time_sec="0.04" crc="832665557"/>
+               <choice name="misc" result="FAIL" time_sec="0.05" crc="731748549"/>
+               <choice name="Napier" result="OK" time_sec="0.05" crc="-75501315"/>
             </choice-list>
         </test>
     </group>

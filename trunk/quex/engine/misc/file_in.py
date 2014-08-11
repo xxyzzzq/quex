@@ -648,6 +648,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     #        LineN = 0
 
     if     __reference_to_setup is not None \
+       and isinstance(__reference_to_setup.suppressed_notification_list, (set, list)) \
        and SuppressCode in __reference_to_setup.suppressed_notification_list:
         return
 

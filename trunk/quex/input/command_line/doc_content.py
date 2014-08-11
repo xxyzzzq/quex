@@ -9,10 +9,6 @@ content = [
 SectionHeader("Code Generation"),
 """
 This section lists the command line options to control code generation.
-Numbers are specified in C-like format. That is, use no prefix to
-designate decimal numbers, \\v{0x} as prefix for hexadecimal numbers, \\v{0o}
-as prefix for octal numbers \\v{0b} as prefix for binary numbers and \\v{0r}
-for roman numbers.
 """,
 Option("input_mode_files", "[file name]+",
     """
@@ -316,7 +312,7 @@ Option("external_lexeme_null_object", "variable",
 There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern footnote:[As for
 'normal' ASCII or Unicode based lexical analyzers, this would most probably not
-be a good design decision. But, when other, alien, non-unicode codings are to
+be a good design decision. But, when other, alien, non-Unicode codings are to
 be used, this case is conceivable.].  The following option allows modification
 of the buffer limit code:
 """,
@@ -727,7 +723,7 @@ Item("9",
 Item("10",
      """
     Warning if there is no 'on_codec_error' handler while a   
-    codec different from unicode is used.                     
+    codec different from Unicode is used.                     
      """),
 Item("11",
      """
