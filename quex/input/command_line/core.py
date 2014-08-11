@@ -2,38 +2,19 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                    import setup, \
-                                                 E_Compression
+from   quex.blackboard                    import setup
 import quex.blackboard                    as     blackboard
-from   quex.input.files.token_type        import TokenTypeDescriptorManual
 from   quex.input.command_line.GetPot     import GetPot
-import quex.input.command_line.validation as     validation
-from   quex.input.command_line.code_generation as code_generation
-from   quex.input.command_line.query      as      query     
+import quex.input.command_line.code_generation as code_generation
+import quex.input.command_line.query      as      query     
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
-                                                 global_extension_db,      \
-                                                 global_character_type_db, \
-                                                 command_line_args_defined, \
-                                                 command_line_arg_position, \
-                                                 E_Files, \
                                                  NotificationDB
 
-from   quex.output.cpp.token_id_maker     import parse_token_id_file
-
 from   quex.engine.misc.file_in           import error_msg,                \
-                                                 verify_word_in_list,      \
-                                                 read_namespaced_name,     \
-                                                 read_integer,             \
                                                  open_file_or_die
-import quex.engine.codec_db.core            as   codec_db
-from   quex.engine.generator.languages.core import db as output_language_db
-from   quex.engine.generator.code.base      import CodeFragment
-
-from   quex.DEFINITIONS import QUEX_VERSION
 
 from   StringIO import StringIO
-from   operator import itemgetter
 import re
 
 def do(argv):
@@ -46,7 +27,7 @@ def do(argv):
     query_f, command_line = argv_interpret(argv)
 
     if command_line is None: return False
-    elif not query_f:        code_generation.setup(command_line, argv)
+    elif not query_f:        code_generation.prepare(command_line, argv)
     else:                    query.run(command_line, argv)
 
     __extra_option_message(location_list)
@@ -133,7 +114,9 @@ def __extra_option_extract_from_file(FileName):
     return result, location_list
 
 def __extra_option_message(ExtraLocationList):
-    if NotificationDB.message_on_extra_options in setup.suppressed_notification_list:
+    if ExtraLocationList is None:
+        return
+    elif NotificationDB.message_on_extra_options in setup.suppressed_notification_list:
         return
     elif len(ExtraLocationList) == 0:
         return
@@ -152,74 +135,93 @@ def argv_interpret(argv):
          Setup  -- information about the command line.
     """
     command_line = GetPot(argv)
-
-    query_f = None
+    query_f      = None
     command_line.disable_loop()
-    known_option_list = []
     for variable_name, info in SETUP_INFO.items():
-        query_f = argv_is_query_option(variable_name)
-        known_option_list.extend(info[0])
+
+        if type(info) != list:  # Parameter not set on command line?
+            continue            # => skip.
+
+        query_f = argv_is_query_option(command_line, info[0], variable_name, query_f)
 
         command_line.reset_cursor()
-        # Some parameters are not set on the command line. Their entry is not associated
-        # with a description list.
-        if type(info) != list: continue
 
-        if info[1] == SetupParTypes.FLAG:
-            setup.__dict__[variable_name] = command_line.search(info[0])        
+        if   info[1] == SetupParTypes.FLAG:
+            value = argv_catch_flag(command_line, info[0], None)
 
         elif info[1] == SetupParTypes.NEGATED_FLAG:
-            setup.__dict__[variable_name] = not command_line.search(info[0])        
+            value = argv_catch_negated_flag(command_line, info[0], None)
 
         elif info[1] == SetupParTypes.INT_LIST:
-            self.__dict__[variable_name] = argv_catch_int_list(info[0])
+            value = argv_catch_int_list(command_line, info[0], [])
 
         elif info[1] == SetupParTypes.LIST:
-            self.__dict__[variable_name] = argv_catch_list(info[0])
+            value = argv_catch_list(command_line, info[0], [])
 
         elif command_line.search(info[0]):
-            if not command_line.search(info[0]):
-                # Set default value
-                setup.__dict__[variable_name] = info[1]
-                continue
+            value = argv_catch_string(command_line, info[0], info[1])
 
-            value = command_line.follow("##EMPTY##", info[0])
-            if value == "##EMPTY##":
-                error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
-            setup.__dict__[variable_name] = value
+        else: 
+            continue
+
+        setup.__dict__[variable_name] = value
 
     # Handle unidentified command line options.
-    argv_ufo_detections(known_option_list)
+    argv_ufo_detections(command_line)
 
     return query_f, command_line
 
-def argv_is_query_option(PrevQueryF, ParameterName):
+def argv_is_query_option(Cl, Option, Name, PrevQueryF):
     """Determines whether the setup parameter is a parameter related to 
     queries (or to code generation). If a mixed usage is detected an 
     error is issued.
 
-    RETURN: True, if the setup parameter is query related. 
-    """
-    query_f = (ParameterName.find("query_") == 0)
-    if PrevQueryF is None:
-        return query_f
-    elif PrevQueryF != query_f:
-        error_msg("Mixed options: query and code generation mode.\n"
-                  "The option(s) '%s' cannot be combined with preceeding options." \
-                  % SETUP_INFO[ParameterName][0][1:-1])
-    else:
-        return query_f
+    RETURN: query flag
 
-def argv_catch_int_list(argv, Option):
+    The query flag is the same as QueryF, except for one case: when QueryF
+    was None (unset) and the option appeared on the command line. Then, the 
+    return value tells whether the option was a query flag or not.
+
+    ERROR: If there are mixed options, i.e. query flags and code generation
+    flags appear at the same time.
+    """
+    if not Cl.search(Option):   return PrevQueryF
+
+    query_f = (Name.find("query_") == 0)
+
+    if   PrevQueryF is None:    return query_f
+    elif PrevQueryF == query_f: return query_f
+
+    # If debug exception is enabled, do not trigger errror
+    if Cl.search(SETUP_INFO["_debug_exception_f"][0]): return query_f
+
+    error_msg("Mixed options: query and code generation mode.\n"
+              "The option(s) '%s' cannot be combined with preceeding options." \
+              % str(SETUP_INFO[Name][0])[1:-1].replace("'",""))
+
+
+def argv_catch_flag(Cl, Option, Default):
+    """RETURNS: True -- if option is found on command line.
+                False -- else.
+    """
+    return Cl.search(Option)
+
+def argv_catch_negated_flag(Cl, Option, Default):
+    """RETURNS: True -- if option is NOT found on command line.
+                False -- else.
+    """
+    return not Cl.search(Option)
+
+def argv_catch_int_list(Cl, Option, Default):
     """RETURNS: list of integers built from the list of no-minus followers of 
     the given option.
     """
     return [
         __get_integer_core(variable_name, x)
-        for x in argv_catch_list(info[0])
+        for x in argv_catch_list(Cl, Option, Default)
     ]
 
-def argv_catch_list(argv, Option):
+def argv_catch_list(Cl, Option, Default):
     """Catch the list of no-minus followers of the given option. Multiple
     occurrencies of Option are considered.
 
@@ -227,23 +229,37 @@ def argv_catch_list(argv, Option):
     """
     result = []
     while 1 + 1 == 2:
-        if not command_line.search(Option):
+        if not Cl.search(Option):
             break
 
-        the_list = command_line.nominus_followers(Option)
+        the_list = Cl.nominus_followers(Option)
         if len(the_list) == 0:
-            error_msg("Option %s\nnot followed by anything." % repr(Option)[1:-1])
+            error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
 
         for x in the_list:
-            if x not in entry: 
-                result.append(x)
+            if x not in result: result.append(x)
     return result
 
-def argv_ufo_detections(Cl, KnownOptions):
+def argv_catch_string(Cl, Option, Default):
+    if not Cl.search(Option):
+        return Default
+
+    value = Cl.follow("##EMPTY##", Option)
+    if value == "##EMPTY##":
+        error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
+    return value
+
+def argv_ufo_detections(Cl):
     """Detects unidentified command line options.
     """
-    ufo_list = Cl.unidentified_options(KnownOptions)
-    if len(ufo_list) == 0: return
+    known_option_list = []
+    for info in SETUP_INFO.itervalues():
+        if type(info) != list: continue
+        known_option_list.extend(info[0])
+
+    ufo_list = Cl.unidentified_options(known_option_list)
+    if not ufo_list: return
+
     option_str = "".join("%s\n" % ufo_list)
     error_msg("Following command line options are unknown to current version of quex:\n" \
               + option_str, 

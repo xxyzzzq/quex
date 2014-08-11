@@ -13,8 +13,6 @@ import quex.engine.codec_db.core          as codec_db
 
 from quex.blackboard import setup as Setup
 
-def run(Cl):
-
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],
         "--codec-file-info":    ["Information about supported characters of a codec file."],
@@ -41,13 +39,13 @@ def run(cl, Argv):
     Setup.path_limit_code   = -1
 
     try:
-        if   setup.query_codec:             __handle_codec(cl)
-        elif setup.query_codec_file:        __handle_codec_file(cl)
-        elif setup.query_codec_language:    __handle_codec_for_language(cl)
-        elif setup.query_property:          __handle_property(cl)
-        elif setup.query_set_by_property:   __handle_set_by_property(cl)
-        elif setup.query_set_by_expression: __handle_set_by_expression(cl)
-        elif setup.query_property_match:    __handle_property_match(cl)
+        if   Setup.query_codec:             __handle_codec(cl)
+        elif Setup.query_codec_file:        __handle_codec_file(cl)
+        elif Setup.query_codec_language:    __handle_codec_for_language(cl)
+        elif Setup.query_property:          __handle_property(cl)
+        elif Setup.query_set_by_property:   __handle_set_by_property(cl)
+        elif Setup.query_set_by_expression: __handle_set_by_expression(cl)
+        elif Setup.query_property_match:    __handle_property_match(cl)
         else:
             assert False # No query option(s) !
 
@@ -56,7 +54,7 @@ def run(cl, Argv):
 
     Setup.buffer_limit_code = backup_buffer_limit_code
     Setup.path_limit_code   = backup_path_limit_code
-    return success_f
+    return 
 
 
 

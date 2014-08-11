@@ -12,7 +12,7 @@ cd $bug/
 if [[ $1 == "PlainC" ]]; then
     quex -i simple.qx --language C --debug-exception
 elif [[ $1 == "ErrorC" ]]; then
-    quex -i simple.qx --language C --fes foo
+    quex -i simple.qx --language C --fes foo # --debug-exception
 elif [[ $1 == "PlainCpp" ]]; then
     quex -i simple.qx 
 elif [[ $1 == "ErrorCpp" ]]; then
