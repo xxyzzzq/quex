@@ -1,7 +1,7 @@
-<test-database execution-time-sec="2.92" date="Mon Aug 11 07:59:32 2014">
+<test-database execution-time-sec="2.95" date="Wed Aug 13 01:30:52 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="1.23"> 
+        <test title="select" time-sum-sec="1.25"> 
             <application file-name="select_longest_paths.py" info-request-time="1401225047L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="14" same_result="False">
@@ -21,7 +21,7 @@
                <choice name="12" result="OK" time_sec="0.09" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="collect" time-sum-sec="0.63"> 
+        <test title="collect" time-sum-sec="0.62"> 
             <application file-name="find.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -33,7 +33,7 @@
                <choice name="6" result="OK" time_sec="0.10" crc="300088630"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.39"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.40"> 
             <application file-name="find-3.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">

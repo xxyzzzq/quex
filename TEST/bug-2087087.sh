@@ -7,6 +7,6 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -numeric --set-by-expression '[:alnum:]'
+quex --numeric --set-by-expression '[:alnum:]'
 
 cd $tmp

@@ -11,6 +11,7 @@ from   quex.engine.misc.file_in        import EndOfStreamException, \
 from   quex.engine.generator.code.core import CodeUser, \
                                               CodeUser_NULL
 from   quex.engine.generator.code.base import SourceRef, \
+                                              CodeFragment, \
                                               SourceRef_VOID
 import quex.input.files.code_fragment  as     code_fragment
 from   quex.input.setup                import E_Files, \

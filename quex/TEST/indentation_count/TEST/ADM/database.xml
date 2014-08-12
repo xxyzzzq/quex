@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.70" date="Mon Aug 11 07:56:44 2014">
+<test-database execution-time-sec="14.70" date="Wed Aug 13 01:30:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting and Range Skipper" time-sum-sec="3.70"> 
         <application file-name="with-skip-range.sh" info-request-time="1381662239L" vanished="False"/>
@@ -9,7 +9,7 @@
            <choice name="nested_range" result="OK" time_sec="1.15" crc="-1046346403"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="3.46"> 
+    <test title="Bad character detection." time-sum-sec="3.45"> 
         <application file-name="bad.sh" info-request-time="1404101244L" vanished="False"/>
         <analogy open="((" close="))"/>
         <happy-pattern re="EasyLexer.c:[0-9]+:"/>
@@ -26,7 +26,7 @@
            <choice name="" result="NO GOOD FILE" time_sec="0.00" crc="0"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="5.24"> 
+    <test title="Customized Event Handlers" time-sum-sec="5.25"> 
         <application file-name="handlers.sh" info-request-time="1404016088L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -37,7 +37,7 @@
            <choice name="on_indentation_error" result="OK" time_sec="1.04" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="2.31"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="2.30"> 
         <application file-name="commonalities.sh" info-request-time="1403765169L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="7" same_result="False">

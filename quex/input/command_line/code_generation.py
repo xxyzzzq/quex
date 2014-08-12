@@ -1,7 +1,7 @@
 from   quex.engine.misc.file_in             import read_namespaced_name, \
                                                    verify_word_in_list, \
-                                                   error_msg, \
-                                                   read_integer
+                                                   get_integer_parameter_value, \
+                                                   error_msg
 import quex.input.command_line.validation   as     validation
 from   quex.input.setup                     import SETUP_INFO,               \
                                                    global_extension_db,      \
@@ -16,9 +16,10 @@ import quex.engine.codec_db.core            as     codec_db
 
 
 from   quex.blackboard import setup as Setup, E_Compression
+import quex.blackboard as blackboard
 
-from   StringIO import StringIO
 from   operator import itemgetter
+import re
 import sys
 import os
 
@@ -348,21 +349,7 @@ def make_numbers(Setup):
     Setup.buffer_element_size           = __get_integer("buffer_element_size")
 
 def __get_integer(MemberName):
-    return __get_integer_core(MemberName, Setup.__dict__[MemberName])
-
-def __get_integer_core(MemberName, ValueStr):
-    if type(ValueStr) == int: 
-        return ValueStr
-    result = read_integer(StringIO(ValueStr))
-    if result is None:
-        option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
-        error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, option_name) + \
-                  "Use prefix '0x' for hexadecimal numbers.\n" + \
-                  "           '0o' for octal numbers.\n"       + \
-                  "           '0b' for binary numbers.\n"      + \
-                  "           '0r' for roman numbers.\n"      + \
-                  "           and no prefix for decimal numbers.")
-    return result
+    return get_integer_parameter_value(str(SETUP_INFO[MemberName][0])[1:-1], Setup.__dict__[MemberName])
 
 def __prepare_file_name(Suffix, ContentType):
     global Setup

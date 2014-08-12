@@ -1,6 +1,7 @@
 0x12340    -->  74560 True
 0x56789    -->  354185 True
 0xABCDEF   -->  11259375 True
-0xG        -->  command line:1:error: Missing digits after '0x' base 16, found 'G'.
+0xG        -->  command line:1:error: Missing digits after for number of base 16, found 'G'.
+
 0x.C0FFEE.BABA -->  828927556282 True
 0x0        -->  0 True

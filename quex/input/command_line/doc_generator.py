@@ -154,8 +154,8 @@ class Visitor:
 
         append(paragraph_list, paragraph)
         return [
-            self.__format_text(paragraph)
-            for paragraph in paragraph_list
+            self.__format_text(p)
+            for p in paragraph_list
         ]
                 
     def __format_text(self, X):
@@ -243,7 +243,6 @@ class VisitorManPage(Visitor):
         return ".SS %s\n\n" % Title
 
     def do_Text(self, Text):          
-        width  = 4 * self.nesting_level
         text   = [ ]
         for paragraph in self.format_text(Text):
             text.append(paragraph)

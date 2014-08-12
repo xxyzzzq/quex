@@ -1,4 +1,4 @@
-<test-database execution-time-sec="39.81" date="Mon Aug 11 07:56:17 2014">
+<test-database execution-time-sec="42.74" date="Wed Aug 13 01:45:39 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -14,12 +14,12 @@
            <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Command Line Option Documentation" time-sum-sec="0.26"> 
+    <test title="Command Line Option Documentation" time-sum-sec="0.38"> 
         <application file-name="verify_command_line_option_doc.py" info-request-time="1407444338L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="man" result="NO GOOD FILE" time_sec="0.13" crc="None"/>
-           <choice name="shinx" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
+           <choice name="man" result="NO GOOD FILE" time_sec="0.19" crc="None"/>
+           <choice name="shinx" result="NO GOOD FILE" time_sec="0.19" crc="None"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.02"> 
@@ -29,11 +29,11 @@
            <choice name="" result="OK" time_sec="0.02" crc="None"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="38.32"> 
+    <test title="Code Check with pyflakes" time-sum-sec="41.07"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="38.32" crc="None"/>
+           <choice name="" result="OK" time_sec="41.07" crc="None"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 
@@ -43,7 +43,7 @@
            <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.49"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.50"> 
         <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
@@ -52,12 +52,12 @@
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.13"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.17"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1405262265L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.13" crc="None"/>
+               <choice name="" result="FAIL" time_sec="0.17" crc="None"/>
             </choice-list>
         </test>
     </group>

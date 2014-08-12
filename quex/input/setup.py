@@ -14,11 +14,21 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo):
         for key, entry in SetupInfo.items():
-            if type(entry) != list:                      default_value = entry
-            elif entry[1] == SetupParTypes.LIST:         default_value = []
-            elif entry[1] == SetupParTypes.FLAG:         default_value = False
-            elif entry[1] == SetupParTypes.NEGATED_FLAG: default_value = True
-            else:                                        default_value = entry[1]
+            if type(entry) != list:                         
+                default_value = entry
+            elif entry[1] in SetupParTypes:
+                # The following is supposed to break, in case a paramater type
+                # appears that is not handled. => detect missing default value setup
+                default_value = {
+                    SetupParTypes.LIST:            [],
+                    SetupParTypes.INT_LIST:        [],
+                    SetupParTypes.FLAG:            False,
+                    SetupParTypes.NEGATED_FLAG:    True,
+                    SetupParTypes.OPTIONAL_STRING: None,  # "" indicates no follower string
+                }[entry[1]]
+            else:                                           
+                default_value = entry[1]
+
             self.__dict__[key] = default_value
 
         # Default values, maybe overiden later on.
@@ -28,6 +38,14 @@ class QuexSetup:
         self.compression_type_list = []
 
         file_in.specify_setup_object(self)
+
+    def set(self, Name, Type, Value):
+        if Type in (SetupParTypes.LIST, SetupParTypes.INT_LIST):
+            prev = self.__dict__.get(Name)
+            if prev in SetupParTypes: self.__dict__[Name] = Value
+            else:                     prev.extend(Value)
+        else:
+            self.__dict__[Name] = Value
 
     def get_buffer_element_value_limit(self):
         """A buffer element is a chunk of memory of the size of the 
@@ -74,7 +92,6 @@ class QuexSetup:
             return sys.maxint
         else:
             return self.get_buffer_element_value_limit()
-
 
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"
@@ -141,7 +158,7 @@ class QuexSetup:
         elif     self.buffer_codec_transformation_info.find("state-split") == -1:   return False
         return True
 
-SetupParTypes = Enum("LIST", "INT_LIST", "FLAG", "NEGATED_FLAG", "STRING")
+SetupParTypes = Enum("LIST", "INT_LIST", "FLAG", "NEGATED_FLAG", "STRING", "OPTIONAL_STRING")
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                                [Default / Type]
@@ -175,7 +192,7 @@ SETUP_INFO = {
     "converter_user_new_func":        [["--converter-new", "--cn"],            ""],
     "converter_ucs_coding_name":      [["--converter-ucs-coding-name", "--cucn"], ""],
     "include_stack_support_f":        [["--no-include-stack", "--nois"],       SetupParTypes.NEGATED_FLAG],
-    "input_mode_files":               [["-i"],                 SetupParTypes.LIST],
+    "input_mode_files":               [["-i"],                                 SetupParTypes.LIST],
     "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.INT_LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
@@ -210,13 +227,13 @@ SETUP_INFO = {
     "query_codec":                    [["--codec-info", "--ci"],          ""],
     "query_codec_file":               [["--codec-info-file", "--cif"],    ""], 
     "query_codec_language":           [["--codec-for-language", "--cil"], ""],
-    "query_property":                 [["--property", "--pr"],            ""],
+    "query_property":                 [["--property", "--pr"],            SetupParTypes.OPTIONAL_STRING],
     "query_set_by_property":          [["--set-by-property", "--sbpr"],   ""], 
     "query_set_by_expression":        [["--set-by-expression", "--sbe"],  ""],
     "query_property_match":           [["--property-match", "--prm"],     ""],
     "query_numeric_f":                [["--numeric", "--num"],            SetupParTypes.FLAG],
     "query_interval_f":               [["--intervals", "--itv"],          SetupParTypes.FLAG],
-    "query_unicode_names":            [["--names"],                       ""],
+    "query_unicode_names_f":          [["--names"],                       SetupParTypes.FLAG],
     #
     #__________________________________________________________________________
     # Parameters not set on the command line:

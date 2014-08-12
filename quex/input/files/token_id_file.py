@@ -1,4 +1,25 @@
-from quex.blackboard import setup as Setup
+from   quex.input.setup                 import NotificationDB
+from   quex.engine.generator.code.base  import SourceRef, \
+                                               SourceRef_VOID
+from   quex.engine.misc.file_in         import get_file_content_or_die, \
+                                               open_file_or_die, \
+                                               error_msg, \
+                                               delete_comment
+from   quex.blackboard                  import setup as Setup, \
+                                               token_id_db, \
+                                               token_id_foreign_set
+from   itertools import chain
+from   copy      import copy
+import re
+import os
+
+class TokenInfo:
+    def __init__(self, Name, ID, TypeName=None, SourceReference=SourceRef_VOID):
+        self.name         = Name
+        self.number       = ID
+        self.related_type = TypeName
+        self.id           = None
+        self.sr           = SourceReference
 
 def parse(ForeignTokenIdFile, CommentDelimiterList):
     """This function somehow interprets the user defined token id file--if there is
@@ -137,4 +158,42 @@ def cut_token_id_prefix(TokenName, FH_Error=False):
     else:
         error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
                   "found: '%s'" % TokenName, FH_Error)
+
+def __delete_comments(Content, CommentDelimiterList):
+    content = Content
+    for opener, closer in CommentDelimiterList:
+        content = delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
+    return content
+
+def __extract_token_ids(PlainContent, FileName):
+    """PlainContent     -- File content without comments.
+    """
+    DefineRE      = "#[ \t]*define[ \t]+([^ \t\n\r]+)[ \t]+[^ \t\n]+"
+    AssignRE      = "([^ \t]+)[ \t]*=[ \t]*[^ \t]+"
+    EnumRE        = "enum[^{]*{([^}]*)}"
+    EnumConst     = "([^=, \n\t]+)"
+    define_re_obj = re.compile(DefineRE)
+    assign_re_obj = re.compile(AssignRE)
+    enum_re_obj   = re.compile(EnumRE)
+    const_re_obj  = re.compile(EnumConst)
+
+    def check_and_append(found_list, Name):
+        if    len(Setup.token_id_prefix_plain) == 0 \
+           or Name.find(Setup.token_id_prefix_plain) == 0 \
+           or Name.find(Setup.token_id_prefix) == 0:
+            found_list.append(Name)
+
+    result = []
+    for name in chain(define_re_obj.findall(PlainContent), assign_re_obj.findall(PlainContent)):
+        # Either there is no plain token prefix, or it matches well.
+        check_and_append(result, name)
+
+    for enum_txt in enum_re_obj.findall(PlainContent):
+        for name in const_re_obj.findall(enum_txt):
+            check_and_append(result, name.strip())
+
+    return result
+
+def space(L, Name):
+    return " " * (L - len(Name))
 

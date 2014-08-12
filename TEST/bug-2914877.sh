@@ -9,7 +9,7 @@ tmp=`pwd`
 cd $bug/ 
 echo "file list before:"
 ls
-quex -i test.qx -o Simple --buffer-element-size-irrelevant >& tmp.txt
+quex -i test.qx -o Simple  >& tmp.txt
 echo
 echo "quex: no output is just fine."
 cat tmp.txt 
