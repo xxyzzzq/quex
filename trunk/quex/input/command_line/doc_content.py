@@ -1,8 +1,7 @@
 import os
 import sys
-import re
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.input.command_line.doc_generator import * 
+from   quex.input.command_line.doc_generator import SectionHeader, Option, Item, List, Block, Note, VisitorSphinx, VisitorManPage
 from   quex.DEFINITIONS import QUEX_VERSION
 
 content = [
@@ -824,13 +823,16 @@ Option("query_numeric_f", None,
        """),
 Option("query_interval_f", None, 
        """
-   This option disables the display of single character or single character codes.
-   In this case sets of adjacent characters are displayed as intervals. This provides
+   If this option is set, adjacent characters are displayed as intervals. This provides
    a somewhat more abbreviated display.
+       """),
+Option("query_unicode_names", None, 
+       """
+       If this option is given, resulting characters are displayed by their
+       (lengthy) Unicode name.
        """),
 ]
 
-# print VisitorSphinx().do(content)
 
 if True:
     content = VisitorManPage().do(content)
@@ -838,5 +840,8 @@ if True:
     page = page.replace("$$OPTIONS$$", content)
     page = page.replace("$$VERSION$$", "%s" % QUEX_VERSION)
     print page
+else:
+    print VisitorSphinx().do(content)
+
 
 

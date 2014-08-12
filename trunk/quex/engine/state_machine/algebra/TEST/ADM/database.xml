@@ -1,6 +1,6 @@
-<test-database execution-time-sec="42.82" date="Mon Aug 11 08:05:29 2014">
+<test-database execution-time-sec="42.80" date="Wed Aug 13 01:30:53 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Complementary State Machines" time-sum-sec="1.83"> 
+    <test title="Complementary State Machines" time-sum-sec="1.84"> 
         <application file-name="test-complement.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -11,7 +11,7 @@
            <choice name="Misc" result="OK" time_sec="0.76" crc="1064577118"/>
         </choice-list>
     </test>
-    <test title="Algebraic Relations" time-sum-sec="21.91"> 
+    <test title="Algebraic Relations" time-sum-sec="21.90"> 
         <application file-name="test-algebraic-relations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -39,7 +39,7 @@
            <choice name="" result="OK" time_sec="0.72" crc="1681411831"/>
         </choice-list>
     </test>
-    <test title="Intersection" time-sum-sec="2.88"> 
+    <test title="Intersection" time-sum-sec="2.87"> 
         <application file-name="test-intersection.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -89,7 +89,7 @@
         </test>
     </group>
     <group name="Complement End">
-        <test title="Cut patterns from P that end with Q." time-sum-sec="2.78"> 
+        <test title="Cut patterns from P that end with Q." time-sum-sec="2.77"> 
             <application file-name="test-complement_end.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">

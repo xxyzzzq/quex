@@ -1,33 +1,20 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in  import get_file_content_or_die, \
-                                        open_file_or_die, \
-                                        delete_comment, \
-                                        get_include_guard_extension, \
-                                        error_msg
-
-from   quex.engine.generator.code.base  import SourceRef, \
-                                               SourceRef_VOID
+from   quex.input.files.token_id_file   import TokenInfo, \
+                                               space
+from   quex.engine.misc.file_in         import get_include_guard_extension, \
+                                               error_msg
 from   quex.engine.misc.string_handling import blue_print
-from   quex.input.setup                 import NotificationDB
 from   quex.blackboard                  import setup as Setup, \
                                                Lng, \
                                                token_id_db, \
-                                               get_used_token_id_set, \
-                                               token_id_foreign_set
+                                               get_used_token_id_set
 import quex.blackboard                  as     blackboard
 
-from   itertools import chain
 from   collections import defaultdict
 import time
-import os
-import re
-from   copy import copy
 from   operator import attrgetter
 
 standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
-
-def space(L, Name):
-    return " " * (L - len(Name))
 
 def do(setup):
     """________________________________________________________________________
@@ -127,14 +114,6 @@ def prepare_default_standard_token_ids():
     for name in sorted(standard_token_id_list):
         if name == "TERMINATION": continue 
         token_id_db[name] = TokenInfo(name, ID=__get_free_token_id())
-
-class TokenInfo:
-    def __init__(self, Name, ID, TypeName=None, SourceReference=SourceRef_VOID):
-        self.name         = Name
-        self.number       = ID
-        self.related_type = TypeName
-        self.id           = None
-        self.sr           = SourceReference
 
 file_str = \
 """/* -*- C++ -*- vim: set syntax=cpp:
@@ -300,41 +279,6 @@ def __error_on_mandatory_token_id_missing(AssertF=False):
         check(AssertF, "INDENT")
         check(AssertF, "DEDENT")
         check(AssertF, "NODENT")
-
-def __delete_comments(Content, CommentDelimiterList):
-    content = Content
-    for opener, closer in CommentDelimiterList:
-        content = delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
-    return content
-
-def __extract_token_ids(PlainContent, FileName):
-    """PlainContent     -- File content without comments.
-    """
-    DefineRE      = "#[ \t]*define[ \t]+([^ \t\n\r]+)[ \t]+[^ \t\n]+"
-    AssignRE      = "([^ \t]+)[ \t]*=[ \t]*[^ \t]+"
-    EnumRE        = "enum[^{]*{([^}]*)}"
-    EnumConst     = "([^=, \n\t]+)"
-    define_re_obj = re.compile(DefineRE)
-    assign_re_obj = re.compile(AssignRE)
-    enum_re_obj   = re.compile(EnumRE)
-    const_re_obj  = re.compile(EnumConst)
-
-    def check_and_append(found_list, Name):
-        if    len(Setup.token_id_prefix_plain) == 0 \
-           or Name.find(Setup.token_id_prefix_plain) == 0 \
-           or Name.find(Setup.token_id_prefix) == 0:
-            found_list.append(Name)
-
-    result = []
-    for name in chain(define_re_obj.findall(PlainContent), assign_re_obj.findall(PlainContent)):
-        # Either there is no plain token prefix, or it matches well.
-        check_and_append(result, name)
-
-    for enum_txt in enum_re_obj.findall(PlainContent):
-        for name in const_re_obj.findall(enum_txt):
-            check_and_append(result, name.strip())
-
-    return result
 
 def __autogenerate_token_id_numbers():
     # Automatically assign numeric token id to token id name

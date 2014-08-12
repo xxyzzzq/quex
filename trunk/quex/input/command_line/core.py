@@ -3,19 +3,17 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                    import setup
-import quex.blackboard                    as     blackboard
 from   quex.input.command_line.GetPot     import GetPot
 import quex.input.command_line.code_generation as code_generation
 import quex.input.command_line.query      as      query     
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
                                                  NotificationDB
-
+from   quex.engine.generator.code.base    import SourceRef
 from   quex.engine.misc.file_in           import error_msg,                \
+                                                 get_integer_parameter_value, \
                                                  open_file_or_die
 
-from   StringIO import StringIO
-import re
 
 def do(argv):
     """RETURNS: True,  if CODE GENERATION needs to happen.
@@ -121,12 +119,13 @@ def __extra_option_message(ExtraLocationList):
     elif len(ExtraLocationList) == 0:
         return
 
+    sr = ExtraLocationList[0][0]
     error_msg("Command line arguments from inside files:", sr, NoteF=True)
     for sr, option in ExtraLocationList:
         if len(option) < 2: option_str = option[0]
         else:               option_str = reduce(lambda x, y: "%s %s" % (x.strip(), y.strip()), option)
         error_msg("%s" % option_str, sr, NoteF=True)
-    error_msg("", file_name, LineN=line_n, NoteF=True, SuppressCode=NotificationDB.message_on_extra_options)
+    error_msg("", sr, NoteF=True, SuppressCode=NotificationDB.message_on_extra_options)
 
 def argv_interpret(argv):
     """RETURNS:
@@ -134,7 +133,7 @@ def argv_interpret(argv):
                    False, if it is run in code generation mode.
          Setup  -- information about the command line.
     """
-    command_line = GetPot(argv)
+    command_line = GetPot(argv, SectionsEnabledF=False)
     query_f      = None
     command_line.disable_loop()
     for variable_name, info in SETUP_INFO.items():
@@ -142,9 +141,10 @@ def argv_interpret(argv):
         if type(info) != list:  # Parameter not set on command line?
             continue            # => skip.
 
-        query_f = argv_is_query_option(command_line, info[0], variable_name, query_f)
-
         command_line.reset_cursor()
+        if not command_line.search(info[0]): continue
+
+        query_f = argv_is_query_option(command_line, info[0], variable_name, query_f)
 
         if   info[1] == SetupParTypes.FLAG:
             value = argv_catch_flag(command_line, info[0], None)
@@ -153,18 +153,15 @@ def argv_interpret(argv):
             value = argv_catch_negated_flag(command_line, info[0], None)
 
         elif info[1] == SetupParTypes.INT_LIST:
-            value = argv_catch_int_list(command_line, info[0], [])
+            value = argv_catch_int_list(command_line, variable_name, info[0], [])
 
         elif info[1] == SetupParTypes.LIST:
             value = argv_catch_list(command_line, info[0], [])
 
-        elif command_line.search(info[0]):
+        else:
             value = argv_catch_string(command_line, info[0], info[1])
 
-        else: 
-            continue
-
-        setup.__dict__[variable_name] = value
+        setup.set(variable_name, info[1], value)
 
     # Handle unidentified command line options.
     argv_ufo_detections(command_line)
@@ -185,8 +182,6 @@ def argv_is_query_option(Cl, Option, Name, PrevQueryF):
     ERROR: If there are mixed options, i.e. query flags and code generation
     flags appear at the same time.
     """
-    if not Cl.search(Option):   return PrevQueryF
-
     query_f = (Name.find("query_") == 0)
 
     if   PrevQueryF is None:    return query_f
@@ -198,7 +193,6 @@ def argv_is_query_option(Cl, Option, Name, PrevQueryF):
     error_msg("Mixed options: query and code generation mode.\n"
               "The option(s) '%s' cannot be combined with preceeding options." \
               % str(SETUP_INFO[Name][0])[1:-1].replace("'",""))
-
 
 def argv_catch_flag(Cl, Option, Default):
     """RETURNS: True -- if option is found on command line.
@@ -212,12 +206,12 @@ def argv_catch_negated_flag(Cl, Option, Default):
     """
     return not Cl.search(Option)
 
-def argv_catch_int_list(Cl, Option, Default):
+def argv_catch_int_list(Cl, VariableName, Option, Default):
     """RETURNS: list of integers built from the list of no-minus followers of 
     the given option.
     """
     return [
-        __get_integer_core(variable_name, x)
+        get_integer_parameter_value(str(Option)[1:-1], x)
         for x in argv_catch_list(Cl, Option, Default)
     ]
 
@@ -240,13 +234,14 @@ def argv_catch_list(Cl, Option, Default):
             if x not in result: result.append(x)
     return result
 
-def argv_catch_string(Cl, Option, Default):
-    if not Cl.search(Option):
-        return Default
-
+def argv_catch_string(Cl, Option, Type):
+    Cl.reset_cursor()
     value = Cl.follow("##EMPTY##", Option)
     if value == "##EMPTY##":
-        error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
+        if Type == SetupParTypes.OPTIONAL_STRING:
+            value = ""
+        else:
+            error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
     return value
 
 def argv_ufo_detections(Cl):

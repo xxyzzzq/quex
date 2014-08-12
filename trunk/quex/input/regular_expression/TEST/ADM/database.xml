@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.26" date="Mon Aug 11 08:05:46 2014">
+<test-database execution-time-sec="4.16" date="Wed Aug 13 01:30:53 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.10"> 
         <application file-name="test-pattern-matching.py" info-request-time="1387873736L" vanished="False"/>
@@ -29,7 +29,7 @@
            <choice name="pattern" result="OK" time_sec="0.13" crc="577634184"/>
         </choice-list>
     </test>
-    <test title="Operations" time-sum-sec="0.65"> 
+    <test title="Operations" time-sum-sec="0.66"> 
         <application file-name="test-operations.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -140,18 +140,18 @@
         </test>
     </group>
     <group name="Replacement">
-        <test title="Character Sets" time-sum-sec="0.20"> 
+        <test title="Character Sets" time-sum-sec="0.13"> 
             <application file-name="test-replacement-2.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.20" crc="1438518425"/>
+               <choice name="" result="OK" time_sec="0.13" crc="1438518425"/>
             </choice-list>
         </test>
-        <test title="Regular Expression State Machines" time-sum-sec="0.17"> 
+        <test title="Regular Expression State Machines" time-sum-sec="0.13"> 
             <application file-name="test-replacement.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="-582140445"/>
+               <choice name="" result="OK" time_sec="0.13" crc="-582140445"/>
             </choice-list>
         </test>
     </group>

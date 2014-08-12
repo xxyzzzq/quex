@@ -223,52 +223,61 @@ def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
     return new_content
 
 def get_number_base(fh):
+    """Checks on the prefix of a number and determines the number base. When
+    this function is done, 'fh' points to the beginning of the number to be
+    parsed.
+
+    RETURNS: [0] base
+             [1] digits which are available in that codec
+    """
     pos = fh.tell()
+    decimal_digits = "0123456789"
 
     first = fh.read(1)
     if first == "" or first.isdigit() == False: 
         fh.seek(pos)
-        return None, None, None
+        return None, None
+    elif first != "0":
+        fh.seek(pos)
+        return 10, decimal_digits
 
-    txt  = ""
-    base = None
-    if first == "0":
-        second = fh.read(1)
-        if   second == "":  return 0
-        elif second == "x": base = 16;       digit_list = "0123456789abcdefABCDEF."
-        elif second == "o": base = 8;        digit_list = "01234567."
-        elif second == "b": base = 2;        digit_list = "01."
-        elif second == "r": base = "roman";  digit_list = "MCDXLIVmcdxliv"
-        elif second == "n": base = "Napier"; digit_list = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        elif second.isdigit(): txt = second; # base = None --> base = 10, see below
-        elif second == ".":
-            error_msg("Decimal integer number cannot contain '.'.", fh)
-        elif not second.isalpha():
-            fh.seek(-1, 1)
-            return 0
-        else:
-            error_msg("Number format '0%s' is not supported by quex.\n" % second + \
-                      "Use prefix '0x' for hexadecimal numbers.\n" + \
-                      "           '0o' for octal numbers.\n"       + \
-                      "           '0b' for binary numbers.\n"      + \
-                      "           '0r' for roman numbers.\n"      + \
-                      "           '0n' for Napier numbers.\n"      + \
-                      "           and no prefix for decimal numbers.", fh)
-    else:
-        txt = first
+    second = fh.read(1)
+    if second == "":  
+        fh.seek(pos) 
+        return 10, decimal_digits
+    elif second.isdigit():
+        fh.seek(-1, 1)
+        return 10, decimal_digits
+    elif second == ".":
+        error_msg("Decimal integer number cannot contain '.'.", fh)
+    elif not second.isalpha():
+        fh.seek(pos)
+        return 10, decimal_digits
 
-    if base is None: 
-        base       = 10
-        digit_list = "0123456789"
-
-    return base, digit_list, txt
+    try:
+        return {
+            "x": (16,       "0123456789abcdefABCDEF."),  #  '.' is allowed and means nothing
+            "o": (8,        "01234567."),                #  '.' is allowed and means nothing
+            "b": (2,        "01."),                      #  '.' is allowed and means nothing
+            "r": ("roman",  "MCDXLIVmcdxliv"),
+            "n": ("Napier", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+        }[second]
+    except:
+        error_msg("Number format '0%s' is not supported by quex.\n" % second + \
+                  "Use prefix '0x' for hexadecimal numbers.\n" + \
+                  "           '0o' for octal numbers.\n"       + \
+                  "           '0b' for binary numbers.\n"      + \
+                  "           '0r' for roman numbers.\n"      + \
+                  "           '0n' for Napier numbers.\n"      + \
+                  "           and no prefix for decimal numbers.", fh)
 
 def read_integer(fh):
     pos = fh.tell()
 
-    base, digit_list, txt = get_number_base(fh)
+    base, digit_list = get_number_base(fh)
     if base is None: return None
 
+    txt = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
         if   tmp == "": break
@@ -282,7 +291,7 @@ def read_integer(fh):
     txt = txt.replace(".", "")
     if len(txt) == 0:
         if base in [2, 8, 16, "roman", "Napier"]:
-            error_msg("Missing digits after '0%s' base %s, found '%s'." % (second, repr(base), tmp), fh)
+            error_msg("Missing digits after for number of base %s, found '%s'." % (str(base), tmp), fh)
         fh.seek(pos)
         return None
 
@@ -648,7 +657,6 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
     #        LineN = 0
 
     if     __reference_to_setup is not None \
-       and isinstance(__reference_to_setup.suppressed_notification_list, (set, list)) \
        and SuppressCode in __reference_to_setup.suppressed_notification_list:
         return
 
@@ -863,4 +871,17 @@ def __check_codec(fh, FileName):
 
     fh.seek(start_pos)
     return fh
+
+def get_integer_parameter_value(MemberName, ValueStr):
+    if type(ValueStr) == int: 
+        return ValueStr
+    result = read_integer(StringIO(ValueStr))
+    if result is None:
+        error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, MemberName) + \
+                  "Use prefix '0x' for hexadecimal numbers.\n" + \
+                  "           '0o' for octal numbers.\n"       + \
+                  "           '0b' for binary numbers.\n"      + \
+                  "           '0r' for roman numbers.\n"      + \
+                  "           and no prefix for decimal numbers.")
+    return result
 

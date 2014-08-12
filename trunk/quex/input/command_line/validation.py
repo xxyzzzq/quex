@@ -37,7 +37,7 @@ def do(setup, command_line, argv):
         occurence_n = 0 
         for option in info[0]:
             occurence_n += argv.count(option)
-        if occurence_n > 1 and info[1] != SetupParTypes.LIST:
+        if occurence_n > 1 and info[1] not in (SetupParTypes.LIST, SetupParTypes.INT_LIST):
             error_msg("Received more than one of the following options:\n" + \
                       "%s" % repr(info[0])[1:-1])
 

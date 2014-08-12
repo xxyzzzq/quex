@@ -1,4 +1,5 @@
-0n         --> 
+0n         -->  command line:1:error: Missing digits after for number of base Napier, found ''.
+
 0na        -->  1 True
 0nA        -->  1 True
 0nb        -->  2 True

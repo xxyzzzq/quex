@@ -1,10 +1,10 @@
-<test-database execution-time-sec="2.47" date="Mon Aug 11 07:57:04 2014">
+<test-database execution-time-sec="3.73" date="Wed Aug 13 01:30:51 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.15"> 
+    <test title="Customized codec files (option --codec-file)" time-sum-sec="0.37"> 
         <application file-name="customized_codec.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.15" crc="283545631"/>
+           <choice name="" result="OK" time_sec="0.37" crc="283545631"/>
         </choice-list>
     </test>
     <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="0.00"> 
@@ -33,11 +33,11 @@
            <choice name="mix2" result="OK" time_sec="0.40" crc="868186280"/>
         </choice-list>
     </test>
-    <test title="Analyzer State Tracer" time-sum-sec="0.15"> 
+    <test title="Analyzer State Tracer" time-sum-sec="1.18"> 
         <application file-name="debug_show.sh" info-request-time="1405263748L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.15" crc="1658698884"/>
+           <choice name="" result="OK" time_sec="1.18" crc="1658698884"/>
         </choice-list>
     </test>
 </test-database>

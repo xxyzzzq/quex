@@ -314,20 +314,20 @@ class GetPot:
         from current cursor position. Only wraps arround the end, if 'loop'
         is enabled. Returns 'False' if nothing was found, True otherwise."""
 
-        # make sure to propperly deal with arrays being passed as arguments
+        # make sure to properly deal with arrays being passed as arguments
         Args = self.__deal_propperly_with_array_arguments(Args)
         
-        if self.cursor >= len(self.argv)-1:
+        if self.cursor > len(self.argv)-1:
             self.cursor = len(self.argv)-1
         self.search_failed_f = 1
         old_cursor = self.cursor
 
-        def check_match(i0, i1, Args, Argv=self.argv, Prefix=self.__prefix, obj=self):
+        def check_match(i0, i1, Args, Argv=self.argv):
             """Checks if one of the arguments in Args matches an argument in sequence."""
             for i in range(i0, i1):
                 for arg in Args:
-                    if Prefix + arg == Argv[i]:
-                        obj.cursor = i; obj.search_failed_f = 0
+                    if self.__prefix + arg == Argv[i]:
+                        self.cursor = i; self.search_failed_f = 0
                         return True
             return False
             
@@ -361,8 +361,10 @@ class GetPot:
         self.disable_loop(); self.reset_cursor()
 
     def set_prefix(self, Prefix):
-        if Prefix[-1] != "/": Prefix += "/"
+        if Prefix:
+            if Prefix[-1] != "/": Prefix += "/"
         self.__prefix = Prefix
+
     # (*) direct access to command line arguments through []-operator
     def __getitem__(self, Idx):
         """Returns a specific argument indexed by Idx or 'None' if this

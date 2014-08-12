@@ -7,8 +7,8 @@ from quex.engine.unicode_db.parser  import ucs_property_db
 
 from quex.exception                 import RegularExpressionException
 
-from   quex.input.command_line.GetPot     import GetPot
 import quex.input.regular_expression.core as regular_expression
+import quex.DEFINITIONS                   import QUEX_VERSION 
 import quex.engine.codec_db.core          as codec_db
 
 from quex.blackboard import setup as Setup
@@ -39,24 +39,21 @@ def run(cl, Argv):
     Setup.path_limit_code   = -1
 
     try:
-        if   Setup.query_codec:             __handle_codec(cl)
-        elif Setup.query_codec_file:        __handle_codec_file(cl)
-        elif Setup.query_codec_language:    __handle_codec_for_language(cl)
-        elif Setup.query_property:          __handle_property(cl)
-        elif Setup.query_set_by_property:   __handle_set_by_property(cl)
-        elif Setup.query_set_by_expression: __handle_set_by_expression(cl)
-        elif Setup.query_property_match:    __handle_property_match(cl)
+        if   Setup.query_codec:                __handle_codec(cl)
+        elif Setup.query_codec_file:           __handle_codec_file(cl)
+        elif Setup.query_codec_language:       __handle_codec_for_language(cl)
+        elif Setup.query_property is not None: __handle_property(cl)
+        elif Setup.query_set_by_property:      __handle_set_by_property(cl)
+        elif Setup.query_set_by_expression:    __handle_set_by_expression(cl)
+        elif Setup.query_property_match:       __handle_property_match(cl)
         else:
             assert False # No query option(s) !
-
     except RegularExpressionException, x:
         error_msg(x.message)
 
     Setup.buffer_limit_code = backup_buffer_limit_code
     Setup.path_limit_code   = backup_path_limit_code
     return 
-
-
 
 def get_supported_command_line_option_description():
     txt = ""
@@ -123,9 +120,7 @@ def __handle_codec_for_language(cl):
     print "Possible Codecs: " + repr(codec_db.get_codecs_for_language(language_name))[1:-1]
 
 def __handle_property(cl):
-    property_follower = cl.follow("", "--property")
-
-    if property_follower == "":
+    if Setup.query_property == "":
         # no specific property => display all properties in the database
         sys.stderr.write("(please, wait for database parsing to complete)\n")
         ucs_property_db.init_db()
@@ -134,16 +129,15 @@ def __handle_property(cl):
     else:
         # specific property => display information about it
         sys.stderr.write("(please, wait for database parsing to complete)\n")
-        property = __get_property(property_follower)
+        property = __get_property(Setup.query_property)
         if property is None: return True
         print property
 
 def __handle_property_match(cl):
-    property_follower = cl.follow("", "--property-match")
-    sys.stderr.write("(please, wait for database parsing to complete)\n")
+    property_follower = Setup.query_property_match
+    if not property_follower: return
 
-    if property_follower == "":
-        return
+    sys.stderr.write("(please, wait for database parsing to complete)\n")
 
     fields = map(lambda x: x.strip(), property_follower.split("="))
     if len(fields) != 2:
@@ -166,52 +160,54 @@ def __handle_property_match(cl):
         print value
 
 def __handle_set_by_property(cl):
-    result = cl.follow("", "--set-by-property") 
+    result = Setup.query_set_by_property
 
     # expect: 'property-name = value'
-    if result != "":
-        sys.stderr.write("(please, wait for database parsing to complete)\n")
-        fields = map(lambda x: x.strip(), result.split("="))
-        if len(fields) not in [1, 2]:
-            error_msg("Wrong property setting '%s'." % result)
+    if not result:
+        return 
 
-        # -- determine name and value
-        name = fields[0]
-        if len(fields) == 2: value = fields[1]
-        else:                value = None
+    sys.stderr.write("(please, wait for database parsing to complete)\n")
+    fields = map(lambda x: x.strip(), result.split("="))
+    if len(fields) not in [1, 2]:
+        error_msg("Wrong property setting '%s'." % result)
 
-        # -- get the property from the database
-        property = __get_property(name)
-        if property is None: 
-            return True
+    # -- determine name and value
+    name = fields[0]
+    if len(fields) == 2: value = fields[1]
+    else:                value = None
 
-        # -- find the character set for the given expression
-        if property.type == "Binary" and value is not None:
-            error_msg("Binary property '%s' cannot have a value assigned to it.\n" % property.name + \
-                      "Setting ignored. Printing set of characters with the given property.")
+    # -- get the property from the database
+    property = __get_property(name)
+    if property is None: 
+        return True
 
-        character_set = property.get_character_set(value)
-        if character_set.__class__.__name__ != "NumberSet":
-            error_msg(character_set)
+    # -- find the character set for the given expression
+    if property.type == "Binary" and value is not None:
+        error_msg("Binary property '%s' cannot have a value assigned to it.\n" % property.name + \
+                  "Setting ignored. Printing set of characters with the given property.")
 
-        __display_set(character_set, cl)
+    character_set = property.get_character_set(value)
+    if character_set.__class__.__name__ != "NumberSet":
+        error_msg(character_set)
+
+    __display_set(character_set, cl)
 
 def __handle_set_by_expression(cl):
-    pattern_str = cl.follow("", "--set-by-expression")
-    if pattern_str != "":
-        dummy, character_set = regular_expression.parse_character_set("[:" + pattern_str + ":]")
-        __display_set(character_set, cl)
+    pattern_str = Setup.query_set_by_expression
+    if not pattern_str : return
+    dummy, character_set = regular_expression.parse_character_set("[:" + pattern_str + ":]")
+    __display_set(character_set, cl)
 
 def __display_set(CharSet, cl):
-    if cl.search("--numeric"): display = "hex"
-    else:                      display = "utf8"
+    if Setup.query_numeric_f: display = "hex"
+    else:                     display = "utf8"
 
     CharSet.intersect_with(NumberSet(Interval(0, 0x110000)))
 
-    print "Characters:\n", 
-    if cl.search("--intervals"): 
+    print "Characters:\n"
+    if Setup.query_interval_f:
         __print_set_in_intervals(CharSet, display, 80)
-    elif cl.search("--names"):
+    elif Setup.query_unicode_names_f:
         __print_set_character_names(CharSet, display, 80)
     else:
         __print_set_single_characters(CharSet, display, 80)

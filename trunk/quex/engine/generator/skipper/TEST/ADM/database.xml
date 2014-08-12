@@ -1,6 +1,6 @@
-<test-database execution-time-sec="44.77" date="Mon Aug 11 08:04:36 2014">
+<test-database execution-time-sec="44.76" date="Wed Aug 13 01:30:52 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="2.82"> 
+    <test title="Indentation Counting" time-sum-sec="2.81"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -44,7 +44,7 @@
         </test>
     </group>
     <group name="Skip-NestedRange">
-        <test title="Delimiter Sizes 1 and 2" time-sum-sec="17.25"> 
+        <test title="Delimiter Sizes 1 and 2" time-sum-sec="17.24"> 
             <application file-name="test-skip_nested_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
