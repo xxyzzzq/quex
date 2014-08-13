@@ -1,4 +1,4 @@
-<test-database execution-time-sec="31.08" date="Wed Aug 13 01:30:51 2014">
+<test-database execution-time-sec="31.08" date="Wed Aug 13 08:14:41 2014">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
         <test title="C++" time-sum-sec="11.39"> 

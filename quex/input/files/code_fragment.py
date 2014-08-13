@@ -218,9 +218,8 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
         else:
             # Warning is posted later when all implicit tokens have been
             # collected. See "token_id_maker.__propose_implicit_token_definitions()"
-            blackboard.token_id_implicit_list.append([prefix_less_TokenName, 
-                                                      fh.name, 
-                                                      get_current_line_info_number(fh)])
+            blackboard.token_id_implicit_list.append((prefix_less_TokenName, 
+                                                      SourceRef.from_FileHandle(fh)))
 
         # Enter the implicit token id definition in the database
         blackboard.token_id_db[prefix_less_TokenName] = \

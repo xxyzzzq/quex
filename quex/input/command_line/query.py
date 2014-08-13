@@ -8,7 +8,7 @@ from quex.engine.unicode_db.parser  import ucs_property_db
 from quex.exception                 import RegularExpressionException
 
 import quex.input.regular_expression.core as regular_expression
-import quex.DEFINITIONS                   import QUEX_VERSION 
+from   quex.DEFINITIONS                   import QUEX_VERSION 
 import quex.engine.codec_db.core          as codec_db
 
 from quex.blackboard import setup as Setup

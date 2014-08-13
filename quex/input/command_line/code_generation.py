@@ -10,7 +10,7 @@ from   quex.input.setup                     import SETUP_INFO,               \
                                                    command_line_arg_position, \
                                                    E_Files
 from   quex.input.files.token_type          import TokenTypeDescriptorManual
-from   quex.input.files.token_id_file       import parse as parse_token_id_file
+from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.engine.generator.languages.core import db as output_language_db
 import quex.engine.codec_db.core            as     codec_db
 
@@ -143,21 +143,21 @@ def prepare(command_line, argv):
             else:                                   index = 2
             Setup.converter_ucs_coding_name = global_character_type_db[Setup.buffer_element_type][index]
 
-    if len(Setup.token_id_foreign_definition_file) != 0: 
-        if len(Setup.token_id_foreign_definition_file) > 3: 
+    if len(Setup.token_id_foreign_definition) != 0: 
+        if len(Setup.token_id_foreign_definition) > 3: 
             error_msg("Option '--foreign-token-id-file' received > 3 followers.\n"
-                      "Found: %s" % str(Setup.token_id_foreign_definition_file)[1:-1])
-        if len(Setup.token_id_foreign_definition_file) > 1:
+                      "Found: %s" % str(Setup.token_id_foreign_definition)[1:-1])
+        if len(Setup.token_id_foreign_definition) > 1:
             Setup.token_id_foreign_definition_file_region_begin_re = \
-                    __compile_regular_expression(Setup.token_id_foreign_definition_file[1], "token id region begin")
-        if len(Setup.token_id_foreign_definition_file) > 2:
+                    __compile_regular_expression(Setup.token_id_foreign_definition[1], "token id region begin")
+        if len(Setup.token_id_foreign_definition) > 2:
             Setup.token_id_foreign_definition_file_region_end_re = \
-                    __compile_regular_expression(Setup.token_id_foreign_definition_file[2], "token id region end")
+                    __compile_regular_expression(Setup.token_id_foreign_definition[2], "token id region end")
         Setup.token_id_foreign_definition_file = \
-                Setup.token_id_foreign_definition_file[0]
+                Setup.token_id_foreign_definition[0]
 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
-        parse_token_id_file(Setup.token_id_foreign_definition_file, 
+        token_id_file_parse(Setup.token_id_foreign_definition_file, 
                             CommentDelimiterList)
 
     # (*) Compression Types

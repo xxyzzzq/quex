@@ -45,7 +45,7 @@ def do(file_list):
 
     # If a foreign token-id file was presented even the standard token ids
     # must be defined there.
-    if len(Setup.token_id_foreign_definition_file) == 0:
+    if not Setup.token_id_foreign_definition:
         prepare_default_standard_token_ids()
 
     for file in file_list:
@@ -128,7 +128,7 @@ def parse_section(fh):
             return
 
         elif word == "token":       
-            if len(Setup.token_id_foreign_definition_file) != 0:
+            if Setup.token_id_foreign_definition:
                 error_msg("Token id file '%s' has been specified.\n" \
                           % Setup.token_id_foreign_definition_file \
                           + "All token ids must be specified there. Section 'token'\n" \

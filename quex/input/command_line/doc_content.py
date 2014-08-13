@@ -242,14 +242,16 @@ Block("""
 """
 A file with token ids can be provided by the option
 """,
-Option("token_id_foreign_definition_file", "file name [[begin-str] end-str]",
+Option("token_id_foreign_definition", "file name [[begin-str] end-str]",
        """
        \\v{file-name} = Name of the file that contains an alternative definition
        of the numerical values for the token-ids.
         
        Note, that quex does not reflect on actual program code. It extracts the
        token ids by heuristic. The optional second and third arguments allow
-       to restrict the region in the file to search for token ids. For example
+       to restrict the region in the file to search for token ids. It starts
+       searching from a line that contains \\v{begin-str} and stops at the first
+       line containing \\v{end-str}. For example
        """,
        Block("""
            > quex ... --foreign-token-id-file my_token_ids.hpp   \\
