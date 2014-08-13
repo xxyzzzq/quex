@@ -11,8 +11,8 @@ from   quex.blackboard                  import setup as Setup, \
 import quex.blackboard                  as     blackboard
 
 from   collections import defaultdict
+from   operator    import attrgetter
 import time
-from   operator import attrgetter
 
 standard_token_id_list = ["TERMINATION", "UNINITIALIZED", "INDENT", "NODENT", "DEDENT"]
 
@@ -233,23 +233,22 @@ def __warn_implicit_token_definitions():
     if len(blackboard.token_id_implicit_list) == 0: 
         return
 
-    file_name = blackboard.token_id_implicit_list[0][1]
-    line_n    = blackboard.token_id_implicit_list[0][2]
+    sr  = blackboard.token_id_implicit_list[0][1]
     msg = "Detected implicit token identifier definitions."
     if len(Setup.token_id_foreign_definition_file) == 0:
         msg += " Proposal:\n"
         msg += "   token {"
-        error_msg(msg, file_name, line_n, DontExitF=True, WarningF=True)
-        for token_name, file_name, line_n in blackboard.token_id_implicit_list:
-            error_msg("     %s;" % token_name, file_name, line_n, DontExitF=True, WarningF=True)
-        error_msg("   }", file_name, line_n, DontExitF=True, WarningF=True)
+        error_msg(msg, sr, line_n, DontExitF=True, WarningF=True)
+        for token_name, sr in blackboard.token_id_implicit_list:
+            error_msg("     %s;" % token_name, sr, DontExitF=True, WarningF=True)
+        error_msg("   }", sr, DontExitF=True, WarningF=True)
     else:
-        error_msg(msg, file_name, line_n, DontExitF=True, WarningF=True)
-        for token_name, file_name, line_n in blackboard.token_id_implicit_list:
+        error_msg(msg, sr, DontExitF=True, WarningF=True)
+        for token_name, sr in blackboard.token_id_implicit_list:
             error_msg("     %s;" % (Setup.token_id_prefix + token_name), 
-                      file_name, line_n, DontExitF=True, WarningF=True)
+                      sr, DontExitF=True, WarningF=True)
         error_msg("Above token ids must be defined in '%s'" % Setup.token_id_foreign_definition_file,
-                  file_name, line_n, DontExitF=True, WarningF=True)
+                  sr, DontExitF=True, WarningF=True)
 
 def __error_on_no_specific_token_ids():
     all_token_id_set = set(token_id_db.iterkeys())

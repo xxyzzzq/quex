@@ -14,7 +14,6 @@ from   quex.engine.misc.file_in           import error_msg,                \
                                                  get_integer_parameter_value, \
                                                  open_file_or_die
 
-
 def do(argv):
     """RETURNS: True,  if CODE GENERATION needs to happen.
                 False, if NOTHING remains to be done.

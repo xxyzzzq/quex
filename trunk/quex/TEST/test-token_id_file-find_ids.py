@@ -4,9 +4,9 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.output.cpp.token_id_maker import parse_token_id_file
-from   quex.blackboard                import token_id_db
-import quex.input.command_line.core   as     command_line
+import quex.blackboard                as blackboard
+import quex.input.command_line.core   as command_line
+import quex.input.setup               as setup
 
 
 if "--hwut-info" in sys.argv:
@@ -17,7 +17,8 @@ if "--hwut-info" in sys.argv:
 CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
 def test(TokenIDFile, TokenPrefix):
     print "##-----------------------------------------------------------------"
-    token_id_db.clear()
+    blackboard.setup.init(setup.SETUP_INFO)
+    blackboard.token_id_db.clear()
     command_line.do(["--foreign-token-id-file", "data/%s" % TokenIDFile, 
                      "--token-id-prefix", TokenPrefix,
                      "--foreign-token-id-file-show"])

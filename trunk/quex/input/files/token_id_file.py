@@ -110,20 +110,24 @@ def parse(ForeignTokenIdFile, CommentDelimiterList):
 
     if Setup.token_id_foreign_definition_file_show_f:
         if len(found_db) == 0:
-            print "note: No token ids with prefix '%s' found in" % Setup.token_id_prefix
-            print "note: '%s' or included files." % Setup.token_id_foreign_definition_file
+            error_msg(  "No token ids with prefix '%s' found in" % Setup.token_id_prefix
+                      + "'%s' or included files." % Setup.token_id_foreign_definition_file, 
+                     NoteF=True)
         else:
             txt = [] 
             for file_name, result in found_db.iteritems():
                 result = set(result)
                 L = max(map(len, result))
-                txt.append("note: Token ids found in file '%s' {\n" % file_name)
+                txt.append("Token ids found in file '%s' {\n" % file_name)
                 for name in sorted(result):
                     shorty = cut_token_id_prefix(name)
                     fully  = Setup.token_id_prefix + shorty
-                    txt.append("note:     %s %s=> '%s'\n" % (fully, space(L, name), shorty))
-                txt.append("note: }\n")
-            print "".join(txt)
+                    txt.append("     %s %s=> '%s'\n" % (fully, space(L, name), shorty))
+                txt.append("}")
+                txt.append("\n")
+
+            if txt: txt = txt[:-1]
+            error_msg("".join(txt), NoteF=True)
             
     ErrorN = NotificationDB.token_id_ignored_files_report
     if ErrorN not in Setup.suppressed_notification_list:

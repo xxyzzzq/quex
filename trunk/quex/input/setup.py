@@ -13,6 +13,9 @@ E_Files = Enum("HEADER",
 
 class QuexSetup:
     def __init__(self, SetupInfo):
+        self.init(SetupInfo)
+
+    def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
             if type(entry) != list:                         
                 default_value = entry
@@ -38,6 +41,7 @@ class QuexSetup:
         self.compression_type_list = []
 
         file_in.specify_setup_object(self)
+
 
     def set(self, Name, Type, Value):
         if Type in (SetupParTypes.LIST, SetupParTypes.INT_LIST):
@@ -197,7 +201,7 @@ SETUP_INFO = {
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
     "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
-    "token_id_foreign_definition_file":  [["--foreign-token-id-file"],         SetupParTypes.LIST],  
+    "token_id_foreign_definition":    [["--foreign-token-id-file"],         SetupParTypes.LIST],  
     "token_id_foreign_definition_file_show_f": [["--foreign-token-id-file-show"], SetupParTypes.FLAG],
     "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
@@ -248,6 +252,7 @@ SETUP_INFO = {
     "token_class_name_safe":                     None,
     "token_id_prefix_name_space":                None,
     "token_id_prefix_plain":                     None,   # i.e. without the namespace specified.
+    "token_id_foreign_definition_file":                  "",
     "token_id_foreign_definition_file_region_begin_re":  None,
     "token_id_foreign_definition_file_region_end_re":    None,
     "output_buffer_codec_header_file":           None,

@@ -106,9 +106,10 @@ def do(setup, command_line, argv):
     if setup.analyzer_derived_class_name != "": 
         __check_identifier(setup, "analyzer_derived_class_name", "Derived class name")
     
-    __check_file_name(setup, "token_class_file",            "file containing token class definition")
-    __check_file_name(setup, "analyzer_derived_class_file", "file containing user derived lexer class")
-    __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids", 0)
+    __check_file_name(setup, "token_class_file",                 "file containing token class definition")
+    __check_file_name(setup, "analyzer_derived_class_file",      "file containing user derived lexer class")
+    __check_file_name(setup, "token_id_foreign_definition_file", "file containing user token ids", 0,
+                      CommandLineOption=SETUP_INFO["token_id_foreign_definition"][0])
     __check_file_name(setup, "input_mode_files", "quex source file")
 
     # Check that not more than one converter is specified
@@ -223,12 +224,12 @@ def __get_supported_command_line_option_description(NormalModeOptions):
     txt += query.get_supported_command_line_option_description()
     return txt
 
-def __check_file_name(setup, Candidate, Name, Index=None):
+def __check_file_name(setup, Candidate, Name, Index=None, CommandLineOption=None):
     value             = setup.__dict__[Candidate]
-    CommandLineOption = command_line_args(Candidate)
-
-
     if len(value) == 0: return
+
+    if CommandLineOption is None:
+        CommandLineOption = command_line_args(Candidate)
 
     if Index is not None:
         if type(value) != list or len(value) <= Index: value = ""
