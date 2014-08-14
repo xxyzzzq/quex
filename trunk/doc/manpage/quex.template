@@ -1,18 +1,19 @@
 .\" Manpage for quex.
-.TH QUEX 1 "$$DATE$$" "$$VERSION$$" "User Commands"
+.TH QUEX 1 "Quex $$VERSION$$" "User Commands"
 .SH NAME
 Quex \- A fast lexical analyzer generator
 .SH SYNOPSIS
-quex -i [file name]+ [OPTIONS]+
+quex -i [file name]+ [OPTIONS]*
 
-quex --token-class-only -i [file name]+ [OPTIONS]+
+quex --token-class-only -i [file name]+ [OPTIONS]*
 
-quex --query [OPTIONS]+
+quex [QUERY OPTION]+
 
 .SH DESCRIPTION
 
 Quex is a tool to generate lexical analyzers. A lexical analyzer is a program that transforms a stream of characters into a stream of 'atomic chunks of meaning', as shown in the figure below:
 
+.sv 0.5i
 .nf
      character stream
                          "if( 3.1 > x ) { printf ..."   
@@ -34,24 +35,13 @@ This man page provides a very brief overview over quex. A good entry point to le
 
 .SH OPTIONS
 
-Quex can be used in two ways, First, it can be used to output representations of lexical analyzers in C or C++. If '--token-class-only' is specified it outputs solely a token class. If '--language dot' is given, then it outputs a graphical description of the state machines. The output can be displayed by the 'dot' (graphviz) utility. 
-
-Second, it may be used to explore regular expressions and codecs. It can be used to find out about Unicode properties. Or, it might be used to find out the resulting character sets which result from a given regular expression. Or, it might also be used to ask questions about codecs, their names and what character sets they cover. Options for the query mode are listed in 
-.I QUERY OPTIONS. 
-What follows is a description of the options available for lexical analyzer generation.
-
-.TP 4
-.BI "-i, --analyzer-class"
-
-Those are the
-.B input files 
-which are nicely formatted.
+Quex can be used in two ways: for code generation and for queries. Code generation includes the generation of lexical analyzers for C (--language C) and C++ (--language C++) as well as source code for graphical representations using graphviz (--language dot). By means of queries the effects of regular expressions can be explored as well as the character sets of codecs and unicode properties.
 
 $$OPTIONS$$
 
 .SH FILES
 
-Input files to quex best end with a '.qx' extension. They may contain lexical analyzer mode descriptions, pattern definition sections, token class descriptions, token id descriptions, and other minor sections that influence code generation.  
+Input files to quex best end with a '.qx' extension. They may contain lexical analyzer mode descriptions, pattern definition sections, token class descriptions, token id descriptions, and other sections that influence code generation. The most significant section types are described below.
 
 .SS Mode Description
 
@@ -120,20 +110,33 @@ defines 'DERIVED' as the start mode for lexical analysis. The transition from on
 
 .SS Pattern Definition Sections
 
-Regular expressions may be defined and named in pattern definition sections. Names which are defined there can be used in modes surrounded by curly brackets. Then, they are expanded to what they have been defined.
+Regular expressions may be defined and named in pattern definition sections. Names which are defined there can be used in modes surrounded by curly brackets. Then, they are expanded to what they have been defined. Using definitions facilitates the specification of complex expressions broken down into its elements. Example:
+
+.nf
+    define {
+        ARABIC         [: intersection(\P{Block=Arabic},  [\\X0-\\XFFFF]) :]
+        ARABIC_DIGIT   [: intersection({ARABIC}, \\G{Nd}, [\\X660-\\X6D0]) :]
+        ARABIC_NUMBER  ({ARABIC_DIGIT}+".")?{ARABIC_DIGIT}+
+    }
+.fi
+
+In the example above, arabic numbers are defined based on Unicode properties. First, the codeset for ARABIC is defined as the set of arabic letters below 0xFFFF. Then, arabic digits are defined as those numbers from Unicode that intersect with that range. With the digits being described, an ARABIC_NUMBER can then be defined as a sequence of digits with a possible dot in between.
+
 
 .SS Token Section
 
 A token section defines names and possible the values of token identifiers. Token identifiers may be generated automatically, or the user may specify their numeric values explicity. The 'token' section contains a list of token names separated by ';'. If a token name is followed by a '=' and a numeric value, this particular value is associated with the token id.
 
-           token {
-               TERMINATION   = 0b0000.0000;
-               UNINITIALIZED = 0b1000.0000;
-               DIV           = 0b0000.0001;
-               MULTIPLY      = 0b0001.0001;
-               PLUS          = 0b0011.0001;
-               MINUS         = 0b0100.0001;
-           }
+.nf
+    token {
+        TERMINATION   = 0b0000.0000;
+        UNINITIALIZED = 0b1000.0000;
+        DIV           = 0b0000.0001;
+        MULTIPLY      = 0b0001.0001;
+        PLUS          = 0b0011.0001;
+        MINUS         = 0b0100.0001;
+    }
+.fi
 
 In the above example, the lowest bit would allow to distinguish between operator tokens and others. The token's name in the token section appears in real code with the token prefix. So, with the default token prefix 'QUEX_TKN_' the 'DIV' token identifier appears in code as 'QUEX_TKN_DIV'.
 
@@ -175,6 +178,20 @@ Quex generates a default token class (C++) or token struct (C). In case, that th
        }
     }
 .fi
+
+.SS Number Format
+
+Quex uses a C-style number format. That is, no prefix means that the number is specified in decimal. The prefixes for other number systems are
+.B 0x
+for hexadecimal,
+.B 0o
+for octal, 
+.B 0b
+for binary, 
+.B 0r
+for roman, and
+.B 0n
+for Napier (positional location) numbers.
 
 .SH SEE ALSO
 
