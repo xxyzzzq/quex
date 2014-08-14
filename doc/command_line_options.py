@@ -1,8 +1,35 @@
+# PURPOSE: 
+#
+# This file generates documentation for command line arguments of quex. For this,
+# it considers the setup definitions in $QUEX_PATH/input/setup.py and the content
+# of this file. Any update on the command line options is directly reflected in
+# the documentation. 
+#
+# There is a test in $QUEX_PATH/quex/TEST/ which tests for the consistency of the
+# generated documentation with the current command line setup information.
+#
+# FILES:
+#  
+# The output files are defined in the variables:
+#  
+#   'sphinx_file' = file where the sphinx documentation is written.
+#   'man_file'    = file where the man page is written.
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.input.command_line.doc_generator import SectionHeader, Option, Item, List, Block, Note, VisitorSphinx, VisitorManPage
-from   quex.DEFINITIONS import QUEX_VERSION
+#______________________________________________________________________________
+sphinx_file = os.environ["QUEX_PATH"] + "/doc/source/invocation/command-line/intro.txt"
+man_file    = os.environ["QUEX_PATH"] + "/doc/manpage/quex.1"
+#______________________________________________________________________________
+
+
+from quex.input.command_line.doc_generator import SectionHeader, Option, Item, \
+                                                  List, Block, Note, \
+                                                  VisitorSphinx, VisitorManPage
+from quex.DEFINITIONS import QUEX_VERSION
 
 content = [
 SectionHeader("Code Generation"),
@@ -828,22 +855,28 @@ Option("query_interval_f", None,
    If this option is set, adjacent characters are displayed as intervals. This provides
    a somewhat more abbreviated display.
        """),
-Option("query_unicode_names", None, 
+Option("query_unicode_names_f", None, 
        """
        If this option is given, resulting characters are displayed by their
        (lengthy) Unicode name.
        """),
 ]
 
-
-if True:
-    content = VisitorManPage().do(content)
-    page = open("%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], "rb").read()
-    page = page.replace("$$OPTIONS$$", content)
+def doc(Formatter, TemplateFile, OutFile):
+    global content
+    content_txt = Formatter.do(content)
+    page = open(TemplateFile, "rb").read()
+    page = page.replace("$$OPTIONS$$", content_txt)
     page = page.replace("$$VERSION$$", "%s" % QUEX_VERSION)
-    print page
-else:
-    print VisitorSphinx().do(content)
+    open(OutFile, "wb").write(page)
+    print "Written: '%s'" % OutFile
 
+doc(VisitorSphinx(), 
+    "%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], 
+    man_file)
+
+doc(VisitorManPage(), 
+    "%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], 
+    sphinx_file) 
 
 

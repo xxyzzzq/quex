@@ -90,10 +90,12 @@ class Visitor:
                 return "empty list"
             elif Default == SetupParTypes.INT_LIST:
                 return "empty list"
+            elif Default == SetupParTypes.OPTIONAL_STRING:
+                return "empty string"
             elif Default == "":
                 return "undefined"
             else:
-                assert False
+                assert False, "%s" % Default
         return "%s" % Default
 
     def format_block(self, Text):

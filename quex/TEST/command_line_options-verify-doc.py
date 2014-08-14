@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 #
-# Check whether the documentation of the command line options in sphinx
-# and man page are up-to-date and consistent.
+# The file 'command_line_options.py' in $QUEX_PATH/doc generates documentation
+# for the command line options. This file double-checks whether the content
+# of the generated files is consistent with the current setup.
 #
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
@@ -31,20 +32,26 @@ option_db = get_option_db()
 
 file_name = os.environ["QUEX_PATH"] + {
     "sphinx": "/doc/source/invocation/command-line/intro.txt",
-    "man":    "/doc/man_page/quex.1",
+    "man":    "/doc/manpage/quex.1",
 }[sys.argv[1]]
 marker = {
     "sphinx": "cmdoption::",
-    "man":    ".SP"
+    "man":    ".B"
 }[sys.argv[1]]
 
+print "## Consider File:"
+print "##    %s" % file_name
+print "##    stat: %s" % os.stat(file_name)
+
 # Verify that every option is documented.
+print "(*) Options which are not documented (no output is good output)"
 command_line_doc = open(file_name).read()
 for option in option_db:
     if command_line_doc.find(option) == -1:
         print "error: %s is not documented" % option
 
 # Find things which are documented but do not exist
+print "(*) Options which are reported, but are not available in application  (no output is good output)"
 option_re = re.compile(" \-[_a-zA-Z\-0-9]+", re.UNICODE)
 for line_i, line in enumerate(command_line_doc.split("\n")):
     if line.find(marker) == -1: continue
