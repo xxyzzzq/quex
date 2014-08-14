@@ -15,7 +15,8 @@ from quex.input.setup import SETUP_INFO
 
 if "--hwut-info" in sys.argv:
     print "Command Line Option Documentation;"
-    print "CHOICES: man, shinx;"
+    print "CHOICES: man, sphinx;"
+    print "SAME;"
     sys.exit()
 
 def get_option_db():
@@ -41,7 +42,6 @@ marker = {
 
 print "## Consider File:"
 print "##    %s" % file_name
-print "##    stat: %s" % os.stat(file_name)
 
 # Verify that every option is documented.
 print "(*) Options which are not documented (no output is good output)"
@@ -58,6 +58,8 @@ for line_i, line in enumerate(command_line_doc.split("\n")):
     for match in option_re.finditer(line):
         lexeme = match.group().strip()
         if lexeme in option_db: continue
+        # Tolerate the '-bullet' marker in man pages
+        if lexeme == "-bullet" and "man" in sys.argv: continue
         print "%s:%i:error: %s reported but does not exist" % \
               (file_name, line_i + 1, lexeme)
         print lexeme in option_db

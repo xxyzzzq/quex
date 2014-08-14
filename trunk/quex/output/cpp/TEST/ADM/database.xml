@@ -1,4 +1,4 @@
-<test-database execution-time-sec="10.47" date="Wed Aug 13 01:30:53 2014">
+<test-database execution-time-sec="10.47" date="Thu Aug 14 08:19:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.11"> 
         <application file-name="test-token_class.py" info-request-time="1397193517L" vanished="False"/>

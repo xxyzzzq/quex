@@ -1,4 +1,4 @@
-<test-database execution-time-sec="42.55" date="Thu Aug 14 01:06:14 2014">
+<test-database execution-time-sec="42.60" date="Thu Aug 14 08:28:02 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.52"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -14,12 +14,12 @@
            <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.50"> 
-        <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
+    <test title="Command Line Option Documentation" time-sum-sec="0.24"> 
+        <application file-name="verify_command_line_option_doc.py" info-request-time="1407444338L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.26" crc="None"/>
-           <choice name="undefinition" result="OK" time_sec="0.24" crc="None"/>
+           <choice name="man" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
+           <choice name="shinx" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.02"> 
@@ -36,6 +36,14 @@
            <choice name="" result="OK" time_sec="41.07" crc="None"/>
         </choice-list>
     </test>
+    <test title="Command Line Option Documentation" time-sum-sec="0.05"> 
+        <application file-name="command_line_options-verify-doc.py" info-request-time="1407997681L" vanished="False"/>
+        <analogy open="((" close="))"/>
+        <choice-list number="2" same_result="True">
+           <choice name="man" result="OK" time_sec="0.00" crc="-702367166"/>
+           <choice name="sphinx" result="OK" time_sec="0.05" crc="None"/>
+        </choice-list>
+    </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 
         <application file-name="macro-check.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
@@ -43,12 +51,12 @@
            <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Command Line Option Documentation" time-sum-sec="0.24"> 
-        <application file-name="verify_command_line_option_doc.py" info-request-time="1407444338L" vanished="False"/>
+    <test title="Include Guards for C/C++" time-sum-sec="0.50"> 
+        <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="man" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
-           <choice name="shinx" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
+           <choice name="convention" result="OK" time_sec="0.26" crc="None"/>
+           <choice name="undefinition" result="OK" time_sec="0.24" crc="None"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

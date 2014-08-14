@@ -544,6 +544,14 @@ Option("compression_template_f", None,
      """
      If this option is set, then template compression is activated.
      """),
+Option("compression_template_uniform_f", None, 
+     """
+     This flag enables template compression. In contrast to the previous flag it 
+     compresses such states into a template state which are uniform. Uniform means,
+     that the states do not differ with respect to the actions performed at their
+     entry. In some cases this might result in smaller code size and faster execution 
+     speed.
+     """),
 Option("compression_template_min_gain", "number", 
      """
      The number following this option specifies the template compression coefficient.
@@ -559,10 +567,7 @@ Option("compression_path_f", None,
      """),
 Option("compression_path_uniform_f", None, 
      """
-     This flag enables path compression. In contrast to the previous flag it 
-     compresses such states into a path which are uniform. This simplifies
-     the structure of the correspondent pathwalkers. In some cases this might
-     result in smaller code size and faster execution speed.
+     Same as uniform template compression, only for path compression. 
      """),
 Option("path_limit_code", "number",
      """
@@ -872,11 +877,11 @@ def doc(Formatter, TemplateFile, OutFile):
     print "Written: '%s'" % OutFile
 
 doc(VisitorSphinx(), 
-    "%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], 
-    man_file)
+    "%s/doc/source/invocation/command-line/intro.template" % os.environ["QUEX_PATH"], 
+    sphinx_file)
 
 doc(VisitorManPage(), 
     "%s/doc/manpage/quex.template" % os.environ["QUEX_PATH"], 
-    sphinx_file) 
+    man_file) 
 
 
