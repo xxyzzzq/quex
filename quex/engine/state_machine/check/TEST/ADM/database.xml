@@ -1,40 +1,40 @@
-<test-database execution-time-sec="5.93" date="Thu Aug 14 08:19:51 2014">
+<test-database execution-time-sec="8.13" date="Sat Aug 16 01:16:00 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="1.95"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="2.84"> 
         <application file-name="test-subset_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="7" same_result="False">
-           <choice name="Easy" result="OK" time_sec="0.15" crc="-443130574"/>
-           <choice name="FalseCases" result="OK" time_sec="0.22" crc="-2100744066"/>
-           <choice name="GoodCases" result="OK" time_sec="0.14" crc="1129454882"/>
-           <choice name="FalseCasesII" result="OK" time_sec="0.27" crc="1052189149"/>
-           <choice name="GoodCasesII" result="OK" time_sec="0.55" crc="-1943706133"/>
-           <choice name="Misc" result="OK" time_sec="0.49" crc="239663837"/>
-           <choice name="Pre-Post-Conditions" result="OK" time_sec="0.13" crc="-752691781"/>
+           <choice name="Easy" result="OK" time_sec="0.23" crc="-443130574"/>
+           <choice name="FalseCases" result="OK" time_sec="0.29" crc="-2100744066"/>
+           <choice name="GoodCases" result="OK" time_sec="0.27" crc="1129454882"/>
+           <choice name="FalseCasesII" result="OK" time_sec="0.38" crc="1052189149"/>
+           <choice name="GoodCasesII" result="OK" time_sec="0.82" crc="-1943706133"/>
+           <choice name="Misc" result="OK" time_sec="0.68" crc="239663837"/>
+           <choice name="Pre-Post-Conditions" result="OK" time_sec="0.18" crc="-752691781"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="1.52"> 
+    <test title="Commonality Checker" time-sum-sec="1.87"> 
         <application file-name="test-outrun.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.52" crc="293006875"/>
+           <choice name="" result="OK" time_sec="1.87" crc="293006875"/>
         </choice-list>
     </test>
-    <test title="Commonality Checker" time-sum-sec="1.37"> 
+    <test title="Commonality Checker" time-sum-sec="1.92"> 
         <application file-name="test-commonality.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.37" crc="360428126"/>
+           <choice name="" result="OK" time_sec="1.92" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="1.09"> 
+    <test title="Pattern Identity Determination" time-sum-sec="1.50"> 
         <application file-name="test-identity_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.56" crc="-390242573"/>
-           <choice name="False" result="OK" time_sec="0.27" crc="554533910"/>
-           <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.13" crc="-138569557"/>
-           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.13" crc="38876760"/>
+           <choice name="True" result="OK" time_sec="0.75" crc="-390242573"/>
+           <choice name="False" result="OK" time_sec="0.38" crc="554533910"/>
+           <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.20" crc="-138569557"/>
+           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.17" crc="38876760"/>
         </choice-list>
     </test>
 </test-database>
