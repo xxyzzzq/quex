@@ -3,7 +3,6 @@ from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 check_or_die, \
                                                 error_msg, \
                                                 error_eof, \
-                                                get_current_line_info_number, \
                                                 read_integer, \
                                                 read_namespaced_name, \
                                                 read_until_closing_bracket, \

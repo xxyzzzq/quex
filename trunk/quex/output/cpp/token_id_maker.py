@@ -238,7 +238,7 @@ def __warn_implicit_token_definitions():
     if len(Setup.token_id_foreign_definition_file) == 0:
         msg += " Proposal:\n"
         msg += "   token {"
-        error_msg(msg, sr, line_n, DontExitF=True, WarningF=True)
+        error_msg(msg, sr, DontExitF=True, WarningF=True)
         for token_name, sr in blackboard.token_id_implicit_list:
             error_msg("     %s;" % token_name, sr, DontExitF=True, WarningF=True)
         error_msg("   }", sr, DontExitF=True, WarningF=True)

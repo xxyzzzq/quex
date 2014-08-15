@@ -1,5 +1,7 @@
 import quex.engine.generator.state.transition.solution  as     solution
 import quex.engine.generator.state.transition.bisection as     bisection
+import quex.engine.generator.state.transition.transition as     transition
+import quex.engine.generator.state.transition.comparison_sequence as comparison_sequence
 from   quex.blackboard                                  import setup as Setup, Lng
 from   copy      import copy
 from   itertools import islice
@@ -18,7 +20,7 @@ def do(txt, TM):
         entry = TM[0]
         assert entry[0].begin == 0, "%s" % entry[0]
         assert entry[0].end   == Setup.get_buffer_element_value_limit(), "%s<->%s" % (entry[0].end, Setup.get_buffer_element_value_limit())
-        __get_transition(txt, entry)
+        transition.do(txt, entry)
         return
 
     # (*) Determine 'outstanding' characters. For example, if 'e' appears
@@ -102,8 +104,8 @@ def __bisection(txt, TriggerMap):
     if   tip == solution.E_Type.BISECTION:           __get_bisection(txt, TriggerMap)
     # Direct Implementation / No more call to __bisection()
     elif tip == solution.E_Type.SWITCH_CASE:         __get_switch(txt, TriggerMap)
-    elif tip == solution.E_Type.COMPARISON_SEQUENCE: __get_comparison_sequence(txt, TriggerMap)
-    elif tip == solution.E_Type.TRANSITION:          __get_transition(txt, TriggerMap[0], IndentF=True)
+    elif tip == solution.E_Type.COMPARISON_SEQUENCE: comparison_sequence.do(txt, TriggerMap)
+    elif tip == solution.E_Type.TRANSITION:          transition.do(txt, TriggerMap[0], IndentF=True)
     else:                                                                 
         assert False
 
@@ -113,7 +115,7 @@ def __bisection(txt, TriggerMap):
 
 def __get_outstanding(txt, TriggerMapEntry):
     txt.append(Lng.IF_INPUT("==", TriggerMapEntry[0].begin))
-    __get_transition(txt, TriggerMapEntry)
+    transition.do(txt, TriggerMapEntry)
     txt.append(Lng.ELSE)
     # Caller must provide later for 'ENDIF'
 
@@ -147,7 +149,7 @@ def __get_switch(txt, TriggerMap):
     case_code_list = []
     for interval, target in TriggerMap:
         target_code = []
-        __get_transition(target_code, (interval, target))
+        transition.do(target_code, (interval, target))
         case_code_list.append((range(interval.begin, interval.end), target_code))
 
     txt.extend(Lng.SELECTION("input", case_code_list))
@@ -195,65 +197,4 @@ def __get_bisection(txt, TriggerMap):
     txt.append(0)
     txt.append(Lng.END_IF())
     txt.append("\n")
-
-def __get_comparison_sequence(txt, TriggerMap):
-    global Lng
-
-    L = len(TriggerMap)
-    trigger_map = TriggerMap
-
-    # Depending on whether the list is checked forward or backward,
-    # the comparison operator and considered border may change.
-    _border_cmp = "<"
-    _border     = lambda interval: interval.end
-
-    # The buffer limit code is something extreme seldom, so make sure that it is 
-    # tested at last, if it is there. This might require to reverse the trigger map.
-    if     Setup.buffer_limit_code >= TriggerMap[0][0].begin \
-       and Setup.buffer_limit_code < TriggerMap[-1][0].end:
-        # Find the index of the buffer limit code in the list
-        for i, candidate in enumerate(TriggerMap):
-            if candidate[0].contains(Setup.buffer_limit_code): break
-        if i < L / 2:
-            trigger_map = copy(TriggerMap)
-            trigger_map.reverse()
-            _border_cmp = ">="
-            _border     = lambda interval: interval.begin
-
-    assert len(trigger_map) != 0
-    L = len(trigger_map)
-
-    LastI = L - 1
-    code = []
-    for i, entry in enumerate(trigger_map):
-        interval, target = entry
-
-        if i != 0: code.append("\n")
-        if   i == LastI:           code.append(Lng.ELSE)
-        elif interval.size() == 1: code.append(Lng.IF_INPUT("==", interval.begin, i==0))
-        else:                      code.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
-
-        __get_transition(code, entry, IndentF=True)
-
-    code.append("\n%s\n" % Lng.END_IF(LastF=True))
-
-    txt.extend(code)
-    return True
-
-def __get_transition(txt, TriggerMapEntry, IndentF=False):
-    global Lng
-
-    if IndentF:
-        txt.append(1)  # indent one scope
-
-    code = TriggerMapEntry[1].code()
-    if type(code) == list: txt.extend(code)
-    else:                  txt.append(code)
-
-    if Setup.comment_transitions_f: 
-        interval = TriggerMapEntry[0] 
-        txt.append(Lng.COMMENT(interval.get_utf8_string()))
-    else: 
-        pass # txt.append("\n")
-    return 
 

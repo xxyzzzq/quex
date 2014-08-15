@@ -1,9 +1,8 @@
-note: Token ids found in file 'Calc_token-ids.h' {
-note:     TKN_DUMMY         => 'DUMMY'
-note:     TKN_TERMINATION   => 'TERMINATION'
-note:     TKN_UNINITIALIZED => 'UNINITIALIZED'
-note: }
-
+command line: Token ids found in file 'Calc_token-ids.h' {
+command line:      TKN_DUMMY         => 'DUMMY'
+command line:      TKN_TERMINATION   => 'TERMINATION'
+command line:      TKN_UNINITIALIZED => 'UNINITIALIZED'
+command line: }
 simple.qx:2:warning: Detected implicit token identifier definitions.
 simple.qx:2:warning:      TKN_1;
 simple.qx:3:warning:      TKN_2;

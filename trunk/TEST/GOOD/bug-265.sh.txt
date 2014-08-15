@@ -1,26 +1,25 @@
 token.h token_ids.h nonsense.qx derived.h codec.dat
 
-note: Token ids found in file 'token_ids.h' {
-note:     TKN_ADVERB____    => 'ADVERB____'
-note:     TKN_ARTICLE___    => 'ARTICLE___'
-note:     TKN_DEDENT        => 'DEDENT'
-note:     TKN_FILL_WORD_    => 'FILL_WORD_'
-note:     TKN_INDENT        => 'INDENT'
-note:     TKN_MARK______    => 'MARK______'
-note:     TKN_ME________    => 'ME________'
-note:     TKN_MY_BROTHER    => 'MY_BROTHER'
-note:     TKN_NEGATION__    => 'NEGATION__'
-note:     TKN_NODENT        => 'NODENT'
-note:     TKN_OK            => 'OK'
-note:     TKN_PREDICATE_    => 'PREDICATE_'
-note:     TKN_SCALLYWAG_    => 'SCALLYWAG_'
-note:     TKN_SUBJECT___    => 'SUBJECT___'
-note:     TKN_TERMINATION   => 'TERMINATION'
-note:     TKN_UKNOWN____    => 'UKNOWN____'
-note:     TKN_UNINITIALIZED => 'UNINITIALIZED'
-note:     TKN_VERB______    => 'VERB______'
-note: }
-
+command line: Token ids found in file 'token_ids.h' {
+command line:      TKN_ADVERB____    => 'ADVERB____'
+command line:      TKN_ARTICLE___    => 'ARTICLE___'
+command line:      TKN_DEDENT        => 'DEDENT'
+command line:      TKN_FILL_WORD_    => 'FILL_WORD_'
+command line:      TKN_INDENT        => 'INDENT'
+command line:      TKN_MARK______    => 'MARK______'
+command line:      TKN_ME________    => 'ME________'
+command line:      TKN_MY_BROTHER    => 'MY_BROTHER'
+command line:      TKN_NEGATION__    => 'NEGATION__'
+command line:      TKN_NODENT        => 'NODENT'
+command line:      TKN_OK            => 'OK'
+command line:      TKN_PREDICATE_    => 'PREDICATE_'
+command line:      TKN_SCALLYWAG_    => 'SCALLYWAG_'
+command line:      TKN_SUBJECT___    => 'SUBJECT___'
+command line:      TKN_TERMINATION   => 'TERMINATION'
+command line:      TKN_UKNOWN____    => 'UKNOWN____'
+command line:      TKN_UNINITIALIZED => 'UNINITIALIZED'
+command line:      TKN_VERB______    => 'VERB______'
+command line: }
 
 
 Generated Files:

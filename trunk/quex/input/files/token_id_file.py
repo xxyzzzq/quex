@@ -188,7 +188,8 @@ def __extract_token_ids(PlainContent, FileName):
             found_list.append(Name)
 
     result = []
-    for name in chain(define_re_obj.findall(PlainContent), assign_re_obj.findall(PlainContent)):
+    for name in chain(define_re_obj.findall(PlainContent), 
+                      assign_re_obj.findall(PlainContent)):
         # Either there is no plain token prefix, or it matches well.
         check_and_append(result, name)
 
