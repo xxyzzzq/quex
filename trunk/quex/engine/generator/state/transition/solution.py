@@ -84,7 +84,7 @@ def get(TriggerMap,
     """See file 'solution-new.py' for an approach of a more sophisticated
        implementation.
     """
-    TriggerSetN       = len(TriggerMap)
+    TriggerSetN = len(TriggerMap)
 
     if TriggerSetN == 1:
         return E_Type.TRANSITION
@@ -109,25 +109,4 @@ def get(TriggerMap,
         return E_Type.BISECTION
     else:
         return E_Type.COMPARISON_SEQUENCE
-
-def prune_outstanding(TriggerMap):
-    """Implements the remaining transitions as:
-
-       (1) Check for an exceptionally often character
-       (2) Check for the remaining trigger map
-    """
-    # Currently no outstanding characters are determined (no statistics yet)
-    return None
-
-    #assert TriggerMap[EntryIndex].size() == 1
-    #OutstandingCharacter = TriggerMap[EntryIndex].begin
-
-    #if EntryIndex != 0 and EntryIndex != len(TriggerMap) - 1:
-    #    # Leave the entry before at size '1' because its easier to test
-    #    if   TriggerMap[EntryIndex-1].size() == 1: TriggerMap[EntryIndex+1].begin = OutstandingCharacter
-    #    else:                                      TriggerMap[EntryIndex-1].end   = OutstandingCharacter + 1
-    #elif EntryIndex == 0:
-    #    TriggerMap[EntryIndex+1].begin = OutstandingCharacter
-    #elif EntryIndex == len(TriggerMap) - 1:
-    #    TriggerMap[EntryIndex-1].begin = OutstandingCharacter
 
