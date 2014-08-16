@@ -24,7 +24,6 @@ from   quex.engine.generator.base                         import do_analyzer
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
 from   quex.engine.analyzer.door_id_address_label         import dial_db
-import quex.engine.generator.state.transition.core        as     transition_block
 from   quex.engine.analyzer.transition_map                import TransitionMap   
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_MapImplementationType, \

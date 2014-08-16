@@ -1,4 +1,4 @@
-import quex.engine.generator.state.transition.transition as     transition
+import quex.engine.generator.state.transition_map.transition as     transition
 from quex.blackboard import setup as Setup, \
                             Lng
 
@@ -39,7 +39,7 @@ def do(txt, TriggerMap):
         elif interval.size() == 1: code.append(Lng.IF_INPUT("==", interval.begin, i==0))
         else:                      code.append(Lng.IF_INPUT(_border_cmp, _border(interval), i==0))
 
-        __get_transition(code, entry, IndentF=True)
+        transition.do(code, entry, IndentF=True)
 
     code.append("\n%s\n" % Lng.END_IF(LastF=True))
 

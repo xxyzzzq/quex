@@ -1,5 +1,8 @@
+from quex.blackboard import setup as Setup, \
+                            Lng
 
 def do(txt, TriggerMapEntry, IndentF=False):
+    global Setup
     global Lng
 
     if IndentF:

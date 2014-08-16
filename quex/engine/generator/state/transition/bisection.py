@@ -1,4 +1,4 @@
-import quex.engine.generator.state.transition.solution  as solution
+import quex.engine.generator.state.transition_map.solution  as solution
 
 def get_index(TriggerMap):
     """RETURNS: The best considered index in TriggerMap where the trigger map

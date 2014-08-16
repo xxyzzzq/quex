@@ -1,7 +1,8 @@
-import quex.engine.generator.state.transition.solution  as     solution
-import quex.engine.generator.state.transition.bisection as     bisection
-import quex.engine.generator.state.transition.transition as     transition
-import quex.engine.generator.state.transition.comparison_sequence as comparison_sequence
+import quex.engine.generator.state.transition_map.solution     as     solution
+import quex.engine.generator.state.transition_map.bisection    as     bisection
+import quex.engine.generator.state.transition_map.branch_table as     branch_table
+import quex.engine.generator.state.transition_map.transition   as     transition
+import quex.engine.generator.state.transition_map.comparison_sequence as comparison_sequence
 from   quex.blackboard                                  import setup as Setup, Lng
 from   copy      import copy
 from   itertools import islice
@@ -103,7 +104,7 @@ def __bisection(txt, TriggerMap):
     # Potentially Recursive
     if   tip == solution.E_Type.BISECTION:           __get_bisection(txt, TriggerMap)
     # Direct Implementation / No more call to __bisection()
-    elif tip == solution.E_Type.SWITCH_CASE:         __get_switch(txt, TriggerMap)
+    elif tip == solution.E_Type.SWITCH_CASE:         branch_table.do(txt, TriggerMap)
     elif tip == solution.E_Type.COMPARISON_SEQUENCE: comparison_sequence.do(txt, TriggerMap)
     elif tip == solution.E_Type.TRANSITION:          transition.do(txt, TriggerMap[0], IndentF=True)
     else:                                                                 
@@ -118,43 +119,6 @@ def __get_outstanding(txt, TriggerMapEntry):
     transition.do(txt, TriggerMapEntry)
     txt.append(Lng.ELSE)
     # Caller must provide later for 'ENDIF'
-
-def __get_switch(txt, TriggerMap):
-    """Transitions of characters that lie close to each other can be very efficiently
-       be identified by a switch statement. For example:
-
-           switch( Value ) {
-           case 1: ..
-           case 2: ..
-           ...
-           case 100: ..
-           }
-
-       If SwitchFrameF == False, then no 'switch() { ... }' frame is produced.
-
-       Is implemented by the very few lines in assembler (i386): 
-
-           sall    $2, %eax
-           movl    .L13(%eax), %eax
-           jmp     *%eax
-
-       where 'jmp *%eax' jumps immediately to the correct switch case.
-    
-       It is therefore of vital interest that those regions are **identified** and
-       **not split** by a bisection. To achieve this, such regions are made a 
-       transition for themselves based on the character range that they cover.
-    """
-    global Lng
-
-    case_code_list = []
-    for interval, target in TriggerMap:
-        target_code = []
-        transition.do(target_code, (interval, target))
-        case_code_list.append((range(interval.begin, interval.end), target_code))
-
-    txt.extend(Lng.SELECTION("input", case_code_list))
-    txt.append("\n")
-    return True
 
 def __get_bisection(txt, TriggerMap):
     
@@ -197,4 +161,25 @@ def __get_bisection(txt, TriggerMap):
     txt.append(0)
     txt.append(Lng.END_IF())
     txt.append("\n")
+
+def prune_outstanding(TriggerMap):
+    """Implements the remaining transitions as:
+
+       (1) Check for an exceptionally often character
+       (2) Check for the remaining trigger map
+    """
+    # Currently no outstanding characters are determined (no statistics yet)
+    return None
+
+    #assert TriggerMap[EntryIndex].size() == 1
+    #OutstandingCharacter = TriggerMap[EntryIndex].begin
+
+    #if EntryIndex != 0 and EntryIndex != len(TriggerMap) - 1:
+    #    # Leave the entry before at size '1' because its easier to test
+    #    if   TriggerMap[EntryIndex-1].size() == 1: TriggerMap[EntryIndex+1].begin = OutstandingCharacter
+    #    else:                                      TriggerMap[EntryIndex-1].end   = OutstandingCharacter + 1
+    #elif EntryIndex == 0:
+    #    TriggerMap[EntryIndex+1].begin = OutstandingCharacter
+    #elif EntryIndex == len(TriggerMap) - 1:
+    #    TriggerMap[EntryIndex-1].begin = OutstandingCharacter
 
