@@ -746,27 +746,27 @@ class Lng_Cpp(dict):
         else:
             assert False 
 
-    def SELECTION(self, Selector, CaseList, CaseFormat="hex"):
+    def SELECTION(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
 
         def __case(txt, item, Content=""):
             def format(N):
                 return {"hex": "case 0x%X: ", 
                         "dec": "case %i: "}[CaseFormat] % N
 
-            if isinstance(item, list):        
-                for elm in item[:-1]:
-                    txt.append(1) # 1 indentation
-                    txt.append("%s\n" % format(elm))
-                txt.append(1) # 1 indentation
-                txt.append(format(item[-1]))
+            if isinstance(item, Interval):        
+                if item.end > item.begin + 1:
+                    for elm in xrange(item.begin, item.end -1):
+                        txt.append("%s\n" % format(elm))
+                txt.append(format(item.end-1))
 
             elif isinstance(item, (int, long)): 
-                txt.append(1) # 1 indentation
                 txt.append(format(item))
 
-            else: 
-                txt.append(1) # 1 indentation
+            elif isinstance(item, (str, unicode)): 
                 txt.append("case %s: "  % item)
+
+            else:
+                assert False
 
             if type(Content) == list: txt.extend(Content)
             elif len(Content) != 0:   txt.append(Content)
@@ -774,7 +774,6 @@ class Lng_Cpp(dict):
             if      self.__code_generation_switch_cases_add_statement is not None \
                 and self.Match_goto.search(txt[-1]) is None                       \
                 and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
-                txt.append(1)
                 txt.append(self.__code_generation_switch_cases_add_statement)
             txt.append("\n")
 
@@ -789,8 +788,10 @@ class Lng_Cpp(dict):
 
         __case(txt, item, consequence)
 
+        if DefaultConsequence is not None:
+            txt.append("default:\n", DefaultConsequence)
+
         txt.append("\n")
-        txt.append(0)       # 0 indentation
         txt.append("}")
         return txt
 
