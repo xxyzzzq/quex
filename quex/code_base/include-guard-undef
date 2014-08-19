@@ -1,4 +1,4 @@
-/* (C) 2005-2009 Frank-Rene Schaefer */
+/* (C) Frank-Rene Schaefer */
 #ifndef __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN
 #   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_INDICATOR__ANALYZER__MAIN is not defined, tells that this is not the case."
 #endif

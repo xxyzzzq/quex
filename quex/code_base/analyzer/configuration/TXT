@@ -31,15 +31,19 @@
 $$SWITCH$$ __QUEX_OPTION_PLAIN_C
 #endif
 
-/* NOTE: The check for the 'C++/C' version and the Assert derivation
- *       are not to be located in 'quex/code_base/configuration/validation'
- *       or 'quex/code_base/configuration/derived' -- errors would be hard to find .*/ 
+/* Following checks are best done here:
+ *   -- Verification of the 'C++/C' version.
+ *   -- Assert control by this configuration file.
+ *
+ * Errors would be hard to find if the two checks were made in
+ *   -- 'quex/code_base/configuration/validation' or
+ *   -- 'quex/code_base/configuration/derived'.                              */ 
 #if ! defined(__QUEX_OPTION_PLAIN_C) && ! defined(__cplusplus)
 #   error "__QUEX_OPTION_PLAIN_C must be defined if no C++ compiler is used! Call quex with option '--language C'."
 #endif
 
 #if defined(__QUEX_INCLUDE_INDICATOR__ASSERTS)
-#   error "Asserts have been adapted before the inclusion of the configuration file."
+#   error "Asserts included before configuration file. However, the configuration file MUST control asserts!"
 #endif
 #
 #if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)

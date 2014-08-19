@@ -5,10 +5,9 @@ def do(Interval, Target, IndentF=False):
     global Setup
     global Lng
 
-    code = Target.code()
-    txt  = []
-    if type(code) == list: txt.extend(code)
-    else:                  txt.append(code)
+    if   hasattr(Target, "code"): txt = Target.code()
+    elif type(Target) == long:    txt = [ Lng.GOTO_ADDRESS(Target) ]
+    else:                         txt = [ Target ]
 
     if Setup.comment_transitions_f: 
         txt.append(Lng.COMMENT(Interval.get_utf8_string()))
