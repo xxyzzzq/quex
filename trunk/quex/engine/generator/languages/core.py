@@ -126,6 +126,7 @@ class Lng_Cpp(dict):
     PURE_RETURN             = "__QUEX_PURE_RETURN;"
     UNREACHABLE             = "__quex_assert_no_passage();"
     ELSE                    = "} else {\n"
+    ELSE_SIMPLE             = "else"
 
     PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
     BUFFER_LIMIT_CODE        = "QUEX_SETTING_BUFFER_LIMIT_CODE"
@@ -493,6 +494,9 @@ class Lng_Cpp(dict):
     def GOTO_BY_VARIABLE(self, VariableName):
         return "QUEX_GOTO_STATE(%s);" % VariableName 
 
+    def GOTO_ADDRESS(self, Address):
+        return "goto %s;" % dial_db.get_label_by_address(Address, GotoedF=True)
+
     def GRID_STEP(self, VariableName, TypeName, GridWidth, StepN=1, IfMacro=None):
         """A grid step is an addition which depends on the current value 
         of a variable. It sets the value to the next valid value on a grid
@@ -626,21 +630,33 @@ class Lng_Cpp(dict):
                 decision.append("\n")
         decision.append(" ) {\n")
 
-    def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False):
+    def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False, SpaceF=False):
         if isinstance(RValue, (str,unicode)): decision = "%s %s %s"   % (LValue, Operator, RValue)
         else:                                 decision = "%s %s 0x%X" % (LValue, Operator, RValue)
         if not SimpleF:
             if FirstF: return "if( %s ) {\n"          % decision
             else:      return "\n} else if( %s ) {\n" % decision
         else:
-            if FirstF: return "if( %s ) "      % decision
-            else:      return "else if( %s ) " % decision
+            if FirstF: 
+                if SpaceF: return "if     ( %s ) " % decision
+                else:      return "if( %s ) "      % decision
+            else:          return "else if( %s ) " % decision
 
     def IF_GOTO(self, LValue, Condition, RValue, DoorId, FirstF=True):
         return "%s %s\n" % (self.IF(LValue, Condition, RValue, FirstF, True), self.GOTO(DoorId))
 
-    def IF_INPUT(self, Condition, Value, FirstF=True):
-        return self.IF("input", Condition, Value, FirstF)
+    def IF_INPUT(self, Condition, Value, FirstF=True, NewlineF=True):
+        return self.IF("input", Condition, Value, FirstF, SimpleF=not NewlineF)
+
+    def IF_X(self, Condition, Value, Index, Length):
+        """Index  = index of decision in list of if-else-if.
+           Length = total number of decisions in if-else-if block.
+
+        Calls 'IF' with the 'SpaceF=True' so that the first if-statement
+        contains a 'pretty space' that makes it aligned with the remaining 
+        decisions.
+        """
+        return self.IF("input", Condition, Value, Index==0, SimpleF=True, SpaceF=(Length>2))
 
     def IF_PRE_CONTEXT(self, txt, FirstF, PreContextID, Consequence):
 
@@ -746,6 +762,34 @@ class Lng_Cpp(dict):
         else:
             assert False 
 
+    def COMPARISON_SEQUENCE(self, IntervalEffectSequence, get_decision):
+        """Get a sequence of comparisons that map intervals to effects as given
+        by 'IntervalEffectSequence'. The if-statements are coming out of 
+        'get_decision'. The 'IntervalEffectSequence' is a list of pairs
+
+                          (Interval, Effect-Text)
+
+        meaning, that if 'input' is inside Interval, the 'Effect-Text' shall be
+        executed.
+
+        RETURNS: C-code that implements the comparison sequences.
+        """
+        L = len(IntervalEffectSequence)
+        if L == 0: 
+            return []
+
+        decision_effect_sequence = [
+            (get_decision(entry[0], i, L), entry[1])
+            for i, entry in enumerate(IntervalEffectSequence)
+        ]
+
+        max_L = max(len(cause) for cause, effect in decision_effect_sequence)
+
+        return [
+            "%s %s%s\n" % (cause, " " * (max_L - len(cause)), effect)
+            for cause, effect in decision_effect_sequence
+        ]
+
     def SELECTION(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
 
         def __case(txt, item, Content=""):
@@ -792,7 +836,7 @@ class Lng_Cpp(dict):
             txt.append("default:\n", DefaultConsequence)
 
         txt.append("\n")
-        txt.append("}")
+        txt.append("}\n")
         return txt
 
     def REPLACE_INDENT(self, txt_list, Start=0):

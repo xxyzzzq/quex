@@ -278,9 +278,11 @@ class DialDB(object):
             if info[0] == Address: return door_id
         return None
 
-    def get_label_by_address(self, Address):
-        for door_id, info in self.__d2la.iteritems():
-            if info[0] == Address: return info[1]
+    def get_label_by_address(self, Address, GotoedF=False):
+        for address, label in self.__d2la.itervalues():
+            if address == Address: 
+                self.__gotoed_address_set.add(address)
+                return label
         return None
 
     def get_door_id_by_label(self, Label):

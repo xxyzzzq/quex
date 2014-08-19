@@ -6,8 +6,9 @@ from   quex.engine.analyzer.state.entry_action    import TransitionID
 from   quex.blackboard                            import E_StateIndices, \
                                                          E_IncidenceIDs
 
-from   copy      import copy
-from   itertools import izip
+from   copy        import copy
+from   itertools   import izip
+from   collections import defaultdict
 import sys
 
 class TransitionMap(list):
@@ -222,6 +223,30 @@ class TransitionMap(list):
         i = self._bisect(Character)
         if i is None: return None
         return self[i][1]
+
+    def get_most_often_appearing_target(self):
+        """Iterate over all targets in the transition map and determine the target
+        that occupies the largest range in the transition map.
+        """
+        db = defaultdict(int)
+        for interval, target in self:
+            db[target] += interval.size()
+
+        max_n      = -1
+        max_target = None
+        for target, n in db.iteritems():
+            if n <= max_n: continue
+            max_n      = n
+            max_target = target
+        return max_target
+
+    def get_size_of_range_other_targets(self, Target):
+        """Sum up the ranges of intervals that target a target that is
+        different from 'Target'.
+        """
+        return sum(interval.size() for interval, target in self
+                   if target != Target
+        )
 
     def set_target(self, Character, NewTarget):
         """Set the target in the transition map for a given 'Character'.

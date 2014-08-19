@@ -15,7 +15,7 @@ def get_structure(TM):
     interval_n = len(TM)
     assert interval_n > 1
 
-    moat = _get_most_often_appearing_target(TM)
+    moat = TM.get_most_often_appearing_target()
 
     # If there's only one interval, there's no need to compare, just go!
     # Otherwise, if there's a very low number of intervals, make a small
@@ -25,7 +25,7 @@ def get_structure(TM):
     # If the size of character ranges which do not target 'moat' is less
     # than a certain number, implement the transition as branch table. The
     # 'moat' is implemented as the 'default:' case.
-    sz_non_moat = _get_size_of_non_moat_ranges(TM)
+    sz_non_moat = TM.get_size_of_range_other_targets(moat)
     if sz_non_moat > 256: return BranchTable(TM, moat)
 
     # Else, there is nothing left but bisectioning
