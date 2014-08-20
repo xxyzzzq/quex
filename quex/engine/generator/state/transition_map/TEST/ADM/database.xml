@@ -1,0 +1,19 @@
+<test-database execution-time-sec="0.73" date="Wed Aug 20 07:22:20 2014">
+    <last-used-diff-display-program name=""/>
+    <group name="Code generation">
+        <test title="Comparison Sequence" time-sum-sec="0.73"> 
+            <application file-name="test-comparison_sequence.py" info-request-time="1408508975L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="8" same_result="False">
+               <choice name="C-2-fw" result="OK" time_sec="0.09" crc="-2120179977"/>
+               <choice name="C-2-bw" result="OK" time_sec="0.09" crc="1067426614"/>
+               <choice name="C-3-fw" result="OK" time_sec="0.09" crc="-341816047"/>
+               <choice name="C-3-bw" result="OK" time_sec="0.09" crc="1507825320"/>
+               <choice name="C-4-fw" result="OK" time_sec="0.09" crc="1360206059"/>
+               <choice name="C-4-bw" result="OK" time_sec="0.09" crc="-1189755466"/>
+               <choice name="C-5-fw" result="OK" time_sec="0.09" crc="1772389293"/>
+               <choice name="C-5-bw" result="OK" time_sec="0.09" crc="1897381153"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
