@@ -2,15 +2,10 @@
 #
 # PURPOSE:
 # 
-# Test the generation of a comparision sequence to map from intervals
-# to targets. Class under test is 'ComparisonSequence'.
+# Test the generation of a branch tables to map from intervals to targets. The
+# Class under test is 'BranchTable'.
 #
-# This tests sets up transition maps of different sizes. By the setting
-# of 'Setup.buffer_limit_code' the direction of the map implementation 
-# is controlled. Since the buffer limit code is considered to appear very
-# seldomly, it is always checked last.
-#
-# Optimization is considered implicitly. 
+# This tests sets up transition maps of different sizes. 
 #
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
@@ -21,7 +16,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   copy import copy
                                                    
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.generator.state.transition_map.comparison_sequence import ComparisonSequence   
+from   quex.engine.generator.state.transition_map.branch_table import BranchTable   
 from   quex.engine.generator.languages.core import db
 from   quex.engine.interval_handling        import Interval
 from   quex.engine.analyzer.transition_map  import TransitionMap   
@@ -30,15 +25,15 @@ from   quex.blackboard                      import setup as Setup, \
 from   collections import defaultdict
 
 if "--hwut-info" in sys.argv:
-    print "Code generation: Comparison Sequence;"
-    print "CHOICES: C-2-fw, C-2-bw, C-3-fw, C-3-bw, C-4-fw, C-4-bw, C-5-fw, C-5-bw;"
+    print "Code generation: Branch Table (switch-case);"
+    print "CHOICES: C-2, C-3, C-4, C-5;"
     sys.exit()
 
 if len(sys.argv) < 2: 
     print "Not enough arguments"
     exit()
 
-Lang, N, Direction = sys.argv[1].split("-")
+Lang, N = sys.argv[1].split("-")
 
 Setup.language_db = db[Lang]
 N = int(N)
@@ -60,15 +55,11 @@ def test(TM_plain):
 
     print "#" + "-" * 79
     tm = TransitionMap.from_iterable(
-        (interval, long(target))
-        for interval, target in TM_plain
+        (interval, long(target)) for interval, target in TM_plain
     )
     print_tm(tm)
-    node = ComparisonSequence(copy(tm))
-    print "    ---"
-    tm, default = ComparisonSequence.optimize(tm)
-    print_tm(tm)
-    print "    default:   %s" % repr(default)
+    most_often_appearing_target, target_n = tm.get_target_statistics()
+    node = BranchTable(copy(tm), most_often_appearing_target)
     print "    ---"
     for element in node.implement():
         print "    %s" % element,
@@ -77,10 +68,6 @@ def test(TM_plain):
 
 adr0 = dial_db.new_address()
 adr1 = dial_db.new_address()
-
-if Direction == "fw": Setup.buffer_limit_code = 1e37
-else:                 Setup.buffer_limit_code = 0
-
 
 if N == 2:
     for i in xrange(-1, 2):
