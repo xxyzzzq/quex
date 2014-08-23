@@ -1,27 +1,32 @@
-import quex.engine.generator.state.transition_map.solution  as solution
+from quex.blackboard import setup as Setup, \
+                            Lng
 
 class Bisection(object):
-     __slots__ = ("bisection_value", "low", "high")
-     def __init__(self, BisectionValue, Low, High):
-         """TM -- transition map
-            MOAT -- Most Often Appearing Target
-         """
-         self.bisection_value = BisectionValue
-         self.low             = Low
-         self.high            = High
+    __slots__ = ("bisection_value", "low", "high")
+
+    def __init__(self, BisectionValue, Low, High):
+        """TM -- transition map
+           MOAT -- Most Often Appearing Target
+        """
+        self.bisection_value = BisectionValue
+        self.low             = Low
+        self.high            = High
 
     def implement(self):
+        global Lng
         txt = [
             Lng.IF_INPUT("<", self.bisection_value)
         ]
         txt.extend(
-            self.lower.implement()
+            self.low.implement()
         )
         txt.append(
             Lng.ELSE
         )
         txt.extend(
-            self.higher.implement()
+            self.high.implement()
         )
-        txt.append("\n")
+        txt.append(
+            "%s\n" % Lng.END_IF()
+        )
         return txt

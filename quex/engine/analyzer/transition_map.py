@@ -220,16 +220,17 @@ class TransitionMap(list):
         return wildcard_target
 
     def get_target(self, Character):
-        i = self._bisect(Character)
+        i = TransitionMap.bisect(self, Character)
         if i is None: return None
         return self[i][1]
 
-    def get_most_often_appearing_target(self):
-        """Iterate over all targets in the transition map and determine the target
-        that occupies the largest range in the transition map.
+    @staticmethod
+    def get_target_statistics(List):
+        """RETURNS: [0] Most often appearing target.
+                    [1] Number of different targets.
         """
         db = defaultdict(int)
-        for interval, target in self:
+        for interval, target in List:
             db[target] += interval.size()
 
         max_n      = -1
@@ -238,13 +239,14 @@ class TransitionMap(list):
             if n <= max_n: continue
             max_n      = n
             max_target = target
-        return max_target
+        return max_target, len(db)
 
-    def get_size_of_range_other_targets(self, Target):
+    @staticmethod
+    def get_size_of_range_other_targets(List, Target):
         """Sum up the ranges of intervals that target a target that is
         different from 'Target'.
         """
-        return sum(interval.size() for interval, target in self
+        return sum(interval.size() for interval, target in List
                    if target != Target
         )
 
@@ -252,7 +254,7 @@ class TransitionMap(list):
         """Set the target in the transition map for a given 'Character'.
         """
         # Find the index of the interval which contains 'Character'
-        i = self._bisect(Character)
+        i = TransitionMap.bisect(self, Character)
         if i is None:
             self.insert(0, (Interval(Character), NewTarget))
             self.sort()
@@ -300,22 +302,29 @@ class TransitionMap(list):
            RETURNS: None      -- Character not found
                     index > 0 -- where interval 'self[i][0]' contains Character.
         """
-        return self._bisect(Character)
+        return TransitionMap.bisect(self, Character)
 
-    def _bisect(self, Character):
+    @staticmethod
+    def bisect(List, Character):
+        """Searches for Character in transition map by bisectioning.
+        
+        RETURNS: None -- if Character has not been found in List.
+                 N    -- The index of the interval in which the Character
+                         can be found.
+        """
         lower = 0
-        upper = len(self)
+        upper = len(List)
         if upper == 0:
             return None
 
         while upper - lower > 1:
             i = (upper + lower) >> 1
-            if   self[i][0].begin >  Character: upper = i
-            elif self[i][0].end   <= Character: lower = i
+            if   List[i][0].begin >  Character: upper = i
+            elif List[i][0].end   <= Character: lower = i
             else:                                         return i
 
-        if     Character >= self[lower][0].begin \
-           and Character <  self[lower][0].end:
+        if     Character >= List[lower][0].begin \
+           and Character <  List[lower][0].end:
             return lower
 
         return None
@@ -351,7 +360,7 @@ class TransitionMap(list):
         """Replaces a single character transition by a transition of its adjacent 
            intervals.
         """
-        i = self._bisect(Character)
+        i = TransitionMap.bisect(self, Character)
         assert i is not None
         assert self[i][0].size() == 1
 
