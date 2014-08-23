@@ -1,7 +1,7 @@
-import quex.engine.generator.state.transition_map.bisection           as bisection
-import quex.engine.generator.state.transition_map.branch_table        as branch_table
-import quex.engine.generator.state.transition_map.transition          as transition
-import quex.engine.generator.state.transition_map.comparison_sequence as comparison_sequence
+from   quex.engine.generator.state.transition_map.bisection           import Bisection
+from   quex.engine.generator.state.transition_map.branch_table        import BranchTable
+from   quex.engine.generator.state.transition_map.comparison_sequence import ComparisonSequence
+from   quex.engine.analyzer.transition_map                            import TransitionMap  
 
 from   quex.engine.misc.enum import Enum
 from   math                  import log
@@ -9,38 +9,70 @@ from   math                  import log
 def do(TM):
     return get_structure(TM)
 
-def get_structure(TM): 
-    """__dive --> indicate recursion that might be replaced by TreeWalker
+def get_solution(TM):
+    """RETURNS: [0] Solution
+                [1] Most often appearing target
+        
+    Solution == 1: ComparisonSequence
+             == 2: BranchTable
+             == 3: Bisectioning
     """
     interval_n = len(TM)
-    assert interval_n > 1
+    assert interval_n > 0
 
-    moat = TM.get_most_often_appearing_target()
+    most_often_appearing_target, target_n = TransitionMap.get_target_statistics(TM)
 
     # If there's only one interval, there's no need to compare, just go!
     # Otherwise, if there's a very low number of intervals, make a small
     # comparison list that iterates linearly through the items.
-    if interval_n < 4:  return ComparisonSequence(TM, moat)
+    if target_n < 4 and interval_n < 6: 
+        return 0, None
 
     # If the size of character ranges which do not target 'moat' is less
     # than a certain number, implement the transition as branch table. The
     # 'moat' is implemented as the 'default:' case.
-    sz_non_moat = TM.get_size_of_range_other_targets(moat)
-    if sz_non_moat > 256: return BranchTable(TM, moat)
+    sz_non_moat = TransitionMap.get_size_of_range_other_targets(TM, most_often_appearing_target)
+    if sz_non_moat > 256: 
+        return 1, most_often_appearing_target
+
+    return 3, None
+
+def get_structure(TM): 
+    """__dive --> indicate recursion that might be replaced by TreeWalker
+    """
+    solution, moat = get_solution(TM)
+
+    if   solution == 0: return ComparisonSequence(TM)
+    elif solution == 1: return BranchTable(TM, moat)
 
     # Else, there is nothing left but bisectioning
     # (which is not the worst thing to do)
-    tm0, tm1 = get_bisection(TM)
+    return get_Bisection(TM)
+
+def get_Bisection(TM):
+    """BranchTables and Comparison sequences are considered to be 'better'
+    than bisectioning. Thus, this function tries to set the bisectioning value
+    so that the two parts are both feasible by either BranchTable or 
+    ComparisonSequence. That is, if the bisectioning into
+
+                                     N = L / 2
+             |-----------------------|-----------------------|
+                   bisectioning         comparison sequence
+
+    can be replaced by 
+                                 Q
+             |-------------------|---------------------------|
+                   branch table            branch table
+
+    then, the bisectioning is better done at Q rather than N.
+    """
+    L = len(TM) / 2
+    assert L >= 1
+
+    tm0 = TM[:L]
+    tm1 = TM[L:]
     bisection_value = tm0[-1][0].end
     low  = get_structure(tm0)
     high = get_structure(tm1)
     return Bisection(bisection_value, low, high)
-
-def get_bisection(TM):
-    """Currently: very simplest solution 'the middle'
-    """
-    L = len(TM)
-    assert L > 1
-    index = int(L / 2)
-    return TM[:index], TM[index:]
 

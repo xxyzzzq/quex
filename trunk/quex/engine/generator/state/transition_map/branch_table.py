@@ -1,6 +1,6 @@
-import quex.engine.generator.state.transition_map.transition as     transition
-from quex.blackboard import setup as Setup, \
-                            Lng
+import quex.engine.generator.state.transition_map.transition as transition
+from   quex.blackboard import setup as Setup, \
+                              Lng
 class BranchTable(object):
     __slots__ = ("sub_map", "moat")
     def __init__(self, SubMap, Moat):
@@ -40,6 +40,6 @@ class BranchTable(object):
         ]
 
         return Lng.SELECTION("input", case_code_list,
-                             DefaultConsequence=self.moat)
+                             DefaultConsequence="".join(transition.do(None, self.moat)))
 
 

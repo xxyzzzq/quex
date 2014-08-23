@@ -58,7 +58,7 @@ def test(TM_plain):
         (interval, long(target)) for interval, target in TM_plain
     )
     print_tm(tm)
-    most_often_appearing_target, target_n = tm.get_target_statistics()
+    most_often_appearing_target, target_n = TransitionMap.get_target_statistics(tm)
     node = BranchTable(copy(tm), most_often_appearing_target)
     print "    ---"
     for element in node.implement():

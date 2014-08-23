@@ -24,6 +24,7 @@ from   quex.engine.analyzer.door_id_address_label        import DoorID, \
                                                                 dial_db, \
                                                                 get_plain_strings, \
                                                                 IfDoorIdReferencedCode
+from   quex.engine.interval_handling                     import Interval
 from   quex.engine.misc.string_handling                  import blue_print, \
                                                                 pretty_code
 from   quex.engine.misc.file_in                          import open_file_or_die, \
@@ -682,8 +683,8 @@ class Lng_Cpp(dict):
     def IF_INPUT_P_EQUAL_LEXEME_START_P(self, FirstF=True):
         return self.IF(self.INPUT_P(), "==", self.LEXEME_START_P(), FirstF)
 
-    def END_IF(self, LastF=True):
-        return { True: "\n}", False: "" }[LastF]
+    def END_IF(self):
+        return "}"
 
     def PRE_CONTEXT_CONDITION(self, PreContextID):
         if PreContextID == E_PreContextIDs.BEGIN_OF_LINE: 
@@ -775,67 +776,104 @@ class Lng_Cpp(dict):
         RETURNS: C-code that implements the comparison sequences.
         """
         L = len(IntervalEffectSequence)
-        if L == 0: 
-            return []
 
-        decision_effect_sequence = [
+        if   L == 0: return []
+        elif L == 1: return ["%s\n" % IntervalEffectSequence[0][1]]
+
+        sequence = [
             (get_decision(entry[0], i, L), entry[1])
             for i, entry in enumerate(IntervalEffectSequence)
         ]
 
-        max_L = max(len(cause) for cause, effect in decision_effect_sequence)
+        max_L = max(len(cause) for cause, effect in sequence)
 
         return [
             "%s %s%s\n" % (cause, " " * (max_L - len(cause)), effect)
-            for cause, effect in decision_effect_sequence
+            for cause, effect in sequence
         ]
 
     def SELECTION(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
 
-        def __case(txt, item, Content=""):
-            def format(N):
-                return {"hex": "case 0x%X: ", 
-                        "dec": "case %i: "}[CaseFormat] % N
+        case_str = {
+            "hex": "case 0x%X: ", 
+            "dec": "case %i: "
+        }[CaseFormat]
 
-            if isinstance(item, Interval):        
-                if item.end > item.begin + 1:
-                    for elm in xrange(item.begin, item.end -1):
-                        txt.append("%s\n" % format(elm))
-                txt.append(format(item.end-1))
+        def case_list(From, To):
+            return "".join("%s" % (case_str % i) for i in xrange(From, To))
 
-            elif isinstance(item, (int, long)): 
-                txt.append(format(item))
+        def case_list_iterable(item):
+            # Next number divisible by '8' and greater than first_border
+            first_border = int(item.begin / 8) * 8 + 8
+            # Last number divisible by '8' and lesser than last_border
+            last_border  = int((item.end - 1) / 8) * 8
 
-            elif isinstance(item, (str, unicode)): 
-                txt.append("case %s: "  % item)
+            if first_border != item.begin:
+                yield "%s\n" % case_list(item.begin, first_border)
+            for begin in xrange(first_border, last_border-7, 8):
+                yield "%s\n" % case_list(begin, begin + 8)
+            yield "%s" % case_list(last_border, item.end)
 
+        def case_interval(item, C):
+            if item is None: return ["default: %s\n" % get_content(C)]
+
+            size = item.end - item.begin
+            if size == 1: 
+                txt = [ case_str % (item.end-1) ]
+            elif size <= 8: 
+                txt = [ case_list(item.begin, item.end) ]
             else:
-                assert False
+                txt = [
+                    text
+                    for text in case_list_iterable(item)
+                ] 
+            txt.append("%s\n" % get_content(C))
+            return txt
 
-            if type(Content) == list: txt.extend(Content)
-            elif len(Content) != 0:   txt.append(Content)
+        def case_integer(item, C):
+            if item is None: return ["default: %s\n" % get_content(C)]
+            return case_str % item
 
-            if      self.__code_generation_switch_cases_add_statement is not None \
-                and self.Match_goto.search(txt[-1]) is None                       \
-                and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
-                txt.append(self.__code_generation_switch_cases_add_statement)
-            txt.append("\n")
+        def case_else(item, C):
+            if item is None: return ["default: %s\n" % get_content(C)]
+            return [ "case %s: %s\n" % (item, get_content(C))]
 
-        txt = [ 0, "switch( %s ) {\n" % Selector ]
+        def content(C):
+            if type(C) == list: return "".join(C)
+            else:               return C
 
-        item, consequence = CaseList[0]
-        for item_ahead, consequence_ahead in CaseList[1:]:
-            if consequence_ahead == consequence: __case(txt, item)
-            else:                                __case(txt, item, consequence)
-            item        = item_ahead
-            consequence = consequence_ahead
+        def content_x(C):
+            return "%s\n%s" % (
+                content(C), 
+                self.__code_generation_switch_cases_add_statement
+            )
 
-        __case(txt, item, consequence)
+        def iterable(CaseList, DefaultConsequence):
+            item, effect = CaseList[0]
+            for item_ahead, effect_ahead in CaseList[1:]:
+                if effect_ahead == effect: 
+                    yield item, ""
+                else:
+                    yield item, effect
+                item   = item_ahead
+                effect = effect_ahead
+            yield item, effect
+            if DefaultConsequence is not None:
+                yield None, DefaultConsequence
 
-        if DefaultConsequence is not None:
-            txt.append("default:\n", DefaultConsequence)
+        get_case = case_interval
+        if      self.__code_generation_switch_cases_add_statement is not None \
+            and self.Match_goto.search(txt[-1]) is None                       \
+            and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
+            get_content = content_x
+        else:
+            get_content = content
 
-        txt.append("\n")
+        txt = [ "switch( %s ) {\n" % Selector ]
+        for item, text in iterable(CaseList, DefaultConsequence):
+            txt.extend(
+                get_case(item, text)
+            )
         txt.append("}\n")
         return txt
 
