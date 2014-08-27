@@ -397,7 +397,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 #    blc_set              = NumberSet(Setup.buffer_limit_code)
 #    first_exit_set       = NumberSet(TransformedCloserSequence[0])
 #    complemtary_core_set = first_exit_set.union(first_exit_set)
-#    core_set             = complemtary_core_set.inverse()
+#    core_set             = complemtary_core_set.get_complement()
 #
 #    #  Buffer Limit Code    --> Reload
 #    #  First Exit Character --> Go to 'Closer Sequence Check'.

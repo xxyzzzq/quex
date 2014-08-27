@@ -198,8 +198,8 @@ class CodecTransformationInfo(list):
             return
 
         # Determine uncovered ranges.
-        self.inv_source_set = self.source_set.inverse() 
-        self.inv_drain_set  = self.drain_set.inverse() 
+        self.inv_source_set = self.source_set.get_complement(Setup.all_character_set()) 
+        self.inv_drain_set  = self.drain_set.get_complement(Setup.all_character_set()) 
 
     def __set_invalid(self):
         list.clear(self)                  

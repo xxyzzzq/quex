@@ -247,7 +247,7 @@ class CountCmdMap(object):
         for character_set, info in self.__map:
             if info.cc_type in ignored: continue
             result.unite_with(character_set)
-        return result.inverse()
+        return result.get_complement(Setup.all_character_set())
 
     def check_grid_values_integer_multiples(self):
         """If there are no spaces and the grid is on a homogeneous scale,

@@ -20,7 +20,9 @@ following components:
     * transition_map: a map that tells what state is to be entered 
                       as a reaction to the current input character.
 
-    * drop_out:       what has to happen if no character triggers.
+There's global 'drop-out' state which has entries from each state. Its entries
+represents what happens if a state's transition mape fails to match any input 
+character.
 
 For administrative purposes, other data such as the 'state_index' is stored
 along with the AnalyzerState object.

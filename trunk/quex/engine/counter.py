@@ -117,7 +117,9 @@ class CountCmdFactory:
         """
         result = [ (x.character_set, x.incidence_id) for x in self.__map ]
         if BeyondIncidenceId is not None:
-            beyond_set = self.character_set.inverse().mask(0, Setup.get_character_value_limit())
+            beyond_set = self.character_set.get_complement(
+                NumberSet.from_range(0, Setup.get_character_value_limit())
+            )
             result.append((beyond_set, BeyondIncidenceId))
         return result
         

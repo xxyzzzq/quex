@@ -29,105 +29,35 @@ _32:
 
     __quex_debug("Init State\n");
 __quex_debug_state(94);
-    if( input < 0xC2 ) {
-        if( input < 0xB ) {
-            switch( input ) {
-                case 0x0: 
-                case 0x1: 
-                case 0x2: 
-                case 0x3: 
-                case 0x4: 
-                case 0x5: 
-                case 0x6: 
-                case 0x7: 
-                case 0x8: goto _17;
-                case 0x9: goto _11;
-                case 0xA: goto _19;
-
-            }
-        } else {
-if( input < 0x30 ) {
-                goto _17;
-
-} else if( input < 0x3A ) {
-                goto _16;
-
-} else if( input < 0x80 ) {
-                goto _17;
+if( input < 0xC2 ) {
+if( input < 0xB ) {
+if     ( input == 0xA )  goto _19;
+else if( input == 0x9 )  goto _11;
+else                     goto _17;
 } else {
-                goto _25;
-
+if     ( input < 0x30 )  goto _17;
+else if( input < 0x3A )  goto _16;
+else if( input < 0x80 )  goto _17;
+else                     goto _25;
 }
-        
-}
-    } else {
-        if( input < 0xF1 ) {
-            switch( input ) {
-                case 0xC2: 
-                case 0xC3: 
-                case 0xC4: 
-                case 0xC5: 
-                case 0xC6: 
-                case 0xC7: 
-                case 0xC8: 
-                case 0xC9: 
-                case 0xCA: 
-                case 0xCB: 
-                case 0xCC: 
-                case 0xCD: 
-                case 0xCE: 
-                case 0xCF: 
-                case 0xD0: 
-                case 0xD1: 
-                case 0xD2: 
-                case 0xD3: 
-                case 0xD4: 
-                case 0xD5: 
-                case 0xD6: 
-                case 0xD7: 
-                case 0xD8: 
-                case 0xD9: 
-                case 0xDA: 
-                case 0xDB: 
-                case 0xDC: 
-                case 0xDD: 
-                case 0xDE: 
-                case 0xDF: goto _4;
-                case 0xE0: goto _14;
-                case 0xE1: 
-                case 0xE2: 
-                case 0xE3: 
-                case 0xE4: 
-                case 0xE5: 
-                case 0xE6: 
-                case 0xE7: 
-                case 0xE8: 
-                case 0xE9: 
-                case 0xEA: 
-                case 0xEB: 
-                case 0xEC: 
-                case 0xED: 
-                case 0xEE: 
-                case 0xEF: goto _5;
-                case 0xF0: goto _18;
-
-            }
-        } else {
-if( input == 0xF1 ) {
-                goto _13;
-
-} else if( input < 0xF4 ) {
-                goto _15;
-
-} else if( input < 0xF8 ) {
-                goto _12;
 } else {
-                goto _25;
-
+if( input < 0xF1 ) {
+if( input < 0xE1 ) {
+if( input == 0xE0 )  goto _14;
+else                 goto _4;
+} else {
+if( input == 0xF0 )  goto _18;
+else                 goto _5;
 }
-        
+} else {
+if( input < 0xF4 ) {
+if( input == 0xF1 )  goto _13;
+else                 goto _15;
+} else {
+if( input < 0xF8 )  goto _12;
+else                goto _25;
 }
-    
+}
 }
 
 __quex_assert_no_passage();
@@ -176,15 +106,9 @@ _2: /* (128 from 123) */
 _41:
 
     __quex_debug_state(128);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _3;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _3;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -201,15 +125,9 @@ _43:
 _42:
 
     __quex_debug_state(129);
-if( input >= 0xC0 ) {
-        goto _28;
-
-} else if( input >= 0x80 ) {
-        goto _17;
-} else {
-        goto _28;
-
-}
+if     ( input >= 0xC0 )  goto _28;
+else if( input >= 0x80 )  goto _17;
+else                      goto _28;
 
 __quex_assert_no_passage();
 
@@ -226,15 +144,9 @@ _45:
 _44:
 
     __quex_debug_state(131);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _17;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _17;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -251,15 +163,9 @@ _47:
 _46:
 
     __quex_debug_state(132);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _4;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _4;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -273,18 +179,10 @@ _6: /* (135 from 97) */
 _48:
 
     __quex_debug_state(135);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input == 0xBF ) {
-        goto _7;
-
-} else if( input >= 0x80 ) {
-        goto _22;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input == 0xBF )  goto _7;
+else if( input >= 0x80 )  goto _22;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -298,18 +196,10 @@ _7: /* (136 from 135) */
 _49:
 
     __quex_debug_state(136);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input == 0xBF ) {
-        goto _8;
-
-} else if( input >= 0x80 ) {
-        goto _23;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input == 0xBF )  goto _8;
+else if( input >= 0x80 )  goto _23;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -323,18 +213,10 @@ _8: /* (137 from 136) */
 _50:
 
     __quex_debug_state(137);
-if( input >= 0xC0 ) {
-        goto _28;
-
-} else if( input == 0xBF ) {
-        goto _9;
-
-} else if( input >= 0x80 ) {
-        goto _3;
-} else {
-        goto _28;
-
-}
+if     ( input >= 0xC0 )  goto _28;
+else if( input == 0xBF )  goto _9;
+else if( input >= 0x80 )  goto _3;
+else                      goto _28;
 
 __quex_assert_no_passage();
 
@@ -348,15 +230,9 @@ _9: /* (138 from 137) */
 _51:
 
     __quex_debug_state(138);
-if( input >= 0xBF ) {
-        goto _28;
-
-} else if( input >= 0x80 ) {
-        goto _17;
-} else {
-        goto _28;
-
-}
+if     ( input >= 0xBF )  goto _28;
+else if( input >= 0x80 )  goto _17;
+else                      goto _28;
 
 __quex_assert_no_passage();
 
@@ -372,6 +248,9 @@ _52:
     __quex_debug_state(95);
 goto _26;
 
+__quex_assert_no_passage();
+
+
     __quex_assert_no_passage();
 _12: /* (96 from 112) (96 from 94) */
     goto _54;
@@ -384,15 +263,9 @@ _54:
 _53:
 
     __quex_debug_state(96);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _5;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _5;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -406,18 +279,10 @@ _13: /* (97 from 94) */
 _55:
 
     __quex_debug_state(97);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input == 0xBF ) {
-        goto _6;
-
-} else if( input >= 0x80 ) {
-        goto _20;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input == 0xBF )  goto _6;
+else if( input >= 0x80 )  goto _20;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -431,15 +296,9 @@ _14: /* (98 from 94) */
 _56:
 
     __quex_debug_state(98);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0xA0 ) {
-        goto _4;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0xA0 )  goto _4;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -456,15 +315,9 @@ _58:
 _57:
 
     __quex_debug_state(100);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _24;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _24;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -480,6 +333,9 @@ _59:
     __quex_debug_state(103);
 goto _27;
 
+__quex_assert_no_passage();
+
+
     __quex_assert_no_passage();
 _17: /* (105 from 129) (105 from 138) (105 from 131) (105 from 94) */
     goto _61;
@@ -494,6 +350,9 @@ _60:
     __quex_debug_state(105);
 goto _28;
 
+__quex_assert_no_passage();
+
+
     __quex_assert_no_passage();
 _18: /* (106 from 94) */
     ++(me->buffer._input_p);
@@ -503,20 +362,13 @@ _18: /* (106 from 94) */
 _62:
 
     __quex_debug_state(106);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x90 ) {
-        goto _20;
-
-} else if( input >= 0x88 ) {
-        goto _15;
-
-} else if( input >= 0x84 ) {
-        goto _21;
+if( input < 0x88 ) {
+if( input >= 0x84 )  goto _21;
+else                 goto _25;
 } else {
-        goto _25;
-
+if     ( input < 0x90 )  goto _15;
+else if( input < 0xC0 )  goto _20;
+else                     goto _25;
 }
 
 __quex_assert_no_passage();
@@ -533,6 +385,9 @@ _63:
     __quex_debug_state(108);
 goto _29;
 
+__quex_assert_no_passage();
+
+
     __quex_assert_no_passage();
 _20: /* (109 from 97) (109 from 106) */
     goto _65;
@@ -545,15 +400,9 @@ _65:
 _64:
 
     __quex_debug_state(109);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _22;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _22;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -567,15 +416,9 @@ _21: /* (112 from 106) */
 _66:
 
     __quex_debug_state(112);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _12;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _12;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -592,15 +435,9 @@ _68:
 _67:
 
     __quex_debug_state(115);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _23;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _23;
+else                      goto _25;
 
 __quex_assert_no_passage();
 
@@ -617,15 +454,9 @@ _70:
 _69:
 
     __quex_debug_state(116);
-if( input >= 0xC0 ) {
-        goto _28;
-
-} else if( input >= 0x80 ) {
-        goto _3;
-} else {
-        goto _28;
-
-}
+if     ( input >= 0xC0 )  goto _28;
+else if( input >= 0x80 )  goto _3;
+else                      goto _28;
 
 __quex_assert_no_passage();
 
@@ -639,15 +470,9 @@ _24: /* (123 from 100) */
 _71:
 
     __quex_debug_state(123);
-if( input >= 0xC0 ) {
-        goto _25;
-
-} else if( input >= 0x80 ) {
-        goto _2;
-} else {
-        goto _25;
-
-}
+if     ( input >= 0xC0 )  goto _25;
+else if( input >= 0x80 )  goto _2;
+else                      goto _25;
 
 __quex_assert_no_passage();
 

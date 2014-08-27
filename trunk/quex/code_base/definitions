@@ -93,12 +93,12 @@
 #   define QUEX_GOTO_LABEL_VOID                       (QUEX_TYPE_GOTO_LABEL)(0x0)
 #   define QUEX_LABEL(StateIndex)                     &&_##StateIndex 
 
-#   define QUEX_GOTO_TERMINAL(LABEL)                  goto *LABEL;
+#   define QUEX_GOTO_TERMINAL(LABEL)                  do { goto *LABEL; } while(0)
 
     /* If no computed gotos are used, then there are two state routers, one for forward
      * state routing and another for backward state routing. Thus, two macros for the same
      * thing are required.                                                                 */
-#   define QUEX_GOTO_STATE(LABEL)                     goto *LABEL;
+#   define QUEX_GOTO_STATE(LABEL)                     do { goto *LABEL; } while(0)
 
 
 #else
@@ -107,23 +107,29 @@
 #   define QUEX_GOTO_LABEL_VOID                      (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_LABEL(StateIndex)                    StateIndex 
 
-#   define QUEX_GOTO_TERMINAL(LABEL)                 last_acceptance = LABEL; \
-                                                     goto QUEX_TERMINAL_ROUTER;
+#   define QUEX_GOTO_TERMINAL(LABEL)      \
+           do {                           \
+               last_acceptance = LABEL;   \
+               goto QUEX_TERMINAL_ROUTER; \
+           } while(0)
 
-#   define QUEX_GOTO_STATE(LABEL)                    target_state_index = LABEL; \
-                                                     goto QUEX_LABEL_STATE_ROUTER;
+#   define QUEX_GOTO_STATE(LABEL)           \
+           do {                             \
+              target_state_index = LABEL;   \
+              goto QUEX_LABEL_STATE_ROUTER; \
+           } while(0)
 #endif
 
 /* DELETE QUEX_GOTO_RELOAD' when safe */
-#define    QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \
-              do { \
-              __QUEX_STD_fprintf(stderr, "%s:%i:\tUSE of QUEX_GOTO_RELOAD -- SUPPOSED TO BE SUPERFLUOUS", __FILE__, __LINE__); \
-              target_state_index      = QUEX_LABEL(ON_SUCCESS); \
-              target_state_else_index = QUEX_LABEL(ON_FAIL);    \
-              goto RELOAD_LABEL; } while (0)
+#define QUEX_GOTO_RELOAD(RELOAD_LABEL, ON_SUCCESS, ON_FAIL)  \
+           do { \
+           __QUEX_STD_fprintf(stderr, "%s:%i:\tUSE of QUEX_GOTO_RELOAD -- SUPPOSED TO BE SUPERFLUOUS", __FILE__, __LINE__); \
+           target_state_index      = QUEX_LABEL(ON_SUCCESS); \
+           target_state_else_index = QUEX_LABEL(ON_FAIL);    \
+           goto RELOAD_LABEL; } while (0)
 
-#   define __QUEX_PRINT_SOURCE_POSITION()                             \
-           __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
+#define __QUEX_PRINT_SOURCE_POSITION()                             \
+        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_ERROR_EXIT(Msg) \

@@ -218,7 +218,7 @@ class Pattern(object):
         c2, self.__post_context_sm               = transformation.do_state_machine(self.__post_context_sm)
         self.set_incidence_id(backup_incidence_id)
 
-        # Only if all transformation have been complete, then the transformation
+        # Only if all transformations have been complete, then the transformation
         # can be considered complete.
         return c0 and c1 and c2
 

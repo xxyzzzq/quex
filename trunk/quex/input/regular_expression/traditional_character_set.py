@@ -95,7 +95,7 @@ def do(sh):
         if char_code is None: break
 
     if tracker.negation_f: 
-        return tracker.match_set.inverse()
+        return tracker.match_set.get_complement(Setup.all_character_set())
     else:                  
         return tracker.match_set
 

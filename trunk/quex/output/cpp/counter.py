@@ -94,11 +94,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
 
     door_id_failure = DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE)
     txt.append(
-        IfDoorIdReferencedCode(door_id_failure,
-        [
-            "%s\n" % Lng.LABEL(door_id_failure),
-            "    %s\n" % Lng.GOTO(DoorIdBeyond),
-        ])
+        "%s /* TERMINAL: FAILURE */\n%s\n" % (Lng.LABEL(door_id_failure), Lng.GOTO(DoorIdBeyond))
     )
     txt.append(
          "%s:\n" % dial_db.get_label_by_door_id(DoorIdReturn) \
@@ -116,6 +112,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
        + "#    endif\n"
        + "    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */\n" \
        + "    %s\n" % Lng.GOTO(DoorIdBeyond) \
+       + "    %s\n" % Lng.GOTO(door_id_failure) \
        + "    (void)target_state_index;\n"
        + "    (void)target_state_else_index;\n"
        + "}\n" \
