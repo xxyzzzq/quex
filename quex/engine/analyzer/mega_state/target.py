@@ -14,8 +14,8 @@ class TargetByStateKey(object):
     """________________________________________________________________________
     
     Where an AnalyzerState's transition map associates a character interval
-    with a target state index, a MegaState's transition map associates a
-    character interval with a TargetByStateKey.
+    with a DoorID, a MegaState's transition map associates a character interval 
+    with a TargetByStateKey.
 
     A TargetByStateKey determines the target state, or target state's entry
     door, by means of a state key. It is very well possible that it is

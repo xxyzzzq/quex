@@ -4,7 +4,8 @@ from   quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.state.entry_action    import TransitionID
 from   quex.blackboard                            import E_StateIndices, \
-                                                         E_IncidenceIDs
+                                                         E_IncidenceIDs, \
+                                                         setup as Setup
 
 from   copy        import copy
 from   itertools   import izip
@@ -33,8 +34,8 @@ class TransitionMap(list):
         """
         result = cls()
         if (TM is not None) and (not TM.is_empty()): 
-
             for target, character_set in TM.get_map().iteritems():
+                # print "#tc", target, character_set.get_string("hex")
                 assert not character_set.is_empty()
                 result.extend(
                     (interval.clone(), target) 
@@ -43,7 +44,10 @@ class TransitionMap(list):
             assert len(result) != 0 # Empty target maps have been handled before
             result.sort()
 
-        result.fill_gaps(E_StateIndices.DROP_OUT)
+        result.fill_gaps(E_StateIndices.DROP_OUT, 
+                         0, Setup.get_buffer_element_value_limit())
+        result.assert_boundary(0, Setup.get_buffer_element_value_limit()) 
+        result.assert_continuity()
         return result
 
     @classmethod
@@ -74,12 +78,13 @@ class TransitionMap(list):
 
         NOTE: The name is derived from python's 'itertools.izip'.
         """
+        begin = 0
+        end   = Setup.get_buffer_element_value_limit()
+
         assert len(TransitionMapA) != 0 
-        assert TransitionMapA[0][0].begin == - sys.maxint
-        assert TransitionMapA[-1][0].end  == sys.maxint
+        TransitionMapA.assert_boundary(begin, end)
         assert len(TransitionMapB) != 0 
-        assert TransitionMapB[0][0].begin == - sys.maxint
-        assert TransitionMapB[-1][0].end  == sys.maxint
+        TransitionMapB.assert_boundary(begin, end)
 
         LenA             = len(TransitionMapA)
         LenB             = len(TransitionMapB)
@@ -87,7 +92,7 @@ class TransitionMap(list):
         k                = 0 # iterator over TransitionMapB
         i_itvl, i_target = TransitionMapA[i]
         k_itvl, k_target = TransitionMapB[k]
-        prev_end         = - sys.maxint
+        prev_end         = begin 
         # Intervals in trigger map are always adjacent, so the '.begin' member is
         # not accessed.
         while not (i == LenA - 1 and k == LenB - 1):
@@ -395,22 +400,26 @@ class TransitionMap(list):
         self.sort()
         self.combine_adjacents()
 
-    def fill_gaps(self, Target):
+    def fill_gaps(self, Target, Begin, End):
         """Fill gaps in the transition map. 
+        Begin -- begin of range of intervals
+        End   -- end of range of intervals.
         """
-        size = len(self)
-
+        size  = len(self)
         if size == 0:
-            self.append((Interval(-sys.maxint, sys.maxint), Target))
+            self.append((Interval(Begin, End), Target))
             return
 
+        assert self[0][0].begin >= Begin, "FAILED: begin %s >= %s" % (self[0][0].begin, Begin)
+        assert self[-1][0].end  <= End,   "FAILED: end %s <= %s" % (self[-1][0].end, End)
+
         # If outer borders are lacking, then add them
-        if self[0][0].begin != -sys.maxint: 
-            self.insert(0, (Interval(-sys.maxint, self[0][0].begin), Target))
+        if self[0][0].begin != Begin: 
+            self.insert(0, (Interval(Begin, self[0][0].begin), Target))
             size += 1
 
-        if self[-1][0].end != sys.maxint: 
-            self.append((Interval(self[-1][0].end, sys.maxint), Target))
+        if self[-1][0].end != End: 
+            self.append((Interval(self[-1][0].end, End), Target))
             size += 1
 
         # Fill gaps between the intervals
@@ -543,8 +552,8 @@ class TransitionMap(list):
             return
 
         if TotalRangeF: 
-            assert self[0][0].begin == -sys.maxint
-            assert self[-1][0].end  == sys.maxint
+            assert self[0][0].begin == 0
+            assert self[-1][0].end  == Setup.get_buffer_element_value_limit()
 
         iterable    = self.__iter__()
         info        = iterable.next()
@@ -568,6 +577,13 @@ class TransitionMap(list):
 
         # If we reach here, then everything is OK.
         return
+
+    def assert_boundary(self, Begin, End):
+        assert len(self) != 0
+        assert self[0][0].begin == Begin, \
+               "begin: %s != %s" % (self[0][0].begin, Begin)
+        assert self[-1][0].end  == End, \
+               "end:   %s != %s" % (self[-1][0].end, End)
 
     def replace_target(self, Original, Replacement):
         for i, info in enumerate(self):

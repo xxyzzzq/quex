@@ -196,14 +196,14 @@ class Interval(object):
         verdict = transformed_n == (self.end - self.begin)
         return verdict, result
 
-    def inverse(self):
+    def get_complement(self, Begin, End):
         if self.begin == self.end:
             # empty interval => whole range
-            return [ Interval(-sys.maxint, sys.maxint) ]
+            return [ Interval(Begin, End) ]
         else:
             result = []
-            if self.begin != -sys.maxint: result.append(Interval(-sys.maxint,self.begin))
-            if self.end   != sys.maxint:  result.append(Interval(self.end, sys.maxint))
+            if self.begin != Begin: result.append(Interval(Begin, self.begin))
+            if self.end   != End:   result.append(Interval(self.end, End))
             return result
 
     def size(self):
@@ -339,6 +339,12 @@ class NumberSet(object):
         else:
             # assert: arg_type in [Interval, NumberSet, int, list] or Arg is None
             assert False, "#Arg: '%s'" % Arg 
+
+    @staticmethod
+    def from_range(Begin, End):
+        result = NumberSet()
+        result.add_interval(Interval(Begin, End))
+        return result
 
     def __clone_intervals(self):
         return [ Interval(x.begin, x.end) for x in self.__intervals ]
@@ -855,10 +861,11 @@ class NumberSet(object):
         clone0.subtract(clone1)
         return clone0
 
-    def invert(self):
+    @typed(UniversalSet=NumberSet)
+    def complement(self, UniversalSet):
         """Invert this number set."""
         if len(self.__intervals) == 0:
-            self.__intervals = [ Interval(-sys.maxint, sys.maxint) ]
+            self.__intervals = [ Interval(Begin, End) ]
             return
 
         first = self.__intervals[0]
@@ -883,10 +890,12 @@ class NumberSet(object):
             last.begin = last.end
             last.end   = sys.maxint
 
-    def inverse(self):
+        self.intersect_with(UniversalSet)
+
+    def get_complement(self, UniversalSet):
         """Intersection of inverse of all intervals."""
         result = self.clone()
-        result.invert()
+        result.complement(UniversalSet)
         return result
         
     @typed(TrafoInfo=list)

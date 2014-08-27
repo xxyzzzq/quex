@@ -21,9 +21,7 @@ def do(TheAnalyzer):
 
     # (*) Second: The drop-out catcher, since it is referenced the most.
     #     (Is implemented entirely by 'entry')
-    result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
-    txt.extend(result)
-    txt.append("\n%s\n" % Lng.UNREACHABLE)
+    code_drop_out_catcher(txt, TheAnalyzer)
 
     # (*) Code the Mega States (implementing multiple states in one)
     for state in TheAnalyzer.mega_state_list:
@@ -40,6 +38,11 @@ def do(TheAnalyzer):
 
     Lng.unregister_analyzer()
     return txt
+
+def code_drop_out_catcher(txt, TheAnalyzer):
+    result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
+    txt.extend(result)
+    txt.append("\n%s\n" % Lng.UNREACHABLE)
 
 def get_frequency_db(StateDB, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more

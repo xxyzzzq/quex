@@ -97,36 +97,6 @@ def do_sequence(Sequence, TrafoInfo=None, fh=-1):
         result.extend(do_character(x, TrafoInfo, fh))
     return result
 
-def do_transition_map(TM, TrafoInfo=None):
-    """RETURNS: verdict, tm
-
-       verdict == True, if the transformation has been made without any 
-       complaints or missing characters. It is 'False' if not. 'tm' is 
-       the resulting transition map.
-    """
-    if TrafoInfo is None:
-        TrafoInfo = Setup.buffer_codec_transformation_info
-    if TrafoInfo is None:
-        return True, TM
-
-    assert not isinstance(TrafoInfo, (str, unicode)) or TrafoInfo.find("-state-split") == -1
-
-    total_verdict = True
-    result        = TransitionMap()
-    for interval, target in TM:
-        verdict, transformed = interval.transform(TrafoInfo)
-        if not verdict: total_verdict = False
-        result.extend((x, target) for x in transformed)
-
-    result.clean_up()
-    # DO NOT:  "result.fill_gaps([])!"
-    # BECAUSE: This adds an action which is not in the original transition map!
-    # EXAMPLE: A loop every action contains a '++p' and the loop ends on 
-    #          'p == End'. Then an additional empty action [] would mean that 
-    #          for some cases '++p' would not occur and the loop will be endless! 
-
-    return total_verdict, result    
-
 def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))
 

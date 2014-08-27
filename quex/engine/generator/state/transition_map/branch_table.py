@@ -39,7 +39,7 @@ class BranchTable(object):
             if target != self.moat
         ]
 
-        return Lng.SELECTION("input", case_code_list,
-                             DefaultConsequence="".join(transition.do(None, self.moat)))
+        return Lng.BRANCH_TABLE_ON_INTERVALS("input", case_code_list,
+                   DefaultConsequence="".join(transition.do(None, self.moat)))
 
 

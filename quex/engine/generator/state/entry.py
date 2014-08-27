@@ -1,7 +1,8 @@
 from   quex.engine.analyzer.door_id_address_label        import IfDoorIdReferencedLabel, \
+                                                                IfDoorIdReferencedCode, \
                                                                 DoorID
 from   quex.engine.analyzer.commands.tree                import CommandTree
-from   quex.blackboard import Lng
+from   quex.blackboard import Lng, E_Cmd
 
 
 def do(TheState, TheAnalyzer, UnreachablePrefixF=True, LabelF=True):
@@ -39,7 +40,9 @@ def do_state_machine_entry(cmd_tree, TheState, TheAnalyzer):
         code_action(txt, node, TheState.entry, GotoParentF=False)
         done_door_id_set.add(node.door_id)
         node = node.parent
-    txt.append(IfDoorIdReferencedLabel(DoorID.transition_block(TheState.index)))
+    txt.append(
+        IfDoorIdReferencedLabel(DoorID.transition_block(TheState.index))
+    )
     return txt, done_door_id_set
 
 def do_post(cmd_tree, TheState, DoneDoorIdSet):
@@ -63,12 +66,22 @@ def do_node(txt, cmd_tree, ActionDb, Node, LastChildF=False, DoneDoorIdSet=None)
         # assert none_is_None(txt)
 
 def code_action(txt, Node, ActionDb, GotoParentF):
-    txt.append(IfDoorIdReferencedLabel(Node.door_id))
-    comment_door(txt, Node, ActionDb)
-    txt.extend(Lng.COMMAND_LIST(Node.command_list))
-    if Node.parent is not None and GotoParentF: 
-        txt.append("    %s\n" % Lng.GOTO(Node.parent.door_id))
-    txt.append("\n")
+    code = [
+        "%s\n" % Lng.LABEL(Node.door_id)
+    ]
+    comment_door(code, Node, ActionDb)
+    code.extend(
+        Lng.COMMAND_LIST(Node.command_list)
+    )
+    if     Node.parent is not None \
+       and GotoParentF \
+       and ((not Node.command_list) \
+            or Node.command_list[-1].id != E_Cmd.GotoDoorId): 
+        code.append("    %s\n" % Lng.GOTO(Node.parent.door_id))
+
+    txt.append(
+        IfDoorIdReferencedCode(Node.door_id, code)
+    )
 
 def comment_door(txt, Node, ActionDb):
     

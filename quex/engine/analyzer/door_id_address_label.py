@@ -217,7 +217,7 @@ class DialDB(object):
         address_label_pair   = AddressLabelPair(self.__address_i, "_%i" % self.__address_i)
 
         if False: # True/False activates debug messages
-            self.__debug_address_generation(DoorId, self.__address_i, 25)
+            self.__debug_address_generation(DoorId, self.__address_i, 19)
 
         self.__d2la[DoorId] = address_label_pair
 
@@ -298,7 +298,7 @@ class DialDB(object):
     def mark_address_as_gotoed(self, Address):
         self.__gotoed_address_set.add(Address)
         if False: # True/False switches debug output
-             self.__debug_address_usage(Address, 119)
+             self.__debug_address_usage(Address, 19)
 
     def mark_label_as_gotoed(self, Label):
         self.mark_address_as_gotoed(self.get_address_by_label(Label))

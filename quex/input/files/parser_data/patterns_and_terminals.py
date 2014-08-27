@@ -148,7 +148,9 @@ def finalize_terminal_db(SortedPPT_List, IncidenceDb, ExtraTerminalList, termina
     return result
 
 def finalize_pattern_list(SortedPPT_List, CounterDb):
-    pattern_list = [ pattern for priority, pattern, terminal in SortedPPT_List ]
+    pattern_list = [ 
+        pattern for priority, pattern, terminal in SortedPPT_List 
+    ]
 
     # (*) Transform anything into the buffer's codec
     #     Skippers: What is relevant to enter the skippers is transformed.
@@ -161,7 +163,6 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     # (*) Cut the signalling characters from any pattern or state machine
     for pattern in pattern_list:
         pattern.cut_character_list(blackboard.signal_character_list(Setup))
-
 
     # (*) Pre-contexts and BIPD can only be mounted, after the transformation.
     for pattern in pattern_list:

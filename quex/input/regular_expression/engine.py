@@ -478,10 +478,7 @@ def create_ALL_BUT_NEWLINE_state_machine():
     result = StateMachine()
     # NOTE: Buffer control characters are supposed to be filtered out by the code
     #       generator.
-    trigger_set = NumberSet(Interval(ord("\n")).inverse()) 
-
-    if Setup.get_character_value_limit() != sys.maxint:
-        trigger_set.intersect_with(Interval(0, Setup.get_character_value_limit()))
+    trigger_set = NumberSet(Interval(ord("\n")).get_complement(Setup.all_character_set())) 
 
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     return result
@@ -800,7 +797,7 @@ def snap_set_term(stream, PatternDict):
             if L > 1:
                 for character_set in set_list[1:]:
                     result.unite_with(character_set)
-            return __debug_exit(result.inverse(), stream)
+            return __debug_exit(result.get_complement(Setup.all_character_set()), stream)
 
         if L < 2:
             raise RegularExpressionException("Regular Expression: A %s operation needs at least\n" % word + \

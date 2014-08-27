@@ -286,7 +286,9 @@ class Lng_Cpp(dict):
         }[Register]
 
     def COMMAND_LIST(self, CmdList):
-        return [self.COMMAND(cmd) for cmd in CmdList]
+        return [ 
+            "%s\n" % self.COMMAND(cmd) for cmd in CmdList
+        ]
 
     def COMMAND(self, Cmd):
         if Cmd.id == E_Cmd.Accepter:
@@ -310,7 +312,7 @@ class Lng_Cpp(dict):
                  self.position_and_goto(self.__analyzer.engine_type, element))
                 for element in Cmd.content
             ]
-            txt = self.SELECTION("last_acceptance", case_list)
+            txt = self.BRANCH_TABLE_ON_STRING("last_acceptance", case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
@@ -325,7 +327,7 @@ class Lng_Cpp(dict):
             else:
                 assert False
 
-            txt = self.SELECTION(key_txt, case_list)
+            txt = self.BRANCH_TABLE(key_txt, case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
@@ -456,8 +458,11 @@ class Lng_Cpp(dict):
         text = [
             cpp._terminal_state_prolog
         ]
+        terminal_door_id_list = []
         for terminal in sorted(TerminalStateList, key=lambda x: x.incidence_id()):
             door_id = DoorID.incidence(terminal.incidence_id())
+            terminal_door_id_list.append(door_id)
+
             t_txt = ["%s __quex_debug(\"* TERMINAL %s\\n\");\n" % \
                      (self.LABEL(door_id), terminal.name())]
             code  = terminal.code(TheAnalyzer)
@@ -465,7 +470,16 @@ class Lng_Cpp(dict):
             t_txt.extend(code)
             t_txt.append("\n")
 
-            text.append(IfDoorIdReferencedCode(door_id, t_txt))
+            text.extend(t_txt)
+        #text.append(
+        #    "if(0) {\n"
+        #    "    /* Avoid unreferenced labels. */\n"
+        #)
+        #text.extend(
+        #    "    %s\n" % self.GOTO(door_id)
+        #    for door_id in terminal_door_id_list
+        #)
+        #text.append("}\n")
         return text
 
     def ANALYZER_FUNCTION(self, ModeName, Setup, VariableDefs, 
@@ -792,12 +806,31 @@ class Lng_Cpp(dict):
             for cause, effect in sequence
         ]
 
-    def SELECTION(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
-
-        case_str = {
+    def CASE_STR(self, Format):
+        return {
             "hex": "case 0x%X: ", 
             "dec": "case %i: "
-        }[CaseFormat]
+        }[Format]
+
+    def BRANCH_TABLE(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
+        case_str = self.CASE_STR(CaseFormat)
+
+        def case_integer(item, C, get_content):
+            if item is None: return ["default: %s\n" % get_content(C)]
+            return [ "%s %s\n" % (case_str % item, get_content(C)) ]
+
+        return self._branch_table_core(Selector, CaseList, case_integer, DefaultConsequence)
+
+    def BRANCH_TABLE_ON_STRING(self, Selector, CaseList):
+        def case_string(item, C, get_content):
+            if item is None: return ["default: %s\n" % get_content(C)]
+            return [ "case %s: %s\n" % (item, get_content(C)) ]
+
+        return self._branch_table_core(Selector, CaseList, case_string)
+
+
+    def BRANCH_TABLE_ON_INTERVALS(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
+        case_str = self.CASE_STR(CaseFormat)
 
         def case_list(From, To):
             return "".join("%s" % (case_str % i) for i in xrange(From, To))
@@ -814,7 +847,7 @@ class Lng_Cpp(dict):
                 yield "%s\n" % case_list(begin, begin + 8)
             yield "%s" % case_list(last_border, item.end)
 
-        def case_interval(item, C):
+        def case_interval(item, C, get_content):
             if item is None: return ["default: %s\n" % get_content(C)]
 
             size = item.end - item.begin
@@ -830,14 +863,9 @@ class Lng_Cpp(dict):
             txt.append("%s\n" % get_content(C))
             return txt
 
-        def case_integer(item, C):
-            if item is None: return ["default: %s\n" % get_content(C)]
-            return case_str % item
+        return self._branch_table_core(Selector, CaseList, case_interval, DefaultConsequence)
 
-        def case_else(item, C):
-            if item is None: return ["default: %s\n" % get_content(C)]
-            return [ "case %s: %s\n" % (item, get_content(C))]
-
+    def _branch_table_core(self, Selector, CaseList, get_case, DefaultConsequence=None):
         def content(C):
             if type(C) == list: return "".join(C)
             else:               return C
@@ -861,7 +889,6 @@ class Lng_Cpp(dict):
             if DefaultConsequence is not None:
                 yield None, DefaultConsequence
 
-        get_case = case_interval
         if      self.__code_generation_switch_cases_add_statement is not None \
             and self.Match_goto.search(txt[-1]) is None                       \
             and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
@@ -872,7 +899,7 @@ class Lng_Cpp(dict):
         txt = [ "switch( %s ) {\n" % Selector ]
         for item, text in iterable(CaseList, DefaultConsequence):
             txt.extend(
-                get_case(item, text)
+                get_case(item, text, get_content)
             )
         txt.append("}\n")
         return txt

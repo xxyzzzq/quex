@@ -3,13 +3,23 @@ from   quex.engine.analyzer.mega_state.target       import TargetByStateKey
 from   quex.engine.generator.languages.variable_db  import variable_db
 from   quex.engine.analyzer.door_id_address_label   import dial_db, DoorID 
 from   quex.engine.tools                            import all_isinstance
-from   quex.blackboard import Lng
+from   quex.blackboard import Lng, setup as Setup
 
 def relate_to_TransitionCode(tm):
     assert tm is not None
     tm.assert_continuity()
     tm.assert_adjacency()
-    return TransitionMap.from_iterable(tm, TransitionCodeFactory.do)
+    tm.assert_boundary(0, Setup.get_buffer_element_value_limit()) 
+
+    def make_str(X):
+        txt = X.code()
+        if isinstance(X, (str, unicode)): return txt
+        else:                             return "".join(txt)
+
+    return TransitionMap.from_iterable(
+        (interval, make_str(x))
+        for interval, x in TransitionMap.from_iterable(tm, TransitionCodeFactory.do)
+    )
 
 def MegaState_relate_to_transition_code(TheState, TheAnalyzer, StateKeyStr):
     TransitionCodeFactory.init_MegaState_handling(TheState, TheAnalyzer, StateKeyStr)
@@ -44,7 +54,10 @@ class TransitionCodeFactory:
                 return TransitionCodeByDoorId(Target.uniform_door_id)
 
             assert Target.scheme_id is not None
-            variable_name = require_scheme_variable(Target.scheme_id, Target.iterable_door_id_scheme(), cls.state, cls.state_db)
+            variable_name = require_scheme_variable(Target.scheme_id,
+                                                    Target.iterable_door_id_scheme(), 
+                                                    cls.state, 
+                                                    cls.state_db)
             return TransitionCode(Lng.GOTO_BY_VARIABLE("%s[%s]" % (variable_name, cls.state_key_str)))
         else:
             assert False

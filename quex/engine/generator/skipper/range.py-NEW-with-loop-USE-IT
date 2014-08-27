@@ -148,7 +148,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
 @typed(ClosingSequence=[int])
 def get_skipper(ClosingSequence, ClosingCountInfo, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter):
     exit_character = ClosingSequence[0]
-    character_set  = NumberSet(exit_character).inverse()
+    character_set  = NumberSet(exit_character).get_complement()
 
     result,         \
     door_id_beyond = loop.do(counter_db.get_factory(character_set, Lng.INPUT_P()), 
