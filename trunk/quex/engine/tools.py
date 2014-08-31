@@ -1,5 +1,6 @@
 from quex.engine.misc.enum  import Enum
 from quex.DEFINITIONS       import QUEX_PATH
+from quex.engine.tools      import flatten_list_of_lists
 
 from   itertools   import izip, islice
 from   collections import deque
@@ -63,6 +64,22 @@ def concatinate(one_list, other_list):
     """
     if other_list is not None: return one_list + other_list
     else:                      return one_list
+
+def flatten_list_of_lists(ListOfListsIterable):
+    """The very fastest way to flatten a list of lists of objects into a list
+    of objects.
+
+    EXAMPLE: input:   [1, 2], [3, 4], [5, 6]
+             output:  [1, 2, 3, 4, 5, 6]
+
+    RETURNS: List of objects.
+    """
+    return list(chain.from_iterable(ListOfListsIterable))
+
+def flatten_it_list_of_lists(ListOfListsIterable):
+    """Same as 'flatten_list_of_lists' only that an iterable is returned.
+    """
+    return chain.from_iterable(ListOfListsIterable)
 
 class UniformObject(object):
     __slots__ = ("_content", "_equal")

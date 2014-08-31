@@ -18,7 +18,8 @@
 # import quex.engine.generator.languages.core as languages
 import quex.engine.utf8 as utf8
 from   quex.engine.tools import r_enumerate, \
-                                typed
+                                typed, \
+                                flatten_list_of_lists
 
 import sys
 from   copy      import copy
@@ -861,9 +862,10 @@ class NumberSet(object):
         clone0.subtract(clone1)
         return clone0
 
-    @typed(UniversalSet=NumberSet)
     def complement(self, UniversalSet):
-        """Invert this number set."""
+        """Transforms self into NumberSet containing all values which are in 
+        UniversalSet but not in self.
+        """
         if len(self.__intervals) == 0:
             self.__intervals = [ Interval(Begin, End) ]
             return
@@ -893,7 +895,9 @@ class NumberSet(object):
         self.intersect_with(UniversalSet)
 
     def get_complement(self, UniversalSet):
-        """Intersection of inverse of all intervals."""
+        """RETURNS: NumberSet containing all values X which are in UniversalSet
+        but not in self.
+        """
         result = self.clone()
         result.complement(UniversalSet)
         return result
@@ -975,10 +979,10 @@ class NumberSet(object):
         """RETURNS: -- List of all numbers which are contained in the number set. 
                     -- None, if one border is 'sys.maxint'. The list would be too big.
         """
-        result = []
-        for interval in self.__intervals:
-            result.extend(xrange(interval.begin, interval.end))
-        return result
+        result = flatten_list_of_lists(
+            xrange(interval.begin, interval.end)
+            for interval in self.__intervals
+        )
 
     def get_the_only_element(self):
         if   len(self.__intervals) != 1: return None

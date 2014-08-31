@@ -84,6 +84,7 @@ _______________________________________________________________________________
 """
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 import quex.engine.analyzer.commands.shared_tail  as     shared_tail
+from   quex.engine.tools                          import flatten_list_of_lists
 
 from quex.engine.tools import typed, TypedDict
 
@@ -450,12 +451,15 @@ class SharedTailDB:
         return "".join(txt)
 
     def get_tree_text(self, CommandAliasDb, Node=None, Depth=0):
+        """__dive: indicate recursion. May be solved by 'TreeWalker'.
+        """
         if Node is None: 
             Node = self.root
 
-        txt = []
-        for door_id in sorted(Node.child_set):
-            txt.extend(self.get_tree_text(CommandAliasDb, self.door_db[door_id], Depth+1))
+        txt = flatten_list_of_lists(
+            self.get_tree_text(CommandAliasDb, self.door_db[door_id], Depth+1)
+            for door_id in sorted(Node.child_set)
+        )
 
         txt.extend([
             "    " * (Depth + 1), 

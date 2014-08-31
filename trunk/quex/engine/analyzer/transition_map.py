@@ -167,6 +167,11 @@ class TransitionMap(list):
             if info in DoorIdSet: return True
         return False
 
+    def has_drop_out(self):
+        for interval, target in self:
+            if target == E_StateIndices.DROP_OUT: return True
+        return False
+
     def is_only_drop_out(self):
         """RETURNS: True  -- if there is only one target which is 'DROP-OUT'.
                     False -- if there are transitions to other states.

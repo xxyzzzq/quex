@@ -21,9 +21,10 @@ to combine them into powerful patterns.
 
 .. describe:: . 
 
-      matches any character (byte) except newline and EOF. Note, that on
-      systems where newline is coded as ``0D,\,0A`` this matches also the
-      ``0D`` character whenever a newline occurs (subject to possible change).
+      matches any character in the current codec except for the buffer limit
+      code and '0x0A' for newline.  On systems where newline is coded as
+      '0x0D, 0x0A' this does match the '0x0D' character whenever a newline
+      occurs.
 
 .. describe:: [xyz]
 

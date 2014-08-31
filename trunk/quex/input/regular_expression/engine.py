@@ -478,7 +478,7 @@ def create_ALL_BUT_NEWLINE_state_machine():
     result = StateMachine()
     # NOTE: Buffer control characters are supposed to be filtered out by the code
     #       generator.
-    trigger_set = NumberSet(Interval(ord("\n")).get_complement(Setup.all_character_set())) 
+    trigger_set = NumberSet(Interval(ord("\n"))).get_complement(Setup.all_character_set())
 
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     return result

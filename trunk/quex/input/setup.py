@@ -1,7 +1,9 @@
 #! /usr/bin/env python
-import quex.engine.misc.file_in as     file_in
-from   quex.engine.misc.enum    import Enum
-from   quex.DEFINITIONS         import QUEX_PATH
+import quex.engine.misc.file_in      as     file_in
+from   quex.engine.misc.enum         import Enum
+from   quex.engine.interval_handling import NumberSet
+from   quex.engine.codec_db.core     import CodecTransformationInfo
+from   quex.DEFINITIONS              import QUEX_PATH
 
 import os.path as path
 import sys
@@ -14,6 +16,7 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo):
         self.init(SetupInfo)
+        self.__all_character_set = None
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -41,7 +44,6 @@ class QuexSetup:
         self.compression_type_list = []
 
         file_in.specify_setup_object(self)
-
 
     def set(self, Name, Type, Value):
         if Type in (SetupParTypes.LIST, SetupParTypes.INT_LIST):
@@ -100,6 +102,21 @@ class QuexSetup:
     def get_character_value_limit_str(self):
         if self.buffer_element_size == 1: return "1 byte"
         else:                             return "%i bytes" % self.buffer_element_size
+
+    def all_character_set(self):
+        if self.__all_character_set is None:
+            if   self.buffer_codec == "unicode":
+                self.__all_character_set = \
+                    NumberSet.from_range(0, self.get_buffer_element_value_limit())
+            elif isinstance(self.buffer_codec_transformation_info, (str, unicode)):
+                self.__all_character_set = \
+                    NumberSet.from_range(0, self.get_buffer_element_value_limit())
+            elif isinstance(self.buffer_codec_transformation_info, CodecTransformationInfo):
+                self.__all_character_set = \
+                    self.buffer_codec_transformation_info.source_set
+            else:
+                assert False
+        return self.__all_character_set
 
     def get_file_reference(self, FileName):
         """When a source package is specified, then it must be given
@@ -200,14 +217,14 @@ SETUP_INFO = {
     "suppressed_notification_list":   [["--suppress", "-s"],                   SetupParTypes.INT_LIST],
     "token_class_file":               [["--token-class-file"],                 ""],
     "token_class":                    [["--token-class", "--tc"],              "Token"],
-    "token_class_only_f":             [["--token-class-only", "--tco"],        SetupParTypes.FLAG],
-    "token_id_foreign_definition":    [["--foreign-token-id-file"],         SetupParTypes.LIST],  
+    "token_class_only_f":             [["--token-class-only", "--tco"],           SetupParTypes.FLAG],
+    "token_id_foreign_definition":    [["--foreign-token-id-file"],               SetupParTypes.LIST],  
     "token_id_foreign_definition_file_show_f": [["--foreign-token-id-file-show"], SetupParTypes.FLAG],
-    "token_id_counter_offset":        [["--token-id-offset"],                "10000"],
+    "token_id_counter_offset":        [["--token-id-offset"],                10000],
     "token_id_type":                  [["--token-id-type"],                  "uint32_t"],
     "token_id_prefix":                [["--token-id-prefix"],                "QUEX_TKN_"],
-    "token_queue_size":               [["--token-queue-size"],               "64"],
-    "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
+    "token_queue_size":               [["--token-queue-size"],               64],
+    "token_queue_safety_border":      [["--token-queue-safety-border"],      16],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
     "token_memory_management_by_user_f": [["--token-memory-management-by-user", "--tmmbu"], SetupParTypes.FLAG],
     "mode_transition_check_f":        [["--no-mode-transition-check"],       SetupParTypes.NEGATED_FLAG],

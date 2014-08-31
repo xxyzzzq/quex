@@ -5,6 +5,7 @@ import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.target_map      import TargetMap
 from   quex.engine.state_machine.state_core_info import StateCoreInfo
 from   quex.engine.state_machine.origin_list     import StateOriginList
+from   quex.engine.tools                         import flatten_list_of_lists
 from   quex.blackboard                           import E_IncidenceIDs, \
                                                         E_PreContextIDs, \
                                                         E_Border
@@ -798,15 +799,15 @@ class StateMachine(object):
 
         # (*) Accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.
-        history = []
-        for state_idx in StateIdxList:
+        history = flatten_list_of_lists(
             # -- trigger dictionary:  target_idx --> trigger set that triggers to target
-            line_up = self.states[state_idx].target_map.get_trigger_set_line_up() 
+            self.states[state_idx].target_map.get_trigger_set_line_up() 
             # NOTE: Duplicate entries in history are perfectly reasonable at this point,
             #       simply if two states trigger on the same character range to the same 
             #       target state. When ranges are opened/closed via the history items
             #       this algo keeps track of duplicates (see below).
-            history.extend(line_up)
+            for state_idx in StateIdxList
+        )
 
         # (*) sort history according to position
         history.sort(key = attrgetter("position")) # lambda a, b: cmp(a.position, b.position))

@@ -427,9 +427,16 @@ class MegaState(AnalyzerState):
                                self.ski_db.iterable_state_key_state_index_pairs(),
                                lambda state_index: TheAnalyzer.drop_out_DoorID(state_index))
 
-        TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 
-                                                     CommandList(cmd))
-        TheAnalyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
+        has_drop_out_f = False
+        for state_index in self.ski_db.implemented_state_index_set:
+            if TheAnalyzer.state_db[state_index].transition_map.has_drop_out():
+                has_drop_out_f = True
+                break
+
+        if has_drop_out_f:
+            TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 
+                                                         CommandList(cmd))
+            TheAnalyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     def prepare_again_for_reload(self, TheAnalyzer):
         """Similar to '_finalize_configure_global_drop_out()' we implement a 

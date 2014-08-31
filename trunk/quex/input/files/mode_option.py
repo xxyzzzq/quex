@@ -3,7 +3,8 @@ import quex.input.regular_expression.core   as     regular_expression
 from   quex.input.files.parser_data.counter import CounterSetupLineColumn_Default
 from   quex.engine.tools                    import all_isinstance
 from   quex.engine.generator.code.base      import SourceRef
-from   quex.engine.tools                    import typed
+from   quex.engine.tools                    import typed, \
+                                                   flatten_list_of_lists
 from   quex.engine.misc.file_in             import error_msg, \
                                                    get_current_line_info_number, \
                                                    skip_whitespace, \
@@ -218,9 +219,9 @@ class OptionDB(dict):
 
         info = mode_option_info_db[Name]
         if info.content_is_list():
-            result = []
-            for x in setting_list:
-                result.extend(x.value)
+            result = flatten_list_of_lists(
+                x.value for x in setting_list
+            )
         else:
             result = [ x.value for x in setting_list ]
 
