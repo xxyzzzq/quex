@@ -507,8 +507,8 @@ class MegaState(AnalyzerState):
                 elif target_by_state_key in replaced_door_id_set: continue # be a 'replaced one'.
                 elif target.state_index == TheAnalyzer.reload_state.index: continue
                 # A MegaState-s DropOut may represent any DropOut
-                elif     target_by_state_key == self_DoorID_drop_out  \
-                     and target.drop_out_f():                     continue 
+                #elif     target_by_state_key == self_DoorID_drop_out  \
+                elif target.drop_out_f():                         continue 
 
                 print "#original:\n"    + original_tm.get_string("hex")
                 print "#scheme:\n"      + self.transition_map.get_string("hex")

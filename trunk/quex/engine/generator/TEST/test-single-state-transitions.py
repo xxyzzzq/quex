@@ -110,7 +110,7 @@ elif choice == "C":
 
 def prepare(tm):
     tm.sort()
-    tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE)
+    tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE, 0, Setup.get_character_value_limit())
 
     iid_db = defaultdict(NumberSet)
     for interval, iid in tm:

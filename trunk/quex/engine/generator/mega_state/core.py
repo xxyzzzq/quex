@@ -58,7 +58,7 @@ def do(txt, TheState, TheAnalyzer):
     specific.debug_info_map_state_key_to_state_index(txt)
 
     # (*) Entry _______________________________________________________________
-    pre_txt, post_txt = entry_coder.do(TheState, TheAnalyzer) 
+    pre_txt, post_txt = entry_coder.do(TheState) 
     txt.extend(pre_txt)
     assert len(post_txt) == 0
 

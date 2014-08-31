@@ -78,7 +78,6 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
         sm = beautifier.do(sm)
     else:
         sm = CsSm.sm
-    print "#sm:", sm.get_string(NormalizeF=False)
 
     analyzer = analyzer_generator.do(sm, EngineType,
                                      ReloadStateExtern,

@@ -420,9 +420,11 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         pattern.cut_character_list(signal_character_list(Setup))
 
     function_body, variable_definitions = cpp_generator.do_core(pattern_list, terminal_db)
+    function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_CHARACTER*)0, (QUEX_TYPE_CHARACTER*)0); }\n"
     function_txt                        = cpp_generator.wrap_up(sm_name, function_body, 
                                                                 variable_definitions, 
                                                                 ModeNameList=[])
+
 
     assert all_isinstance(function_txt, str)
 

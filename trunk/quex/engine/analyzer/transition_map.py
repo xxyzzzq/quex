@@ -36,7 +36,6 @@ class TransitionMap(list):
         if (TM is not None) and (not TM.is_empty()): 
             for target, character_set in TM.get_map().iteritems():
                 # print "#tc", target, character_set.get_string("hex")
-                assert not character_set.is_empty()
                 result.extend(
                     (interval.clone(), target) 
                     for interval in character_set.get_intervals(PromiseToTreatWellF=True)
