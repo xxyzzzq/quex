@@ -464,7 +464,7 @@ class Lng_Cpp(dict):
             door_id = DoorID.incidence(terminal.incidence_id())
             terminal_door_id_list.append(door_id)
 
-            t_txt = ["%s __quex_debug(\"* TERMINAL %s\\n\");\n" % \
+            t_txt = ["%s\n    __quex_debug(\"* TERMINAL %s\\n\");\n" % \
                      (self.LABEL(door_id), terminal.name())]
             code  = terminal.code(TheAnalyzer)
             assert none_isinstance(code, list)

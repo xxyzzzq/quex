@@ -23,7 +23,7 @@ lex_iconv:
 
 lex_icu: 
 	@echo "Call to quex"
-	@quex -i simple.qx -o $(X) -b 2 --icu 
+	@quex -i simple.qx -o $(X) -b 2 --icu --debug-exception
 	@echo "Compiling"
 	g++ -I./ -I$(QUEX_PATH) \
 		$(X).cpp                      \

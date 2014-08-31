@@ -207,10 +207,10 @@ def argv_catch_negated_flag(Cl, Option, Default):
     """
     return not Cl.search(Option)
 
-def argv_catch_int(Cl, VariableName, Option, Default):
+def argv_catch_int(Cl, Option, Default):
     """RETURNS: Integer for the given variable name.
     """
-    return get_integer_parameter_value(str(Option)[1:-1], cl.follow("%i" % Default, Option))
+    return get_integer_parameter_value(str(Option)[1:-1], Cl.follow("%i" % Default, Option))
 
 def argv_catch_int_list(Cl, VariableName, Option, Default):
     """RETURNS: list of integers built from the list of no-minus followers of 
