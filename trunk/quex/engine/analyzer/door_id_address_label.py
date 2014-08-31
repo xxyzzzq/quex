@@ -262,7 +262,6 @@ class DialDB(object):
 
     def get_label_by_door_id(self, DoorId, GotoedF=False):
         assert DoorId in self.__d2la, "%s" % str(DoorId)
-        print "#glbda:", DoorId
         address, label = self.__d2la[DoorId]
         if GotoedF:
             self.mark_address_as_gotoed(address)
@@ -298,7 +297,7 @@ class DialDB(object):
 
     def mark_address_as_gotoed(self, Address):
         self.__gotoed_address_set.add(Address)
-        if True: # True/False switches debug output
+        if False: # True/False switches debug output
              self.__debug_address_usage(Address, 6, 3)
 
     def mark_label_as_gotoed(self, Label):

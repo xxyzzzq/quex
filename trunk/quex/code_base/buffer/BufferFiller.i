@@ -620,7 +620,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         uint8_t*              witerator   = 0x0; 
         QUEX_TYPE_CHARACTER*        End         = 0x0; 
         const QUEX_TYPE_CHARACTER*  iterator    = 0x0; 
-        QUEX_TYPE_CHARACTER*        utf8_end    = 0x0; 
 #       endif
 
         if(    me->_on_overflow == 0x0

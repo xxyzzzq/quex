@@ -1,6 +1,6 @@
-<test-database execution-time-sec="159.47" date="Thu Aug 28 17:46:54 2014">
+<test-database execution-time-sec="159.69" date="Sun Aug 31 13:22:14 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Mode Changes" time-sum-sec="2.15"> 
+    <test title="Mode Changes" time-sum-sec="2.16"> 
         <application file-name="test-mode-changes.py" info-request-time="1387873735L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="True">
@@ -116,7 +116,7 @@
                <choice name="ANSI-C-CG" result="OK" time_sec="0.62" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="10.74"> 
+        <test title="Part 2" time-sum-sec="10.73"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
@@ -214,7 +214,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="4.60"> 
+        <test title="Part II" time-sum-sec="4.57"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="10" same_result="True">
@@ -230,14 +230,14 @@
                <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.26" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="4.09"> 
+        <test title="Part I" time-sum-sec="4.36"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="10" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="FAIL" time_sec="0.28" crc="1455270"/>
                <choice name="ANSI-C" result="FAIL" time_sec="0.28" crc="1455270"/>
                <choice name="ANSI-C-CG" result="FAIL" time_sec="0.29" crc="1455270"/>
-               <choice name="Cpp" result="FAIL" time_sec="0.62" crc="1455270"/>
+               <choice name="Cpp" result="FAIL" time_sec="0.89" crc="1455270"/>
                <choice name="Cpp_StrangeStream" result="FAIL" time_sec="0.65" crc="1455270"/>
                <choice name="Cpp-Template" result="FAIL" time_sec="0.63" crc="1455270"/>
                <choice name="Cpp-Template-CG" result="FAIL" time_sec="0.64" crc="1455270"/>
@@ -282,7 +282,7 @@
                <choice name="ANSI-C-PathTemplate" result="FAIL" time_sec="0.30" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" time-sum-sec="6.90"> 
+        <test title="Tiny Expressions" time-sum-sec="6.89"> 
             <application file-name="test-simple.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
