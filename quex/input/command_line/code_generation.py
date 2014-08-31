@@ -49,6 +49,10 @@ def prepare(command_line, argv):
                   % (Setup.output_file_naming_scheme, Setup.language) + \
                   "Available schemes are: %s." % repr(Setup.extension_db.keys())[1:-1])
 
+    # (*) Output files
+    if Setup.language not in ["DOT"]:
+        prepare_file_names(Setup)
+
     # Before file names can be prepared, determine the output directory
     # If 'source packaging' is enabled and no output directory is specified
     # then take the directory of the source packaging.
@@ -69,10 +73,6 @@ def prepare(command_line, argv):
     elif Setup.buffer_codec != "unicode":
         Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(Setup.buffer_codec)
 
-    # (*) Output files
-    if Setup.language not in ["DOT"]:
-        prepare_file_names(Setup)
-
     if Setup.buffer_byte_order == "<system>": 
         Setup.buffer_byte_order = sys.byteorder 
         Setup.byte_order_is_that_of_current_system_f = True
@@ -87,8 +87,6 @@ def prepare(command_line, argv):
     if Setup.buffer_element_type == "wchar_t":
         Setup.converter_ucs_coding_name = "WCHAR_T"
 
-    make_numbers(Setup)
-
     # (*) Determine buffer element type and size (in bytes)
     if Setup.buffer_element_size == -1:
         if global_character_type_db.has_key(Setup.buffer_element_type):
@@ -96,8 +94,8 @@ def prepare(command_line, argv):
         elif Setup.buffer_element_type == "":
             Setup.buffer_element_size = 1
         else:
-            # If the buffer element type is defined, then here we know that it is 'unknown'
-            # and Quex cannot know its size on its own.
+            # Buffer element type is not identified in 'global_character_type_db'.
+            # => here Quex cannot know its size on its own.
             Setup.buffer_element_size = -1
 
     if Setup.buffer_element_type == "":
@@ -337,19 +335,6 @@ def prepare_file_names(Setup):
     else:
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-unicode-buffer"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-unicode-buffer.i"
-
-def make_numbers(Setup):
-    Setup.compression_template_min_gain = __get_integer("compression_template_min_gain")
-    Setup.buffer_limit_code             = __get_integer("buffer_limit_code")
-    Setup.path_limit_code               = __get_integer("path_limit_code")
-
-    Setup.token_id_counter_offset       = __get_integer("token_id_counter_offset")
-    Setup.token_queue_size              = __get_integer("token_queue_size")
-    Setup.token_queue_safety_border     = __get_integer("token_queue_safety_border")
-    Setup.buffer_element_size           = __get_integer("buffer_element_size")
-
-def __get_integer(MemberName):
-    return get_integer_parameter_value(str(SETUP_INFO[MemberName][0])[1:-1], Setup.__dict__[MemberName])
 
 def __prepare_file_name(Suffix, ContentType):
     global Setup

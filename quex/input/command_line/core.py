@@ -157,6 +157,8 @@ def argv_interpret(argv):
         elif info[1] == SetupParTypes.LIST:
             value = argv_catch_list(command_line, info[0], [])
 
+        elif isinstance(info[1], (int, long)):
+            value = argv_catch_int(command_line, info[0], info[1])
         else:
             value = argv_catch_string(command_line, info[0], info[1])
 
@@ -204,6 +206,11 @@ def argv_catch_negated_flag(Cl, Option, Default):
                 False -- else.
     """
     return not Cl.search(Option)
+
+def argv_catch_int(Cl, VariableName, Option, Default):
+    """RETURNS: Integer for the given variable name.
+    """
+    return get_integer_parameter_value(str(Option)[1:-1], cl.follow("%i" % Default, Option))
 
 def argv_catch_int_list(Cl, VariableName, Option, Default):
     """RETURNS: list of integers built from the list of no-minus followers of 

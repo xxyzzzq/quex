@@ -30,7 +30,8 @@ from   quex.engine.misc.string_handling                  import blue_print, \
 from   quex.engine.misc.file_in                          import open_file_or_die, \
                                                                 write_safely_and_close
 from   quex.engine.tools import typed, \
-                                none_isinstance
+                                none_isinstance, \
+                                flatten_list_of_lists
 from   quex.blackboard   import setup as Setup, \
                                 E_StateIndices,  \
                                 E_IncidenceIDs, \
@@ -739,23 +740,22 @@ class Lng_Cpp(dict):
 
         txt.extend(code)
 
-    def STATE_DEBUG_INFO(self, txt, TheState, TheAnalyzer):
+    def STATE_DEBUG_INFO(self, TheState, GlobalEntryF):
+        assert isinstance(TheState, Processor)
+
         if isinstance(TheState, TemplateState):
-            txt.append("__quex_debug_template_state(%i, state_key);\n" \
-                       % TheState.index)
+            return "__quex_debug_template_state(%i, state_key);\n" \
+                   % TheState.index
         elif isinstance(TheState, PathWalkerState):
-            txt.append("__quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
-                       % (TheState.index, TheState.index))
+            return "__quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
+                   % (TheState.index, TheState.index))
+        elif GlobalEntryF: 
+            return "__quex_debug(\"Init State\\n\");\n"
+                   "__quex_debug_state(%i);\n" % TheState.index
+        elif TheState.index == E_StateIndices.DROP_OUT:
+            return "__quex_debug(\"Drop-Out Catcher\\n\");\n"
         else:
-            assert isinstance(TheState, Processor)
-            if TheAnalyzer.is_init_state_forward(TheState.index): 
-                txt.append("__quex_debug(\"Init State\\n\");\n")
-                txt.append("__quex_debug_state(%i);\n" % TheState.index)
-            elif TheState.index == E_StateIndices.DROP_OUT:
-                txt.append("__quex_debug(\"Drop-Out Catcher\\n\");\n")
-            else:
-                txt.append("__quex_debug_state(%i);\n" % TheState.index)
-        return 
+            return "__quex_debug_state(%i);\n" % TheState.index
 
     def POSITION_REGISTER(self, Index):
         return "position[%i]" % Index
@@ -897,10 +897,12 @@ class Lng_Cpp(dict):
             get_content = content
 
         txt = [ "switch( %s ) {\n" % Selector ]
-        for item, text in iterable(CaseList, DefaultConsequence):
-            txt.extend(
+        txt.extend(
+            flatten_list_of_lists(
                 get_case(item, text, get_content)
+                for item, text in iterable(CaseList, DefaultConsequence)
             )
+        )
         txt.append("}\n")
         return txt
 

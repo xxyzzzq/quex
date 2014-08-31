@@ -8,7 +8,8 @@ from   quex.engine.misc.file_in                        import error_msg
 from   quex.engine.interval_handling                   import NumberSet
 from   quex.blackboard                                 import setup as Setup
 
-from   quex.engine.tools import typed
+from   quex.engine.tools import typed, \
+                                flatten_list_of_lists
 
 @typed(X=(StateMachine,None))
 def do_state_machine(X):
@@ -92,10 +93,11 @@ def do_character(Character, TrafoInfo, fh=-1):
 def do_sequence(Sequence, TrafoInfo=None, fh=-1):
     if TrafoInfo is None:
         TrafoInfo = Setup.buffer_codec_transformation_info
-    result = []
-    for x in Sequence:
-        result.extend(do_character(x, TrafoInfo, fh))
-    return result
+
+    return flatten_list_of_lists(
+        do_character(x, TrafoInfo, fh)
+        for x in Sequence
+    )
 
 def homogeneous_chunk_n_per_character(Thing, TrafoInfo):
     assert isinstance(TrafoInfo, (str, unicode))

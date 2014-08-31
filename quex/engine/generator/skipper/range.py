@@ -9,7 +9,8 @@ import quex.engine.state_machine.index             as     sm_index
 import quex.engine.state_machine.transformation    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import r_enumerate, \
-                                                          typed
+                                                          typed, \
+                                                          flatten_list_of_lists
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 import quex.output.cpp.counter                     as     counter
@@ -317,9 +318,10 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
     UnicodeEndSequencePattern.prepare_count_info(Mode.counter_db, Setup.buffer_codec_transformation_info)
 
     # Trasform letter by letter.
-    sequence = []
-    for x in UnicodeSequence:
-        sequence.extend(transformation.do_character(x, Setup.buffer_codec_transformation_info))
+    sequence = flatten_list_of_lists(
+        transformation.do_character(x, Setup.buffer_codec_transformation_info)
+        for x in UnicodeSequence
+    )
 
     EndSequenceChunkN = len(sequence)
 

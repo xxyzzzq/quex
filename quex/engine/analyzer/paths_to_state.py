@@ -1,4 +1,5 @@
-from quex.blackboard import E_IncidenceIDs, E_TransitionN
+from quex.engine.tools import flatten_list_of_lists
+from quex.blackboard   import E_IncidenceIDs, E_TransitionN
 
 from operator        import attrgetter
 from collections     import namedtuple, defaultdict
@@ -149,10 +150,10 @@ class PathsToState:
         return self.__uniform_acceptance_sequence
 
     def accepting_state_index_list(self):
-        result = []
-        for acceptance_sequence in self.__list:
-            result.extend(x.accepting_state_index for x in acceptance_sequence)
-        return result
+        return flatten_list_of_lists(
+            (x.accepting_state_index for x in acceptance_sequence)
+            for acceptance_sequence in self.__list
+        )
 
     def acceptance_precedence_clash(self):
         # self.__acceptance_precedence_matrix_contruct() is None

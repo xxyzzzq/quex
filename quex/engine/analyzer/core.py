@@ -80,6 +80,14 @@ def do(SM, EngineType=engine.FORWARD,
     # DoorID-s required by '.prepare_for_reload()'
     analyzer.prepare_DoorIDs()
 
+    print "#sm", SM.get_string(NormalizeF=False)
+    print "#an", analyzer
+    for state in analyzer.state_db.itervalues():
+        print "#state:", state.index
+        print "#tm:"
+        for interval, target in state.transition_map:
+            print "#it", interval.get_string("hex"), "->", target
+
     # Prepare the reload BEFORE mega state compression!
     # (Null-operation, in case no reload required.)
     # TransitionMap:              On BufferLimitCode --> ReloadState
@@ -159,6 +167,7 @@ class Analyzer:
     def _prepare_entries_and_drop_out(self, EngineType, SM):
         if not EngineType.requires_detailed_track_analysis():
             for state_index, state in SM.states.iteritems():
+                if not self.state_db[state_index].transition_map.has_drop_out(): continue
                 cl = EngineType.create_DropOut(state)
                 self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, 
                                                       state_index, cl)
@@ -304,9 +313,10 @@ class Analyzer:
     def drop_out_DoorID(self, StateIndex):
         """RETURNS: DoorID of the drop-out catcher for the state of the given
                     'StateIndex'
+                    None -- if there is no drop out for the given state.
         """
         drop_out_door_id = self.drop_out.entry.get_door_id(E_StateIndices.DROP_OUT, StateIndex)
-        assert drop_out_door_id is not None
+        #assert drop_out_door_id is not None
         return drop_out_door_id
                                       
     def init_state(self):
@@ -439,6 +449,7 @@ class Analyzer:
         acceptance_storage_db = defaultdict(list)
         position_storage_db   = defaultdict(list)
         for state_index, trace_list in self.__trace_db.iteritems():
+            if not self.state_db[state_index].transition_map.has_drop_out(): continue
             cl = self.drop_out_configure(state_index, trace_list, 
                                          acceptance_storage_db,
                                          position_storage_db)

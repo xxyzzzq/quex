@@ -58,7 +58,7 @@ in section <<sec-query-intro>>.
 As an option to facilitate the specification of property values, quex allows
 you to use wildcards ``*``, ``?`` and simple character sets such as as
 ``[AEIOUX-Z]`` for the characters ``A``, ``E``, ``I``, ``O``, ``U``, ``X``, ``Y``, and ``Z``. If the first
-character is an ``!`` then the inverse character set is considered.  This is
+character is an ``!`` then the complementary character set is considered.  This is
 conform with unix file name matching.  set specifications such as ``[a-z]``
 such to facilitate the search. It is advisable, though, to use quex's query
 functionality first <<sec-query-intro>> in order to get an impression to what

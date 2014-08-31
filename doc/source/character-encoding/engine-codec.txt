@@ -153,7 +153,7 @@ to the constructor.
 
    quex::MyLexer   qlex(fh, 0x0, /* ReverseByteOrderF */True);
 
-Such a usage is appropriate if the codec is inverse to the machines codec. If, for example
+Such a usage is appropriate if the codec is contrary to the machine's codec. If, for example
 one tries to analyze a UTF16-BE (big endian stream) on an intel pentium (tm) machine, which
 is little endian, then the reverse byte order flag can be passed to the constructor. If a
 UTF16 stream is expected which specifies the byte order via a byte order mark (BOM), then 

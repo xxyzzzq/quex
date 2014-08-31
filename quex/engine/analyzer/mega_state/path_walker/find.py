@@ -1,4 +1,5 @@
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
+from   quex.engine.tools                                 import flatten_list_of_lists
 from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression, E_StateIndices
 
@@ -23,11 +24,10 @@ def do(TheAnalyzer, CompressionType, AvailableStateIndexSet):
         if i in AvailableStateIndexSet and i != TheAnalyzer.init_state_index \
     )
 
-    path_list = []
-    for state_index in sorted(iterable_state_indices, key=lambda i: depth_db[i]):
-        path_list.extend(
-            CharacterPathList_find(TheAnalyzer, state_index, CompressionType, AvailableStateIndexSet)
-        )
+    path_list = flatten_list_of_lists(
+        CharacterPathList_find(TheAnalyzer, state_index, CompressionType, AvailableStateIndexSet)
+        for state_index in sorted(iterable_state_indices, key=lambda i: depth_db[i])
+    )
 
     return path_list
 
