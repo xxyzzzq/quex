@@ -1,7 +1,7 @@
-"""A state can be entered from multiple states and the actions performed upon
+"""A state can be entered from multiple states. The actions performed upon
 entry may differ, and partly be the same. A 'CommandTree' organizes command 
-lists efficiently similarities. This module codes a command tree where its
-leafs are the entries from other states.
+lists efficiently considering similarities. This module codes a command tree 
+where its leafs are the entries from other states.
 
                 from X               from Y             from Z
                    |                    |                  |
@@ -22,13 +22,6 @@ leafs are the entries from other states.
                                   | Root-DoorID       |
                                   |   TransitionMap   |
                                      ...
-
-NOTE: 
-    
-The code of an entry node is only implemented if the entry is actually 
-goto-ed. Any command list may also contain goto-s. The goto-s in the command
-lists influence the set of gotoed labels depending on their entry being
-goto-ed. 
 
 (C) Frank-Rene Schaefer
 _______________________________________________________________________________
@@ -58,16 +51,16 @@ def do(TheState):
     cmd_tree = CommandTree.from_AnalyzerState(TheState)
 
     done_set = set()
+    post_txt = []
+
     global_entry_door_id = TheState.get_global_entry_door_id()
     if global_entry_door_id is not None:
-        pre_txt  = do_from_leaf_to_root(CmdTree, done_set, global_entry_door_id,
-                                        GlobalEntryF=True)
-        post_txt = []
-        ref      = post_txt
+        pre_txt = do_from_leaf_to_root(CmdTree, done_set, global_entry_door_id,
+                                       GlobalEntryF=True)
+        ref     = post_txt
     else:
-        pre_txt  = ["\n\n    %s\n" % Lng.UNREACHABLE]
-        post_txt = None
-        ref      = pre_txt
+        pre_txt = ["\n\n    %s\n" % Lng.UNREACHABLE]
+        ref     = pre_txt
 
     ref.extend(
         do_leafs(cmd_tree, TheState, done_set)
