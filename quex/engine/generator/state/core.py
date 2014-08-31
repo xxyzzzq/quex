@@ -11,7 +11,7 @@ def do(code, TheState, TheAnalyzer):
     assert isinstance(TheAnalyzer, Analyzer)
 
     # (*) Entry _______________________________________________________________
-    txt, post_txt = entry.do(TheState, TheAnalyzer)
+    txt, post_txt = entry.do(TheState)
 
     # (*) Transition Map ______________________________________________________
     tm = relate_to_TransitionCode(TheState.transition_map)

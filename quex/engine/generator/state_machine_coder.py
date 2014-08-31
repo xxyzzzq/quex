@@ -40,7 +40,7 @@ def do(TheAnalyzer):
     return txt
 
 def code_drop_out_catcher(txt, TheAnalyzer):
-    result, post_txt = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
+    result, post_txt = entry.do(TheAnalyzer.drop_out)
     assert not post_txt
 
     txt.extend(result)

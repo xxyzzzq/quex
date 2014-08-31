@@ -196,6 +196,31 @@ class Entry(object):
                 return True
         return False
 
+    def has_transitions_to_door_id(self, DoorId):
+        for action in self.__db.itervalues():
+            if action.door_id == DoorId:
+                return True
+        return False
+
+    def door_id_set(self):
+        """RETURNS: The door ids of this entry.
+
+        In the frame of a CommandTree, this set is the set of 'leaf door ids'.
+        """
+        return set(action.door_id 
+                   for action in self.__db.itervalues()
+                   if action.door_id is not None)
+
+    def get_global_entry_door_id(self):
+        """RETURNS: DoorID, if the entry contains THE entry into the analyzer.
+                    None, if not.
+        """
+        for transition_id, action in self.__db.iteritems():
+            if transition_id.source_state_index != E_StateIndices.NONE: 
+                continue
+            return action.door_id
+        return None
+
     def delete(self, StateIndex, FromStateIndex, TriggerId=0):
         del self.__db[TransitionID(StateIndex, FromStateIndex, 0)]
 
@@ -217,9 +242,6 @@ class Entry(object):
         return
 
     def itervalues(self):
-        for tid, ta in self.__db.iteritems():
-            if ta.door_id is None: print "!! ", str(tid)
-
         for ta in self.__db.itervalues():
             assert ta.door_id is not None, ".categorize() needs to be called before this!"
             yield ta
@@ -285,12 +307,6 @@ class Entry(object):
     @property 
     def largest_used_door_sub_index(self):
         return self.__largest_used_door_sub_index
-
-    def has_transitions_to_door_id(self, DoorId):
-        for action in self.__db.itervalues():
-            if action.door_id == DoorId:
-                return True
-        return False
 
     def check_consistency(self):
         """Any two entries with the same DoorID must have the same command list

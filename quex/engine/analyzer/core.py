@@ -80,14 +80,6 @@ def do(SM, EngineType=engine.FORWARD,
     # DoorID-s required by '.prepare_for_reload()'
     analyzer.prepare_DoorIDs()
 
-    print "#sm", SM.get_string(NormalizeF=False)
-    print "#an", analyzer
-    for state in analyzer.state_db.itervalues():
-        print "#state:", state.index
-        print "#tm:"
-        for interval, target in state.transition_map:
-            print "#it", interval.get_string("hex"), "->", target
-
     # Prepare the reload BEFORE mega state compression!
     # (Null-operation, in case no reload required.)
     # TransitionMap:              On BufferLimitCode --> ReloadState

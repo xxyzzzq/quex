@@ -744,18 +744,20 @@ class Lng_Cpp(dict):
         assert isinstance(TheState, Processor)
 
         if isinstance(TheState, TemplateState):
-            return "__quex_debug_template_state(%i, state_key);\n" \
+            return "    __quex_debug_template_state(%i, state_key);\n" \
                    % TheState.index
         elif isinstance(TheState, PathWalkerState):
-            return "__quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
-                   % (TheState.index, TheState.index))
+            return "    __quex_debug_path_walker_state(%i, path_walker_%s_path_base, path_iterator);\n" \
+                   % (TheState.index, TheState.index)
         elif GlobalEntryF: 
-            return "__quex_debug(\"Init State\\n\");\n"
-                   "__quex_debug_state(%i);\n" % TheState.index
+            return "    __quex_debug(\"Init State\\n\");\n" \
+                   "    __quex_debug_state(%i);\n" % TheState.index
         elif TheState.index == E_StateIndices.DROP_OUT:
-            return "__quex_debug(\"Drop-Out Catcher\\n\");\n"
+            return "    __quex_debug(\"Drop-Out Catcher\\n\");\n"
+        elif isinstance(TheState.index, (int, long)):
+            return "    __quex_debug_state(%i);\n" % TheState.index
         else:
-            return "__quex_debug_state(%i);\n" % TheState.index
+            return ""
 
     def POSITION_REGISTER(self, Index):
         return "position[%i]" % Index

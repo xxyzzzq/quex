@@ -1,8 +1,7 @@
 from quex.engine.misc.enum  import Enum
 from quex.DEFINITIONS       import QUEX_PATH
-from quex.engine.tools      import flatten_list_of_lists
 
-from   itertools   import izip, islice
+from   itertools   import izip, islice, chain
 from   collections import deque
 import sys
 import os
