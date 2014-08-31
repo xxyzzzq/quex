@@ -7,8 +7,8 @@ def do(TheReloadState):
                                     E_StateIndices.RELOAD_BACKWARD)
     assert TheReloadState.entry.size() != 0
 
-    pre_txt, txt = entry.do(TheReloadState)
-    assert pre_txt is None
+    txt, post_txt = entry.do(TheReloadState)
+    assert not post_txt
 
     txt.extend(
         Lng.RELOAD_PROCEDURE(ForwardF=(TheReloadState.index == E_StateIndices.RELOAD_FORWARD))

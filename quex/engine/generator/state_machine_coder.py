@@ -40,9 +40,11 @@ def do(TheAnalyzer):
     return txt
 
 def code_drop_out_catcher(txt, TheAnalyzer):
-    result, dummy = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
+    result, post_txt = entry.do(TheAnalyzer.drop_out, TheAnalyzer)
+    assert not post_txt
+
     txt.extend(result)
-    txt.append("\n%s\n" % Lng.UNREACHABLE)
+    txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
 
 def get_frequency_db(StateDB, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more
