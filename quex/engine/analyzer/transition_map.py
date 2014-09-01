@@ -168,7 +168,9 @@ class TransitionMap(list):
 
     def has_drop_out(self):
         for interval, target in self:
-            if target == E_StateIndices.DROP_OUT: return True
+            if   target == E_StateIndices.DROP_OUT: return True
+            elif not hasattr(target, "drop_out_f"): continue
+            elif target.drop_out_f():               return True
         return False
 
     def is_only_drop_out(self):
