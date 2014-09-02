@@ -1,4 +1,4 @@
-<test-database execution-time-sec="17.35" date="Sun Aug 24 09:12:31 2014">
+<test-database execution-time-sec="17.36" date="Tue Sep  2 08:30:40 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>
@@ -116,7 +116,7 @@
         </test>
     </group>
     <group name="Track Analysis">
-        <test title="Single Pattern Checks" time-sum-sec="1.18"> 
+        <test title="Single Pattern Checks" time-sum-sec="1.19"> 
             <application file-name="track_analysis_single_pattern.py" info-request-time="1391584874L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="11" same_result="False">
@@ -149,7 +149,7 @@
                <choice name="10" result="OK" time_sec="0.14" crc="-1436089507"/>
             </choice-list>
         </test>
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.26"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.27"> 
             <application file-name="track_analysis.py" info-request-time="1391584897L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="11" same_result="False">
@@ -166,7 +166,7 @@
                <choice name="10" result="OK" time_sec="0.12" crc="-703072557"/>
             </choice-list>
         </test>
-        <test title="With Pre-Contexts" time-sum-sec="1.96"> 
+        <test title="With Pre-Contexts" time-sum-sec="1.97"> 
             <application file-name="paths_analysis-pre.py" info-request-time="1392275165L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="15" same_result="False">
@@ -195,7 +195,7 @@
                <choice name="1" result="OK" time_sec="0.11" crc="-509218225"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="1.25"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="1.24"> 
             <application file-name="paths_analysis-pre-post.py" info-request-time="1392275226L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -233,7 +233,7 @@
         </test>
     </group>
     <group name="Transition Map Tools">
-        <test title="combine_adjacent" time-sum-sec="0.42"> 
+        <test title="combine_adjacent" time-sum-sec="0.40"> 
             <application file-name="transition_map_tools-combine_adjacent.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -242,17 +242,6 @@
                <choice name="2-diff" result="OK" time_sec="0.08" crc="1731659390"/>
                <choice name="3-same" result="OK" time_sec="0.08" crc="-1156268790"/>
                <choice name="3-diff" result="OK" time_sec="0.08" crc="78032644"/>
-            </choice-list>
-        </test>
-        <test title="set" time-sum-sec="0.39"> 
-            <application file-name="transition_map_tools.py" info-request-time="1387873736L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="5" same_result="False">
-               <choice name="Normal" result="OK" time_sec="0.08" crc="-22334169"/>
-               <choice name="Apart" result="OK" time_sec="0.08" crc="442968172"/>
-               <choice name="AbsorbA" result="OK" time_sec="0.08" crc="54034854"/>
-               <choice name="AbsorbB" result="OK" time_sec="0.08" crc="825164361"/>
-               <choice name="AbsorbC" result="OK" time_sec="0.08" crc="1438611652"/>
             </choice-list>
         </test>
         <test title="prune" time-sum-sec="0.52"> 
@@ -264,14 +253,7 @@
                <choice name="3" result="OK" time_sec="0.14" crc="1418772995"/>
             </choice-list>
         </test>
-        <test title="TransitionMap.izip" time-sum-sec="0.08"> 
-            <application file-name="transition_map_tools-zipped_iterable.py" info-request-time="1387873736L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="833975462"/>
-            </choice-list>
-        </test>
-        <test title="fill_gaps" time-sum-sec="0.42"> 
+        <test title="fill_gaps" time-sum-sec="0.41"> 
             <application file-name="transition_map_tools-fill_gaps.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -280,6 +262,24 @@
                <choice name="2-diff" result="OK" time_sec="0.08" crc="-502064113"/>
                <choice name="3-same" result="OK" time_sec="0.08" crc="-1278972709"/>
                <choice name="3-diff" result="OK" time_sec="0.09" crc="1193266311"/>
+            </choice-list>
+        </test>
+        <test title="TransitionMap.izip" time-sum-sec="0.08"> 
+            <application file-name="transition_map_tools-zipped_iterable.py" info-request-time="1387873736L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.08" crc="833975462"/>
+            </choice-list>
+        </test>
+        <test title="set" time-sum-sec="0.40"> 
+            <application file-name="transition_map_tools.py" info-request-time="1387873736L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="5" same_result="False">
+               <choice name="Normal" result="OK" time_sec="0.08" crc="-22334169"/>
+               <choice name="Apart" result="OK" time_sec="0.08" crc="442968172"/>
+               <choice name="AbsorbA" result="OK" time_sec="0.08" crc="54034854"/>
+               <choice name="AbsorbB" result="OK" time_sec="0.08" crc="825164361"/>
+               <choice name="AbsorbC" result="OK" time_sec="0.08" crc="1438611652"/>
             </choice-list>
         </test>
     </group>

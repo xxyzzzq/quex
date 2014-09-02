@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.07" date="Sun Aug 24 09:17:56 2014">
+<test-database execution-time-sec="4.05" date="Tue Sep  2 08:30:54 2014">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.01"> 
         <application file-name="run_coverage.sh" info-request-time="1408779207L" vanished="False"/>
@@ -8,7 +8,7 @@
         </choice-list>
     </test>
     <group name="Code generation">
-        <test title="Comparison Sequence" time-sum-sec="0.75"> 
+        <test title="Comparison Sequence" time-sum-sec="0.74"> 
             <application file-name="test-comparison_sequence.py" info-request-time="1408778493L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
@@ -32,7 +32,7 @@
                <choice name="C-5" result="OK" time_sec="0.09" crc="-990235024"/>
             </choice-list>
         </test>
-        <test title="Branch Table (switch-case) II" time-sum-sec="0.83"> 
+        <test title="Branch Table (switch-case) II" time-sum-sec="0.82"> 
             <application file-name="test-branch_table-2.py" info-request-time="1408778223L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">

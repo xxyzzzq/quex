@@ -1,6 +1,6 @@
-<test-database execution-time-sec="44.65" date="Sun Aug 24 09:17:49 2014">
+<test-database execution-time-sec="44.64" date="Tue Sep  2 08:30:52 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="2.82"> 
+    <test title="Indentation Counting" time-sum-sec="2.81"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -32,7 +32,7 @@
                <choice name="8" result="OK" time_sec="0.60" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="2.99"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.00"> 
             <application file-name="test-skip-utf8.py" info-request-time="1406458476L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
