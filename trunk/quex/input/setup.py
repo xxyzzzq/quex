@@ -135,7 +135,7 @@ class QuexSetup:
 
         # If the source packager is active, then everything becomes relative
         # to the new source package directory.
-        if self.source_package_directory == "": 
+        if not self.source_package_directory: 
             return clean(FileName)
 
         full_file_name          = clean(path.realpath(FileName))
@@ -164,7 +164,7 @@ class QuexSetup:
             ## print "## result = ", result
             return result
 
-        elif self.source_package_directory != "" and self.output_directory == self.source_package_directory:
+        elif self.source_package_directory and self.output_directory == self.source_package_directory:
             # If we are in the process of 'source packaging' and no explicit output
             # directory is specified, then the base directory is deleted from the FileName.
             idx = full_file_name.find(full_source_package_dir)

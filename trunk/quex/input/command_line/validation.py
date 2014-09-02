@@ -19,7 +19,7 @@ def do(setup, command_line, argv):
     """
 
     setup.output_directory = os.path.normpath(setup.output_directory)
-    if setup.output_directory != "":
+    if setup.output_directory:
         # Check, if the output directory exists
         if os.access(setup.output_directory, os.F_OK) == False:
             error_msg("The directory %s was specified for output, but does not exists." % setup.output_directory)

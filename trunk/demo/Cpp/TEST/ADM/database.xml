@@ -1,4 +1,4 @@
-<test-database execution-time-sec="305.68" date="Tue Sep  2 20:27:08 2014">
+<test-database execution-time-sec="305.39" date="Tue Sep  2 20:48:50 2014">
     <last-used-diff-display-program name=""/>
     <group name="demo/000">
         <test title="Single Mode Example" time-sum-sec="6.43"> 
@@ -21,12 +21,12 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" time-sum-sec="3.82"> 
+        <test title="Indentation Based Scopes" time-sum-sec="3.85"> 
             <application file-name="002.sh" info-request-time="1381662251L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="2.22" crc="-1626426563"/>
-               <choice name="DEBUG" result="FAIL" time_sec="1.59" crc="-1626426563"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="2.24" crc="-1626426563"/>
+               <choice name="DEBUG" result="FAIL" time_sec="1.61" crc="-1626426563"/>
             </choice-list>
         </test>
     </group>
@@ -86,12 +86,12 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="7.52"> 
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="7.19"> 
             <application file-name="006.sh" info-request-time="1381662250L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NDEBUG" result="FAIL" time_sec="3.99" crc="67355700"/>
-               <choice name="DEBUG" result="FAIL" time_sec="3.53" crc="67355700"/>
+               <choice name="NDEBUG" result="FAIL" time_sec="3.89" crc="67355700"/>
+               <choice name="DEBUG" result="FAIL" time_sec="3.30" crc="67355700"/>
             </choice-list>
         </test>
     </group>

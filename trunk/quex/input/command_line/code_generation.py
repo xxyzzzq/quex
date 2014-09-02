@@ -53,16 +53,10 @@ def prepare(command_line, argv):
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
 
-    # Before file names can be prepared, determine the output directory
-    # If 'source packaging' is enabled and no output directory is specified
-    # then take the directory of the source packaging.
-    if Setup.source_package_directory != "" and Setup.output_directory == "":
-        Setup.output_directory = Setup.source_package_directory
-
     if Setup.buffer_codec in ["utf8", "utf16"]:
         Setup.buffer_codec_transformation_info = Setup.buffer_codec + "-state-split"
 
-    elif len(Setup.buffer_codec_file) != 0:
+    elif Setup.buffer_codec_file:
         try: 
             Setup.buffer_codec = os.path.splitext(os.path.basename(Setup.buffer_codec_file))[0]
         except:
@@ -297,6 +291,15 @@ def __setup_token_id_prefix(Setup):
          error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
 def prepare_file_names(Setup):
+    # Before file names can be prepared, determine the output directory
+    # If 'source packaging' is enabled and no output directory is specified
+    # then take the directory of the source packaging.
+    if Setup.source_package_directory and not Setup.output_directory:
+        Setup.output_directory = Setup.source_package_directory
+
+    if Setup.language in ["DOT"]:
+        return
+
     Setup.output_file_stem = ""
     if Setup.analyzer_name_space != ["quex"]:
         for name in Setup.analyzer_name_space:
@@ -345,6 +348,6 @@ def __prepare_file_name(Suffix, ContentType):
 
     file_name = Setup.output_file_stem + Suffix + ext
 
-    if Setup.output_directory == "": return file_name
-    else:                            return os.path.normpath(Setup.output_directory + "/" + file_name)
+    if not Setup.output_directory: return file_name
+    else:                          return os.path.normpath(Setup.output_directory + "/" + file_name)
 
