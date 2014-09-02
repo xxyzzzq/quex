@@ -867,7 +867,7 @@ class NumberSet(object):
         UniversalSet but not in self.
         """
         if len(self.__intervals) == 0:
-            self.__intervals = [ Interval(Begin, End) ]
+            self.__intervals = UniversalSet.get_intervals()
             return
 
         first = self.__intervals[0]
