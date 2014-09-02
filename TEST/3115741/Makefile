@@ -25,11 +25,13 @@ COMPILER = gcc -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                            \
-	 -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -Wconversion -pedantic                   \
+	 -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -Wconversion -pedantic \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DPRINT_TOKEN                                  \
 	 $(ADD_DEFINES)
    
+# -DQUEX_OPTION_DEBUG_SHOW                       \
+	
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________

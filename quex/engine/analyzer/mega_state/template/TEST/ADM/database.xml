@@ -1,6 +1,6 @@
-<test-database execution-time-sec="2.58" date="Sun Aug 24 09:12:38 2014">
+<test-database execution-time-sec="2.54" date="Tue Sep  2 08:30:40 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Combination of Two Transition Maps" time-sum-sec="0.47"> 
+    <test title="Combination of Two Transition Maps" time-sum-sec="0.46"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -11,7 +11,7 @@
            <choice name="4" result="OK" time_sec="0.09" crc="1319313977"/>
         </choice-list>
     </test>
-    <test title="Combine Simple" time-sum-sec="0.29"> 
+    <test title="Combine Simple" time-sum-sec="0.30"> 
         <application file-name="combine-simple.py" info-request-time="1398227720L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
@@ -20,7 +20,7 @@
            <choice name="distinguished" result="OK" time_sec="0.10" crc="-1963706776"/>
         </choice-list>
     </test>
-    <test title="Template states handling recursion" time-sum-sec="0.47"> 
+    <test title="Template states handling recursion" time-sum-sec="0.46"> 
         <application file-name="recursion.py" info-request-time="1402122029L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -32,7 +32,7 @@
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Get Best Matching Pair" time-sum-sec="0.47"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.46"> 
             <application file-name="best_matching_pair.py" info-request-time="1397789073L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -51,7 +51,7 @@
                <choice name="2" result="OK" time_sec="0.10" crc="-1615454940"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.66"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.65"> 
             <application file-name="metric.py" info-request-time="1398237111L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">

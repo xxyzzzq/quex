@@ -33,7 +33,7 @@ def do(txt, TM):
     #     (This may include 'no bisectioning')
     _implement(txt, structure)
 
-    txt.append("\n%s\n" % Lng.UNREACHABLE)
+    # txt.append("\n%s\n" % Lng.UNREACHABLE)
 
 def _implement(txt, structure):
     """Creates code for state transitions from this state. This function is very

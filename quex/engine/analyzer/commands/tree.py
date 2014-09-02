@@ -119,6 +119,29 @@ class CommandTree:
         ]
         return CommandTree(TheState.index, door_id_command_list)
 
+    def iterable_to_root(self, DoorId, done_set=None):
+        """Iterate from a node, parent by parent, to the root of the tree.
+
+        If 'done_set' is specified, it is taken care that:
+            (1) No Node with Node.door_id from DoneSet is yielded
+            (2) The DoorID of yielded nodes is added to done_set
+
+        YIELDS: Door which is a node in the tree.
+        """
+        node = self.door_db.get(DoorId)
+        if done_set is None:
+            while node is not None:
+                yield node
+                node = node.parent
+        else:
+            while node is not None:
+                if node.door_id not in done_set: yield node
+                done_set.add(node.door_id)
+                node = node.parent
+
+    def get_step_n_to_root(self, LeafDoorId):
+        return sum(1 for x in self.iterable_to_root(LeafDoorId))
+
     def get_string(self, CommandAliasDb=None):
         def cmd_iterable(DoorDb):
             for door in self.door_db.itervalues():
@@ -142,7 +165,6 @@ class Door(object):
         self.command_list = CmdList
         self.parent       = Parent
         self.child_set    = ChildSet
-
 
 class SharedTailCandidateSet(object):
     """A SharedTailCandidateSet is 1:1 associated with a shared tail command list.
@@ -201,7 +223,6 @@ class SharedTailCandidateSet(object):
             txt.append("        %s -> { %s }\n" % (str(door_id), "".join("%i, " % i for i in cut_indices)))
         txt.append("    }\n")
         return "".join(txt)
-
 
 class SharedTailDB:
     """_________________________________________________________________________                     
@@ -468,7 +489,6 @@ class SharedTailDB:
             " [%s]\n" % ("".join("%s " % CommandAliasDb[cmd] for cmd in Node.command_list)).strip()
         ])
         return txt
-    
 
 def get_string_DELETED(DoorTreeRoot):
     """ActionDB can be received, for example from the 'entry' object.

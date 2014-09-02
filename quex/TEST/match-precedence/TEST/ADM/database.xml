@@ -1,4 +1,4 @@
-<test-database execution-time-sec="14.22" date="Sun Aug 24 09:09:55 2014">
+<test-database execution-time-sec="14.21" date="Tue Sep  2 08:30:21 2014">
     <last-used-diff-display-program name=""/>
     <test title="Checking PRIORITY-MARK internally." time-sum-sec="3.39"> 
         <application file-name="priority.py" info-request-time="1387873736L" vanished="False"/>
@@ -50,7 +50,7 @@
            <choice name="subset" result="OK" time_sec="0.14" crc="1033631323"/>
         </choice-list>
     </test>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.43"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." time-sum-sec="1.42"> 
         <application file-name="unvalid-marks.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">

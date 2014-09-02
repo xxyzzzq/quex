@@ -17,7 +17,7 @@ def do(code, TheState, TheAnalyzer):
     tm = relate_to_TransitionCode(TheState.transition_map)
     transition_block.do(txt, tm)
 
-    # ( ) Post-state entry to init state (if necessary)
+    # (*) Post-state entry to init state (if necessary)
     txt.extend(post_txt) 
 
     # (*) Consistency check ___________________________________________________

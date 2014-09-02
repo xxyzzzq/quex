@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.85" date="Sun Aug 24 09:10:41 2014">
+<test-database execution-time-sec="0.88" date="Tue Sep  2 08:30:39 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.01"> 
@@ -29,7 +29,7 @@
         </test>
     </group>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.03"> 
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="strange_stream.exe" info-request-time="1408864239L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.491677"/>
@@ -40,7 +40,7 @@
                <choice name="5" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="strange_wstream.exe" info-request-time="1408864240L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.498777"/>

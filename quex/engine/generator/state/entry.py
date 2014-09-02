@@ -30,16 +30,15 @@ from   quex.engine.analyzer.door_id_address_label import IfDoorIdReferencedLabel
                                                          DoorID
 from   quex.engine.analyzer.commands.tree         import CommandTree
 from   quex.engine.tools                          import flatten_list_of_lists, \
-                                                         typed
+                                                         typed, none_isinstance
 from   quex.blackboard                            import Lng, E_Cmd
 
 @typed(FirstF=bool)
 def do(TheState):
     """Generate code for the entry into a state from multiple different states.
 
-    RETURNS: [0] Code to be 'pasted' in from of the transition map
-             [1] Code to be pasted after the transition map. 
-                 None -- if there is none.
+    RETURNS: [0] Code to be 'pasted' in FRONT of the transition map
+             [1] Code that can be 'pasted' anywhere. 
 
     The case where [1] is not None, is actually a special case. It is the case
     of the global entry into the state machine / analyzer function. 
@@ -51,24 +50,38 @@ def do(TheState):
     """
     cmd_tree = CommandTree.from_AnalyzerState(TheState)
 
+    global_entry_door_id    = TheState.entry.get_global_entry_door_id()
+
+    # Determin the branch that starts from a leaf and ends at the entry
+    # of the transition map (Processor main body).
+    straight_branch_door_id, \
+    global_entry_f           = __select_the_straight(cmd_tree, TheState)
+
     done_set = set()
-    post_txt = []
+    pre_txt  = do_from_leaf_to_root(TheState, cmd_tree, straight_branch_door_id, 
+                                    done_set, GlobalEntryF=global_entry_f)
 
-    global_entry_door_id = TheState.entry.get_global_entry_door_id()
-    if global_entry_door_id is not None:
-        pre_txt = do_from_leaf_to_root(TheState, cmd_tree, 
-                                       global_entry_door_id, done_set, 
-                                       GlobalEntryF=True)
-        ref     = post_txt
-    else:
-        pre_txt = ["\n\n    %s\n" % Lng.UNREACHABLE]
-        ref     = pre_txt
-
-    ref.extend(
-        do_leafs(TheState, cmd_tree, done_set)
-    )
+    post_txt = do_leafs(TheState, cmd_tree, done_set)
 
     return pre_txt, post_txt
+
+def __select_the_straight(CmdTree, TheState):
+    """One branch from leaf to root is special: It implements ALL nodes
+    including the ROOT node. This branch has to be placed IMMEDIATELY before the
+    transition map. All other branches are moveable inside the function.
+
+    RETURNS: DoorID of selected leaf node.
+    """
+    # (*) Is there a 'global' entry?
+    global_entry_door_id = TheState.entry.get_global_entry_door_id()
+    if global_entry_door_id is not None:
+        return global_entry_door_id, True
+
+    # (*) Otherwise, take the longest path to the root
+    door_id = max(TheState.entry.door_id_set(), 
+                  key=lambda door_id: CmdTree.get_step_n_to_root(door_id))
+
+    return door_id, False
 
 def do_leafs(TheState, CmdTree, done_set):
     """Create code starting from the 'leafs' of the command tree. The leafs are 
@@ -81,12 +94,12 @@ def do_leafs(TheState, CmdTree, done_set):
     txt_list = []
     for door_id in outer_door_id_set:
         if door_id in done_set: continue
-        txt_list.append(
-            do_from_leaf_to_root(TheState, CmdTree, door_id, done_set)
-        )
+        branch_txt = do_from_leaf_to_root(TheState, CmdTree, door_id, done_set)
+        txt_list.append(branch_txt)
 
     # Flatten the list of lists, where the longest list has to come last.
-    return flatten_list_of_lists(sorted(txt_list, key=lambda x: len(x)))
+    result = flatten_list_of_lists(sorted(txt_list, key=lambda x: len(x)))
+    return result
 
 def do_from_leaf_to_root(TheState, CmdTree, LeafDoorId, done_set, GlobalEntryF=False):
     """Code the sequence from a leaf of the command tree to its root. This
@@ -99,24 +112,19 @@ def do_from_leaf_to_root(TheState, CmdTree, LeafDoorId, done_set, GlobalEntryF=F
     The list of string implements nodes from a command tree leaf over all of
     its parents to the root, or the first already implemented parent.
     """
-    def from_leaf_to_root(LeafNode):
-        """Starts from a given leaf node (given by LeafDoorId) and iterates
-        through all of its parents until it reaches the root of the command
-        tree.
-        
-        YIELDS: Command tree node
-        """
-        node = LeafNode
-        while node is not None:
-            if node.door_id not in done_set:
-                yield node
-            done_set.add(node.door_id)
-            node = node.parent
+    txt = []
+    if not GlobalEntryF:
+        # When the entry is a global entry into the analyzer, then it is slipped
+        # into at function begin. => no 'assert unreachable'! Else, yes!
+        txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
 
-    return flatten_list_of_lists(
-        __code(node, TheState, done_set, GlobalEntryF)
-        for node in from_leaf_to_root(CmdTree.door_db[LeafDoorId])
+    txt.extend( 
+        flatten_list_of_lists(
+            __code(node, TheState, done_set, GlobalEntryF)
+            for node in CmdTree.iterable_to_root(LeafDoorId, done_set)
+        )
     )
+    return txt
 
 def __code(Node, TheState, done_set, GlobalEntryF):
     """Code a node of the command tree in a sequence of nodes from leaf to
@@ -126,6 +134,8 @@ def __code(Node, TheState, done_set, GlobalEntryF):
 
     RETURNS: list of strings = code for node.
     """
+    done_set.add(Node.door_id)
+
     txt = []
     __label_node(txt, Node)
     __comment(txt, Node, TheState, GlobalEntryF)
@@ -137,6 +147,7 @@ def __code(Node, TheState, done_set, GlobalEntryF):
 
     # (*) The 'goto parent'.
     if Node.parent is None:
+        # This is the root. 
         return txt
 
     elif Node.parent.door_id not in done_set:

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="20.88" date="Sun Aug 24 09:18:13 2014">
+<test-database execution-time-sec="20.82" date="Tue Sep  2 08:30:54 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -122,7 +122,7 @@
         </test>
     </group>
     <group name="Plot">
-        <test title="Get graphviz string of state machine." time-sum-sec="0.13"> 
+        <test title="Get graphviz string of state machine." time-sum-sec="0.12"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
@@ -155,7 +155,7 @@
                <choice name="BeginOfLine" result="OK" time_sec="0.68" crc="268888540"/>
             </choice-list>
         </test>
-        <test title="Characters of different horizontal sizes." time-sum-sec="2.67"> 
+        <test title="Characters of different horizontal sizes." time-sum-sec="2.68"> 
             <application file-name="test-count_character_n-2.py" info-request-time="1394950335L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -272,13 +272,6 @@
                <choice name="" result="OK" time_sec="0.07" crc="-77063234"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
-            </choice-list>
-        </test>
         <test title="Cloning" time-sum-sec="0.06"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
@@ -291,6 +284,13 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.07" crc="638605976"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.06"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1387873736L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="1084071896"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" time-sum-sec="0.10"> 
@@ -318,7 +318,7 @@
                <choice name="" result="OK" time_sec="4.99" crc="119936027"/>
             </choice-list>
         </test>
-        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.31"> 
+        <test title="Contigous Word Sequence Ranges" time-sum-sec="0.30"> 
             <application file-name="test-utf16_interval_split.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -331,7 +331,7 @@
         </test>
     </group>
     <group name="UTF8 State Split">
-        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.37"> 
+        <test title="Contigous Byte Sequence Ranges" time-sum-sec="0.36"> 
             <application file-name="test-utf8_number_set_split.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
@@ -350,7 +350,7 @@
                <choice name="" result="OK" time_sec="0.81" crc="-544662156"/>
             </choice-list>
         </test>
-        <test title="Intervals" time-sum-sec="0.25"> 
+        <test title="Intervals" time-sum-sec="0.24"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -360,7 +360,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.06" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" time-sum-sec="0.75"> 
+        <test title="Plug Intermediate States" time-sum-sec="0.72"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="False">
