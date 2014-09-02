@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.53" date="Tue Sep  2 20:28:13 2014">
+<test-database execution-time-sec="0.53" date="Tue Sep  2 20:49:50 2014">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.04"> 
         <application file-name="enum.py" info-request-time="1387873735L" vanished="False"/>
