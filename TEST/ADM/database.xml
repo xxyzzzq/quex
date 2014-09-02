@@ -1,4 +1,4 @@
-<test-database execution-time-sec="296.72" date="Tue Sep  2 08:21:11 2014">
+<test-database execution-time-sec="335.78" date="Tue Sep  2 20:26:29 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="2.06"> 
@@ -44,13 +44,13 @@
                <choice name="FilesExist" result="OK" time_sec="0.73" crc="-1946340971"/>
             </choice-list>
         </test>
-        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="11.72"> 
+        <test title="2001602 RE matching UTF8 l quote uno" time-sum-sec="12.46"> 
             <application file-name="bug-2001602.sh" info-request-time="1405121582L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="3.81" crc="60983025"/>
                <choice name="icu" result="OK" time_sec="4.01" crc="60983025"/>
-               <choice name="codec" result="FAIL" time_sec="3.90" crc="60983025"/>
+               <choice name="codec" result="FAIL" time_sec="4.64" crc="60983025"/>
             </choice-list>
         </test>
         <test title="3025852 0.49.2 Instatiation of inheritable-only-modes" time-sum-sec="0.89"> 
@@ -127,11 +127,11 @@
                <choice name="" result="OK" time_sec="0.86" crc="722879612"/>
             </choice-list>
         </test>
-        <test title="3504730 0.61.2 Post condition with OR causes crash" time-sum-sec="1.44"> 
+        <test title="3504730 0.61.2 Post condition with OR causes crash" time-sum-sec="2.22"> 
             <application file-name="bug-3504730.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="simple" result="FAIL" time_sec="0.24" crc="-1336575801"/>
+               <choice name="simple" result="OK" time_sec="1.02" crc="-1336575801"/>
                <choice name="more" result="OK" time_sec="1.20" crc="-977054981"/>
             </choice-list>
         </test>
@@ -173,14 +173,14 @@
                <choice name="" result="OK" time_sec="0.47" crc="-99272246"/>
             </choice-list>
         </test>
-        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="2.38"> 
+        <test title="3357694 Matches too long when using certain post condition" time-sum-sec="2.63"> 
             <application file-name="bug-3357694.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
                <choice name="Normal" result="OK" time_sec="1.26" crc="-515846762"/>
-               <choice name="TemplateCompression" result="FAIL" time_sec="0.37" crc="1869054668"/>
-               <choice name="PathCompression" result="FAIL" time_sec="0.37" crc="1869054668"/>
-               <choice name="PathTemplateCompression" result="FAIL" time_sec="0.38" crc="1869054668"/>
+               <choice name="TemplateCompression" result="FAIL" time_sec="0.53" crc="1869054668"/>
+               <choice name="PathCompression" result="FAIL" time_sec="0.43" crc="1869054668"/>
+               <choice name="PathTemplateCompression" result="FAIL" time_sec="0.41" crc="1869054668"/>
             </choice-list>
         </test>
         <test title="3392478 UTF-8 Backward Input Position Detection Error" time-sum-sec="1.44"> 
@@ -192,12 +192,12 @@
         </test>
     </group>
     <group name="dlazesz">
-        <test title="261 Track Analysis--dangerous paths." time-sum-sec="0.52"> 
+        <test title="261 Track Analysis--dangerous paths." time-sum-sec="2.14"> 
             <application file-name="bug-261.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.26" crc="1602965633"/>
-               <choice name="2" result="FAIL" time_sec="0.26" crc="1167937483"/>
+               <choice name="1" result="OK" time_sec="1.06" crc="1602965633"/>
+               <choice name="2" result="OK" time_sec="1.08" crc="1167937483"/>
             </choice-list>
         </test>
         <test title="3510261 0.61.2 Failed ydd (0xFF) and begin of line pattern" time-sum-sec="0.94"> 
@@ -341,19 +341,19 @@
                <choice name="good" result="OK" time_sec="2.36" crc="None"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="4.05"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="37.84"> 
             <application file-name="bug-1952133.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
-               <choice name="29" result="FAIL" time_sec="0.48" crc="-666949049"/>
-               <choice name="30" result="FAIL" time_sec="0.45" crc="724510434"/>
-               <choice name="127" result="FAIL" time_sec="0.44" crc="1623846816"/>
-               <choice name="128" result="FAIL" time_sec="0.45" crc="-1539323143"/>
-               <choice name="129" result="FAIL" time_sec="0.44" crc="124125853"/>
-               <choice name="2499" result="FAIL" time_sec="0.44" crc="-1168176940"/>
-               <choice name="2500" result="FAIL" time_sec="0.45" crc="193244179"/>
-               <choice name="2501" result="FAIL" time_sec="0.44" crc="406806272"/>
-               <choice name="2502" result="FAIL" time_sec="0.45" crc="754141749"/>
+               <choice name="29" result="OK" time_sec="5.50" crc="-666949049"/>
+               <choice name="30" result="OK" time_sec="4.04" crc="724510434"/>
+               <choice name="127" result="OK" time_sec="3.94" crc="1623846816"/>
+               <choice name="128" result="OK" time_sec="3.92" crc="-1539323143"/>
+               <choice name="129" result="OK" time_sec="3.93" crc="124125853"/>
+               <choice name="2499" result="OK" time_sec="4.00" crc="-1168176940"/>
+               <choice name="2500" result="OK" time_sec="4.03" crc="193244179"/>
+               <choice name="2501" result="OK" time_sec="4.12" crc="406806272"/>
+               <choice name="2502" result="OK" time_sec="4.36" crc="754141749"/>
             </choice-list>
         </test>
         <test title="3039173 On Mismatch" time-sum-sec="0.90"> 
@@ -443,14 +443,14 @@
         </test>
     </group>
     <group name="mabraham">
-        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.04"> 
+        <test title="3109479 0.55.2 Error Transition to Forward Init State" time-sum-sec="2.92"> 
             <application file-name="bug-3109479.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.31" crc="818163954"/>
                <choice name="2" result="OK" time_sec="0.30" crc="1783765944"/>
                <choice name="3" result="OK" time_sec="1.14" crc="1097270163"/>
-               <choice name="4" result="FAIL" time_sec="0.29" crc="-1687333515"/>
+               <choice name="4" result="OK" time_sec="1.17" crc="-1687333515"/>
             </choice-list>
         </test>
     </group>
@@ -562,8 +562,8 @@
             <application file-name="bug-3512806.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="C" result="FAIL" time_sec="0.05" crc="None"/>
-               <choice name="Cpp" result="FAIL" time_sec="0.03" crc="None"/>
+               <choice name="C" result="FAIL" time_sec="0.04" crc="None"/>
+               <choice name="Cpp" result="FAIL" time_sec="0.04" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -578,11 +578,11 @@
         </test>
     </group>
     <group name="petulda">
-        <test title="3178600 0.58.1 Last appeared char not stored when switching modes" time-sum-sec="0.35"> 
+        <test title="3178600 0.58.1 Last appeared char not stored when switching modes" time-sum-sec="1.30"> 
             <application file-name="bug-3178600.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.35" crc="-1207199507"/>
+               <choice name="" result="OK" time_sec="1.30" crc="-1207199507"/>
             </choice-list>
         </test>
     </group>
@@ -605,11 +605,11 @@
         </test>
     </group>
     <group name="remcobloemen1">
-        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="0.28"> 
+        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="0.32"> 
             <application file-name="bug-3295781.sh" info-request-time="1405279907L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.28" crc="-1533834692"/>
+               <choice name="" result="FAIL" time_sec="0.32" crc="-1533834692"/>
             </choice-list>
         </test>
     </group>
