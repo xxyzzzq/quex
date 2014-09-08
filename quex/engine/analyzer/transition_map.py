@@ -77,8 +77,8 @@ class TransitionMap(list):
 
         NOTE: The name is derived from python's 'itertools.izip'.
         """
-        begin = 0
-        end   = Setup.get_buffer_element_value_limit()
+        begin = Setup.all_character_set().minimum()
+        end   = Setup.all_character_set().supremum()
 
         assert len(TransitionMapA) != 0 
         TransitionMapA.assert_boundary(begin, end)

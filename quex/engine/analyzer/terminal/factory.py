@@ -116,6 +116,13 @@ class TerminalFactory:
         terminating_zero_f, \
         adorned_code        = self.__adorn_user_code(Code, MatchF=True)
 
+        # IMPORTANT: Terminals can be entered by any kind of 'GOTO'. In order to
+        #            be on the safe side, BIPD should be started from within the
+        #            terminal itself. Otherwise, it may be missed due to some 
+        #            coding negligence.
+        if ThePattern.bipd_sm is not None:
+            TerminalFactory.do_bipd_entry_and_return(txt, ThePattern)
+
         text = [
             self.get_counter_text(ThePattern),
             #
@@ -229,3 +236,27 @@ class TerminalFactory:
     def name_pattern_match_terminal(PatternString):
         return safe_string(PatternString)
 
+    @staticmethod
+    def do_bipd_entry_and_return(txt, ThePattern):
+        """(This is a very seldom case) After the pattern has matched, one needs 
+        to determine the end of the lexeme by 'backward input position detection' 
+        (bipd). Thus,
+
+              TERMINAL 
+                   '----------.
+                       (goto) '---------> BIPD State Machine
+                                               ...
+                                          (determine _input_p)
+                                               |
+                      (label) .----------------'
+                   .----------'
+                   |
+              The actions on 
+              pattern match.
+        """
+        door_id_entry  = DoorID.state_machine_entry(ThePattern.bipd_sm.get_id())
+        door_id_return = DoorID.bipd_return(ThePattern.incidence_id())
+        txt.append("    %s\n%s\n" 
+           % (Lng.GOTO(door_id_entry),   # Enter BIPD
+              Lng.LABEL(door_id_return)) # Return from BIPD
+        )

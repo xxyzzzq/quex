@@ -37,7 +37,7 @@ from   quex.blackboard                            import Lng, E_Cmd
 def do(TheState):
     """Generate code for the entry into a state from multiple different states.
 
-    RETURNS: [0] Code to be 'pasted' in FRONT of the transition map
+    RETURNS: [0] Code to be 'pasted' IN FRONT of the transition map
              [1] Code that can be 'pasted' anywhere. 
 
     The case where [1] is not None, is actually a special case. It is the case
@@ -49,8 +49,6 @@ def do(TheState):
     organized in a command tree as explained in the entry of the file.
     """
     cmd_tree = CommandTree.from_AnalyzerState(TheState)
-
-    global_entry_door_id    = TheState.entry.get_global_entry_door_id()
 
     # Determin the branch that starts from a leaf and ends at the entry
     # of the transition map (Processor main body).
@@ -73,7 +71,7 @@ def __select_the_straight(CmdTree, TheState):
     RETURNS: DoorID of selected leaf node.
     """
     # (*) Is there a 'global' entry?
-    global_entry_door_id = TheState.entry.get_global_entry_door_id()
+    global_entry_door_id = TheState.entry.get_state_machine_entry_door_id()
     if global_entry_door_id is not None:
         return global_entry_door_id, True
 

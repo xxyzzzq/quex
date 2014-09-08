@@ -114,6 +114,7 @@ class Analyzer:
         self.__init_state_index = InitStateIndex
         self.__state_db         = {}
         self.drop_out           = Processor(E_StateIndices.DROP_OUT, Entry())
+        self.__state_machine_id = None
 
     @classmethod
     @typed(SM=StateMachine, EngineType=engine.Base)
@@ -285,7 +286,8 @@ class Analyzer:
         if StateIndex == self.init_state_index:
             if self.engine_type.is_FORWARD():
                 ta = TransitionAction(CommandList(InputPDereference()))
-            state.entry.enter(StateIndex, E_StateIndices.NONE, ta)
+            state.entry.enter_state_machine_entry(self.__state_machine_id, 
+                                                  StateIndex, ta)
 
         return state
 
@@ -315,7 +317,8 @@ class Analyzer:
         return self.state_db[self.init_state_index]
 
     def get_action_at_state_machine_entry(self):
-        return self.init_state().entry.get_action(self.init_state_index, E_StateIndices.NONE)
+        return self.init_state().entry.get_action(self.init_state_index, 
+                                                  E_StateIndices.NONE)
 
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.
@@ -365,20 +368,19 @@ class Analyzer:
 
         Consequently, a drop-out action contains two elements:
 
-            -- Acceptance Checker: Dependent on the fulfilled pre-contexts a
-               winning pattern is determined. 
+         -- Acceptance Checker: Dependent on the fulfilled pre-contexts a
+            winning pattern is determined. 
 
-               If acceptance depends on stored acceptances, a request is raised
-               at each accepting state that is has to store its acceptance in 
-               variable 'last_acceptance'.
+            If acceptance depends on stored acceptances, a request is raised at
+            each accepting state that is has to store its acceptance in
+            variable 'last_acceptance'.
 
-            -- Terminal Router: Dependent on the accepted pattern the input
-               position is modified and the terminal containing the pattern
-               action is entered.
+         -- Terminal Router: Dependent on the accepted pattern the input
+            position is modified and the terminal containing the pattern
+            action is entered.
 
-               If the input position is restored from a position register, 
-               then the storing states are requested to store the input
-               position.
+            If the input position is restored from a position register, then
+            the storing states are requested to store the input position.
 
         _______________________________________________________________________
         HINT:

@@ -356,44 +356,66 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     variable_db.variable_db.init()  # because constructor creates some addresses.
     blackboard.required_support_begin_of_line_set()
 
-    def action(PatternName): 
-        txt = "%s\n" % Lng.STORE_LAST_CHARACTER(blackboard.required_support_begin_of_line())
-        txt += "%s\n" % Lng.LEXEME_TERMINATING_ZERO_SET(True)
-        txt += 'printf("%19s  \'%%s\'\\n", Lexeme); fflush(stdout);\n' % PatternName
+    def action(ThePattern, PatternName): 
+        txt = []
+        if ThePattern.bipd_sm is not None:
+            TerminalFactory.do_bipd_entry_and_return(txt, pattern)
 
-        if   "->1" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mr_analyzer_function);\n"
-        elif "->2" in PatternName: txt += "me->current_analyzer_function = QUEX_NAME(Mrs_analyzer_function);\n"
+        txt.append("%s\n" % Lng.STORE_LAST_CHARACTER(blackboard.required_support_begin_of_line()))
+        txt.append("%s\n" % Lng.LEXEME_TERMINATING_ZERO_SET(True))
+        txt.append('printf("%19s  \'%%s\'\\n", Lexeme); fflush(stdout);\n' % PatternName)
 
-        if "CONTINUE" in PatternName: txt += ""
-        elif "STOP" in PatternName:   txt += "return false;\n"
-        else:                         txt += "return true;\n"
+        if   "->1" in PatternName: txt.append("me->current_analyzer_function = QUEX_NAME(Mr_analyzer_function);\n")
+        elif "->2" in PatternName: txt.append("me->current_analyzer_function = QUEX_NAME(Mrs_analyzer_function);\n")
+
+        if "CONTINUE" in PatternName: txt.append("")
+        elif "STOP" in PatternName:   txt.append("return false;\n")
+        else:                         txt.append("return true;\n")
 
 
-        txt += "%s\n" % Lng.GOTO(DoorID.continue_with_on_after_match())
+        txt.append("%s\n" % Lng.GOTO(DoorID.continue_with_on_after_match()))
         ## print "#", txt
-        return CodeTerminal([ txt ])
+        return CodeTerminal(txt)
     
     # -- Display Setup: Patterns and the related Actions
     print "(*) Lexical Analyser Patterns:"
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
 
+    if not SecondModeF:  sm_name = "Mr"
+    else:                sm_name = "Mrs"
+
+    Setup.analyzer_class_name = sm_name
+    
+    pattern_action_list = [
+        (regex.do(pattern_str, PatternDictionary), action_str)
+        for pattern_str, action_str in PatternActionPairList
+    ]
+    
+    support_begin_of_line_f = False
+    for pattern, action_str in pattern_action_list:
+        support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
+
+    for pattern, action_str in pattern_action_list:
+        pattern.prepare_count_info(CounterSetupLineColumn_Default(), CodecTrafoInfo=None)
+        pattern.mount_post_context_sm()
+        pattern.mount_pre_context_sm()
+        pattern.cut_character_list(signal_character_list(Setup))
+
     # -- PatternList/TerminalDb
+    #    (Terminals can only be generated after the 'mount procedure', because, 
+    #     the bipd_sm is generated through mounting.)
     on_failure              = CodeTerminal(["return false;\n"])
     support_begin_of_line_f = False
-    pattern_list            = []
     terminal_db             = {
         E_IncidenceIDs.MATCH_FAILURE: Terminal(on_failure, "FAILURE"),
         E_IncidenceIDs.END_OF_STREAM: Terminal(on_failure, "END_OF_STREAM"),
     }
     terminal_db[E_IncidenceIDs.MATCH_FAILURE].set_incidence_id(E_IncidenceIDs.MATCH_FAILURE)
     terminal_db[E_IncidenceIDs.END_OF_STREAM].set_incidence_id(E_IncidenceIDs.END_OF_STREAM)
-    for pattern_str, action_str in PatternActionPairList:
-        pattern                  =  regex.do(pattern_str, PatternDictionary)
-        support_begin_of_line_f |= pattern.pre_context_trivial_begin_of_line_f
-        pattern_list.append(pattern)
-        name     = TerminalFactory.name_pattern_match_terminal(pattern_str)
-        terminal = Terminal(action(action_str), name)
+    for pattern, action_str in pattern_action_list:
+        name     = TerminalFactory.name_pattern_match_terminal(pattern.pattern_string())
+        terminal = Terminal(action(pattern, action_str), name)
         terminal.set_incidence_id(pattern.incidence_id())
         terminal_db[pattern.incidence_id()] = terminal
 
@@ -408,23 +430,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     print "## (1) code generation"    
 
-    if not SecondModeF:  sm_name = "Mr"
-    else:                sm_name = "Mrs"
-
-    Setup.analyzer_class_name = sm_name
-
-    for pattern in pattern_list:
-        pattern.prepare_count_info(CounterSetupLineColumn_Default(), CodecTrafoInfo=None)
-        pattern.mount_post_context_sm()
-        pattern.mount_pre_context_sm()
-        pattern.cut_character_list(signal_character_list(Setup))
-
+    pattern_list = [ pattern for pattern, action_str in pattern_action_list ]
     function_body, variable_definitions = cpp_generator.do_core(pattern_list, terminal_db)
     function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_CHARACTER*)0, (QUEX_TYPE_CHARACTER*)0); }\n"
     function_txt                        = cpp_generator.wrap_up(sm_name, function_body, 
                                                                 variable_definitions, 
                                                                 ModeNameList=[])
-
 
     assert all_isinstance(function_txt, str)
 

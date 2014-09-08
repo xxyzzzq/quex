@@ -1,49 +1,49 @@
-<test-database execution-time-sec="4.05" date="Tue Sep  2 20:49:50 2014">
+<test-database execution-time-sec="4.12" date="Mon Sep  8 21:51:55 2014">
     <last-used-diff-display-program name=""/>
-    <test title="" time-sum-sec="2.01"> 
+    <test title="" time-sum-sec="2.02"> 
         <application file-name="run_coverage.sh" info-request-time="1408779207L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="NO GOOD FILE" time_sec="2.01" crc="None"/>
+           <choice name="" result="NO GOOD FILE" time_sec="2.02" crc="None"/>
         </choice-list>
     </test>
     <group name="Code generation">
-        <test title="Comparison Sequence" time-sum-sec="0.74"> 
+        <test title="Comparison Sequence" time-sum-sec="0.78"> 
             <application file-name="test-comparison_sequence.py" info-request-time="1408778493L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
                <choice name="C-2-fw" result="OK" time_sec="0.09" crc="-2120179977"/>
                <choice name="C-2-bw" result="OK" time_sec="0.09" crc="1067426614"/>
-               <choice name="C-3-fw" result="OK" time_sec="0.09" crc="-341816047"/>
-               <choice name="C-3-bw" result="OK" time_sec="0.09" crc="1507825320"/>
-               <choice name="C-4-fw" result="OK" time_sec="0.09" crc="1360206059"/>
+               <choice name="C-3-fw" result="OK" time_sec="0.10" crc="-341816047"/>
+               <choice name="C-3-bw" result="OK" time_sec="0.11" crc="1507825320"/>
+               <choice name="C-4-fw" result="OK" time_sec="0.10" crc="1360206059"/>
                <choice name="C-4-bw" result="OK" time_sec="0.10" crc="-1189755466"/>
                <choice name="C-5-fw" result="OK" time_sec="0.09" crc="1772389293"/>
                <choice name="C-5-bw" result="OK" time_sec="0.10" crc="1897381153"/>
             </choice-list>
         </test>
-        <test title="Branch Table (switch-case)" time-sum-sec="0.38"> 
+        <test title="Branch Table (switch-case)" time-sum-sec="0.37"> 
             <application file-name="test-branch_table.py" info-request-time="1408778229L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
-               <choice name="C-2" result="OK" time_sec="0.11" crc="482590475"/>
+               <choice name="C-2" result="OK" time_sec="0.09" crc="482590475"/>
                <choice name="C-3" result="OK" time_sec="0.09" crc="-2093056677"/>
                <choice name="C-4" result="OK" time_sec="0.09" crc="-1376196976"/>
                <choice name="C-5" result="OK" time_sec="0.09" crc="-990235024"/>
             </choice-list>
         </test>
-        <test title="Branch Table (switch-case) II" time-sum-sec="0.82"> 
+        <test title="Branch Table (switch-case) II" time-sum-sec="0.86"> 
             <application file-name="test-branch_table-2.py" info-request-time="1408778223L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
                <choice name="C-7" result="OK" time_sec="0.09" crc="-1898273026"/>
-               <choice name="C-8" result="OK" time_sec="0.10" crc="1379565647"/>
+               <choice name="C-8" result="OK" time_sec="0.09" crc="1379565647"/>
                <choice name="C-9" result="OK" time_sec="0.09" crc="-323172045"/>
                <choice name="C-15" result="OK" time_sec="0.09" crc="-860057566"/>
-               <choice name="C-16" result="OK" time_sec="0.09" crc="745394353"/>
+               <choice name="C-16" result="OK" time_sec="0.10" crc="745394353"/>
                <choice name="C-17" result="OK" time_sec="0.09" crc="796249272"/>
-               <choice name="C-31" result="OK" time_sec="0.09" crc="1773095653"/>
-               <choice name="C-32" result="OK" time_sec="0.09" crc="-1840186582"/>
+               <choice name="C-31" result="OK" time_sec="0.10" crc="1773095653"/>
+               <choice name="C-32" result="OK" time_sec="0.10" crc="-1840186582"/>
                <choice name="C-33" result="OK" time_sec="0.09" crc="-1176589660"/>
             </choice-list>
         </test>

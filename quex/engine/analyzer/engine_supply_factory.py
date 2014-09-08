@@ -32,12 +32,8 @@ class Base:
     def create_DropOut(self, SM_State):                assert False
 
 class Class_FORWARD(Base):
-    def __init__(self, BipdEntryDoorIdDb=None):
-        # map: AcceptanceID --> Entry Door of the BIPD
-        if BipdEntryDoorIdDb is not None:
-            self.bipd_entry_door_id_db = BipdEntryDoorIdDb
-        else:
-            self.bipd_entry_door_id_db = {}
+    def __init__(self):
+        pass
 
     def is_FORWARD(self):                  
         return True
@@ -119,7 +115,7 @@ class Class_BACKWARD_INPUT_POSITION(Base):
             return CommandList(
                 QuexDebug('pattern %i: backward input position detected\\n' % incidence_id),
                 InputPIncrement(), 
-                GotoDoorId(DoorID.incidence(incidence_id))
+                GotoDoorId(DoorID.bipd_return(incidence_id))
             )
         else:
             return CommandList(

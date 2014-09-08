@@ -135,14 +135,12 @@ def _get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
 # .file_name      = Name of file where the codec was taken from.
 # .source_set     = NumberSet of unicode code points which have a representation 
 #                   the given codec.
-# .inv_source_set = inverse of .source_set
 # .drain_set      = NumberSet of available code points in the given codec.
-# .inv_drain_set  = inverse of drain_set
 #
 # NOTE: If the content of the file was not a valid codec transformation info,
 #       then the following holds:
 #
-#       .source_set = .inv_source_set = .drain_set = .inv_drain_set = None
+#       .source_set = .drain_set = None
 #______________________________________________________________________________
 class CodecTransformationInfo(list):
     def __init__(self, Codec=None, FileName=None, ExitOnErrorF=True):
@@ -195,18 +193,11 @@ class CodecTransformationInfo(list):
         if error_str is not None:
             error_msg(error_str, fh, DontExitF=not ExitOnErrorF)
             self.__set_invalid() # Transformation is not valid.
-            return
-
-        # Determine uncovered ranges.
-        self.inv_source_set = self.source_set.get_complement(Setup.all_character_set()) 
-        self.inv_drain_set  = self.drain_set.get_complement(Setup.all_character_set()) 
 
     def __set_invalid(self):
         list.clear(self)                  
         self.source_set     = None
         self.drain_set      = None
-        self.inv_source_set = None
-        self.inv_drain_set  = None
 
 def get_supported_unicode_character_set(CodecAlias=None, FileName=None):
     """RETURNS:

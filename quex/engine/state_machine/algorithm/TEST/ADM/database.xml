@@ -1,20 +1,20 @@
-<test-database execution-time-sec="0.70" date="Tue Sep  2 20:49:50 2014">
+<test-database execution-time-sec="0.73" date="Mon Sep  8 21:52:35 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
-        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.23"> 
+        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.25"> 
             <application file-name="test-hopcroft-minimization-2.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NEW" result="OK" time_sec="0.12" crc="-2137376588"/>
-               <choice name="ADAPT" result="OK" time_sec="0.11" crc="-2137376588"/>
+               <choice name="NEW" result="OK" time_sec="0.13" crc="-2137376588"/>
+               <choice name="ADAPT" result="OK" time_sec="0.12" crc="-2137376588"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.16"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.17"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
                <choice name="NEW" result="OK" time_sec="0.08" crc="320921215"/>
-               <choice name="ADAPT" result="OK" time_sec="0.08" crc="320921215"/>
+               <choice name="ADAPT" result="OK" time_sec="0.09" crc="320921215"/>
             </choice-list>
         </test>
         <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.14"> 

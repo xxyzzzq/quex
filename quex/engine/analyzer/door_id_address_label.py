@@ -76,6 +76,8 @@ class DoorID(namedtuple("DoorID_tuple", ("state_index", "door_index"))):
     @staticmethod                        
     def incidence(IncidenceId):            return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.ACCEPTANCE)
     @staticmethod                        
+    def bipd_return(IncidenceId):     return DoorID(dial_db.map_incidence_id_to_state_index(IncidenceId), E_DoorIdIndex.BIPD_RETURN)
+    @staticmethod                        
     def state_machine_entry(SM_Id):        return DoorID(SM_Id,      E_DoorIdIndex.STATE_MACHINE_ENTRY)
     @staticmethod                        
     def global_state_router():             return DoorID(0L,         E_DoorIdIndex.GLOBAL_STATE_ROUTER)
@@ -328,8 +330,6 @@ class DialDB(object):
 
         return index
     
-
-
 dial_db = DialDB()
 
 class DoorID_Scheme(tuple):

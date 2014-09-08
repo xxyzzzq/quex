@@ -7,11 +7,14 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.interval_handling       import Interval
 import quex.engine.analyzer.transition_map as     transition_map_tools
 from   quex.engine.analyzer.transition_map import TransitionMap
+from   quex.blackboard import setup as Setup
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
     print "Transition Map Tools: TransitionMap.izip;"
     sys.exit()
+
+Setup.set_all_character_set_UNIT_TEST(-sys.maxint, sys.maxint)
 
 def test(Name, TM_A, TM_B):
     tm_a = TransitionMap.from_iterable((Interval(x[0], x[1]), x[2]) for x in TM_A)

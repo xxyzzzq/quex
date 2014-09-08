@@ -103,6 +103,9 @@ class QuexSetup:
         if self.buffer_element_size == 1: return "1 byte"
         else:                             return "%i bytes" % self.buffer_element_size
 
+    def set_all_character_set_UNIT_TEST(self, Begin, End):
+        self.__all_character_set = NumberSet.from_range(Begin, End)
+
     def all_character_set(self):
         if self.__all_character_set is None:
             if   self.buffer_codec == "unicode":

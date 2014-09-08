@@ -1,10 +1,12 @@
 from   quex.engine.analyzer.commands.core         import StoreInputPosition, Command, CommandList
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
-from   quex.engine.analyzer.door_id_address_label import dial_db
+from   quex.engine.analyzer.door_id_address_label import dial_db, \
+                                                         DoorID
 from   quex.engine.tools                          import typed, \
                                                          TypedDict
 from   quex.blackboard                            import E_Cmd, \
-                                                         E_StateIndices
+                                                         E_StateIndices, \
+                                                         E_DoorIdIndex
 
 class Entry(object):
     """________________________________________________________________________
@@ -120,6 +122,7 @@ class Entry(object):
     def enter_CommandList(self, ToStateIndex, FromStateIndex, Cl):
         return self.enter(ToStateIndex, FromStateIndex, TransitionAction(Cl))
 
+    @typed(TheAction=TransitionAction)
     def enter(self, ToStateIndex, FromStateIndex, TheAction):
         assert isinstance(TheAction, TransitionAction)
         #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
@@ -132,6 +135,11 @@ class Entry(object):
         self.__db[transition_id] = TheAction
         return transition_id
 
+    @typed(ta=TransitionAction)
+    def enter_state_machine_entry(self, SM_id, ToStateIndex, ta):
+        ta.door_id = DoorID.state_machine_entry(SM_id)
+        return self.enter(ToStateIndex, E_StateIndices.NONE, ta)
+
     def enter_before(self, ToStateIndex, FromStateIndex, TheCommandList):
         transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
         ta = self.__db.get(transition_id)
@@ -142,7 +150,7 @@ class Entry(object):
     def __get_trigger_id(self, ToStateIndex, FromStateIndex):
         ft = (ToStateIndex, FromStateIndex)
         tmp = self.__trigger_id_db.get(ft)
-        # "FromStateIndex == E_StateIndices.NONE" indicates the entry into the
+        # "FromStateIndex == E_StateIndices.NONE" indicates the entry into the 
         # state machine. There cannot be more than one entry into the state 
         # machine. Thus, it cannot appear twice.
         assert FromStateIndex != E_StateIndices.NONE or tmp is None
@@ -211,13 +219,14 @@ class Entry(object):
                    for action in self.__db.itervalues()
                    if action.door_id is not None)
 
-    def get_global_entry_door_id(self):
+    def get_state_machine_entry_door_id(self):
         """RETURNS: DoorID, if the entry contains THE entry into the analyzer.
                     None, if not.
         """
         for transition_id, action in self.__db.iteritems():
             if transition_id.source_state_index != E_StateIndices.NONE: 
                 continue
+            assert action.door_id.door_index == E_DoorIdIndex.STATE_MACHINE_ENTRY
             return action.door_id
         return None
 
