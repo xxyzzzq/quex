@@ -22,6 +22,8 @@ import quex.output.graphviz.core                as grapviz_generator
 
 import quex.blackboard                          as blackboard
 
+from   operator import attrgetter
+
 def do():
     """Generates state machines for all modes. Each mode results into 
        a separate state machine that is stuck into a virtual function
@@ -119,8 +121,7 @@ def do():
         source_package.do()
 
 def analyzer_functions_get(ModeDB):
-    inheritance_info = [] # list of (mode name, inheritance info str)
-    code_analyzer    = []
+    code = []
 
     # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -131,35 +132,17 @@ def analyzer_functions_get(ModeDB):
 
         # -- Generate 'Mode' from 'ModeDescriptions'
         mode = Mode(mode_descr)
-
         blackboard.mode_db[name] = mode
-        if mode.abstract_f(): continue
 
-        # -- some modes only define event handlers that are inherited
-        if len(mode.pattern_list) == 0: continue
+        if not mode.is_implemented(): continue
 
         txt_analyzer = cpp_generator.do(mode, mode_name_list)
+        txt_counter  = cpp_generator.do_default_counter(mode)
 
-        txt_counter = []
-        if mode.default_character_counter_required_f:
-            dial_db.clear()
-            ccfactory   = CountCmdFactory.from_ParserDataLineColumn(mode.counter_db, NumberSet_All(), Lng.INPUT_P())
-            txt_counter = cpp_generator.do_default_counter(mode.name, ccfactory)
+        code.extend(txt_counter)
+        code.extend(txt_analyzer)
 
-        code_analyzer.extend(txt_counter)
-        code_analyzer.extend(txt_analyzer)
-
-        if Setup.comment_mode_patterns_f:
-            inheritance_info.append((mode.name, mode.get_documentation()))
-
-    # Bring the info about the patterns first
-    if Setup.comment_mode_patterns_f:
-        inheritance_info.sort(key=lambda x: x[0]) # Sort by mode name
-        info_str = "".join(x[1] for x in inheritance_info)
-        comment = Lng.ML_COMMENT("BEGIN: MODE PATTERNS\n" + \
-                                 info_str                 + \
-                                 "\nEND: MODE PATTERNS")
-        code_analyzer.append(comment)
+    code.append(do_comment_pattern_action_pairs(blackboard.mode_db.itervalues()))
 
     if not Setup.token_class_only_f:
         determine_start_mode(blackboard.mode_db)
@@ -168,7 +151,7 @@ def analyzer_functions_get(ModeDB):
     consistency_check.do(blackboard.mode_db)
 
     # generate frame for analyser code
-    return cpp_generator.frame_this("".join(code_analyzer)), blackboard.mode_db
+    return cpp_generator.frame_this("".join(code)), blackboard.mode_db
 
 def do_plot():
     mode_description_db = quex_file_parser.do(Setup.input_mode_files)
@@ -206,6 +189,21 @@ def do_token_class_info():
         comment.append("%s\n" % line)
     comment.append("<<<QUEX-OPTIONS>>>")
     return Lng.ML_COMMENT("".join(comment), IndentN=0)
+
+def do_comment_pattern_action_pairs(ModeIterable):
+    """Write some comment on the pattern action pairs of all modes.
+    """
+    if not Setup.comment_mode_patterns_f:
+        return ""
+
+    txt = "".join(
+        mode.get_documentation()
+        for mode in sorted(ModeIterable, key=attrgetter("name"))
+    )
+    comment = Lng.ML_COMMENT("BEGIN: MODE PATTERNS\n" + \
+                             txt                      + \
+                             "\nEND: MODE PATTERNS")
+    return comment 
 
 def blackboard_mode_db_setup(ModeDescrDb):
     """Takes all ModeDescription-s from ModeDescrDb and generates Mode objects

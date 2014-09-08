@@ -18,6 +18,7 @@ from   itertools       import ifilter
 class EngineStateMachineSet:
     def __init__(self, PatternList): 
         assert isinstance(PatternList, list)
+        assert len(PatternList) > 0
         assert all_isinstance(PatternList, Pattern)
         assert all_true(PatternList, lambda p: p.incidence_id() is not None)
 
@@ -175,6 +176,7 @@ class CharacterSetStateMachine:
 
     def __prepare_incidence_id_map(self, IncidenceIdMap):
         def add(sm, StateIndex, TriggerSet, IncidenceId):
+            if TriggerSet.is_empty(): return
             target_state_index = sm.add_transition(StateIndex, TriggerSet)
             target_state       = sm.states[target_state_index]
             target_state.mark_self_as_origin(IncidenceId, target_state_index)

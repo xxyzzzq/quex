@@ -110,10 +110,13 @@ def get(BaseModeSequence, OptionsDb, CounterDb, IncidenceDb):
 def finalize(ppt_list, CounterDb, IncidenceDb, extra_terminal_list, terminal_factory):
     """Finalizes the terminal_db and pattern list resulting from the PPT-List.
     """
+    pattern_list = finalize_pattern_list(ppt_list, CounterDb)
+
+    # Terminals must be generated AFTER mounting.
+    # (E.g. 'pattern.bipd_sm' is generated through mounting. It is required for
+    #  pattern match terminals).
     terminal_db  = finalize_terminal_db(ppt_list, IncidenceDb, 
                                         extra_terminal_list, terminal_factory)
-
-    pattern_list = finalize_pattern_list(ppt_list, CounterDb)
 
     return pattern_list, terminal_db
 

@@ -347,6 +347,13 @@ class NumberSet(object):
         result.add_interval(Interval(Begin, End))
         return result
 
+    @staticmethod
+    def from_union_of_iterable(Iterable):
+        result = NumberSet()
+        for x in Iterable:
+            result.unite_with(x)
+        return result
+
     def __clone_intervals(self):
         return [ Interval(x.begin, x.end) for x in self.__intervals ]
 

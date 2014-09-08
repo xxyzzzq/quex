@@ -298,6 +298,9 @@ class Mode:
 
         return abstract_f
 
+    def is_implemented(self):
+        return not(self.abstract_f() or len(self.pattern_list) == 0)
+
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath, base_mode_sequence):
         """Determine the sequence of base modes. The type of sequencing determines
            also the pattern precedence. The 'deep first' scheme is chosen here. For

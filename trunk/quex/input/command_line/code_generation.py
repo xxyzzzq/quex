@@ -291,12 +291,14 @@ def __setup_token_id_prefix(Setup):
          error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
 def prepare_file_names(Setup):
-    # Before file names can be prepared, determine the output directory
+    # BEFORE file names can be prepared, determine the output directory!
+    #
     # If 'source packaging' is enabled and no output directory is specified
     # then take the directory of the source packaging.
     if Setup.source_package_directory and not Setup.output_directory:
         Setup.output_directory = Setup.source_package_directory
 
+    #__________________________________________________________________________
     if Setup.language in ["DOT"]:
         return
 

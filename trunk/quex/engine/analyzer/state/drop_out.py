@@ -20,7 +20,8 @@ def get_CommandList(TheAccepter, TheTerminalRouter):
     # If the 'last_acceptance' is not determined in this state, then it
     # must bee derived from previous storages. We cannot simplify here.
     if TheAccepter is None: 
-        return CommandList(TheTerminalRouter,)
+        return CommandList(TheTerminalRouter)
+
     elif not TheAccepter.content.has_acceptance_without_pre_context():
         # If no pre-context is met, then 'last_acceptance' needs to be 
         # considered.

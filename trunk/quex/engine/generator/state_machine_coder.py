@@ -28,12 +28,7 @@ def do(TheAnalyzer):
         mega_state_coder.do(txt, state, TheAnalyzer)
 
     # (*) All other (normal) states (sorted by their frequency of appearance)
-    frequency_db = get_frequency_db(TheAnalyzer.state_db, 
-                                    TheAnalyzer.non_mega_state_index_set)
-    remainder    = copy(TheAnalyzer.non_mega_state_index_set)
-    remainder.remove(TheAnalyzer.init_state_index)
-    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
-                        key=lambda s: frequency_db[s.index], reverse=True):
+    for state in remaining_non_mega_state_iterable(TheAnalyzer):
         state_coder.do(txt, state, TheAnalyzer) 
 
     Lng.unregister_analyzer()
@@ -44,6 +39,15 @@ def code_drop_out_catcher(txt, TheAnalyzer):
     txt.extend(pre_txt)
     txt.extend(post_txt)
     # txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
+
+def remaining_non_mega_state_iterable(TheAnalyzer):
+    frequency_db = get_frequency_db(TheAnalyzer.state_db, 
+                                    TheAnalyzer.non_mega_state_index_set)
+    remainder    = copy(TheAnalyzer.non_mega_state_index_set)
+    remainder.remove(TheAnalyzer.init_state_index)
+    for state in sorted(imap(lambda i: TheAnalyzer.state_db[i], remainder), 
+                        key=lambda s: frequency_db[s.index], reverse=True):
+        yield state
 
 def get_frequency_db(StateDB, RemainderStateIndexList):
     """Sort the list in a away, so that states that are used more

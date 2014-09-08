@@ -39,7 +39,7 @@ from   quex.blackboard import E_IncidenceIDs, \
 #
 # INDENTATION_DETECTOR_SM:
 
-def do_main(SM, BipdEntryDoorIdDb):
+def do_main(SM):
     """Main pattern matching state machine (forward).
     ---------------------------------------------------------------------------
     Micro actions are: line/column number counting, position set/reset,
@@ -54,7 +54,7 @@ def do_main(SM, BipdEntryDoorIdDb):
 
             position, PositionRegisterN, last_acceptance, input.
     """
-    txt, analyzer = do_state_machine(SM, engine.Class_FORWARD(BipdEntryDoorIdDb))
+    txt, analyzer = do_state_machine(SM, engine.Class_FORWARD())
 
     if analyzer.last_acceptance_variable_required():
         variable_db.require("last_acceptance")
@@ -96,13 +96,17 @@ def do_pre_context(SM, PreContextSmIdList):
     return txt, analyzer
 
 def do_backward_input_position_detectors(BipdDb):
+    """RETURNS: [0] Code for BIPD analyzer
+                [1] map: acceptance_id --> DoorID of entry into BIPD
+
+    The 'bipd_entry_door_id_db' is used by 'do_main()' later.
+    """
     result = []
-    bipd_entry_door_id_db = {}
     for incidence_id, bipd_sm in BipdDb.iteritems():
-        txt, analyzer = do_state_machine(bipd_sm, engine.Class_BACKWARD_INPUT_POSITION(incidence_id)) 
-        bipd_entry_door_id_db[incidence_id] = analyzer.get_action_at_state_machine_entry().door_id
+        txt, analyzer = do_state_machine(bipd_sm, 
+                                         engine.Class_BACKWARD_INPUT_POSITION(incidence_id)) 
         result.extend(txt)
-    return result, bipd_entry_door_id_db
+    return result
 
 def do_reload_procedure(TheAnalyzer):
     """Lazy (delayed) code generation of the forward and backward reloaders. 

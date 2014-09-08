@@ -302,10 +302,12 @@ class StateMachine(object):
             # 'items()' not 'iteritems()' because 'delete_transitions_to_target()'
             # may change the dictionaries content.
             for target_state_index, trigger_set in state.target_map.get_map().items():
-                if trigger_set.contains(Number):
-                    trigger_set.cut_interval(Interval(Number))
+                assert not trigger_set.is_empty()
+                if not trigger_set.contains(Number): continue
 
-                # If the operation resulted in cutting the path to the target state, then delete it.
+                trigger_set.cut_interval(Interval(Number))
+                # If the operation resulted in cutting the path to the target state, 
+                # => then delete it.
                 if trigger_set.is_empty():
                     state.target_map.delete_transitions_to_target(target_state_index)
 

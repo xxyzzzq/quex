@@ -148,7 +148,8 @@ def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     init_state_index = analyzer.init_state_index
         
     # OnEntry
-    ta_on_entry              = entry.get_action(init_state_index, E_StateIndices.NONE)
+    ta_on_entry              = entry.get_action(init_state_index, 
+                                                E_StateIndices.NONE)
     ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
                                                        OnBegin)
 

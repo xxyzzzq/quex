@@ -767,13 +767,13 @@ class Lng_Cpp(dict):
         Positioning = X.positioning
         Register    = X.position_register
         if   Positioning == E_TransitionN.VOID: 
-            return   "__quex_assert(position[%i] != (void*)0);\n" % Register \
-                   + "me->buffer._input_p = position[%i];\n" % Register
+            return   "    __quex_assert(position[%i] != (void*)0);\n" % Register \
+                   + "    me->buffer._input_p = position[%i];\n" % Register
         # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-            return "%s = %s + 1; " % (self.INPUT_P(), self.LEXEME_START_P())
+            return "    %s = %s + 1;\n" % (self.INPUT_P(), self.LEXEME_START_P())
         elif Positioning > 0:     
-            return "me->buffer._input_p -= %i; " % Positioning
+            return "    me->buffer._input_p -= %i;\n" % Positioning
         elif Positioning == 0:    
             return ""
         else:
@@ -985,20 +985,10 @@ class Lng_Cpp(dict):
 
     @typed(X=RouterContentElement)
     def position_and_goto(self, EngineType, X):
-        # If the pattern requires backward input position detection, then
-        # jump to the entry of the detector. (This is a very seldom case)
-        if EngineType.is_FORWARD():
-            bipd_entry_door_id = EngineType.bipd_entry_door_id_db.get(X.acceptance_id)
-            if bipd_entry_door_id is not None:                        
-                return self.GOTO(bipd_entry_door_id) 
-
         # Position the input pointer and jump to terminal.
-        positioning_str   = self.POSITIONING(X)
-        if len(positioning_str) != 0: positioning_str += "\n"
-        goto_terminal_str = self.GOTO(DoorID.incidence(X.acceptance_id))
         return [
-            positioning_str, "\n" if len(positioning_str) != 0 else "",
-            goto_terminal_str
+           self.POSITIONING(X)
+           self.GOTO(DoorID.incidence(X.acceptance_id))
         ]
 
 cpp_include_Multi_i_str = """

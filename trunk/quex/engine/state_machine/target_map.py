@@ -49,7 +49,7 @@ class TargetMap:
 
         # check whether trigger sets intersect
         all_trigger_sets = NumberSet()
-        for trigger_set in self.__db.values():
+        for trigger_set in self.__db.itervalues():
             if all_trigger_sets.has_intersection(trigger_set): 
                 return False
             else:
@@ -67,7 +67,7 @@ class TargetMap:
         """
         assert type(TargetStateIdx) == long \
                or TargetStateIdx is None, "%s" % TargetStateIdx.__class__.__name__
-        assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger is None
+        assert Trigger.__class__ in (int, long, list, Interval, NumberSet) or Trigger is None
 
         if Trigger is None: # This is a shorthand to trigger via the remaining triggers
             Trigger = self.get_trigger_set_union().get_complement(Setup.all_character_set())
@@ -97,30 +97,13 @@ class TargetMap:
         if TargetStateIdx in self.__epsilon_target_index_list:
             del self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(TargetStateIdx)]
 
-    def delete_transitions_on_character_set(self, CharacterSet):
-
-        for trigger_set in self.__db.itervalues():
-            trigger_set.subtract(CharacterSet)
-
-        self.delete_transitions_on_empty_trigger_sets()
-
-    def delete_transitions_on_character_list(self, CharacterCodeList):
-
-        for trigger_set in self.__db.values():
-            for char_code in CharacterCodeList:
-                if trigger_set.contains(char_code):
-                    trigger_set.cut_interval(Interval(char_code, char_code+1))
-
-        self.delete_transitions_on_empty_trigger_sets()
-
     def delete_transitions_on_empty_trigger_sets(self):
-
         for target_index, trigger_set in self.__db.items():
             if trigger_set.is_empty(): del self.__db[target_index]
 
     def get_trigger_set_union(self):
         result = NumberSet()
-        for trigger_set in self.__db.values():
+        for trigger_set in self.__db.itervalues():
             result.unite_with(trigger_set)
         return result
 
@@ -216,7 +199,7 @@ class TargetMap:
         history = []
         # NOTE: This function only deals with non-epsilon triggers. Empty
         #       ranges in 'history' are dealt with in '.get_trigger_map()'. 
-        for target_idx, trigger_set in self.__db.items():
+        for target_idx, trigger_set in self.__db.iteritems():
             interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
             for interval in interval_list: 
                 # add information about start and end of current interval
@@ -303,16 +286,16 @@ class TargetMap:
         """
         complete_f = True
         for target, number_set in self.__db.items(): # NOT '.iteritems()'
-            if not number_set.transform(TrafoInfo):
-                complete_f = False
-                if number_set.is_empty():
-                    del self.__db[target]
-            else:
+            assert not number_set.is_empty()
+            if number_set.transform(TrafoInfo): 
                 assert not number_set.is_empty()
+                continue
+            complete_f = False
+            if number_set.is_empty():
+                del self.__db[target]
 
         # All code points which are not available in the drain's range must
         # trigger an 'on_codec_error'.
-        # self.__db[E_IncidenceIDs.CODEC_ERROR] = TrafoInfo.inv_drain_set.clone()
         return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.65" date="Tue Sep  2 20:49:34 2014">
+<test-database execution-time-sec="0.65" date="Mon Sep  8 21:40:40 2014">
     <last-used-diff-display-program name=""/>
     <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1408864157L" vanished="False"/>
@@ -22,9 +22,9 @@
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
-        <make-procedure success="True" time_sec="1.031192"/>
+        <make-procedure success="False" time_sec="1.031192"/>
         <choice-list number="1" same_result="False">
-           <choice name="customized" result="OK" time_sec="0.02" crc="-682143504"/>
+           <choice name="customized" result="MAKE FAILED" time_sec="0.02" crc="-682143504"/>
         </choice-list>
     </test>
     <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
@@ -49,9 +49,9 @@
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
-        <make-procedure success="True" time_sec="0.938627"/>
+        <make-procedure success="False" time_sec="0.938627"/>
         <choice-list number="1" same_result="False">
-           <choice name="default" result="OK" time_sec="0.02" crc="1103554026"/>
+           <choice name="default" result="MAKE FAILED" time_sec="0.02" crc="1103554026"/>
         </choice-list>
     </test>
     <group name="Mode Transitions">
@@ -77,12 +77,12 @@
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
-            <make-procedure success="True" time_sec="1.412408"/>
+            <make-procedure success="False" time_sec="1.412408"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.02" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.03" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.03" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.30" crc="-1605736885"/>
+               <choice name="1" result="MAKE FAILED" time_sec="0.02" crc="140187343"/>
+               <choice name="2" result="MAKE FAILED" time_sec="0.03" crc="1810777269"/>
+               <choice name="3" result="MAKE FAILED" time_sec="0.03" crc="784591852"/>
+               <choice name="error" result="MAKE FAILED" time_sec="0.30" crc="-1605736885"/>
             </choice-list>
         </test>
         <test title="transition.qx" make-dependent="True" time-sum-sec="0.23"> 
@@ -107,12 +107,12 @@
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
             <happy-pattern re="EHLexer.c:[0-9]+:"/>
-            <make-procedure success="True" time_sec="1.489539"/>
+            <make-procedure success="False" time_sec="1.489539"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.02" crc="140187343"/>
-               <choice name="2" result="OK" time_sec="0.02" crc="1810777269"/>
-               <choice name="3" result="OK" time_sec="0.02" crc="784591852"/>
-               <choice name="error" result="OK" time_sec="0.17" crc="609096275"/>
+               <choice name="1" result="MAKE FAILED" time_sec="0.02" crc="140187343"/>
+               <choice name="2" result="MAKE FAILED" time_sec="0.02" crc="1810777269"/>
+               <choice name="3" result="MAKE FAILED" time_sec="0.02" crc="784591852"/>
+               <choice name="error" result="MAKE FAILED" time_sec="0.17" crc="609096275"/>
             </choice-list>
         </test>
     </group>

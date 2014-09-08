@@ -214,6 +214,8 @@ def philosophical_cut(core_sm, post_context_sm):
        the iteration in the core condition and cutting the iteration in the post
        condition. Thus 'x+/x+' is transformed into 'x+/x' and can be solved by
        the technique for forward ambiguous post conditions.
+
+       __dive -- indicator of recursion! replace by TreeWalker
     """
     core_acceptance_state_list = core_sm.get_acceptance_state_list()
 

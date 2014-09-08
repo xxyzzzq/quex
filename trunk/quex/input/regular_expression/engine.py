@@ -267,7 +267,7 @@ def snap_primary(stream, PatternDict):
         stream.seek(-1, 1); 
         result = snap_character_set_expression(stream, PatternDict)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
-    elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
+    elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine(stream)
     elif x == "(":  result = snap_bracketed_expression(stream, PatternDict)
 
     elif x.isspace():
@@ -473,12 +473,16 @@ def __snap_repetition_range(the_state_machine, stream):
     
     return result
 
-def create_ALL_BUT_NEWLINE_state_machine():
+def create_ALL_BUT_NEWLINE_state_machine(stream):
     global Setup
     result = StateMachine()
     # NOTE: Buffer control characters are supposed to be filtered out by the code
     #       generator.
     trigger_set = NumberSet(Interval(ord("\n"))).get_complement(Setup.all_character_set())
+    if trigger_set.is_empty():
+        error_msg("The set of admissible characters contains only newline.\n"
+                  "The '.' for 'all but newline' is an empty set.",
+                  SourceRef.from_FileHandle(stream))
 
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     return result

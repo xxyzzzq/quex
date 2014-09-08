@@ -60,7 +60,6 @@ def do(txt, TheState, TheAnalyzer):
     # (*) Entry _______________________________________________________________
     pre_txt, post_txt = entry_coder.do(TheState) 
     txt.extend(pre_txt)
-    assert len(post_txt) == 0
 
     # (*) Access input character etc. _________________________________________
     specific.framework(txt, TheState, TheAnalyzer)
@@ -68,6 +67,9 @@ def do(txt, TheState, TheAnalyzer):
     # (*) Transition Map ______________________________________________________
     tm = MegaState_relate_to_transition_code(TheState, TheAnalyzer, specific.state_key_str)
     transition_block.do(txt, tm)
+
+    # (*) Stuff to be pasted after transition map
+    txt.extend(post_txt)
 
     # (*) Request necessary variable definition _______________________________
     specific.require_data(TheState, TheAnalyzer)
