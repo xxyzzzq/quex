@@ -175,6 +175,10 @@ def do_variable_definitions():
     return Lng.VARIABLE_DEFINITIONS(variable_db)
 
 def do_state_machine(sm, EngineType): 
+    """Generates code for state machine 'sm' and the 'EngineType'.
+
+    RETURNS: list of strings
+    """
     assert len(sm.get_orphaned_state_index_list()) == 0
 
     txt = []
@@ -182,10 +186,14 @@ def do_state_machine(sm, EngineType):
     if Setup.comment_state_machine_f: 
         Lng.COMMENT_STATE_MACHINE(txt, sm)
 
-    # -- implement the state machine itself
+    # -- Analyze state machine --> optimized version
     analyzer = analyzer_generator.do(sm, EngineType)
-    sm_text  = do_analyzer(analyzer)
-    txt.extend(sm_text)
+
+    # -- Generate code for analyzer
+    txt.extend(
+        do_analyzer(analyzer)
+    )
+
     return txt, analyzer
 
 def do_analyzer(analyzer): 
