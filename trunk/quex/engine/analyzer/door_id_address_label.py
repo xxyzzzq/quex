@@ -321,7 +321,8 @@ class DialDB(object):
         self.mark_address_as_routed(self.get_address_by_door_id(DoorId))
 
     def map_incidence_id_to_state_index(self, IncidenceId):
-        assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs
+        assert isinstance(IncidenceId, (int, long)) or IncidenceId in E_IncidenceIDs, \
+               "Found <%s>" % IncidenceId
 
         index = self.__map_incidence_id_to_state_index.get(IncidenceId)
         if index is None:

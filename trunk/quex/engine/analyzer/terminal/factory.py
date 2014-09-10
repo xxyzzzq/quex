@@ -3,7 +3,7 @@ from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.analyzer.terminal.core          import Terminal, TerminalGenerated
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
-from   quex.engine.tools                           import typed
+from   quex.engine.tools                           import typed, print_callstack
 from   quex.engine.misc.string_handling            import safe_string, \
                                                           pretty_code
 
@@ -120,16 +120,17 @@ class TerminalFactory:
         #            be on the safe side, BIPD should be started from within the
         #            terminal itself. Otherwise, it may be missed due to some 
         #            coding negligence.
+        text = []
         if ThePattern.bipd_sm is not None:
-            TerminalFactory.do_bipd_entry_and_return(txt, ThePattern)
+            TerminalFactory.do_bipd_entry_and_return(text, ThePattern)
 
-        text = [
+        text.extend([
             self.get_counter_text(ThePattern),
             #
             adorned_code,
             #
             Lng.GOTO(DoorID.continue_with_on_after_match())
-        ] 
+        ])
 
         code = CodeTerminal(text, 
                             SourceReference        = Code.sr,

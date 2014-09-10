@@ -169,10 +169,16 @@ def _get_source_code(CcFactory, analyzer, terminal_list):
     Also, it requests variable definitions as they are required.
     """
     txt = []
-    txt.extend(generator.do_analyzer(analyzer))
-    txt.extend(generator.do_terminals(terminal_list, analyzer))
+    txt.extend(
+        generator.do_analyzer(analyzer)
+    )
+    txt.extend(
+        generator.do_terminals(terminal_list, analyzer)
+    )
     if analyzer.engine_type.subject_to_reload():
-        txt.extend(generator.do_reload_procedure(analyzer))
+        txt.extend(
+            generator.do_reload_procedure(analyzer)
+        )
 
     if CcFactory.requires_reference_p():   
         variable_db.require("reference_p", Condition="QUEX_OPTION_COLUMN_NUMBER_COUNTING")

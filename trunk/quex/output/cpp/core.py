@@ -50,7 +50,6 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
     pre_context, \
     pre_analyzer         = generator.do_pre_context(esms.pre_context_sm,
                                                     esms.pre_context_sm_id_list)
-
     # assert all_isinstance(pre_context, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Backward input position detection

@@ -38,7 +38,6 @@ def code_drop_out_catcher(txt, TheAnalyzer):
     pre_txt, post_txt = entry.do(TheAnalyzer.drop_out)
     txt.extend(pre_txt)
     txt.extend(post_txt)
-    # txt.append("\n\n    %s\n" % Lng.UNREACHABLE)
 
 def remaining_non_mega_state_iterable(TheAnalyzer):
     frequency_db = get_frequency_db(TheAnalyzer.state_db, 

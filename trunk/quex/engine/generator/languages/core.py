@@ -987,7 +987,7 @@ class Lng_Cpp(dict):
     def position_and_goto(self, EngineType, X):
         # Position the input pointer and jump to terminal.
         return [
-           self.POSITIONING(X)
+           self.POSITIONING(X),
            self.GOTO(DoorID.incidence(X.acceptance_id))
         ]
 
