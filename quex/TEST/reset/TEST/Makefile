@@ -30,8 +30,9 @@ icu-lexer: lexer.cpp
 lexer: lexer.cpp 
 	quex -i simple.qx -o Simple --token-policy single --debug-exception
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
-		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
+		 -DQUEX_SETTING_BUFFER_SIZE=14                 \
 		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           
+		 #-DQUEX_OPTION_DEBUG_SHOW                      \
 
 lexer-x: lexer-x.cpp
 	quex -i simple.qx -o Simple --token-policy single --debug-exception

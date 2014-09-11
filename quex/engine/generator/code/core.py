@@ -64,4 +64,18 @@ class CodeTerminalOnMatch(CodeTerminal):
         self.mode_name = CodeFrag.sr.mode_name
         CodeTerminal.__init__(self, code, LexemeRelevanceF=True)
 
+class CodeGenerated(CodeFragment):
+    def __init__(self, Function, Data, Name):
+        self.generator_function = Function
+        self.data               = Data
+        self.name               = Name
+
+class CodeGeneratedBlock(CodeGenerated):
+    def __init__(self, IncidenceId, Function, Data, Name):
+        CodeGenerated.__init__(self, Function, Data, Name)
+        self.__incidence_id = IncidenceId
+
+    def incidence_id(self):
+        return self.__incidence_id
+
     

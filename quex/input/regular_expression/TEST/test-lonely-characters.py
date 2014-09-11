@@ -4,7 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine as core
-from   quex.blackboard                      import setup as Setup
+from   quex.blackboard import setup as Setup
+Setup.set_all_character_set_UNIT_TEST(-sys.maxint, sys.maxint)
 Setup.buffer_limit_code = 0
 Setup.path_limit_code   = 0
  

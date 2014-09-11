@@ -102,8 +102,7 @@ goto _4;
 _29:
     /* (DROP_OUT from 98) (DROP_OUT from 111) (DROP_OUT from 93) (DROP_OUT from 130) (DROP_OUT from 112) (DROP_OUT from 122) (DROP_OUT from 134) (DROP_OUT from 109) (DROP_OUT from 103) (DROP_OUT from 100) (DROP_OUT from 128) (DROP_OUT from 97) (DROP_OUT from 110) (DROP_OUT from 132) (DROP_OUT from 129)  */
     __quex_debug("Drop-Out Catcher\n");
-    me->buffer._input_p = me->buffer._lexeme_start_p + 1; 
-
+        me->buffer._input_p = me->buffer._lexeme_start_p + 1;
 goto _39;
     goto _37;
 
