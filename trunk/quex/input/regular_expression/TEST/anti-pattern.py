@@ -5,10 +5,9 @@ import StringIO
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.exception as exception
-
-sys.path.insert(0, os.environ["QUEX_PATH"])
-
 import quex.input.regular_expression.engine as engine
+from   quex.blackboard import setup as Setup
+Setup.set_all_character_set_UNIT_TEST(-sys.maxint, sys.maxint)
 
 if "--hwut-info" in sys.argv:
     print "Anti-Patterns"

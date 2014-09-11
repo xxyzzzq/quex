@@ -6,6 +6,8 @@ import StringIO
 sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.exception as exception
 from   quex.input.regular_expression.engine import snap_character_set_expression
+from   quex.blackboard import setup as Setup
+Setup.set_all_character_set_UNIT_TEST(-sys.maxint, sys.maxint)
 
 if "--hwut-info" in sys.argv:
     print "Combination: Alternative Expressions"
