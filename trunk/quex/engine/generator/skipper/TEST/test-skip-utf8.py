@@ -3,10 +3,12 @@
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-from helper import *
-from quex.engine.interval_handling import NumberSet, Interval
-from quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
-from quex.blackboard import setup as Setup
+from   helper import *
+import quex.engine.state_machine.utf8_state_split  as utf8_state_split
+from   quex.engine.interval_handling               import NumberSet, Interval
+from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
+from   quex.engine.codec_db.core                   import CodecDynamicInfo
+from   quex.blackboard                             import setup as Setup
 
 if "--hwut-info" in sys.argv:
     print "Skip-Characters: UTF8 Engine -- Varrying Buffer Size"
@@ -28,8 +30,7 @@ Language = "Cpp"
 __Setup_init_language_database(Language)
 
 trigger_set = NumberSet([Interval(0x600, 0x700)]) 
-Setup.buffer_codec                     = "utf8"
-Setup.buffer_codec_transformation_info = "utf8-state-split"
+Setup.buffer_codec = CodecDynamicInfo("utf8", utf8_state_split)()
 
 def make(TriggerSet, BufferSize):
     Language = "ANSI-C-from-file"

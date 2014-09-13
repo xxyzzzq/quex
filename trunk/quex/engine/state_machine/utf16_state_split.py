@@ -219,6 +219,10 @@ def get_trigger_sequence_for_interval(X):
 
     return [ Interval(front_seq[0], back_seq[0] + 1), 
              Interval(front_seq[1], back_seq[1] + 1) ]
-    
 
+def get_unicode_range(self):
+    return NumberSet(0, 0x110000)
 
+def get_codec_element_range(self):
+    """Codec element's size is 2 bytes."""
+    return NumberSet(0, 0x10000)

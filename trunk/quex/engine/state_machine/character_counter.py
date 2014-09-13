@@ -1,5 +1,6 @@
 # (C) 2012 Frank-Rene Schaefer
 from   quex.engine.misc.tree_walker             import TreeWalker
+from   quex.engine.codec_db.core                import CodecDynamicInfo
 import quex.engine.state_machine.transformation as     transformation
 from   quex.blackboard                          import E_Count
 
@@ -16,7 +17,7 @@ class CountInfo:
         self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
         self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
 
-        if CodecTrafoInfo in ["utf8-state-split", "utf16-state-split"]: 
+        if isinstance(CodecTrafoInfo, CodecDynamicInfo):
             self._consider_variable_character_sizes(SM, CodecTrafoInfo)
 
     @staticmethod
@@ -142,8 +143,7 @@ class CountInfo:
     def _get_chunk_n_per_character(SM, CodecTrafoInfo):
         if CountInfo.chunk_n_per_char != -1:
             return CountInfo.chunk_n_per_char
-        CountInfo.chunk_n_per_char = transformation.homogeneous_chunk_n_per_character(
-                                                    SM, CodecTrafoInfo)
+        CountInfo.chunk_n_per_char = CodecTrafoInfo.homogeneous_chunk_n_per_character(SM)
         return CountInfo.chunk_n_per_char
 
     def _consider_variable_character_sizes(self, SM, CodecTrafoInfo):

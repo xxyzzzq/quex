@@ -18,6 +18,7 @@ from quex.engine.misc.file_in import get_file_content_or_die, \
                                      read_integer, \
                                      skip_whitespace
 from quex.engine.interval_handling                            import Interval, NumberSet
+from quex.engine.tools                                        import typed
 from quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
 
 _codec_db_path = QUEX_PATH + "/quex/engine/codec_db/database"
@@ -142,24 +143,114 @@ def _get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
 #
 #       .source_set = .drain_set = None
 #______________________________________________________________________________
+class CodecInfo:
+    def __init__(self, Name, SourceSet, DrainSet):
+        self.name       = Name
+        self.source_set = SourceSet
+        self.drain_set  = DrainSet
+
+    def transform(self, sm):
+        return True, sm
+
+    def transform_NumberSet(self, number_set):
+        return number_set
+
+    def transform_Number(self, number):
+        return [ number_set ]
+
+class CodecDynamicInfo(CodecInfo):
+    def __init__(self, Name, ImplementingModule):
+        CodecInfo.__init__(self, 
+                    Name,
+                    ImplementingModule.get_unicode_range(), 
+                    ImplementingModule.get_codec_element_range())
+        self.module = ImplementingModule
+
+    def transform(self, sm):
+        sm = self.module.do(sm)
+        return True, sm
+
+    @typed(number_set=NumberSet)
+    def transform_NumberSet(self, number_set):
+        result = self.module.do_set(number_set)
+        assert result is not None, \
+               "Operation 'number set transformation' failed.\n" + \
+               "The given number set results in a state sequence not a single transition."
+        return result
+
+    def transform_Number(self, number):
+        return self.transform_NumberSet(NumberSet(number)).get_intervals()
+
+    def homogeneous_chunk_n_per_character(self, SM_or_CharacterSet):
+        """Consider a given state machine (pattern). If all characters involved in the 
+        state machine require the same number of chunks (2 bytes) to be represented 
+        this number is returned. Otherwise, 'None' is returned.
+
+        RETURNS:   N > 0  number of chunks (2 bytes) required to represent any character 
+                          in the given state machine.
+                   None   characters in the state machine require different numbers of
+                          chunks.
+        """
+        if isinstance(SM_or_CharacterSet, NumberSet):
+            return self.module.homogeneous_chunk_n_per_character(SM_or_CharacterSet)
+        else:
+            chunk_n = None
+            for state in SM_or_CharacterSet.states.itervalues():
+                for number_set in state.target_map.get_map().itervalues():
+                    candidate_chunk_n = self.module.homogeneous_chunk_n_per_character(number_set)
+                    if   candidate_chunk_n is None:    return None
+                    elif chunk_n is None:              chunk_n = candidate_chunk_n
+                    elif chunk_n != candidate_chunk_n: return None
+            return chunk_n
+
 class CodecTransformationInfo(list):
     def __init__(self, Codec=None, FileName=None, ExitOnErrorF=True):
         assert Codec is not None or FileName is not None
 
         if FileName is not None:
-            file_name = FileName
+            codec_name = "file:%s" % FileName
+            file_name  = FileName
         else:
-            distinct_codec = _get_distinct_codec_name_for_alias(Codec)
-            file_name      = _codec_db_path + "/%s.dat" % distinct_codec
+            codec_name = _get_distinct_codec_name_for_alias(Codec)
+            file_name  = _codec_db_path + "/%s.dat" % distinct_codec
 
+        source_set, drain_set = self.__load(file_name, ExitOnErrorF)
+        CodecInfo.__init__(self, codec_name, source_set, drain_set)
+
+    def transform(self, sm):
+        """RETURNS: True  transformation for all states happend completely.
+                    False transformation may not have transformed all elements because
+                          the target codec does not cover them.
+        """
+        complete_f         = True
+        orphans_possible_f = False
+        for state in sm.states.itervalues():
+            L = len(state.target_map.get_map())
+            if not state.target_map.transform(self):
+                complete_f = False
+                if L != len(state.target_map.get_map()):
+                    orphans_possible_f = True
+
+        # If some targets have been deleted from target maps, then a orphan state 
+        # deletion operation is necessary.
+        if orphans_possible_f:
+            sm.delete_orphaned_states()
+
+        return complete_f, sm
+
+    def transform_NumberSet(self, number_set):
+        return number_set.transform(self)
+
+    def transform_Number(self, number):
+        return self.transform_NumberSet(NumberSet(number)).get_intervals()
+
+    def __load(self, FileName, ExitOnErrorF):
         # Read coding into data structure
-        self.source_set = NumberSet()
-        self.drain_set  = NumberSet()
+        source_set = NumberSet()
+        drain_set  = NumberSet()
 
         error_str = None
-        fh        = open_safely(file_name, "rb")
-        if fh is None:
-            error_str = "Could not open codec file '%s'."
+        fh        = open_file_or_die(file_name, "rb")
 
         try:
             while error_str is None:
@@ -184,8 +275,8 @@ class CodecTransformationInfo(list):
                 source_end = source_begin + source_size
                 list.append(self, [source_begin, source_end, target_begin])
 
-                self.source_set.add_interval(Interval(source_begin, source_end))
-                self.drain_set.add_interval(Interval(target_begin, target_begin + source_size))
+                source_set.add_interval(Interval(source_begin, source_end))
+                drain_set.add_interval(Interval(target_begin, target_begin + source_size))
 
         except EndOfStreamException:
             pass
@@ -194,10 +285,12 @@ class CodecTransformationInfo(list):
             error_msg(error_str, fh, DontExitF=not ExitOnErrorF)
             self.__set_invalid() # Transformation is not valid.
 
+        return source_set, drain_set
+
     def __set_invalid(self):
         list.clear(self)                  
-        self.source_set     = None
-        self.drain_set      = None
+        self.source_set = None
+        self.drain_set  = None
 
 def get_supported_unicode_character_set(CodecAlias=None, FileName=None):
     """RETURNS:

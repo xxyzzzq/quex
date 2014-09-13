@@ -1,10 +1,10 @@
-import quex.engine.utf8                            as utf8
-from   quex.engine.interval_handling               import NumberSet
-from   quex.engine.misc.file_in                    import error_msg
-from   quex.engine.misc.string_handling            import safe_string
-from   quex.blackboard                             import \
-                                                          setup as Setup, \
-                                                          Lng
+import quex.engine.utf8                  as     utf8
+from   quex.engine.interval_handling     import NumberSet
+from   quex.engine.misc.file_in          import error_msg
+from   quex.engine.misc.string_handling  import safe_string
+from   quex.engine.codec_db.core         import CodecDynamicInfo
+from   quex.blackboard                   import setup as Setup, \
+                                                Lng
 
 __line_counter_in_loop = """
     __QUEX_IF_COUNT_LINES_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 
@@ -13,7 +13,7 @@ __line_counter_in_loop = """
 """
 
 def line_counter_in_loop():
-    TrafoInfo = Setup.buffer_codec_transformation_info
+    TrafoInfo = Setup.buffer_codec
     if TrafoInfo is None: return __line_counter_in_loop % "'\\n'"
 
     newline_code = get_newline_in_codec(TrafoInfo)
@@ -30,7 +30,7 @@ __line_column_counter_in_loop = """
 """
 
 def line_column_counter_in_loop():
-    TrafoInfo = Setup.buffer_codec_transformation_info
+    TrafoInfo = Setup.buffer_codec
     if TrafoInfo is None: return __line_column_counter_in_loop % "'\\n'"
 
     newline_code = get_newline_in_codec(TrafoInfo)
@@ -43,13 +43,7 @@ def get_newline_in_codec(TrafoInfo):
        RETURNS: None if the transformation is not possible.
     """
     tmp = NumberSet(ord('\n'))
-    if isinstance(TrafoInfo, (str, unicode)):
-        if   TrafoInfo == "utf8-state-split":  pass
-        elif TrafoInfo == "utf16-state-split": pass
-        else:                                  
-            error_msg("Character encoding '%s' unknown to skipper.\n" % TrafoInfo + \
-                      "For line number counting assume code of newline character code to be '0x%02X'." % ord('\n'),
-                      DontExitF=True)
+    if isinstance(TrafoInfo, CodecDynamicInfo):
         return ord('\n')
 
     tmp.transform(TrafoInfo)

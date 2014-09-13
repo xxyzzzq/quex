@@ -98,7 +98,7 @@ def do(sh):
         if char_code is None: break
 
     if tracker.negation_f: 
-        return tracker.match_set.get_complement(Setup.all_character_set())
+        return tracker.match_set.get_complement(Setup.buffer_codec.source_set)
     else:                  
         return tracker.match_set
 

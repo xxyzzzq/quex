@@ -4,9 +4,12 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine as     core
-import quex.input.files.counter             as     counter
-from   StringIO                             import StringIO
+import quex.input.regular_expression.engine        as     core
+import quex.input.files.counter                    as     counter
+from   quex.engine.codec_db.core                   import CodecDynamicInfo
+import quex.engine.state_machine.utf8_state_split  as     utf8_state_split
+import quex.engine.state_machine.utf16_state_split as     utf16_state_split
+from   StringIO                                    import StringIO
 
 spec_txt = """
    [\\x02] => newline 1;
@@ -30,8 +33,8 @@ def test(TestString):
     pattern = core.do(TestString, {})
 
     # Prepare transformation info according to choice.
-    if "UTF8" in sys.argv: trafo_info = "utf8-state-split"
-    else:                  trafo_info = "utf16-state-split"
+    if "UTF8" in sys.argv: trafo_info = CodecDynamicInfo(utf8_state_split)
+    else:                  trafo_info = CodecDynamicInfo(utf16_state_split)
 
     # Count
     pattern.prepare_count_info(counter_db, trafo_info)

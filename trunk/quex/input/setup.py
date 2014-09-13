@@ -16,7 +16,6 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo):
         self.init(SetupInfo)
-        self.__all_character_set = None
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -40,7 +39,7 @@ class QuexSetup:
         # Default values, maybe overiden later on.
         self.language_db  = None
         self.extension_db = None
-        self.buffer_codec_transformation_info = None
+        self.buffer_codec = None
         self.compression_type_list = []
 
         file_in.specify_setup_object(self)
@@ -104,22 +103,7 @@ class QuexSetup:
         else:                             return "%i bytes" % self.buffer_element_size
 
     def set_all_character_set_UNIT_TEST(self, Begin, End):
-        self.__all_character_set = NumberSet.from_range(Begin, End)
-
-    def all_character_set(self):
-        if self.__all_character_set is None:
-            if   self.buffer_codec == "unicode":
-                self.__all_character_set = \
-                    NumberSet.from_range(0, self.get_buffer_element_value_limit())
-            elif isinstance(self.buffer_codec_transformation_info, (str, unicode)):
-                self.__all_character_set = \
-                    NumberSet.from_range(0, self.get_buffer_element_value_limit())
-            elif isinstance(self.buffer_codec_transformation_info, CodecTransformationInfo):
-                self.__all_character_set = \
-                    self.buffer_codec_transformation_info.source_set
-            else:
-                assert False
-        return self.__all_character_set
+        self.buffer_codec.source_set = NumberSet.from_range(Begin, End)
 
     def get_file_reference(self, FileName):
         """When a source package is specified, then it must be given
@@ -177,9 +161,9 @@ class QuexSetup:
         return clean(FileName)
 
     def variable_character_sizes_f(self):
-        if       self.buffer_codec_transformation_info is None:                     return False                 
-        elif not isinstance(self.buffer_codec_transformation_info, (str, unicode)): return False
-        elif     self.buffer_codec_transformation_info.find("state-split") == -1:   return False
+        if       self.buffer_codec is None:                     return False                 
+        elif not isinstance(self.buffer_codec, (str, unicode)): return False
+        elif     self.buffer_codec.find("state-split") == -1:   return False
         return True
 
 SetupParTypes = Enum("LIST", "INT_LIST", "FLAG", "NEGATED_FLAG", "STRING", "OPTIONAL_STRING")
@@ -190,7 +174,7 @@ SETUP_INFO = {
     "analyzer_class":                 [["-o", "--analyzer-class"],             "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
-    "buffer_codec":                   [["--codec"],                            "unicode"],
+    "buffer_codec_name":                   [["--codec"],                            "unicode"],
     "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
@@ -567,7 +551,7 @@ DOC = {
     "analyzer_class":                 ("Specify analyzer class with optional namespace.", ""),
     "analyzer_derived_class_file":    ("Name of file containing derived class.", ""),
     "analyzer_derived_class_name":    ("Name of derived class with optional namespace.", ""),
-    "buffer_codec":                   ("Buffer internal codec.", ""),
+    "buffer_codec_name":                   ("Buffer internal codec.", ""),
     "buffer_codec_file":              ("Codec file describing mapping to unicode code points.", ""),
     "buffer_limit_code":              ("Buffer limit code.", ""),
     "buffer_element_size":            ("Buffer element size.", ""),

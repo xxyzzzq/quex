@@ -77,16 +77,13 @@ class TransitionMap(list):
 
         NOTE: The name is derived from python's 'itertools.izip'.
         """
-        begin = Setup.all_character_set().minimum()
-        end   = Setup.all_character_set().supremum()
+        LenA = len(TransitionMapA)
+        LenB = len(TransitionMapB)
+        assert LenA != 0 
+        assert LenB != 0 
+        TransitionMapA.assert_boundary(TransitionMapB[0][0].begin, 
+                                       TransitionMapB[-1][0].end)
 
-        assert len(TransitionMapA) != 0 
-        TransitionMapA.assert_boundary(begin, end)
-        assert len(TransitionMapB) != 0 
-        TransitionMapB.assert_boundary(begin, end)
-
-        LenA             = len(TransitionMapA)
-        LenB             = len(TransitionMapB)
         i                = 0 # iterator over TransitionMapA
         k                = 0 # iterator over TransitionMapB
         i_itvl, i_target = TransitionMapA[i]

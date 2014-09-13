@@ -335,22 +335,22 @@ def __get_converter_configuration(IncludeGuardExtension):
         implementation_include = "#include <quex/code_base/converter_helper/identity.i>"
         from_codec = "identical"
 
-    elif Setup.buffer_codec in ["utf8", "utf16", "utf32"]:
-        declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"   % Setup.buffer_codec
-        implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>" % Setup.buffer_codec
-        from_codec = Setup.buffer_codec
+    elif Setup.buffer_codec.name in ["utf8", "utf16", "utf32"]:
+        declaration_include    = "#include <quex/code_base/converter_helper/from-%s>"   % Setup.buffer_codec.name
+        implementation_include = "#include <quex/code_base/converter_helper/from-%s.i>" % Setup.buffer_codec.name
+        from_codec = Setup.buffer_codec.name
 
-    elif Setup.buffer_codec == "unicode":
+    elif Setup.buffer_codec.name == "unicode":
         declaration_include    = "#include <quex/code_base/converter_helper/from-unicode-buffer>"
         implementation_include = "#include <quex/code_base/converter_helper/from-unicode-buffer.i>"
-        from_codec = Setup.buffer_codec
+        from_codec = Setup.buffer_codec.name
 
     else:
         declaration_include    = "#include \"%s\"" % \
                                            Setup.get_file_reference(Setup.output_buffer_codec_header)
         implementation_include = "#include \"%s\"" % \
                                            Setup.get_file_reference(Setup.output_buffer_codec_header_i)
-        from_codec = Setup.buffer_codec
+        from_codec = Setup.buffer_codec.name
 
     if not Setup.token_class_only_f:
         string  = "QUEX_CONVERTER_STRING(%s,char)"  % from_codec

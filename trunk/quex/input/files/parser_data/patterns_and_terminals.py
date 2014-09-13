@@ -149,14 +149,14 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     # (*) Counting information must be determined BEFORE transformation
     for pattern in pattern_list:
         pattern.prepare_count_info(CounterDb, 
-                                   Setup.buffer_codec_transformation_info)
+                                   Setup.buffer_codec)
 
     # (*) Transform anything into the buffer's codec
     #     Skippers: What is relevant to enter the skippers is transformed.
     #               Related data (skip character set, ... ) is NOT transformed!
     for pattern in pattern_list:
-        if not pattern.transform(Setup.buffer_codec_transformation_info):
-            error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec,
+        if not pattern.transform(Setup.buffer_codec):
+            error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec_name,
                       pattern.sr, DontExitF=True)
 
     # (*) Cut the signalling characters from any pattern or state machine
@@ -178,7 +178,6 @@ def finalize_terminal_db(ModeName, SortedPPT_List, IncidenceDb, ExtraTerminalLis
     # (*) Some terminals can only be generated when everything is mounted
     #     (see e.g. 'bipd_sm')
     def terminalize(ThePattern, candidate):
-        print "#candidate.__class__", candidate.__class__
         if ThePattern is not None: incidence_id = ThePattern.incidence_id()
         else:                      incidence_id = candidate.incidence_id()
 
@@ -199,7 +198,6 @@ def finalize_terminal_db(ModeName, SortedPPT_List, IncidenceDb, ExtraTerminalLis
             candidate = factory.do(E_TerminalType.MATCH_PATTERN, 
                                    code, ThePattern)
 
-        print "#iid:", incidence_id
         candidate.set_incidence_id(incidence_id)
         return candidate
 

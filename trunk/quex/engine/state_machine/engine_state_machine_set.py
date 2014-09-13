@@ -77,7 +77,7 @@ class CharacterSetStateMachine:
                    '-----------------'         
 
         The terminals related to the mentioned incidence ids are not implemented.
-        If Setup.buffer_codec_transformation_info is defined the state machine
+        If Setup.buffer_codec is defined the state machine
         is transformed accordingly.
 
         MaintainLexemeF == True => The lexeme_start_p is maintained. This restricts
@@ -122,7 +122,6 @@ class CharacterSetStateMachine:
                    OnBeforeReload = ccfactory.on_before_reload,
                    OnAfterReload  = ccfactory.on_after_reload, 
                    BeyondIid      = beyond_iid)
-
 
     def __prepare_begin_and_putback(self, OnBegin, OnEnd):
         """If we deal with variable character sizes, the begin of the letter is stored
