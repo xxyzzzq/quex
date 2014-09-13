@@ -38,7 +38,7 @@ def do(Data, TheAnalyzer):
     DoorIdOnSkipRangeOpen = Data["door_id_on_skip_range_open"]
     DoorIdAfter           = Data["door_id_after"]
 
-    ClosingCountInfo      = ClosingPattern.prepare_count_info(count_db, Setup.buffer_codec_transformation_info)
+    ClosingCountInfo      = ClosingPattern.prepare_count_info(count_db, Setup.buffer_codec)
 
     return get_skipper(ClosingSequence, ClosingCountInfo, ModeName, DoorIdOnSkipRangeOpen, DoorIdAfter) 
 

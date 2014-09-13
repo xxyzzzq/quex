@@ -5,21 +5,19 @@ from copy import copy
 from quex.DEFINITIONS                  import QUEX_PATH
 from quex.engine.misc.string_handling  import blue_print
 from quex.engine.misc.file_in          import make_safe_identifier, get_file_content_or_die
+from quex.engine.codec_db.core         import CodecDynamicInfo
 from quex.blackboard                   import setup as Setup, \
                                               Lng
 
 def do():
-    if Setup.buffer_codec == "unicode": 
+    if Setup.buffer_codec.name == "unicode": 
         return None, None
-    elif Setup.buffer_codec_transformation_info in ["utf8-state-split", "utf16-state-split"]: 
+    elif isinstance(Setup.buffer_codec, CodecDynamicInfo):
         return None, None
 
-    assert Setup.buffer_codec_transformation_info is not None
+    return _do(Setup.buffer_codec) 
 
-    return _do(Setup.buffer_codec_transformation_info, 
-               Setup.buffer_codec)
-
-def _do(UnicodeTrafoInfo, CodecName):
+def _do(UnicodeTrafoInfo):
     """
     PURPOSE: Writes converters for conversion towards UTF8/UTF16/UCS2/UCS4.
 
@@ -35,7 +33,7 @@ def _do(UnicodeTrafoInfo, CodecName):
          ... 
        ]
     """
-    codec_name = make_safe_identifier(CodecName).lower()
+    codec_name = make_safe_identifier(TrafoInfo.name).lower()
     utf8_epilog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
     dummy,        utf32_function_body = ConverterWriterUTF32().do(UnicodeTrafoInfo)

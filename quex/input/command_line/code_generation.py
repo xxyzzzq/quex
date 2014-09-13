@@ -1,7 +1,3 @@
-from   quex.engine.misc.file_in             import read_namespaced_name, \
-                                                   verify_word_in_list, \
-                                                   get_integer_parameter_value, \
-                                                   error_msg
 import quex.input.command_line.validation   as     validation
 from   quex.input.setup                     import SETUP_INFO,               \
                                                    global_extension_db,      \
@@ -12,7 +8,14 @@ from   quex.input.setup                     import SETUP_INFO,               \
 from   quex.input.files.token_type          import TokenTypeDescriptorManual
 from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.engine.generator.languages.core import db as output_language_db
+import quex.engine.state_machine.utf8_state_split  as utf8_state_split      
+import quex.engine.state_machine.utf16_state_split as utf16_state_split      
 import quex.engine.codec_db.core            as     codec_db
+from   quex.engine.interval_handling        import NumberSet
+from   quex.engine.misc.file_in             import read_namespaced_name, \
+                                                   verify_word_in_list, \
+                                                   get_integer_parameter_value, \
+                                                   error_msg
 
 
 from   quex.blackboard import setup as Setup, E_Compression
@@ -53,19 +56,7 @@ def prepare(command_line, argv):
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
 
-    if Setup.buffer_codec in ["utf8", "utf16"]:
-        Setup.buffer_codec_transformation_info = Setup.buffer_codec + "-state-split"
-
-    elif Setup.buffer_codec_file:
-        try: 
-            Setup.buffer_codec = os.path.splitext(os.path.basename(Setup.buffer_codec_file))[0]
-        except:
-            error_msg("cannot interpret string following '--codec-file'")
-
-        Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(FileName=Setup.buffer_codec_file)
-
-    elif Setup.buffer_codec != "unicode":
-        Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(Setup.buffer_codec)
+    __prepare_buffer_codec(Setup.buffer_codec_name, Setup.buffer_codec_file)
 
     if Setup.buffer_byte_order == "<system>": 
         Setup.buffer_byte_order = sys.byteorder 
@@ -124,7 +115,7 @@ def prepare(command_line, argv):
     # The only case where no converter helper is required is where ASCII 
     # (Unicode restricted to [0, FF] is used.
     Setup.converter_helper_required_f = True
-    if Setup.converter_f == False and Setup.buffer_element_size == 1 and Setup.buffer_codec == "unicode":
+    if Setup.converter_f == False and Setup.buffer_element_size == 1 and Setup.buffer_codec_name == "unicode":
         Setup.converter_helper_required_f = False
 
     validation.do(Setup, command_line, argv)
@@ -318,25 +309,25 @@ def prepare_file_names(Setup):
     else:
         Setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.SOURCE)
 
-    if   Setup.buffer_codec == "utf8":
+    if   Setup.buffer_codec_name == "utf8":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf8"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf8.i"
 
-    elif Setup.buffer_codec == "utf16":
+    elif Setup.buffer_codec_name == "utf16":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf16"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf16.i"
 
-    elif Setup.buffer_codec == "utf32":
+    elif Setup.buffer_codec_name == "utf32":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf32"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf32.i"
 
-    elif Setup.buffer_codec != "unicode":
+    elif Setup.buffer_codec_name != "unicode":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
         Setup.output_buffer_codec_header = \
-            __prepare_file_name("-converter-%s" % Setup.buffer_codec, E_Files.HEADER)
+            __prepare_file_name("-converter-%s" % Setup.buffer_codec_name, E_Files.HEADER)
         Setup.output_buffer_codec_header_i = \
-            __prepare_file_name("-converter-%s" % Setup.buffer_codec, E_Files.HEADER_IMPLEMTATION)
+            __prepare_file_name("-converter-%s" % Setup.buffer_codec_name, E_Files.HEADER_IMPLEMTATION)
     else:
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-unicode-buffer"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-unicode-buffer.i"
@@ -353,3 +344,25 @@ def __prepare_file_name(Suffix, ContentType):
     if not Setup.output_directory: return file_name
     else:                          return os.path.normpath(Setup.output_directory + "/" + file_name)
 
+def __prepare_buffer_codec(BufferCodecName, BufferCodecFileName):
+    """Determines: Setup.buffer_codec_name
+                   Setup.buffer_codec
+    """
+    if   BufferCodecName == "utf8":
+        result = codec_db.CodecDynamicInfo(utf8_state_split)
+    elif BufferCodecName == "utf16":
+        result = codec_db.CodecInfo(utf16_state_split)
+    elif BufferCodecFileName:
+        try: 
+           os.path.splitext(os.path.basename(BufferCodecFileName))
+        except:
+            error_msg("cannot interpret string following '--codec-file'")
+        result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
+    elif BufferCodecName != "unicode":
+        result = codec_db.CodecTransformationInfo(BufferCodecName)
+    else:
+        result = codec_db.CodecInfo("unicode", 
+                                    NumberSet(0, 0x110000), 
+                                    NumberSet(Setup.get_character_value_limit()))
+
+    Setup.buffer_codec = result

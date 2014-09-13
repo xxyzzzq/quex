@@ -17,6 +17,8 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
+import quex.engine.state_machine.utf8_state_split         as utf8_state_split
+import quex.engine.state_machine.utf16_state_split        as utf16_state_split 
 import quex.engine.analyzer.engine_supply_factory         as     engine
 from   quex.engine.interval_handling                      import Interval, NumberSet
 import quex.engine.generator.languages.core               as     languages
@@ -25,6 +27,7 @@ from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
 from   quex.engine.analyzer.door_id_address_label         import dial_db
 from   quex.engine.analyzer.transition_map                import TransitionMap   
+from   quex.engine.codec_db.core                          import CodecDynamicInfo
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_MapImplementationType, \
                                                                  E_IncidenceIDs, \
@@ -120,9 +123,9 @@ def prepare(tm):
 
 def get_transition_function(iid_map, Codec):
     if Codec == "UTF8":
-        Setup.buffer_codec_transformation_info = "utf8-state-split"
+        Setup.buffer_codec = CodecDynamicInfo(utf8_state_split)
     else:
-        Setup.buffer_codec_transformation_info = None
+        Setup.buffer_codec = None
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)

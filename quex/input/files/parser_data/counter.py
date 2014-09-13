@@ -221,9 +221,8 @@ class CountCmdMap(object):
             return column_incr_per_character
 
         chunk_n_per_character = \
-            transformation.homogeneous_chunk_n_per_character(number_set, 
-                                              Setup.buffer_codec_transformation_info)
-        if chunk_n_per_character  is None:
+            Setup.buffer_codec.homogeneous_chunk_n_per_character(number_set) 
+        if chunk_n_per_character is None:
             return None
         else:
             return float(column_incr_per_character) / chunk_n_per_character
@@ -247,7 +246,7 @@ class CountCmdMap(object):
         for character_set, info in self.__map:
             if info.cc_type in ignored: continue
             result.unite_with(character_set)
-        return result.get_complement(Setup.all_character_set())
+        return result.get_complement(Setup.buffer_codec.source_set)
 
     def check_grid_values_integer_multiples(self):
         """If there are no spaces and the grid is on a homogeneous scale,

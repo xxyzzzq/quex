@@ -986,7 +986,7 @@ class NumberSet(object):
         """RETURNS: -- List of all numbers which are contained in the number set. 
                     -- None, if one border is 'sys.maxint'. The list would be too big.
         """
-        result = flatten_list_of_lists(
+        return flatten_list_of_lists(
             xrange(interval.begin, interval.end)
             for interval in self.__intervals
         )

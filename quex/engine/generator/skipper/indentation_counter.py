@@ -213,7 +213,7 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
     else:
         count_info = CountInfo.from_StateMachine(SmComment, 
                                                  CounterDb,
-                                                 CodecTrafoInfo=Setup.buffer_codec_transformation_info)
+                                                 CodecTrafoInfo=Setup.buffer_codec)
         code = [
             Lng.COMMAND(Assign(E_R.ReferenceP, E_R.LexemeStartP)),
             CounterDb.do_CountInfo(count_info),

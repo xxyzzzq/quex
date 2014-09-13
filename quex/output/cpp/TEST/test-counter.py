@@ -42,6 +42,8 @@ from   quex.engine.interval_handling           import NumberSet, Interval, Numbe
 import quex.engine.generator.languages.core    as     languages
 import quex.engine.codec_db.core               as     codec_db
 import quex.output.cpp.counter                 as     counter
+import quex.engine.state_machine.utf8_state_split  as utf8_state_split
+import quex.engine.state_machine.utf16_state_split as utf16_state_split
 
 from   quex.blackboard                         import setup as Setup, Lng
 from   itertools                               import chain
@@ -136,13 +138,13 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
 
 def get_test_application(counter_db, ReferenceP, CT):
     if   codec == "utf_32_le" or codec == "ascii":  
-        Setup.buffer_codec_transformation_info = None
+        Setup.buffer_codec = None
     elif codec == "utf_8": 
-        Setup.buffer_codec_transformation_info = "utf8-state-split"
+        Setup.buffer_codec = codec_db.CodecDynamicInfo(utf8_state_split)
     elif codec == "utf_16_le":
-        Setup.buffer_codec_transformation_info = "utf16-state-split"
+        Setup.buffer_codec = codec_db.CodecDynamicInfo(utf16_state_split)
     else:                 
-        Setup.buffer_codec_transformation_info = codec_db.CodecTransformationInfo(codec)
+        Setup.buffer_codec = codec_db.CodecTransformationInfo(codec)
     # (*) Generate Code 
     counter_function_name, \
     counter_str            = counter.get(CountCmdFactory.from_ParserDataLineColumn(counter_db, NumberSet_All(), Lng.INPUT_P()), 

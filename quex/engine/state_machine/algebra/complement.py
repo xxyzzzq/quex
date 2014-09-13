@@ -60,7 +60,7 @@ def do(SM):
 
         # -- Every drop-out becomes a transition to 'Accept-All' state.
         trigger_set         = state.target_map.get_trigger_set_union()
-        inverse_trigger_set = trigger_set.get_complement(Setup.all_character_set())
+        inverse_trigger_set = trigger_set.get_complement(Setup.buffer_codec.source_set)
         if not inverse_trigger_set.is_empty():
             result_state.add_transition(inverse_trigger_set, accept_all_state_index)
 

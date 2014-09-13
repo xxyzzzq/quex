@@ -149,12 +149,6 @@ class State:
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__target_map.add_transition(Trigger, TargetStateIdx)
 
-    def transform(self, TrafoInfo):
-        """RETURNS: True  transformation successful
-                    False transformation failed, number set possibly in inconsistent state!
-        """
-        return self.__target_map.transform(TrafoInfo)
-    
     def __repr__(self):
         return self.get_string()
 
@@ -574,27 +568,6 @@ class StateMachine(object):
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
-
-    def transform(self, TrafoInfo):
-        """RETURNS: True  transformation for all states happend completely.
-                    False transformation may not have transformed all elements because
-                          the target codec does not cover them.
-        """
-        complete_f         = True
-        orphans_possible_f = False
-        for state in self.states.itervalues():
-            L = len(state.target_map.get_map())
-            if not state.transform(TrafoInfo):
-                complete_f = False
-                if L != len(state.target_map.get_map()):
-                    orphans_possible_f = True
-
-        # If some targets have been deleted from target maps, then a orphan state 
-        # deletion operation is necessary.
-        if orphans_possible_f:
-            self.delete_orphaned_states()
-
-        return complete_f
 
     def transform_to_anti_pattern(self):
         """Anti Pattern: 

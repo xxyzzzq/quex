@@ -47,7 +47,7 @@ class CountCmdFactory:
         self.__map                  = CMap
         self.column_count_per_chunk = ColumnNPerChunk
         self.input_p_name           = InputPName
-        self.character_set          = CharacterSet.intersection(Setup.all_character_set())
+        self.character_set          = CharacterSet.intersection(Setup.buffer_codec.source_set)
 
         self.on_begin,         \
         self.on_end,           \
@@ -116,11 +116,12 @@ class CountCmdFactory:
            is associated with 'BeyondIncidenceId'.
         """
         result = [ (x.character_set, x.incidence_id) for x in self.__map ]
+
         if BeyondIncidenceId is None:
             return result
 
         all_set    = NumberSet.from_union_of_iterable(x.character_set for x in self.__map)
-        beyond_set = all_set.get_complement(self.character_set)
+        beyond_set = all_set.get_complement(Setup.buffer_codec.source_set)
         if not beyond_set.is_empty(): 
             result.append((beyond_set, BeyondIncidenceId))
         return result

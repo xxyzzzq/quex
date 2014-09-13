@@ -121,7 +121,7 @@ def do(setup, command_line, argv):
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n"    + \
                   "to be used mutually exclusively.")
-    if converter_n == 1 and setup.buffer_codec != "unicode":  
+    if converter_n == 1 and setup.buffer_codec_name != "unicode":  
         # If the buffer codec is other than unicode, then no converter shall
         # be used to fill the buffer. Instead, the engine is transformed, so 
         # that it works directly on the codec.
@@ -169,7 +169,7 @@ def do(setup, command_line, argv):
 
     # Internal engine character encoding
     def __codec_vs_buffer_element_size(CodecName, RequiredBufferElementSize):
-        if   setup.buffer_codec        != CodecName:                 return
+        if   setup.buffer_codec_name        != CodecName:                 return
         elif setup.buffer_element_size == RequiredBufferElementSize: return
 
         if setup.buffer_element_size == -1: 
@@ -181,11 +181,11 @@ def do(setup, command_line, argv):
                   "Consult command line argument %s" \
                   % command_line_args_string("buffer_element_size"))
 
-    if setup.buffer_codec != "unicode":
+    if setup.buffer_codec_name != "unicode":
         if setup.buffer_codec_file == "":
-            verify_word_in_list(setup.buffer_codec,
+            verify_word_in_list(setup.buffer_codec_name,
                                 codec_db.get_supported_codec_list() + ["utf8", "utf16"],
-                                "Codec '%s' is not supported." % setup.buffer_codec)
+                                "Codec '%s' is not supported." % setup.buffer_codec_name)
         __codec_vs_buffer_element_size("utf8", 1)
         __codec_vs_buffer_element_size("utf16", 2)
 
