@@ -20,7 +20,7 @@ def do(txt, TM):
     """
     #__________________________________________________________________________
     #
-    #   NOT:      TM.prune(0, Setup.get_buffer_element_value_limit()) !!
+    #   NOT:      TM.prune(min, supremum) !!
     #
     # Pruning at this point in time would mean that possible transitions are 
     # cut. As a consequence whole branches of the the state machine may be 
@@ -65,4 +65,5 @@ def _assert_consistency(TM):
 
     # The transition map MUST be designed to cover exactly the range of 
     # of possible values given by the buffer element type!
-    TM.assert_boundary(0, Setup.get_buffer_element_value_limit()) 
+    TM.assert_boundary(Setup.buffer_codec.drain_set.minimum(), 
+                       Setup.buffer_codec.drain_set.supremum()) 

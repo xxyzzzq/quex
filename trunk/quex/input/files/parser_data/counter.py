@@ -392,8 +392,10 @@ class ParserDataLineColumn(Base):
 
     def finalize(self):
         # Assign the 'else' command to all the remaining places in the character map.
-        self.count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), 
-                                                         self.sr)
+        self.count_command_map.assign_else_count_command(
+                                 Setup.buffer_codec.source_set.minimum(), 
+                                 Setup.buffer_codec.source_set.supremum(), 
+                                 self.sr)
         self.consistency_check()
 
     def consistency_check(self):
@@ -666,9 +668,11 @@ def CounterSetupLineColumn_Default():
         count_command_map = CountCmdMap()
         count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_DEFAULT)
         count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_DEFAULT)
-        count_command_map.define_else("space",   1, SourceRef_DEFAULT)                    # Define: "\else"
-        count_command_map.assign_else_count_command(0, Setup.get_character_value_limit(), # Apply:  "\else"
-                                                    SourceRef_DEFAULT) 
+        count_command_map.define_else("space",   1, SourceRef_DEFAULT)    # Define: "\else"
+        count_command_map.assign_else_count_command(
+            Setup.buffer_codec.source_set.minimum(), 
+            Setup.buffer_codec.source_set.supremum(),                     # Apply:  "\else"
+            SourceRef_DEFAULT) 
 
         _CounterSetupLineColumn_Default = ParserDataLineColumn(SourceRef_DEFAULT, 
                                                                count_command_map)

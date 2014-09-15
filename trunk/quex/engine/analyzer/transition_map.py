@@ -35,7 +35,6 @@ class TransitionMap(list):
         result = cls()
         if (TM is not None) and (not TM.is_empty()): 
             for target, character_set in TM.get_map().iteritems():
-                # print "#tc", target, character_set.get_string("hex")
                 result.extend(
                     (interval.clone(), target) 
                     for interval in character_set.get_intervals(PromiseToTreatWellF=True)
@@ -44,8 +43,10 @@ class TransitionMap(list):
             result.sort()
 
         result.fill_gaps(E_StateIndices.DROP_OUT, 
-                         0, Setup.get_buffer_element_value_limit())
-        result.assert_boundary(0, Setup.get_buffer_element_value_limit()) 
+                         Setup.buffer_codec.drain_set.minimum(),  
+                         Setup.buffer_codec.drain_set.supremum())
+        result.assert_boundary(Setup.buffer_codec.drain_set.minimum(), 
+                               Setup.buffer_codec.drain_set.supremum()) 
         result.assert_continuity()
         return result
 
@@ -86,8 +87,9 @@ class TransitionMap(list):
 
         i                = 0 # iterator over TransitionMapA
         k                = 0 # iterator over TransitionMapB
-        i_itvl, i_target = TransitionMapA[i]
-        k_itvl, k_target = TransitionMapB[k]
+        i_itvl, i_target = TransitionMapA[0]
+        k_itvl, k_target = TransitionMapB[0]
+        begin            = i_itvl.begin
         prev_end         = begin 
         # Intervals in trigger map are always adjacent, so the '.begin' member is
         # not accessed.
@@ -413,8 +415,8 @@ class TransitionMap(list):
             self.append((Interval(Begin, End), Target))
             return
 
-        assert self[0][0].begin >= Begin, "FAILED: begin %s >= %s" % (self[0][0].begin, Begin)
-        assert self[-1][0].end  <= End,   "FAILED: end %s <= %s" % (self[-1][0].end, End)
+        assert self[0][0].begin >= Begin, "FAILED: begin %x >= %s" % (self[0][0].begin, Begin)
+        assert self[-1][0].end  <= End,   "FAILED: end   %x <= %s" % (self[-1][0].end, End)
 
         # If outer borders are lacking, then add them
         if self[0][0].begin != Begin: 
@@ -555,8 +557,8 @@ class TransitionMap(list):
             return
 
         if TotalRangeF: 
-            assert self[0][0].begin == 0
-            assert self[-1][0].end  == Setup.get_buffer_element_value_limit()
+            assert self[0][0].begin == Setup.buffer_codec.drain_set.minimum()
+            assert self[-1][0].end  == Setup.buffer_codec.drain_set.supremum()
 
         iterable    = self.__iter__()
         info        = iterable.next()

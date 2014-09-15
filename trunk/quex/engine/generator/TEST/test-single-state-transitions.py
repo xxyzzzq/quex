@@ -26,8 +26,8 @@ from   quex.engine.generator.base                         import do_analyzer
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
 from   quex.engine.analyzer.door_id_address_label         import dial_db
-from   quex.engine.analyzer.transition_map                import TransitionMap   
-from   quex.engine.codec_db.core                          import CodecDynamicInfo
+from   quex.engine.analyzer.transition_map                import TransitionMap  
+from   quex.engine.codec_db.core                          import CodecDynamicInfo, CodecInfo
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_MapImplementationType, \
                                                                  E_IncidenceIDs, \
@@ -35,6 +35,7 @@ from   quex.blackboard                                    import setup as Setup,
 from   collections import defaultdict
 
 Setup.language_db = languages.db["C++"]
+Setup.buffer_codec_prepare("unicode", None)
 
 dial_db.clear()
 
@@ -113,7 +114,9 @@ elif choice == "C":
 
 def prepare(tm):
     tm.sort()
-    tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE, 0, Setup.get_character_value_limit())
+    tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE, 
+                 Setup.buffer_codec.drain_set.minimum(), 
+                 Setup.buffer_codec.drain_set.supremum())
 
     iid_db = defaultdict(NumberSet)
     for interval, iid in tm:
@@ -122,10 +125,8 @@ def prepare(tm):
     return iid_map
 
 def get_transition_function(iid_map, Codec):
-    if Codec == "UTF8":
-        Setup.buffer_codec = CodecDynamicInfo(utf8_state_split)
-    else:
-        Setup.buffer_codec = None
+    if Codec == "UTF8": Setup.buffer_codec_prepare("utf8", None)
+    else:               Setup.buffer_codec_prepare("unicode", None) 
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)
