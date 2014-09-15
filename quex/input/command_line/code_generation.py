@@ -56,7 +56,7 @@ def prepare(command_line, argv):
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
 
-    __prepare_buffer_codec(Setup.buffer_codec_name, Setup.buffer_codec_file)
+    Setup.buffer_codec_prepare(Setup.buffer_codec_name, Setup.buffer_codec_file)
 
     if Setup.buffer_byte_order == "<system>": 
         Setup.buffer_byte_order = sys.byteorder 
@@ -344,25 +344,3 @@ def __prepare_file_name(Suffix, ContentType):
     if not Setup.output_directory: return file_name
     else:                          return os.path.normpath(Setup.output_directory + "/" + file_name)
 
-def __prepare_buffer_codec(BufferCodecName, BufferCodecFileName):
-    """Determines: Setup.buffer_codec_name
-                   Setup.buffer_codec
-    """
-    if   BufferCodecName == "utf8":
-        result = codec_db.CodecDynamicInfo(utf8_state_split)
-    elif BufferCodecName == "utf16":
-        result = codec_db.CodecInfo(utf16_state_split)
-    elif BufferCodecFileName:
-        try: 
-           os.path.splitext(os.path.basename(BufferCodecFileName))
-        except:
-            error_msg("cannot interpret string following '--codec-file'")
-        result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
-    elif BufferCodecName != "unicode":
-        result = codec_db.CodecTransformationInfo(BufferCodecName)
-    else:
-        result = codec_db.CodecInfo("unicode", 
-                                    NumberSet(0, 0x110000), 
-                                    NumberSet(Setup.get_character_value_limit()))
-
-    Setup.buffer_codec = result

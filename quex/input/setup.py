@@ -2,7 +2,7 @@
 import quex.engine.misc.file_in      as     file_in
 from   quex.engine.misc.enum         import Enum
 from   quex.engine.interval_handling import NumberSet
-from   quex.engine.codec_db.core     import CodecTransformationInfo
+import quex.engine.codec_db.core     as     codec_db
 from   quex.DEFINITIONS              import QUEX_PATH
 
 import os.path as path
@@ -52,55 +52,64 @@ class QuexSetup:
         else:
             self.__dict__[Name] = Value
 
-    def get_buffer_element_value_limit(self):
-        """A buffer element is a chunk of memory of the size of the 
-        granularity of which the input point increases. For fixed size
-        codecs, such as ASCII or UCS32, the BUFFER ELEMENT VALUE LIMIT
-        is exactly the same as the CHARACTER VALUE LIMIT. 
-
-        However, for dynamic sized codecs, such as UTF8 or UTF16, they
-        are different. In UTF8, the input pointer increments by one byte
-        on each state transition. However, a character may consist out
-        of multiple bytes. The buffer element value limit is 256, but
-        the character value limit is the whole range.
-        
-        RETURNS: Integer = supremum of possible buffer element value, 
-                           i.e. one character behind the last possible.
-
-                    sys.maxint, if no such limit exists.
+    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName):
+        """Determines: Setup.buffer_codec_name
+                       Setup.buffer_codec
         """
+        if   BufferCodecName == "utf8":
+            result = codec_db.CodecDynamicInfo("utf8", utf8_state_split)
+        elif BufferCodecName == "utf16":
+            result = codec_db.CodecInfo("utf8", utf16_state_split)
+        elif BufferCodecFileName:
+            try: 
+               os.path.splitext(os.path.basename(BufferCodecFileName))
+            except:
+                error_msg("cannot interpret string following '--codec-file'")
+            result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
+        elif BufferCodecName == "unicode":
+            result = codec_db.CodecInfo("unicode", 
+                                NumberSet.from_range(0, 0x110000), 
+                                NumberSet.from_range(0, self.get_character_value_limit()))
+        else:
+            result = codec_db.CodecTransformationInfo(BufferCodecName)
 
-        if self.buffer_element_size == -1:    
-            return sys.maxint
-
-        try:
-            result = 256 ** self.buffer_element_size
-        except:
-            file_in.error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%s)\n"   \
-                              % self.get_character_value_limit_str()                                    + \
-                              "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                              "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
-
-        if result > sys.maxint: return sys.maxint
-        else:                   return result
+        self.buffer_codec = result
+        #print "#Setup.name", self.buffer_codec.name
+        #print "#Setup.buffer_codec.source_set", self.buffer_codec.source_set
+        #print "#Setup.buffer_codec.drain_set ", self.buffer_codec.drain_set
 
     def get_character_value_limit(self):
-        """For the difference between CHARACTER VALUE LIMIT and BUFFER ELEMENT
-        VALUE LIMIT see function 'get_buffer_element_value_limit()'.
+        """A buffer element is a chunk of memory of the size of the granularity
+        of which the input pointer increases. For fixed size codecs, such as
+        ASCII or UCS32, the BUFFER ELEMENT VALUE LIMIT is exactly the same as
+        the CHARACTER VALUE LIMIT. 
+
+        However, for dynamic sized codecs, such as UTF8 or UTF16, they are
+        different. In UTF8, the input pointer increments by one byte on each
+        state transition. However, a character may consist out of multiple
+        bytes. The buffer element value limit is 256, but the character value
+        limit is the whole range.
+        
         
         RETURNS: Integer = supremum of possible character range, i.e.
                            one character behind the last possible.
 
                  sys.maxint, if no such limit exists.
         """
-        if self.variable_character_sizes_f():   
-            return sys.maxint
-        else:
-            return self.get_buffer_element_value_limit()
+        buffer_element_size = self.buffer_element_size
 
-    def get_character_value_limit_str(self):
-        if self.buffer_element_size == 1: return "1 byte"
-        else:                             return "%i bytes" % self.buffer_element_size
+        if buffer_element_size == -1: return sys.maxint
+
+        try:
+            result = 256 ** buffer_element_size
+        except:
+            file_in.error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%i bytes)\n"   \
+                              % buffer_element_size + \
+                              "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
+                              "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
+
+        if result > sys.maxint: return sys.maxint
+        else:                   return result
 
     def set_all_character_set_UNIT_TEST(self, Begin, End):
         self.buffer_codec.source_set = NumberSet.from_range(Begin, End)

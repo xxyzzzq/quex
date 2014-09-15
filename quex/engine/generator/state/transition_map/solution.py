@@ -6,16 +6,14 @@ from   quex.engine.analyzer.transition_map                            import Tra
 from   quex.engine.misc.enum import Enum
 from   math                  import log
 
+E_Solution = Enum("COMPARISON_SEQUENCE", "BRANCH_TABLE", "BISECTIONING", "__DEBUG_Solution")
+
 def do(TM):
     return get_structure(TM)
 
 def get_solution(TM):
-    """RETURNS: [0] Solution
+    """RETURNS: [0] Solution from E_Solution
                 [1] Most often appearing target
-        
-    Solution == 1: ComparisonSequence
-             == 2: BranchTable
-             == 3: Bisectioning
     """
     interval_n = len(TM)
     assert interval_n > 0
@@ -26,24 +24,24 @@ def get_solution(TM):
     # Otherwise, if there's a very low number of intervals, make a small
     # comparison list that iterates linearly through the items.
     if target_n < 4 and interval_n < 6: 
-        return 0, None
+        return E_Solution.COMPARISON_SEQUENCE, None
 
     # If the size of character ranges which do not target 'moat' is less
     # than a certain number, implement the transition as branch table. The
     # 'moat' is implemented as the 'default:' case.
     sz_non_moat = TransitionMap.get_size_of_range_other_targets(TM, most_often_appearing_target)
-    if sz_non_moat > 256: 
-        return 1, most_often_appearing_target
+    if sz_non_moat < 256: 
+        return E_Solution.BRANCH_TABLE, most_often_appearing_target
 
-    return 3, None
+    return E_Solution.BISECTIONING, None
 
 def get_structure(TM): 
     """__dive --> indicate recursion that might be replaced by TreeWalker
     """
     solution, moat = get_solution(TM)
 
-    if   solution == 0: return ComparisonSequence(TM)
-    elif solution == 1: return BranchTable(TM, moat)
+    if   solution == E_Solution.COMPARISON_SEQUENCE: return ComparisonSequence(TM)
+    elif solution == E_Solution.BRANCH_TABLE:        return BranchTable(TM, moat)
 
     # Else, there is nothing left but bisectioning
     # (which is not the worst thing to do)

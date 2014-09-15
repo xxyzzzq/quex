@@ -63,6 +63,9 @@ class CountCmdFactory:
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
+        print "#incidence_id_mappy:"
+        for x in cmap:
+            print "#    %10s %i" % (x.character_set, x.incidence_id)
 
         ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(CharacterSet)
 
@@ -74,8 +77,8 @@ class CountCmdFactory:
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
         result = CountCmdFactory.from_ParserDataLineColumn(CounterDb, 
-                                                           ISetup.whitespace_character_set.get(), 
-                                                           InputPName)
+                                 ISetup.whitespace_character_set.get(), 
+                                 InputPName)
         # Up to now, the '__map' contains only character sets which intersect with the 
         # defined whitespace. Add the 'bad indentation characters'.
         bad_character_set = ISetup.bad_character_set.get()
