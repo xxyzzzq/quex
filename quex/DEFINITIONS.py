@@ -26,7 +26,6 @@ try:
     QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
     # Note, that windows can also deal with backslashes.
     QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR.replace("\\", "/")
-    QUEX_PATH             = QUEX_INSTALLATION_DIR
 except:
     print "error: environment variable 'QUEX_PATH' is not defined."
     if os.name == "posix":
@@ -48,6 +47,9 @@ except:
         print "error: variables. if you find out, please, send an email to"
         print "error: <fschaef@users.sourceforge.net>"
     sys.exit(-1) # sys.exit(-1) is acceptable
+
+QUEX_PATH          = QUEX_INSTALLATION_DIR
+QUEX_CODEC_DB_PATH = QUEX_PATH + "/quex/engine/codec_db/database"
 
 sys.path.insert(0, QUEX_INSTALLATION_DIR)
 

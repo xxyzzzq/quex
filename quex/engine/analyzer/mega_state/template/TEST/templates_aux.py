@@ -23,7 +23,7 @@ from   quex.engine.tools                                    import typed
 from   copy        import copy
 from   operator    import attrgetter
 from   collections import defaultdict
-from   quex.blackboard import E_StateIndices, E_Compression
+from   quex.blackboard import E_StateIndices, E_Compression, setup as Setup
 
 import sys
 
@@ -67,7 +67,9 @@ def get_Analyzer(StatesDescription):
         assert isinstance(state_index, long)
         assert isinstance(transition_map, list)
         tm = TransitionMap.from_iterable(transition_map)
-        tm.fill_gaps(E_StateIndices.DROP_OUT)
+        tm.fill_gaps(E_StateIndices.DROP_OUT,
+                     Setup.buffer_codec.drain_set.minimum(), 
+                     Setup.buffer_codec.drain_set.supremum())
         analyzer.state_db[state_index] = get_AnalyzerState(state_index, tm)
         all_state_index_set.update(x[1] for x in transition_map)
 

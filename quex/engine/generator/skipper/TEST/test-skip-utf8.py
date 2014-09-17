@@ -30,7 +30,7 @@ Language = "Cpp"
 __Setup_init_language_database(Language)
 
 trigger_set = NumberSet([Interval(0x600, 0x700)]) 
-Setup.buffer_codec = CodecDynamicInfo("utf8", utf8_state_split)()
+Setup.buffer_codec = CodecDynamicInfo("utf8", utf8_state_split)
 
 def make(TriggerSet, BufferSize):
     Language = "ANSI-C-from-file"

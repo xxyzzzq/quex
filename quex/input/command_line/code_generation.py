@@ -56,7 +56,11 @@ def prepare(command_line, argv):
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
 
-    Setup.buffer_codec_prepare(Setup.buffer_codec_name, Setup.buffer_codec_file)
+    if   Setup.buffer_codec_name == "utf8":  module = utf8_state_split
+    elif Setup.buffer_codec_name == "utf16": module = utf16_state_split
+    else:                                    module = None
+    Setup.buffer_codec_prepare(Setup.buffer_codec_name, 
+                               Setup.buffer_codec_file, module)
 
     if Setup.buffer_byte_order == "<system>": 
         Setup.buffer_byte_order = sys.byteorder 

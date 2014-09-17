@@ -16,6 +16,7 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo):
         self.init(SetupInfo)
+        self.buffer_codec_prepare("unit-test") # Default: be prepared for unit tests
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -52,14 +53,13 @@ class QuexSetup:
         else:
             self.__dict__[Name] = Value
 
-    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName):
+    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName=None, Module=None):
         """Determines: Setup.buffer_codec_name
                        Setup.buffer_codec
         """
-        if   BufferCodecName == "utf8":
-            result = codec_db.CodecDynamicInfo("utf8", utf8_state_split)
-        elif BufferCodecName == "utf16":
-            result = codec_db.CodecInfo("utf8", utf16_state_split)
+        if   BufferCodecName in ("utf8", "utf16"):
+            assert Module is not None
+            result = codec_db.CodecDynamicInfo(BufferCodecName, Module)
         elif BufferCodecFileName:
             try: 
                os.path.splitext(os.path.basename(BufferCodecFileName))
@@ -67,9 +67,18 @@ class QuexSetup:
                 error_msg("cannot interpret string following '--codec-file'")
             result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
         elif BufferCodecName == "unicode":
+            # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
+            # If the internal buffer is 'unicode', then the pattern's state 
+            # machines are not converted. The requirement for the pattern's
+            # range is the same as for the 'buffer element chunks'.
             result = codec_db.CodecInfo("unicode", 
-                                NumberSet.from_range(0, 0x110000), 
+                                NumberSet.from_range(0, self.get_character_value_limit()), 
                                 NumberSet.from_range(0, self.get_character_value_limit()))
+        elif BufferCodecName == "unit-test":
+            result = codec_db.CodecInfo("unicode", 
+                                NumberSet.from_range(-sys.maxint, sys.maxint),
+                                NumberSet.from_range(-sys.maxint, sys.maxint))
+
         else:
             result = codec_db.CodecTransformationInfo(BufferCodecName)
 

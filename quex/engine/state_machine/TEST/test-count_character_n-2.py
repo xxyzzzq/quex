@@ -8,15 +8,15 @@ import quex.input.regular_expression.engine as     core
 import quex.input.files.counter             as     counter
 from   StringIO                             import StringIO
 
-spec_txt = """
-   [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
-   [\\t]                                     => grid    4;
-"""
-
 if "--hwut-info" in sys.argv:
     print "Predetermined Character Count: Characters of different horizontal sizes."
     print "CHOICES: Same, Different, TwoSet, Grid, Grid-BOL;"
     sys.exit(0)
+
+spec_txt = """
+   [\\x0A\\x0b\\x0c\\x85\\X2028\\X2029\\x0d] => newline 1;
+   [\\t]                                     => grid    4;
+"""
 
 choice = sys.argv[1]
 if "TwoSet" in sys.argv:

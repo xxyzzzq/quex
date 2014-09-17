@@ -42,12 +42,9 @@ def get_newline_in_codec(TrafoInfo):
 
        RETURNS: None if the transformation is not possible.
     """
-    tmp = NumberSet(ord('\n'))
-    if isinstance(TrafoInfo, CodecDynamicInfo):
-        return ord('\n')
-
-    tmp.transform(TrafoInfo)
-    return tmp.get_the_only_element() # Returns 'None' if there is none
+    result = TrafoInfo.transform_Number(ord('\n'))
+    if result is None or len(result) != 1: return None
+    return result[0].begin
 
 def get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=False):
     if len(OnSkipRangeOpen.get_code()) == 0:

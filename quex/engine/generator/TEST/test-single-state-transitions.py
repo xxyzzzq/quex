@@ -125,8 +125,8 @@ def prepare(tm):
     return iid_map
 
 def get_transition_function(iid_map, Codec):
-    if Codec == "UTF8": Setup.buffer_codec_prepare("utf8", None)
-    else:               Setup.buffer_codec_prepare("unicode", None) 
+    if Codec == "UTF8": Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
+    else:               Setup.buffer_codec_prepare("unicode") 
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)

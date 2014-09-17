@@ -70,7 +70,7 @@ class TargetMap:
         assert Trigger.__class__ in (int, long, list, Interval, NumberSet) or Trigger is None
 
         if Trigger is None: # This is a shorthand to trigger via the remaining triggers
-            Trigger = self.get_trigger_set_union().get_complement(Setup.buffer_codec_source_set)
+            Trigger = self.get_trigger_set_union().get_complement(Setup.buffer_codec.source_set)
         elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
         elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
         elif type(Trigger) == list: Trigger = NumberSet(Trigger, ArgumentIsYoursF=True)
