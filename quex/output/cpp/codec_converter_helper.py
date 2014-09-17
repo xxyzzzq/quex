@@ -33,7 +33,7 @@ def _do(UnicodeTrafoInfo):
          ... 
        ]
     """
-    codec_name = make_safe_identifier(TrafoInfo.name).lower()
+    codec_name = make_safe_identifier(UnicodeTrafoInfo.name).lower()
     utf8_epilog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
     dummy,        utf32_function_body = ConverterWriterUTF32().do(UnicodeTrafoInfo)

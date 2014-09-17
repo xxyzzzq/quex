@@ -140,15 +140,17 @@ def get_test_application(counter_db, ReferenceP, CT):
     if   codec == "utf_32_le" or codec == "ascii":  
         Setup.buffer_codec_prepare("unicode")
     elif codec == "utf_8": 
-        Setup.buffer_codec_prepare("utf8", utf8_state_split)
+        Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
     elif codec == "utf_16_le":
-        Setup.buffer_codec_prepare("utf16", utf16_state_split)
+        Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
     else:                 
         Setup.buffer_codec_prepare(codec)
     # (*) Generate Code 
+    ccfactory = CountCmdFactory.from_ParserDataLineColumn(counter_db, 
+                                                          Setup.buffer_codec.source_set,
+                                                          Lng.INPUT_P())
     counter_function_name, \
-    counter_str            = counter.get(CountCmdFactory.from_ParserDataLineColumn(counter_db, NumberSet_All(), Lng.INPUT_P()), 
-                                         "TEST_MODE")
+    counter_str            = counter.get(ccfactory, "TEST_MODE")
     counter_str = counter_str.replace("static void", "void")
 
     # Make sure that the counter is implemented using reference pointer

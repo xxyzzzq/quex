@@ -149,6 +149,14 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content = deepcopy(self.content)
         return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash)
 
+    def is_conditionless_goto(self):
+        if self.id == E_Cmd.GotoDoorId: 
+            return True
+        elif self.id == E_Cmd.IfPreContextSetPositionAndGoto:
+            return     self.content.pre_context_id == E_PreContextIDs.NONE \
+                   and self.content.router_element.positioning == 0
+        return False
+
     def __hash__(self):      
         return self.my_hash
 
@@ -790,9 +798,9 @@ def IndentationHandlerCall(DefaultIhF, ModeName):
     return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
 
 def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
-    if     PreContextId == E_PreContextIDs.NONE \
-       and RouterElement.positioning == 0:
-        return GotoDoorId(DoorID.incidence(RouterElement.acceptance_id))
+    #if     PreContextId == E_PreContextIDs.NONE \
+    #   and RouterElement.positioning == 0:
+    #    return GotoDoorId(DoorID.incidence(RouterElement.acceptance_id))
         
     return Command(E_Cmd.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
 
@@ -980,12 +988,12 @@ class CommandList(list):
         return "".join("%s\n" % str(cmd) for cmd in self)
 
 def repr_acceptance_id(Value, PatternStrF=True):
-    if   Value == E_IncidenceIDs.VOID:                       return "last_acceptance"
-    elif Value == E_IncidenceIDs.MATCH_FAILURE:                    return "Failure"
+    if   Value == E_IncidenceIDs.VOID:          return "last_acceptance"
+    elif Value == E_IncidenceIDs.MATCH_FAILURE: return "Failure"
     elif Value >= 0:                                    
-        if PatternStrF: return "Pattern%i" % Value
-        else:           return "%i" % Value
-    else:                                               assert False
+        if PatternStrF:                         return "Pattern%i" % Value
+        else:                                   return "%i" % Value
+    else:                                       assert False
 
 def repr_position_register(Register):
     if Register == E_PostContextIDs.NONE: return "position[Acceptance]"

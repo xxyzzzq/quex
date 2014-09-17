@@ -1,4 +1,4 @@
-<test-database execution-time-sec="28.13" date="Wed Sep 17 08:44:57 2014">
+<test-database execution-time-sec="28.14" date="Thu Sep 18 00:24:02 2014">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.10"> 
@@ -16,13 +16,13 @@
                <choice name="" result="OK" time_sec="0.07" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" time-sum-sec="0.37"> 
+        <test title="Inverse" time-sum-sec="0.39"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1393744293L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
-               <choice name="1" result="FAIL" time_sec="0.12" crc="1433382430"/>
+               <choice name="1" result="FAIL" time_sec="0.13" crc="1433382430"/>
                <choice name="2" result="OK" time_sec="0.12" crc="-1623020661"/>
-               <choice name="serious" result="FAIL" time_sec="0.12" crc="1292580990"/>
+               <choice name="serious" result="FAIL" time_sec="0.14" crc="1292580990"/>
             </choice-list>
         </test>
         <test title="Difference" time-sum-sec="0.05"> 
@@ -30,6 +30,19 @@
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.05" crc="2115164504"/>
+            </choice-list>
+        </test>
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.61"> 
+            <application file-name="test-NumberSet-transform-x.py" info-request-time="1404559151L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="7" same_result="False">
+               <choice name="10" result="OK" time_sec="0.05" crc="1378888075"/>
+               <choice name="1000" result="OK" time_sec="0.52" crc="-646722016"/>
+               <choice name="2000" result="OK" time_sec="1.79" crc="1205044615"/>
+               <choice name="3000" result="OK" time_sec="3.92" crc="843858714"/>
+               <choice name="100" result="OK" time_sec="0.06" crc="-2005431878"/>
+               <choice name="250" result="OK" time_sec="0.09" crc="1443580919"/>
+               <choice name="500" result="OK" time_sec="0.18" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Massive Mutual Consistency Check" time-sum-sec="16.16"> 
@@ -75,6 +88,14 @@
                <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
+        <test title="Algebraic Relations" time-sum-sec="0.25"> 
+            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="2" same_result="False">
+               <choice name="unary" result="FAIL" time_sec="0.13" crc="1792904643"/>
+               <choice name="binary" result="OK" time_sec="0.12" crc="983993768"/>
+            </choice-list>
+        </test>
         <test title="Cut" time-sum-sec="0.38"> 
             <application file-name="test-NumberSet-cut.py" info-request-time="1393744121L" vanished="False"/>
             <analogy open="((" close="))"/>
@@ -86,27 +107,6 @@
                <choice name="1b" result="OK" time_sec="0.05" crc="1415502275"/>
                <choice name="2b" result="OK" time_sec="0.06" crc="1842878511"/>
                <choice name="3b" result="OK" time_sec="0.06" crc="-1227968480"/>
-            </choice-list>
-        </test>
-        <test title="Algebraic Relations" time-sum-sec="0.25"> 
-            <application file-name="test-algebraic-relations.py" info-request-time="1393744666L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="2" same_result="False">
-               <choice name="unary" result="FAIL" time_sec="0.13" crc="1792904643"/>
-               <choice name="binary" result="OK" time_sec="0.12" crc="983993768"/>
-            </choice-list>
-        </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.61"> 
-            <application file-name="test-NumberSet-transform-x.py" info-request-time="1404559151L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="7" same_result="False">
-               <choice name="10" result="OK" time_sec="0.05" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.52" crc="-646722016"/>
-               <choice name="2000" result="OK" time_sec="1.79" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="3.92" crc="843858714"/>
-               <choice name="100" result="OK" time_sec="0.06" crc="-2005431878"/>
-               <choice name="250" result="OK" time_sec="0.09" crc="1443580919"/>
-               <choice name="500" result="OK" time_sec="0.18" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Interval comparison" time-sum-sec="0.10"> 

@@ -29,4 +29,4 @@ State 2:
 .drop_out:
 QuexDebug: { string=pattern 0: backward input position detected\n,  }
 InputPIncrement
-GotoDoorId: DoorID(s=21, d=ACCEPTANCE)
+GotoDoorId: DoorID(s=21, d=BIPD_RETURN)
