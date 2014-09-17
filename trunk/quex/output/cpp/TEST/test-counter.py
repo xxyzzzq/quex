@@ -138,13 +138,13 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
 
 def get_test_application(counter_db, ReferenceP, CT):
     if   codec == "utf_32_le" or codec == "ascii":  
-        Setup.buffer_codec = None
+        Setup.buffer_codec_prepare("unicode")
     elif codec == "utf_8": 
-        Setup.buffer_codec = codec_db.CodecDynamicInfo(utf8_state_split)
+        Setup.buffer_codec_prepare("utf8", utf8_state_split)
     elif codec == "utf_16_le":
-        Setup.buffer_codec = codec_db.CodecDynamicInfo(utf16_state_split)
+        Setup.buffer_codec_prepare("utf16", utf16_state_split)
     else:                 
-        Setup.buffer_codec = codec_db.CodecTransformationInfo(codec)
+        Setup.buffer_codec_prepare(codec)
     # (*) Generate Code 
     counter_function_name, \
     counter_str            = counter.get(CountCmdFactory.from_ParserDataLineColumn(counter_db, NumberSet_All(), Lng.INPUT_P()), 

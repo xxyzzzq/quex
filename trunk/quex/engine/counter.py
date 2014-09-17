@@ -63,9 +63,6 @@ class CountCmdFactory:
             CountInfo(dial_db.new_incidence_id(), info.cc_type, info.value, intersection)
             for intersection, info in CounterDb.count_command_map.column_grid_line_iterable_pruned(CharacterSet)
         ]
-        print "#incidence_id_mappy:"
-        for x in cmap:
-            print "#    %10s %i" % (x.character_set, x.incidence_id)
 
         ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(CharacterSet)
 

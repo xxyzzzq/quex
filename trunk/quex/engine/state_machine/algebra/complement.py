@@ -11,6 +11,7 @@
 import quex.engine.state_machine.index as     index
 from   quex.engine.state_machine.core  import State
 from   quex.engine.interval_handling   import NumberSet, Interval
+from   quex.blackboard                 import setup as Setup
 from   copy import deepcopy
 import sys
 

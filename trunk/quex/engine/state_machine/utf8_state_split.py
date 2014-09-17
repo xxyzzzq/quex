@@ -387,9 +387,9 @@ def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx,
 
     return       
 
-def get_unicode_range(self):
+def get_unicode_range():
     return NumberSet.from_range(0, 0x110000)
 
-def get_codec_element_range(self):
+def get_codec_element_range():
     """Codec element's size is 1 byte."""
     return NumberSet.from_range(0, 0x100)

@@ -9,8 +9,14 @@ import quex.input.files.counter                    as     counter
 from   quex.engine.codec_db.core                   import CodecDynamicInfo
 import quex.engine.state_machine.utf8_state_split  as     utf8_state_split
 import quex.engine.state_machine.utf16_state_split as     utf16_state_split
+from   quex.blackboard import setup as Setup
 from   StringIO                                    import StringIO
 
+if "--hwut-info" in sys.argv:
+    print "Predetermined Character Count: Codec Engine"
+    print "CHOICES: UTF8, UTF16;"
+    sys.exit(0)
+    
 spec_txt = """
    [\\x02] => newline 1;
    [\\x03] => grid    4;
@@ -20,11 +26,6 @@ fh = StringIO(spec_txt)
 fh.name    = "<string>"
 counter_db = counter.parse_line_column_counter(fh)
 
-if "--hwut-info" in sys.argv:
-    print "Predetermined Character Count: Codec Engine"
-    print "CHOICES: UTF8, UTF16;"
-    sys.exit(0)
-    
 def test(TestString):
     TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
     if "BeginOfLine" in sys.argv:
@@ -33,8 +34,8 @@ def test(TestString):
     pattern = core.do(TestString, {})
 
     # Prepare transformation info according to choice.
-    if "UTF8" in sys.argv: trafo_info = CodecDynamicInfo(utf8_state_split)
-    else:                  trafo_info = CodecDynamicInfo(utf16_state_split)
+    if "UTF8" in sys.argv: trafo_info = Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
+    else:                  trafo_info = Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
 
     # Count
     pattern.prepare_count_info(counter_db, trafo_info)
