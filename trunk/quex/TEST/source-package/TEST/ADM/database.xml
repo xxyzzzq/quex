@@ -1,14 +1,14 @@
-<test-database execution-time-sec="29.23" date="Wed Sep 17 08:44:56 2014">
+<test-database execution-time-sec="30.85" date="Thu Sep 18 00:24:01 2014">
     <last-used-diff-display-program name=""/>
     <group name="Source Packager">
-        <test title="C++" time-sum-sec="10.33"> 
+        <test title="C++" time-sum-sec="11.12"> 
             <application file-name="test-cpp.sh" info-request-time="1405121002L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
                <choice name="plain" result="OK" time_sec="0.90" crc="1735895320"/>
                <choice name="iconv" result="OK" time_sec="0.93" crc="1735895320"/>
                <choice name="icu" result="OK" time_sec="1.00" crc="1735895320"/>
-               <choice name="codec" result="FAIL" time_sec="0.24" crc="1735895320"/>
+               <choice name="codec" result="OK" time_sec="1.03" crc="1735895320"/>
                <choice name="codec-utf8" result="OK" time_sec="0.89" crc="1735895320"/>
                <choice name="codec-utf16" result="OK" time_sec="0.89" crc="1735895320"/>
                <choice name="post-categorizer" result="OK" time_sec="1.01" crc="1735895320"/>
@@ -37,14 +37,14 @@
                <choice name="customized-token-class" result="NO GOOD FILE" time_sec="0.75" crc="1735895320"/>
             </choice-list>
         </test>
-        <test title="C" time-sum-sec="9.64"> 
+        <test title="C" time-sum-sec="10.46"> 
             <application file-name="test-c.sh" info-request-time="1408866338L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="12" same_result="True">
                <choice name="plain" result="OK" time_sec="0.85" crc="-21726970"/>
                <choice name="iconv" result="OK" time_sec="0.93" crc="-21726970"/>
                <choice name="icu" result="OK" time_sec="0.93" crc="-21726970"/>
-               <choice name="codec" result="FAIL" time_sec="0.26" crc="-21726970"/>
+               <choice name="codec" result="OK" time_sec="1.08" crc="-21726970"/>
                <choice name="codec-utf8" result="OK" time_sec="0.78" crc="-21726970"/>
                <choice name="codec-utf16" result="OK" time_sec="0.76" crc="-21726970"/>
                <choice name="post-categorizer" result="OK" time_sec="0.95" crc="-21726970"/>

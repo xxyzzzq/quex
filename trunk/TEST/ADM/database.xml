@@ -1,4 +1,4 @@
-<test-database execution-time-sec="306.61" date="Wed Sep 17 08:43:54 2014">
+<test-database execution-time-sec="306.84" date="Thu Sep 18 00:22:40 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.96"> 
@@ -53,11 +53,11 @@
                <choice name="codec" result="OK" time_sec="4.14" crc="60983025"/>
             </choice-list>
         </test>
-        <test title="3025852 0.49.2 Instatiation of inheritable-only-modes" time-sum-sec="0.87"> 
+        <test title="3025852 0.49.2 Instatiation of inheritable-only-modes" time-sum-sec="0.93"> 
             <application file-name="bug-3025852.sh" info-request-time="1405121001L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.87" crc="2047772173"/>
+               <choice name="" result="FAIL" time_sec="0.93" crc="2047772173"/>
             </choice-list>
         </test>
         <test title="2619679 QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY redefined" time-sum-sec="2.14"> 
@@ -178,16 +178,16 @@
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
                <choice name="Normal" result="OK" time_sec="1.25" crc="-515846762"/>
-               <choice name="TemplateCompression" result="FAIL" time_sec="0.37" crc="1869054668"/>
+               <choice name="TemplateCompression" result="FAIL" time_sec="0.38" crc="1869054668"/>
                <choice name="PathCompression" result="OK" time_sec="1.23" crc="1869054668"/>
                <choice name="PathTemplateCompression" result="FAIL" time_sec="0.38" crc="1869054668"/>
             </choice-list>
         </test>
-        <test title="3392478 UTF-8 Backward Input Position Detection Error" time-sum-sec="1.05"> 
+        <test title="3392478 UTF-8 Backward Input Position Detection Error" time-sum-sec="1.08"> 
             <application file-name="bug-3392478.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="1.05" crc="-1642706732"/>
+               <choice name="" result="FAIL" time_sec="1.08" crc="-1642706732"/>
             </choice-list>
         </test>
     </group>
@@ -295,8 +295,8 @@
             <application file-name="bug-2161098-x.sh" info-request-time="1381662253L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
-               <choice name="c_comments" result="FAIL" time_sec="0.25" crc="1081111669"/>
-               <choice name="shell_comments" result="FAIL" time_sec="0.24" crc="-660275559"/>
+               <choice name="c_comments" result="FAIL" time_sec="0.24" crc="1081111669"/>
+               <choice name="shell_comments" result="FAIL" time_sec="0.25" crc="-660275559"/>
                <choice name="funny_comments" result="FAIL" time_sec="0.24" crc="-1971994879"/>
             </choice-list>
         </test>
@@ -323,13 +323,13 @@
                <choice name="" result="OK" time_sec="0.22" crc="None"/>
             </choice-list>
         </test>
-        <test title="2161098 0.32.1 Range Skipper Line Number Counter" time-sum-sec="0.71"> 
+        <test title="2161098 0.32.1 Range Skipper Line Number Counter" time-sum-sec="0.78"> 
             <application file-name="bug-2161098.sh" info-request-time="1381662254L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
-               <choice name="c_comments" result="FAIL" time_sec="0.24" crc="1305183221"/>
-               <choice name="shell_comments" result="FAIL" time_sec="0.23" crc="413896311"/>
-               <choice name="funny_comments" result="FAIL" time_sec="0.24" crc="-500944698"/>
+               <choice name="c_comments" result="FAIL" time_sec="0.26" crc="1305183221"/>
+               <choice name="shell_comments" result="FAIL" time_sec="0.25" crc="413896311"/>
+               <choice name="funny_comments" result="FAIL" time_sec="0.26" crc="-500944698"/>
             </choice-list>
         </test>
         <test title="2209142 0.33.1-pre-release" time-sum-sec="4.33"> 
@@ -514,11 +514,11 @@
                <choice name="" result="OK" time_sec="0.26" crc="247970917"/>
             </choice-list>
         </test>
-        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" time-sum-sec="0.54"> 
+        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" time-sum-sec="0.57"> 
             <application file-name="bug-2395200.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="error-lexer" result="FAIL" time_sec="0.26" crc="-379544684"/>
+               <choice name="error-lexer" result="FAIL" time_sec="0.29" crc="-379544684"/>
                <choice name="lexer" result="FAIL" time_sec="0.28" crc="-194156373"/>
             </choice-list>
         </test>
@@ -558,11 +558,11 @@
                <choice name="utf8" result="OK" time_sec="0.23" crc="-1094209245"/>
             </choice-list>
         </test>
-        <test title="3512806 0.62.2 build error" time-sum-sec="0.08"> 
+        <test title="3512806 0.62.2 build error" time-sum-sec="0.06"> 
             <application file-name="bug-3512806.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="C" result="FAIL" time_sec="0.04" crc="None"/>
+               <choice name="C" result="FAIL" time_sec="0.03" crc="None"/>
                <choice name="Cpp" result="FAIL" time_sec="0.03" crc="None"/>
             </choice-list>
         </test>
@@ -605,11 +605,11 @@
         </test>
     </group>
     <group name="remcobloemen1">
-        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="0.62"> 
+        <test title="3295781 Duplicate label with Template and Path Compression" time-sum-sec="0.65"> 
             <application file-name="bug-3295781.sh" info-request-time="1405279907L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.62" crc="-1533834692"/>
+               <choice name="" result="FAIL" time_sec="0.65" crc="-1533834692"/>
             </choice-list>
         </test>
     </group>
@@ -635,11 +635,11 @@
         </test>
     </group>
     <group name="sbellon">
-        <test title="265 Modification time change on input file." time-sum-sec="0.17"> 
+        <test title="265 Modification time change on input file." time-sum-sec="0.18"> 
             <application file-name="bug-265.sh" info-request-time="1381662252L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.17" crc="-2145169155"/>
+               <choice name="" result="FAIL" time_sec="0.18" crc="-2145169155"/>
             </choice-list>
         </test>
         <test title="3524729 0.62.4 token_type distinct members cause overloading error" time-sum-sec="0.45"> 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="265.00" date="Wed Sep 17 08:45:07 2014">
+<test-database execution-time-sec="265.00" date="Thu Sep 18 00:24:02 2014">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.11"> 
         <application file-name="test-mode-changes.py" info-request-time="1387873735L" vanished="False"/>

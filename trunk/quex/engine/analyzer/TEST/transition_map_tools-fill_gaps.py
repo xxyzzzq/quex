@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling       import Interval
 from   quex.engine.analyzer.transition_map import TransitionMap
+from   quex.blackboard import setup as Setup
 from   copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -25,7 +26,7 @@ def test(TM, Target="X"):
     print "____________________________________________________________________"
     print "BEFORE:"
     show(tm)
-    tm.fill_gaps(Target)
+    tm.fill_gaps(Target, Setup.buffer_codec.source_set.minimum(), Setup.buffer_codec.source_set.supremum())
     tm.assert_adjacency(ChangeF=True)
     print "AFTER:"
     show(tm)

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.05" date="Wed Sep 17 08:45:13 2014">
+<test-database execution-time-sec="4.05" date="Thu Sep 18 00:24:09 2014">
     <last-used-diff-display-program name=""/>
     <test title="" time-sum-sec="2.01"> 
         <application file-name="run_coverage.sh" info-request-time="1408779207L" vanished="False"/>

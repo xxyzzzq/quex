@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.42" date="Wed Sep 17 08:44:50 2014">
+<test-database execution-time-sec="1.42" date="Thu Sep 18 00:23:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="Disable several error messages." time-sum-sec="0.33"> 
         <application file-name="no-error-flags.sh" info-request-time="1381662240L" vanished="False"/>

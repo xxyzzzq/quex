@@ -153,7 +153,7 @@ def __code(Node, TheState, done_set, GlobalEntryF):
         # after this node--no goto is required.
         return txt
 
-    elif Node.command_list and Node.command_list[-1].id == E_Cmd.GotoDoorId: 
+    elif Node.command_list and Node.command_list[-1].is_conditionless_goto(): 
         # Goto is futile if the last command is an unconditional goto.
         return txt
 
