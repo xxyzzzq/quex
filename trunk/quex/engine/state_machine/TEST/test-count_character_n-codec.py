@@ -34,11 +34,13 @@ def test(TestString):
     pattern = core.do(TestString, {})
 
     # Prepare transformation info according to choice.
-    if "UTF8" in sys.argv: trafo_info = Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
-    else:                  trafo_info = Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
+    if "UTF8" in sys.argv: 
+        Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
+    else:                  
+        Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
 
     # Count
-    pattern.prepare_count_info(counter_db, trafo_info)
+    pattern.prepare_count_info(counter_db, Setup.buffer_codec)
     print ("info  = {\n    %s\n}\n" % str(pattern.count_info()).replace("\n", "\n    "))
 
 if "UTF8" in sys.argv:

@@ -472,7 +472,7 @@ def _prepare_skip_range(ModeName, OptionsDb, CounterDb, IncidenceDb, MHI):
     if SrSetup is None or len(SrSetup) == 0: return [], []
 
     return [], [
-        PPT_range_skipper(False, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb, terminal_factory)
+        PPT_range_skipper(False, MHI, i, data, ModeName, OptionsDb, CounterDb, IncidenceDb)
         for i, data in enumerate(SrSetup)
     ]
 

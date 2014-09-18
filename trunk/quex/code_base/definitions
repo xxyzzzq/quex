@@ -183,6 +183,7 @@
 
 #   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
            __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase), (Message)); \
+           __quex_assert((int)PathIterator - (int)PathBase >= (int)0);                               \
            __quex_debug4("(path walker: %i, path: %i, offset: %i)",                                  \
                          (int)PathWalkerIdx,                                                         \
                          (int)__QUEX_DEBUG_MAP_PATH_BASE_TO_PATH_ID(PathBase),                       \
