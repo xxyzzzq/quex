@@ -1,4 +1,4 @@
-<test-database execution-time-sec="15.73" date="Thu Sep 18 00:24:12 2014">
+<test-database execution-time-sec="15.89" date="Thu Sep 18 08:29:02 2014">
     <last-used-diff-display-program name=""/>
     <test title="Parse Indentation Setup" time-sum-sec="0.55"> 
         <application file-name="indentation_setup.py" info-request-time="1404283486L" vanished="False"/>
@@ -23,23 +23,23 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.14" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.56"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.59"> 
         <application file-name="counter_setup.py" info-request-time="1404284241L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="FAIL" time_sec="0.13" crc="1107514325"/>
-           <choice name="twice" result="FAIL" time_sec="0.10" crc="-66430363"/>
+           <choice name="twice" result="FAIL" time_sec="0.13" crc="-66430363"/>
            <choice name="intersection" result="OK" time_sec="0.11" crc="-1272420778"/>
-           <choice name="intersection-2" result="FAIL" time_sec="0.11" crc="1668066904"/>
-           <choice name="non-numeric" result="FAIL" time_sec="0.10" crc="1478286530"/>
+           <choice name="intersection-2" result="FAIL" time_sec="0.12" crc="1668066904"/>
+           <choice name="non-numeric" result="FAIL" time_sec="0.11" crc="1478286530"/>
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.91"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="1.04"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1407818498L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.91" crc="139565825"/>
+               <choice name="" result="FAIL" time_sec="1.04" crc="139565825"/>
             </choice-list>
         </test>
         <test title="Information about Properties" time-sum-sec="5.90"> 

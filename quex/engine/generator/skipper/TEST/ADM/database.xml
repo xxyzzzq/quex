@@ -1,12 +1,12 @@
-<test-database execution-time-sec="43.34" date="Thu Sep 18 00:24:07 2014">
+<test-database execution-time-sec="43.58" date="Thu Sep 18 08:28:57 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="2.06"> 
+    <test title="Indentation Counting" time-sum-sec="2.34"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
-           <choice name="Uniform" result="FAIL" time_sec="0.73" crc="1131795500"/>
-           <choice name="NonUniform" result="FAIL" time_sec="0.64" crc="1218462623"/>
-           <choice name="NonUniform-2" result="FAIL" time_sec="0.68" crc="2024468269"/>
+           <choice name="Uniform" result="FAIL" time_sec="0.93" crc="1131795500"/>
+           <choice name="NonUniform" result="FAIL" time_sec="0.70" crc="1218462623"/>
+           <choice name="NonUniform-2" result="FAIL" time_sec="0.71" crc="2024468269"/>
         </choice-list>
     </test>
     <group name="Skip-Characters">
@@ -32,14 +32,14 @@
                <choice name="8" result="OK" time_sec="0.60" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.16"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.11"> 
             <application file-name="test-skip-utf8.py" info-request-time="1410829053L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="5" result="FAIL" time_sec="0.75" crc="979409748"/>
-               <choice name="6" result="FAIL" time_sec="0.89" crc="-336978531"/>
-               <choice name="7" result="FAIL" time_sec="0.75" crc="-336978531"/>
-               <choice name="8" result="FAIL" time_sec="0.76" crc="-336978531"/>
+               <choice name="5" result="FAIL" time_sec="0.77" crc="979409748"/>
+               <choice name="6" result="FAIL" time_sec="0.77" crc="-336978531"/>
+               <choice name="7" result="FAIL" time_sec="0.77" crc="-336978531"/>
+               <choice name="8" result="FAIL" time_sec="0.80" crc="-336978531"/>
             </choice-list>
         </test>
     </group>

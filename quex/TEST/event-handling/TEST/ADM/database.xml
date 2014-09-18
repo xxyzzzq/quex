@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.53" date="Thu Sep 18 00:23:52 2014">
+<test-database execution-time-sec="0.54" date="Thu Sep 18 08:28:42 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.02"> 
+    <test title="Customized on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 
         <application file-name="on_skip_range_open-customized.sh" info-request-time="1410829219L" vanished="False"/>
         <analogy open="((" close="))"/>
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
@@ -25,7 +25,7 @@
         <happy-pattern re="EHLexer.c:[0-9]+:"/>
         <make-procedure success="True" time_sec="0.955856"/>
         <choice-list number="1" same_result="False">
-           <choice name="customized" result="FAIL" time_sec="0.02" crc="-682143504"/>
+           <choice name="customized" result="FAIL" time_sec="0.03" crc="-682143504"/>
         </choice-list>
     </test>
     <test title="Default on_skip_range_open event." make-dependent="True" time-sum-sec="0.03"> 

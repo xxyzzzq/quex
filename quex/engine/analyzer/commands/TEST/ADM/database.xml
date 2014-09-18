@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.87" date="Thu Sep 18 00:24:02 2014">
+<test-database execution-time-sec="4.87" date="Thu Sep 18 08:28:51 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
