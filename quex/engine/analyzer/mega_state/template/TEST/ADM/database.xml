@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.79" date="Thu Sep 18 08:28:51 2014">
+<test-database execution-time-sec="2.79" date="Thu Sep 18 21:19:01 2014">
     <last-used-diff-display-program name=""/>
     <test title="Combination of Two Transition Maps" time-sum-sec="0.58"> 
         <application file-name="combine-maps.py" info-request-time="1401225926L" vanished="False"/>
