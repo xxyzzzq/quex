@@ -156,7 +156,7 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     #               Related data (skip character set, ... ) is NOT transformed!
     for pattern in pattern_list:
         if not pattern.transform(Setup.buffer_codec):
-            error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec_name,
+            error_msg("Pattern contains elements not found in engine codec '%s'." % Setup.buffer_codec.name,
                       pattern.sr, DontExitF=True)
 
     # (*) Cut the signalling characters from any pattern or state machine

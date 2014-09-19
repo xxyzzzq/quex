@@ -84,7 +84,9 @@ class CountCmdMap(object):
         self.__map.append((CharSet, CountCmdMapEntry(cc_type, Value, sr)))
 
     def get_count_commands(self, CharacterSet):
-        """Finds the count command for column, grid, and newline.
+        """Finds the count command for column, grid, and newline. This does NOT
+        consider 'chunk number per character'. The consideration is on pure 
+        character (unicode) level.
         
         RETURNS: [0] column increment (None, if none, -1 if undetermined)
                  [1] grid step size   (None, if none, -1 if undetermined)
@@ -217,7 +219,7 @@ class CountCmdMap(object):
         # the character set 'number_set'. If the character set is represented
         # by the same number of chunks, than the column number per chunk is
         # found.
-        if not Setup.variable_character_sizes_f():
+        if not Setup.buffer_codec.variable_character_sizes_f():
             return column_incr_per_character
 
         chunk_n_per_character = \

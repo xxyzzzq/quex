@@ -1,57 +1,57 @@
-<test-database execution-time-sec="3.29" date="Thu Sep 18 21:19:01 2014">
+<test-database execution-time-sec="3.52" date="Fri Sep 19 23:01:17 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="1.16"> 
+        <test title="select" time-sum-sec="1.56"> 
             <application file-name="select_longest_paths.py" info-request-time="1401225047L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="14" same_result="False">
-               <choice name="0" result="OK" time_sec="0.08" crc="858932159"/>
-               <choice name="1" result="OK" time_sec="0.08" crc="464756229"/>
-               <choice name="2" result="OK" time_sec="0.09" crc="-1999432940"/>
-               <choice name="3" result="OK" time_sec="0.09" crc="-379941737"/>
-               <choice name="4" result="OK" time_sec="0.08" crc="-1024587979"/>
-               <choice name="5" result="OK" time_sec="0.08" crc="470140688"/>
-               <choice name="6" result="OK" time_sec="0.08" crc="-1231177672"/>
-               <choice name="7" result="OK" time_sec="0.08" crc="-2097780869"/>
-               <choice name="8" result="OK" time_sec="0.08" crc="-1697922765"/>
-               <choice name="9" result="OK" time_sec="0.08" crc="1993708865"/>
-               <choice name="10" result="OK" time_sec="0.09" crc="1505417187"/>
-               <choice name="11a" result="OK" time_sec="0.08" crc="-379941737"/>
-               <choice name="11b" result="OK" time_sec="0.09" crc="889524467"/>
-               <choice name="12" result="OK" time_sec="0.08" crc="-1818699120"/>
+               <choice name="0" result="OK" time_sec="0.10" crc="858932159"/>
+               <choice name="1" result="OK" time_sec="0.10" crc="464756229"/>
+               <choice name="2" result="OK" time_sec="0.10" crc="-1999432940"/>
+               <choice name="3" result="OK" time_sec="0.10" crc="-379941737"/>
+               <choice name="4" result="OK" time_sec="0.11" crc="-1024587979"/>
+               <choice name="5" result="OK" time_sec="0.10" crc="470140688"/>
+               <choice name="6" result="OK" time_sec="0.11" crc="-1231177672"/>
+               <choice name="7" result="OK" time_sec="0.11" crc="-2097780869"/>
+               <choice name="8" result="OK" time_sec="0.12" crc="-1697922765"/>
+               <choice name="9" result="OK" time_sec="0.13" crc="1993708865"/>
+               <choice name="10" result="OK" time_sec="0.11" crc="1505417187"/>
+               <choice name="11a" result="OK" time_sec="0.13" crc="-379941737"/>
+               <choice name="11b" result="OK" time_sec="0.13" crc="889524467"/>
+               <choice name="12" result="OK" time_sec="0.11" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="collect" time-sum-sec="0.62"> 
+        <test title="collect" time-sum-sec="0.71"> 
             <application file-name="find.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.10" crc="-1505164111"/>
                <choice name="2" result="OK" time_sec="0.10" crc="1211733340"/>
-               <choice name="3" result="OK" time_sec="0.10" crc="605339522"/>
-               <choice name="4" result="OK" time_sec="0.11" crc="-2006970915"/>
-               <choice name="5" result="OK" time_sec="0.10" crc="-1643133387"/>
-               <choice name="6" result="OK" time_sec="0.11" crc="300088630"/>
+               <choice name="3" result="OK" time_sec="0.11" crc="605339522"/>
+               <choice name="4" result="OK" time_sec="0.13" crc="-2006970915"/>
+               <choice name="5" result="OK" time_sec="0.13" crc="-1643133387"/>
+               <choice name="6" result="OK" time_sec="0.14" crc="300088630"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.83"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.46"> 
             <application file-name="find-3.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="0.52" crc="-436209603"/>
-               <choice name="2" result="OK" time_sec="0.11" crc="-480203752"/>
+               <choice name="1" result="OK" time_sec="0.12" crc="-436209603"/>
+               <choice name="2" result="OK" time_sec="0.13" crc="-480203752"/>
                <choice name="3" result="OK" time_sec="0.10" crc="-8579387"/>
-               <choice name="4" result="OK" time_sec="0.10" crc="1917712010"/>
+               <choice name="4" result="OK" time_sec="0.11" crc="1917712010"/>
             </choice-list>
         </test>
-        <test title="find_path (mean tests)" time-sum-sec="0.55"> 
+        <test title="find_path (mean tests)" time-sum-sec="0.66"> 
             <application file-name="find-2.py" info-request-time="1402009615L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.10" crc="507022156"/>
-               <choice name="2" result="OK" time_sec="0.10" crc="-150044201"/>
-               <choice name="3" result="OK" time_sec="0.09" crc="448772152"/>
-               <choice name="4a" result="OK" time_sec="0.12" crc="246217963"/>
-               <choice name="4b" result="OK" time_sec="0.14" crc="-1600831568"/>
+               <choice name="1" result="OK" time_sec="0.12" crc="507022156"/>
+               <choice name="2" result="OK" time_sec="0.13" crc="-150044201"/>
+               <choice name="3" result="OK" time_sec="0.11" crc="448772152"/>
+               <choice name="4a" result="OK" time_sec="0.13" crc="246217963"/>
+               <choice name="4b" result="OK" time_sec="0.17" crc="-1600831568"/>
             </choice-list>
         </test>
         <test title="is_difference_single_character" time-sum-sec="0.13"> 

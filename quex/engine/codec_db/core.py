@@ -10,6 +10,7 @@ from   quex.engine.misc.file_in      import get_file_content_or_die, \
 from   quex.engine.interval_handling import Interval, NumberSet
 from   quex.engine.tools             import typed
 
+import os
 
 _supported_codec_list              = []
 _supported_codec_list_plus_aliases = []
@@ -93,6 +94,9 @@ class CodecInfo:
         self.source_set = SourceSet
         self.drain_set  = DrainSet
 
+    def variable_character_sizes_f(self):
+        return False
+
     def transform(self, sm):
         return True, sm
 
@@ -102,6 +106,12 @@ class CodecInfo:
     def transform_Number(self, number):
         return [ Interval(number) ]
 
+    def homogeneous_chunk_n_per_character(self, CharacterSet):
+        return 1 # In non-dynamic character codecs each chunk element is a character
+
+    def homogeneous_chunk_n_per_character_in_state_machine(self, SM):
+        return 1
+
 class CodecDynamicInfo(CodecInfo):
     def __init__(self, Name, ImplementingModule):
         CodecInfo.__init__(self, 
@@ -109,6 +119,9 @@ class CodecDynamicInfo(CodecInfo):
                     ImplementingModule.get_unicode_range(), 
                     ImplementingModule.get_codec_element_range())
         self.module = ImplementingModule
+
+    def variable_character_sizes_f(self):
+        return True
 
     def transform(self, sm):
         sm = self.module.do(sm)
@@ -127,7 +140,7 @@ class CodecDynamicInfo(CodecInfo):
         if result is None: return None
         else:              return result.get_intervals(PromiseToTreatWellF=True)
 
-    def homogeneous_chunk_n_per_character(self, SM_or_CharacterSet):
+    def homogeneous_chunk_n_per_character(self, CharacterSet):
         """Consider a given state machine (pattern). If all characters involved in the 
         state machine require the same number of chunks (2 bytes) to be represented 
         this number is returned. Otherwise, 'None' is returned.
@@ -137,24 +150,26 @@ class CodecDynamicInfo(CodecInfo):
                    None   characters in the state machine require different numbers of
                           chunks.
         """
-        if isinstance(SM_or_CharacterSet, NumberSet):
-            return self.module.homogeneous_chunk_n_per_character(SM_or_CharacterSet)
-        else:
-            chunk_n = None
-            for state in SM_or_CharacterSet.states.itervalues():
-                for number_set in state.target_map.get_map().itervalues():
-                    candidate_chunk_n = self.module.homogeneous_chunk_n_per_character(number_set)
-                    if   candidate_chunk_n is None:    return None
-                    elif chunk_n is None:              chunk_n = candidate_chunk_n
-                    elif chunk_n != candidate_chunk_n: return None
-            return chunk_n
+        return self.module.homogeneous_chunk_n_per_character(CharacterSet)
+
+    def homogeneous_chunk_n_per_character_in_state_machine(self, SM):
+        chunk_n = None
+        for state in SM.states.itervalues():
+            for number_set in state.target_map.get_map().itervalues():
+                candidate_chunk_n = self.module.homogeneous_chunk_n_per_character(number_set)
+                if   candidate_chunk_n is None:    return None
+                elif chunk_n is None:              chunk_n = candidate_chunk_n
+                elif chunk_n != candidate_chunk_n: return None
+        return chunk_n
 
 class CodecTransformationInfo(CodecInfo, list):
     def __init__(self, Codec=None, FileName=None, ExitOnErrorF=True):
         assert Codec is not None or FileName is not None
 
         if FileName is not None:
-            codec_name = "file:%s" % FileName
+            file_name  = os.path.basename(FileName)
+            file_name, dumped_ext = os.path.splitext(file_name)
+            codec_name = file_name.replace(" ", "_").replace("\t", "_").replace("\n", "_")
             file_name  = FileName
         else:
             codec_name = _get_distinct_codec_name_for_alias(Codec)

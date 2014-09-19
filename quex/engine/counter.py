@@ -236,8 +236,8 @@ class CountCmdFactory:
         # possible that reload happens in between one character. I such cases
         # the 'input_p' cannot be used as reference for delta-add. Here,
         # we must rely on the 'character begin_p'.
-        if Setup.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
-        else:                                  pointer = E_R.InputP
+        if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
+        else:                                               pointer = E_R.InputP
 
         on_begin         = [ ColumnCountReferencePSet(pointer) ]
         on_after_reload  = [ ColumnCountReferencePSet(pointer) ]
