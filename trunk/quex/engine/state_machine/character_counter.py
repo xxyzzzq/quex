@@ -5,6 +5,44 @@ import quex.engine.state_machine.transformation as     transformation
 from   quex.blackboard                          import E_Count
 
 class CountInfo:
+    """Information on character counting characteristics of lexeme that match a 
+    given state machine.
+    
+      .line_n_increment   
+        
+         The number of lines that appear in the pattern.
+         
+         E_Count.VOID => cannot be determined from the pattern off-line.
+
+      .line_n_increment_by_lexeme_length 
+
+         If the line number increment is proportional to the length of the
+         lexeme which is matched, then this variable contains the factor. 
+         
+         E_Count.VOID => lexeme length not proportional to line_n_increment.
+
+      .column_index
+      
+         If the column index after match has a specific value, then this 
+         member variable contains its value. If it has not, it contains
+         E_Count.VOID.
+
+         (This makes sense for pattern that have a 'begin-of-line' pre-
+         context. Or, when it contains a newline such as "\\notto".)
+
+      .column_n_increment 
+      
+         The number of columns that appear in the pattern It is E_Count.VOID if
+         it cannot be determined from the pattern off-line.
+
+      .column_n_increment_by_lexeme_length 
+
+         If the column number increment is proportional to the length of the
+         lexeme which is matched, then this variable contains the factor. It
+         is E_Count.VOID if there is no relation between lexeme length and
+         column number increment.
+    """
+
     chunk_n_per_char = None
 
     def __init__(self, Result, CodecTrafoInfo, SM):
@@ -27,42 +65,8 @@ class CountInfo:
         Given a pattern as a state machine 'SM' this function analyses the 
         increments of line and column numbers. Depending on whether those 
         values can be determined from the state machine or only during run-
-        time, a CountInfo object is provided that provides basic information:
-
-          .line_n_increment   
-            
-             The number of lines that appear in the pattern.
-             
-             E_Count.VOID => cannot be determined from the pattern off-line.
-
-          .line_n_increment_by_lexeme_length 
-
-             If the line number increment is proportional to the length of the
-             lexeme which is matched, then this variable contains the factor. 
-             
-             E_Count.VOID => lexeme length not proportional to line_n_increment.
-
-          .column_index
-          
-             If the column index after match has a specific value, then this 
-             member variable contains its value. If it has not, it contains
-             E_Count.VOID.
-
-             (This makes sense for pattern that have a 'begin-of-line' pre-
-             context. Or, when it contains a newline such as "\\notto".)
-
-          .column_n_increment 
-          
-             The number of columns that appear in the pattern It is E_Count.VOID if
-             it cannot be determined from the pattern off-line.
-
-          .column_n_increment_by_lexeme_length 
-
-             If the column number increment is proportional to the length of the
-             lexeme which is matched, then this variable contains the factor. It
-             is E_Count.VOID if there is no relation between lexeme length and
-             column number increment.
-
+        time, a CountInfo object is provided.
+        
         NOTES _____________________________________________________________________
 
         State machine shall not contain pre- or post-contexts.
@@ -99,14 +103,19 @@ class CountInfo:
 
         ___________________________________________________________________________
         """
-        tracer  = CharacterCountTracer(SM)
-        state   = SM.get_init_state()
-        count   = Count(0, 0, ColumnIndex = 0 if BeginOfLineF else E_Count.VOID, GridStepN = E_Count.VIRGIN)
+        tracer       = CharacterCountTracer(SM)
+        init_state   = SM.get_init_state()
+
+        column_index = E_Count.VOID
+        if BeginOfLineF: column_index = 0
+        count   = Count(0, 0, ColumnIndex=column_index, GridStepN=E_Count.VIRGIN)
         # Next Node: [0] state index of target state
         #            [1] character set that triggers to it
-        #            [2] count information
-        initial = [ (state_index, character_set, count.clone()) \
-                    for state_index, character_set in state.target_map.get_map().iteritems() ]
+        #            [2] count information (initialized to 'virgin')
+        initial = [ 
+            (target_state_index, character_set, count.clone()) \
+            for target_state_index, character_set in init_state.target_map.get_map().iteritems() 
+        ]
 
         Count.init(CounterDB)
         tracer.do(initial)
@@ -119,7 +128,8 @@ class CountInfo:
             # If the count procedure was aborted, possibly NOT all character
             # transitions have been investigated. So the value for 'grid' must
             # determined now, independently of the 'tracer.do()'.
-            Count.grid_step_size_by_lexeme_length <<= _get_grid_step_size_by_lexeme_length(SM, CounterDB)
+            Count.grid_step_size_by_lexeme_length <<= \
+                    _get_grid_step_size_by_lexeme_length(SM, CounterDB)
 
         return CountInfo(tracer.result, CodecTrafoInfo, SM)
 
@@ -143,7 +153,8 @@ class CountInfo:
     def _get_chunk_n_per_character(SM, CodecTrafoInfo):
         if CountInfo.chunk_n_per_char != -1:
             return CountInfo.chunk_n_per_char
-        CountInfo.chunk_n_per_char = CodecTrafoInfo.homogeneous_chunk_n_per_character(SM)
+        CountInfo.chunk_n_per_char = \
+             CodecTrafoInfo.homogeneous_chunk_n_per_character_in_state_machine(SM)
         return CountInfo.chunk_n_per_char
 
     def _consider_variable_character_sizes(self, SM, CodecTrafoInfo):

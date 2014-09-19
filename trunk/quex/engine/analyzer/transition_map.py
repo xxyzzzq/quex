@@ -90,6 +90,7 @@ class TransitionMap(list):
         i_itvl, i_target = TransitionMapA[0]
         k_itvl, k_target = TransitionMapB[0]
         begin            = i_itvl.begin
+        end_of_both      = TransitionMapA[-1][0].end
         prev_end         = begin 
         # Intervals in trigger map are always adjacent, so the '.begin' member is
         # not accessed.
@@ -109,7 +110,8 @@ class TransitionMap(list):
                 k += 1; k_itvl, k_target = TransitionMapB[k]
 
         # Treat the last trigger interval
-        yield prev_end, sys.maxint, TransitionMapA[-1][1], TransitionMapB[-1][1]
+        if prev_end != end_of_both:
+            yield prev_end, end_of_both, TransitionMapA[-1][1], TransitionMapB[-1][1]
         return
 
     def relate_to_DoorIDs(self, TheAnalyzer, StateIndex):

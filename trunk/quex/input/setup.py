@@ -5,7 +5,7 @@ from   quex.engine.interval_handling import NumberSet
 import quex.engine.codec_db.core     as     codec_db
 from   quex.DEFINITIONS              import QUEX_PATH
 
-import os.path as path
+import os  
 import sys
 
 E_Files = Enum("HEADER", 
@@ -61,10 +61,11 @@ class QuexSetup:
             assert Module is not None
             result = codec_db.CodecDynamicInfo(BufferCodecName, Module)
         elif BufferCodecFileName:
+            os.path.splitext(os.path.basename(BufferCodecFileName))
             try: 
                os.path.splitext(os.path.basename(BufferCodecFileName))
             except:
-                error_msg("cannot interpret string following '--codec-file'")
+                file_in.error_msg("cannot interpret string following '--codec-file'")
             result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
         elif BufferCodecName == "unicode":
             # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
@@ -143,10 +144,10 @@ class QuexSetup:
         if not self.source_package_directory: 
             return clean(FileName)
 
-        full_file_name          = clean(path.realpath(FileName))
+        full_file_name          = clean(os.path.realpath(FileName))
         # Ensure that all directories end with '/'. The 'clean' will omit double slashes.
-        full_source_package_dir = clean(path.realpath(self.source_package_directory) + "/")
-        full_code_base_dir      = clean(path.realpath(QUEX_PATH + code_base_directory) + "/")
+        full_source_package_dir = clean(os.path.realpath(self.source_package_directory) + "/")
+        full_code_base_dir      = clean(os.path.realpath(QUEX_PATH + code_base_directory) + "/")
 
         ##if FileName.find("CppDefault.qx") != -1:
         ##    print "## filename           = ", FileName
@@ -177,12 +178,6 @@ class QuexSetup:
                 return clean(full_file_name[len(full_source_package_dir):])
 
         return clean(FileName)
-
-    def variable_character_sizes_f(self):
-        if       self.buffer_codec is None:                     return False                 
-        elif not isinstance(self.buffer_codec, (str, unicode)): return False
-        elif     self.buffer_codec.find("state-split") == -1:   return False
-        return True
 
 SetupParTypes = Enum("LIST", "INT_LIST", "FLAG", "NEGATED_FLAG", "STRING", "OPTIONAL_STRING")
 
@@ -569,7 +564,7 @@ DOC = {
     "analyzer_class":                 ("Specify analyzer class with optional namespace.", ""),
     "analyzer_derived_class_file":    ("Name of file containing derived class.", ""),
     "analyzer_derived_class_name":    ("Name of derived class with optional namespace.", ""),
-    "buffer_codec_name":                   ("Buffer internal codec.", ""),
+    "buffer_codec_name":              ("Buffer internal codec.", ""),
     "buffer_codec_file":              ("Codec file describing mapping to unicode code points.", ""),
     "buffer_limit_code":              ("Buffer limit code.", ""),
     "buffer_element_size":            ("Buffer element size.", ""),

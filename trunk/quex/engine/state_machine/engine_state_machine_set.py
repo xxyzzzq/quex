@@ -128,7 +128,7 @@ class CharacterSetStateMachine:
         in 'character_begin_p'. To reset the input pointer 'input_p = character_begin_p' 
         is applied.
         """
-        if not Setup.variable_character_sizes_f():
+        if not Setup.buffer_codec.variable_character_sizes_f():
             # 1 character == 1 chunk
             # => rest to last character: 'input_p = input_p - 1'
             self.on_step    = []
@@ -157,7 +157,7 @@ class CharacterSetStateMachine:
         RETURNS: [0] on_before_reload
                  [1] on_after_reload
         """
-        if Setup.variable_character_sizes_f():
+        if Setup.buffer_codec.variable_character_sizes_f():
             if not self.maintain_lexeme_f:
                 on_before_reload = [ Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
                 on_after_reload  = [ Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]

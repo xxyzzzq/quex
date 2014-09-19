@@ -53,14 +53,15 @@ def prepare(command_line, argv):
                   "Available schemes are: %s." % repr(Setup.extension_db.keys())[1:-1])
 
     # (*) Output files
-    if Setup.language not in ["DOT"]:
-        prepare_file_names(Setup)
-
     if   Setup.buffer_codec_name == "utf8":  module = utf8_state_split
     elif Setup.buffer_codec_name == "utf16": module = utf16_state_split
     else:                                    module = None
     Setup.buffer_codec_prepare(Setup.buffer_codec_name, 
                                Setup.buffer_codec_file, module)
+
+    # AFTER: Setup.buffer_codec_prepare() !!!
+    if Setup.language not in ["DOT"]:
+        prepare_file_names(Setup)
 
     if Setup.buffer_byte_order == "<system>": 
         Setup.buffer_byte_order = sys.byteorder 
@@ -119,7 +120,7 @@ def prepare(command_line, argv):
     # The only case where no converter helper is required is where ASCII 
     # (Unicode restricted to [0, FF] is used.
     Setup.converter_helper_required_f = True
-    if Setup.converter_f == False and Setup.buffer_element_size == 1 and Setup.buffer_codec_name == "unicode":
+    if Setup.converter_f == False and Setup.buffer_element_size == 1 and Setup.buffer_codec.name == "unicode":
         Setup.converter_helper_required_f = False
 
     validation.do(Setup, command_line, argv)
@@ -313,25 +314,25 @@ def prepare_file_names(Setup):
     else:
         Setup.output_token_class_file_implementation = __prepare_file_name("-token",     E_Files.SOURCE)
 
-    if   Setup.buffer_codec_name == "utf8":
+    if   Setup.buffer_codec.name == "utf8":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf8"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf8.i"
 
-    elif Setup.buffer_codec_name == "utf16":
+    elif Setup.buffer_codec.name == "utf16":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf16"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf16.i"
 
-    elif Setup.buffer_codec_name == "utf32":
+    elif Setup.buffer_codec.name == "utf32":
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-utf32"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-utf32.i"
 
-    elif Setup.buffer_codec_name != "unicode":
+    elif Setup.buffer_codec.name != "unicode":
         # Note, that the name may be set to 'None' if the conversion is utf8 or utf16
         # See Internal engine character encoding'
         Setup.output_buffer_codec_header = \
-            __prepare_file_name("-converter-%s" % Setup.buffer_codec_name, E_Files.HEADER)
+            __prepare_file_name("-converter-%s" % Setup.buffer_codec.name, E_Files.HEADER)
         Setup.output_buffer_codec_header_i = \
-            __prepare_file_name("-converter-%s" % Setup.buffer_codec_name, E_Files.HEADER_IMPLEMTATION)
+            __prepare_file_name("-converter-%s" % Setup.buffer_codec.name, E_Files.HEADER_IMPLEMTATION)
     else:
         Setup.output_buffer_codec_header   = "quex/code_base/converter_helper/from-unicode-buffer"
         Setup.output_buffer_codec_header_i = "quex/code_base/converter_helper/from-unicode-buffer.i"
