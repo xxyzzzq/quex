@@ -19,9 +19,11 @@ from   quex.blackboard import E_StateIndices, \
 @typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
 def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,
        ParallelSmTerminalPairList=None):
-    """Buffer Limit Code --> Reload
-       Skip Character    --> Loop to Skipper State
-       Else              --> Exit Loop
+    """Generates a (pseudo-one-state) state machine with the properties:
+        
+               Buffer Limit Code --> Reload
+               Loop Character    --> Loop Entry
+               Else              --> Exit Loop
 
     NOTE: This function does NOT code the FAILURE terminal. The caller needs to 
           do this if required.

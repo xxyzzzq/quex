@@ -104,8 +104,10 @@ class OptionDB(dict):
 
     ---------------------------------------------------------------------------
     """
-    def get(self, Key):         assert False # Not to be used.
-    def __getitem__(self, Key): assert False # Not to be used
+    def get(self, Key):         
+        assert False, "Not to be used, but result would be '%s'" % dict.get(self, Key) 
+    def __getitem__(self, Key): 
+        assert False, "Not to be used, but result would be '%s'" % dict.__getitem__(self, Key)
     def __setitem__(self, Key): assert False # Not to be used
 
     @classmethod
@@ -276,7 +278,6 @@ def parse(fh, new_mode):
 
     # Finally, set the option
     new_mode.option_db.enter(identifier, value, source_reference, new_mode.name)
-
     return True
 
 def __parse_skip_option(fh, new_mode, identifier):
