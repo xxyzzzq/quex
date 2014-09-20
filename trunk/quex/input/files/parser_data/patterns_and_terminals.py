@@ -17,7 +17,7 @@ import quex.engine.state_machine.check.superset          as     superset_check
 import quex.engine.state_machine.check.identity          as     identity_checker
 import quex.engine.state_machine.sequentialize           as     sequentialize
 
-from   quex.engine.tools import typed, print_callstack
+from   quex.engine.tools import typed
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               Lng, \
@@ -83,10 +83,8 @@ def get(BaseModeSequence, OptionsDb, CounterDb, IncidenceDb):
     # -- Collect patterns and terminals which are required to implement
     #    skippers and indentation counters.
     extra_terminal_list = []
-    for i, func in enumerate((_prepare_skip_character_set, 
-                              _prepare_skip_range, 
-                              _prepare_skip_nested_range, 
-                              _prepare_indentation_counter)):
+    for i, func in enumerate((_prepare_skip_character_set, _prepare_skip_range, 
+                              _prepare_skip_nested_range, _prepare_indentation_counter)):
         new_extra_terminals, \
         new_ppts             = func(mode_name, OptionsDb, CounterDb, 
                                     IncidenceDb, MHI=-4+i)
@@ -549,8 +547,7 @@ def PPT_indentation_handler_newline(MHI, data, ISetup, CounterDb):
 
     pattern = Pattern(sm, PatternString="<indentation newline>", 
                       Sr = ISetup.sm_newline.sr)
-    code    = CodeGenerated(indentation_counter.do, 
-                            data, 
+    code    = CodeGenerated(indentation_counter.do, data, 
                             "INDENTATION COUNTER: NEWLINE")
     pattern.set_incidence_id(E_IncidenceIDs.INDENTATION_HANDLER)
 

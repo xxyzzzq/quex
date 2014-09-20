@@ -1,79 +1,79 @@
-<test-database execution-time-sec="62.81" date="Fri Sep 19 23:01:22 2014">
+<test-database execution-time-sec="50.35" date="Sat Sep 20 09:09:23 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting" time-sum-sec="1.96"> 
+    <test title="Indentation Counting" time-sum-sec="2.26"> 
         <application file-name="test-indentation-counter.py" info-request-time="1404556274L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
-           <choice name="Uniform" result="FAIL" time_sec="0.69" crc="1131795500"/>
-           <choice name="NonUniform" result="FAIL" time_sec="0.62" crc="1218462623"/>
-           <choice name="NonUniform-2" result="FAIL" time_sec="0.65" crc="2024468269"/>
+           <choice name="Uniform" result="FAIL" time_sec="0.76" crc="1131795500"/>
+           <choice name="NonUniform" result="FAIL" time_sec="0.76" crc="1218462623"/>
+           <choice name="NonUniform-2" result="FAIL" time_sec="0.73" crc="2024468269"/>
         </choice-list>
     </test>
     <group name="Skip-Characters">
-        <test title="Large Buffer" time-sum-sec="11.53"> 
+        <test title="Large Buffer" time-sum-sec="9.09"> 
             <application file-name="test-skip.py" info-request-time="1410417375L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="2.32" crc="-2098256826"/>
-               <choice name="ANSI-C" result="OK" time_sec="2.21" crc="-2098256826"/>
-               <choice name="Cpp" result="OK" time_sec="3.46" crc="-2098256826"/>
-               <choice name="Cpp_StrangeStream" result="OK" time_sec="3.54" crc="-2098256826"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.66" crc="-2098256826"/>
+               <choice name="ANSI-C" result="OK" time_sec="1.82" crc="-2098256826"/>
+               <choice name="Cpp" result="OK" time_sec="2.88" crc="-2098256826"/>
+               <choice name="Cpp_StrangeStream" result="OK" time_sec="2.73" crc="-2098256826"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" time-sum-sec="5.58"> 
+        <test title="Varrying Buffer Size" time-sum-sec="4.07"> 
             <application file-name="test-skip-2.py" info-request-time="1406458456L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="True">
-               <choice name="3" result="OK" time_sec="0.90" crc="982389702"/>
-               <choice name="4" result="OK" time_sec="0.92" crc="982389702"/>
-               <choice name="5" result="OK" time_sec="0.91" crc="982389702"/>
-               <choice name="6" result="OK" time_sec="0.92" crc="982389702"/>
-               <choice name="7" result="OK" time_sec="0.99" crc="982389702"/>
-               <choice name="8" result="OK" time_sec="0.94" crc="982389702"/>
+               <choice name="3" result="OK" time_sec="0.70" crc="982389702"/>
+               <choice name="4" result="OK" time_sec="0.61" crc="982389702"/>
+               <choice name="5" result="OK" time_sec="0.63" crc="982389702"/>
+               <choice name="6" result="OK" time_sec="0.70" crc="982389702"/>
+               <choice name="7" result="OK" time_sec="0.71" crc="982389702"/>
+               <choice name="8" result="OK" time_sec="0.72" crc="982389702"/>
             </choice-list>
         </test>
-        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="2.79"> 
+        <test title="UTF8 Engine -- Varrying Buffer Size" time-sum-sec="3.06"> 
             <application file-name="test-skip-utf8.py" info-request-time="1410829053L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="5" result="OK" time_sec="0.70" crc="979409748"/>
-               <choice name="6" result="OK" time_sec="0.69" crc="-336978531"/>
-               <choice name="7" result="OK" time_sec="0.67" crc="-336978531"/>
-               <choice name="8" result="OK" time_sec="0.73" crc="-336978531"/>
+               <choice name="5" result="OK" time_sec="0.78" crc="979409748"/>
+               <choice name="6" result="OK" time_sec="0.82" crc="-336978531"/>
+               <choice name="7" result="OK" time_sec="0.71" crc="-336978531"/>
+               <choice name="8" result="OK" time_sec="0.75" crc="-336978531"/>
             </choice-list>
         </test>
     </group>
     <group name="Skip-NestedRange">
-        <test title="Delimiter Sizes 1 and 2" time-sum-sec="25.71"> 
+        <test title="Delimiter Sizes 1 and 2" time-sum-sec="20.08"> 
             <application file-name="test-skip_nested_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="5.06" crc="-607472181"/>
-               <choice name="ANSI-C" result="OK" time_sec="4.96" crc="-607472181"/>
-               <choice name="Cpp" result="OK" time_sec="7.81" crc="-607472181"/>
-               <choice name="Cpp_StrangeStream" result="OK" time_sec="7.88" crc="-607472181"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="4.10" crc="-607472181"/>
+               <choice name="ANSI-C" result="OK" time_sec="3.93" crc="-607472181"/>
+               <choice name="Cpp" result="OK" time_sec="6.05" crc="-607472181"/>
+               <choice name="Cpp_StrangeStream" result="OK" time_sec="5.99" crc="-607472181"/>
             </choice-list>
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="11.63"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="9.09"> 
             <application file-name="test-skip_range.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
-               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="2.34" crc="-59780179"/>
-               <choice name="ANSI-C" result="OK" time_sec="2.33" crc="-59780179"/>
-               <choice name="Cpp" result="OK" time_sec="3.47" crc="-59780179"/>
-               <choice name="Cpp_StrangeStream" result="OK" time_sec="3.49" crc="-59780179"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.85" crc="-59780179"/>
+               <choice name="ANSI-C" result="OK" time_sec="1.82" crc="-59780179"/>
+               <choice name="Cpp" result="OK" time_sec="2.62" crc="-59780179"/>
+               <choice name="Cpp_StrangeStream" result="OK" time_sec="2.80" crc="-59780179"/>
             </choice-list>
         </test>
-        <test title="Varrying DelimiterLength, Large Buffer" time-sum-sec="3.60"> 
+        <test title="Varrying DelimiterLength, Large Buffer" time-sum-sec="2.70"> 
             <application file-name="test-skip_range-2.py" info-request-time="1406458459L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
-               <choice name="DL=1" result="OK" time_sec="0.91" crc="1309012673"/>
-               <choice name="DL=2" result="OK" time_sec="0.85" crc="-1894220404"/>
-               <choice name="DL=3" result="OK" time_sec="0.84" crc="1989046053"/>
-               <choice name="DL=4" result="OK" time_sec="1.00" crc="-1857281654"/>
+               <choice name="DL=1" result="OK" time_sec="0.73" crc="1309012673"/>
+               <choice name="DL=2" result="OK" time_sec="0.62" crc="-1894220404"/>
+               <choice name="DL=3" result="OK" time_sec="0.65" crc="1989046053"/>
+               <choice name="DL=4" result="OK" time_sec="0.70" crc="-1857281654"/>
             </choice-list>
         </test>
     </group>
