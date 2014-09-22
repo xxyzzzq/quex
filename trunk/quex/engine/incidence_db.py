@@ -100,7 +100,7 @@ class IncidenceDB(dict):
         return CodeFragment(txt, SourceRef_DEFAULT)
 
     @typed(factory=TerminalFactory)
-    def extract_terminal_db(self, factory):
+    def extract_terminal_db(self, factory, ReloadRequiredF):
         """SpecialTerminals: END_OF_STREAM
                              FAILURE
                              CODEC_ERROR
@@ -108,7 +108,11 @@ class IncidenceDB(dict):
         """
         result = {}
         for incidence_id, code_fragment in self.iteritems():
-            if incidence_id not in IncidenceDB.terminal_type_db: continue
+            if incidence_id not in IncidenceDB.terminal_type_db: 
+                continue
+            elif   incidence_id == E_IncidenceIDs.END_OF_STREAM \
+               and not ReloadRequiredF:
+                continue
             terminal_type = IncidenceDB.terminal_type_db[incidence_id]
             code_terminal = CodeTerminal(code_fragment.get_code())
             assert terminal_type not in result

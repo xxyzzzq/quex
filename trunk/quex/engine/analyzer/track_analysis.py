@@ -309,8 +309,8 @@ class _Trace(object):
             self.__acceptance_trace = [] 
         else:
             self.__acceptance_trace = [ 
-                  _AcceptInfo(PreContextID         = E_PreContextIDs.NONE, 
-                             AcceptanceID            = E_IncidenceIDs.MATCH_FAILURE, 
+                  _AcceptInfo(PreContextID        = E_PreContextIDs.NONE, 
+                             AcceptanceID         = E_IncidenceIDs.MATCH_FAILURE, 
                              AcceptingStateIndex  = InitStateIndex, 
                              PathSincePositioning = [InitStateIndex], 
                              TransitionNSincePositioning = 0)              

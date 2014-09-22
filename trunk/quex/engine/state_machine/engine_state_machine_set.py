@@ -92,14 +92,23 @@ class CharacterSetStateMachine:
                         in parallel to the root incidence map.
 
         """
+        def trafo(SM):
+            dummy, sm = transformation.do_state_machine(SM)
+            assert sm is not None
+            return sm
+
         self.maintain_lexeme_f = MaintainLexemeF
 
-        sm = self.__prepare_incidence_id_map(IncidenceIdMap)
-        sm = self.__mount_parallel_state_machines(sm, ParallelSmList)
-
         # Perform a character set transformation, if required.
-        dummy, \
-        self.sm = transformation.do_state_machine(sm)
+        # State machine ids of parallel state machines must be lower than
+        # main state machine. Thus, transform first.
+        psm_list = []
+        if ParallelSmList is not None:
+            psm_list = [trafo(sm) for sm in ParallelSmList]
+        main_sm  = trafo(self.__prepare_incidence_id_map(IncidenceIdMap))
+
+        self.sm = get_combined_state_machine(psm_list + [main_sm],
+                                             MarkNotSet=set([main_sm.get_id()]))
 
         self.__prepare_begin_and_putback(OnBegin, OnEnd)
         self.__prepare_before_and_after_reload(OnBeforeReload, OnAfterReload)
@@ -188,27 +197,8 @@ class CharacterSetStateMachine:
 
         return sm
 
-    def __mount_parallel_state_machines(self, sm, ParallelSmList):
-        if ParallelSmList is None:
-            return sm
-
-        for psm in ParallelSmList:
-            assert psm.is_DFA_compliant()
-
-        # CloneF = False => sm will contain the result.
-        parallelize.do([sm] + ParallelSmList, CommonTerminalStateF=False, 
-                       CloneF=False)
-
-        # -- ParallelSmList MUST be setup in a way that they do not intersect
-        #    with incidence_id_map.
-        # => There CANNOT be a transition on the same character to different 
-        #    states from the init states. 
-        # => Thus, the parallelization must be a DFA.
-        assert sm.is_DFA_compliant(), sm.get_string(Option="hex")
-
-        return sm
-
-def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
+def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
+                               MarkNotSet=set()):
     """Creates a DFA state machine that incorporates the paralell
        process of all pattern passed as state machines in 
        the StateMachine_List. Each origins of each state machine
@@ -261,6 +251,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     #     match the current input.   
     #
     for sm in StateMachine_List:
+        if sm.get_id() in MarkNotSet: continue
         sm.mark_state_origins()
         assert sm.is_DFA_compliant(), sm.get_string(Option="hex")
 

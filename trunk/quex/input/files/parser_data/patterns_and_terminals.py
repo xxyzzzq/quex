@@ -16,6 +16,7 @@ from   quex.engine.generator.code.core                   import CodeTerminal, \
 import quex.engine.state_machine.check.superset          as     superset_check
 import quex.engine.state_machine.check.identity          as     identity_checker
 import quex.engine.state_machine.sequentialize           as     sequentialize
+import quex.engine.state_machine.algorithm.beautifier    as     beautifier
 
 from   quex.engine.tools import typed
 import quex.blackboard as blackboard
@@ -213,7 +214,8 @@ def finalize_terminal_db(ModeName, SortedPPT_List, IncidenceDb, ExtraTerminalLis
     # Some incidences have their own terminal
     # THEIR INCIDENCE ID REMAINS FIXED!
     terminal_db.update(
-        IncidenceDb.extract_terminal_db(factory)
+        IncidenceDb.extract_terminal_db(factory,
+                              ReloadRequiredF=not Setup.buffer_based_analyzis_f)
     )
 
     terminal_db.update(
@@ -367,6 +369,7 @@ def _prepare_indentation_counter(ModeName, OptionsDb, CounterDb, IncidenceDb, MH
     if ISetup.sm_newline_suppressor.get() is not None:
         sm_suppressed_newline = sequentialize.do([ISetup.sm_newline_suppressor.get(),
                                                   ISetup.sm_newline.get()])
+        sm_suppressed_newline = beautifier.do(sm_suppressed_newline)
     else:
         sm_suppressed_newline = None
 

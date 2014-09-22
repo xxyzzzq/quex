@@ -72,16 +72,15 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
 
     # (*) Construct State Machine and Terminals _______________________________
     #
-    CsSm = CharacterSetStateMachine.from_CountCmdFactory(CcFactory, LexemeMaintainedF)
-
+    parallel_sm_list = None
     if ParallelSmTerminalPairList is not None:
         parallel_sm_list = [ sm for sm, terminal in ParallelSmTerminalPairList ]
-        sm = parallelize.do([CsSm.sm] + parallel_sm_list, CommonTerminalStateF=False)
-        sm = beautifier.do(sm)
-    else:
-        sm = CsSm.sm
 
-    analyzer = analyzer_generator.do(sm, EngineType,
+    CsSm = CharacterSetStateMachine.from_CountCmdFactory(CcFactory, 
+                                                         LexemeMaintainedF,
+                                                         ParallelSmList=parallel_sm_list)
+
+    analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
                                      OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
                                      OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
@@ -90,7 +89,7 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     #
     door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
 
-    def get_appendix(ccfactory, CC_Type):
+    def get_LexemeEndCheck_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
             return [ GotoDoorId(door_id_loop) ]
         #
@@ -115,7 +114,7 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
 
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
                                                 CsSm.incidence_id_beyond,
-                                                get_appendix)
+                                                get_LexemeEndCheck_appendix)
     if ParallelSmTerminalPairList is not None:
         terminal_list.extend(
             terminal for sm, terminal in ParallelSmTerminalPairList
