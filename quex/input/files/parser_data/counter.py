@@ -467,11 +467,11 @@ class ParserDataIndentation(Base):
         else:                 prev_cset.unite_with(cset)
 
     @typed(sr=SourceRef)
-    def specify_newline(self, SmNewline, sr):
+    def specify_newline(self, Sm, sr):
         _error_if_defined_before(self.sm_newline, sr)
 
-        beginning_char_set = SmNewline.get_beginning_character_set()
-        ending_char_set    = SmNewline.get_ending_character_set()
+        beginning_char_set = Sm.get_beginning_character_set()
+        ending_char_set    = Sm.get_ending_character_set()
 
         self.count_command_map.add(beginning_char_set, "begin(newline)", None, sr)
 
@@ -480,7 +480,8 @@ class ParserDataIndentation(Base):
         if not ending_char_set.is_empty():
             self.count_command_map.add(ending_char_set, "end(newline)", None, sr)
 
-        self.sm_newline.set(SmNewline, sr)
+        if not Sm.is_DFA_compliant(): Sm = beautifier.do(Sm)
+        self.sm_newline.set(Sm, sr)
 
     @typed(sr=SourceRef)
     def specify_suppressor(self, Sm, sr):
@@ -488,6 +489,7 @@ class ParserDataIndentation(Base):
 
         self.count_command_map.add(Sm.get_beginning_character_set(), 
                                    "begin(newline suppressor)", None, sr)
+        if not Sm.is_DFA_compliant(): Sm = beautifier.do(Sm)
         self.sm_newline_suppressor.set(Sm, sr)
 
     @typed(sr=SourceRef)
@@ -496,6 +498,7 @@ class ParserDataIndentation(Base):
 
         self.count_command_map.add(Sm.get_beginning_character_set(), 
                                    "begin(comment to newline)", None, sr)
+        if not Sm.is_DFA_compliant(): Sm = beautifier.do(Sm)
         self.sm_comment.set(Sm, sr)
 
     def __sm_newline_default(self):

@@ -1,54 +1,54 @@
-<test-database execution-time-sec="0.72" date="Sat Sep 20 09:01:45 2014">
+<test-database execution-time-sec="0.57" date="Mon Sep 22 07:43:54 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
-            <application file-name="bom-istream.exe" info-request-time="1411196504L" vanished="False"/>
+            <application file-name="bom-istream.exe" info-request-time="1411364633L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.526844"/>
+            <make-procedure success="True" time_sec="0.509068"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
         <test title="FILE" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="bom.exe" info-request-time="1411196504L" vanished="False"/>
+            <application file-name="bom.exe" info-request-time="1411364634L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.271453"/>
+            <make-procedure success="True" time_sec="0.144102"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
     </group>
     <group name="Consistency">
-        <test title="Files in multi.i are not included elsewhere." time-sum-sec="0.65"> 
+        <test title="Files in multi.i are not included elsewhere." time-sum-sec="0.52"> 
             <application file-name="test-include-Multi.sh" info-request-time="1406100104L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+\ files"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.65" crc="-2071775558"/>
+               <choice name="" result="OK" time_sec="0.52" crc="-2071775558"/>
             </choice-list>
         </test>
     </group>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_stream.exe" info-request-time="1411196503L" vanished="False"/>
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="strange_stream.exe" info-request-time="1411364632L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.695956"/>
+            <make-procedure success="True" time_sec="0.557507"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
-            <application file-name="strange_wstream.exe" info-request-time="1411196504L" vanished="False"/>
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="strange_wstream.exe" info-request-time="1411364633L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.492412"/>
+            <make-procedure success="True" time_sec="0.540196"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="None"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
     </group>

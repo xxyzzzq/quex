@@ -79,6 +79,12 @@ def do(Data, TheAnalyzer):
     default_ih_f          = Data["default_indentation_handler_f"]
     mode_name             = Data["mode_name"]
     sm_suppressed_newline = Data["sm_suppressed_newline"]
+    sm_newline            = isetup.sm_newline.get()
+    sm_comment            = isetup.sm_comment.get()
+
+    assert sm_suppressed_newline  is None or sm_suppressed_newline.is_DFA_compliant()
+    assert sm_newline is None             or sm_newline.is_DFA_compliant()
+    assert sm_comment is None             or sm_comment.is_DFA_compliant()
 
     # -- 'on_indentation' == 'on_beyond': 
     #     A handler is called as soon as an indentation has been detected.
@@ -133,9 +139,13 @@ def _get_state_machine_vs_terminal_list(SmSuppressedNewline, SmNewline, SmCommen
                  counting columns of whitespace.
     """
     result = []
+    # If nothing is to be done, nothing is appended
     _add_suppressed_newline(result, SmSuppressedNewline)
     _add_newline(result, SmNewline)
     _add_comment(result, SmComment, CounterDb)
+
+    for sm, terminal in result:
+        assert sm.get_id() == terminal.incidence_id()
     return result
 
 def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):

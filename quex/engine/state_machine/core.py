@@ -44,6 +44,22 @@ class State:
             self.__origin_list = AltOriginList
             self.__target_map  = AltTM
 
+    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, 
+              AcceptanceIDReplacementDB=None):
+        """Creates a copy of all transitions, but replaces any state index with the ones 
+           determined in the ReplacementDictionary."""
+        assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
+        assert StateIndex is None            or isinstance(StateIndex, long)
+        result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
+                                                                AcceptanceIDReplacementDB=AcceptanceIDReplacementDB),
+                       AltTM         = self.__target_map.clone())
+
+        # if replacement of indices is desired, than do it
+        if ReplacementDictionary is not None:
+            result.target_map.replace_target_indices(ReplacementDictionary)
+
+        return result
+
     @staticmethod
     def new_merged_core_state(StateList, ClearF=False):
         result      = State()
@@ -65,21 +81,6 @@ class State:
 
     def __merge(self, Other):
         self.origins().merge(Other.origins().get_list()) 
-
-    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
-        """Creates a copy of all transitions, but replaces any state index with the ones 
-           determined in the ReplacementDictionary."""
-        assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
-        assert StateIndex is None            or isinstance(StateIndex, long)
-        result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
-                                                                AcceptanceIDReplacementDB=AcceptanceIDReplacementDB),
-                       AltTM         = self.__target_map.clone())
-
-        # if replacement of indices is desired, than do it
-        if ReplacementDictionary is not None:
-            result.target_map.replace_target_indices(ReplacementDictionary)
-
-        return result
 
     def core(self):
         assert False

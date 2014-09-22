@@ -143,6 +143,9 @@ def __code(Node, TheState, done_set, GlobalEntryF):
         Lng.COMMAND_LIST(Node.command_list)
     )
 
+    # (*) AFTER: COMMAND_LIST -- The state debug info.
+    txt.append(Lng.STATE_DEBUG_INFO(TheState, GlobalEntryF))
+
     # (*) The 'goto parent'.
     if Node.parent is None:
         # This is the root. 
@@ -182,7 +185,6 @@ def __comment(txt, Node, TheState, GlobalEntryF):
         for x in transition_id_list
     )
     txt.append("    %s\n" % Lng.COMMENT(msg)[:-1])
-    txt.append(Lng.STATE_DEBUG_INFO(TheState, GlobalEntryF))
 
 def __label_node(txt, Node):
     """The 'label' of a node in the command tree. Note, that depending on child 

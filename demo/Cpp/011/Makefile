@@ -43,7 +43,6 @@ utf8-lexer: utf8-lexer.cpp
 		-I$(QUEX_PATH) -I.       \
 		$<                       \
 		$(CCFLAG_ASSERTS)        \
-        -DQUEX_OPTION_DEBUG_SHOW \
 		UTF8Lex.cpp              \
 		-o $@
 	
