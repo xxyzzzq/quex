@@ -394,7 +394,7 @@ Option("converter_icu_f", None,
 Alternatively, the engine can run directly on a specific codec, i.e. without a conversion
 to Unicode. This approach is less flexible, but may be faster.
 """,
-Option("buffer_codec", "codec name",
+Option("buffer_codec_name", "codec name",
      """
      Specifies a codec for the generated engine. The codec name specifies
      the codec of the internal analyzer engine. An engine generated for 
@@ -589,7 +589,7 @@ Option("path_limit_code", "number",
      stream to be analyzed contains the default value.
      """),
 """
-The following options control the comment which is added to the generated code:
+The following options control the output of comment which is added to the generated code:
 """,
 Option("comment_state_machine_f", None, 
      """
@@ -600,9 +600,9 @@ Option("comment_state_machine_f", None,
      Block("""
             /* BEGIN: STATE MACHINE
              ...
-             * 02353(A, S) <~ (117, 398, A, S)
+             * 02353(A, S) <- (117, 398, A, S)
              *       <no epsilon>
-             * 02369(A, S) <~ (394, 1354, A, S), (384, 1329)
+             * 02369(A, S) <- (394, 1354, A, S), (384, 1329)
              *       == '=' ==> 02400
              *       <no epsilon>
              ...
@@ -662,8 +662,9 @@ Option("comment_mode_patterns_f", None,
      itself.
      """),
 """
-The comment output is framed by \\v{BEGIN:} and \\v{END:} markers. This facilitates the extraction
-of this information for further processing. For example, the Unix command 'awk' can be used:
+The comment output is framed by \\v{BEGIN:} and \\v{END:} markers. These markers facilitate the extraction
+of the comment information for further processing. For example, the Unix command 'awk' can be used to
+extract what appears in between \\v{BEGIN:} and \\v{END:} the following way:
 """,
 Block("""
    awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
@@ -690,8 +691,8 @@ Option("warning_on_outrun_f", None,
      """),
 """
 Some warnings, notes, or error messages might not be interesting or even
-be disturbing for the user. For such cases, quex provides an interface to 
-avoid prints on the standard output.
+be disturbing. For such cases, quex provides an interface to 
+prevent messages on the standard output.
 """,
 Option("suppressed_notification_list", "[integer]+", 
     """
@@ -775,13 +776,12 @@ Item("11",
 Item("12",
      """
     Warning if a counter setup is defined without an          
-    \\v{\else} section.                                        
+    \\v{\\else} section.                                        
      """),
 Item("13",
      """
-    If there is a counter setup without newline defined, quex 
-    tries to implement a default newline as hexadecimal 0A or 
-    0D.0A.                                                    
+    Warning if a default newline is used upon missing newline definition
+    in a counter definition section.
      """),
 Item("14",
      """
@@ -791,7 +791,7 @@ Item("15",
      """
     Warning if a token type has no 'take_text' member         
     function. It means, that the token type has no interface  
-    to automatically accept a lexeme or and accumulated       
+    to automatically accept a lexeme or an accumulated       
     string.                                                   
      """),
 Item("16",
@@ -818,8 +818,7 @@ of regular expressions.
 Option("query_codec", "name",
        """
    Displays the characters that are covered by the given codec's name. If the
-   name is omitted, a list of all supported codecs is printed. Engine internal
-   character encoding is discussed in section :ref:`sec-engine-internal-coding`.
+   name is omitted, a list of all supported codecs is printed. 
        """),
 Option("query_codec_file", "file name", 
        """
@@ -855,19 +854,18 @@ Option("query_property_match", "wildcard-expression",
 Option("query_set_by_expression", "regular expression", 
        """
        Displays the resulting character set for the given regular expression.
-   Character set expressions that are ususally specified in \\v{[: ... :]} brackets
-   can be specified as expression. To display state machines, it may be best
-       to use the '--language dot' option mentioned in the previous section.
+   Larger character set expressions that are specified in \\v{[: ... :]} brackets.
        """),
 Option("query_numeric_f", None, 
        """
    If this option is specified the numeric character codes are displayed rather
-   then the utf8 characters.
+   then the characters.
        """),
 Option("query_interval_f", None, 
        """
-   If this option is set, adjacent characters are displayed as intervals. This provides
-   a somewhat more abbreviated display.
+       If this option is set, adjacent characters are displayed as intervals, i.e.
+       in terms of begin and end of domains of adjacent character codes.
+       This provides a concise display.
        """),
 Option("query_unicode_names_f", None, 
        """
