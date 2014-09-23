@@ -43,9 +43,22 @@ Input files to quex best end with a '.qx' extension. They may contain lexical an
 
 .SS Mode Description
 
-A lexical analyzer does anything it does in a mode. Modes contain so called 'pattern-action-pairs'. A pattern-action-pair tells what action has to happen when the input stream matches a pattern. Usually, it simply sends a token. But the actions are only restricted by the language for which code is generated. Modes also may contain specifications on events. For example the 'on_entry' handler specifies what is to be done if the mode is entered. 'on_failure' specifies what happens if no pattern matches.
+A quex-generated lexical analyzer does anything it does in a mode. Modes have a name by which they are referred. For a mode the following things can be specified: For a mode the following things can be specified:
 
-At the beginning of a mode a list of mode options can be specified. These options allow to define skipping of characters and character ranges, column and line number counting behavior, indentation based lexical analyzis definitions, etc.
+.RS
+.B (i) Pattern-action pairs.
+
+.B (ii) Event handlers, such as 'on end of stream'.
+
+.B (iii) Options, counter specifications, skippers, and indentation handlers.
+
+.B (iv) inheritance relationships to other modes.
+
+.RE
+
+A pattern-action-pair tells what action has to happen when the input stream matches a pattern. Usually, it simply sends a token. However, the actions are only restricted by the language for which code is generated. Modes also may contain specifications on events. For example the 'on_entry' handler specifies what is to be done if the mode is entered. 'on_failure' specifies what happens if no pattern matches.
+
+At the beginning of a mode a list of mode options can be specified. These options define skipping of characters and character ranges, column and line number counting behavior, indentation based lexical analyzis definitions, etc.
 
 The following describes a mode that may identify numbers and identifiers.
 
@@ -79,7 +92,8 @@ Modes can be related to each other by inheritance relationships. If a mode is de
 
 Here, the mode 'DERIVED' triggers on numbers and identifiers, as their pattern actions pairs are inherited from 'BASE'. Additionally, is triggers on the binary operators plus, minus, multiplication, and division.
 
-When more then one mode is defined, the start mode must be explicitly specified by an assignment to 'start', i.e.
+When more then one mode is defined, the start mode must be explicitly specified by an assignment to 'start' (outside any 
+mode definition), i.e.
 
 .nf
     start = DERIVED;
@@ -108,11 +122,11 @@ defines 'DERIVED' as the start mode for lexical analysis. The transition from on
 
 .SS Pattern Definition Sections
 
-Regular expressions may be defined and named in pattern definition sections. Names which are defined there can be used in modes surrounded by curly brackets. Then, they are expanded to what they have been defined. Using definitions facilitates the specification of complex expressions broken down into its elements. Example:
+Regular expressions may be associated with names in pattern definition sections. Names which are defined there can be expanded to regular expressions using curly brackets. Using definitions facilitates the specification of complex expressions and to brea them  down into smaller elements. Example:
 
 .nf
     define {
-        ARABIC         [: intersection(\P{Block=Arabic},  [\\X0-\\XFFFF]) :]
+        ARABIC         [: intersection(\\P{Block=Arabic},  [\\X0-\\XFFFF]) :]
         ARABIC_DIGIT   [: intersection({ARABIC}, \\G{Nd}, [\\X660-\\X6D0]) :]
         ARABIC_NUMBER  ({ARABIC_DIGIT}+".")?{ARABIC_DIGIT}+
     }
@@ -140,7 +154,7 @@ In the above example, the lowest bit would allow to distinguish between operator
 
 .SS Token Class Description
 
-Quex generates a default token class (C++) or token struct (C). In case, that this is not sufficient, it supports the generation of token types. For this the internas of a token class may be described briefly in a 'token_type' section. The following example may explain more than thousand words.
+Quex generates a default token class (C++) or token struct (C). In case, that this is not sufficient, it supports the generation of token types. For this, the internals of a token class may be described briefly in a 'token_type' section. Example:
 
 .nf
     token_type {
@@ -179,7 +193,7 @@ Quex generates a default token class (C++) or token struct (C). In case, that th
 
 .SS Number Format
 
-Quex uses a C-style number format. That is, no prefix means that the number is specified in decimal. The prefixes for other number systems are
+Numbers in quex are specified similar to numeric literals in the C programming language. That is, no prefix means that the number is specified in decimal. The prefixes for other number systems are
 .B 0x
 for hexadecimal,
 .B 0o
@@ -193,7 +207,7 @@ for Napier (positional location) numbers.
 
 .SH SEE ALSO
 
-The real documentation reference is the quex documentation that comes along with the software.
+The web project page at quex.org, or quex.sf.net provides futher information and documentation.
     
 .SH ENVIRONMENT VARIABLES
 
