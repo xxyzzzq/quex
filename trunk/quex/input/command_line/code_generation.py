@@ -1,6 +1,5 @@
 import quex.input.command_line.validation   as     validation
-from   quex.input.setup                     import SETUP_INFO,               \
-                                                   global_extension_db,      \
+from   quex.input.setup                     import global_extension_db,      \
                                                    global_character_type_db, \
                                                    command_line_args_defined, \
                                                    command_line_arg_position, \
@@ -10,11 +9,8 @@ from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.engine.generator.languages.core import db as output_language_db
 import quex.engine.state_machine.utf8_state_split  as utf8_state_split      
 import quex.engine.state_machine.utf16_state_split as utf16_state_split      
-import quex.engine.codec_db.core            as     codec_db
-from   quex.engine.interval_handling        import NumberSet
 from   quex.engine.misc.file_in             import read_namespaced_name, \
                                                    verify_word_in_list, \
-                                                   get_integer_parameter_value, \
                                                    error_msg
 
 

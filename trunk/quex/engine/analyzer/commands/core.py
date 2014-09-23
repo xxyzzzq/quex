@@ -69,8 +69,6 @@
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 from   quex.engine.misc.enum import Enum
-from   quex.engine.tools     import print_callstack
-from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.blackboard       import E_Cmd, \
                                     E_PreContextIDs, \
                                     E_TransitionN, \

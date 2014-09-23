@@ -2,8 +2,8 @@
 from   quex.input.setup                           import NotificationDB
 from   quex.engine.tools                          import typed
 from   quex.engine.misc.file_in                   import error_msg
-import quex.engine.state_machine.transformation   as     transformation
 from   quex.engine.state_machine.core             import StateMachine  
+import quex.engine.state_machine.algorithm.beautifier as beautifier    
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT

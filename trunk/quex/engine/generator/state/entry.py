@@ -26,12 +26,11 @@ where its leafs are the entries from other states.
 (C) Frank-Rene Schaefer
 _______________________________________________________________________________
 """
-from   quex.engine.analyzer.door_id_address_label import IfDoorIdReferencedLabel, \
-                                                         DoorID
+from   quex.engine.analyzer.door_id_address_label import IfDoorIdReferencedLabel
 from   quex.engine.analyzer.commands.tree         import CommandTree
 from   quex.engine.tools                          import flatten_list_of_lists, \
-                                                         typed, none_isinstance
-from   quex.blackboard                            import Lng, E_Cmd
+                                                         typed
+from   quex.blackboard                            import Lng
 
 @typed(FirstF=bool)
 def do(TheState):

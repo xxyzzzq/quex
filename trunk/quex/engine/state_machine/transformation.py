@@ -1,12 +1,6 @@
 # (C) Frank-Rene Schaefer
 from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.utf8_state_split      as utf8_state_split
-import quex.engine.state_machine.utf16_state_split     as utf16_state_split
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
-from   quex.engine.analyzer.transition_map             import TransitionMap
-from   quex.engine.misc.file_in                        import error_msg
-from   quex.engine.interval_handling                   import NumberSet
-from   quex.engine.codec_db.core                       import CodecDynamicInfo
 from   quex.blackboard                                 import setup as Setup
 
 from   quex.engine.tools import typed, \

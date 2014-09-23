@@ -4,7 +4,6 @@ from   quex.engine.generator.state.transition_map.comparison_sequence import Com
 from   quex.engine.analyzer.transition_map                            import TransitionMap  
 
 from   quex.engine.misc.enum import Enum
-from   math                  import log
 
 E_Solution = Enum("COMPARISON_SEQUENCE", "BRANCH_TABLE", "BISECTIONING", "__DEBUG_Solution")
 

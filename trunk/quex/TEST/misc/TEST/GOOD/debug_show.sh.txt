@@ -23,9 +23,8 @@ Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 0)
 Simple.c:LineNumber:	(path walker: 381, path: 0, offset: 1)
 Simple.c:LineNumber:	state_key = 0
 Simple.c:LineNumber:	state_key = 1
-Simple.c:LineNumber:	state_key = 2
 Simple.c:LineNumber:	(template: 382, state key=0)
 Simple.c:LineNumber:	(template: 382, state key=1)
 Simple.c:LineNumber:	(template: 383, state key=0)
 Simple.c:LineNumber:	(template: 383, state key=1)
-Simple.c:LineNumber:	(template: 397, state key=2)
+Simple.c:LineNumber:	(template: 410, state key=0)

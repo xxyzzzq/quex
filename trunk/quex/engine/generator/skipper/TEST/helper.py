@@ -136,9 +136,10 @@ def create_indentation_handler_code(Language, TestStr, ISetup, BufferSize, Token
         "sm_suppressed_newline":         None,
     }
 
-    code_str = indentation_counter.do(data, Analyzer)
+    code = [ "%s\n" % Lng.LABEL(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)) ]
+    code.extend(indentation_counter.do(data, Analyzer))
 
-    return create_customized_analyzer_function(Language, TestStr, code_str, 
+    return create_customized_analyzer_function(Language, TestStr, code, 
                                                QuexBufferSize=BufferSize, 
                                                CommentTestStrF="", ShowPositionF=True, 
                                                EndStr=end_str, MarkerCharList=map(ord, " :\t"),

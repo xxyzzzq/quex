@@ -1,12 +1,11 @@
-from quex.DEFINITIONS         import QUEX_CODEC_DB_PATH
+from quex.DEFINITIONS              import QUEX_CODEC_DB_PATH
 from quex.engine.interval_handling import NumberSet, Interval
-from quex.engine.misc.file_in import open_file_or_die, \
-                                     error_msg, \
-                                     EndOfStreamException, \
-                                     read_integer, \
-                                     skip_whitespace
+from quex.engine.misc.file_in      import open_file_or_die, \
+                                          EndOfStreamException, \
+                                          read_integer, \
+                                          skip_whitespace
 
-def do(section_list, FileName):
+def do(section_list, fh):
     """Parses a codec information file. The described codec can only be
     a 'static character length' encoding. That is every character in the
     code occupies the same number of bytes.
@@ -19,7 +18,6 @@ def do(section_list, FileName):
     drain_set  = NumberSet()
 
     error_str = None
-    fh        = open_file_or_die(FileName, "rb")
 
     try:
         while error_str is None:
@@ -51,7 +49,6 @@ def do(section_list, FileName):
         pass
 
     return source_set, drain_set, error_str
-
 
 _codec_list_db = []
 def get_codec_list_db():

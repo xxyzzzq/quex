@@ -22,9 +22,7 @@ from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
                                                                 dial_db, \
-                                                                get_plain_strings, \
-                                                                IfDoorIdReferencedCode
-from   quex.engine.interval_handling                     import Interval
+                                                                get_plain_strings
 from   quex.engine.misc.string_handling                  import blue_print, \
                                                                 pretty_code
 from   quex.engine.misc.file_in                          import open_file_or_die, \
@@ -78,7 +76,6 @@ class Lng_Cpp(dict):
     def __init__(self, DB):      
         self.update(DB)
         self.__analyzer                                   = None
-        self.__code_generation_switch_cases_add_statement = None
         self.__code_generation_reload_label               = None
         self.__code_generation_on_reload_fail_adr         = None
         self.__state_machine_identifier                   = None
@@ -90,10 +87,6 @@ class Lng_Cpp(dict):
         # Unregistering an analyzer ensures that no one else works with the 
         # analyzer on something unrelated.
         self.__analyzer = None
-
-    def code_generation_switch_cases_add_statement(self, Value):
-        assert Value is None or self.__code_generation_switch_cases_add_statement is None
-        self.__code_generation_switch_cases_add_statement = Value
 
     def code_generation_reload_label_set(self, Value):
         assert Value is None or self.__code_generation_reload_label is None
@@ -868,15 +861,9 @@ class Lng_Cpp(dict):
         return self._branch_table_core(Selector, CaseList, case_interval, DefaultConsequence)
 
     def _branch_table_core(self, Selector, CaseList, get_case, DefaultConsequence=None):
-        def content(C):
+        def get_content(C):
             if type(C) == list: return "".join(C)
             else:               return C
-
-        def content_x(C):
-            return "%s\n%s" % (
-                content(C), 
-                self.__code_generation_switch_cases_add_statement
-            )
 
         def iterable(CaseList, DefaultConsequence):
             item, effect = CaseList[0]
@@ -890,13 +877,6 @@ class Lng_Cpp(dict):
             yield item, effect
             if DefaultConsequence is not None:
                 yield None, DefaultConsequence
-
-        if      self.__code_generation_switch_cases_add_statement is not None \
-            and self.Match_goto.search(txt[-1]) is None                       \
-            and self.Match_QUEX_GOTO_RELOAD.search(txt[-1]) is None:
-            get_content = content_x
-        else:
-            get_content = content
 
         txt = [ "switch( %s ) {\n" % Selector ]
         txt.extend(
