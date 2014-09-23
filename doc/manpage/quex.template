@@ -11,7 +11,7 @@ quex [QUERY OPTION]+
 
 .SH DESCRIPTION
 
-Quex is a tool to generate lexical analyzers. A lexical analyzer is a program that transforms a stream of characters into a stream of 'atomic chunks of meaning', as shown in the figure below:
+Quex is a tool to generate lexical analyzers. A lexical analyzer is a program that transforms a stream of characters into a stream of atomic chunks of meaning, as shown in the figure below:
 
 .sv 0.5i
 .nf
@@ -27,11 +27,9 @@ Quex is a tool to generate lexical analyzers. A lexical analyzer is a program th
                      'if'      '('       '3.1'       
 .fi
 
-The atomic chunks of meaning, so called 'tokens', are the basis of an interpretation on some higher level.  Each token consists at least of a type identifier. Additionally, some parameters about the matching 'lexeme' might be stored in the token.
+The atomic chunks of meaning, so called 'tokens', are the basis of an interpretation on some higher level.  Each token consists at least of a type identifier such as 'keyword', 'number', or 'operator'. Additionally, some parameters about the matching 'lexeme' might be stored in the token.
 
-Quex provides a convenient means to describe a process of lexical analysis. It generates code in C/C++, which implements the user's lexical analyzer.
-
-This man page provides a very brief overview over quex. A good entry point to learn quex are the subdirectories of './demo' which contain many examples for C and C++. Further, the Quex Manual can be downloaded from online at sourceforge.net.
+Quex provides a convenient means to describe the process of lexical analysis. It generates code in C or C++, which implements the user's lexical analyzer.  This man page provides a very brief overview over quex. A good entry point to learn quex are the subdirectories of './demo' which contain many examples for C and C++. Further, the Quex manual can be downloaded online at sourceforge.net.
 
 .SH OPTIONS
 
