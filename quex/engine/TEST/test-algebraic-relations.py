@@ -11,8 +11,10 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: unary, binary;"
     sys.exit()
 
+all = NumberSet.from_range(-sys.maxint, sys.maxint)
+
 def inv(A):     
-    result = A.inverse()
+    result = A.get_complement(all)
     result.assert_consistency()
     return result
 
@@ -64,8 +66,8 @@ def equal(X_str, Y_str):
     exec("y = " + Y_str.replace("All", "S_All").replace("None", "S_None"))
     result = x.is_equal(y)
     assert result == True
-    assert result != x.is_equal(y.inverse())
-    assert result != y.is_equal(x.inverse())
+    assert result != x.is_equal(y.get_complement(all))
+    assert result != y.is_equal(x.get_complement(all))
     correct_n += 1
 
 def unary(TheList):

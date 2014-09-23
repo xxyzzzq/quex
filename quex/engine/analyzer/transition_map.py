@@ -4,10 +4,8 @@ from   quex.engine.analyzer.mega_state.target     import TargetByStateKey
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.analyzer.state.entry_action    import TransitionID
 from   quex.blackboard                            import E_StateIndices, \
-                                                         E_IncidenceIDs, \
                                                          setup as Setup
 
-from   copy        import copy
 from   itertools   import izip
 from   collections import defaultdict
 import sys

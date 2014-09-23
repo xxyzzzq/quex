@@ -1,10 +1,7 @@
 import quex.engine.generator.state.transition_map.transition as transition
 from   quex.engine.analyzer.transition_map import TransitionMap
-from   quex.engine.tools import typed
 from   quex.blackboard import setup as Setup, \
                               Lng
-
-from   copy import copy
 
 class ComparisonSequence(object):
     __slots__ = ("sub_map")

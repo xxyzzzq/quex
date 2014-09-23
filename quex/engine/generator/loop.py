@@ -1,6 +1,4 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-import quex.engine.state_machine.parallelize           as     parallelize
-import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.generator.languages.variable_db     import variable_db
 import quex.engine.generator.base                      as     generator
 import quex.engine.analyzer.core                       as     analyzer_generator

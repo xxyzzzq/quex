@@ -1,11 +1,5 @@
-import quex.engine.generator.state.transition_map.bisection           as bisection
-import quex.engine.generator.state.transition_map.branch_table        as branch_table
-import quex.engine.generator.state.transition_map.transition          as transition
-import quex.engine.generator.state.transition_map.comparison_sequence as comparison_sequence
 import quex.engine.generator.state.transition_map.solution            as     solution
-from   quex.blackboard                                                import setup as Setup, Lng
-from   copy      import copy
-from   itertools import islice
+from   quex.blackboard                                                import setup as Setup
 
 def do(txt, TM):
     """Implement the given transition map 'TM'. That is for a given 'input' 

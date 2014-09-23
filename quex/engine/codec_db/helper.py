@@ -3,9 +3,10 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
 from   quex.input.regular_expression.snap_backslashed_character import __parse_hex_number
-from   quex.DEFINITIONS            import QUEX_CODEC_DB_PATH
-from   quex.engine.codec_db.parser import get_codec_list_db
-from   quex.engine.misc.file_in    import open_file_or_die
+from   quex.engine.interval_handling import Interval
+from   quex.DEFINITIONS              import QUEX_CODEC_DB_PATH
+from   quex.engine.codec_db.parser   import get_codec_list_db
+from   quex.engine.misc.file_in      import open_file_or_die
 import codecs
 
 def __get_transformation(encoder, CharCode):

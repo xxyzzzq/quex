@@ -5,12 +5,12 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.engine.interval_handling import Interval, NumberSet
 
+all = NumberSet.from_range(-sys.maxint, sys.maxint)
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Inverse"
     print "CHOICES: 1, 2, serious;"
     sys.exit(0)
-
 
 def test(NSet):
     print "# write output in temporary file: 'tmp'"    
@@ -18,7 +18,7 @@ def test(NSet):
     print "# > plot \"tmp\" w l"
     
     print NSet.gnuplot_string(1)
-    result = NSet.inverse()
+    result = NSet.get_complement(all)
     result.assert_consistency()
     print result.gnuplot_string(0)
 
@@ -41,9 +41,9 @@ elif "serious" in sys.argv:
         clone = nset.clone()
         print "#NumberSet:         %s" % nset
         result = nset.clone()
-        result.invert()
+        result.complement(all)
         print "#NumberSet.inverse: %s" % result
-        assert result.is_equal(nset.inverse())
+        assert result.is_equal(nset.get_complement(all))
         assert result.intersection(nset).is_empty()
         assert result.union(nset).is_all()
 

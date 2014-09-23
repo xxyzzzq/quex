@@ -1,6 +1,6 @@
 ==========================================================================================
 Regression Tests on Fixed Bugs
-Mon Sep 22 08:27:43 2014
+Mon Sep 22 23:52:49 2014
 TEST
 ------------------------------------------------------------------------------------------
 
@@ -472,7 +472,7 @@ TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Demo-Applications for Plain C
-Mon Sep 22 07:37:38 2014
+Mon Sep 22 23:55:40 2014
 demo/C/TEST
 ------------------------------------------------------------------------------------------
  -- Makefile Differences to C++ Version
@@ -611,7 +611,7 @@ demo/C/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Demo-Applications for C++
-Mon Sep 22 07:41:39 2014
+Mon Sep 22 23:59:35 2014
 demo/Cpp/TEST
 ------------------------------------------------------------------------------------------
 
@@ -736,15 +736,15 @@ demo/Cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Miscellaneous Basic Tests
-Mon Sep 22 07:42:20 2014
+Tue Sep 23 00:00:15 2014
 quex/TEST
 ------------------------------------------------------------------------------------------
  -- (*) Exceptions during 'import'
         test-exceptions-in-place.sh .......................................[OK]
  -- < #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$
-        check-default-configuration.sh ..................................[FAIL]
+        check-default-configuration.sh ....................................[OK]
  -- Code Check with pyflakes
-        pyflakes-check.sh ...............................................[FAIL]
+        pyflakes-check.sh .................................................[OK]
  -- Command Line Option Documentation
         command_line_options-verify-doc.py man ............................[OK]
                                            sphinx .........................[OK]
@@ -760,16 +760,13 @@ quex/TEST
 
     __parse_token_id_file
         test-token_id_file-find_ids.py ....................................[OK]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] check-default-configuration.sh
-    [FAIL] pyflakes-check.sh
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:42:22 2014
+Tue Sep 23 00:00:17 2014
 quex/TEST/command-line/TEST
 ------------------------------------------------------------------------------------------
  -- Detect lower prio-patterns outrun higher-prio patterns
@@ -782,7 +779,7 @@ quex/TEST/command-line/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Check Applications of 'Did you mean'.
-Mon Sep 22 07:42:25 2014
+Tue Sep 23 00:00:20 2014
 quex/TEST/did-you-mean/TEST
 ------------------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -795,7 +792,7 @@ quex/TEST/did-you-mean/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:42:26 2014
+Tue Sep 23 00:00:21 2014
 quex/TEST/errors-warnings/TEST
 ------------------------------------------------------------------------------------------
  -- Token identifier definition and orthography.
@@ -806,7 +803,7 @@ quex/TEST/errors-warnings/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Event Handlers
-Mon Sep 22 07:42:31 2014
+Tue Sep 23 00:00:26 2014
 quex/TEST/event-handling/TEST
 ------------------------------------------------------------------------------------------
  -- Customized on_skip_range_open event.
@@ -832,7 +829,7 @@ quex/TEST/event-handling/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Include Stack Handling
-Mon Sep 22 07:42:37 2014
+Tue Sep 23 00:00:31 2014
 quex/TEST/include-stack/TEST
 ------------------------------------------------------------------------------------------
 
@@ -860,7 +857,7 @@ quex/TEST/include-stack/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Indentation Based Blocks
-Mon Sep 22 08:51:03 2014
+Tue Sep 23 00:00:46 2014
 quex/TEST/indentation_count/TEST
 ------------------------------------------------------------------------------------------
  -- Bad character detection.
@@ -891,7 +888,7 @@ quex/TEST/indentation_count/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Match Precedence in Mode Inheritance Structures
-Mon Sep 22 07:43:03 2014
+Tue Sep 23 00:01:01 2014
 quex/TEST/match-precedence/TEST
 ------------------------------------------------------------------------------------------
  -- Checking DELETE marks internally.
@@ -954,11 +951,11 @@ quex/TEST/match-precedence/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:43:07 2014
+Tue Sep 23 00:01:05 2014
 quex/TEST/misc/TEST
 ------------------------------------------------------------------------------------------
  -- Analyzer State Tracer
-        debug_show.sh ...................................................[FAIL]
+        debug_show.sh .....................................................[OK]
  -- Customized codec files (option --codec-file)
         customized_codec.sh ...............................................[OK]
  -- Inadmissible commonalities
@@ -969,17 +966,14 @@ quex/TEST/misc/TEST
                        mix ................................................[OK]
                        mix2 ...............................................[OK]
  -- Test code comments
-        comment.sh ......................................................[FAIL]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] debug_show.sh
-    [FAIL] comment.sh
+        comment.sh ........................................................[OK]
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 The 'Reset' Button
-Mon Sep 22 07:43:18 2014
+Tue Sep 23 00:01:16 2014
 quex/TEST/reset/TEST
 ------------------------------------------------------------------------------------------
  -- Normal Reset
@@ -1051,7 +1045,7 @@ quex/TEST/reset/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:43:39 2014
+Tue Sep 23 00:01:37 2014
 quex/TEST/source-package/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1089,7 +1083,7 @@ quex/TEST/source-package/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Customized Token Class
-Mon Sep 22 07:43:44 2014
+Tue Sep 23 00:01:43 2014
 quex/TEST/token-class/TEST
 ------------------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -1107,7 +1101,7 @@ quex/TEST/token-class/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Tests related to token queues
-Mon Sep 22 07:43:52 2014
+Tue Sep 23 00:01:50 2014
 quex/TEST/token-policies/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1130,7 +1124,7 @@ quex/TEST/token-policies/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:43:54 2014
+Tue Sep 23 00:01:53 2014
 quex/code_base/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1164,7 +1158,7 @@ quex/code_base/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Lexical Analyzer Class Template
-Mon Sep 22 07:43:59 2014
+Tue Sep 23 00:01:58 2014
 quex/code_base/analyzer/TEST
 ------------------------------------------------------------------------------------------
  -- Accumulator
@@ -1225,7 +1219,7 @@ quex/code_base/analyzer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Basic Buffer Functions
-Mon Sep 22 07:44:08 2014
+Tue Sep 23 00:02:07 2014
 quex/code_base/buffer/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1284,7 +1278,7 @@ quex/code_base/buffer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Input Buffers Based on the IConv - Library
-Mon Sep 22 07:44:16 2014
+Tue Sep 23 00:02:16 2014
 quex/code_base/buffer/converter/iconv/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1355,7 +1349,7 @@ quex/code_base/buffer/converter/iconv/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing the ICU Converter Adaption
-Mon Sep 22 07:44:26 2014
+Tue Sep 23 00:02:27 2014
 quex/code_base/buffer/converter/icu/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1426,7 +1420,7 @@ quex/code_base/buffer/converter/icu/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Plain Buffer Filler (without conversion)
-Mon Sep 22 07:44:43 2014
+Tue Sep 23 00:02:44 2014
 quex/code_base/buffer/plain/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1517,7 +1511,7 @@ quex/code_base/buffer/plain/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:44:48 2014
+Tue Sep 23 00:02:49 2014
 quex/code_base/converter_helper/TEST
 ------------------------------------------------------------------------------------------
  -- Test of complete character set on base converters (utf8, utf16, utf32)
@@ -1540,7 +1534,7 @@ quex/code_base/converter_helper/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Core Functionalities
-Mon Sep 22 07:45:16 2014
+Tue Sep 23 00:03:22 2014
 quex/engine/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1549,7 +1543,7 @@ quex/engine/TEST
     Add Interval
         test-NumberSet-add_interval.py ....................................[OK]
     Algebraic Relations
-        test-algebraic-relations.py unary ...............................[FAIL]
+        test-algebraic-relations.py unary .................................[OK]
                                     binary ................................[OK]
     Cut
         test-NumberSet-cut.py empty .......................................[OK]
@@ -1569,9 +1563,9 @@ quex/engine/TEST
         test-Interval-cmp.py normal .......................................[OK]
                              special ......................................[OK]
     Inverse
-        test-NumberSet-inverse.py 1 .....................................[FAIL]
+        test-NumberSet-inverse.py 1 .......................................[OK]
                                   2 .......................................[OK]
-                                  serious ...............................[FAIL]
+                                  serious .................................[OK]
     Massive Mutual Consistency Check
         test-NumberSet-mmcc.py union ......................................[OK]
                                intersection ...............................[OK]
@@ -1611,17 +1605,13 @@ quex/engine/TEST
         test-utf8-byte-sequences.py .......................................[OK]
     Map UTF8 String To Unicode Values
         test-utf8-UCS-to-UTF8.py ..........................................[OK]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] test-algebraic-relations.py _ unary
-    [FAIL] test-NumberSet-inverse.py _ 1
-                                   \__ serious
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 State Machine Trace Analysis
-Mon Sep 22 07:45:30 2014
+Tue Sep 23 00:03:38 2014
 quex/engine/analyzer/TEST
 ------------------------------------------------------------------------------------------
  -- Position Register vs. Post-Context and Last Acceptance
@@ -1773,7 +1763,7 @@ quex/engine/analyzer/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:45:32 2014
+Tue Sep 23 00:03:40 2014
 quex/engine/analyzer/commands/TEST
 ------------------------------------------------------------------------------------------
  -- SharedTailDB
@@ -1810,7 +1800,7 @@ quex/engine/analyzer/commands/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Compression: Path and Table
-Mon Sep 22 07:45:35 2014
+Tue Sep 23 00:03:43 2014
 quex/engine/analyzer/mega_state/path_walker/TEST
 ------------------------------------------------------------------------------------------
 
@@ -1855,7 +1845,7 @@ quex/engine/analyzer/mega_state/path_walker/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Template Compression Analysis
-Mon Sep 22 07:45:37 2014
+Tue Sep 23 00:03:46 2014
 quex/engine/analyzer/mega_state/template/TEST
 ------------------------------------------------------------------------------------------
  -- Combination of Two Transition Maps
@@ -1900,7 +1890,7 @@ quex/engine/analyzer/mega_state/template/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Code Generation for Lexical Analyzer
-Mon Sep 22 07:50:23 2014
+Tue Sep 23 07:00:57 2014
 quex/engine/generator/TEST
 ------------------------------------------------------------------------------------------
  -- Mode Changes
@@ -2155,13 +2145,13 @@ quex/engine/generator/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Test Skippers and Indentation Detectors
-Mon Sep 22 07:51:05 2014
+Tue Sep 23 07:01:41 2014
 quex/engine/generator/skipper/TEST
 ------------------------------------------------------------------------------------------
  -- Indentation Counting
-        test-indentation-counter.py Uniform .............................[FAIL]
-                                    NonUniform ..........................[FAIL]
-                                    NonUniform-2 ........................[FAIL]
+        test-indentation-counter.py Uniform ...............................[OK]
+                                    NonUniform ............................[OK]
+                                    NonUniform-2 ..........................[OK]
 
  -- Skip-Characters:
 
@@ -2203,17 +2193,13 @@ quex/engine/generator/skipper/TEST
                              DL=2 .........................................[OK]
                              DL=3 .........................................[OK]
                              DL=4 .........................................[OK]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] test-indentation-counter.py _ Uniform
-                                     \__ NonUniform
-                                     \__ NonUniform-2
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 <no file 'ADM/title.txt'>
-Mon Sep 22 07:51:08 2014
+Tue Sep 23 07:01:44 2014
 quex/engine/generator/state/transition_map/TEST
 ------------------------------------------------------------------------------------------
 
@@ -2251,7 +2237,7 @@ quex/engine/generator/state/transition_map/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Frank-Rene Schaefers Little Python Library
-Mon Sep 22 07:51:08 2014
+Tue Sep 23 07:01:44 2014
 quex/engine/misc/TEST
 ------------------------------------------------------------------------------------------
  -- Enums -- Functionality Test
@@ -2287,7 +2273,7 @@ quex/engine/misc/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine Operations
-Mon Sep 22 07:51:25 2014
+Tue Sep 23 07:02:02 2014
 quex/engine/state_machine/TEST
 ------------------------------------------------------------------------------------------
 
@@ -2436,7 +2422,7 @@ quex/engine/state_machine/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Algrebraic Structure of REs
-Mon Sep 22 07:52:05 2014
+Tue Sep 23 07:02:42 2014
 quex/engine/state_machine/algebra/TEST
 ------------------------------------------------------------------------------------------
  -- Algebraic Relations
@@ -2511,7 +2497,7 @@ quex/engine/state_machine/algebra/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine related Algorithms
-Mon Sep 22 07:52:05 2014
+Tue Sep 23 07:02:43 2014
 quex/engine/state_machine/algorithm/TEST
 ------------------------------------------------------------------------------------------
 
@@ -2539,7 +2525,7 @@ quex/engine/state_machine/algorithm/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 State Machine Checks
-Mon Sep 22 07:52:11 2014
+Tue Sep 23 07:02:49 2014
 quex/engine/state_machine/check/TEST
 ------------------------------------------------------------------------------------------
  -- Commonality Checker
@@ -2565,7 +2551,7 @@ quex/engine/state_machine/check/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Character Set Queries
-Mon Sep 22 07:52:27 2014
+Tue Sep 23 07:03:05 2014
 quex/input/TEST
 ------------------------------------------------------------------------------------------
  -- Case Folding based on Unicode Database
@@ -2593,7 +2579,7 @@ quex/input/TEST
     Character Sets for Property Settings
         test-query-character-set.py .......................................[OK]
     Character Sets for Property Settings II
-        test-query-character-set-by-expression.py .......................[FAIL]
+        test-query-character-set-by-expression.py .........................[OK]
     Information about Properties
         test-query.py PropertyList ........................................[OK]
                       PropertyInfo ........................................[OK]
@@ -2642,15 +2628,13 @@ quex/input/TEST
                         Error .............................................[OK]
                         Twice .............................................[OK]
                         Twice-2 ...........................................[OK]
-                                                                       ___   _    _   _
-                                                                      |  _| / \  | | | |
-                                                                      | |_|/ - \ | | | |_
-                                                                      |_|  |_|_| |_| |___| 
-------------------------------------------------------------------------------------------
-    [FAIL] test-query-character-set-by-expression.py
+                                                                               ___  _  _
+                                                                              / _ \| |/ )
+                                                                             ( (_) | _ <
+                                                                              \___/|_|\_) 
 ==========================================================================================
 Regular Expression Parsing
-Mon Sep 22 07:52:31 2014
+Tue Sep 23 07:03:08 2014
 quex/input/regular_expression/TEST
 ------------------------------------------------------------------------------------------
  -- Anti-Patterns
@@ -2726,7 +2710,7 @@ quex/input/regular_expression/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Basic Code Writing Functionality
-Mon Sep 22 07:52:40 2014
+Tue Sep 23 07:03:17 2014
 quex/output/cpp/TEST
 ------------------------------------------------------------------------------------------
  -- Token Class Template
@@ -2776,7 +2760,7 @@ quex/output/cpp/TEST
                                                                               \___/|_|\_) 
 ==========================================================================================
 Testing Statemachine Plots
-Mon Sep 22 07:52:41 2014
+Tue Sep 23 07:03:18 2014
 quex/output/graphviz/TEST
 ------------------------------------------------------------------------------------------
 
@@ -2800,7 +2784,7 @@ SUMMARY:
            [OK]  TEST
            [OK]  demo/C/TEST
            [OK]  ..../Cpp/TEST
-     2   [FAIL]  quex/TEST
+           [OK]  quex/TEST
            [OK]  ..../TEST/command-line/TEST
            [OK]  ........./did-you-mean/TEST
            [OK]  ........./errors-warnings/TEST
@@ -2808,7 +2792,7 @@ SUMMARY:
            [OK]  ........./include-stack/TEST
            [OK]  ........./indentation_count/TEST
            [OK]  ........./match-precedence/TEST
-     2   [FAIL]  ........./misc/TEST
+           [OK]  ........./misc/TEST
            [OK]  ........./reset/TEST
            [OK]  ........./source-package/TEST
            [OK]  ........./token-class/TEST
@@ -2820,28 +2804,27 @@ SUMMARY:
            [OK]  .............................../icu/TEST
            [OK]  ...................../plain/TEST
            [OK]  ............../converter_helper/TEST
-     3   [FAIL]  ..../engine/TEST
+           [OK]  ..../engine/TEST
            [OK]  .........../analyzer/TEST
            [OK]  ..................../commands/TEST
            [OK]  ..................../mega_state/path_walker/TEST
            [OK]  .............................../template/TEST
            [OK]  .........../generator/TEST
-     3   [FAIL]  ...................../skipper/TEST
+           [OK]  ...................../skipper/TEST
            [OK]  ...................../state/transition_map/TEST
            [OK]  .........../misc/TEST
            [OK]  .........../state_machine/TEST
            [OK]  ........................./algebra/TEST
            [OK]  ........................./algorithm/TEST
            [OK]  ........................./check/TEST
-     1   [FAIL]  ..../input/TEST
+           [OK]  ..../input/TEST
            [OK]  ........../regular_expression/TEST
            [OK]  ..../output/cpp/TEST
            [OK]  .........../graphviz/TEST
 ------------------------------------------------------------------------------------------
-     _____     _ _          _  _           
-    |  ___|_ _(_) |___     / |/ |    __  __
-    | |_ / _` | | / __|    | || |    \ \/ /
-    |  _| (_| | | \__ \    | || |     >  < 
-    |_|  \__,_|_|_|___/    |_||_|    /_/\_\
-                  
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 ==========================================================================================

@@ -5,6 +5,7 @@
 from   quex.DEFINITIONS              import QUEX_PATH, QUEX_CODEC_DB_PATH
 import quex.engine.codec_db.parser   as     parser
 from   quex.engine.misc.file_in      import get_file_content_or_die, \
+                                            open_file_or_die, \
                                             error_msg, \
                                             verify_word_in_list
 from   quex.engine.interval_handling import Interval, NumberSet
@@ -208,7 +209,8 @@ class CodecTransformationInfo(CodecInfo, list):
         else:              return result.get_intervals(PromiseToTreatWellF=True)
 
     def __load(self, FileName, ExitOnErrorF):
-        source_set, drain_set, error_str = parser.do(self, FileName)
+        fh = open_file_or_die(FileName, "rb")
+        source_set, drain_set, error_str = parser.do(self, fh)
 
         if error_str is not None:
             error_msg(error_str, fh, DontExitF=not ExitOnErrorF)

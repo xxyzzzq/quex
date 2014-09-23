@@ -38,7 +38,7 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
                 state.set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
         return None
 
-    # (*) invert the state machine of the pre-condition 
+    # (*) Reverse the state machine of the pre-condition 
     inverse_pre_context = reverse.do(pre_context_sm)
         
     if BeginOfLinePreContextF:

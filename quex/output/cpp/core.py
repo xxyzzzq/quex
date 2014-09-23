@@ -7,7 +7,6 @@ from   quex.engine.generator.languages.variable_db        import variable_db
 import quex.engine.generator.base                         as     generator
 from   quex.engine.state_machine.engine_state_machine_set import EngineStateMachineSet
 from   quex.engine.counter                                import CountCmdFactory
-from   quex.engine.interval_handling                      import NumberSet_All
 from   quex.engine.tools                                  import all_isinstance, \
                                                                  typed
 import quex.output.cpp.counter                            as     counter

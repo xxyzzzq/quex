@@ -25,7 +25,7 @@ def do(Data, TheAnalyzer):
 #    #OpeningSequence = transform()
 #    character_set   = NumberSet(CloserSequence[0])
 #    character_set.add(OpeningSequence[0])
-#    character_set.invert()
+#    character_set.complement()
 #
 #    txt = "/* Assert sizeof(buffer) >= len(CloserSequence) + 2 */\n"
 #

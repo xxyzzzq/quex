@@ -1,5 +1,4 @@
-from quex.blackboard import setup as Setup, \
-                            Lng
+from quex.blackboard import Lng
 
 class Bisection(object):
     __slots__ = ("bisection_value", "low", "high")

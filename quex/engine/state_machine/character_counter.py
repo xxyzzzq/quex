@@ -1,8 +1,7 @@
 # (C) 2012 Frank-Rene Schaefer
-from   quex.engine.misc.tree_walker             import TreeWalker
-from   quex.engine.codec_db.core                import CodecDynamicInfo
-import quex.engine.state_machine.transformation as     transformation
-from   quex.blackboard                          import E_Count
+from   quex.engine.misc.tree_walker import TreeWalker
+from   quex.engine.codec_db.core    import CodecDynamicInfo
+from   quex.blackboard              import E_Count
 
 class CountInfo:
     """Information on character counting characteristics of lexeme that match a 
