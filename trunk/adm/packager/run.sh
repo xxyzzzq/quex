@@ -1,33 +1,34 @@
 #! /usr/bin/env bash 
 # PURPOSE: Creating a release of Quex
-#   $1  QUEX_PATH
-#   $2  version of the quex release
+#   $1  version of the quex release
 #
 # (C) 2005-2008 Frank-Rene Schaefer  fschaef@users.sourceforge.net
 # 
 # ABSOLUTELY NO WARRANTY
 #
 ###########################################################################
-export QUEX_PATH=$1
-shift
 cd ~/prj/quex/trunk
 mkdir -p /tmp/quex-packages
 
-orig_directory=`pwd`
-directory=`basename $orig_directory`
+orig_directory=$PWD
+export QUEX_PATH=$PWD
 
 INSTALLBUILDER=/opt/installbuilder-7.2.0/bin/builder
 INSTALLBUILDER_OUT=/opt/installbuilder-7.2.0/output
 
 # Temporary file for building a distribution file list
-input=/tmp/file-list-in.txt
-output=/tmp/file-list-out.txt
+file_list0=/tmp/file-list-0.txt
+file_list=/tmp/file-list-1.txt
 
 if [[ -z $1 ]]; then
     echo "Version must be defined as first argument."
     exit
 fi
 
+pushd  demo
+source make_clean.sh
+hwut make clean
+popd
 
 function update_version_information()
 {
@@ -42,24 +43,37 @@ function update_version_information()
     hwut i > unit_test_results.txt;
 }
 
+function create_man_page() {
+    pushd $QUEX_PATH/doc/
+    python command_line_options.py
+    popd
+}
+
 function collect_distribution_file_list()
 {
-    cd $QUEX_PATH;
-    cd ..;
+    sub_dir=$(basename $QUEX_PATH)
+
+    echo "QUEX_PATH:  $QUEX_PATH"
+    echo "file_list0: $file_list0"
+    echo "file_list:  $file_list"
+    echo "sub_dir:    $(basename $QUEX_PATH)"
 
     # (*) Collect the list of files under concern
     echo "-- Collect files for distribution"
+    cd $QUEX_PATH/..
 
-    find trunk/quex $directory/demo  -type f  > $input
+    find $sub_dir/quex \
+         $sub_dir/demo \
+         -type f  > $file_list0
 
-    echo "trunk/LGPL.txt"              >> $input
-    echo "trunk/COPYRIGHT.txt"         >> $input
-    echo "trunk/README"                >> $input
-    echo "trunk/unit_test_results.txt" >> $input
-    echo "trunk/quex-exe.py"           >> $input
-    echo "trunk/quex.bat"              >> $input
-    echo "trunk/__init__.py"           >> $input
-
+    echo "$sub_dir/doc/manpage/quex.1"    >> $file_list0
+    echo "$sub_dir/LGPL.txt"              >> $file_list0
+    echo "$sub_dir/COPYRIGHT.txt"         >> $file_list0
+    echo "$sub_dir/README"                >> $file_list0
+    echo "$sub_dir/unit_test_results.txt" >> $file_list0
+    echo "$sub_dir/quex-exe.py"           >> $file_list0
+    echo "$sub_dir/quex.bat"              >> $file_list0
+    echo "$sub_dir/__init__.py"           >> $file_list0
 
     # -- filter out all files that are not directly required for 
     #    a working application.
@@ -75,12 +89,17 @@ function collect_distribution_file_list()
          && ! /\.html$/   \
          && ! /\.swo$/    \
          && ! /\.swp$/    \
-         && ! /trunk\/quex\/data_base\/misc\// { print; }' $input > $QUEX_PATH/tmp-file-list.txt
-    mv -f tmp.txt $input
+         && ! /\.a$/      \
+         && ! /\.so$/     \
+         && ! /\.exrc$/   \
+         && ! /tmp?.txt$/ \
+         && ! /tmp.txt$/  \
+         && ! /\.log$/    \
+         && ! /\/quex\/data_base\/misc\// { print; }' $file_list0 > $file_list
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
-    tar cf /tmp/quex-$1.tar `cat $QUEX_PATH/tmp-file-list.txt` 
+    tar cf /tmp/quex-$1.tar `cat $file_list`
     echo `ls -lh /tmp/quex-$1.tar`
 
     # -- change base directory from ./trunk to ./quex-$version
@@ -88,6 +107,9 @@ function collect_distribution_file_list()
     cd /tmp/
     tar xf quex-$1.tar
     rm quex-$1.tar 
+
+    # -- Rename trunk, so that it carries the name quex and version info
+    rm -rf quex-$1  # make sure that the directory does not exist
     mv trunk quex-$1
 }
 
@@ -99,7 +121,15 @@ function create_packages()
 
     ## We do the debian packages on our own-- thanks to Joaquin Duo.
     ## $INSTALLBUILDER build ./install-builder.xml deb
+    #  The 'debian/run.sh' relies on the manpage being in 'doc/manpage/'
+    echo "(It is a good idea to run this script as 'sudo' ...)"
     sudo $QUEX_PATH/adm/packager/debian/run.sh $1 0
+
+    # -- place man page in root directory, 
+    #    for source distributions.
+    mv /tmp/quex-$1/doc/manpage /tmp/quex-$1/manpage
+    rmdir /tmp/quex-$1/doc
+
     # -- create xml file for the install builder
     $QUEX_PATH/adm/packager/make_install_builder_script.py `pwd`/quex-$1 $1
     $INSTALLBUILDER build ./install-builder.xml windows
@@ -132,10 +162,11 @@ function validate_directory_tree()
 
     for d in `find -maxdepth 1 -type d`; do 
         case $d in
-            .)      echo "directory .    [OK]";;
-            ./demo) echo "directory demo [OK]";;
-            ./quex) echo "directory quex [OK]";;
-            *)      echo "directory '$d' is not to be packed. Abort!"; exit;; 
+            .)             echo "directory .    [OK]";;
+            ./demo)        echo "directory demo [OK]";;
+            ./quex)        echo "directory quex [OK]";;
+            ./doc)        echo "directory quex [OK]";;
+            *)             echo "directory '$d' is not to be packed. Abort!"; exit;; 
         esac
     done
 }
@@ -214,7 +245,7 @@ function clean_up() {
     cd /tmp
 
     # (*) clean up
-    rm $input $output
+    rm -f $file_list0 $file_list
 
     cd $orig_directory
 
@@ -222,6 +253,8 @@ function clean_up() {
 }
 
 update_version_information $1
+
+create_man_page $1
 
 collect_distribution_file_list $1
 

@@ -48,7 +48,7 @@ mkdir -p $package_dir/DEBIAN
 #  -- pre-remove file
 #  -- post remove file
 BIN_DIRECTORY_REPLACE=$( echo $BIN_DIRECTORY | sed 's/\//\\\//g')
-scripts="control preinst postinst prerm postrm"
+scripts="control preinst postinst prerm postrm copyright"
 for script in $scripts; do
       sed "s/##QUEX_VERSION/$VERSION/" $template_dir/$script | \
       sed "s/##PACKAGE_VERSION/$PACKAGE_VERSION/" | \
@@ -56,6 +56,9 @@ for script in $scripts; do
       $package_dir/DEBIAN/$script
       chmod 0755 $package_dir/DEBIAN/$script
 done
+
+#Copy the manpage into manpage.*
+cp $base_dir/doc/manpage/quex.1 $package_dir/DEBIAN/manpage.1
 
 #Copy sources to the new destination on package
 mkdir -p $package_dir/opt/quex/quex-$VERSION
@@ -65,10 +68,11 @@ cp -a $base_dir/* $package_dir/opt/quex/quex-$VERSION
 #Need to be root for this by now, later ill use fakeroot
 sudo chown root:root -R $package_dir/opt
 
-#Create the package
+# Create the package
 sudo dpkg-deb -b $package_dir
 
-#Copy the resulting package
+# Make package accessible 
 sudo chmod 777 /tmp/*.deb 
 
+sudo mv /tmp/quex_$VERSION_$PACKAGE_VERSION.deb /tmp/quex-$VERSION/$VERSION_$PACKAGE_VERSION_all.deb 
 exit 0
