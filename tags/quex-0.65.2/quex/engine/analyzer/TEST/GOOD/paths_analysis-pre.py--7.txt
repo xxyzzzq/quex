@@ -1,0 +1,109 @@
+init-state = 0L
+00000 (1), (2)
+     == 'a' ==> 00001
+     == 'b' ==> 00005
+    
+00001 (1, A, pre=bol), (2)
+     == 'b' ==> 00002
+    
+00002 (2)
+     == 'c' ==> 00003
+    
+00003 (2)
+     == 'd' ==> 00004
+    
+00004 (2, A)
+    
+00005 (1, A, pre=bol), (2)
+     == 'c' ==> 00003
+    
+
+State 0:
+  .entry:
+    .from NONE:
+  .drop_out:
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 1:
+  .entry:
+    .from 0: 
+  .drop_out:
+    if BeginOfLine:  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 2:
+  .entry:
+    .from 1: if 'BeginOfLine': position[PostContext_1]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos -= 1;  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .from 2: 
+    .from 5: if 'BeginOfLine': position[PostContext_1]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos = position[PostContext_1] ; goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 4:
+  .entry:
+    .from 3: 
+  .drop_out:
+     goto Pattern2;
+
+
+State 5:
+  .entry:
+    .from 0: 
+  .drop_out:
+    if BeginOfLine:  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 0:
+        [MATCH_FAILURE]: NONE/set([0L])
+
+State 1:
+        [MATCH_FAILURE]: NONE/set([0L])
+        [      1]: BEGIN_OF_LINE/set([1L])
+
+State 2:
+        [MATCH_FAILURE]: NONE/set([0L])
+        [      1]: BEGIN_OF_LINE/set([1L])
+
+State 3:
+        [MATCH_FAILURE]: NONE/set([0L])
+    (*) [      1]: BEGIN_OF_LINE/set([1L, 5L])
+
+State 4:
+        [      2]: NONE/set([4L])
+
+State 5:
+        [MATCH_FAILURE]: NONE/set([0L])
+        [      1]: BEGIN_OF_LINE/set([5L])
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1: if 'BeginOfLine': position[PostContext_0]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos -= 1;  goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+
+State 3:
+  .entry:
+    .from 2: 
+    .from 5: if 'BeginOfLine': position[PostContext_0]  = input_p;
+  .drop_out:
+    if BeginOfLine: pos = position[PostContext_0] ; goto Pattern1;
+    pos = lexeme_start_p + 1;  goto Failure;
+
+

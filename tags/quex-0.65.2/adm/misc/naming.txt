@@ -1,0 +1,23 @@
+Cpp-NAMING:
+
+   Functions/Objects:
+  
+   DEF Inside its Namespace:     X
+   /* DEF Outside its Namespace:    NAMESPACE::X */
+
+   REF Inside its Namespace:     X
+   REF Outside its Namespace:    NAMESPACE::X
+
+C-NAMING:
+
+   Functions/Objects:
+  
+   DEF Inside its Namespace:     NAMESPACE_X
+   DEF Outside its Namespace:    NAMESPACE_X
+
+   REF Inside its Namespace:     NAMESPACE_X
+   REF Outside its Namespace:    NAMESPACE_X
+
+
+
+

@@ -1,0 +1,159 @@
+<history date="Tue Sep 23 00:03:46 2014" element-n="117">
+    <day year="2011" month="09" day="28">
+        <history-init time="20:08:52"/>
+    </day>
+    <day year="2011" month="09" day="29">
+        <crc-error time="20:42:18" application="combine-maps.py" choice="1" database-crc="820212916" real-crc="1678558343"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2" database-crc="-1627687556" real-crc="-2112920410"/>
+        <crc-error time="20:42:18" application="combine-maps.py" choice="2b" database-crc="578732802" real-crc="-1958104461"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="0" database-crc="-388511388" real-crc="463769672"/>
+        <crc-error time="20:42:19" application="best_matching_pair.py" choice="2" database-crc="846269955" real-crc="-1321050110"/>
+    </day>
+    <day year="2012" month="02" day="14">
+        <crc-error time="20:58:59" application="combine-simple.py" choice="plain" database-crc="-1381564096" real-crc="-2144681528"/>
+    </day>
+    <day year="2012" month="02" day="20">
+        <crc-error time="07:45:36" application="combine-simple.py" choice="plain" database-crc="-2096630557" real-crc="-673640113"/>
+        <crc-error time="07:46:49" application="combine-simple.py" choice="recursive" database-crc="-7642453" real-crc="47904335"/>
+        <crc-error time="07:48:22" application="combine-simple.py" choice="distinguished" database-crc="1109648656" real-crc="192272569"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="1" database-crc="-892034469" real-crc="-665118599"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2" database-crc="-604200621" real-crc="664275895"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="2b" database-crc="-348066796" real-crc="1741258459"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="3" database-crc="2055694699" real-crc="909283175"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="4" database-crc="1571523934" real-crc="1484321836"/>
+        <crc-error time="21:18:32" application="combine-maps.py" choice="recursive" database-crc="699993789" real-crc="462762661"/>
+    </day>
+    <day year="2012" month="02" day="21">
+        <crc-error time="08:22:51" application="combine-maps-2.py" choice="1" database-crc="623867792" real-crc="403402211"/>
+        <crc-error time="08:22:56" application="combine-maps-2.py" choice="2" database-crc="-260759165" real-crc="972740394"/>
+        <crc-error time="09:51:43" application="metric.py" choice="3" database-crc="-2116294388" real-crc="-749157642"/>
+        <crc-error time="09:51:58" application="metric.py" choice="3" database-crc="-749157642" real-crc="482091865"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="1" database-crc="-665118599" real-crc="-1294371951"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="2" database-crc="664275895" real-crc="-666103023"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="2b" database-crc="1741258459" real-crc="87543699"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="3" database-crc="909283175" real-crc="-341781596"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="4" database-crc="1484321836" real-crc="640265243"/>
+        <crc-error time="09:52:01" application="combine-maps.py" choice="recursive" database-crc="462762661" real-crc="1327431436"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="2" database-crc="972740394" real-crc="132411998"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive" database-crc="1301004420" real-crc="-562817148"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-2" database-crc="-483938337" real-crc="-1421550926"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-3" database-crc="328223535" real-crc="1091680709"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-b" database-crc="1301004420" real-crc="-562817148"/>
+        <crc-error time="09:52:02" application="combine-maps-2.py" choice="recursive-2b" database-crc="1547619373" real-crc="298678448"/>
+        <crc-error time="09:52:02" application="best_matching_pair.py" choice="0" database-crc="463769672" real-crc="-1675777048"/>
+    </day>
+    <day year="2012" month="06" day="04">
+        <crc-error time="06:26:20" application="metric.py" choice="1" database-crc="112967874" real-crc="-1866853462"/>
+        <crc-error time="06:26:35" application="metric.py" choice="2" database-crc="384668193" real-crc="-36161655"/>
+        <crc-error time="06:26:45" application="metric.py" choice="2b" database-crc="-1685403599" real-crc="1190668093"/>
+        <crc-error time="06:26:54" application="metric.py" choice="3" database-crc="156389046" real-crc="1997484216"/>
+        <crc-error time="06:27:02" application="metric.py" choice="4" database-crc="1953557393" real-crc="587714161"/>
+        <crc-error time="06:27:17" application="metric.py" choice="recursive" database-crc="453528387" real-crc="-1522834400"/>
+        <crc-error time="06:27:48" application="combine-maps-2.py" choice="1" database-crc="511314389" real-crc="1791333566"/>
+        <crc-error time="06:27:57" application="combine-maps-2.py" choice="2" database-crc="132411998" real-crc="4266641"/>
+        <crc-error time="06:28:05" application="combine-maps-2.py" choice="recursive" database-crc="-562817148" real-crc="1202017180"/>
+        <crc-error time="06:28:19" application="combine-maps-2.py" choice="recursive-2" database-crc="-1421550926" real-crc="-1778639786"/>
+        <crc-error time="06:28:29" application="combine-maps-2.py" choice="recursive-3" database-crc="1091680709" real-crc="1026173306"/>
+        <crc-error time="06:28:39" application="combine-maps-2.py" choice="recursive-b" database-crc="-562817148" real-crc="1202017180"/>
+        <crc-error time="06:28:48" application="combine-maps-2.py" choice="recursive-2b" database-crc="298678448" real-crc="1315164732"/>
+        <crc-error time="16:58:44" application="combine-maps.py" choice="1" database-crc="-1294371951" real-crc="-1445811063"/>
+        <crc-error time="16:58:58" application="combine-maps.py" choice="2" database-crc="-666103023" real-crc="-1612938100"/>
+        <crc-error time="16:59:08" application="combine-maps.py" choice="2b" database-crc="87543699" real-crc="-1894629620"/>
+        <crc-error time="16:59:21" application="combine-maps.py" choice="3" database-crc="-341781596" real-crc="-1308775497"/>
+        <crc-error time="16:59:30" application="combine-maps.py" choice="4" database-crc="640265243" real-crc="-103244750"/>
+        <crc-error time="16:59:38" application="combine-maps.py" choice="recursive" database-crc="1327431436" real-crc="-1429545679"/>
+    </day>
+    <day year="2012" month="06" day="05">
+        <crc-error time="03:37:22" application="combine-simple.py" choice="plain" database-crc="-673640113" real-crc="-2141069942"/>
+        <crc-error time="04:00:22" application="combine-simple.py" choice="plain" database-crc="-2141069942" real-crc="939872630"/>
+    </day>
+    <day year="2012" month="06" day="06">
+        <crc-error time="21:57:04" application="combine-maps.py" choice="recursive" database-crc="-1429545679" real-crc="-1494520142"/>
+        <crc-error time="21:59:07" application="combine-maps.py" choice="recursive" database-crc="-1494520142" real-crc="444984098"/>
+    </day>
+    <day year="2012" month="06" day="07">
+        <crc-error time="02:57:44" application="combine-maps.py" choice="recursive" database-crc="444984098" real-crc="-2048503433"/>
+        <crc-error time="03:00:16" application="combine-simple.py" choice="plain" database-crc="939872630" real-crc="-762358456"/>
+        <crc-error time="03:02:03" application="combine-simple.py" choice="recursive" database-crc="47904335" real-crc="-975107438"/>
+        <crc-error time="03:03:14" application="combine-simple.py" choice="distinguished" database-crc="192272569" real-crc="-1189709231"/>
+        <crc-error time="03:05:17" application="combine-maps-2.py" choice="recursive" database-crc="1202017180" real-crc="5780893"/>
+        <crc-error time="03:05:44" application="combine-maps-2.py" choice="recursive-2" database-crc="-1778639786" real-crc="-1128091714"/>
+        <crc-error time="03:07:03" application="combine-maps-2.py" choice="recursive-3" database-crc="1026173306" real-crc="-1689396160"/>
+        <crc-error time="03:07:40" application="combine-maps-2.py" choice="recursive-b" database-crc="1202017180" real-crc="-1705288158"/>
+        <crc-error time="03:08:22" application="combine-maps-2.py" choice="recursive-2b" database-crc="1315164732" real-crc="1547189810"/>
+        <crc-error time="03:08:51" application="metric.py" choice="recursive" database-crc="-1522834400" real-crc="2119390375"/>
+        <crc-error time="03:30:26" application="combine-maps-2.py" choice="recursive" database-crc="5780893" real-crc="45826118"/>
+        <crc-error time="03:33:17" application="combine-maps-2.py" choice="recursive-2" database-crc="-1128091714" real-crc="-1853114465"/>
+        <crc-error time="03:33:48" application="combine-maps-2.py" choice="recursive-3" database-crc="-1689396160" real-crc="1144588756"/>
+        <crc-error time="03:34:26" application="combine-maps-2.py" choice="recursive-b" database-crc="-1705288158" real-crc="45826118"/>
+        <crc-error time="04:33:37" application="combine-simple.py" choice="plain" database-crc="-762358456" real-crc="-1004142137"/>
+        <crc-error time="04:34:50" application="combine-simple.py" choice="distinguished" database-crc="-1189709231" real-crc="-514424701"/>
+        <crc-error time="04:39:02" application="combine-simple.py" choice="recursive" database-crc="-975107438" real-crc="1765684673"/>
+    </day>
+    <day year="2012" month="06" day="09">
+        <crc-error time="04:28:25" application="best_matching_pair.py" choice="0" database-crc="-722672771" real-crc="-1563767364"/>
+        <crc-error time="04:28:53" application="best_matching_pair.py" choice="2" database-crc="1285456427" real-crc="-1506293018"/>
+        <crc-error time="05:05:12" application="combine-simple.py" choice="recursive" database-crc="-670543503" real-crc="1765684673"/>
+    </day>
+    <day year="2012" month="06" day="22">
+        <crc-error time="03:07:49" application="best_matching_pair.py" choice="0" database-crc="-1563767364" real-crc="-2111286241"/>
+    </day>
+    <day year="2012" month="06" day="23">
+        <crc-error time="04:53:58" application="best_matching_pair.py" choice="0" database-crc="-2111286241" real-crc="488206684"/>
+        <crc-error time="04:54:09" application="best_matching_pair.py" choice="1" database-crc="-678397194" real-crc="-2131708322"/>
+        <crc-error time="04:54:49" application="best_matching_pair.py" choice="2" database-crc="-1506293018" real-crc="228632361"/>
+        <crc-error time="04:54:57" application="best_matching_pair.py" choice="recursive" database-crc="-728795694" real-crc="-206740455"/>
+    </day>
+    <day year="2014" month="04" day="16">
+        <crc-error time="05:11:40" application="combine-simple.py" choice="plain" database-crc="951932943" real-crc="-1936121256"/>
+        <crc-error time="05:14:30" application="combine-simple.py" choice="distinguished" database-crc="1057638771" real-crc="1951953792"/>
+        <crc-error time="06:26:05" application="combine-maps-2.py" choice="1" database-crc="15509166" real-crc="813714795"/>
+    </day>
+    <day year="2014" month="04" day="17">
+        <crc-error time="04:49:03" application="combine-maps-2.py" choice="2" database-crc="799955905" real-crc="-1615454940"/>
+    </day>
+    <day year="2014" month="04" day="18">
+        <crc-error time="02:45:03" application="best_matching_pair.py" choice="0" database-crc="488206684" real-crc="-70851933"/>
+        <crc-error time="02:45:34" application="best_matching_pair.py" choice="1" database-crc="-2131708322" real-crc="-470078879"/>
+        <crc-error time="02:45:51" application="best_matching_pair.py" choice="2" database-crc="228632361" real-crc="596279651"/>
+        <crc-error time="02:46:21" application="best_matching_pair.py" choice="3" database-crc="1541910571" real-crc="1460960682"/>
+        <crc-error time="02:47:05" application="best_matching_pair.py" choice="recursive" database-crc="-206740455" real-crc="1950094314"/>
+    </day>
+    <day year="2014" month="04" day="20">
+        <crc-error time="08:30:39" application="metric.py" choice="1" database-crc="340776046" real-crc="225881948"/>
+        <crc-error time="08:39:38" application="metric.py" choice="2" database-crc="-2041708454" real-crc="-1762834884"/>
+        <crc-error time="08:40:39" application="metric.py" choice="3" database-crc="-2124408666" real-crc="1633325203"/>
+        <crc-error time="08:41:02" application="metric.py" choice="4" database-crc="1899760512" real-crc="280770878"/>
+        <crc-error time="10:10:26" application="metric.py" choice="1" database-crc="225881948" real-crc="316750510"/>
+        <crc-error time="10:10:37" application="metric.py" choice="2" database-crc="-1762834884" real-crc="-1835208730"/>
+        <crc-error time="10:10:49" application="metric.py" choice="3" database-crc="1633325203" real-crc="-487991081"/>
+        <crc-error time="10:11:00" application="metric.py" choice="4" database-crc="280770878" real-crc="1821567828"/>
+        <crc-error time="10:13:36" application="best_matching_pair.py" choice="0" database-crc="-70851933" real-crc="-1156851576"/>
+        <crc-error time="10:13:47" application="best_matching_pair.py" choice="1" database-crc="-470078879" real-crc="-373353205"/>
+        <crc-error time="10:13:52" application="best_matching_pair.py" choice="2" database-crc="596279651" real-crc="-326735393"/>
+        <crc-error time="10:13:56" application="best_matching_pair.py" choice="3" database-crc="1460960682" real-crc="-436647206"/>
+        <crc-error time="10:14:00" application="best_matching_pair.py" choice="recursive" database-crc="1950094314" real-crc="961507194"/>
+        <crc-error time="10:14:27" application="metric.py" choice="2b" database-crc="1030623470" real-crc="-1393103537"/>
+    </day>
+    <day year="2014" month="04" day="21">
+        <crc-error time="06:31:41" application="combine-simple.py" choice="recursive" database-crc="342614412" real-crc="1077674044"/>
+        <crc-error time="07:20:16" application="metric.py" choice="recursive" database-crc="-616495450" real-crc="-1922550798"/>
+    </day>
+    <day year="2014" month="04" day="23">
+        <crc-error time="06:29:09" application="recursion.py" choice="0" database-crc="517904786" real-crc="412753535"/>
+        <crc-error time="06:29:42" application="recursion.py" choice="0b" database-crc="1597115840" real-crc="-1393433161"/>
+        <crc-error time="06:43:22" application="recursion.py" choice="1b" database-crc="0" real-crc="-748825646"/>
+    </day>
+    <day year="2014" month="06" day="05">
+        <crc-error time="23:26:36" application="combine-simple.py" choice="plain" database-crc="-1936121256" real-crc="-1161485993"/>
+        <crc-error time="23:27:22" application="combine-simple.py" choice="recursive" database-crc="1077674044" real-crc="287197039"/>
+        <crc-error time="23:27:33" application="combine-simple.py" choice="distinguished" database-crc="1951953792" real-crc="-1963706776"/>
+        <crc-error time="23:27:55" application="recursion.py" choice="0" database-crc="412753535" real-crc="1560569670"/>
+        <crc-error time="23:28:28" application="recursion.py" choice="0b" database-crc="-1393433161" real-crc="1104360742"/>
+    </day>
+    <day year="2014" month="06" day="07">
+        <crc-error time="06:21:19" application="recursion.py" choice="1b" database-crc="-748825646" real-crc="-265675705"/>
+        <crc-error time="06:21:25" application="recursion.py" choice="1" database-crc="-2048096852" real-crc="-1517067324"/>
+        <crc-error time="06:21:31" application="recursion.py" choice="1c" database-crc="-719613315" real-crc="-1963784925"/>
+    </day>
+</history>

@@ -1,0 +1,17 @@
+command line: Token ids found in file 'include_me.h' {
+command line:      QUEX_TKN_A             => 'A'
+command line:      QUEX_TKN_TERMINATION   => 'TERMINATION'
+command line:      QUEX_TKN_UNINITIALIZED => 'UNINITIALIZED'
+command line: }
+include_me.h:2:warning: Files recursively included (ignored second inclusion):
+include_me.h:2:warning: include_me.h
+include_me.h:2:warning: 
+include_me.h:2:warning: Note, that quex does not handle C-Preprocessor instructions.
+include_me.h:2:warning: ('--suppress 0' to avoid this message)
+
+Generated Files:
+EasyLexer
+EasyLexer-configuration
+EasyLexer.cpp
+EasyLexer-token
+EasyLexer-token_ids

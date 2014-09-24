@@ -1,0 +1,6 @@
+
+Output from constructed header:_______________________________________
+
+#      error "More than one lexical analyzer have been generated in the same name space. Read documentation on command line option '-o'."
+#   line 4 "error.qx"
+#   line 60 "Simple"

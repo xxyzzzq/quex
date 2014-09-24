@@ -1,0 +1,19 @@
+window_sizes 1013 716 270 737 637 0
+diagrams
+  active  classdiagram_ref 128002 // Construction
+    737 637 92 4 0 0
+end
+show_stereotypes
+selected attribute_ref 132354 // content_end
+open
+  operation_ref 129282 // construct
+  operation_ref 128898 // delete_self
+  operation_ref 130690 // new
+  class_ref 129538 // BufferFiller_Converter
+  class_ref 129666 // Converter
+  class_ref 129794 // Converter_ICU
+  class_ref 129922 // Converter_IConv
+  attribute_ref 128642 // content_end
+  attribute_ref 132354 // content_end
+end
+end

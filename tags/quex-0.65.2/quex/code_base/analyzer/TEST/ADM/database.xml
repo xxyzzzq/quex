@@ -1,0 +1,103 @@
+<test-database execution-time-sec="0.13" date="Tue Sep 23 00:01:58 2014">
+    <last-used-diff-display-program name=""/>
+    <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
+        <application file-name="statistics.exe" info-request-time="1411423315L" vanished="False"/>
+        <analogy open="((" close="))"/>
+        <make-procedure success="True" time_sec="0.136353"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="0.00" crc="1432648595"/>
+        </choice-list>
+    </test>
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
+        <application file-name="accumulator.exe" info-request-time="1411423318L" vanished="False"/>
+        <analogy open="((" close="))"/>
+        <make-procedure success="True" time_sec="0.520578"/>
+        <choice-list number="5" same_result="False">
+           <choice name="String" result="OK" time_sec="0.00" crc="1490722418"/>
+           <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
+           <choice name="N-Character" result="OK" time_sec="0.00" crc="-1120495017"/>
+           <choice name="N-String" result="OK" time_sec="0.00" crc="932695689"/>
+           <choice name="Mix" result="OK" time_sec="0.00" crc="142252970"/>
+        </choice-list>
+    </test>
+    <test title="{" time-sum-sec="0.00"> 
+        <application file-name="test-statistics" info-request-time="1317327275L" vanished="True"/>
+        <analogy open="((" close="))"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="NO GOOD FILE" time_sec="0.00" crc="1432648595"/>
+        </choice-list>
+    </test>
+    <group name="Post Categorizer">
+        <test title="Enter" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-find.exe" info-request-time="1411423314L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="0.749870"/>
+            <choice-list number="7" same_result="True">
+               <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-978220029"/>
+               <choice name="6" result="OK" time_sec="0.00" crc="-978220029"/>
+            </choice-list>
+        </test>
+        <test title="Remove Total" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-total.exe" info-request-time="1411423317L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="0.812555"/>
+            <choice-list number="7" same_result="True">
+               <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="6" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="7" result="OK" time_sec="0.00" crc="312237205"/>
+            </choice-list>
+        </test>
+        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-2.exe" info-request-time="1411423315L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="0.802332"/>
+            <choice-list number="7" same_result="False">
+               <choice name="Ab" result="OK" time_sec="0.00" crc="156350769"/>
+               <choice name="Ad" result="OK" time_sec="0.00" crc="-615592824"/>
+               <choice name="Af" result="OK" time_sec="0.00" crc="-271613736"/>
+               <choice name="Ah" result="OK" time_sec="0.00" crc="-639697045"/>
+               <choice name="Bb" result="OK" time_sec="0.00" crc="-1397501183"/>
+               <choice name="Bd" result="OK" time_sec="0.00" crc="1509696768"/>
+               <choice name="Bf" result="OK" time_sec="0.00" crc="1062816794"/>
+            </choice-list>
+        </test>
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove.exe" info-request-time="1411423316L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="0.770581"/>
+            <choice-list number="8" same_result="True">
+               <choice name="Aa" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ae" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ag" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ai" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ba" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Bc" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Be" result="OK" time_sec="0.00" crc="1918139693"/>
+            </choice-list>
+        </test>
+        <test title="Enter" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-enter.exe" info-request-time="1411423317L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="0.774703"/>
+            <choice-list number="7" same_result="False">
+               <choice name="1" result="OK" time_sec="0.00" crc="-998642932"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-271066271"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="72151989"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="0" result="OK" time_sec="0.00" crc="-530099081"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="-1772219006"/>
+               <choice name="6" result="OK" time_sec="0.00" crc="-376401680"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

@@ -1,0 +1,40 @@
+,------------------------------------------------------------------------------------
+| [START]
+on_match
+on_after_match
+(1, 1)  	ELSE__________: a
+on_match
+on_after_match
+(1, 2)  	ELSE__________: a
+on_match
+on_after_match
+(1, 3)  	ABPLUS________: abb
+on_match
+on_after_match
+(1, 6)  	BAPLUS________: baa
+on_match
+on_after_match
+(1, 9)  	ABPLUS________: abb
+on_match
+on_after_match
+(1, 12)  	BAPLUS________: ba
+on_match
+on_after_match
+(1, 14)  	ABPLUS________: ab
+on_match
+on_after_match
+(1, 16)  	ELSE__________: b
+on_match
+on_after_match
+(1, 17)  	ELSE__________: a
+on_match
+on_after_match
+(1, 18)  	ELSE__________: b
+(1, 19)  	ON_FAILURE____: 
+
+on_match
+on_after_match
+(2, 1)  	<TERMINATION>: 
+
+| [END] number of token = 12
+`------------------------------------------------------------------------------------

@@ -1,0 +1,66 @@
+test.qx:6:warning: Detected implicit token identifier definitions. Proposal:
+test.qx:6:warning:    token {
+test.qx:6:warning:      WORLD;
+test.qx:6:warning:    }
+    /* BEGIN: STATE MACHINE
+     * init-state = 154L
+     * 00154 (0, 79)
+     *      == ['a', 'z'] ==> 00155
+     *     
+     * 00155 (0, 80)
+     *      == ['0', '9'] ==> 00156
+     *     
+     * 00156 (0, 81, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 204L
+     * 00204 (0, 57)
+     *      == 'w' ==> 00205
+     *     
+     * 00205 (0, 58)
+     *      == 'o' ==> 00206
+     *     
+     * 00206 (0, 59)
+     *      == 'r' ==> 00207
+     *     
+     * 00207 (0, 60)
+     *      == 'l' ==> 00208
+     *     
+     * 00208 (0, 61)
+     *      == 'd' ==> 00209
+     *     
+     * 00209 (0, 62, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 229L
+     * 00229 (0, 124)
+     *      == 'A' ==> 00230
+     *     
+     * 00230 (0, 125)
+     *      == 'c' ==> 00231
+     *     
+     * 00231 (0, 126)
+     *      == 'b' ==> 00232
+     *     
+     * 00232 (0, 127)
+     *      == 'a' ==> 00233
+     *     
+     * 00233 (0, 128)
+     *      == 'Z' ==> 00234
+     *     
+     * 00234 (0, 129, A)
+     *     
+     * END: STATE MACHINE
+    /* BEGIN: STATE MACHINE
+     * init-state = 248L
+     * 00248 (0, 141)
+     *      == 'h' ==> 00249
+     *     
+     * 00249 (0, 142)
+     *      == 'i' ==> 00250
+     *     
+     * 00250 (0, 143, A)
+     *     
+     * END: STATE MACHINE

@@ -1,0 +1,91 @@
+-------------------------
+Interval:     [E000]
+   .front --> E000.
+   .back  --> E000.
+
+Result:
+   Interval < 0x10000:     [E000]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [E000, E001]
+   .front --> E000.
+   .back  --> E001.
+
+Result:
+   Interval < 0x10000:     [E000, E001]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [E001]
+   .front --> E001.
+   .back  --> E001.
+
+Result:
+   Interval < 0x10000:     [E001]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [10FFFF]
+   .front --> DBFF.DFFF.
+   .back  --> DBFF.DFFF.
+
+Result:
+   Interval < 0x10000:     None
+   Intervals >= 0x10000:  
+      [10FFFF] 
+         .front --> DBFF.DFFF.
+         .back  --> DBFF.DFFF.
+-------------------------
+Interval:     [10FFFE, 10FFFF]
+   .front --> DBFF.DFFE.
+   .back  --> DBFF.DFFF.
+
+Result:
+   Interval < 0x10000:     None
+   Intervals >= 0x10000:  
+      [10FFFE, 10FFFF] 
+         .front --> DBFF.DFFE.
+         .back  --> DBFF.DFFF.
+-------------------------
+Interval:     [10FFFE]
+   .front --> DBFF.DFFE.
+   .back  --> DBFF.DFFE.
+
+Result:
+   Interval < 0x10000:     None
+   Intervals >= 0x10000:  
+      [10FFFE] 
+         .front --> DBFF.DFFE.
+         .back  --> DBFF.DFFE.
+-------------------------
+Interval:     [E000, 10FFFF]
+   .front --> E000.
+   .back  --> DBFF.DFFF.
+
+Result:
+   Interval < 0x10000:     [E000, FFFF]
+   Intervals >= 0x10000:  
+      [10000, 103FF] 
+         .front --> D800.DC00.
+         .back  --> D800.DFFF.
+      [10400, 10FBFF] 
+         .front --> D801.DC00.
+         .back  --> DBFE.DFFF.
+      [10FC00, 10FFFF] 
+         .front --> DBFF.DC00.
+         .back  --> DBFF.DFFF.
+-------------------------
+Interval:     [E001, 10FFFE]
+   .front --> E001.
+   .back  --> DBFF.DFFE.
+
+Result:
+   Interval < 0x10000:     [E001, FFFF]
+   Intervals >= 0x10000:  
+      [10000, 103FF] 
+         .front --> D800.DC00.
+         .back  --> D800.DFFF.
+      [10400, 10FBFF] 
+         .front --> D801.DC00.
+         .back  --> DBFE.DFFF.
+      [10FC00, 10FFFE] 
+         .front --> DBFF.DC00.
+         .back  --> DBFF.DFFE.
