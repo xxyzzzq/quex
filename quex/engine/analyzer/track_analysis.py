@@ -23,7 +23,7 @@ EXPLANATION:
 Each path is related to a list of 'AcceptCondition' objects. An
 AcceptCondition consists of the following main members:
 
-    .acceptance_id              -- Pattern that can be accepted.
+    .acceptance_id           -- Pattern that can be accepted.
     
     .pre_context_id          -- PreContext required for acceptance.
     
@@ -52,14 +52,14 @@ The position storing state is involved when
        state index.
 
 The eventualities of a path is represented by a list of AcceptCondition 
-objects. It can be imagined as a list. The sorting order tells the precedence 
+objects. It behaves like a list where sorting order tells the precedence 
 of winners. The first pattern where the pre_context is fulfilled wins.
 
      AcceptSequence: [ 
-          #                   acceptance_id   pre_context_id   ...
-          AcceptCondition(34,          2,               ...)
-          AcceptCondition(12,          1,               ...)
-          AcceptCondition(67,          None,            ...)
+          #               length       acceptance_id   pre_context_id   ...
+          AcceptCondition(67,          2,               ...)
+          AcceptCondition(32,          1,               ...)
+          AcceptCondition(7,           None,            ...)
      ]
 
 Note, that length has preceedence over acceptance_id. For this reason, greater
@@ -76,9 +76,8 @@ is represented by
     map:  state index --> list(list(AcceptCondition)) 
 ________________________________________________________________________________
 
-Based on the information in the AcceptCondition objects requirements on 
-entry and drop_out behaviors of a state can be derived, as done by module 
-'core.py'.
+Based on this information on AcceptCondition-s requirements on entry and 
+drop_out behaviors of a state can be derived. This is done by module 'core.py'.
 ________________________________________________________________________________
 NOTE:
 
@@ -87,7 +86,7 @@ though a different path but with the same consequence as another path through
 that state, then the further investigation of that path is aborted. All 
 possible informations have been gathered, no need to investigate further.
 ________________________________________________________________________________
-(C) 2010-2013 Frank-Rene Schaefer
+(C) 2010-2014 Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
 ________________________________________________________________________________
 """
@@ -114,7 +113,7 @@ def do(SM, ToDB):
     ___________________________________________________________________________
     IMPORTANT:
 
-    There is NO GUARANTEE that the pats from acceptance to 'state_index' or
+    There is NO GUARANTEE that the paths from acceptance to 'state_index' or
     the paths from input position storage to 'state_index' are complete! The 
     calling algorithm must walk these paths on its own.
 
@@ -152,6 +151,8 @@ def do(SM, ToDB):
         def on_enter(self, Args):
             PreviousTrace = Args[0]
             StateIndex    = Args[1]
+            # print "#sp:", StateIndex
+            # print "#pt:", PreviousTrace
 
             # (*) Update the information about the 'trace of acceptances'
             State = self.sm.states[StateIndex]
@@ -464,8 +465,8 @@ class _Trace(object):
         #            eq ^= hash(x.transition_n_since_positioning)
         data = []
         for x in self.__acceptance_trace:
-            if isinstance(x.acceptance_id, long):                     data.append(x.acceptance_id)
-            elif x.acceptance_id == E_IncidenceIDs.MATCH_FAILURE:          data.append(0x5A5A5A5A)
+            if isinstance(x.acceptance_id, long):                  data.append(x.acceptance_id)
+            elif x.acceptance_id == E_IncidenceIDs.MATCH_FAILURE:  data.append(0x5A5A5A5A)
             else:                                                  data.append(0xA5A5A5A5)
             if isinstance(x.accepting_state_index, long):          data.append(x.accepting_state_index)
             else:                                                  data.append(0x5B5B5B5B)
@@ -500,7 +501,7 @@ class _Trace(object):
         else:
             self.__equivalence_hint = None
         self.__acceptance_trace_len = len(self.__acceptance_trace)
-        self.__storage_db_len       = len(self.__acceptance_trace)
+        self.__storage_db_len       = len(self.__storage_db)
 
     def is_equivalent(self, Other, EndOfRoadF=False):
         """This function determines whether the path trace described in Other is
@@ -508,14 +509,14 @@ class _Trace(object):
         """
         if self.__equivalence_hash != Other.__equivalence_hash:           return False
 
-        if self.__equivalence_hint is not None:
-            if self.__equivalence_hint == Other.__equivalence_hint:       return True
+        #if self.__equivalence_hint is not None:
+        #    if self.__equivalence_hint == Other.__equivalence_hint:       return True
 
         if   self.__acceptance_trace_len != Other.__acceptance_trace_len: return False
         elif self.__storage_db_len       != Other.__storage_db_len:       return False
 
         for x, y in izip(self.__acceptance_trace, Other.__acceptance_trace):
-            if   x.acceptance_id                     != y.acceptance_id:                     return False
+            if   x.acceptance_id                  != y.acceptance_id:                  return False
             elif x.accepting_state_index          != y.accepting_state_index:          return False
             elif x.positioning_state_index        != y.positioning_state_index:        return False
             elif x.transition_n_since_positioning != y.transition_n_since_positioning: return False

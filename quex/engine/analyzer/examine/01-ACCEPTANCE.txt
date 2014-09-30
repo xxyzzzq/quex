@@ -1,0 +1,125 @@
+This file describes the action reduction/action post poning for acceptance and
+input position restauration. It follows the scheme described in '00-README.txt'.
+
+    (1) The actions required for 'history(Actions, state)'.
+
+    (2) 'history(Actions, state)'.
+
+    (3) 'f(c_i, state)'.
+
+    (4) Condition for 'f(c_i, state) == history(Actions, state)'.
+
+-------------------------------------------------------------------------------
+
+(1) Actions 
+
+There are three actions involved: 'Accept', 'AcceptWithPostContext' and 
+'StoreInputPosition' as explained below.
+
+  * Accept(AcceptanceID, PreContextId):
+        if PreContextId:
+            last_acceptance      = AcceptanceID
+            position_register[0] = input_position
+
+    The incoming characters constitute a lexeme that matches a pattern 
+    identified by 'AcceptanceID'. Optionally, the match may depend on a pre-
+    context indicated by 'PreContextId'. The state machine may continue to
+    eat characters to match a longer pattern. In case, it later falls back
+    to this match the input position must be restored. This can be done
+    using the value from 'position_register[0]'.
+
+    + writes: 'last_acceptance'
+    + writes: 'position_register[0]'
+
+  * AcceptWithPostContext(AcceptanceID, PreContextId):
+        if PreContextId:
+            last_acceptance = AcceptanceID   
+         
+    Same as 'Accept', only that the input position is not stored. In fact, the
+    input position must have been stored at the end of the core pattern into
+    a position_register given by the acceptance id.
+
+    + writes: 'last_acceptance'
+
+Multiple 'Accept' and 'AcceptWithPostContext' actions can be concatinated.
+The sorting order is given by the acceptance id (higher priority = lower
+acceptance id). The first 'Accept' or 'AcceptWithPostContext' wins. After
+an unconditional accept action, no further may follow--of course.
+
+  * StoreInputPosition(AcceptanceID, PreContextId):
+
+    if PreContextId:
+        position_register[by(AcceptanceID)] = input position  
+
+    + writes: 'position_register[by(AcceptanceID)]'
+
+Store input position actions are not exclusive. Any storage command for which 
+the condition holds may store its value in its position register.
+
+-------------------------------------------------------------------------------
+
+(2) 'history(Actions, state)'.
+
+The 'last_acceptance' tells what pattern has won. That is, the last Accept
+or AcceptWithPostContext that wrote to that variable is the longest and has
+therefore the highest priority (philosophy of longest match). This match
+may have happened some time before, so that the input position must be reset
+to the place where it matched. In case of AcceptWithPostContext, the input
+position must be set to the begin of the core pattern (that is before the
+post context which matched). Thus the history function is
+
+    i              = by(last_acceptance)     
+    input_position = position_register[i]    
+    goto terminal(last_acceptance)           
+
++ reads: last_acceptance
++ reads: position_register[i]
+
+
+-------------------------------------------------------------------------------
+
+(3) 'f(c_i, state)'.
+
+(3.1) Acceptance AND input position can be determined from state machine 
+      structure. Then, the sequence of Accept and AcceptWithPostContext 
+      commands can be implemented in the drop-out. 
+
+      if   PreContextId_p: input_position = Pos_p; goto Terminal_p;
+      elif PreContextId_q: input_position = Pos_q; goto Terminal_q;
+      elif PreContextId_r: input_position = Pos_r; goto Terminal_r;
+      elif PreContextId_s: input_position = Pos_s; goto Terminal_s;
+
+      => c_i = { Pos_*, Termina_* }
+
+      The constants 'c_i' for a state is the set of 'Pos_*' and 'Terminal_*'
+      variables in the sequence. The 'Terminal_*' constant can be derived 
+      from the acceptance that belongs to 'PreContextId_*'.
+
+(3.2) ONLY acceptance is determined, positions are not. 
+
+      if   PreContextId_p: input_position = position_register[Rp]; goto Terminal_p;
+      elif PreContextId_q: input_position = position_register[Rq]; goto Terminal_q;
+      elif PreContextId_r: input_position = position_register[Rr]; goto Terminal_r;
+      elif PreContextId_s: input_position = position_register[Rs]; goto Terminal_s;
+
+      => c_i = { R*, Terminal_* }
+
+      Same as above, the values 'R*' and 'Terminal_*' are derived by the acceptance 
+      that belongs to 'PreContextId_*'.
+
+(3.3) ONLY input position is determined, acceptance is not.
+
+      input_position = Pos
+      if   PreContextId_p: goto Terminal_p;
+      elif PreContextId_q: goto Terminal_q;
+      elif PreContextId_r: goto Terminal_r;
+      elif PreContextId_s: goto Terminal_s;
+
+      => c_i = { Pos, Termina_* }
+
+     
+
+
+
+
+

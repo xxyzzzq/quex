@@ -176,12 +176,12 @@ class Analyzer:
             #     The PathTrace objects tell what to do at drop_out. From this, the
             #     required entry actions of states can be derived.
             acceptance_storage_db, \
-            position_storage_db    = self.configure_drop_outs()
+            position_storage_db    = self.configure_all_drop_outs()
 
             # (*) Entry Behavior
             #     Implement the required entry actions.
-            self.configure_entries(acceptance_storage_db, position_storage_db,
-                                   path_element_db)
+            self.configure_all_entries(acceptance_storage_db, position_storage_db,
+                                       path_element_db)
 
             if EngineType.requires_position_register_map():
                 # (*) Position Register Map (Used in 'optimizer.py')
@@ -439,7 +439,7 @@ class Analyzer:
 
         return drop_out.get_CommandList(accepter, terminal_router)
 
-    def configure_drop_outs(self):
+    def configure_all_drop_outs(self):
         acceptance_storage_db = defaultdict(list)
         position_storage_db   = defaultdict(list)
         for state_index, trace_list in self.__trace_db.iteritems():
@@ -451,7 +451,7 @@ class Analyzer:
                                                   state_index, cl)
         return acceptance_storage_db, position_storage_db
 
-    def configure_entries(self, acceptance_storage_db, position_storage_db, PathElementDb):
+    def configure_all_entries(self, acceptance_storage_db, position_storage_db, PathElementDb):
         """DropOut objects may rely on acceptances and input positions being 
            stored. This storage happens at state entries.
            

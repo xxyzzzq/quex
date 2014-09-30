@@ -10,11 +10,11 @@ from itertools       import islice, izip
 # AcceptSequences is a list of AcceptCondition objects.
 # 
 AcceptCondition = namedtuple("AcceptCondition", 
-                             ["acceptance_id", 
+                             ("acceptance_id", 
                               "pre_context_id", 
                               "accepting_state_index", 
                               "positioning_state_index",
-                              "transition_n_since_positioning"])
+                              "transition_n_since_positioning"))
 
 class AcceptSequence:
     def __init__(self, AcceptanceTrace):
@@ -32,7 +32,7 @@ class AcceptSequence:
             return False
         for x, y in izip(self.__sequence, Other.__sequence):
             if   x.pre_context_id != y.pre_context_id: return False
-            elif x.acceptance_id     != y.acceptance_id:     return False
+            elif x.acceptance_id  != y.acceptance_id:  return False
         return True
 
     def __iter__(self):
@@ -284,60 +284,3 @@ class PathsToState:
     def __iter__(self):
         return self.__list.__iter__()
 
-def delegate_acceptance_storage(StateIndex, TraceDB, ToDB, DoneSet):
-    """A state can potentially carry an acceptance storage command
-    further, if all none of its target states inhibits an acceptance
-    precedence clash. An acceptance precedence class prohibits that 
-    a state can store acceptance without a possible interference.
-    """
-    target_index_iterable = (x for x in ToDB[StateIndex] if x != StateIndex and x not in DoneSet)
-
-    for target_index in target_index_iterable:
-        if TraceDB[target_index].acceptance_precedence_clash():
-            return False
-
-    # All target states can store acceptance without 'precedence clash'
-    return True
-
-#def get_delegates(StateIndex):
-#    """RETURN: 
-#       [0] List of target states that can be delegated to store the
-#           acceptance storage.
-#
-#       [1] List of target states that MUST store the acceptance upon
-#           the entry from 'StateIndex'.
-#
-#       None, None means that the state cannot delegate and not store 
-#       anything in a subsequent state.
-#   """
-#   return 
-#   #target_index_list = list(x for x in ToDB[StateIndex] if x != StateIndex and x not in DoneSet)
-#
-#   #if len(target_index_list):
-#   #    return [], []
-#
-#   #for target_index in target_index_list:
-#   #    if delegate_acceptance_storage(target_index, TraceDB, ToDB, DoneSet):
-#   #        delegate_list.append(target_index)
-#   #    else:
-#   #        storage_list.append((StateIndex, target_index))
-#   #return delegate_list, storage_list
-#
-#def post_pone_acceptance_storage(AcceptanceStateIndexList, PatternId):
-#
-#    work_set = set(AcceptanceStateIndexList)
-#    done_set = set()
-#    while len(work_set) != 0:
-#        state_index = work_set.pop()
-#        delegate_list, storage_list = get_delegates(state_index)
-#        done_set.add(state_index)
-#        work_set.update(delegate_list)
-#
-#        # Perform the storage
-#        for from_index, to_index in storage_list:
-#            self.state_db[to_index].entry.doors.accepter.add(, compare_func)
-#            
-#    
-#
-#
-#
