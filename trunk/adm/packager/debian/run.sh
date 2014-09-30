@@ -30,7 +30,7 @@ fi
 #Create the variables after checking the inputs
 base_dir=/tmp/quex-$VERSION
 template_dir=$QUEX_PATH/adm/packager/debian/scripts/
-package_dir=/tmp/"quex_$VERSION-$PACKAGE_VERSION""_i386"
+package_dir=/tmp/"quex_$VERSION-$PACKAGE_VERSION""_all"
 
 # Check assumption that sources are copied to /tmp/quex-$VERSION
 if test ! -e $base_dir; then
@@ -62,7 +62,7 @@ cp $base_dir/doc/manpage/quex.1 $package_dir/DEBIAN/manpage.1
 
 #Copy sources to the new destination on package
 mkdir -p $package_dir/opt/quex/quex-$VERSION
-cp -a $base_dir/* $package_dir/opt/quex/quex-$VERSION
+sudo cp -a $base_dir/* $package_dir/opt/quex/quex-$VERSION
 
 #Set file owners
 #Need to be root for this by now, later ill use fakeroot
@@ -74,5 +74,5 @@ sudo dpkg-deb -b $package_dir
 # Make package accessible 
 sudo chmod 777 /tmp/*.deb 
 
-sudo mv /tmp/quex_$VERSION_$PACKAGE_VERSION.deb /tmp/quex-$VERSION/$VERSION_$PACKAGE_VERSION_all.deb 
+sudo mv $package_dir.deb /tmp/quex-packages/
 exit 0
