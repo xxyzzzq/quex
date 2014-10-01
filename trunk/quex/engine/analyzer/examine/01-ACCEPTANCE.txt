@@ -9,6 +9,10 @@ input position restauration. It follows the scheme described in '00-README.txt'.
 
     (4) Condition for 'f(c_i, state) == history(Actions, state)'.
 
+    (5) Procedure description
+
+(C) Frank-Rene Schaefer
+
 -------------------------------------------------------------------------------
 
 (1) Actions 
@@ -80,9 +84,35 @@ post context which matched). Thus the history function is
 
 (3) 'f(c_i, state)'.
 
-(3.1) Acceptance AND input position can be determined from state machine 
-      structure. Then, the sequence of Accept and AcceptWithPostContext 
-      commands can be implemented in the drop-out. 
+Accept and AcceptWithPostContext actions on a path can be combined into a
+sequence. This is only possible, if there is no 'transition mouth', i.e. a
+state which is entered from more than one state. Later Accept actions 
+have higher precedence, because the lexeme they match is longer. An un-
+conditional Accept, i.e. without pre-context, annulates all previous Accept
+actions. This is shown in figure 2.
+
+             if pre0:                if pre1:              la=pattern2 
+               la=pattern0              la=pattern1
+
+    ... ---->( 1 )---->    ...  ---->( i )---->  ...  ---->( k )---->
+
+                                 |  |  |  |  |
+                              is transformed into
+                                 |  |  |  |  |
+                                \./\./\./\./\./
+
+    ... ---->( 1 )---->    ...  ---->( i )---->  ...  ---->( k )---->
+             if pre0:                if pre1:              la=pattern2 
+               la=pattern0              la=pattern1
+                                     elif pre0:
+                                        la=pattern0
+
+      Figure 2: Sequence derived from occurrences of Accept actions.
+
+
+  (3.1) Acceptance AND input position can be determined from state machine 
+        structure. Then, the sequence of Accept and AcceptWithPostContext 
+        commands can be implemented in the drop-out. 
 
       if   PreContextId_p: input_position = Pos_p; goto Terminal_p;
       elif PreContextId_q: input_position = Pos_q; goto Terminal_q;
@@ -95,7 +125,7 @@ post context which matched). Thus the history function is
       variables in the sequence. The 'Terminal_*' constant can be derived 
       from the acceptance that belongs to 'PreContextId_*'.
 
-(3.2) ONLY acceptance is determined, positions are not. 
+  (3.2) ONLY acceptance is determined, positions are not. 
 
       if   PreContextId_p: input_position = position_register[Rp]; goto Terminal_p;
       elif PreContextId_q: input_position = position_register[Rq]; goto Terminal_q;
@@ -107,7 +137,7 @@ post context which matched). Thus the history function is
       Same as above, the values 'R*' and 'Terminal_*' are derived by the acceptance 
       that belongs to 'PreContextId_*'.
 
-(3.3) ONLY input position is determined, acceptance is not.
+  (3.3) ONLY input position is determined, acceptance is not.
 
       input_position = Pos
       if   PreContextId_p: goto Terminal_p;
@@ -116,6 +146,93 @@ post context which matched). Thus the history function is
       elif PreContextId_s: goto Terminal_s;
 
       => c_i = { Pos, Termina_* }
+
+-------------------------------------------------------------------------------
+
+(4) Condition for 'f(c_i, state) == history(Actions, state)'.
+
+(4.1) Acceptance
+
+Acceptance in a state 'i' can be determined from the state machine structure,
+if the sequence of acceptance checks can be derived from the path to state 'i'.
+This is NOT the case, if two acceptance schemes hit a 'transition mouth'. This
+is shown in figure 1.
+
+              
+    if   pre0: la = 0;      
+    ...                 ----------.
+    elif preN: la = N;             \.---------.
+                                    | state i |----- Sequence?
+                                    '---------'
+    if   preM: la = M;             /
+    ...                 ----------'
+    elif preP: la = P;     
+
+       Figure 1: Two acceptance sequences as actions enter a 'mouth' 
+                 state.
+
+The sequence at exit of 'state i' is not determined, because, a match that
+appeared on the 'upper' path may not happen on the lower path. Thus, it is not
+legal, to combine both sequences. Either the sequences are the same for ALL
+transitions into the 'mouth' state, or the states behind state i cannot
+determine the acceptance sequence from the state machine structure.
+
+(4.2) Position Store/Restore
+
+Input positions can be restored without position registers, if and only if the
+state where the 'StoreInputPosition', or 'Accept' action happens has a finite
+number of state transitions to the state 'i'. This is not the case, if one of
+the states on the path is involved into a loop.  In any other case, this is
+possible.
+
+-------------------------------------------------------------------------------
+
+(5) Procedure Description
+
+There are two basic types of states which are mutually exclusive:
+
+   (i) 'Linear states' that have only one entry from another state.
+
+            --->( 0 )--->( 1 )--->( 2 )--->( 3 )--->( 4 )--->
+
+        Linear states can accumulate Accept actions as described in section (3).
+        The following states do not require 'last_acceptance' to be stored, 
+        because it is known from the sequence.
+
+   (ii) 'Mouth states' which are entered from more than one state.
+
+          ... ( 0 )---->---.
+          ... ( 1 )--->--. |
+          ... ( 2 )--->-( 4 )--->
+          ... ( 3 )--->--'
+
+         The configuration of acceptance cannot be expressed after the 'Mouth' 
+         state. Any state following must rely on 'last_acceptance'.
+
+Another distinction of states must be made to determine whether the number
+of state transitions between two states is pre-determined or depends on the
+actual lexmeme:
+
+    (i)  'Loop states', i.e. states that are part of a loop.
+
+    (ii) 'Non-Loop states', i.e. states that do not appear as part of a loop.
+
+The length of a path which contains a loop state cannot be pre-determined.
+
+
+STEP 1.1: Find the set of 'linear' states.
+          Any state not in 'linear' is a 'mouth' state.
+
+STEP 1.2: Find the set of 'loop' states.
+          Any state not in 'loop' is a 'non-loop' state.
+
+
+
+
+
+
+
+
 
      
 

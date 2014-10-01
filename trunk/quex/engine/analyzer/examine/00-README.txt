@@ -65,8 +65,11 @@ to start the following things must be described precisely:
 
     (4) Condition for 'f(c_i, state) == history(Actions, state)'.
 
+    (5) Procedure description
+
 All .txt files in this directory that describe action reductions are following
 this scheme.
+
 -------------------------------------------------------------------------------
 
 
