@@ -11,6 +11,8 @@ input position restauration. It follows the scheme described in '00-README.txt'.
 
     (5) Procedure description
 
+    (6) Doubt discussion
+
 (C) Frank-Rene Schaefer
 
 -------------------------------------------------------------------------------
@@ -174,7 +176,7 @@ is shown in figure 1.
 The sequence at exit of 'state i' is not determined, because, a match that
 appeared on the 'upper' path may not happen on the lower path. Thus, it is not
 legal, to combine both sequences. Either the sequences are the same for ALL
-transitions into the 'mouth' state, or the states behind state i cannot
+transitions into the 'mouth' state, or the states behind state 'i' cannot
 determine the acceptance sequence from the state machine structure.
 
 (4.2) Position Store/Restore
@@ -201,40 +203,237 @@ There are two basic types of states which are mutually exclusive:
 
    (ii) 'Mouth states' which are entered from more than one state.
 
-          ... ( 0 )---->---.
-          ... ( 1 )--->--. |
-          ... ( 2 )--->-( 4 )--->
-          ... ( 3 )--->--'
+                        ... ( 0 )---->---.
+                        ... ( 1 )--->--. |
+                        ... ( 2 )--->-( 4 )--->
+                        ... ( 3 )--->--'
 
-         The configuration of acceptance cannot be expressed after the 'Mouth' 
+         The configuration of acceptance cannot be determined after the 'mouth'
          state. Any state following must rely on 'last_acceptance'.
 
-Another distinction of states must be made to determine whether the number
-of state transitions between two states is pre-determined or depends on the
-actual lexmeme:
+STEP 1: Find the set of 'linear' states.
+        Any state not in 'linear' is a 'mouth' state.
 
-    (i)  'Loop states', i.e. states that are part of a loop.
+A string of linear states where the acceptance sequence can be accumulated
+starts with an absolute acceptance (without pre-context), or a mouth state
+where all acceptance sequences are equal. This is so, since an absolute
+acceptance dominates any other acceptance which came before. This again is so,
+since a later acceptance happens only with a longer lexeme, which
+has a higher precedence.
 
-    (ii) 'Non-Loop states', i.e. states that do not appear as part of a loop.
+STEP 2.1: Determine AAS, the 'set of absolute acceptance states'. The init 
+          state is one of them. It accepts 'Failure' without any pre-context.
 
-The length of a path which contains a loop state cannot be pre-determined.
+STEP 2.2: Determine ELS, the 'set of ends of linear strings'. Those are:
+
+    (i)   terminal states where there are no further transitions.
+
+    (ii)  absolute acceptance states. 
+    
+          Any absolute acceptance state is the beginning of its own linear
+          string of state transitions. The init state is an absolute acceptance
+          state. It accepts 'FAIL'.
+
+    (iii) mouth states. 
+    
+          In those states acceptance sequences may interfere and what comes
+          beyond must rely on what has been stored before.
+         
+
+STEP 3: Walk from any state in AAS along 'linear' states until a ELS-state
+        is reached. 
+
+        Along the walk accumulate the acceptance sequence, where later
+        sequences are pasted on top, i.e. with a higher precedence (because
+        if 'longer match'). When the walk stops at a mouth state, the 
+        acceptance sequence can be stored along with the transition 
+        (from, to, acceptance_sequence). This way it can be known from 
+        what direction what sequence is applied.
+
+The walk along linear states can never contain a loop. Loops require either a
+mouth state, or the init state. In the mouth state the entry from inside the
+loop meets with the transition from outside the loop.  The init state has
+officially no entrance from 'start'. So the above consideration may fail.
+However, the init state is part of ELS and thus a string of linear state
+transitions will not reach at it.
+
+Thus, the input position is ALWAYS derivable as p = p0 + C_i, where C_i is a
+constant depending on the state, and p0 the position that would have been
+stored. Thus, the stored position is 'p0 = p - C_i'.
+
+Now, the mouth states can be considered. There are two types of mouth states:
+
+  (i)  The acceptance sequence is uniform. 
+  
+       The acceptance sequence can be propagated to all followers until the
+       next ELS-end.
+
+  (ii) The acceptance sequence is the same with respect to acceptance, but 
+       differs in position deltas.
+
+       The acceptance sequence must be adapted, so that position of differing
+       position deltas rely on store and restore. The adapted acceptance 
+       sequence may be propagated until next ELS-end.
+
+  (iii) The acceptance sequence differs. Thus the acceptance behavior IS NOT 
+        deterministic. It is a result of the path that has been taken to the 
+        mouth state.
+
+      The mouth state and all its followers until an ELS-end must rely on the
+      stored acceptance and positions.
+
+STEP 4: 
+
+      Walk from the mouth states of (i) and (ii) until an ELS-end is reached.
+      Propagate along the linear states the uniform accept sequence.
+
+      For mouth states of type three, propagate 'void', i.e. the restoring 
+      of last acceptance and positions from position registers.
+
+ITERATE:
+
+      Repeat STEP 3 and 4 until the set of unresolved mouth states is no
+      further reduced.
+
+It may occur, that there are still mouth states remaining. Those are dead-lock
+states. An example is shown in Figure 4.
+
+                           .------------>( 2 )
+                     A     |             /   \
+                ... ---->( 1 )          (     )
+                           |             \   /
+                           '------------>( 3 )
+         
+        Figure 4: A dead-lock of mouth states 2 and 3.
+
+The human can judge easily, that for both states only pattern A can occur. 
+This, however, must be formally described.
+
+    DEFINITION: Dead-lock state.
+
+    A dead-lock state is a mouth state with an unresolved output accept
+    sequence. In particular:
+
+      -- it has at least one unresolved entry accept sequence.
+
+      -- all of the other entries are uniform (if there are other entries).
+
+      -- it depends on other dead-lock states.
+
+A group of dead-lock states are states which are mutually dependent. They all
+have unresolved entries which depend on outputs of other dead lock states. About
+such a group, it can be said that:
+
+    (i) If all entries of this group have the same accept sequence, then 
+        they can only propagate this accept sequence between each other.
+        Thus, all of their outputs are determined to have this accept 
+        sequence. Figure 4 showed such an example.
+
+    (ii) If one entry of a state in that group has a different accept 
+        sequence, it will interfere with the other. Then, all mouth states
+        have their output to be determined as 'void'.
+
+                                           .---->----.      B
+                         .------------>( 2 )        ( 4 )<------
+                   A     |              / \'----<----'
+              ... ---->( 1 )           (   )
+                         |              \ /
+                         '------------>( 3 )
+         
+            Figure 5: Dead lock states with differing accept sequence.
+
+        In figure 5, for example, the 'B' may come through state 4 and
+        and interfere with the 'A' in state 2. Thus, the output from state 2
+        is void. Since state 2 has inputs into state 3 and 4, the outputs 
+        of 3 and 4 will also be void.
+
+        This effect does not change when linear states in between are 
+        involved.
+
+Through the determination of dead-lock states other mouth states may become
+determined. Those states may also be dead-lock states.
+
+ITERATE:
+
+   Go back to step three until no more open mouth state exists. 
+
+Now, all states are determined.
+
+-------------------------------------------------------------------------------
+
+(6) Doubt discussion
+
+DOUBT 1: Are all possible influences of 'history' considered?
+
+(i) In first step the strings of linear states are considered. Starting from
+    an absolute acceptance state, any previous history is nullified. When they
+    reach a mouth state, they stop and store the acceptance sequence.
+
+At this point the AAS and the strings of linear states are handled. What remains
+are the mouth states and their followers.
+
+(ii) A mouth state does not propagate an acceptance sequence until all entries
+     are determined. 
 
 
-STEP 1.1: Find the set of 'linear' states.
-          Any state not in 'linear' is a 'mouth' state.
+DOUBT 2: What about loops?
 
-STEP 1.2: Find the set of 'loop' states.
-          Any state not in 'loop' is a 'non-loop' state.
-
-
-
-
+The problem of loop states is handled automatically. If an acceptance sequence
+is propagated through a loop-mouth state, then in that mouth state the position
+is compared. If it refers to the same storage state from inside the loop as
+from outside the loop, then the positioning from inside the loop must be
+greater (more state transitions).
 
 
+                                    R=p-5
+                                 .-----------<-----------------------.
+                                 |                                   |
+           R=p           R=p-1   |   R=p-2        R=p-3      R=p-4   |
+        ... --( 0 )----------->( 1 )------>( 2 )------>( 3 )------>( 4 )---> ...
+                                      
+                 Figure 3: Position handling in loops.
+
+Figure 3 shows an example. 
+
+Coming from state '0' the register that stored 'p' can be set at entry into
+state '1' to 'p-1', that is the position before.  In state '4', it can be set
+to 'p-4', without relying on storage. However, at the mouth state '1' the entry
+from state '4' meets with the entry from state '0'.  Both have a different
+distances to the original storage position.  Thus, storage will rely on stored
+values. The 'R=p' cannot be omitted.
 
 
+DOUBT 3: Precedence change due position to store and restore.
 
-     
+For mouth states, where the positioning is different dependent on entries
+from different states, the positioning must rely on stored position from
+position registers. Thus two acceptance sequences
+
+          Entry A:                             Entry B:
+
+          if   pr0: pos=p-3; la=P0;            if   pr0: pos=p-1; la=P0;
+          elif pr1: pos=p-4; la=P1;            elif pr1: pos=p-2; la=P1;
+
+become
+                             Entry Both:
+                   
+                             if   pr0: pos=r[i0]; la=P0;
+                             elif pr1: pos=r[i1]; la=P1;
+
+The doubt here is that longer patterns should have precedence. However, if
+positions are restored from registers, then how can the precedence be
+maintained? The key to the answer lies in one central statement:
+
+
+   If a mouth state is entered uniformly with an acceptance sequence, 
+   then this acceptance sequence is fix, independent through which path
+   the state has been entered. The positions as they are stored cannot
+   escape that.
+
+Note, that if a mouth state propagates a void accept sequence, this void accept
+sequence will appear as such in any further mouth state. Any mouth state that
+has one entry being void, can only propagate void. 
+
 
 
 
