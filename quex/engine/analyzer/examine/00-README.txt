@@ -136,6 +136,21 @@ STATEMENT: Run-time dependence.
     Mouth states may depend on run-time. The path by which they are entered
     determines what actions have been applied. 
 
+Algorithms usually walk along sequences of linear states. The termination
+criteria for the walk along linear states may be defined as follows.
+
+DEFINITION: Termination criteria for walk along sequence of linear states.
+
+    A recursive walk along sequences of linear states does not enter the
+    state ahead, if 
+
+       (i)   there is no state. The current state is a terminal.
+       (ii)  the state ahead is a mouth state.
+       (iii) a specific condition on transition actions is met.
+
+The specific condition on transition actions depends on the procedure to be
+applied.
+
 -------------------------------------------------------------------------------
 
 
