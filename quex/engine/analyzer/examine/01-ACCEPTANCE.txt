@@ -150,6 +150,7 @@ where 'delta_y' is the number of state transitions from X to Y. Terminal_y is
 the terminal that belongs to the pattern that the Accept action accepted. In
 general, a state inhibits an acceptance scheme. 
 
+
 (2.1) Linear states: Accumulation of actions.
 
 Acceptance schemes (definition see in section 1) may accumulate actions in a
@@ -215,6 +216,7 @@ The stacking of acceptance schemes in explained in figure 2.
 
       Figure 1: Acceptance schemes. a) original acceptance schemes in every
                 state. b) acceptance schemes which are post-poned.
+
 
 (2.2) Mouth states: Intereference of actions.
 
@@ -303,8 +305,7 @@ directly implemented fixed coded resets of input positions and acceptances.
 (3.1) The walk along sequences of linear states.
 
 Let the specific walk-end condition (00-README.txt; Definition 'Termination 
-criteria for walk along sequence of linear states') be that the state ahead
-is a state of unconditional acceptance.
+criteria for walk along sequence of linear states') be as follows.
 
 DEFINITION: Specific walk-end condition.
 
