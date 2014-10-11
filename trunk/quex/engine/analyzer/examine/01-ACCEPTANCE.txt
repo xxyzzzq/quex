@@ -1,7 +1,7 @@
-This file describes the action reduction/action post poning for acceptance and
+This file describes the action reduction/action post-poning for acceptance and
 input position restauration. It follows the scheme described in '00-README.txt'.
 
-    (1) The actions required for 'history(Actions, state)'.
+  (1) Specification of SOV, Actions, and 'consq(i, SOV)'.
 
     (2) 'history(Actions, state)'.
 
@@ -17,7 +17,18 @@ input position restauration. It follows the scheme described in '00-README.txt'.
 
 -------------------------------------------------------------------------------
 
-(1) Actions 
+(1) Specification of SOV, Actions, and 'consq(i, SOV)'.
+
+(1.1) Setting of Variables SOV.
+
+The variables of interest for acceptance are, i.e. the 'SOV' is:
+
+    -- last_acceptance, i.e. id of the last pattern that matched.
+
+    -- position_register[i] which contains the position to which the
+       input position needs to be reset.
+
+(1.2) Actions
 
 There are three actions involved: 'Accept', 'AcceptWithPostContext' and 
 'StoreInputPosition' as explained below.
@@ -47,7 +58,7 @@ There are three actions involved: 'Accept', 'AcceptWithPostContext' and
 
     + writes: 'last_acceptance'
 
-Multiple 'Accept' and 'AcceptWithPostContext' actions can be concatinated.
+Multiple 'Accept' and 'AcceptWithPostContext' actions can be concatenated.
 The sorting order is given by the acceptance id (higher priority = lower
 acceptance id). The first 'Accept' or 'AcceptWithPostContext' wins. After
 an unconditional accept action, no further may follow--of course.
@@ -94,9 +105,7 @@ is the winner. If pre-context 0 is not fulfilled, then one checks on
 pre-context 1. This continues until the 'None' pre-context is reached which
 always triggers a match of the related pattern; here pattern 'k'.
 
--------------------------------------------------------------------------------
-
-(2) 'history(Actions, state)'.
+(1.3) 'consq(i, SOV)'.
 
 The 'last_acceptance' tells what pattern has won. That is, the last Accept
 or AcceptWithPostContext that wrote to that variable is the longest and has
@@ -150,6 +159,7 @@ where 'delta_y' is the number of state transitions from X to Y. Terminal_y is
 the terminal that belongs to the pattern that the Accept action accepted. In
 general, a state inhibits an acceptance scheme. 
 
+-------------------------------------------------------------------------------
 
 (2.1) Linear states: Accumulation of actions.
 
