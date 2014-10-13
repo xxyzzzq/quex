@@ -47,9 +47,9 @@ common concepts. First let the term 'action' be defined as follows.
 
 DEFINITION: Action -- 'Act(i)'
 
-    An action, in this context, denotes an operation which is to be performed
-    and the state in which it is to be performed.  The operation is a write or
-    change operation to a variable from the SOV. 
+    An action, in this context, denotes an *operation* which is to be performed
+    and the *state* in which it is to be performed.  The operation is a write
+    or change operation to a variable from the SOV. 
 
 
 -------------------------------------------------------------------------------
@@ -118,16 +118,6 @@ DEFINITION: Accumulated Action 'Accu(i, k)'
    An 'Accu(i)' also maintains information about which of its elementary
    operations require what action in previous states.
 
-Accumulated actions can be developed along linear states, because for each
-linear state there is only one previous setting of SOV. The accumulated action
-provides a procedure to implement the effect of actions of previous states,
-without requiring the actions in the states itself.
-
-The development of accumulated actions along linear states is called the 'walk
-along linear states'. It can only start at states 'i' where Accu(i), AA(i), and
-PA(i) art determined. The particular procedure according to the SOV must
-provide the begin states for this walk.
-
 Accumulated actions are associated with *absolutely necessary* actions
 and *potentially necessary* actions. An absolutely necessary action in the
 example of figure 2 would be that the value of 'x' is stored 'x(a) upon entry
@@ -150,8 +140,27 @@ DEFINITION: Potentially necessary action -- PA(i, x)
 A special accumulated action is the 'void' action, where nothing can be
 pre-determined. For this action, there is solely a set of absolutely necessary
 actions. No Accu(i) can exist where PA(i, x) is not known for all of its
-elements. If the action that can be avoided was unknown, then there would 
-be no point in an Acc(i).
+elements. If PA(i, x), the action to be avoided, was unknown, then there would
+be no point in an Accu(i).
+
+Accumulated actions can be developed along linear states, because for each
+linear state there is only one previous setting of SOV. The accumulated action
+provides a procedure to implement the effect of actions of previous states,
+thus not requiring the actions in the states along the ransitions.
+
+Let the development of accumulated actions along linear states be called the
+'walk along linear states'. It can only start at states 'i' where Accu(i),
+AA(i), and PA(i) art determined. 
+
+DEFINITION: Begin States for Walker along Linear States
+
+    A walk along linear states can only begin at states where Accu(i), 
+    AA(i), and PA(i) is determined.
+
+From the existence of Accu(i) and AA(i) in a state 'i' it can be concluded that
+the SOV can be determined in state 'i' without the actions on the path to it. It
+represents a cut from where everything that could happen before is expressed
+distincly in Accu(i).
 
 The contrary to linear states are mouth states.
 
@@ -201,7 +210,7 @@ DEFINITION: Action Interference
     accumulated action is either void or specific.
 
     The output can be determined to be void, as soon as two entries are not of
-    'sufficient uniformity'. However, in that case, the AA(i) remain
+    'sufficient uniformity'. However, in that case, the AA(i) remains
     undetermined as long as not all entries are considered.
 
     A specific output can only be determined if all accumulated actions at
@@ -213,8 +222,9 @@ DEFINITION: Sufficient Uniformity for Action Interference
     uniformity if there is a procedure that can translate the set into a single
     accumulated action Accu(i). Further, the AA(i) and PA(i) must be determined.
 
-As soon as an accumulated action interference has been performed in a mouth
-state, it can also act as the begin for a walk along linear states.
+I follows, that as soon as entries in a mouth state share sufficient uniformity
+they can be considered as begin states of the walk along linear states. This
+algorithm is treated in the next section.
 
 -------------------------------------------------------------------------------
 
@@ -233,8 +243,9 @@ STATEMENT: Run-time dependence.
 
 A recursive walk along sequences of linear states is part of any analysis.
 Linear states can have transitions to more than one state. So, the walk along
-linear states is a recursive 'tree-walk'. The termination criteria for the walk
-along linear states may be defined as follows.
+linear states is a recursive 'tree-walk'. The tree cannot contain loops, since
+a loop requires a state with more than one entry. The termination criteria for
+the walk along linear states may be defined as follows.
 
 DEFINITION: Termination criteria for walk along sequence of linear states.
 
@@ -243,7 +254,8 @@ DEFINITION: Termination criteria for walk along sequence of linear states.
 
        (i)   there is no state. The current state is a terminal.
        (ii)  the state ahead is a mouth state.
-       (iii) the state ahead imposes a specific Accu(i), AA(i), and PA(i).
+       (iii) the state ahead complies to the conditions of a begin state
+             for the walk along linear states.
 
 The first condition comes natural. The second condition exists, because 
 actions cannot be accumulated beyond mouth states. The third condition 
@@ -262,6 +274,9 @@ accumulated actions can be defined.
    |         (*) perform action interference in mouth states where possible.
    '-- yes --(*) are there specific mouth states?
              (*) Stop.
+
+        Algorithm 1: Accu(i) derived in states by action accumulation 
+                     and interference.
 
 When this algorithm comes to an end, there might be still mouth states with 
 undetermined entries. This may be the case due to mutual dependence between
@@ -283,16 +298,16 @@ states. An example is shown in Figure 4.
         Figure 4: A dead-lock of mouth states 2 and 3.
 
 The human can judge easily, that for both states only pattern A can occur. 
-This, however, must be formally described.
+This derivation, however, must be formally described.
 
-    DEFINITION: Dead-lock state.
+DEFINITION: Dead-lock state.
 
-    A dead-lock state is a mouth state with an unresolved output accept
-    sequence. In particular:
+    A dead-lock state is a mouth state for which there is no Accu(i) and AA(i)
+    when algorithm 1 came to end end. 
 
-      -- it has at least one unresolved entry accept sequence.
+      -- it has at least one unresolved entry.
 
-      -- all of the other entries are uniform (if there are other entries).
+      -- all of the resolved entries sufficiently uniform.
 
       -- it depends on other dead-lock states.
 
@@ -306,8 +321,8 @@ such a group, it can be said that:
         sequence. Figure 4 showed such an example.
 
     (ii) If one entry of a state in that group has a different accept 
-        sequence, it will interfere with the other. Then, all mouth states
-        have their output to be determined as 'void'.
+         sequence, it will interfere with the other. Then, all mouth states
+         have their output to be determined as 'void'.
 
                                            .---->----.      B
                          .------------>( 2 )        ( 4 )<------
@@ -318,18 +333,19 @@ such a group, it can be said that:
          
             Figure 5: Dead lock states with differing accept sequence.
 
-        In figure 5, for example, the 'B' may come through state 4 and
-        and interfere with the 'A' in state 2. Thus, the output from state 2
-        is void. Since state 2 has inputs into state 3 and 4, the outputs 
-        of 3 and 4 will also be void.
+In figure 5, for example, the 'B' may come through state 4 and and interfere
+with the 'A' in state 2. Thus, the output from state 2 is void. Since state 2
+has inputs into state 3 and 4, the outputs of 3 and 4 will also be void.
 
-        This effect does not change when linear states in between are 
-        involved.
+This effect does not change when linear states in between are involved.
+
 -------------------------------------------------------------------------------
+
 At some point in time the transitions come to an end--either through a
 character or the end of the character stream. This is the end of an analyzer
 step.  From outside the state machine, only the SOV at the end of this analyzer
 step is of interest. 
+
 
 DEFINITION: consq(i, SOV)
 
