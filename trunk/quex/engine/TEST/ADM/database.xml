@@ -1,4 +1,4 @@
-<test-database execution-time-sec="32.17" date="Mon Oct 13 08:18:31 2014">
+<test-database execution-time-sec="32.17" date="Mon Oct 13 20:08:48 2014">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Super Set" time-sum-sec="0.07"> 
@@ -32,11 +32,17 @@
                <choice name="" result="OK" time_sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Union" time-sum-sec="0.04"> 
-            <application file-name="test-NumberSet-union.py" info-request-time="1393744558L" vanished="False"/>
+        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.18"> 
+            <application file-name="test-NumberSet-transform-x.py" info-request-time="1404559151L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="973910203"/>
+            <choice-list number="7" same_result="False">
+               <choice name="10" result="OK" time_sec="0.04" crc="1378888075"/>
+               <choice name="1000" result="OK" time_sec="0.50" crc="-646722016"/>
+               <choice name="2000" result="OK" time_sec="1.70" crc="1205044615"/>
+               <choice name="3000" result="OK" time_sec="3.65" crc="843858714"/>
+               <choice name="100" result="OK" time_sec="0.05" crc="-2005431878"/>
+               <choice name="250" result="OK" time_sec="0.08" crc="1443580919"/>
+               <choice name="500" result="OK" time_sec="0.16" crc="-352222672"/>
             </choice-list>
         </test>
         <test title="Massive Mutual Consistency Check" time-sum-sec="17.09"> 
@@ -75,17 +81,11 @@
                <choice name="some" result="OK" time_sec="0.05" crc="735638535"/>
             </choice-list>
         </test>
-        <test title="Transform Large NumberSets / Transformations" time-sum-sec="6.18"> 
-            <application file-name="test-NumberSet-transform-x.py" info-request-time="1404559151L" vanished="False"/>
+        <test title="Union" time-sum-sec="0.04"> 
+            <application file-name="test-NumberSet-union.py" info-request-time="1393744558L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <choice-list number="7" same_result="False">
-               <choice name="10" result="OK" time_sec="0.04" crc="1378888075"/>
-               <choice name="1000" result="OK" time_sec="0.50" crc="-646722016"/>
-               <choice name="2000" result="OK" time_sec="1.70" crc="1205044615"/>
-               <choice name="3000" result="OK" time_sec="3.65" crc="843858714"/>
-               <choice name="100" result="OK" time_sec="0.05" crc="-2005431878"/>
-               <choice name="250" result="OK" time_sec="0.08" crc="1443580919"/>
-               <choice name="500" result="OK" time_sec="0.16" crc="-352222672"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.04" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Algebraic Relations" time-sum-sec="4.43"> 

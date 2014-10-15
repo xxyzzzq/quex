@@ -1,12 +1,12 @@
-<test-database execution-time-sec="0.03" date="Mon Oct 13 08:18:21 2014">
+<test-database execution-time-sec="0.27" date="Mon Oct 13 20:08:47 2014">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.00"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.24"> 
             <application file-name="queue.exe" info-request-time="1411423305L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.009666"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.00" crc="-264108046"/>
+               <choice name="" result="OK" time_sec="0.24" crc="-264108046"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
@@ -14,7 +14,7 @@
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="1.979649"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.00" crc="178235029"/>
+               <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>
         </test>
     </group>
@@ -24,15 +24,15 @@
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="1.764964"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.00" crc="-1396014048"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="users_token-real.exe" info-request-time="1411423308L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="1.846915"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.00" crc="178235029"/>
+               <choice name="" result="OK" time_sec="0.01" crc="178235029"/>
             </choice-list>
         </test>
     </group>

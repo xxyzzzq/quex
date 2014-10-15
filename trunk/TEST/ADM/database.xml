@@ -1,4 +1,4 @@
-<test-database execution-time-sec="353.56" date="Mon Oct 13 08:11:41 2014">
+<test-database execution-time-sec="354.22" date="Mon Oct 13 20:08:42 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.82"> 
@@ -596,11 +596,11 @@
         </test>
     </group>
     <group name="rami-al-rafou">
-        <test title="3476232 0.62.1 Slow C code generation (unicode)" time-sum-sec="20.65"> 
+        <test title="3476232 0.62.1 Slow C code generation (unicode)" time-sum-sec="21.08"> 
             <application file-name="bug-3476232.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="20.65" crc="1764378916"/>
+               <choice name="" result="FAIL" time_sec="21.08" crc="1764378916"/>
             </choice-list>
         </test>
     </group>
@@ -708,7 +708,7 @@
                <choice name="" result="OK" time_sec="0.17" crc="-131589335"/>
             </choice-list>
         </test>
-        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="1.87"> 
+        <test title="2799244 0.39.5 attempts to call unimplemented token set() function" time-sum-sec="2.10"> 
             <application file-name="bug-2799244.sh" info-request-time="1405656749L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[a-z0-9.]+:[0-9]+:"/>
@@ -718,7 +718,7 @@
             <choice-list number="3" same_result="False">
                <choice name="error" result="OK" time_sec="0.31" crc="1205639024"/>
                <choice name="good-1" result="OK" time_sec="0.85" crc="1658979746"/>
-               <choice name="good-2" result="FAIL" time_sec="0.71" crc="None"/>
+               <choice name="good-2" result="OK" time_sec="0.94" crc="-536858215"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-dependent="True" time-sum-sec="0.01"> 

@@ -4,7 +4,7 @@
 %error-verbose
 %lex-param {quex::Calc_lexer  *qlex}
 %parse-param {quex::Calc_lexer  *qlex}
-%name-prefix="Calc_yy"
+%define api.prefix {Calc_yy}
 
 %{
 #include "Calc_lexer"
