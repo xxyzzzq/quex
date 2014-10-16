@@ -44,6 +44,23 @@ DEFINITION: SOV -- Set of Variables
     The term 'set of variables' SOV shall stand for the set of all
     variables which are relevant to the investigated behavior. 
 
+The variables of an SOV evolve along state transitions. Not all variables may
+be necessary in all states. For example, if the lexeme length is not required
+in a terminal, then no state on the path to the terminal is required to
+contribute to the development of that variable. Let the state specific 
+set of variables SOV(i) be defined.
+
+DEFINITION: SOV(i) -- The state specific required set of variables.
+
+    The set of variables SOV(i) in state 'i' contains all variables which are
+    required to satisfy the requirements of all successor states of state 'i'.
+
+As a direct consequence, the 'SOV(i)' for each state can be determined by
+*back-propagation* of needs. A state or terminal which requires a specific
+variable tags all of its predecessor states with this requirement. That is, if
+a state 'k' requires a variable 'x' than 'x is element of SOV(i)' for all 'i'
+in the set of states that lead to 'k'.
+
 A state machine changes variables of the SOV. These changes are consequences of
 operations that happen in states. Let an 'action' be defined as follows.
 
@@ -115,62 +132,41 @@ compensate for previous actions.
 
 DEFINITION: Accumulated Action 'Accu(i, k)'
 
-   An Accumulated Action 'Accu(i)' describes how the setting of SOV in the
-   state 'i' can be determined based on some initial setting of SOV in another
-   state and the sequence of actions which influences the SOV in state.
+   An Accumulated Action 'Accu(i)' describes the setting of the SOV after 
+   state 'i' has been entered. That is, it maps
 
-   An 'Accu(i)' also maintains information about which of its elementary
-   operations require what action in previous states.
+                     (S, R, C) ---> SOV(i)
 
-If upon entry into state 'i' operations according to Accu(i) are performed,
-than any history of transactions before is unimportant.
+   where 'S' is the current state including his variables. R is a setting of
+   registers that store temporary data, and C is a set of constants. 
 
-Accumulated actions are associated with *absolutely necessary* actions
-and *potentially necessary* actions. An absolutely necessary action in the
-example of figure 2 would be that the value of 'x' is stored 'x(a) upon entry
-in state 'a'. Only then, the subsequent operations reduce to 'x = x(a) +
-constant'. Potentially necessary actions, are the increments 'x = x + 1' in
-each state. They become necessary, if no other simplification is possible.
+The operations in Accu(i) in state 'i' replace any operation on SOV that
+happend on the path to state 'i'. An example of a register storage can be
+observed in figure 2, where 'x(a)' stored the value of 'x' in state 'a'.
+There, the constant '4' in the computation of 'x(e)' is an example for 
+an element of 'R'. If 'x' ware calculated by something like 
 
-DEFINITION: Absolutely necessary action -- AA(i)
+                        x(i) = (ip - p(a))
 
-    An absolutely necessary action AA(i) of an accumulated action in state 
-    i is the set of actions in a state machine which are absolutely required
-    for Accu(i) to work.
-
-DEFINITION: Potentially necessary action -- PA(i, x)
-
-    A potentially necessary action is an action which becomes necessary if a
-    simplification 'x' in an accumulated action 'Accu(i)' can no longer be
-    used.
-
-A special accumulated action is the 'void' action, where nothing can be
-pre-determined. For this action, there is solely a set of absolutely necessary
-actions. No Accu(i) can exist where PA(i, x) is not known for all of its
-elements. If PA(i, x), the action to be avoided, was unknown, then there would
-be no point in an Accu(i).
-
-Accumulated actions can be developed along linear states, because for each
-linear state there is only one predecessor SOV. The accumulated action provides
-represents the effect of actions of previous states, thus not requiring the
-actions in the states along the ransitions.
+where 'ip' is the input pointer, then 'ip' is an example of a state variable
+that entered the description of Accu(i).  Accumulated actions can be developed
+along linear states, because for each linear state there is only one
+predecessor SOV. 
 
 Let the development of accumulated actions along linear states be called the
-'walk along linear states'. It can only start at states 'i' where Accu(i),
-AA(i), and PA(i) are determined. Let the term spring denote a state that
-can act as the begin for a walk along a sequence of linear states.
+'walk along linear states'. It can only start at specific states, called
+'spring'. 
 
 DEFINITION: Spring
 
     A spring is a state where a walk along a sequence of linear states can
-    begin. For a state to act as a spring Accu(i), AA(i), and PA(i,x) must be
-    completely determined. 
+    begin. For a state to act as a spring Accu(i) must be completely
+    determined. 
 
-Whatever preceded the entry into a spring state, it is reflected in Accu(i),
-AA(i), and PA(i,x). Thus, it can be treated without knowing the exact history
-of state transitions. The same is true for all linear states that branch from
-it--until a so called mouth state is reached. Mouth states are the counterpart
-to linear states. 
+Whatever preceded the entry into a spring state, it is reflected in Accu(i).
+Thus, it can be treated without knowing the exact history of state transitions.
+The same is true for all linear states that branch from it--until a so called
+mouth state is reached. Mouth states are the counterpart to linear states. 
 
 DEFINITION: Mouth State
 
