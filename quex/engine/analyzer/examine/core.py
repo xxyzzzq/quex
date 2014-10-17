@@ -3,14 +3,123 @@ E_AccuType = Enum("UNDETERMINED", "VOID", "__DEBUG_E_AccuType")
 
 DeadLockGroup = namedtuple("DeadLockGroup", 
                            ("state_index_set", "dependency_set"))
+class Accu:
+    """Base class for accumulated actions. The general accumulated action 
+    depends on:
+
+        -- The current state.
+        -- Constants which can be pre-determined.
+        -- Register contents which are developed at run-time.
+
+    See 00-README.txt the according DEFINITION.
+    """
+    @staticmethod
+    def from_spring(SpringState):
+        """RETURNS: An accumulated action that determines the setting of the
+                    SOV(i) after the SpringState has been entered.
+        """
+        assert False
+
+    @staticmethod
+    def from_accumulation(Accu, LinearState):
+        """RETURNS: An accumulated action that expresses the concatenation of
+                    the given Accu, with the operation at entry of LinearState.
+
+        The resulting accumulated action determines the setting of SOV(i) after
+        the linear state has been entered.
+        """
+        assert False
+
+    @staticmethod
+    def from_interference(AccuIterable, MouthState):
+        """RETURNS: An accumulated action that expresses the interference of 
+                    accumulated actions at different entries into a MouthState.
+        """
+        assert False
+
+    @staticmethod
+    def is_spring(TheState):
+        """RETURNS: True  -- if TheState complies with the requirements of a 
+                             spring state.
+                    False -- else.
+
+        In a spring the Accu(i) must be determined. That is, as soon as this
+        state is entered any history becomes unimportant. The setting of the
+        SOV(i) can be determined from an Accu(i).
+        """
+        assert False
+
+    def get_drop_out_CommandList(self):
+        """With a given Accu(i) for a state 'i', the action upon state machine
+        exit can be determined.
+
+        RETURNS: A CommandList that corresponds self.
+        """
+        assert False
+    
+    def get_entry_CommandList(self, NextAccu):
+        """Consider the NextAccu with respect to self. Some contents may 
+        have to be stored in registers upon entry into this state. 
+
+        RETURNS: A CommandList that allows 'InterferedAccu' to operate after 
+                 the state.
+
+        This is particulary important at mouth states, where 'self' is an 
+        entry into the mouth state and 'NextAccu' is the accumulated action
+        after the state has been entered.
+        """
+        assert False
+    
+class ResultState:
+    __slots__ = ("on_entry_db", "on_drop_out")
+
+    @staticmethod
+    def from_LinearState(Accu, EntryTransitionID, EntryAccu):
+        if EntryAccu is None:
+            ecl = None
+        else:
+            ecl = EntryAccu.get_entry_CommandList(Accu)
+        self.on_entry_db[EntryTransitionID] = ecl
+        self.on_drop_out = Accu.get_drop_out_CommandList()
+
+    @staticmethod
+    def from_MouthState(AccuDb, Accu):
+        for transition_id, accu in AccuDb.iteritems():
+            ecl = accu.get_entry_CommandList(Accu)
+            self.on_entry_db[transition_id] = ecl
+        self.on_drop_out = Accu.get_drop_out_CommandList()
+
+
+class LinearState:
+    """.accu        = Accumulated action Accu(i) that determines SOV(i) after 
+                      state has been entered.
+
+    The '.accu' is determined from a spring state, or through accumulation of
+    linear states. The 'on_drop_out' handler can be determined as soon as 
+    '.accu' is determined.
+    """
+    __slots__ = ("accu", "on_drop_out")
+
+class MouthState:
+    """.accu        = Accumulated action Accu(i) that determines SOV(i) after 
+                      state has been entered.
+       .accu_db     = map: from 'TransitionID' to accumulated action at entry 
+                           into mouth state.
+
+    The '.accu_db' is filled each time a walk along a sequence of linear states
+    reaches a mouth state. It is complete, as soon as all entries into the state
+    are present in the keys of '.accu_db'. Then, an interference may derive the
+    '.accu' which determines the SOV(i) as soon as the state has been entered.
+    Only then, the '.on_drop_out' and '.on_entry_db' can be determined.
+    """
+    __slots__ = ("accu", "accu_db", "on_drop_out", "on_entry_db")
 
 class Strategy:
-    """Base class for analysis strategies.
-    """
-    def __init__(self, SM):
-        self.sm = SM
+    def __init__(self, SM, AccuType):
+        self.sm        = SM
+        self.accu_type = AccuType
 
-    def base_do(self):
+    def do(self):
         """Associate all states in the state machine with an Accu(i) and 
         determine what actions have to be implemented at what place.
         """
@@ -18,26 +127,26 @@ class Strategy:
         # Determine what states are entered only by one state. Those are the 
         # 'linear states'. States which are entered by more than one state are
         # 'mouth states'.
-        from_db, dummy   = self.sm.get_from_to_db()
-        state_index_set  = self.sm.states.itervalues()
-        init_state_index = self.sm.init_state_index
-        linear_list, mouth_list = Strategy.base_categorize(from_db, 
-                                                           init_state_index
-                                                           state_index_set)
+        from_db, dummy          = self.sm.get_from_to_db()
+        state_index_set         = self.sm.states.itervalues()
+        init_state_index        = self.sm.init_state_index
+        linear_list, mouth_list = self.categorize(from_db, 
+                                                       init_state_index
+                                                       state_index_set)
 
         # Determine the states from where a walk along a linear sequence of 
         # states makes sense.
-        springs = self.base_filter_springs(linear_list)
+        springs = self.filter_springs(linear_list)
 
         # Resolve as many as possible states in the state machine, i.e. 
         # associate the states with an accumulated action 'Accu(i)'.
-        dead_lock_list  = self.base_resolve(springs, mouth_list)
+        dead_lock_list  = self.resolve(springs, mouth_list)
 
         # Resolve the states which have been identified to be dead-locks.
-        self.base_resolve_dead_lock(dead_lock_list)
+        self.resolve_dead_lock(dead_lock_list)
 
     @staticmethod
-    def base_categorize(FromDb, InitStateIndex, StateIndexIterable):
+    def categorize(FromDb, InitStateIndex, StateIndexIterable):
         """Seperates the states in state machine into two sets:
 
         RETURNS: [0] linear states (only ONE entry from another state)
@@ -64,7 +173,7 @@ class Strategy:
 
         return linear_list, mouth_list
 
-    def base_filter_springs(self, CandidateList):
+    def filter_springs(self, CandidateList):
         """RETURNS: list of state indices from CandidateList where the according
                     state can be the begin of a walk along a sequence of linear
                     states.
@@ -72,18 +181,10 @@ class Strategy:
         return [
             state_index
             for state_index in CandidateList
-            if self.has_determined_accu(state_index)
+            if self.accu_type.is_spring(state_index)
         ]
 
-    def base_entrance_ok(self, TargetStateIndex):
-        """RETURNS: False -- if the state 'Target' should not be entered.
-                    True  -- if it should
-        """
-        if   TargetStateIndex in self.mouth_set:         return False
-        elif self.has_determined_accu(TargetStateIndex): return False
-        else:                                            return True
-
-    def base_resolve(self, BeginList, MouthList):
+    def resolve(self, BeginList, MouthList):
         """.--->  (1) Walk along linear states from the states in the set of 
            |          begin states. Derive accumulated actions along the walk.
            |      
@@ -109,21 +210,21 @@ class Strategy:
 
         return unresolved_mouths
 
-    def base_resolve_dead_lock(self, DeadLockList):
+    def resolve_dead_lock(self, DeadLockList):
         """During the process of '.resolve()', there might be remaining mouth
         states which cannot be resolve due to mutual dependencies. Those states
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent linear states.
         """
-        dependency_db       = self.base_get_dependency_db(DeadLockList)
-        dead_lock_group_set = self.base_get_dead_lock_groups(dependency_db)
+        dependency_db       = self.get_dependency_db(DeadLockList)
+        dead_lock_group_set = self.get_dead_lock_groups(dependency_db)
         resolution_sequence = _dead_lock_resolution_sequence(group_set)
 
         for group in resolution_sequence:
             _dead_lock_resolve(group)
             resolved, unresolved = _accumulate(Springs=group)
 
-    def base_dead_lock_groups_find(DeadLockList):
+    def dead_lock_groups_find(DeadLockList):
         depend_db = {} # map: state 'i' --> 'state_set' that depend on 'i'
 
         # (*) Direct dependencies.
@@ -157,7 +258,7 @@ class Strategy:
 
          return set(depend_db.itervalues())
 
-    def base_get_dead_lock_groups(self, DependencyDb):
+    def get_dead_lock_groups(self, DependencyDb):
         """Determine groups of dead-lock mouth states where all states
         that belong to it are mutually dependent.
 
@@ -168,39 +269,11 @@ class Strategy:
         dead_lock_group_set = set(DependencyDb.itervalues())
 
         for group in dead_lock_group_set:
-            accu = Strategy.intefere(flatten(x.accu_in_list for x in group))
+            accu = self.accu_type.from_interference(flatten(x.accu_in_list for x in group))
             for mouth in group:
                 assign(mouth, accu)
 
         return dead_lock_group_set
-
-    def get_walk_begin_state_list(self):
-        """RETURNS: set of indices of states which are suited to be the begin
-                    of a walk along a linear sequence of states.
-        """
-        assert False
-
-    def accumulate(self, PrevAccu, Accu)
-        """RETURNS: An accumulated action where an existing accu is mounted
-                    on top of a later one.
-        """
-        assert False
-
-    def interfere(self, AccuList):
-        """RETURNS: None                    -- if there are undetermined entries.
-                    AccumulatedAction_VOID  -- if the outgoing Accu is 'void'
-                    AccumulatedAction       -- the accu that results from interference.
-
-        If None is returned, this means that there can be outgoing accu be determined
-        because entries are missing. If 'AccumulatedAction_VOID' is returned that 
-        the lack of uniformity of existing entries allows to tell that absolutely
-        not common accumulator pattern can be derived. 
-
-        Only in case that a normal 'AccumulatedAction' object is returned, it can 
-        be assumed that all entries have been considered and that a common pattern
-        could be derived.
-        """
-        assert False
 
     def _interfere(self, MouthStateList):
         """Perform interference of mouth states.
@@ -208,7 +281,9 @@ class Strategy:
         resolved   = []
         unresolved = []
         for state in MouthStateList:
-            accu_out = self.interfere(state.accu_in_list)
+            accu_out = self.accu_type.from_interference(
+                accu for i, accu in state.accu_db.iteritems()
+            )
             if accu_out is None:
                 unresolved.append(state)
             else:
@@ -231,26 +306,34 @@ class Strategy:
         """
 
         def on_enter(prev_accu):
-            accu = self.accumulate(prev_accu, state.action)
+            accu = self.accu_type.from_accumulation(prev_accu, state.action)
 
             # Termination Criteria:
             # (i)   Terminal: no transitions, do further recursion. 
             #       (Nothing to be done to guarantee that)
             # (ii)  Do not enter a mouth state.
             # (iii) Consider Strategy specific criteria.
-            def entrance_ok(target):
-                if mouth in mouth_state_list: 
-                    mouth.accu_in_list.append((state.index, accu))
-                    return False
-                return self.entrance_ok(state, target)
-
             todo = [
                 target
                 for target in state.transitions()
-                if entrance_ok(target)
+                if entrance_ok(transition_id, target)
             ]
 
             if not todo: return None
             else:        return todo
+
+        def entrance_ok(transition_id, target):
+            """RETURNS: False -- if the state 'Target' should not be entered.
+                        True  -- if it should
+            """
+            if target in mouth_state_list: 
+                target.accu_db[transition_id] = accu 
+                return False
+            elif self.accu_type.is_spring(TargetStateIndex): 
+                return False
+            else:                                            
+                return True
+
+
 
    return linear_state_list, mouth_state_list
