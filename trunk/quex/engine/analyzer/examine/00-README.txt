@@ -62,14 +62,20 @@ a state 'k' requires a variable 'x' than 'x is element of SOV(i)' for all 'i'
 in the set of states that lead to 'k'.
 
 A state machine changes variables of the SOV. These changes are consequences of
-operations that happen in states. Let an 'action' be defined as follows.
+operations that happen upon entry into states. Let an 'operation' be defined as
+follows.
 
-DEFINITION: Action -- '(op, i)'
+DEFINITION: op(i) -- Operation 
 
-    An action '(op, i)' this context, denotes an *operation* 'op' which is to
-    be performed and the *state* 'i' in which it is to be performed.  The
-    operation is a write or change operation to a variable from the SOV. 
+    The modification on the SOV upon entry into a state 'i' is called an
+    operation 'op(i)'. With 'x' as the setting of the SOV before entry
+    into a state 'i' the term, the setting of the SOV in state 'i' becomes
 
+                         SOV(i) = op(i)(x)
+
+That is, 'op(i)' is a function or a procedure that is applied on the set of
+variables of concern. All investigated behavior along the state machine 
+concentrates on operations on the SOV.
 
 -------------------------------------------------------------------------------
 
@@ -81,7 +87,8 @@ how actions that happen before influence the SOV behind them.
 
 DEFINITION: Linear State
 
-    A linear state is a state that is entered only through one state.
+    A linear state is a state that is entered only through one predecessor 
+    state, i.e. it has only one entry.
 
                                     .---> ...
                                    /
@@ -90,13 +97,26 @@ DEFINITION: Linear State
                 Figure 1: The concept of a linear state.
 
 Since there is only one predecessor state to a linear state the SOV can be
-derived from the SOV at the predecessor and the actions of the linear state
-itself--at compile time.
+derived from the SOV at the predecessor and the operation at the entry of the
+linear state itself. Let 'p(i)' denote the predecessor state of 'i'. Then,
 
-                 SOV(i) = Action(i) on SOV(predecessor(i))
+                 SOV(i) = op(i)(SOV(p(i)))
 
-Actions along a sequence of linear states can be pre-determined--at compile 
-time. Consider the linear state sequence in figure 2.
+if 'p(i)' is also a linear state, then the right hand of the above equation can
+be expanded
+
+                 SOV(i) = op(i)(SOV(op(p(i))(SOV(p(p(i))))))
+
+Let OP(i,k) denote the concatinated operations from state 'k' to state 'i'
+along a sequence of linear states, then SOV(i) can be determined by the SOV(k)
+through
+
+                 SOV(i) = OP(i,k)(SOV(k))
+
+That is, if SOV(k) is determined, then SOV(i) can be determined without the
+operations along the path from 'k' to 'i', but in the state 'i' itself. 
+Figure 2 displays an example, that shows how this can be used to reduce 
+computational effort. 
 
                      x=x+1       x=x+1       x=x+1        
            ... ( a )------>( b )------>( c )------>( d )------>
@@ -124,49 +144,63 @@ Or, shortly
                          
                           x(e) = x(a) + 4
        
-This highlights that along a sequence of linear states operations can be
-accumulated efficiently. In the example above, a longer sequence of additions
-was transformed into a single transition at exit. The accumulated action
-'Accu(i,k)' description of what actions are required in a state in order to
-compensate for previous actions. 
+The formula for 'x(e)' can be considered as a recipe to determine the SOV in a
+state, without knowing the previous operations along the path.  In the example
+above, a longer sequence of additions was transformed into a single addition.
+Let the term recipe be define for the context of this discussion.
 
-DEFINITION: Accumulated Action 'Accu(i, k)'
+DEFINITION: R(i) -- Recipe 
 
-   An Accumulated Action 'Accu(i)' describes the setting of the SOV after 
-   state 'i' has been entered. That is, it maps
+   A recipe 'R(i)' for a state 'i' is a description of how to determine 
+   the SOV(i) when the state has been entered. It maps
 
-                     (S, R, C) ---> SOV(i)
+                     (s, r, c) ---> SOV(i)
 
-   where 'S' is the current state including his variables. R is a setting of
-   registers that store temporary data, and C is a set of constants. 
+   where 's' is the current state including his variables. 'r' is a setting of
+   registers that store temporary data, and 'c' is a set of constants. 
 
-The operations in Accu(i) in state 'i' replace any operation on SOV that
-happend on the path to state 'i'. An example of a register storage can be
-observed in figure 2, where 'x(a)' stored the value of 'x' in state 'a'.
-There, the constant '4' in the computation of 'x(e)' is an example for 
-an element of 'R'. If 'x' ware calculated by something like 
+Along a sequence of linear states, there is an obvious relation between a
+recipe an the concatinated operations
 
-                        x(i) = (ip - p(a))
+                   SOV(i) = OP(i,x)(SOV(x))
 
-where 'ip' is the input pointer, then 'ip' is an example of a state variable
-that entered the description of Accu(i).  Accumulated actions can be developed
-along linear states, because for each linear state there is only one
-predecessor SOV. 
+If 'i' is reached from 'x' by a sequence of linear states, then the SOV(x) and
+the OP(i,x) build together the recipe R(i). 'SOV(i)' is an example of content
+stored in registers, i.e. the 'r' in the definition of a recipe. An example for
+constants 'c' can be observed in the example from figure 2, where 'x' was computed
+as the content of 'x' stored 'a' plus a constant number. 
 
-Let the development of accumulated actions along linear states be called the
-'walk along linear states'. It can only start at specific states, called
-'spring'. 
+An example for a state variable in a recipe would be, for example, the
+computation of the lexeme length 'lengh(i)' based on the distance to the
+position of first character 'p0'. Let 'ip' be the pointer to the position where
+the current character is located. Then the lexeme length can be expressed as
+
+                        length(i) = (ip - p(a))
+
+and 'ip' is a state variable, i.e. an element of 's' from the definition of 
+a recipe. The iterative development of recipies can only start at a state
+where either the recipe to compute the SOV is determined. Only then, any 
+previous history can be dropped from consideration, because it is reflected
+in the state's recipe.
 
 DEFINITION: Spring
 
-    A spring is a state where a walk along a sequence of linear states can
-    begin. For a state to act as a spring Accu(i) must be completely
-    determined. 
+    A spring is a state where a walk along linear states can begin. For a state
+    'i' to act as a spring, the recipe 'R(i)' must be determined.
 
-Whatever preceded the entry into a spring state, it is reflected in Accu(i).
-Thus, it can be treated without knowing the exact history of state transitions.
-The same is true for all linear states that branch from it--until a so called
-mouth state is reached. Mouth states are the counterpart to linear states. 
+If the spring is connected to a linear state, then this linear state can
+determine its recipe through concatenation, as discussed earlier. Let this
+process of iterative concatenation be called accumulation.
+
+DEFINITION: Accumulation
+
+    The process of determining a recipe of a linear state base on the recipe
+    of a predecessor state is called 'accumulation'.
+
+If a linear state that received a recipe through accumulation can now itself
+act as a basis for accumulation for successor linear states. This process can
+be repeated until a mouth state is reached.  Mouth states are the counterpart
+to linear states. 
 
 DEFINITION: Mouth State
 
@@ -181,89 +215,67 @@ DEFINITION: Mouth State
 
                 Figure 3: The concept of a mouth state.
 
-Depending on the state from which a mouth state is entered different actions
-may have appeared along the path. An example is shown in figure 4.
+At each of the mouth state entry, there may be different incoming recipe.  An
+example is shown in figure 4. The operation 'op(i)' for each state is 'x=x+1'.
 
-                              x=x+1
-                       .---------->-----------. [x=x(0)+1]
-                      /                        \
-                   ( 0 )                      ( 3 )---> ...
-                      \                        /
-                       '--->( 1 )----->( 2 )--' [x=x(0)+2]
-                       x=x+1      x=x+1
+                                              x=x+1
+                       .-------------->---------------. [x=x(0)+1]
+                      /                                \
+                   ( 0 ) [x=x(0)]                     ( 3 )---> ...
+                      \                                /
+                       '--->( 1 )----->( 2 )----->----' [x=x(0)+3]
+                       x=x+1      x=x+1       x=x+1
 
-                 Figure 4: Accumulated Actions meet in mouth state 3.
+                   Figure 4: Recipes meet in mouth state 3.
 
-At the entry to state 3, there are two accumulated actions on 'x'. First,
-directly from state 0, where 'x=x(0)+1'. Second, there is an entry from
-state 2. There, the accumulated action is 'x=x(0)+2'. The setting of 'x'
-depends on the path that is taken.  In state 3, it cannot be known
-beforehand, how much on has to add to 'x(0)'.  In the example, one cannot
-derive an accumulated action from the entries. The incremental actions can
-now either be implemented at their original positions, or at the entry into
-the mouth state. The later, requires less computational effort, and is
-therefore preferable.
+At the entry to state 3, there are two recipes for 'x'. First, there is recipe
+'R(0)' which is concatenated with 'op(3)'. It becomes "x=(0)+1". Second, there
+is recipe 'R(2)' concatenated with 'op(3)' which becomes "x=x(0)+3".  Both are
+different, so there is only one way to determine 'x': it must be computed  upon
+entry into the state.  A recipe for state 3 which can be a basis for subsequent
+linear states must rely on the stored value for it.
 
+               x(3)=x(0)+1 
+           ... ------. 
+                      \     [x=x(3)]      x=x+1       [x=x(3) + 1]
+                     ( 3 )---------------------->( 4 )------- ...
+                      /
+           ... ------' 
+               x(3)=x(0)+3 
 
-                  [x=x(0)+1]
-                 ------------. 
-                              \  x(3)=x         [x=x(3)+1]
-                               >--------->( 3 )------------> 
-                              /
-                 ------------' 
-                  [x=x(0)+2]
+                   Figure 4: Recipes in a mouth state.
 
-         Figure 5: Interference of accumulated actions in mouth states.
+Note, that the register 'x(3)' is not part of the SOV. Thus, the newly entered
+computations 'x(3)=x(0)+1' and 'x(3)=x(0)+3' are not operations 'op(i)' as
+defined earlier and are not subject to further considerations.  Now, let the
+process of 'interference' be defined as follows.
 
+DEFINITION: Interference
 
-The actual path taken to a mouth state is something that is only determined at
-run-time. Thus, in general the outgoing accumulated action can only be different
-from 'void' if there is some type of uniformity. Let the process of 'action
-interference' be defined as follows.
+    The process of 'interference' develops a recipe 'R(i)' for a mouth state.
+    First, it concatenates the recipe of each incoming state with its operation
+    'op(i)'. The result is the set of entry recipes. Second, the set of entry
+    recipes is used as a basis to determine 'R(i)'. Along with the recipe
+    new non-SOV operations may be injected into the state machine. Those
+    operations store reference values which are required by 'R(i)'.
 
-DEFINITION: Action Interference
+Interference cannot happen, if the set of entry recipes is incomplete. That is,
+if for one entry the recipe cannot be determined, then the interference of 
+the mouth state cannot be accomplished.
 
-    The process of 'action interference' develops an accumulated action based
-    on multiple accumulated actions at the entries of a mouth state. The output
-    accumulated action is either void or specific.
-
-    The output can be determined to be void, as soon as two entries are not of
-    'sufficient uniformity'. 
-
-    A specific output can only be determined if all accumulated actions at
-    all entries share a 'sufficient uniformity'.
-
-DEFINITION: Sufficient Uniformity for Action Interference
-
-    A set of accumulated actions { Accu(k), for some k } contains sufficient
-    uniformity if there is a procedure that can translate the set into a single
-    accumulated action Accu(i). Further, the AA(i) and PA(i) must be determined.
-
-I follows, that if entries in a mouth state share sufficient uniformity they
-can be considered as springs. The determined accumulated actions is achieved
-by interference. As springs, they become begin states for the walk along a
-sequence of linear states, as described in the next section.
+Commonalities between recipes are translated into changed constants. When
+differences are detected, they require values to be stored in registers for
+later reference. Once, a mouth state has a determined recipe, it can act
+as a spring for the walk along linear states.
 
 -------------------------------------------------------------------------------
 
 THE WALK ALONG LINEAR STATES
 
-There is a duality between linear states and mouth states with respect to 
-run-time dependency. It is expressed as follows.
-
-STATEMENT: Run-time dependence.
-
-    Linear state sequences do never depend on run-time. Their behavior is 
-    determined by their predecessor state and the operation at entry into
-    the state.
-
-    Mouth states may depend on run-time. The path by which they are entered
-    determines what actions have been applied. 
-
-A recursive walk along sequences of linear states is part of any analysis.
-Linear states can have transitions to more than one state. So, the walk along
-linear states is a recursive 'tree-walk'. The termination criteria for
-the walk along linear states is defined as follows.
+The recipes for states are determined by a walk along linear states. While
+linear states have only one entry, they may have transitions to more than one
+state. So, the walk along linear states is a recursive 'tree-walk'. The
+termination criteria for the walk along linear states is defined as follows.
 
 DEFINITION: Termination criteria for walk along sequence of linear states.
 
@@ -274,31 +286,82 @@ DEFINITION: Termination criteria for walk along sequence of linear states.
        (ii)  the state ahead is a mouth state.
        (iii) the state ahead complies to the conditions of a spring.
 
-The first condition comes natural. The second condition exists, because actions
-cannot be accumulated beyond mouth states. The third condition tells that the
-walk stops where another walk begins. The tree cannot contain loops, since a
-loop requires a state with more than one entry. 
+The first condition comes natural. The second condition exists, because recipes
+cannot be accumulated beyond mouth states. As a direct consequence, the walk
+can never go along loops, since a loop requires a state with more than one
+entry. A mouth state, however, is never part of the walk according to condition
+(ii). The third condition tells that the walk stops where another walk begin or
+began.  With these concepts, a first draft of an algorithm for the
+determination of recipes can be defined.
 
-With these concepts, a first draft of an algorithm for the determination of
-accumulated actions can be defined.
+          (*) Start.
+          (*) begin_list = springs extracted from state machine.
+   .----->(*) perform linear walks starting from each spring.
+   |          --> determine R(i) along linear states until terminal,
+   |              mouth, or springs.
+   |          --> entries of mouth states receive entry recipes.
+   |      (*) interference in mouth states with complete sets of entry
+   |          recipes.
+   |          begin_list = determined mouth states
+   '- no -(*) begin_list empty?
+          (*) Stop.
 
-             (*) Start.
-             (*) begin_list = springs extracted from state machine.
-   .-------->(*) perform linear walks starting from each spring.
-   |             --> Accu(i) linear states until terminal, mouth, or specific 
-   |                 states.
-   |             --> entries of mouth states receive accumulated actions.
-   |         (*) perform interference in mouth states where all entries are
-   |             determined.
-   '-- yes --(*) are there specific mouth states? --> new springs.
-             (*) Stop.
-
-        Algorithm 1: Accu(i) derived in states by action accumulation 
-                     and interference.
+        Algorithm 1: Determination of recipies.
 
 When this algorithm comes to an end, there might be still mouth states with
 undetermined entries. The only possible reason for that are mutual dependencies
 between mouth states. Such dead-locks are handled in the next section.
+
+PROOF: 
+    
+     (1) The begin_list in algorithm 1 is <=> there are no new springs.
+
+         That is, either there were no mouth states, or the mouth states that 
+         exist were not resolved. 
+
+     (2) A mouth state is only unresolved, if there is at least one entry which
+         cannot be determined. An entry into a mouth state which is
+         undetermined must originate from an unresolved mouth state.
+
+         With (1) it follows:
+        
+         For every unresolved mouth state 'i' there is at least one state 'k'
+         on which it depends which is also unresolved.
+
+     (3) If a state 'a' depends on 'b' and 'b' depends on 'c', then 'a' also
+         depends on 'c'. For an unresolved state a dependency sequence can
+         be specified of the form
+
+                           a <-- b <-- c <-- ...
+
+         briefly, let the set of states on which 'a' depends be 
+
+                           D(a) = a <-- (b, c, ...)
+         
+     (4) A state machine has a finite number of states. 
+
+     (5) from (3) and (4): The set of states on which an unresolved mouth state
+         'a' depends is finite.
+
+     (6) Let 'p' be the last state added to 'D(a)'.
+    
+         from (2) and (3): for a state 'p' to belong to D(a), it must rely on 
+         an unresolved state 'q'.
+
+     (7) from (6) and the restriction of (5): 'q' must be element of D(a).
+
+     (8) if 'q' belongs to 'D(a)' before, than it must depend on 'p'.
+
+     => There is at least one 'p' depending on 'q' and 'q' depending on 'p'
+        in the set of 'D(a)'.
+         
+However, not every unresolved state is locked into a mutual dependency.
+
+                             .---->---.             
+                          ( 0 )      ( 1 )------>( 2 ) 
+                             '----<---'            
+                     
+              Figure 6: Unresolved state 2, not having a mutual dependency.
 
 -------------------------------------------------------------------------------
 
@@ -316,41 +379,64 @@ An example is shown in Figure 4.
          
         Figure 4: A dead-lock of mouth states 2 and 3.
 
-The human can judge easily, that for both states only pattern A can occur.  The
-following paragraphs, however, formally describe a precise procedure to
-determine the entries and the output of dead-lock states.
+In the example shown in figure 4, both states 2 and 3 only experience the
+effects of operation 'A'. For an algorithm, a formal procedure is required
+to determine the entries of dead-lock states. 
 
 DEFINITION: Dead-lock state.
 
-    A dead-lock state is a mouth state for which there is no Accu(i) and AA(i)
-    when algorithm 1 came to end end. 
+    A dead-lock state is a mouth state 'i' which could not be resolved with 
+    algorithm 1. As a direct consequence, it
 
-      -- it has at least one unresolved entry.
+       (i)   has at least one entry with no associated 'R(p(i))'.
+      
+       (ii)  has entries originating from other dead-lock states.
 
-      -- it depends on other dead-lock states.
+The first characteristic is a tautology to the fact that algorithm 1 was not
+able to resolve it. The second characteristic is a logic conclusion from the
+fact algorithm 1 stops only when it cannot use a dependency to resolve another.
+Thus, there must be some mutual dependency, such as 'A' depends on 'B', depends
+on 'C', which depends on 'A'. 
 
-An entry of any mouth state, in particular a dead-lock state, is the terminal
-of a sequence of linear states. The linear states originate in a state that is
-part of the dead-lock state set, or not. If it originates in a non-dead-lock
-state, then the entry into the mouth state is determined, otherwise not. Thus,
+Dependencies correspond to paths of linear states between mouth states. If
+there are mutual dependencies, then, this corresponds to loops in the graph
+model.
 
-DEFINITION: Group of Dead-Lock States.
+DEFINITION: Dead-Lock Group.
 
-    A set of mouth states where each state 'i' from the set depends on all 
-    other states, is called a 'group of dead-lock' states.
+    A set of mouth states where each state from the set depends on all other
+    states, is called a dead-lock group. As a direct consequence of mutual
+    dependencies, each state in a dead-lock group is connected to at least one
+    loop.
 
-STATEMENT:
+A dead-lock group cannot be divided into two sub-groups. If any two states 'i'
+and 'k' belong to a group of dead-locks states, then they depend on each other
+mutually. If either one belonged to a group without the other, then this group
+cannot be a dead-lock group. It would be missing a mutual dependency. 
 
-    An entry into a dead-lock state which is undetermined originates 
-    by a sequence of linear states from another dead-lock state.
+However, there may be more than one dead-lock group where one even depends
+on the other. Consider a dead-lock group where states 'i' and 'k' are mutually
+dependent. State 'k' depends on a state 'p', but 'p' not on 'k'. However, 
+'p' is mutually dependent on 'q'. This is depicted in figure 6.
 
-If the other dead-lock state may belong to the same group of dead lock states,
-or to another group. In the case that the entry depends on the output of a
-dead-lock state of another group, the other group must be determined first.
-A circular dependency, such as "group A depends on group B, depends on group
-C, which depends on group A", is impossible, because this would make all
-states of A, B, and C mutually dependent, and therefore build a group
-altogether.
+                     .---->---.             .---->---.
+                  ( i )      ( k )<------( p )      ( q )
+                     '----<---'             '----<---'
+
+                  Figure 6: Dependent dead-lock groups.
+
+The 'p' an 'q' build a dead-lock group, and so does 'i' and 'k'. All four 
+states do not build a dead lock group. 'i' and 'k' depend on 'p' and 'q'.
+however, 'p' and 'q' do not depend neither on 'i' nor on 'k'.
+
+In the case that the entry depends on the output of a dead-lock state of
+another group, then that other group must be determined first.  
+
+A circular
+dependency, such as "group A depends on group B, depends on group C, which
+depends on group A", is impossible, because this would make all states of A, B,
+and C mutually dependent. Therefore, the states of those groups were,
+actually, a dead-lock group on their own. 
 
 STATEMENT:
 
@@ -385,103 +471,34 @@ only influence from outside this group comes through 'Accu(2)', 'Accu(3,1)',
 'Accu(3,5)' and 'Accu(4)'. Since states are mutually dependent, there
 necessarily exist loops inside a dead-lock group. Thus, the number of
 transitions inside the group can only be determined at run-time. The process
-of specification of an inherent accumulated action inside a dead-lock group,
+of specification of an inherent recipe action inside a dead-lock group,
 can be defined similar to interference as follows.
 
-DEFINITION: Inherent Accumulated Action -- Accu(group)
+DEFINITION: R(group) -- Inherent Recipe
 
-   The 'inherent accumulated action' Accu(group) is the accumulated action
-   that appears at any entry into a dead-lock state from another dead-lock
-   state. 
+   The 'inherent recipe' R(group) is the recipe that appears at any entry into
+   a dead-lock state from another dead-lock state. 
 
-   Accu(group) is determined from the set of specified accumulated actions, at
+   R(group) is determined from the set of specified accumulated actions, at
    specific entries of states of the group. 
 
-   Accu(group) can either not rely on transition numbers at all, or they must
+   R(group) can either not rely on transition numbers at all, or they must
    be relative to the first state through which the group is entered.
 
-   Accu(group) is specified at each entry of the group, except for the specific
+   R(group) is specified at each entry of the group, except for the specific
    entries which are previously determined.
 
-An issue remains. What if on the linear paths between the dead-lock mouth
-states there is an action? This action can only be *undetermined*, otherwise it
-was a spring and, therefore, the resulting entry to the mouth state at the end
-was determined. The consequences of this undetermined action can propagate
-through all states of the dead-lock group. Further, it is not determined
-whether it influences the SOV before run-time, or how many times it influences
-the SOV. This influences from outside the group are captured by the Accu(i) of
-the specific entries. The safest way, to maintain the state machine's behavior,
-is by leaving the action in place, implemeting Accu(i) at each entry into
-the dead-end state group, and propagating Accu(void) inside the dead-lock
-group.
+An issue remains: What if on the linear paths between the dead-lock mouth
+states there is a state with an operation? Clearly, this state cannot be a
+spring, otherwise, the mouth state's entry on the other end would be determined
+which it is not. Operations of linear states which are not springs accumulate.
+Further, dead-lock groups incorporate loops. So, The position where the
+operation occurs in the sequence and in what sequence with other operations
+cannot be determined.
 
-STATEMENT:
 
 
 -------------------------------------------------------------------------------
-
-At some point in time the transitions come to an end--either through a
-character or the end of the character stream. This is the end of an analyzer
-step.  From outside the state machine, only the SOV at the end of this analyzer
-step is of interest. 
-
-
-DEFINITION: consq(i, SOV)
-
-    The function 'consq(i, SOV)' describes what is supposed to happen upon exit
-    from the state machine. It may also express what the SOV is supposed to
-    contain. It is specific to its state 'i'. Further, it depends on the SOV as
-    it results from the history of transitions along the state machine. 
-
-The goals is to find a method so that the actions along the state machine can
-be omitted by an adapted handling at the end of the analyzer step, or by a
-postponing as until the actions influence can no further be determined.  This
-has obvious efficiency advantages. Consider, for example, the lexeme length
-as SOV.  The 'consq(i, SOV)' function simply provides the lexeme length as
-the value that has been accumulated.  If the number of transitions from begin
-to end is fix for a given state, then the lexeme length does not have to be
-incremented at each transition. Instead, it can be set upon exit to a
-constant. 
-
-DEFINITION: f(Ci, SOV)
-
-    The representative function 'f(Ci, SOV)' does two operations:
-
-        (1) it derives actions from SOV independent from actions 
-            on the transition path.
-        (2) it implements what consq(i, SOV) does.
-
-The set of constants 'Ci' is specific to state 'i' and must be known at
-compile-time. The role of this function is to replace 'consq()' by 'f(Ci, SOV)' 
-and therefore omit the actions which 'consq()' would require.  
-
-DEFINITION: Ai
-
-    Let Ai denote the set of required actions to compute the SOV at the 
-    exit of state 'i'. 
-
-The replacement of 'consq()' by a function 'f(Ci, COV)' in a state reduces the
-set Ai. If an action is not mentioned in any Ai, then it can be completely
-removed from the state machine.
-
-
-GENERAL DOCUMENT STRUCTURE:
-
-Documents describing state machine analysis shall follow the following scheme:
-
-  (1) Specification of SOV, Actions, and 'consq(i, SOV)'.
-
-  (2.1) Action Accumulation in linear states.
-
-  (2.2) Action Interference in mouth states. 
-
-  (3.1) Specify 'f(Ci, SOV)'
-
-  (3.2) Specify how Ai is reduced due if 'f(Ci, SOV)' replaces 'consq(i, SOV)'.
-
-  (4) Procedure description
-
-  (5) Doubt discussion
 
 All .txt files in this directory that describe action reductions are following
 this scheme. The 'doubt' discussion shall demonstrate the deepness of thought
@@ -489,8 +506,4 @@ that has been put into the development. All doubts, of course, should be
 debunked.
 
 -------------------------------------------------------------------------------
-
-
-
-
 

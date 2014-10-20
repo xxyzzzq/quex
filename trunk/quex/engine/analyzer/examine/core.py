@@ -14,6 +14,18 @@ class Accu:
     See 00-README.txt the according DEFINITION.
     """
     @staticmethod
+    def is_spring(TheState):
+        """RETURNS: True  -- if TheState complies with the requirements of a 
+                             spring state.
+                    False -- else.
+
+        In a spring the Accu(i) must be determined. That is, as soon as this
+        state is entered any history becomes unimportant. The setting of the
+        SOV(i) can be determined from an Accu(i).
+        """
+        assert False
+
+    @staticmethod
     def from_spring(SpringState):
         """RETURNS: An accumulated action that determines the setting of the
                     SOV(i) after the SpringState has been entered.
@@ -34,18 +46,6 @@ class Accu:
     def from_interference(AccuIterable, MouthState):
         """RETURNS: An accumulated action that expresses the interference of 
                     accumulated actions at different entries into a MouthState.
-        """
-        assert False
-
-    @staticmethod
-    def is_spring(TheState):
-        """RETURNS: True  -- if TheState complies with the requirements of a 
-                             spring state.
-                    False -- else.
-
-        In a spring the Accu(i) must be determined. That is, as soon as this
-        state is entered any history becomes unimportant. The setting of the
-        SOV(i) can be determined from an Accu(i).
         """
         assert False
 
@@ -333,7 +333,5 @@ class Strategy:
                 return False
             else:                                            
                 return True
-
-
 
    return linear_state_list, mouth_state_list
