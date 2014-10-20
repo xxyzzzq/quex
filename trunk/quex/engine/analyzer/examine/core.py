@@ -1,11 +1,11 @@
 
-E_AccuType = Enum("UNDETERMINED", "VOID", "__DEBUG_E_AccuType")
+E_RecipeType = Enum("UNDETERMINED", "VOID", "__DEBUG_E_RecipeType")
 
 DeadLockGroup = namedtuple("DeadLockGroup", 
                            ("state_index_set", "dependency_set"))
-class Accu:
-    """Base class for accumulated actions. The general accumulated action 
-    depends on:
+
+class Recipe:
+    """Base class for SOV recipes. The general recipe depends on:
 
         -- The current state.
         -- Constants which can be pre-determined.
@@ -19,9 +19,9 @@ class Accu:
                              spring state.
                     False -- else.
 
-        In a spring the Accu(i) must be determined. That is, as soon as this
+        In a spring the Recipe(i) must be determined. That is, as soon as this
         state is entered any history becomes unimportant. The setting of the
-        SOV(i) can be determined from an Accu(i).
+        SOV(i) can be determined from an Recipe(i).
         """
         assert False
 
@@ -33,9 +33,9 @@ class Accu:
         assert False
 
     @staticmethod
-    def from_accumulation(Accu, LinearState):
+    def from_accumulation(Recipe, LinearState):
         """RETURNS: An accumulated action that expresses the concatenation of
-                    the given Accu, with the operation at entry of LinearState.
+                    the given Recipe, with the operation at entry of LinearState.
 
         The resulting accumulated action determines the setting of SOV(i) after
         the linear state has been entered.
@@ -43,29 +43,29 @@ class Accu:
         assert False
 
     @staticmethod
-    def from_interference(AccuIterable, MouthState):
+    def from_interference(RecipeIterable, MouthState):
         """RETURNS: An accumulated action that expresses the interference of 
                     accumulated actions at different entries into a MouthState.
         """
         assert False
 
     def get_drop_out_CommandList(self):
-        """With a given Accu(i) for a state 'i', the action upon state machine
+        """With a given Recipe(i) for a state 'i', the action upon state machine
         exit can be determined.
 
         RETURNS: A CommandList that corresponds self.
         """
         assert False
     
-    def get_entry_CommandList(self, NextAccu):
-        """Consider the NextAccu with respect to self. Some contents may 
+    def get_entry_CommandList(self, NextRecipe):
+        """Consider the NextRecipe with respect to self. Some contents may 
         have to be stored in registers upon entry into this state. 
 
-        RETURNS: A CommandList that allows 'InterferedAccu' to operate after 
+        RETURNS: A CommandList that allows 'InterferedRecipe' to operate after 
                  the state.
 
         This is particulary important at mouth states, where 'self' is an 
-        entry into the mouth state and 'NextAccu' is the accumulated action
+        entry into the mouth state and 'NextRecipe' is the accumulated action
         after the state has been entered.
         """
         assert False
@@ -74,24 +74,23 @@ class ResultState:
     __slots__ = ("on_entry_db", "on_drop_out")
 
     @staticmethod
-    def from_LinearState(Accu, EntryTransitionID, EntryAccu):
-        if EntryAccu is None:
+    def from_LinearState(Recipe, EntryTransitionID, EntryRecipe):
+        if EntryRecipe is None:
             ecl = None
         else:
-            ecl = EntryAccu.get_entry_CommandList(Accu)
+            ecl = EntryRecipe.get_entry_CommandList(Recipe)
         self.on_entry_db[EntryTransitionID] = ecl
-        self.on_drop_out = Accu.get_drop_out_CommandList()
+        self.on_drop_out = Recipe.get_drop_out_CommandList()
 
     @staticmethod
-    def from_MouthState(AccuDb, Accu):
-        for transition_id, accu in AccuDb.iteritems():
-            ecl = accu.get_entry_CommandList(Accu)
+    def from_MouthState(RecipeDb, Recipe):
+        for transition_id, accu in RecipeDb.iteritems():
+            ecl = accu.get_entry_CommandList(Recipe)
             self.on_entry_db[transition_id] = ecl
-        self.on_drop_out = Accu.get_drop_out_CommandList()
-
+        self.on_drop_out = Recipe.get_drop_out_CommandList()
 
 class LinearState:
-    """.accu        = Accumulated action Accu(i) that determines SOV(i) after 
+    """.accu        = Recipemulated action Recipe(i) that determines SOV(i) after 
                       state has been entered.
 
     The '.accu' is determined from a spring state, or through accumulation of
@@ -101,7 +100,7 @@ class LinearState:
     __slots__ = ("accu", "on_drop_out")
 
 class MouthState:
-    """.accu        = Accumulated action Accu(i) that determines SOV(i) after 
+    """.accu        = Recipemulated action Recipe(i) that determines SOV(i) after 
                       state has been entered.
        .accu_db     = map: from 'TransitionID' to accumulated action at entry 
                            into mouth state.
@@ -115,12 +114,12 @@ class MouthState:
     __slots__ = ("accu", "accu_db", "on_drop_out", "on_entry_db")
 
 class Strategy:
-    def __init__(self, SM, AccuType):
+    def __init__(self, SM, RecipeType):
         self.sm        = SM
-        self.accu_type = AccuType
+        self.accu_type = RecipeType
 
     def do(self):
-        """Associate all states in the state machine with an Accu(i) and 
+        """Associate all states in the state machine with an Recipe(i) and 
         determine what actions have to be implemented at what place.
         """
 
@@ -139,7 +138,7 @@ class Strategy:
         springs = self.filter_springs(linear_list)
 
         # Resolve as many as possible states in the state machine, i.e. 
-        # associate the states with an accumulated action 'Accu(i)'.
+        # associate the states with an accumulated action 'Recipe(i)'.
         dead_lock_list  = self.resolve(springs, mouth_list)
 
         # Resolve the states which have been identified to be dead-locks.

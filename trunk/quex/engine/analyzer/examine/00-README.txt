@@ -314,48 +314,61 @@ between mouth states. Such dead-locks are handled in the next section.
 
 PROOF: 
     
-     (1) The begin_list in algorithm 1 is <=> there are no new springs.
+begin_list in algorithm 1 empty <=> there are no new springs.
 
-         That is, either there were no mouth states, or the mouth states that 
-         exist were not resolved. 
+=> Either: (i) All mouth states were resolved (-> would be springs), or 
+           (ii) There are unresolved mouth states, because not all entries
+                of those states could be determined.                        (1)
 
-     (2) A mouth state is only unresolved, if there is at least one entry which
-         cannot be determined. An entry into a mouth state which is
-         undetermined must originate from an unresolved mouth state.
+From case (i) no statement about unresolved mouth states can be derived. Case
+(ii) makes the first usable statement. 
 
-         With (1) it follows:
-        
-         For every unresolved mouth state 'i' there is at least one state 'k'
-         on which it depends which is also unresolved.
+        U := set of unresolved mouth states after algorithm 1 ended.        (2)
 
-     (3) If a state 'a' depends on 'b' and 'b' depends on 'c', then 'a' also
-         depends on 'c'. For an unresolved state a dependency sequence can
-         be specified of the form
+An entry into a mouth state which is undetermined must connected to a linear
+state sequence, or directly, with a mouth state which is undetermined. Let the
+fact that a state 'p' has an undetermined entry originating from 'q' be called
+a dependency of 'p' on 'q' and let it be written as 
 
-                           a <-- b <-- c <-- ...
+                          p <-- q
 
-         briefly, let the set of states on which 'a' depends be 
+'q' must be undetermined, so it follows
 
-                           D(a) = a <-- (b, c, ...)
+                'p <-- q' and 'p in U' => 'q' in 'U'                        (3)
+
+If 'q' depends on 'u', then logically 'u' influences 'q' and 'p'. Thus, 
+
+               p <-- q  and q <-- u   <=>   p <-- { q, u }                  (4)
+
+
+Let the set of dependencies for a state 'p' be defined as 
+
+                          D(p) = { q, u, ...}                               (5)
+
+which includes every state on which 'p' depends with its 'unresolvedness'. The
+number of states in a state machine is finite, thus the size of U is finite. 
+It follows 
+
+                         size of D(p) = finite                              (6)
          
-     (4) A state machine has a finite number of states. 
+From (3) follows that any state 'i' in 'D(p)' must be unresolved, thus it must
+be dependent on an unresolved state 'k'. From (4), it follows that if 'p'
+depends on 'i', then it also depends on 'k', i.e. 'k in 'D(p)'. 
 
-     (5) from (3) and (4): The set of states on which an unresolved mouth state
-         'a' depends is finite.
+               'i' in D(a) and 'i <-- k' => 'k in D(a)'
 
-     (6) Let 'p' be the last state added to 'D(a)'.
-    
-         from (2) and (3): for a state 'p' to belong to D(a), it must rely on 
-         an unresolved state 'q'.
+If each state of 'D(a)' is displayed as dot in a plane, and the dependencies
+between elements of 'D(a)' as arrows, then there would be 'n+1' arrows on 'n'
+dots. This is only possible, if there is at least one loop. A loop is a mutual
+dependency.
 
-     (7) from (6) and the restriction of (5): 'q' must be element of D(a).
+      size of U is not empty <=> there is at least one mutual dependency    (7)
 
-     (8) if 'q' belongs to 'D(a)' before, than it must depend on 'p'.
-
-     => There is at least one 'p' depending on 'q' and 'q' depending on 'p'
-        in the set of 'D(a)'.
-         
-However, not every unresolved state is locked into a mutual dependency.
+what was to be proven.  However, not every unresolved state is locked into a
+mutual dependency. An example is shown in figure 6. There, state 2 is
+unresolved because it depends on state 1. However, state 2 is not mutually
+dependent on state 1. State 1, on the other hand, is unresolved, because it
+is mutually dependent on state 0.
 
                              .---->---.             
                           ( 0 )      ( 1 )------>( 2 ) 
@@ -386,21 +399,19 @@ to determine the entries of dead-lock states.
 DEFINITION: Dead-lock state.
 
     A dead-lock state is a mouth state 'i' which could not be resolved with 
-    algorithm 1. As a direct consequence, it
+    algorithm 1. Additionally, it is part of a mutual dependency with at least
+    one other unresolved mouth state. As a direct consequence, it
 
-       (i)   has at least one entry with no associated 'R(p(i))'.
+       (i)   There is at least one entry with no associated 'R(p(i))'.
       
-       (ii)  has entries originating from other dead-lock states.
+       (ii)  'i in D(i)', it is element of the set of states from which
+             it depends.
 
 The first characteristic is a tautology to the fact that algorithm 1 was not
-able to resolve it. The second characteristic is a logic conclusion from the
-fact algorithm 1 stops only when it cannot use a dependency to resolve another.
-Thus, there must be some mutual dependency, such as 'A' depends on 'B', depends
-on 'C', which depends on 'A'. 
-
-Dependencies correspond to paths of linear states between mouth states. If
-there are mutual dependencies, then, this corresponds to loops in the graph
-model.
+able to resolve it. The second characteristic is a reformulation of the finding
+of the PROOF of the last section.  Dependencies correspond to paths of linear
+states between mouth states. If there are mutual dependencies, then, this
+corresponds to loops in the graph model.
 
 DEFINITION: Dead-Lock Group.
 
@@ -427,16 +438,15 @@ dependent. State 'k' depends on a state 'p', but 'p' not on 'k'. However,
 
 The 'p' an 'q' build a dead-lock group, and so does 'i' and 'k'. All four 
 states do not build a dead lock group. 'i' and 'k' depend on 'p' and 'q'.
-however, 'p' and 'q' do not depend neither on 'i' nor on 'k'.
+However, 'p' and 'q' do not depend neither on 'i' nor on 'k'.
 
 In the case that the entry depends on the output of a dead-lock state of
 another group, then that other group must be determined first.  
 
-A circular
-dependency, such as "group A depends on group B, depends on group C, which
-depends on group A", is impossible, because this would make all states of A, B,
-and C mutually dependent. Therefore, the states of those groups were,
-actually, a dead-lock group on their own. 
+A circular dependency, such as "group A depends on group B, depends on group C,
+which depends on group A", is impossible, because this would make all states
+of A, B, and C mutually dependent. Therefore, the states of those groups
+were, actually, a dead-lock group on their own. 
 
 STATEMENT:
 
@@ -495,8 +505,6 @@ which it is not. Operations of linear states which are not springs accumulate.
 Further, dead-lock groups incorporate loops. So, The position where the
 operation occurs in the sequence and in what sequence with other operations
 cannot be determined.
-
-
 
 -------------------------------------------------------------------------------
 
