@@ -58,6 +58,20 @@ class AnalyzerState(Processor):
         self.transition_map                    = TheTransitionMap
 
     @staticmethod
+    def from_LinearState(S):
+        if EntryRecipe is not None:
+            self.entry.enter_CommandList(S.entry_transition_id,
+                                         S.recipe.get_entry_CommandList())
+        self.on_drop_out = Recipe.get_drop_out_CommandList()
+
+    @staticmethod
+    def from_MouthState(S):
+        for transition_id, recipe in S.entry_db.iteritems():
+            self.entry.enter_CommandList(transition_id,
+                                         recipe.get_entry_CommandList())
+        self.on_drop_out = S.recipe.get_drop_out_CommandList()
+
+    @staticmethod
     def from_State(SM_State, StateIndex, EngineType):
         assert isinstance(SM_State, State)
         assert SM_State.target_map.is_DFA_compliant()
