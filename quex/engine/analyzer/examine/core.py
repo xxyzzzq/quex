@@ -1,5 +1,8 @@
+from   quex.engine.misc.tree_walker        import TreeWalker
 
-E_RecipeType = Enum("UNDETERMINED", "VOID", "__DEBUG_E_RecipeType")
+import types
+
+E_RecipeType  = Enum("UNDETERMINED", "VOID", "__DEBUG_E_RecipeType")
 
 DeadLockGroup = namedtuple("DeadLockGroup", 
                            ("state_index_set", "dependency_set"))
@@ -80,7 +83,7 @@ class Recipe:
         """
         assert False
     
-class LinearState:
+class LinearStateInfo:
     """.recipe        = Recipemulated action Recipe(i) that determines SOV(i) after 
                         state has been entered.
 
@@ -90,7 +93,7 @@ class LinearState:
     """
     __slots__ = ("recipe")
 
-class MouthState:
+class MouthStateInfo:
     """.recipe   = Recipemulated action Recipe(i) that determines SOV(i) 
                         after state has been entered.
        .entry_db = map: from 'TransitionID' to accumulated action at entry 
@@ -106,11 +109,11 @@ class MouthState:
 
 class Strategy:
     def __init__(self, SM, RecipeType):
-        self.sm          = SM
-        self.recipe_type = RecipeType
+        self.sm              = SM
+        self.recipe_type     = RecipeType
 
-        self.mouth_state_db  = {}
-        self.linear_state_db = {}
+        self.mouth_db  = {}
+        self.linear_db = {}
 
     def do(self):
         """Associate all states in the state machine with an 'R(i)' and 
@@ -120,23 +123,24 @@ class Strategy:
         # Determine what states are entered only by one state. Those are the 
         # 'linear states'. States which are entered by more than one state are
         # 'mouth states'.
-        linears, mouths = Strategy.categorize_states()
+        self.linear_db, \
+        self.mouth_db   = Strategy.categorize_states()
 
         # Determine states from where a walk along linear states can begin.
         springs = self.determine_springs()
-        self.determined_state_index_set = set(s.state_index for state in springs)
+        self.determined_set = set(s.state_index for state in springs)
 
         # Resolve as many as possible states in the state machine, i.e. 
         # associate the states with an recipe 'R(i)'.
-        dead_lock_list = self.resolve(springs, mouth_list)
+        unresolved_mouths = self.resolve(springs)
 
         # Resolve the states which have been identified to be dead-locks. After
         # each resolved dead-lock, resolve depending linear states.
-        self.resolve_dead_lock(dead_lock_list)
+        self.resolve_dead_locks(unresolved_mouths)
 
         # At this point all states must have determined recipes, according to
         # the theory in 00-README.txt.
-        assert self.determined_state_index_set == set(self.sm.states.iterkeys())
+        assert self.determined_set == set(self.sm.states.iterkeys())
 
     def categorize_states(self):
         """Seperates the states in state machine into two sets:
@@ -150,30 +154,31 @@ class Strategy:
         """
         from_db = self.sm.get_from_db()
 
+        linear_db = {}
+        mouth_db  = {}
         def add(StateIndex, Limit):
             """Determine in what list the StateIndex needs to be put based on
             the number of states from which it is entered.
             """
             if len(from_db[StateIndex]) <= Limit: 
-                return self.linear_db[StateIndex] = LinearState()
+                return linear_db[StateIndex] = LinearStateInfo()
             else:                                
-                return self.mouth_db[StateIndex]  = MouthState()
+                return mouth_db[StateIndex]  = MouthStateInfo()
 
         add(self.sm.init_state_index, 0)
         for state_index in self.sm.states.iterkeys():
             if state_index == InitStateIndex: continue
             add(state_index, 1)
 
-        return [self.sm.states[i] for i in self.linear_db], \
-               [self.sm.states[i] for i in self.mouth_db]
+        return linear_db, mouth_db
 
     def determine_springs(self):
         """Iterates through all states of a given state machine and determines
         the states from where a walk along linear states may begin, so called 
         'springs' (see 00-README.txt). For the springs recipes are derived and
-        they are registered in '.determined_state_index_set'.
+        they are registered in '.determined_set'.
 
-        MODIFIES: .determined_state_index_set
+        MODIFIES: .determined_set
                   .mouth_db
                   .linear_db
 
@@ -186,16 +191,18 @@ class Strategy:
             for state in self.sm.states.itervalues()
             if self.recipe_type.is_spring(state)
         ]
+
         for state in spring_list:
-            self.determined_state_index_set.add(state.index)
+            self.determined_set.add(state.index)
             recipe = self.recipe_type.from_spring(state)
             if state.state_index in self.mouth_db:
                 self.mouth_db[state.state_index].recipe = recipe 
             else:
                 self.linear_db[state.state_index].recipe = recipe
+
         return spring_list
 
-    def resolve(self, Springs, MouthList):
+    def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
            |          begin states. Derive accumulated actions along the walk.
            |      
@@ -216,34 +223,47 @@ class Strategy:
         """
         new_springs = Springs
         while new_springs:
-            unresolved_mouths              = self._accumulate(springs) 
+            determined_mouths = self._accumulate(springs) 
+
             # Resolved mouth states -> new springs for '_accumulate()'
-            new_springs, unresolved_mouths = self._interfere(unresolved_mouths)
+            self._interfere(self.sm.states[si] for si in determined_mouths)
+            new_springs = (self.sm.states[si] for si in determined_mouths)
 
-        return unresolved_mouths
+        return set(self.mouth_db.iterkeys()).difference(self.determined_set)
 
-    def resolve_dead_lock(self, DeadLockList):
+    def resolve_dead_locks(self, UnresolvedMouths):
         """During the process of '.resolve()', there might be remaining mouth
         states which cannot be resolve due to mutual dependencies. Those states
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent linear states.
         """
-        dependency_db       = self.get_dependency_db(DeadLockList)
+        dependency_db       = self.get_dependency_db(UnresolvedMouths)
         dead_lock_group_set = self.get_dead_lock_groups(dependency_db)
-        resolution_sequence = _dead_lock_resolution_sequence(group_set)
 
-        for group in resolution_sequence:
+        for group in _dead_lock_resolution_sequence(group_set):
             _dead_lock_resolve(group)
-            resolved, unresolved = _accumulate(Springs=group)
+            determined_mouths = self._accumulate(Springs=group)
 
-    def dead_lock_groups_find(DeadLockList):
+    def dead_lock_groups_find(self, UnresolvedMouths):
+        """Find dead-lock groups. 
+
+        RETURNS: Sets of states -- each set is a dead-lock group.
+        """
         depend_db = {} # map: state 'i' --> 'state_set' that depend on 'i'
 
         # (*) Direct dependencies.
         #
         # Detect dependencies originating from connections by linear state
         # sequences.
-        for begin in DeadLockList:
+        walker = LinearStateWalker(self.recipe_type, 
+                                   self.sm.states, 
+                                   self.determined_set,
+                                   self.linear_db, 
+                                   self.mouth_db)
+
+        for begin in UnresolvedMouths:
+            for state in Springs:
+                walker.do((state, self.recipe.from_spring(state)))
             reached_mouths = self.__walk_linear(begin)
             # Any mouth state that has been reached starting from 'begin'
             # depends on the output of 'begin'.
@@ -287,23 +307,24 @@ class Strategy:
 
         return dead_lock_group_set
 
-    def _interfere(self, MouthStateList):
+    def _interfere(self, DeterminedMouthSet):
         """Perform interference of mouth states.
         """
-        resolved   = []
-        unresolved = []
-        for state in MouthStateList:
-            accu_out = self.recipe_type.from_interference(
-                recipe for i, recipe in state.entry_db.iteritems()
+        for state_index in DeterminedMouthStateSet:
+            recipe = self.recipe_type.from_interference(
+                state.entry_db.itervalues()
             )
+            assert recipe is not None
             if accu_out is None:
                 unresolved.append(state)
             else:
                 state.accu_out = accu_out
                 resolved.append(state)
+
+        self.determined_set.update(DeterminedMouthSet)
         return resolved, unresolved
 
-    def _accumulate(Springs):
+    def _accumulate(self, Springs):
         """Recursively walk along linear states. The termination criteria is 
         that one of three things hold:
 
@@ -316,35 +337,82 @@ class Strategy:
                 recipe = self._accumulate(recipe, State)
 
         """
+        walker = LinearStateWalker(self.recipe_type, 
+                                   self.sm.states, 
+                                   self.determined_set,
+                                   self.linear_db, 
+                                   self.mouth_db)
 
-        def entrance_ok(transition_id, target):
-            """RETURNS: False -- if the state 'Target' should not be entered.
-                        True  -- if it should
-            """
-            if target_index in self.determined_state_index_set:
-                return False
-            elif target_index in self.mouth_db: 
-                self.mouth_db.entry_db.enter(transition_id, recipe)
-                return False
-            return True
+        for state in Springs:
+            walker.do((state, self.recipe.from_spring(state)))
 
-        def on_enter(prev_state, prev_recipe):
-            recipe = self.recipe_type.from_accumulation(
-                             prev_recipe, 
-                             self.recipe_type.get_SOV_operation(state))
+        # self.determined_set == walker.determined_set
+        return walker.resolved_mouths
 
-            # Termination Criteria:
-            # (i)   Terminal: no transitions, do further recursion. 
-            #       (Nothing to be done to guarantee that)
-            # (ii)  Do not enter a mouth state.          --> entrance_ok()
-            # (iii) Consider Strategy specific criteria. --> entrance_ok()
-            todo = [
-                target
-                for target, transition_id in state.transitions()
-                if entrance_ok(transition_id, target)
-            ]
+class LinearStateWalker(TreeWalker):
+    """Walks recursively along linear states until it reaches a terminal, until the
+    state ahead is a mouth state, or a determined state.
 
-            if not todo: return None
-            else:        return todo
+        -- Performs the accumulation according to the given 'RecipeType'. 
 
-   return linear_state_list, mouth_state_list
+        -- Every state, for which a recipe is determined, is added to the 
+           'determined_set'. 
+
+        -- Every mouth state for wich all entry recipies are defined, is added
+           to the 'determined_mouths' set.
+
+    The 'determined_mouths' will later be determined through 'interference' and
+    as then they will be added to 'determined_set'--but not now!
+    """
+    @typed(RecipeType=types.ClassType)
+    def __init__(self, RecipeType, StateDb, DeterminedStateIndexSet, LinearDb, MouthDb):
+        self.recipe_type       = RecipeType
+        self.state_db          = StateDb
+        self.mouth_db          = MouthDb
+        self.linear_db         = LinearDb
+
+        self.determined_set    = DeterminedStateIndexSet
+        self.determined_mouths = set()
+
+        TreeWalker.__init__(self)
+
+    def on_enter(Args):
+        StateIndex = Args[0]
+        PrevRecipe = Args[1]
+        # Accumulation: Concatenate recipe of previous state with operation
+        #               of current state.
+        # => recipe of current state.
+        state  = self.state_db[StateIndex]
+        op     = self.recipe_type.get_SOV_operation(state)
+        recipe = self.recipe_type.from_accumulation(PrevRecipe, op)
+        self.determined_set.add(StateIndex)
+
+        # Determine the recipe of the entered linear state.
+        self.linear_db[StateIndex].recipe = recipe
+
+        # Termination Criteria:
+        # (i)   Terminal: no transitions, do further recursion. 
+        #       (Nothing to be done to guarantee that)
+        # (ii)  Do not enter a mouth state.        
+        # (iii) Target is determined (spring).               
+        todo = []
+        for target_index, transition_id in state.target_map().iteritems():
+            mouth_info = self.mouth_db.get(target_index)
+            if mouth_info is not None:
+                # (ii) Consider mouth state --> not in 'todo'.
+                target   = self.state_db[target_index]
+                op       = self.recipe_type.get_SOV_operation(target)
+                e_recipe = self.recipe_type.from_accumulation(recipe, op)
+                mouth_info.entry_db.enter(transition_id, e_recipe)
+                if mouth_info.is_determined():
+                    self.determined_mouths.append(target_index)
+                continue # Do not dive into mouth states!
+            elif target.index in self.determined_set:
+                # (iii) Target is determined --> not in 'todo'.
+                continue
+            else:
+                todo.append((target_index, recipe))
+
+        if not todo: return None
+        else:        return todo
+
