@@ -1,6 +1,8 @@
 from   quex.engine.misc.tree_walker        import TreeWalker
 
 import types
+from   collections import defaultdict
+from   itertools   import chain
 
 E_RecipeType  = Enum("UNDETERMINED", "VOID", "__DEBUG_E_RecipeType")
 
@@ -16,6 +18,24 @@ class Recipe:
 
     See 00-README.txt the according DEFINITION.
     """
+    @staticmethod
+    def get_terminal_SOV_db(SM):
+        """Determines terminals in the state machine which absolutely require
+        some information about a set of variables (SOV) for the investigated
+        behavior. The set is not concerned of determination happening during
+        analysis or at run-time. 
+
+        Only 'terminals' need to be specified, because the SOV(i) for each 
+        state 'i' is determined by BACK-PROPAGATION of needs.
+
+        RETURNS: defaultdict(set): state index --> set of variables
+
+        The 'variables' are best determined in form of 'Enum' values. The 
+        return type must be 'defaultdict(set)' so that it can be easily 
+        extended by further processing.
+        """
+        assert False
+
     @staticmethod
     def get_SOV_operation(TheState):
         """Extracts from a given state machine state the operation on the SOV, 
@@ -109,8 +129,8 @@ class MouthStateInfo:
 
 class Strategy:
     def __init__(self, SM, RecipeType):
-        self.sm              = SM
-        self.recipe_type     = RecipeType
+        self.sm          = SM
+        self.recipe_type = RecipeType
 
         self.mouth_db  = {}
         self.linear_db = {}
@@ -119,12 +139,13 @@ class Strategy:
         """Associate all states in the state machine with an 'R(i)' and 
         determine what actions have to be implemented at what place.
         """
+        self.sov_db = self.determine_SOVs()
 
         # Determine what states are entered only by one state. Those are the 
         # 'linear states'. States which are entered by more than one state are
         # 'mouth states'.
         self.linear_db, \
-        self.mouth_db   = Strategy.categorize_states()
+        self.mouth_db   = self.categorize_states()
 
         # Determine states from where a walk along linear states can begin.
         springs = self.determine_springs()
@@ -141,6 +162,41 @@ class Strategy:
         # At this point all states must have determined recipes, according to
         # the theory in 00-README.txt.
         assert self.determined_set == set(self.sm.states.iterkeys())
+
+    def determine_SOVs(self):
+        """Determines SOV(i), that is it determines the variables which are 
+        important for each state. For that the 'terminals' are requested from 
+        the recipe type (representing the investigated behavior). 
+        
+        If a state 'i' requires a variable 'x' for its drop-out procedure, then
+        the development of 'x' along the states on the path to 'i' must be 
+        implemented. In other words, 'x' is part of any SOV(k) where 'k' is a
+        predecessor state of 'i'.
+
+        The method to resolve this is 'back-propagation' of needs.
+        """
+        # terminal_sov_db = defaultdict(set)
+        terminal_sov_db = self.recipe_type.get_terminal_SOV_db(self.sm)
+
+        # SOV(i) for all states determined => back-propagation not necessary.
+        if len(terminal_sov_db) == len(self.sm.states):
+            return terminal_sov_db
+
+        # Determine SOV(i) of states on which determined states depend
+        propagated_db = defaultdict(set)
+        for si, sov in terminal_sov_db:
+            predecessor_set = self.predecessor_db[si]
+            propagated_db.update(
+                (psi, sov) for psi in predecessor_set
+            )
+
+        # Include propagated sovs into already known ones
+        sov_db = terminal_sov_db
+        for si, sov in propagated_db.iteritems():
+            # SOV(i) takes over what is reported in 'propagated_db[i]'
+            sov_db[si].update(sov)
+
+        return sov_db
 
     def categorize_states(self):
         """Seperates the states in state machine into two sets:
