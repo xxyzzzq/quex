@@ -1,4 +1,1 @@
-# TODO
-class TerminalIndentationHandler:
-    pass
 
