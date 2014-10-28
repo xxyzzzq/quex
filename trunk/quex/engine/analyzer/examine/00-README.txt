@@ -11,6 +11,33 @@ performance increase (due to avoided cache misses, for example). Operations are
 preferred to be postponed, because earlier states are passed more often than
 later states.
 
+The basis for the analysis is a 'simple state machine'. What makes the state
+machine simple is the association of states and operations: For any entry into
+the state the exact same operation is applied. As a result of the operation
+reduction and operation postponing, a (non-simple) 'state machine' is
+developed. In this state machine, operations upon entry into a state differ
+depending on the state from which they are entered.
+
+      a)
+
+          ...   ---------.
+                          \                      .-----.
+          ...   -----------+---[ operation ]----( state )----->   ...
+                          /                      '-----'
+          ...   ---------'       
+
+      b)
+
+          ...   ---[ operation 0 ]----.
+                                       \         .-----.
+          ...   ---[ operation 1 ]------+-------( state )----->   ...
+                                       /         '-----'
+          ...   ---[ operation 2 ]----'       
+
+
+      Figure 1: a) State of a simple state machine. b) State of a (non-simple) 
+                state machine.
+
 -------------------------------------------------------------------------------
 SITUATION:
 
@@ -22,12 +49,13 @@ the passed operations and the current state. The steps in the run through a
 state machine are depicted in figure 1.
 
 
-                         .----------<---------------.
-                         |                          |
-               Begin -------> Operations -----> Transitions -----> Drop-Out
-                                                       
+                    .----------<---------------.
+                    |                          |
+          Begin -------> Operations -----> Transitions -----> Drop-Out
+                                                  
 
-                   Figure 1: The run through a state machine.
+              Figure 1: The run through a state machine.
+
 
 Each phenomenon can be associated with a set of variables by which it is
 determined. The line and column numbers are determined by the current line and
@@ -35,10 +63,12 @@ column number and the previous line and current number, for example. The sets
 of variables which are associated with an investigated procedure, is called
 SOV.
 
+
 DEFINITION: SOV -- Set of Variables
 
     The term 'set of variables' SOV shall stand for the set of all
     variables which are relevant to the investigated behavior. 
+
 
 The variables of an SOV evolve along state transitions. Not all variables may
 be necessary in all states. For example, if the lexeme length is not required
@@ -46,10 +76,12 @@ in a terminal, then no state on the path to the terminal is required to
 contribute to the development of that variable. Let the state specific 
 set of variables SOV(i) be defined.
 
+
 DEFINITION: SOV(i) -- The state specific required set of variables.
 
     The set of variables SOV(i) in state 'i' contains all variables which are
     required to satisfy the requirements of all successor states of state 'i'.
+
 
 As a direct consequence, the 'SOV(i)' for each state can be determined by
 *back-propagation* of needs. A state or a terminal which requires a specific
@@ -61,6 +93,7 @@ A state machine changes variables of the SOV. These changes are consequences of
 operations that happen upon entry into states. Let an 'operation' be defined as
 follows.
 
+
 DEFINITION: op(i) -- Operation 
 
     The modification on the SOV upon entry into a state 'i' is called an
@@ -68,6 +101,7 @@ DEFINITION: op(i) -- Operation
     into a state 'i', the setting of the SOV in state 'i' becomes
 
                          SOV(i) = op(i)(x)
+
 
 That is, 'op(i)' is a function or a procedure that is applied on the set of
 variables of concern. All investigated behavior along the state machine 
@@ -416,10 +450,23 @@ DEFINITION: Dead-Lock Group.
     dependencies, each state in a dead-lock group is connected to at least one
     loop.
 
-A dead-lock group cannot be divided into two sub-groups. If any two states 'i'
-and 'k' belong to a group of dead-locks states, then they depend on each other
-circularly. If either one belonged to a group without the other, then this group
-cannot be a dead-lock group. It would be missing a circular dependency. 
+STATEMENT:
+
+    A dead-lock group cannot be divided into two sub-groups. 
+    
+Proof: If any two states 'i' and 'k' belong to a group of dead-locks states,
+then they depend on each other circularly. If either one belonged to a
+group without the other, then this group cannot be a dead-lock group. It
+would be missing a circular dependency. 
+
+STATEMENT:
+
+    A state can only belong to one dead-lock group.
+
+Proof: If a state 'i' belongs to a group of states on which it depends, then it
+cannot belong to a group that does not have all those other states. Otherwise,
+the other group would not be complete. Since there can be no groups which are
+sub groups of others, a state can therefore only belong to one group.
 
 However, there may be more than one dead-lock group where one group depends on
 the other. Consider a dead-lock group where states 'i' and 'k' are circularly
