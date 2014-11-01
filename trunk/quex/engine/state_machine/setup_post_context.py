@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
+import quex.engine.state_machine.sequentialize          as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier   as     beautifier
 import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_context
-from   quex.blackboard                                  import E_PreContextIDs, setup as Setup
+from   quex.blackboard                                  import E_PreContextIDs, \
+                                                               setup as Setup
 
 
 def do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReference):
@@ -76,12 +78,12 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     if post_context_sm is None:
         assert EndOfLinePostContextF
         # Generate a new post context that just contains the 'newline'
-        post_context_sm = StateMachine(AcceptanceF=True)
-        post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
+        post_context_sm = StateMachine_Newline() 
 
     elif EndOfLinePostContextF: 
         # Mount 'newline' to existing post context
-        post_context_sm.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f)
+        post_context_sm = sequentialize.do([post_context_sm, 
+                                            StateMachine_Newline()]) 
 
     # A post context with an initial state that is acceptance is not really a
     # 'context' since it accepts anything. The state machine remains un-post context.
@@ -155,4 +157,29 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
 
     # No input position backward search required
     return beautifier.do(the_state_machine), None
+
+def StateMachine_Newline():
+    """Creates a state machine matching newline according to what has been 
+    specified in the setup (Setup.dos_carriage_return_newline_f). 
+
+    That is, if is DOS newline then the state machine represents '\r\n' and
+    if it is unix only, then it represents '\n'. If both is required they 
+    are implemented in parallel.
+
+    RETURNS: StateMachine
+    """
+    UnixF = True
+    DosF  = Setup.dos_carriage_return_newline_f
+
+    NL = ord('\n')  # (pure) newline, i.e. line feed
+    CR = ord('\r')  # carriage return
+
+    sm = StateMachine()
+    if UnixF:
+        sm.add_transition(sm.init_state_index, NL, AcceptanceF=True)
+    if DosF:
+        idx = sm.add_transition(sm.init_state_index, CR, AcceptanceF=False)
+        sm.add_transition(idx, NL, AcceptanceF=True)
+
+    return beautifier.do(sm)
 

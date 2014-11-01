@@ -1,7 +1,9 @@
 #! /usr/bin/env python
 from quex.engine.state_machine.core import StateMachine
+from quex.engine.tools import typed
 
 
+@typed(the_state_machine_list=[StateMachine])
 def do(the_state_machine_list, 
        LeaveIntermediateAcceptanceStatesF = False, 
        MountToFirstStateMachineF          = False, 
@@ -17,9 +19,7 @@ def do(the_state_machine_list,
        If MountToFirstStateMachineF is set, then the first state machine will
        contain the result of the concatination.
     """
-    assert type(the_state_machine_list) == list 
     assert len(the_state_machine_list) != 0
-    assert map(lambda x: x.__class__.__name__, the_state_machine_list) == ["StateMachine"] * len(the_state_machine_list)
 
     for sm in the_state_machine_list:   # DEBUG
         sm.assert_consistency()         # DEBUG

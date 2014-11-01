@@ -457,50 +457,6 @@ class StateMachine(object):
                 state.set_pre_context_id(E_PreContextIDs.NONE) 
                 state.set_acceptance(False)
 
-    def mount_newline_to_acceptance_states(self, DOS_CarriageReturnNewlineF, InverseF=False):     
-        """Adds the condition 'newline or border character' at the end of the given
-           state machine. Acceptance is only reached when the newline or border
-           occurs. 
-           
-           This function is used for begin of line or end of line pre-conditions,
-           thus: IT DOES NOT SETUP A POST-CONDITITION in the sense that output is
-           scanned but cursor is being reset after match!  The caller provides the
-           post-condition modifications itself, if needed.
-
-           We simply append to each acceptance state the trigger '\n' or
-           BorderCharacter that leads to the new acceptance.  The old acceptance
-           state is annulated.  
-        """    
-        assert type(DOS_CarriageReturnNewlineF) == bool
-        assert type(InverseF)                   == bool
-
-        old_acceptance_state_list = self.get_acceptance_state_list() 
-        new_state_idx             = state_machine_index.get()
-        new_state                 = State(StateIndex=new_state_idx)
-        # New state must be just like any of the acceptance states (take the first).
-        # The transition map, of course must be empty.
-        new_state.origins().set([old_acceptance_state_list[0].origins().get_the_only_one().clone()])
-
-        self.states[new_state_idx] = new_state
-
-        if InverseF: sequence = [ord("\n"), ord("\r")]
-        else:        sequence = [ord("\r"), ord("\n")]
-
-        for state in old_acceptance_state_list:
-            # Transition '\n' --> Acceptance
-            state.add_transition(ord('\n'), new_state_idx)
-            
-            if DOS_CarriageReturnNewlineF:
-                # Alternative Transition '\r\n' --> Acceptance
-                aux_idx = self.create_new_state(AcceptanceF=False)
-                state.add_transition(sequence[0], aux_idx)
-                self.states[aux_idx].add_transition(sequence[1], new_state_idx)
-
-            # (-) Cancel acceptance of old state
-            state.set_acceptance(False)
-            
-        return new_state_idx    
-
     def mount_to_initial_state(self, TargetStateIdx):
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
         The initial states epsilon transition to TERMINATE is deleted."""
@@ -1115,4 +1071,4 @@ class StateMachine(object):
                        "present state indices: " + repr(self.states.keys()) + "\n" + \
                        "state machine = " + self.get_string(NormalizeF=False)
 
-            
+           
