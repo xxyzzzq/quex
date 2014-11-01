@@ -1,7 +1,9 @@
 #include <fstream>    
 #include <iostream> 
+#include "Calc_lexer" 
+/* With bison version 3.0.2, somehow the source code is not pasted into header. 
+ * Including the quex generated header before the bison header helps.        */
 #include "Calc_parser.tab.hpp"
-#include "Calc_lexer"
 
 int Calc_yyparse(quex::Calc_lexer  *qlex);
 

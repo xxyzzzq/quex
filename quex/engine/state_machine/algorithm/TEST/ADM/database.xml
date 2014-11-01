@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.55" date="Sat Nov  1 20:54:37 2014">
+<test-database execution-time-sec="0.56" date="Sat Nov  1 22:11:31 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.21"> 
@@ -9,11 +9,11 @@
                <choice name="ADAPT" result="OK" time_sec="0.10" crc="-2137376588"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.12"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.13"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NEW" result="OK" time_sec="0.06" crc="1884331329"/>
+               <choice name="NEW" result="OK" time_sec="0.07" crc="1884331329"/>
                <choice name="ADAPT" result="OK" time_sec="0.06" crc="320921215"/>
             </choice-list>
         </test>

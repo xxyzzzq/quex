@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include "Calc_parser.tab.h"
 #include "Calc_lexer.h"
+/* With bison version 3.0.2, somehow the source code is not pasted into header. 
+ * Including the quex generated header before the bison header helps.        */
+#include "Calc_parser.tab.h"
 
 int Calc_yyparse(quex_Calc_lexer  *qlex);
 

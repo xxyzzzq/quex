@@ -2,9 +2,9 @@
 %debug
 %pure-parser
 %error-verbose
-%lex-param {quex_Calc_lexer  *qlex}
-%parse-param {quex_Calc_lexer  *qlex}
-%name-prefix="Calc_yy"
+%lex-param {struct quex_Calc_lexer_tag  *qlex}
+%parse-param {struct quex_Calc_lexer_tag  *qlex}
+%define api.prefix {Calc_yy}
 
 %{
 #include "Calc_lexer.h"
@@ -20,8 +20,10 @@
 };
 
 %{
-int  Calc_yylex(YYSTYPE *yylval, quex_Calc_lexer *qlex);
-void Calc_yyerror(quex_Calc_lexer *qlex, const char* m);
+#include "Calc_lexer.h"
+#include <stdio.h>
+int  Calc_yylex(YYSTYPE *yylval, struct quex_Calc_lexer_tag *qlex);
+void Calc_yyerror(struct quex_Calc_lexer_tag *qlex, const char* m);
 %}
 
 %type<dbl> exp num
@@ -73,14 +75,14 @@ num:	TKN_NUM
         
 %%
 
-void Calc_yyerror(quex_Calc_lexer *qlex, const char*  m)
+void Calc_yyerror(struct quex_Calc_lexer_tag *qlex, const char*  m)
 {
 	printf("Parsing error at %i:%i: %s", 
            (int)qlex->counter._line_number_at_begin, (int)qlex->counter._column_number_at_begin, m);
            
 }
 
-int Calc_yylex(YYSTYPE *yylval, quex_Calc_lexer *qlex)
+int Calc_yylex(YYSTYPE *yylval, struct quex_Calc_lexer_tag *qlex)
 {
 	QUEX_TYPE_TOKEN* token;
 

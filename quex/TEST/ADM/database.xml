@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.16" date="Sat Nov  1 20:54:36 2014">
+<test-database execution-time-sec="1.20" date="Sat Nov  1 22:00:45 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -14,12 +14,12 @@
            <choice name="" result="OK" time_sec="0.02" crc="None"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.24"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.27"> 
         <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.12" crc="None"/>
-           <choice name="undefinition" result="OK" time_sec="0.12" crc="None"/>
+           <choice name="convention" result="OK" time_sec="0.13" crc="None"/>
+           <choice name="undefinition" result="OK" time_sec="0.14" crc="None"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
@@ -44,11 +44,11 @@
            <choice name="sphinx" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." time-sum-sec="0.04"> 
         <application file-name="macro-check.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="None"/>
+           <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
     <test title="Command Line Option Documentation" time-sum-sec="0.24"> 
@@ -60,14 +60,14 @@
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.12"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.13"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1407962959L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.12" crc="2107669146"/>
+               <choice name="" result="OK" time_sec="0.13" crc="2107669146"/>
             </choice-list>
         </test>
     </group>
