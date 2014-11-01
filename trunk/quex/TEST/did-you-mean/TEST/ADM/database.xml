@@ -1,10 +1,10 @@
-<test-database execution-time-sec="3.43" date="Sat Nov  1 20:54:36 2014">
+<test-database execution-time-sec="3.34" date="Sat Nov  1 22:00:50 2014">
     <last-used-diff-display-program name=""/>
-    <test title="UCS Character Code Names" time-sum-sec="3.31"> 
+    <test title="UCS Character Code Names" time-sum-sec="3.22"> 
         <application file-name="ucs-character-name.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="1" result="OK" time_sec="3.31" crc="-890159197"/>
+           <choice name="1" result="OK" time_sec="3.22" crc="-890159197"/>
         </choice-list>
     </test>
     <test title="Explicit Token Type Member Assignment" time-sum-sec="0.12"> 

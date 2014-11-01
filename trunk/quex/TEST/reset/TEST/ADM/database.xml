@@ -1,67 +1,67 @@
-<test-database execution-time-sec="0.21" date="Sat Nov  1 20:54:36 2014">
+<test-database execution-time-sec="0.28" date="Sat Nov  1 22:01:47 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.01"> 
-        <application file-name="lexer-x" info-request-time="1414850919L" vanished="False"/>
+    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.05"> 
+        <application file-name="lexer-x" info-request-time="1414875702L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="2.303299"/>
+        <make-procedure success="True" time_sec="2.296158"/>
         <choice-list number="11" same_result="True">
            <choice name="0" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="1" result="OK" time_sec="0.00" crc="285620241"/>
-           <choice name="2" result="OK" time_sec="0.00" crc="285620241"/>
+           <choice name="2" result="OK" time_sec="0.01" crc="285620241"/>
            <choice name="3" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="20" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="30" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="50" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="134" result="OK" time_sec="0.00" crc="285620241"/>
-           <choice name="135" result="OK" time_sec="0.01" crc="285620241"/>
+           <choice name="135" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="136" result="OK" time_sec="0.00" crc="285620241"/>
            <choice name="1000" result="OK" time_sec="0.00" crc="285620241"/>
         </choice-list>
     </test>
     <group name="Reset w/ QuexBufferFiller">
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="codec-lexer" info-request-time="1414850914L" vanished="False"/>
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.05"> 
+            <application file-name="codec-lexer" info-request-time="1414875697L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="2.248888"/>
-            <choice-list number="11" same_result="True">
-               <choice name="0" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="1" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="1000" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="20" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="30" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="50" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="134" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="135" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="136" result="OK" time_sec="0.00" crc="319410180"/>
-            </choice-list>
-        </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.08"> 
-            <application file-name="icu-lexer" info-request-time="1414850916L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="2.466815"/>
+            <make-procedure success="True" time_sec="2.357542"/>
             <choice-list number="11" same_result="True">
                <choice name="0" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="1" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="319410180"/>
                <choice name="3" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="1000" result="OK" time_sec="0.00" crc="319410180"/>
                <choice name="20" result="OK" time_sec="0.00" crc="319410180"/>
                <choice name="30" result="OK" time_sec="0.00" crc="319410180"/>
                <choice name="50" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="134" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="135" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="136" result="OK" time_sec="0.01" crc="319410180"/>
+            </choice-list>
+        </test>
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.06"> 
+            <application file-name="icu-lexer" info-request-time="1414875700L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <make-procedure success="True" time_sec="2.644318"/>
+            <choice-list number="11" same_result="True">
+               <choice name="0" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="20" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="30" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="50" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="134" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="135" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="136" result="OK" time_sec="0.00" crc="319410180"/>
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.06"> 
-            <application file-name="lexer" info-request-time="1414850921L" vanished="False"/>
+        <test title="Plain" make-dependent="True" time-sum-sec="0.05"> 
+            <application file-name="lexer" info-request-time="1414875704L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="2.273269"/>
+            <make-procedure success="True" time_sec="2.388026"/>
             <choice-list number="11" same_result="True">
                <choice name="0" result="OK" time_sec="0.00" crc="759753114"/>
-               <choice name="1" result="OK" time_sec="0.01" crc="759753114"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="759753114"/>
                <choice name="2" result="OK" time_sec="0.00" crc="759753114"/>
                <choice name="3" result="OK" time_sec="0.00" crc="759753114"/>
                <choice name="1000" result="OK" time_sec="0.01" crc="759753114"/>
@@ -73,21 +73,21 @@
                <choice name="136" result="OK" time_sec="0.00" crc="759753114"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.05"> 
-            <application file-name="iconv-lexer" info-request-time="1414850923L" vanished="False"/>
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.06"> 
+            <application file-name="iconv-lexer" info-request-time="1414875707L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="2.273951"/>
+            <make-procedure success="True" time_sec="2.400603"/>
             <choice-list number="11" same_result="True">
                <choice name="0" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="1" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="3" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="20" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="30" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="1" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="20" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="30" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="50" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="134" result="OK" time_sec="0.01" crc="319410180"/>
-               <choice name="135" result="OK" time_sec="0.00" crc="319410180"/>
-               <choice name="136" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="134" result="OK" time_sec="0.00" crc="319410180"/>
+               <choice name="135" result="OK" time_sec="0.01" crc="319410180"/>
+               <choice name="136" result="OK" time_sec="0.01" crc="319410180"/>
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
