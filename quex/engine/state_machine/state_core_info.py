@@ -206,40 +206,36 @@ class StateOperation(object):
                 return Str
             return "%s%s" % (Str, PatternId)
 
-        try:
-            attribute_list = []
-            if self.__acceptance_f:        
-                acceptance_id_txt = ""
-                pre_txt           = ""
-                restore_txt       = ""
-                if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
-                    acceptance_id_txt = repr(self.__pattern_id).replace("L", "")
-                if self.__pre_context_id != E_PreContextIDs.NONE:            
-                    if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
-                        pre_txt = "pre=bol"
-                    else: 
-                        pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
-                if self.__input_position_restore_f: 
-                    restore_txt = annotate("R", self.__pattern_id)
+        attribute_list = []
+        if self.__acceptance_f:        
+            acceptance_id_txt = ""
+            pre_txt           = ""
+            restore_txt       = ""
+            if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
+                acceptance_id_txt = repr(self.__pattern_id).replace("L", "")
+            if self.__pre_context_id != E_PreContextIDs.NONE:            
+                if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                    pre_txt = "pre=bol"
+                else: 
+                    pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
+            if self.__input_position_restore_f: 
+                restore_txt = annotate("R", self.__pattern_id)
 
-                txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
-                if txt: txt_str = "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
-                else:   txt_str = "A"
+            txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
+            if txt: txt_str = "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
+            else:   txt_str = "A"
 
-                attribute_list.append(txt_str)
+            attribute_list.append(txt_str)
 
-            else:
-                assert not self.__input_position_restore_f
+        else:
+            assert not self.__input_position_restore_f
 
-            if self.__input_position_store_f:   
-                attribute_list.append(annotate("S", self.__pattern_id))
+        if self.__input_position_store_f:   
+            attribute_list.append(annotate("S", self.__pattern_id))
 
-            # Attributes happen to be sorted alpabetically, to make the output more stable
-            # Thus, "attribute_list.sort()" --> not necessary (yet)
+        # Attributes happen to be sorted alpabetically, to make the output more stable
+        # Thus, "attribute_list.sort()" --> not necessary (yet)
 
-            if attribute_list: return reduce(lambda x,y: "%s,%s" % (x,y), attribute_list)
-            else:              return ""
-        except:
-            import os
-            os.system("touch /tmp/QUEX_ERROR_OCCURRED")
+        if attribute_list: return reduce(lambda x,y: "%s,%s" % (x,y), attribute_list)
+        else:              return ""
 

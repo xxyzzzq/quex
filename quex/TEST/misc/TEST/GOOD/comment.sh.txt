@@ -21,7 +21,7 @@
 > goto _7;
 <     /* BEGIN: STATE MACHINE
 <      * init-state = 12L
-<      * 00012 F
+<      * 00012  
 <      *      == 'a' ==> 00013
 <      *     
 <      * 00013 A(0)

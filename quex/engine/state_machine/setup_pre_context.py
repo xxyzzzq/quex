@@ -1,8 +1,10 @@
 # (C) Frank-Rene Schaefer
 #     ABSOLUTELY NO WARRANTY
-import quex.engine.state_machine.algorithm.beautifier         as beautifier
-import quex.engine.state_machine.algorithm.acceptance_pruning as acceptance_pruning
-import quex.engine.state_machine.algebra.reverse         as reverse
+import quex.engine.state_machine.algorithm.beautifier         as     beautifier
+import quex.engine.state_machine.algorithm.acceptance_pruning as     acceptance_pruning
+import quex.engine.state_machine.algebra.reverse              as     reverse
+import quex.engine.state_machine.sequentialize                as     sequentialize
+from   quex.engine.state_machine.setup_post_context           import StateMachine_Newline
 from   quex.blackboard                                        import E_PreContextIDs, setup as Setup
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
@@ -39,23 +41,24 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         return None
 
     # (*) Reverse the state machine of the pre-condition 
-    inverse_pre_context = reverse.do(pre_context_sm)
+    reverse_pre_context = reverse.do(pre_context_sm)
         
     if BeginOfLinePreContextF:
         # Extend the existing pre-context with a preceeding 'begin-of-line'.
-        inverse_pre_context.mount_newline_to_acceptance_states(Setup.dos_carriage_return_newline_f, 
-                                                               InverseF=True)
+        reverse_newline_sm = reverse.do(StateMachine_Newline())
+        reverse_pre_context = sequentialize.do([reverse_pre_context, 
+                                                reverse_newline_sm])
 
     # (*) Once an acceptance state is reached no further analysis is necessary.
-    acceptance_pruning.do(inverse_pre_context)
+    acceptance_pruning.do(reverse_pre_context)
 
     # (*) Clean up what has been done by inversion (and optionally 'BeginOfLinePreContextF')
     #     AFTER acceptance_pruning (!)
-    inverse_pre_context = beautifier.do(inverse_pre_context)
+    reverse_pre_context = beautifier.do(reverse_pre_context)
 
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
-    pre_context_sm_id = inverse_pre_context.get_id()
+    pre_context_sm_id = reverse_pre_context.get_id()
 
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
@@ -63,6 +66,6 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         if not state.is_acceptance(): continue
         state.set_pre_context_id(pre_context_sm_id)
     
-    return inverse_pre_context
+    return reverse_pre_context
 
             
