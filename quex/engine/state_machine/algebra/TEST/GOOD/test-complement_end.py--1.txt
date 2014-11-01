@@ -7,10 +7,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == ['a', 'l'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -22,10 +22,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == ['o', 'z'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -37,25 +37,25 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
      == 'A' ==> 00005
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '3' ==> 00003
     
-00003 ()
+00003 
      == '4' ==> 00004
     
-00004 (A)
+00004 A
     
-00005 ()
+00005 
      == 'B' ==> 00006
     
-00006 ()
+00006 
      == 'C' ==> 00004
     
 
@@ -68,16 +68,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '3' ==> 00003
     
-00003 (A)
+00003 A
     
 
 ---------------------------
@@ -89,14 +89,14 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
      == 'A' ==> 00002
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 (A)
+00002 A
     
 
 
@@ -108,10 +108,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -123,13 +123,13 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 (A)
+00002 A
     
 
 
@@ -141,10 +141,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -156,19 +156,19 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == 'B' ==> 00002
     
-00002 ()
+00002 
      == ['A', 'B'] ==> 00003
     
-00003 ()
+00003 
      == 'C' ==> 00004
     
-00004 (A)
+00004 A
     
 
 
@@ -180,19 +180,19 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == 'A' ==> 00002
     
-00002 ()
+00002 
      == 'B' ==> 00003
     
-00003 ()
+00003 
      == 'C' ==> 00004
     
-00004 (A)
+00004 A
     
 
 ---------------------------
@@ -204,37 +204,37 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'a' ==> 00001
     
-00001 ()
+00001 
      == 'l' ==> 00002
     
-00002 ()
+00002 
      == 'b' ==> 00003
     
-00003 (A)
+00003 A
      == 'e' ==> 00004
     
-00004 ()
+00004 
      == 'r' ==> 00005
     
-00005 ()
+00005 
      == 't' ==> 00006
     
-00006 ()
+00006 
      == 'i' ==> 00007
     
-00007 ()
+00007 
      == 'k' ==> 00008
     
-00008 ()
+00008 
      == 'u' ==> 00009
     
-00009 ()
+00009 
      == 's' ==> 00010
     
-00010 (A)
+00010 A
     
 
 
@@ -246,24 +246,24 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'a' ==> 00001
     
-00001 ()
+00001 
      == 'l' ==> 00002
     
-00002 ()
+00002 
      == 'b' ==> 00003
     
-00003 ()
+00003 
      == 'e' ==> 00004
     
-00004 ()
+00004 
      == 'r' ==> 00005
     
-00005 ()
+00005 
      == 't' ==> 00006
     
-00006 (A)
+00006 A
     
 

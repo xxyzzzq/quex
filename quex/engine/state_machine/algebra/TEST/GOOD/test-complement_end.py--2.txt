@@ -5,7 +5,7 @@ Cutter   = "123"
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -15,7 +15,7 @@ Cutter   = "123"+
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -27,10 +27,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'X' ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -40,7 +40,7 @@ Cutter   = X"123"?
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -52,10 +52,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'X' ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -65,7 +65,7 @@ Cutter   = "123"?X
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -77,10 +77,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'X' ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -90,7 +90,7 @@ Cutter   = "123"*X
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -102,28 +102,28 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'X' ==> 00001
     
-00001 (A)
+00001 A
      == '1' ==> 00002
     
-00002 ()
+00002 
      == '2' ==> 00003
     
-00003 ()
+00003 
      == '3' ==> 00004
     
-00004 ()
+00004 
      == '1' ==> 00005
     
-00005 ()
+00005 
      == '2' ==> 00006
     
-00006 ()
+00006 
      == '3' ==> 00007
     
-00007 (A)
+00007 A
      == '1' ==> 00005
     
 
@@ -134,6 +134,6 @@ Cutter   = X"123"*
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 

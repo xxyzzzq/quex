@@ -2,10 +2,10 @@ No Post Context at all
 (no output is good output)
 State Machine _____________________________________
 init-state = 0L
-00000 (1)
+00000 
      == 'a' ==> 00001
     
-00001 (1, A)
+00001 A(1)
     
 
 Positioning Info __________________________________

@@ -20,6 +20,8 @@
 };
 
 %{
+#include "Calc_lexer"
+#include <iostream>
 int Calc_yylex(YYSTYPE *yylval, quex::Calc_lexer *qlex);
 void Calc_yyerror(quex::Calc_lexer *qlex, const std::string& m);
 %}

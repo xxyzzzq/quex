@@ -1,24 +1,24 @@
 init-state = 0L
-00000 (1), (2), (3)
+00000 
      == 'x' ==> 00001
     
-00001 (1, S), (2, S), (3)
+00001 S1, S2
      == 'a' ==> 00002
      == 'b' ==> 00006
     
-00002 (1, A, R), (3)
+00002 A(1,R1)
      == 'a' ==> 00002
      == 'c' ==> 00003
     
-00003 (3)
+00003 
      == 'd' ==> 00004
     
-00004 (3)
+00004 
      == 'e' ==> 00005
     
-00005 (3, A)
+00005 A(3)
     
-00006 (2, A, R), (3)
+00006 A(2,R2)
      == 'b' ==> 00006
      == 'c' ==> 00003
     
@@ -65,67 +65,69 @@ State 4:
 
 .drop_out:
 on last_acceptance:
-
-
 case 1: pos = position[PostContext_1] ; goto Pattern1;
-  case 2: pos = position[PostContext_2] ; goto Pattern2;
-    State 5: 
+case 2: pos = position[PostContext_2] ; goto Pattern2;
 
-.entry:
-.from 4:
 
-.drop_out:
-  goto Pattern3;
-    State 6:
-        .entry:
-        .from  1:
-        last_acceptance  = Pattern2
-    position[PostContext_1] = input_p;
-
-position[PostContext_2] = input_p;
-.from 6: last_acceptance = Pattern2
-
+State 5:
+  .entry:
+    .from 4: 
 
 .drop_out:
-
-pos = position[PostContext_2] ; goto Pattern2;
-  --- Optimized States ---
-    State 2:
-        .entry:
-        .from  1:
-    last_acceptance = Pattern1
-
-position[PostContext_0] = input_p;
-.from 2: last_acceptance = Pattern1
-
-.drop_out:
-  pos = position[PostContext_0] ; goto Pattern1;
-    State 3: 
-    .entry: 
-
-.from 2:
-.from 6:
-.drop_out:
-on last_acceptance:
-    case 1: pos = position[PostContext_0] ; goto Pattern1; 
-
-case 2: pos = position[PostContext_0] ; goto Pattern2;
-State 4:
-.entry:
-.from 3:
-
-
-.drop_out:
-on last_acceptance:
-        case  1: pos = position[PostContext_0] ; goto Pattern1;
-    case 2: pos = position[PostContext_0] ; goto Pattern2;
+goto Pattern3;
 
 State 6:
-.entry:
+  .entry:
+    .from 1:
+        last_acceptance = Pattern2
+        position[PostContext_1]  = input_p;
+        position[PostContext_2]  = input_p;
+    .from 6: last_acceptance = Pattern2
 
-.from 1:
-last_acceptance = Pattern2
-position[PostContext_0]  = input_p;
-.from 6: last_acceptance = Pattern2
+.drop_out:
+pos = position[PostContext_2] ; goto Pattern2;
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1:
+        last_acceptance = Pattern1
+        position[PostContext_0]  = input_p;
+    .from 2: last_acceptance = Pattern1
+
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
+
+State 3:
+  .entry:
+    .from 2: 
+    .from 6: 
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos = position[PostContext_0] ; goto Pattern2;
+
+
+State 4:
+  .entry:
+    .from 3: 
+
+.drop_out:
+on last_acceptance:
+case 1: pos = position[PostContext_0] ; goto Pattern1;
+case 2: pos = position[PostContext_0] ; goto Pattern2;
+
+
+State 6:
+  .entry:
+    .from 1:
+        last_acceptance = Pattern2
+        position[PostContext_0]  = input_p;
+    .from 6: last_acceptance = Pattern2
+
 .drop_out:
 pos = position[PostContext_0] ; goto Pattern2;
+

@@ -54,7 +54,7 @@ sm = StateMachine()
 def set_origins(StateIndex, *TheList):
     global sm
     sm.states[StateIndex].origins().set(
-        [ StateCoreInfo(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
+        [ StateOperation(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
     )
 
 n0 = sm.init_state_index     
@@ -84,7 +84,7 @@ txt = """
 sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-sm.states[n1].add_origin(5555L, 1L)
+add_origin(sm.states[n1], 5555L, 1L)
 set_origins(n1, (5555, 1, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
 n2 = sm.add_transition(n2, ord('a'), n2, AcceptanceF=True)

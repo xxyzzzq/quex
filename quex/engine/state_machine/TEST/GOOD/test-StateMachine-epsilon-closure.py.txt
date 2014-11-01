@@ -1,41 +1,41 @@
-## state machine =  init-state = 0L
-00000 ()
-     == 'a' ==> 00001
+## state machine =  init-state = 25L
+00025 
+     == 'a' ==> 00026
     
-00001 ()
-     == 'b' ==> 00002
-     == 'd' ==> 00003
+00026 
+     == 'b' ==> 00027
+     == 'd' ==> 00028
     
-00002 ()
-     == 'c' ==> 00003
+00027 
+     == 'c' ==> 00028
     
-00003 ()
-     == 'e' ==> 00004
+00028 
+     == 'e' ==> 00029
     
-00004 (A)
-     ==<epsilon>==> 00005
-00005 ()
-     ==<epsilon>==> 00006, 00011
-00006 ()
-     == 'a' ==> 00007
+00029 A
+     ==<epsilon>==> 00035
+00030 
+     == 'a' ==> 00031
     
-00007 ()
-     == 'b' ==> 00008
-     == 'd' ==> 00009
+00031 
+     == 'b' ==> 00032
+     == 'd' ==> 00033
     
-00008 ()
-     == 'c' ==> 00009
+00032 
+     == 'c' ==> 00033
     
-00009 ()
-     == 'e' ==> 00010
+00033 
+     == 'e' ==> 00034
     
-00010 
-     ==<epsilon>==> 00006, 00011
-00011 (A)
+00034 
+     ==<epsilon>==> 00030, 00036
+00035 
+     ==<epsilon>==> 00030, 00036
+00036 A
     
 
 ## compute epsilon closures of all states:
-state =  35 epsilon-closure =  [31L, 35L, 36L]
-state =  29 epsilon-closure =  [29L, 30L, 31L, 36L]
-state =  30 epsilon-closure =  [30L, 31L, 36L]
-## normal epsilon closures =  [25L, 26L, 27L, 28L, 31L, 32L, 33L, 34L, 36L]
+state =  34 epsilon-closure =  [30L, 34L, 36L]
+state =  35 epsilon-closure =  [30L, 35L, 36L]
+state =  29 epsilon-closure =  [29L, 30L, 35L, 36L]
+## normal epsilon closures =  [25L, 26L, 27L, 28L, 30L, 31L, 32L, 33L, 36L]

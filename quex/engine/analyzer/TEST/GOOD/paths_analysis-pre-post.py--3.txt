@@ -1,43 +1,43 @@
 init-state = 0L
-00000 (1), (2), (3), (4)
+00000 
      == 'a' ==> 00001
     
-00001 (1, A, pre=1), (2, S), (3, S), (4, A)
+00001 A(1,pre=1), S2, S3, A(4)
      == 'b' ==> 00002
     
-00002 (2), (3)
+00002 
      == 'b' ==> 00003
      == 'c' ==> 00005
     
-00003 (2)
+00003 
      == 'b' ==> 00003
      == 'c' ==> 00004
     
-00004 (2, A, R)
+00004 A(2,R2)
     
-00005 (2, A, R), (3)
+00005 A(2,R2)
      == 'd' ==> 00006
     
-00006 (3)
+00006 
      == 'e' ==> 00007
     
-00007 (3, A, R)
+00007 A(3,R3)
     
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from NONE: 
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0:
-  .drop_out:
-    if PreContext_1:  goto Pattern1;
-     goto Pattern4;
+    .from 0: 
 
+.drop_out:
+if PreContext_1: goto Pattern1;
+goto Pattern4;
 
 State 2:
   .entry:
@@ -45,47 +45,47 @@ State 2:
         position[PostContext_2]  = input_p;
         position[PostContext_4]  = input_p;
         if 'PreContext_1': position[PostContext_1]  = input_p;
-  .drop_out:
-    if PreContext_1: pos -= 1;  goto Pattern1;
-    pos -= 1;  goto Pattern4;
 
+.drop_out:
+if PreContext_1: pos -= 1;  goto Pattern1;
+pos -= 1;  goto Pattern4;
 
 State 3:
   .entry:
-    .from 2:
-    .from 3:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
-    pos = position[PostContext_4] ; goto Pattern4;
+    .from 2: 
+    .from 3: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+pos = position[PostContext_4] ; goto Pattern4;
 
 State 4:
   .entry:
-    .from 3:
-  .drop_out:
-    pos = position[PostContext_2] ; goto Pattern2;
+    .from 3: 
 
+.drop_out:
+pos = position[PostContext_2] ; goto Pattern2;
 
 State 5:
   .entry:
-    .from 2:
-  .drop_out:
-    pos -= 2;  goto Pattern2;
+    .from 2: 
 
+.drop_out:
+pos -= 2;  goto Pattern2;
 
 State 6:
   .entry:
-    .from 5:
-  .drop_out:
-    pos -= 3;  goto Pattern2;
+    .from 5: 
 
+.drop_out:
+pos -= 3;  goto Pattern2;
 
 State 7:
   .entry:
-    .from 6:
-  .drop_out:
-    pos -= 4;  goto Pattern3;
+    .from 6: 
 
+.drop_out:
+pos -= 4;  goto Pattern3;
 
 
 --- Optimized States ---
@@ -93,24 +93,24 @@ State 7:
 State 2:
   .entry:
     .from 1: position[PostContext_0]  = input_p;
-  .drop_out:
-    if PreContext_1: pos -= 1;  goto Pattern1;
-    pos -= 1;  goto Pattern4;
 
+.drop_out:
+if PreContext_1: pos -= 1;  goto Pattern1;
+pos -= 1;  goto Pattern4;
 
 State 3:
   .entry:
-    .from 2:
-    .from 3:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
-    pos = position[PostContext_0] ; goto Pattern4;
+    .from 2: 
+    .from 3: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
+pos = position[PostContext_0] ; goto Pattern4;
 
 State 4:
   .entry:
-    .from 3:
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern2;
+    .from 3: 
 
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern2;
 

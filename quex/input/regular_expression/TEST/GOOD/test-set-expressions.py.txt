@@ -38,17 +38,17 @@ result     = ['A', 'Z'], ['a', 'z']
 Check the range cut ...
 expression = "[^a]"
 result     = init-state = 0L
-00000 ()
+00000 
      == [-oo, 0060] [0062, oo]  ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression = "[:inverse([a]):]"
 result     = init-state = 0L
-00000 ()
+00000 
      == [-oo, 0060] [0062, oo]  ==> 00001
     
-00001 (A)
+00001 A
     
 

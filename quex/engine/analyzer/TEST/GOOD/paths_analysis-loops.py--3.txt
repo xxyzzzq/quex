@@ -1,89 +1,89 @@
 init-state = 0L
-00000 (1), (2)
+00000 
      == 'a' ==> 00001
     
-00001 (1, A, pre=1), (2, A, pre=2)
+00001 A(1,pre=1), A(2,pre=2)
      == 'b' ==> 00002
     
-00002 (1), (2)
+00002 
      == 'c' ==> 00002
      == 'd' ==> 00003
     
-00003 (1), (2)
+00003 
      == 'e' ==> 00004
     
-00004 (1, A, pre=1), (2, A, pre=2)
+00004 A(1,pre=1), A(2,pre=2)
      == 'f' ==> 00005
     
-00005 (1), (2)
+00005 
      == 'g' ==> 00006
     
-00006 (1, A, pre=1), (2, A, pre=2)
+00006 A(1,pre=1), A(2,pre=2)
     
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from NONE: 
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0:
-  .drop_out:
-    if PreContext_1:  goto Pattern1;
-    else if PreContext_2:  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 0: 
 
+.drop_out:
+if PreContext_1: goto Pattern1;
+else if PreContext_2: goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 2:
   .entry:
     .from 1:
         if 'PreContext_1': position[PostContext_1]  = input_p;
         if 'PreContext_2': position[PostContext_2]  = input_p;
-    .from 2:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
-    else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 2: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 3:
   .entry:
-    .from 2:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
-    else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 2: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_1] ; goto Pattern1;
+else if PreContext_2: pos = position[PostContext_2] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 4:
   .entry:
-    .from 3:
-  .drop_out:
-    if PreContext_1:  goto Pattern1;
-    else if PreContext_2:  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 3: 
 
+.drop_out:
+if PreContext_1: goto Pattern1;
+else if PreContext_2: goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 5:
   .entry:
-    .from 4:
-  .drop_out:
-    if PreContext_1: pos -= 1;  goto Pattern1;
-    else if PreContext_2: pos -= 1;  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 4: 
 
+.drop_out:
+if PreContext_1: pos -= 1;  goto Pattern1;
+else if PreContext_2: pos -= 1;  goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 6:
   .entry:
-    .from 5:
-  .drop_out:
-    if PreContext_1:  goto Pattern1;
-    else if PreContext_2:  goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 5: 
 
+.drop_out:
+if PreContext_1: goto Pattern1;
+else if PreContext_2: goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 0:
         [MATCH_FAILURE]: NONE/set([0L])
@@ -126,19 +126,19 @@ State 2:
     .from 1:
         if 'PreContext_1': position[PostContext_0]  = input_p;
         if 'PreContext_2': position[PostContext_0]  = input_p;
-    .from 2:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
-    else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 2: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
+else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 3:
   .entry:
-    .from 2:
-  .drop_out:
-    if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
-    else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from 2: 
 
+.drop_out:
+if PreContext_1: pos = position[PostContext_0] ; goto Pattern1;
+else if PreContext_2: pos = position[PostContext_0] ; goto Pattern2;
+pos = lexeme_start_p + 1;  goto Failure;
 

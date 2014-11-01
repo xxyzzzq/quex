@@ -30,4 +30,4 @@ print sm3
 print sm3.clone()
 
 
-print Interval(ord('a'), ord('g')+1).inverse()
+# print Interval(ord('a'), ord('g')+1).inverse()
