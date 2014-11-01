@@ -3,8 +3,8 @@ from   quex.engine.misc.string_handling          import blue_print
 from   quex.engine.interval_handling             import NumberSet, Interval
 import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.target_map      import TargetMap
-from   quex.engine.state_machine.state_core_info import StateCoreInfo
-from   quex.engine.state_machine.origin_list     import StateOriginList
+from   quex.engine.state_machine.state_core_info import StateOperation
+from   quex.engine.state_machine.origin_list     import OperationPot
 from   quex.engine.tools                         import flatten_list_of_lists
 from   quex.blackboard                           import E_IncidenceIDs, \
                                                         E_PreContextIDs, \
@@ -17,62 +17,68 @@ from   collections import defaultdict
 import sys
 
 class State:
-    # Information about all transitions starting from a particular state. 
-    # Transitions are of two types:
-    # 
-    #  -- normal transitions: triggered when a character arrives that falls into 
-    #                         a trigger set.
-    #  -- epsilon transition: triggered when no other trigger of the normal 
-    #                         transitions triggers.
-    #
-    # Objects of this class are to be used in class StateMachine, where a 
-    # dictionary maps from a start state index to a State-object.
-    ## Little Slower: __slots__ = ('__core', '__origin_list', '__target_map')
+    """A state consisting of ONE entry operation and multiple transitions to
+    other states. 
+
+           ...   ----->---.                               .--->   ...
+                           \                     .-----.-'
+           ...   ----->-----+--->[ StateOp ]----( State )----->   ...
+                           /                     '-----'
+           ...   ----->---'        
+
+    Transitions are of two types:
+    
+     -- normal transitions: Happen when an input character fits a trigger set.
+     -- epsilon transition: Happen without any input.
+    
+    Collections of states connected by transitions build a StateMachine. A state 
+    of a DFA state machine does not epsilon transitions and the trigger sets of 
+    normal transitions do not intersect.
+    """
     def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.MATCH_FAILURE, StateIndex=-1L, 
-                 AltOriginList=None, AltTM=None):
+                 CloneF=False):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
-        if AltOriginList is None:
-            self.__origin_list = StateOriginList([
-                                      StateCoreInfo(AcceptanceID = StateMachineID, 
-                                                    StateIndex   = StateIndex, 
-                                                    AcceptanceF  = AcceptanceF)
-                                 ])
-            self.__target_map = TargetMap()
-        else:
-            assert AltTM is not None
-            self.__origin_list = AltOriginList
-            self.__target_map  = AltTM
+        if CloneF: return
 
-    def clone(self, ReplacementDictionary=None, StateIndex=None, PreContextReplacementDB=None, 
-              AcceptanceIDReplacementDB=None):
+        self.__origin_list = OperationPot.from_one(
+                                  StateOperation(AcceptanceID = StateMachineID, 
+                                                 StateIndex   = StateIndex, 
+                                                 AcceptanceF  = AcceptanceF)
+                             )
+        self.__target_map = TargetMap()
+
+    def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
-           determined in the ReplacementDictionary."""
-        assert ReplacementDictionary is None or isinstance(ReplacementDictionary, dict)
-        assert StateIndex is None            or isinstance(StateIndex, long)
-        result = State(AltOriginList = self.__origin_list.clone(PreContextReplacementDB=PreContextReplacementDB,
-                                                                AcceptanceIDReplacementDB=AcceptanceIDReplacementDB),
-                       AltTM         = self.__target_map.clone())
+           determined in the ReplDbStateIndex."""
+        assert ReplDbStateIndex is None or isinstance(ReplDbStateIndex, dict)
+        result = State()
+        result.__origin_list = self.__origin_list.clone(ReplDbPreContext=ReplDbPreContext,
+                                                        ReplDbAcceptance=ReplDbAcceptance)
+        result.__target_map  = self.__target_map.clone()
 
         # if replacement of indices is desired, than do it
-        if ReplacementDictionary is not None:
-            result.target_map.replace_target_indices(ReplacementDictionary)
+        if ReplDbStateIndex is not None:
+            result.target_map.replace_target_indices(ReplDbStateIndex)
 
         return result
 
     @staticmethod
-    def new_merged_core_state(StateList, ClearF=False):
+    def from_state_iterable(StateList, ClearF=False):
         result      = State()
-        origin_list = StateOriginList()
+        origin_list = OperationPot()
 
         if not ClearF:
             for state in StateList:
                 origin_list.merge(state.origins().get_list())
+            result.set_origins(origin_list)
         else:
-            for state in StateList:
-                origin_list.merge_clear(state.origins().get_list())
+            result.__origin_list = OperationPot.from_one(
+                                   StateOperation(AcceptanceID = E_IncidenceIDs.MATCH_FAILURE, 
+                                                  StateIndex   = -1L, 
+                                                  AcceptanceF  = False)
+                                )
 
-        result.set_origins(origin_list)
         return result
 
     def merge_core_with(self, StateList):
@@ -90,7 +96,7 @@ class State:
         return self.__origin_list
 
     def set_origins(self, OriginList):
-        assert isinstance(OriginList, StateOriginList)
+        assert isinstance(OriginList, OperationPot)
         self.__origin_list = OriginList
 
     @property
@@ -121,22 +127,19 @@ class State:
     def set_acceptance(self, Value=True):
         origin = self.origins().get_the_only_one()
         origin.set_acceptance_f(Value)
-        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
+        if Value == False: origin.set_pre_context_id(E_PreContextIDs.NONE)
 
     def set_input_position_store_f(self, Value=True):
         origin = self.origins().get_the_only_one()
         origin.set_input_position_store_f(Value)
-        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def set_input_position_restore_f(self, Value=True):
         origin = self.origins().get_the_only_one()
         origin.set_input_position_restore_f(Value)
-        if Value == False and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def set_pre_context_id(self, Value=True):
         origin = self.origins().get_the_only_one()
         origin.set_pre_context_id(Value)
-        if Value == E_PreContextIDs.NONE and not origin.is_meaningful(): self.origins().remove_the_only_one()
 
     def mark_self_as_origin(self, AcceptanceID, StateIndex):
         origin = self.origins().get_the_only_one()
@@ -166,7 +169,11 @@ class State:
         return self.target_map.get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
 class StateMachine(object):
-    def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None):
+    def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None, DoNothingF=False):
+        # Get a unique state machine id 
+        self.set_id(state_machine_index.get_state_machine_id())
+
+        if DoNothingF: return
 
         if InitStateIndex is None: InitStateIndex = state_machine_index.get()
         self.init_state_index = InitStateIndex
@@ -175,8 +182,14 @@ class StateMachine(object):
         if InitState is None: InitState = State(AcceptanceF=AcceptanceF)
         self.states = { self.init_state_index: InitState }        
 
-        # Get a unique state machine id 
-        self.set_id(state_machine_index.get_state_machine_id())
+    @staticmethod
+    def from_iterable(InitStateIndex, IterableStateIndexStatePairs):
+        """IterableStateIndexStatePairs = list of (state_index, state) 
+        """
+        result = StateMachine(DoNothingF=True)
+        result.init_state_index = InitStateIndex
+        result.states = dict(IterableStateIndexStatePairs)
+        return result
 
     def clean_up(self):
         # Delete states which are not connected from the init state.
@@ -202,7 +215,7 @@ class StateMachine(object):
         result.add_transition(result.init_state_index, CharacterSet, AcceptanceF=True)
         return result
 
-    def clone(self, ReplacementDB=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
+    def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         """Clone state machine, i.e. create a new one with the same behavior,
         i.e. transitions, but with new unused state indices. This is used when
         state machines are to be created that combine the behavior of more
@@ -228,43 +241,34 @@ class StateMachine(object):
                 assert value not in reference_set
                 reference_set.add(value)
 
-        assert_uniqueness(ReplacementDB)
-        assert_uniqueness(PreContextReplacementDB)
-        assert_uniqueness(AcceptanceIDReplacementDB)
-        assert_transitivity(AcceptanceIDReplacementDB)
+        assert_uniqueness(ReplDbStateIndex)
+        assert_uniqueness(ReplDbPreContext)
+        assert_uniqueness(ReplDbAcceptance)
+        assert_transitivity(ReplDbAcceptance)
 
-        # (*) create the new state machine
-        #     (this has to happen first, to get an init_state_index)
-        if ReplacementDB is not None: 
-            result      = StateMachine(InitStateIndex=ReplacementDB[self.init_state_index])
-            replacement = ReplacementDB
-        else:                         
-            result      = StateMachine()
-            replacement = {}
-            for state_idx in sorted(self.states.iterkeys()):
-                # NOTE: The constructor already delivered an init state index to 'result'.
-                #       Thus self's init index has to be translated to result's init index.
-                if state_idx == self.init_state_index:
-                    replacement[state_idx] = result.init_state_index
-                else:
-                    replacement[state_idx] = state_machine_index.get()
+        if ReplDbStateIndex is None: 
+            ReplDbStateIndex = dict(
+                (si, state_machine_index.get())
+                for si in sorted(self.states.iterkeys())
+            )
 
-        for state_idx in self.states.iterkeys():
-            new_state_idx = replacement[state_idx]
-            result.states[new_state_idx] = \
-                    self.states[state_idx].clone(replacement, 
-                                                 PreContextReplacementDB=PreContextReplacementDB,
-                                                 AcceptanceIDReplacementDB=AcceptanceIDReplacementDB)
+        iterable = (
+            (ReplDbStateIndex[si], state.clone(ReplDbStateIndex, 
+                                               ReplDbPreContext=ReplDbPreContext,
+                                               ReplDbAcceptance=ReplDbAcceptance))
+            for si, state in self.states.iteritems()
+        )
         
-        return result
+        return StateMachine.from_iterable(ReplDbStateIndex[self.init_state_index], 
+                                          iterable)
 
-    def normalized_clone(self, PreContextReplacementDB=None):
+    def normalized_clone(self, ReplDbPreContext=None):
         index_map, dummy, dummy         = self.get_state_index_normalization()
         pre_context_map, pattern_id_map = self.get_pattern_and_pre_context_normalization()
         
         return self.clone(index_map, 
-                          PreContextReplacementDB=pre_context_map, 
-                          AcceptanceIDReplacementDB=pattern_id_map)
+                          ReplDbPreContext=pre_context_map, 
+                          ReplDbAcceptance=pattern_id_map)
 
     def delete_orphaned_states(self):
         """Remove all orphan states.
@@ -321,13 +325,6 @@ class StateMachine(object):
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].target_map.is_empty()
 
-    def is_init_state_a_target_state(self):
-        init_state_index = self.init_state_index
-        for state in self.states.values():
-            target_state_index_list = state.target_map.get_target_state_index_list()
-            if init_state_index in target_state_index_list: return True
-        return False
-        
     def is_DFA_compliant(self):
         for state in self.states.values():
             if state.target_map.is_DFA_compliant() == False: 
@@ -500,7 +497,7 @@ class StateMachine(object):
                 self.states[aux_idx].add_transition(sequence[1], new_state_idx)
 
             # (-) Cancel acceptance of old state
-            state.origins().remove_the_only_one()
+            state.set_acceptance(False)
             
         return new_state_idx    
 
@@ -856,18 +853,24 @@ class StateMachine(object):
         else:
             return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.origins().get_the_only_one().acceptance_id() == AcceptanceID ]
 
-    def get_from_to_db(self):
+    def get_to_db(self):
         """RETURNS:
-             [0] from_db:  state_index --> states from which it is entered.
-             [1] to_db:    state_index --> states which it enters
+                    map:    state_index --> states which it enters
+        """
+        return dict(
+            (from_index, set(state.target_map.get_map().iterkeys()))
+            for from_index, state in self.states.iteritems()
+        )
+
+    def get_from_db(self):
+        """RETURNS:
+                    map:     state_index --> states from which it is entered.
         """
         from_db = defaultdict(set)
-        to_db   = defaultdict(set)
         for from_index, state in self.states.iteritems():
-            to_db[from_index] = set(state.target_map.get_map().iterkeys())
             for to_index in state.target_map.get_map().iterkeys():
                 from_db[to_index].add(from_index)
-        return from_db, to_db
+        return from_db
 
     def match_sequence(self, UserSequence):
         """RETURNS: True, if the sequences ends in an acceptance state.

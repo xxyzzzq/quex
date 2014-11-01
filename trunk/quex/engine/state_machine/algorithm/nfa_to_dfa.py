@@ -15,7 +15,7 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
     #     -- add the origin list of all states in the epsilon closure
-    InitState = Class_State.new_merged_core_state(SM.states[i] for i in initial_state_epsilon_closure)
+    InitState = Class_State.from_state_iterable(SM.states[i] for i in initial_state_epsilon_closure)
 
     # NOTE: 
     # State machines with an initial acceptance state are conceivable!  In a
@@ -65,7 +65,7 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
             if not result.states.has_key(target_state_index):
                 # create the new target state in the state machine
                 result.states[target_state_index] = \
-                    Class_State.new_merged_core_state(SM.states[i] for i in epsilon_closure_of_target_state_combination)
+                    Class_State.from_state_iterable(SM.states[i] for i in epsilon_closure_of_target_state_combination)
 
                 worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
 

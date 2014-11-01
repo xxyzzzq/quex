@@ -2,14 +2,14 @@
 A = abc("123"+)xyz
 B = abcyz
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 
 A = abcyz
 B = abc("123"+)xyz
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 identity: True
@@ -17,14 +17,14 @@ identity: True
 A = abc("123"|"ABC")xyz
 B = abc1B3xyz
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 
 A = abc1B3xyz
 B = abc("123"|"ABC")xyz
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 identity: True
@@ -32,14 +32,14 @@ identity: True
 A = abc("123"|"ABCD")xyz
 B = abcABCxyc
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 
 A = abcABCxyc
 B = abc("123"|"ABCD")xyz
 intersection =  init-state = 0L
-00000 ()
+00000 
     
 
 identity: True

@@ -238,34 +238,6 @@ class TargetMap:
             if new_idx is None: continue
             self.__epsilon_target_index_list[i] = new_idx
 
-    def replace_target_index(self, Before, After):
-        """Replaces given target index 'Before' with the index 'After'. 
-           This means, that a transition targetting to 'Before' will then transit
-           to 'After'.
-
-           RETURNS: 'True' if replacement happend
-                    'False' if no replacement took place
-        """   
-        found_f = False
-        # replace target index in the 'normal map'
-        if not self.__db.has_key(Before): 
-            pass
-        elif self.__db.has_key(After):    
-            self.__db[After].unite_with(self.__db[Before])
-            del self.__db[Before]
-            found_f = True
-        else: 
-            self.__db[After] = self.__db[Before]
-            del self.__db[Before]
-            found_f = True
-
-        # replace target index in the list of epsilon transition targets.
-        if Before in self.__epsilon_target_index_list:
-            self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(Before)] = After
-            found_f = True
-
-        return found_f
-
     def transform(self, TrafoInfo):
         """Transforms all related NumberSets from Unicode to a given Target 
            Encoding according to the given TransformationInfo. The 

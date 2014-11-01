@@ -5,7 +5,7 @@ Cutter   = [0-9]
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -15,7 +15,7 @@ Cutter   = [0-9]+
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -27,11 +27,11 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00000
      == ['1', '9'] ==> 00001
     
-00001 (A)
+00001 A
      == '0' ==> 00000
      == ['1', '9'] ==> 00001
     
@@ -43,7 +43,7 @@ Cutter   = [0-9]+
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -55,16 +55,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
      == ['1', '9'] ==> 00002
     
-00001 (A)
+00001 A
      == '0' ==> 00001
      == '1' ==> 00000
      == ['2', '9'] ==> 00002
     
-00002 (A)
+00002 A
      == '0' ==> 00001
      == ['1', '9'] ==> 00002
     
@@ -76,7 +76,7 @@ Cutter   = [0-9]+
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -88,25 +88,25 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '0' ==> 00001
      == ['1', '9'] ==> 00003
     
-00001 ()
+00001 
      == '0' ==> 00002
      == '1' ==> 00003
      == ['2', '9'] ==> 00004
     
-00002 (A)
+00002 A
      == '0' ==> 00002
      == '1' ==> 00003
      == ['2', '9'] ==> 00004
     
-00003 ()
+00003 
      == '0' ==> 00002
      == ['1', '9'] ==> 00004
     
-00004 (A)
+00004 A
      == '0' ==> 00002
      == ['1', '9'] ==> 00004
     
@@ -118,7 +118,7 @@ Cutter   = [0-9]{2,}
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -128,7 +128,7 @@ Cutter   = 123(4?)
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -140,19 +140,19 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '3' ==> 00003
     
-00003 ()
+00003 
      == '4' ==> 00004
     
-00004 (A)
+00004 A
     
 
 ---------------------------
@@ -162,7 +162,7 @@ Cutter   = 1(2?)
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -174,10 +174,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -187,7 +187,7 @@ Cutter   = 1(2?)
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -199,13 +199,13 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 (A)
+00002 A
     
 
 ---------------------------
@@ -217,16 +217,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'A' ==> 00001
     
-00001 ()
+00001 
      == 'B' ==> 00002
     
-00002 ()
+00002 
      == 'C' ==> 00003
     
-00003 (A)
+00003 A
     
 
 
@@ -236,7 +236,7 @@ Cutter   = "123"|"ABC"
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 ---------------------------
@@ -246,7 +246,7 @@ Cutter   = (\r\n)|\n
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -256,6 +256,6 @@ Cutter   = \n
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 

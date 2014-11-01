@@ -42,7 +42,8 @@ def prepare(PatternStringList, GetPreContextSM_F=False):
 
 def test_track_analysis(SM, EngineType = engine.FORWARD, PrintPRM_F = False):
     print SM.get_string(NormalizeF=True, OriginalStatesF=False)
-    from_db, to_db = SM.get_from_to_db()
+    to_db   = SM.get_to_db()
+    from_db = SM.get_from_db()
 
     trace_db,       \
     path_element_db = track_analysis.do(SM, to_db)

@@ -20,6 +20,10 @@ import sys
 from quex.engine.state_machine.core import *
 from quex.engine.interval_handling import *
 
+def add_origin(state, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
+    state.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
+                        StoreInputPositionF, state.is_acceptance())
+
 # (*) set up some state machines
 #
 # NOTE: We use globally unique state indices!

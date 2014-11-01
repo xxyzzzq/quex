@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
 
 test_sm0 = repeat.do(sm0, 1)
 
-print "## state machine = ", test_sm0
+print "## state machine = ", test_sm0.get_string(NormalizeF=False)
 print "## compute epsilon closures of all states:"
 
 normal_epsilon_closures = []

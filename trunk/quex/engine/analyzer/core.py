@@ -138,7 +138,8 @@ class Analyzer:
         #     from_db:  state_index --> states from which it is entered.
         #     to_db:    state_index --> states which it enters
         #
-        self.__from_db, self.__to_db = SM.get_from_to_db()
+        self.__to_db   = SM.get_to_db()
+        self.__from_db = SM.get_from_db()
 
         # (*) Prepare AnalyzerState Objects
         self.__state_db.update(

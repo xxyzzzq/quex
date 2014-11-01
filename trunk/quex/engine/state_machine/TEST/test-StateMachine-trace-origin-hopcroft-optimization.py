@@ -40,7 +40,7 @@ print sm
 def set_origins(StateIndex, TheList):
     global sm
     sm.states[StateIndex].origins().set(
-        [ StateCoreInfo(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
+        [ StateOperation(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
     )
 
 set_origins(n0, [(0, 0,  False), (1, 0,  False), (2, 0,  False)])

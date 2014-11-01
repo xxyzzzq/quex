@@ -2,8 +2,9 @@ from quex.blackboard import E_IncidenceIDs, \
                             E_PreContextIDs, \
                             E_IncidenceIDs_SubsetAcceptanceIDs
 
-class StateCoreInfo(object): 
-    """A StateCoreInfo tells about a state how it should behave in a state
+
+class StateOperation(object): 
+    """A StateOperation tells about a state how it should behave in a state
        machine that represents one single isolated pattern. This is in 
        contrast to a state machine that consists of a conglomerate of 
        patterns combined into a single machine.
@@ -57,8 +58,8 @@ class StateCoreInfo(object):
             in a single isolated state machine, designed to match one single
             pattern. 
 
-            The exact behavior of a state in a 'melted' state machine is
-            derived from lists of these objects by track analysis.
+      The exact behavior of a state in a 'melted' state machine is derived from 
+      lists of these objects by track analysis.
     """    
     __slots__ = ("__pattern_id", "state_index", 
                  "__acceptance_f", 
@@ -90,7 +91,7 @@ class StateCoreInfo(object):
         self.__input_position_restore_f = RestoreInputPositionF
         self.__pre_context_id           = PreContextID  
 
-    def clone(self, StateIndex=None, PreContextReplacementDB=None, AcceptanceIDReplacementDB=None):
+    def clone(self, StateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         if StateIndex is not None: state_index = StateIndex
         else:                      state_index = self.state_index
 
@@ -99,11 +100,11 @@ class StateCoreInfo(object):
             if Value  not in TheEnum and DB is not None: return DB[Value]
             else:                                        return Value
 
-        return StateCoreInfo(produce(AcceptanceIDReplacementDB, self.__pattern_id, E_IncidenceIDs_SubsetAcceptanceIDs), 
+        return StateOperation(produce(ReplDbAcceptance, self.__pattern_id, E_IncidenceIDs_SubsetAcceptanceIDs), 
                              state_index, 
                              self.__acceptance_f,
                              self.__input_position_store_f,
-                             produce(PreContextReplacementDB, self.__pre_context_id, E_PreContextIDs),
+                             produce(ReplDbPreContext, self.__pre_context_id, E_PreContextIDs),
                              self.__input_position_restore_f)
 
     def merge(self, Other):
@@ -199,39 +200,46 @@ class StateCoreInfo(object):
     def __repr__(self):
         return self.get_string()
 
-    def is_meaningful(self):
-        if   self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE: return True
-        elif self.state_index      != -1L:                 return True
-        elif self.__acceptance_f:                          return True
-        elif self.__input_position_store_f:                return True
-        elif self.__input_position_restore_f:              return True
-        return False
+    def get_string(self):
+        def annotate(Str, PatternId):
+            if PatternId == E_IncidenceIDs.MATCH_FAILURE:
+                return Str
+            return "%s%s" % (Str, PatternId)
 
-    def get_string(self, StateMachineAndStateInfoF=True, OriginalStatesF=True):
-        txt = ""
+        try:
+            attribute_list = []
+            if self.__acceptance_f:        
+                acceptance_id_txt = ""
+                pre_txt           = ""
+                restore_txt       = ""
+                if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
+                    acceptance_id_txt = repr(self.__pattern_id).replace("L", "")
+                if self.__pre_context_id != E_PreContextIDs.NONE:            
+                    if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                        pre_txt = "pre=bol"
+                    else: 
+                        pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
+                if self.__input_position_restore_f: 
+                    restore_txt = annotate("R", self.__pattern_id)
 
-        if StateMachineAndStateInfoF:
-            if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
-                txt += ", " + repr(self.__pattern_id).replace("L", "")
-            if OriginalStatesF and self.state_index != -1L:
-                txt += ", " + repr(self.state_index).replace("L", "")
+                txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
+                if txt: txt_str = "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
+                else:   txt_str = "A"
 
-        if self.__acceptance_f:        
-            txt += ", A"
-            if self.__input_position_restore_f:
-                txt += ", R" 
-        else:
-            if self.__input_position_store_f:        
-                txt += ", S" 
+                attribute_list.append(txt_str)
 
-        if self.__pre_context_id != E_PreContextIDs.NONE:            
-            if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
-                txt += ", pre=bol"
-            else: 
-                txt += ", pre=" + repr(self.__pre_context_id).replace("L", "")
+            else:
+                assert not self.__input_position_restore_f
 
-        # Delete the starting ", "
-        if len(txt) > 2: txt = txt[2:]
+            if self.__input_position_store_f:   
+                attribute_list.append(annotate("S", self.__pattern_id))
 
-        return "(%s)" % txt
+            # Attributes happen to be sorted alpabetically, to make the output more stable
+            # Thus, "attribute_list.sort()" --> not necessary (yet)
+
+            if attribute_list: return reduce(lambda x,y: "%s,%s" % (x,y), attribute_list)
+            else:              return ""
+        except:
+            import os
+            os.system("touch /tmp/QUEX_ERROR_OCCURRED")
 

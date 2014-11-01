@@ -1,64 +1,64 @@
 expression    = "a-z"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'z'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "ABCDE0-9"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['0', '9'], ['A', 'E'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "ABCD\aE0-9"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == '\a', ['0', '9'], ['A', 'E'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "A-Z\n\"^CD"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == '\n', '"', ['A', 'Z'], '^' ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "^a-z"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == [-oo, '`'], ['{', oo] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "^a"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == [-oo, '`'], ['b', oo] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = "^ \n"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == [-oo, '\t'], ['\v', \31], ['!', oo] ==> 00001
     
-00001 (A)
+00001 A
     
 
 expression    = ""-""

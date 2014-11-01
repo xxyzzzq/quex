@@ -1,33 +1,33 @@
 init-state = 0L
-00000 (1)
+00000 
      == 'a' ==> 00001
     
-00001 (1, S)
+00001 S1
      == 'b' ==> 00002
     
-00002 (1)
+00002 
      == 'c' ==> 00003
     
-00003 (1, A, R)
+00003 A(1,R1)
     
 
 #State 0
-    p-id     pre-id   as-i     ps-i     tnsp
+    p-id           pre-id   as-i     ps-i     tnsp
     MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
 
 
 #State 1
-    p-id     pre-id   as-i     ps-i     tnsp
+    p-id           pre-id   as-i     ps-i     tnsp
     MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
 
 
 #State 2
-    p-id     pre-id   as-i     ps-i     tnsp
+    p-id           pre-id   as-i     ps-i     tnsp
     MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
 
 
 #State 3
-    p-id     pre-id   as-i     ps-i     tnsp
-    1        NONE     3        1        2        
+    p-id           pre-id   as-i     ps-i     tnsp
+    1              NONE     3        1        2        
 
 

@@ -1,21 +1,21 @@
 init-state = 0L
-00000 (1), (2), (3)
+00000 
      == 'a' ==> 00001
      == 'b' ==> 00004
     
-00001 (1, A), (3)
+00001 A(1)
      == 'a' ==> 00001
      == 'd' ==> 00002
     
-00002 (3)
+00002 
      == 'e' ==> 00003
     
-00003 (3, A)
+00003 A(3)
     
-00004 (2, A), (3)
+00004 A(2)
      == 'c' ==> 00005
     
-00005 (3)
+00005 
      == 'c' ==> 00005
      == 'd' ==> 00002
     
@@ -78,15 +78,15 @@ State 2:
 
 .drop_out:
 on last_acceptance:
-
-
 case 1: pos -= 1;  goto Pattern1;
-  case 2: pos = position[PostContext_0] ; goto Pattern2;
-    State 5:
-    .entry: 
+case 2: pos = position[PostContext_0] ; goto Pattern2;
 
-.from 4: position[PostContext_0]  = input_p;
-.from 5:
+
+State 5:
+  .entry:
+    .from 4: position[PostContext_0]  = input_p;
+    .from 5: 
 
 .drop_out:
 pos = position[PostContext_0] ; goto Pattern2;
+

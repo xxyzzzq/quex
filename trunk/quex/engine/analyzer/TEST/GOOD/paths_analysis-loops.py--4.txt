@@ -1,99 +1,99 @@
 init-state = 0L
-00000 (1)
+00000 
      == 'a' ==> 00001
     
-00001 (1, A)
+00001 A(1)
      == 'b' ==> 00002
     
-00002 (1)
+00002 
      == 'c' ==> 00003
      == 'e' ==> 00006
     
-00003 (1)
+00003 
      == 'c' ==> 00004
      == 'd' ==> 00002
     
-00004 (1)
+00004 
      == 'c' ==> 00005
      == 'd' ==> 00003
     
-00005 (1)
+00005 
      == 'd' ==> 00004
     
-00006 (1, A)
+00006 A(1)
      == 'f' ==> 00007
     
-00007 (1)
+00007 
      == 'g' ==> 00008
     
-00008 (1, A)
+00008 A(1)
     
 
 State 0:
   .entry:
-    .from NONE:
-  .drop_out:
-    pos = lexeme_start_p + 1;  goto Failure;
+    .from NONE: 
 
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
 
 State 1:
   .entry:
-    .from 0:
-  .drop_out:
-     goto Pattern1;
+    .from 0: 
 
+.drop_out:
+goto Pattern1;
 
 State 2:
   .entry:
     .from 1: position[PostContext_1]  = input_p;
-    .from 3:
-  .drop_out:
-    pos = position[PostContext_1] ; goto Pattern1;
+    .from 3: 
 
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
 
 State 3:
   .entry:
-    .from 2:
-    .from 4:
-  .drop_out:
-    pos = position[PostContext_1] ; goto Pattern1;
+    .from 2: 
+    .from 4: 
 
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
 
 State 4:
   .entry:
-    .from 3:
-    .from 5:
-  .drop_out:
-    pos = position[PostContext_1] ; goto Pattern1;
+    .from 3: 
+    .from 5: 
 
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
 
 State 5:
   .entry:
-    .from 4:
-  .drop_out:
-    pos = position[PostContext_1] ; goto Pattern1;
+    .from 4: 
 
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
 
 State 6:
   .entry:
-    .from 2:
-  .drop_out:
-     goto Pattern1;
+    .from 2: 
 
+.drop_out:
+goto Pattern1;
 
 State 7:
   .entry:
-    .from 6:
-  .drop_out:
-    pos -= 1;  goto Pattern1;
+    .from 6: 
 
+.drop_out:
+pos -= 1;  goto Pattern1;
 
 State 8:
   .entry:
-    .from 7:
-  .drop_out:
-     goto Pattern1;
+    .from 7: 
 
+.drop_out:
+goto Pattern1;
 
 State 0:
         [MATCH_FAILURE]: NONE/set([0L])
@@ -128,31 +128,31 @@ State 8:
 State 2:
   .entry:
     .from 1: position[PostContext_0]  = input_p;
-    .from 3:
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern1;
+    .from 3: 
 
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
 
 State 3:
   .entry:
-    .from 2:
-    .from 4:
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern1;
+    .from 2: 
+    .from 4: 
 
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
 
 State 4:
   .entry:
-    .from 3:
-    .from 5:
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern1;
+    .from 3: 
+    .from 5: 
 
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
 
 State 5:
   .entry:
-    .from 4:
-  .drop_out:
-    pos = position[PostContext_0] ; goto Pattern1;
+    .from 4: 
 
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
 

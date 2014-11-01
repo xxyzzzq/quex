@@ -8,11 +8,11 @@ command line:1:error: Exactly 1 pattern required between '{' and '}'
 expression    = "\Diff{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00000
     
-00001 (A)
+00001 A
      == ['a', 'k'] ==> 00001
     
 
@@ -20,10 +20,10 @@ init-state = 0L
 expression    = "\Intersection{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['g', 'k'] ==> 00001
     
-00001 (A)
+00001 A
      == ['g', 'k'] ==> 00001
     
 
@@ -31,10 +31,10 @@ init-state = 0L
 expression    = "\NotBegin{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'f'] ==> 00001
     
-00001 (A)
+00001 A
      == ['a', 'k'] ==> 00001
     
 
@@ -42,11 +42,11 @@ init-state = 0L
 expression    = "\NotEnd{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00000
     
-00001 (A)
+00001 A
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00000
     
@@ -61,15 +61,15 @@ command line:1:error: Exactly 1 pattern required between '{' and '}'
 expression    = "\SymDiff{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00000
      == ['l', 'p'] ==> 00002
     
-00001 (A)
+00001 A
      == ['a', 'k'] ==> 00001
     
-00002 (A)
+00002 A
      == ['g', 'p'] ==> 00002
     
 
@@ -77,20 +77,20 @@ init-state = 0L
 expression    = "\Union{[a-k]+ [g-p]+}"
 state machine
 init-state = 0L
-00000 ()
+00000 
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00002
      == ['l', 'p'] ==> 00003
     
-00001 (A)
+00001 A
      == ['a', 'k'] ==> 00001
     
-00002 (A)
+00002 A
      == ['a', 'f'] ==> 00001
      == ['g', 'k'] ==> 00002
      == ['l', 'p'] ==> 00003
     
-00003 (A)
+00003 A
      == ['g', 'p'] ==> 00003
     
 

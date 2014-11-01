@@ -7,10 +7,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == ['a', 'l'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -22,10 +22,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == ['o', 'z'] ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -37,16 +37,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'A' ==> 00001
     
-00001 ()
+00001 
      == 'B' ==> 00002
     
-00002 ()
+00002 
      == 'C' ==> 00003
     
-00003 (A)
+00003 A
     
 
 
@@ -58,16 +58,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == '2' ==> 00002
     
-00002 ()
+00002 
      == '3' ==> 00003
     
-00003 (A)
+00003 A
     
 
 ---------------------------
@@ -79,10 +79,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'A' ==> 00001
     
-00001 (A)
+00001 A
     
 
 
@@ -94,10 +94,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -107,7 +107,7 @@ Cutter   = 1
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 
 
@@ -119,10 +119,10 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 (A)
+00001 A
     
 
 ---------------------------
@@ -134,19 +134,19 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == 'B' ==> 00002
     
-00002 ()
+00002 
      == ['A', 'B'] ==> 00003
     
-00003 ()
+00003 
      == 'C' ==> 00004
     
-00004 (A)
+00004 A
     
 
 
@@ -158,19 +158,19 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == '1' ==> 00001
     
-00001 ()
+00001 
      == 'A' ==> 00002
     
-00002 ()
+00002 
      == 'B' ==> 00003
     
-00003 ()
+00003 
      == 'C' ==> 00004
     
-00004 (A)
+00004 A
     
 
 ---------------------------
@@ -182,16 +182,16 @@ intersection(Cutter, result) is None: True
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
      == 'a' ==> 00001
     
-00001 ()
+00001 
      == 'l' ==> 00002
     
-00002 ()
+00002 
      == 'b' ==> 00003
     
-00003 (A)
+00003 A
     
 
 
@@ -201,6 +201,6 @@ Cutter   = alb|albertikus
 union(Original, result) == Original:  True
 
 result =  init-state = 0L
-00000 ()
+00000 
     
 

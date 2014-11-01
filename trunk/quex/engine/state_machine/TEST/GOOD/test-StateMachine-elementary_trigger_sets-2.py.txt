@@ -1,13 +1,13 @@
 states machine =  init-state = 0L
-00000 ()
+00000 
     
-00001 ()
+00001 
      == 'b' ==> 00003
     
-00002 ()
+00002 
      == 'b' ==> 00003
     
-00003 ()
+00003 
     
 
 elementary trigger sets =  [[[100L], [[98]]]]
@@ -19,15 +19,15 @@ elementary trigger sets =  [[[100L], [[98]]]]
 
 
 states machine =  init-state = 0L
-00000 ()
+00000 
     
-00001 ()
+00001 
      == ['b', 'c'] ==> 00003
     
-00002 ()
+00002 
      == 'b' ==> 00003
     
-00003 ()
+00003 
     
 
 elementary trigger sets =  [[[100L], [[98, 99]]]]

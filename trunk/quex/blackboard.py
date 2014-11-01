@@ -144,7 +144,7 @@ E_IncidenceIDs = Enum(
     "SKIP_RANGE", 
     "SKIP_RANGE_OPEN",
     "VOID",
-    "_DEBUG_Events")
+    "_DEBUG_IncidenceIDs")
 
 E_IncidenceIDs_SubsetAcceptanceIDs = [
     E_IncidenceIDs.MATCH_FAILURE,
