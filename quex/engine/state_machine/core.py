@@ -72,18 +72,17 @@ class State:
     Whether or not a state complies to the requirements of a DFA can be checked
     by '.is_DFA_compliant()'.
     """
-    def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.MATCH_FAILURE, StateIndex=-1L, 
-                 CloneF=False):
+    def __init__(self, AcceptanceF=False, CloneF=False):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
         if CloneF: return
 
         self.__target_map  = TargetMap()
-        self.__origin_list = OperationPot.from_one(
-                                  StateOperation(AcceptanceID = StateMachineID, 
-                                                 StateIndex   = StateIndex, 
-                                                 AcceptanceF  = AcceptanceF)
-                             )
+        self.__origin_list = OperationPot()
+        self.__origin_list.add(
+            StateOperation(AcceptanceID = E_IncidenceIDs.MATCH_FAILURE, 
+                           StateIndex   = -1L, 
+                           AcceptanceF  = AcceptanceF))
 
     def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -97,15 +96,13 @@ class State:
         return result
 
     @staticmethod
-    def from_state_iterable(StateList, ClearF=False):
+    def from_state_iterable(StateList):
         """Does not set '.__target_map'
         """
         result = State()
         result.__target_map  = TargetMap()
         result.__origin_list = OperationPot() 
-        if not ClearF:
-            result.__origin_list.merge_list(state.origins().get_list() for state in StateList)
-
+        result.__origin_list.merge_list(state.origins().get_list() for state in StateList)
         return result
 
     def origins(self):
