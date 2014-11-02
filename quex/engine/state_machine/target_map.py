@@ -19,9 +19,16 @@ class TargetMap:
         ## requires that all possible changes to the database need to annulate the cache value.
         ## self.__DEBUG_trigger_map = None
 
-    def clone(self):
-        return TargetMap(DB = dict([(key, trigger_set.clone()) for key, trigger_set in self.__db.iteritems()]),
-                             ETIL = list(self.__epsilon_target_index_list))
+    def clone(self, ReplDbStateIndex=None):
+        if ReplDbStateIndex is None:
+            db   = dict((tsi, trigger_set.clone()) 
+                        for tsi, trigger_set in self.__db.iteritems())
+            etil = list(self.__epsilon_target_index_list)
+        else:
+            db   = dict((ReplDbStateIndex[tsi], trigger_set.clone()) 
+                        for tsi, trigger_set in self.__db.iteritems())
+            etil = list(ReplDbStateIndex[tsi] for tsi in self.__epsilon_target_index_list)
+        return TargetMap(DB=db, ETIL=etil) 
 
     def clear(self, TriggerMap=None):
         if TriggerMap is not None:

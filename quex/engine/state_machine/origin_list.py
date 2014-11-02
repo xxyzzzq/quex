@@ -32,18 +32,6 @@ class OperationPot(object):
     def __len__(self):
         return len(self.__list)
 
-    def take_out_FAILURE(self):
-        L = len(self.__list)
-        for i in xrange(L-1, -1, -1):
-            if self.__list[i].acceptance_id() == E_IncidenceIDs.MATCH_FAILURE:
-                del self.__list[i]
-
-    def is_there_a_non_FAILURE(self):
-        for origin in self.__list:
-            if origin.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE:
-                return True
-        return False
-
     def __add(self, Origin):
         """Check if origin has already been mentioned, else append the new origin.
         """
@@ -108,6 +96,10 @@ class OperationPot(object):
         for origin in OriginIterable: 
             self.__add(origin)
 
+    def merge_list(self, OriginIterableIterable):
+        for origin_iterable in OriginIterableIterable:
+            self.merge(origin_iterable)
+
     def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
         if ArgumentIsYoursF: 
@@ -171,3 +163,16 @@ class OperationPot(object):
             if ostr: txt += "%s, " % ostr
         txt = (txt[:-2] + "\n").replace("L","")     
         return txt
+
+    def take_out_FAILURE(self):
+        L = len(self.__list)
+        for i in xrange(L-1, -1, -1):
+            if self.__list[i].acceptance_id() == E_IncidenceIDs.MATCH_FAILURE:
+                del self.__list[i]
+
+    def is_there_a_non_FAILURE(self):
+        for origin in self.__list:
+            if origin.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE:
+                return True
+        return False
+

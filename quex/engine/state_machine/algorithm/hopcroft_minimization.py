@@ -499,7 +499,8 @@ def create_state_machine(SM, Result, Class_StateMachine, Class_State):
         #  acceptance states. There can be no state set containing acceptance and 
         #  non-acceptance states) 
         # (Note, that the prototype's info has not been included yet, consider whole set)
-        result.states[new_state_index] = Class_State.from_state_iterable(SM.states[i] for i in state_set)
+        result.states[new_state_index] = Class_State.from_state_iterable(
+                                                SM.states[i] for i in state_set)
 
     for state_set_idx, state_set in enumerate(Result.state_set_list):
         # The prototype: States in one set behave all equivalent with respect to target state sets
@@ -536,9 +537,11 @@ def adapt_state_machine(sm, Result):
         else:                                prototype_i = state_set[0]  
 
         # The prototype takes over the role of all
-        sm.states[prototype_i].merge_core_with(sm.states[i] for i in state_set if i != prototype_i)
+        sm.states[prototype_i].origins().merge_list(
+            sm.states[i].origins().get_list() for i in state_set if i != prototype_i)
 
-        replacement_dict.update((i, prototype_i) for i in state_set if i != prototype_i)
+        replacement_dict.update(
+            (i, prototype_i) for i in state_set if i != prototype_i)
 
     # Replace the indices of the thrown out states
     for state_idx in replacement_dict.iterkeys():
