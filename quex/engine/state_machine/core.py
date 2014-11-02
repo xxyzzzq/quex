@@ -16,6 +16,12 @@ from   itertools import ifilter, imap
 from   collections import defaultdict
 import sys
 
+class Accept:
+    def __init__(self):
+        self.__acceptance_id              = None
+        self.__pre_context_id             = None
+        self.__position_register_register = None
+
 class State:
     """A state consisting of ONE entry and multiple transitions to other
     states.  One entry means that the exact same actions are applied upon state
@@ -49,21 +55,21 @@ class State:
         """
         if CloneF: return
 
+        self.__target_map  = TargetMap()
         self.__origin_list = OperationPot.from_one(
                                   StateOperation(AcceptanceID = StateMachineID, 
                                                  StateIndex   = StateIndex, 
                                                  AcceptanceF  = AcceptanceF)
                              )
-        self.__target_map = TargetMap()
 
     def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplDbStateIndex."""
         assert ReplDbStateIndex is None or isinstance(ReplDbStateIndex, dict)
         result = State()
+        result.__target_map  = self.__target_map.clone(ReplDbStateIndex)
         result.__origin_list = self.__origin_list.clone(ReplDbPreContext=ReplDbPreContext,
                                                         ReplDbAcceptance=ReplDbAcceptance)
-        result.__target_map  = self.__target_map.clone(ReplDbStateIndex)
 
         return result
 
@@ -72,6 +78,7 @@ class State:
         """Does not set '.__target_map'
         """
         result = State()
+        result.__target_map = TargetMap()
 
         if not ClearF:
             result.__origin_list = OperationPot()

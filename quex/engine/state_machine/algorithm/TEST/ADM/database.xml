@@ -1,20 +1,20 @@
-<test-database execution-time-sec="0.67" date="Sun Nov  2 09:16:07 2014">
+<test-database execution-time-sec="0.75" date="Sun Nov  2 21:55:51 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
-        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.22"> 
+        <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.27"> 
             <application file-name="test-hopcroft-minimization-2.py" info-request-time="1414482434L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NEW" result="OK" time_sec="0.11" crc="-1904801837"/>
-               <choice name="ADAPT" result="OK" time_sec="0.10" crc="-2137376588"/>
+               <choice name="NEW" result="OK" time_sec="0.14" crc="-1904801837"/>
+               <choice name="ADAPT" result="OK" time_sec="0.13" crc="-2137376588"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.15"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.17"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
-               <choice name="NEW" result="OK" time_sec="0.08" crc="1884331329"/>
-               <choice name="ADAPT" result="OK" time_sec="0.07" crc="320921215"/>
+               <choice name="NEW" result="OK" time_sec="0.09" crc="1884331329"/>
+               <choice name="ADAPT" result="OK" time_sec="0.09" crc="320921215"/>
             </choice-list>
         </test>
         <test title="Hopcroft optimization III (state machine combination)" time-sum-sec="0.12"> 
@@ -27,18 +27,18 @@
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA - Special Case" time-sum-sec="0.11"> 
+        <test title="Conversion to DFA - Special Case" time-sum-sec="0.10"> 
             <application file-name="test-nfa-to-dfa-special.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.11" crc="-538930774"/>
+               <choice name="" result="OK" time_sec="0.10" crc="-538930774"/>
             </choice-list>
         </test>
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.07"> 
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.09"> 
             <application file-name="test-nfa-to-dfa.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="816185042"/>
+               <choice name="" result="OK" time_sec="0.09" crc="816185042"/>
             </choice-list>
         </test>
     </group>
