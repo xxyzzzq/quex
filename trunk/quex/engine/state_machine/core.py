@@ -17,8 +17,9 @@ from   collections import defaultdict
 import sys
 
 class State:
-    """A state consisting of ONE entry operation and multiple transitions to
-    other states. 
+    """A state consisting of ONE entry and multiple transitions to other
+    states.  One entry means that the exact same actions are applied upon state
+    entry, independent from where the state is entered.
 
            ...   ----->---.                               .--->   ...
                            \                     .-----.-'
@@ -31,9 +32,16 @@ class State:
      -- normal transitions: Happen when an input character fits a trigger set.
      -- epsilon transition: Happen without any input.
     
-    Collections of states connected by transitions build a StateMachine. A state 
-    of a DFA state machine does not epsilon transitions and the trigger sets of 
-    normal transitions do not intersect.
+    Collections of states connected by transitions build a StateMachine. States 
+    may be used in NFA-s (non-deterministic finite state automatons) and DFA-s
+    (deterministic finite state automatons). Where NFA-s put no restrictions on
+    transitions, DFA-s do. A state in a DFA has the following properties:
+    
+       -- Trigger sets of normal transitions do not intersect.
+       -- There are no epsilon transitions. 
+
+    Whether or not a state complies to the requirements of a DFA can be checked
+    by '.is_DFA_compliant()'.
     """
     def __init__(self, AcceptanceF=False, StateMachineID=E_IncidenceIDs.MATCH_FAILURE, StateIndex=-1L, 
                  CloneF=False):
@@ -55,49 +63,31 @@ class State:
         result = State()
         result.__origin_list = self.__origin_list.clone(ReplDbPreContext=ReplDbPreContext,
                                                         ReplDbAcceptance=ReplDbAcceptance)
-        result.__target_map  = self.__target_map.clone()
-
-        # if replacement of indices is desired, than do it
-        if ReplDbStateIndex is not None:
-            result.target_map.replace_target_indices(ReplDbStateIndex)
+        result.__target_map  = self.__target_map.clone(ReplDbStateIndex)
 
         return result
 
     @staticmethod
     def from_state_iterable(StateList, ClearF=False):
-        result      = State()
-        origin_list = OperationPot()
+        """Does not set '.__target_map'
+        """
+        result = State()
 
         if not ClearF:
-            for state in StateList:
-                origin_list.merge(state.origins().get_list())
-            result.set_origins(origin_list)
+            result.__origin_list = OperationPot()
+            result.__origin_list.merge_list(
+                state.origins().get_list() for state in StateList)
         else:
             result.__origin_list = OperationPot.from_one(
                                    StateOperation(AcceptanceID = E_IncidenceIDs.MATCH_FAILURE, 
                                                   StateIndex   = -1L, 
                                                   AcceptanceF  = False)
-                                )
+            )
 
         return result
 
-    def merge_core_with(self, StateList):
-        for state in StateList:
-            self.__merge(state)
-
-    def __merge(self, Other):
-        self.origins().merge(Other.origins().get_list()) 
-
-    def core(self):
-        assert False
-        return self.__origin_list.get_list()[0]
-
     def origins(self):
         return self.__origin_list
-
-    def set_origins(self, OriginList):
-        assert isinstance(OriginList, OperationPot)
-        self.__origin_list = OriginList
 
     @property
     def target_map(self):
