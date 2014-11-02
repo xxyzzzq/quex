@@ -1,12 +1,12 @@
-<test-database execution-time-sec="0.88" date="Sun Nov  2 21:44:38 2014">
+<test-database execution-time-sec="0.65" date="Sun Nov  2 23:26:18 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
-        <test title="ifstream" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bom-istream.exe" info-request-time="1414961077L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.644306"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
         <test title="FILE" make-dependent="True" time-sum-sec="0.00"> 
@@ -19,12 +19,12 @@
         </test>
     </group>
     <group name="Consistency">
-        <test title="Files in multi.i are not included elsewhere." time-sum-sec="0.83"> 
+        <test title="Files in multi.i are not included elsewhere." time-sum-sec="0.61"> 
             <application file-name="test-include-Multi.sh" info-request-time="1406100104L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+\ files"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.83" crc="-2071775558"/>
+               <choice name="" result="OK" time_sec="0.61" crc="-2071775558"/>
             </choice-list>
         </test>
     </group>
@@ -36,7 +36,7 @@
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.00" crc="None"/>
                <choice name="3" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="None"/>
                <choice name="5" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
@@ -46,8 +46,8 @@
             <make-procedure success="True" time_sec="0.742851"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="4" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="None"/>
                <choice name="5" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>

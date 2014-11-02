@@ -5,7 +5,7 @@ import quex.engine.state_machine.index           as     state_machine_index
 from   quex.engine.state_machine.target_map      import TargetMap
 from   quex.engine.state_machine.state_core_info import StateOperation
 from   quex.engine.state_machine.origin_list     import OperationPot
-from   quex.engine.tools                         import flatten_list_of_lists
+from   quex.engine.tools                         import flatten_list_of_lists, typed
 from   quex.blackboard                           import E_IncidenceIDs, \
                                                         E_PreContextIDs, \
                                                         E_Border
@@ -18,9 +18,32 @@ import sys
 
 class Accept:
     def __init__(self):
-        self.__acceptance_id              = None
-        self.__pre_context_id             = None
-        self.__position_register_register = None
+        self.__acceptance_id                = None
+        self.__pre_context_id               = None
+        self.__position_register_register_f = False
+
+    def set_acceptance_id(self, PatternId):
+        self.__acceptance_id = PatternId
+
+    def acceptance_id(self):
+        return self.__acceptance_id
+
+    def set_pre_context_id(self, PatternId):
+        self.__pre_context_id = PatternId
+
+    def pre_context_id(self):
+        return self.__pre_context_id
+
+    def set_restore_position_register_f(self):
+        self.__position_register_register_f = True
+
+    def restore_position_register_f(self):
+        return self.__position_register_register_f
+
+class StoreInputPosition:
+    @typed(RegisterId=long)
+    def __init__(self, RegisterId):
+        self.__position_register_register = RegisterId
 
 class State:
     """A state consisting of ONE entry and multiple transitions to other
@@ -78,18 +101,10 @@ class State:
         """Does not set '.__target_map'
         """
         result = State()
-        result.__target_map = TargetMap()
-
+        result.__target_map  = TargetMap()
+        result.__origin_list = OperationPot() 
         if not ClearF:
-            result.__origin_list = OperationPot()
-            result.__origin_list.merge_list(
-                state.origins().get_list() for state in StateList)
-        else:
-            result.__origin_list = OperationPot.from_one(
-                                   StateOperation(AcceptanceID = E_IncidenceIDs.MATCH_FAILURE, 
-                                                  StateIndex   = -1L, 
-                                                  AcceptanceF  = False)
-            )
+            result.__origin_list.merge_list(state.origins().get_list() for state in StateList)
 
         return result
 
@@ -122,30 +137,39 @@ class State:
         return E_PreContextIDs.NONE
 
     def set_acceptance(self, Value=True):
+        # accept_cmd = self.origins().find_Accept()
+        # assert accept_cmd is None
+        # self.origins().add(Accept())
         origin = self.origins().get_the_only_one()
         origin.set_acceptance_f(Value)
         if Value == False: origin.set_pre_context_id(E_PreContextIDs.NONE)
 
-    def set_input_position_store_f(self, Value=True):
-        origin = self.origins().get_the_only_one()
-        origin.set_input_position_store_f(Value)
-
     def set_input_position_restore_f(self, Value=True):
+        # accept_cmd = self.origins().find_Accept()
+        # assert accept_cmd is not None
+        # accept_cmd.set_input_position_restore_f()
         origin = self.origins().get_the_only_one()
         origin.set_input_position_restore_f(Value)
 
     def set_pre_context_id(self, Value=True):
+        # accept_cmd = self.origins().find_Accept()
+        # assert accept_cmd is not None
+        # accept_cmd.set_pre_context_id(Value)
         origin = self.origins().get_the_only_one()
         origin.set_pre_context_id(Value)
 
+    def set_input_position_store_f(self, Value=True):
+        # self.origins().add(StoreInputPosition())
+        origin = self.origins().get_the_only_one()
+        origin.set_input_position_store_f(Value)
+
     def mark_self_as_origin(self, AcceptanceID, StateIndex):
+        # accept_cmd = self.origins().find_Accept()
+        # if accept_cmd is None: return
+        # accept_cmd.set_acceptance_id(AcceptanceID)
         origin = self.origins().get_the_only_one()
         origin.set_pattern_id(AcceptanceID)
         origin.state_index = StateIndex
-
-    def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
-        self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
-                           StoreInputPositionF, self.is_acceptance())
 
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__target_map.add_transition(Trigger, TargetStateIdx)
