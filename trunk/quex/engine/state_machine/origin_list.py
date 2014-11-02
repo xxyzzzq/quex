@@ -82,7 +82,7 @@ class OperationPot(object):
         assert StateIndex is None or type(StateIndex) == long
         assert StoreInputPositionF is not None
             
-        if isinstance(X.__class__, StateOperation):
+        if isinstance(X, StateOperation):
             self.__add(X.clone())
         else:
             self.__add(StateOperation(AcceptanceID          = X, 

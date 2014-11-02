@@ -47,8 +47,7 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
 
     # (*) collect all transitions from both state machines into a single one
     #     (clone to ensure unique identifiers of states)
-    new_init_state = State.from_state_iterable((clone.get_init_state() for clone in clone_list), 
-                                               ClearF=True)
+    new_init_state = State() 
     result         = StateMachine(InitState=new_init_state)
 
     for clone in clone_list:
@@ -65,9 +64,7 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     new_terminal_state_index = -1L
     if CommonTerminalStateF:
         new_terminal_state_index = index.get()
-        result.states[new_terminal_state_index] = \
-                    State.from_state_iterable(result.get_acceptance_state_list(), \
-                                              ClearF=True)
+        result.states[new_terminal_state_index] = State() 
     
     # (*) Connect from the new initial state to the initial states of the
     #     clones via epsilon transition. 
