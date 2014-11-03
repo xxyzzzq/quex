@@ -1,18 +1,18 @@
-<test-database execution-time-sec="1.82" date="Mon Nov  3 00:19:26 2014">
+<test-database execution-time-sec="1.59" date="Mon Nov  3 07:26:57 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Disable several error messages." time-sum-sec="0.40"> 
+    <test title="Disable several error messages." time-sum-sec="0.35"> 
         <application file-name="no-error-flags.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.40" crc="764573507"/>
+           <choice name="" result="OK" time_sec="0.35" crc="764573507"/>
         </choice-list>
     </test>
-    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="1.41"> 
+    <test title="Detect lower prio-patterns outrun higher-prio patterns" time-sum-sec="1.24"> 
         <application file-name="outrun.sh" info-request-time="1405084982L" vanished="False"/>
         <analogy open="((" close="))"/>
         <happy-pattern re="outrun.qx:[0-9]+:"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="1.41" crc="-1164005888"/>
+           <choice name="" result="OK" time_sec="1.24" crc="-1164005888"/>
         </choice-list>
     </test>
 </test-database>
