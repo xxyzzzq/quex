@@ -1030,6 +1030,13 @@ class NumberSet(object):
             assert x.begin > prev.end, "%s" % self.__intervals
             prev = x
 
+    def assert_range(self, Minimum, Supremum):
+        assert self.minimum()  >= Minimum, \
+               "FAIL: %s >= %s" % (self.minimum(), Minimum)
+        assert self.supremum() <= Supremum, \
+               "FAIL: %s <= %s" % (self.supremum(), Supremum)
+
+
 # Range of code points that are covered by Unicode
 def UnicodeInterval():
     return Interval(0x0, 0x110000)

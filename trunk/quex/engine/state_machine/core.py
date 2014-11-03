@@ -565,7 +565,7 @@ class StateMachine(object):
     def get_number_sequence(self):
         """Returns a number sequence that represents the state machine.
         If the state machine cannot be represented by a plain chain of 
-        number, then it returns 'None'.
+        numbers, then it returns 'None'.
 
         Assumes: State machine is 'beautified'.
         """
@@ -851,7 +851,6 @@ class StateMachine(object):
         return False
 
     def create_new_init_state(self, AcceptanceF=False):
-
         self.init_state_index = self.create_new_state()
         return self.init_state_index
 
@@ -1085,4 +1084,8 @@ class StateMachine(object):
                        "present state indices: " + repr(self.states.keys()) + "\n" + \
                        "state machine = " + self.get_string(NormalizeF=False)
 
+    def assert_range(self, Range):
+        for state in self.states.itervalues():
+            for number_set in state.target_map.get_map().itervalues():
+                number_set.assert_range(Range.minimum(), Range.supremum())
            

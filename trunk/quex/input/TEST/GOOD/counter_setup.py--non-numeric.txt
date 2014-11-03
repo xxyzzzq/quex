@@ -7,7 +7,7 @@ test_string:1:warning: ('--suppress 11' to avoid this message)
 grid:
     variable by '\a', '\v'
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
 
 
 (2) |[\v\a] => grid variable kongo;>|
@@ -22,7 +22,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
     variable2 by '\a', '\v'
 
 
@@ -38,7 +38,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, oo]
+      1 by [\0, 'ÿ']
 
 
 (6) |/* empty will do */>|
@@ -48,6 +48,6 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, oo]
+      1 by [\0, 'ÿ']
 
 

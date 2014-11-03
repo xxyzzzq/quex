@@ -5,7 +5,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, oo]
+      1 by [\0, 'ÿ']
 
 
 (2) |[\v\a]|
@@ -44,7 +44,7 @@ test_string:1:warning: ('--suppress 11' to avoid this message)
 grid:
       4 by '\a', '\v'
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
 
 
 (8) |[\v\a] => space;>|
@@ -54,7 +54,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
       1 by '\a', '\v'
 
 
@@ -65,7 +65,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
      16 by '\a', '\v'
 
 
@@ -76,7 +76,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 newline:
       1 by '\a', '\v'
 space:
-      1 by [\0, \6], ['\b', '\n'], ['\f', oo]
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
 
 
 (11)
@@ -100,7 +100,7 @@ test_string:1:warning: ('--suppress 11' to avoid this message)
 grid:
      10 by '\t'
 space:
-      1 by [\0, \6], '\b', '\n', ['\f', oo]
+      1 by [\0, \6], '\b', '\n', ['\f', 'ÿ']
       1 by '\a', '\v'
 
 
@@ -111,7 +111,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-      1 by [\0, '\t'], ['\v', oo]
+      1 by [\0, '\t'], ['\v', 'ÿ']
       1 by '\n'
 
 
@@ -122,7 +122,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 newline:
       1 by 'x'
 space:
-      1 by [\0, '\t'], ['\v', 'w'], ['y', oo]
+      1 by [\0, '\t'], ['\v', 'w'], ['y', 'ÿ']
       2 by '\n'
 
 

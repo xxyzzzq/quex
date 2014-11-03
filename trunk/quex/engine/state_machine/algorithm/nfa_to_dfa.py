@@ -2,13 +2,14 @@ from   quex.engine.state_machine.core  import StateMachine, State
 from   quex.engine.state_machine.index import map_state_combination_to_index
 
 def do(SM, Class_StateMachine=StateMachine, Class_State=State):
-    """Creates a deterministic finite automaton (DFA) from the current state 
-       machine - which may be a NFA (non-deterministic finite automaton). This is
-       a generalized version of the 'subset construction' algorithm. Where 
-       subsection construction focusses on letters of an alphabet for the
-       investigation of transitions, this algorithm focusses on elementary
-       trigger sets. A very good description of the subset construction 
-       algorithm can be found in 'Engineering a Compiler' by Keith Cooper.
+    """Creates a deterministic finite automaton (DFA) from a state machine 
+    - which may be a NFA (non-deterministic finite automaton). 
+    
+    This is a generalized version of the 'subset construction' algorithm. Where
+    subsection construction focusses on letters of an alphabet for the
+    investigation of transitions, this algorithm focusses on elementary trigger
+    sets. A very good description of the subset construction algorithm can be
+    found in 'Engineering a Compiler' by Keith Cooper.
     """
     # (*) create the result state machine
     initial_state_epsilon_closure = SM.get_epsilon_closure(SM.init_state_index) 

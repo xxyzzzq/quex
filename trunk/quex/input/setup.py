@@ -17,6 +17,7 @@ class QuexSetup:
     def __init__(self, SetupInfo):
         self.init(SetupInfo)
         self.buffer_codec_prepare("unit-test") # Default: be prepared for unit tests
+        self.__buffer_element_specification_done_f = False
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -53,10 +54,47 @@ class QuexSetup:
         else:
             self.__dict__[Name] = Value
 
+    def buffer_element_specification_prepare(self):
+        if self.buffer_element_size == "wchar_t":
+            error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
+                      "with option '--buffer-element-size' or '-bes'. Please, specify\n"
+                      "'--buffer-element-type wchar_t' or '--bet'.")
+
+        if self.buffer_element_type == "wchar_t":
+            self.converter_ucs_coding_name = "WCHAR_T"
+
+        # (*) Determine buffer element type and size (in bytes)
+        if self.buffer_element_size == -1:
+            if global_character_type_db.has_key(self.buffer_element_type):
+                self.buffer_element_size = global_character_type_db[self.buffer_element_type][3]
+            elif self.buffer_element_type == "":
+                self.buffer_element_size = 1
+            else:
+                # Buffer element type is not identified in 'global_character_type_db'.
+                # => here Quex cannot know its size on its own.
+                self.buffer_element_size = -1
+
+        if self.buffer_element_type == "":
+            if self.buffer_element_size in [1, 2, 4]:
+                self.buffer_element_type = { 
+                    1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
+                }[self.buffer_element_size]
+            elif self.buffer_element_size == -1:
+                pass
+            else:
+                error_msg("Buffer element type cannot be determined for size '%i' which\n" \
+                          % self.buffer_element_size + 
+                          "has been specified by '-b' or '--buffer-element-size'.")
+
+        self.__buffer_element_specification_done_f = True
+
     def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName=None, Module=None):
         """Determines: Setup.buffer_codec_name
                        Setup.buffer_codec
         """
+        assert    BufferCodecName == "unit-test" \
+               or self.__buffer_element_specification_done_f == True
+
         if   BufferCodecName in ("utf8", "utf16"):
             assert Module is not None
             result = codec_db.CodecDynamicInfo(BufferCodecName, Module)

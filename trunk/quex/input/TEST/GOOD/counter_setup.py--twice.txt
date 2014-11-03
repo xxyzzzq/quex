@@ -7,7 +7,7 @@
 test_string:1:warning: Setup does not define 'newline'.
 test_string:1:warning: ('--suppress 11' to avoid this message)
 space:
-     66 by [\0, \6], '\b', '\n', ['\f', oo]
+     66 by [\0, \6], '\b', '\n', ['\f', 'ÿ']
      10 by '\a', '\v'
      10 by '\t'
 
@@ -24,7 +24,7 @@ grid:
      10 by '\a', '\v'
      10 by '\t'
 space:
-     66 by [\0, \6], '\b', '\n', ['\f', oo]
+     66 by [\0, \6], '\b', '\n', ['\f', 'ÿ']
 
 
 (3)
@@ -37,6 +37,6 @@ newline:
       1 by '\a', '\v'
       1 by '\t'
 space:
-     66 by [\0, \6], '\b', '\n', ['\f', oo]
+     66 by [\0, \6], '\b', '\n', ['\f', 'ÿ']
 
 
