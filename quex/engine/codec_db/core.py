@@ -99,13 +99,32 @@ class CodecInfo:
         return False
 
     def transform(self, sm):
-        return True, sm
+        """Cut any number that is not in drain_set from the transition trigger
+        sets. Possible orphaned states are deleted.
+        """
+        complete_f         = True
+        orphans_possible_f = False
+        for state in sm.states.itervalues():
+            target_map = state.target_map.get_map()
+            for target_index, number_set in target_map.items():
+                if self.drain_set.is_superset(number_set): continue
+                complete_f = False
+                number_set.intersect_with(self.drain_set)
+                if number_set.is_empty(): 
+                    del target_map[target_index]
+                    orphans_possible_f = True
+
+        if orphans_possible_f:
+            sm.delete_orphaned_states()
+
+        return complete_f, sm
 
     def transform_NumberSet(self, number_set):
-        return number_set
+        return self.drain_set.intersection(number_set)
 
     def transform_Number(self, number):
-        return [ Interval(number) ]
+        if self.drain_set.contains(number): return [ Interval(number) ]
+        return None
 
     def homogeneous_chunk_n_per_character(self, CharacterSet):
         return 1 # In non-dynamic character codecs each chunk element is a character

@@ -6,8 +6,8 @@ from   quex.blackboard                                 import setup as Setup
 from   quex.engine.tools import typed, \
                                 flatten_list_of_lists
 
-@typed(X=(StateMachine,None))
-def do_state_machine(X):
+@typed(SmIn=(StateMachine,None))
+def do_state_machine(SmIn):
     """Transforms a given state machine from 'Unicode Driven' to another
        character encoding type.
     
@@ -19,13 +19,19 @@ def do_state_machine(X):
        It is ensured that the result of this function is a DFA compliant
        state machine.
     """
-    if X is None: return True, None
-    assert X.is_DFA_compliant()
+    if SmIn is None: return True, None
+    assert SmIn.is_DFA_compliant()
 
-    complete_f, sm = Setup.buffer_codec.transform(X)
+    # BEFORE: Forgive characters not in source range. What comes out is 
+    #         important. It is checked in 'transform()' of the Pattern.
+    complete_f, sm_out = Setup.buffer_codec.transform(SmIn)
 
-    if sm.is_DFA_compliant(): return complete_f, sm
-    else:                     return complete_f, beautifier.do(sm)
+    # AFTER: Whatever happend, the transitions in the state machine MUST
+    #        lie in the drain_set.
+    sm_out.assert_range(Setup.buffer_codec.drain_set)
+
+    if sm_out.is_DFA_compliant(): return complete_f, sm_out
+    else:                         return complete_f, beautifier.do(sm_out)
 
 def do_set(number_set, TrafoInfo, fh=-1):
     """RETURNS: True  transformation successful

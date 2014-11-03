@@ -50,7 +50,7 @@ test_string:1:warning: ('--suppress 12' to avoid this message)
 newline:
       1 by 'a'
 space:
-      1 by [\0, '`'], 'b', ['d', oo]
+      1 by [\0, '`'], 'b', ['d', 'ÿ']
       1 by 'c'
 
 

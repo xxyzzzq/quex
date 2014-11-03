@@ -65,6 +65,51 @@ class OperationPot(object):
         assert L == 1, "Calling function not permitted on aggregated states. len(self.__list) == %s" % len(self.__list)
         return self.__list[0]
 
+    def hopcroft_combinability_key(self):
+        """Two states have the same hopcroft-combinability key, if and only if
+        they are combinable during the initial state split in the hopcroft
+        minimization. Criteria:
+        
+        (1) Acceptance states of a different origin constellation. The
+            decision making about the winning pattern must be the same for all
+            states of a state set that is possibly combined into one single
+            state. 
+        
+            In particular, non-acceptance states can never be combined with
+            acceptance states.
+        
+        (2) Two states of the same pattern where one stores the input position
+            and the other not, cannot be combined. Otherwise, the input
+            position would be stored in unexpected situations.
+
+        The approach is the following: For each investigated behavior a a tuple
+        of numbers can be derived that describes it uniquely. The tuple of all
+        tuples is used during the hopcroft minimization to distinguish between
+        combinable states and those that are not.
+        """
+        def acceptance_info():
+            """Before the track analysis, the acceptance in a state is simple
+            given by its precedence, i.e. its acceptance id. Thus, the sorted
+            sequence of acceptance ids identifies the acceptance behavior.
+            """
+            return tuple(sorted(x.acceptance_id() 
+                                for x in self if x.is_acceptance()
+            ))
+
+        # (2) Separate by Store-Input-Position Behavior
+        def store_info():
+            """The storing of input positions in registers is independent of its
+            position in the command list (as long as it all happens before the increment
+            of the input pointer, of course).
+
+            The sorted list of position storage registers where positions are stored
+            is a distinct description of the position storing behavior.
+            """
+            return tuple(sorted(x.acceptance_id() 
+                                for x in self if x.input_position_store_f()))
+
+        return (acceptance_info(), store_info())
+
     def add(self, X, StateIndex=None, 
             StoreInputPositionF   = False, 
             AcceptanceF           = False, 

@@ -9,6 +9,7 @@ import quex.input.files.counter as counter
 from   quex.engine.misc.file_in import EndOfStreamException, error_msg, error_eof
 from   quex.blackboard import setup as Setup
 
+Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_prepare("unicode")
 
 if "--hwut-info" in sys.argv:

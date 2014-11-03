@@ -16,6 +16,7 @@ from   quex.input.files.parser_data.counter        import CounterSetupLineColumn
 from   quex.input.regular_expression.construct     import Pattern
 import quex.engine.analyzer.engine_supply_factory  as     engine
 
+Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_prepare("unicode", None)
 
 class MiniAnalyzer:

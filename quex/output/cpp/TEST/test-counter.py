@@ -137,6 +137,7 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
     fh.close()
 
 def get_test_application(counter_db, ReferenceP, CT):
+    Setup.buffer_element_specification_prepare()
     if   codec == "utf_32_le" or codec == "ascii":  
         Setup.buffer_codec_prepare("unicode")
     elif codec == "utf_8": 

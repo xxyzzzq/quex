@@ -17,9 +17,9 @@ esac
 
 cd $QUEX_PATH/demo/Cpp/011
 make clean >& /dev/null
-make $choice-lexer >& tmp.txt
-cat tmp.txt | awk ' ! /g\+\+/ && ! /codec/ && !/-Werror/ && (/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/) { print; }'
+make $choice-lexer 2> tmp.txt 1> /dev/null
+cat tmp.txt | awk ' !/g\+\+/ && !/codec/ && !/-Werror/ && !/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ && !/[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 rm tmp.txt
 valgrind --leak-check=full ./$choice-lexer $special >& tmp.txt
-python ../TEST/show-valgrind.py
+python $QUEX_PATH/TEST/show-valgrind.py
 rm -f tmp.txt

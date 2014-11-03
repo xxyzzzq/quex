@@ -48,7 +48,14 @@ def prepare(command_line, argv):
                   % (Setup.output_file_naming_scheme, Setup.language) + \
                   "Available schemes are: %s." % repr(Setup.extension_db.keys())[1:-1])
 
-    # (*) Output files
+    if Setup.buffer_byte_order == "<system>": 
+        Setup.buffer_byte_order                      = sys.byteorder 
+        Setup.byte_order_is_that_of_current_system_f = True
+    else:
+        Setup.byte_order_is_that_of_current_system_f = False
+
+    Setup.buffer_element_specification_prepare()
+
     if   Setup.buffer_codec_name == "utf8":  module = utf8_state_split
     elif Setup.buffer_codec_name == "utf16": module = utf16_state_split
     else:                                    module = None
@@ -58,43 +65,6 @@ def prepare(command_line, argv):
     # AFTER: Setup.buffer_codec_prepare() !!!
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
-
-    if Setup.buffer_byte_order == "<system>": 
-        Setup.buffer_byte_order = sys.byteorder 
-        Setup.byte_order_is_that_of_current_system_f = True
-    else:
-        Setup.byte_order_is_that_of_current_system_f = False
-
-    if Setup.buffer_element_size == "wchar_t":
-        error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
-                  "with option '--buffer-element-size' or '-bes'. Please, specify\n"
-                  "'--buffer-element-type wchar_t' or '--bet'.")
-
-    if Setup.buffer_element_type == "wchar_t":
-        Setup.converter_ucs_coding_name = "WCHAR_T"
-
-    # (*) Determine buffer element type and size (in bytes)
-    if Setup.buffer_element_size == -1:
-        if global_character_type_db.has_key(Setup.buffer_element_type):
-            Setup.buffer_element_size = global_character_type_db[Setup.buffer_element_type][3]
-        elif Setup.buffer_element_type == "":
-            Setup.buffer_element_size = 1
-        else:
-            # Buffer element type is not identified in 'global_character_type_db'.
-            # => here Quex cannot know its size on its own.
-            Setup.buffer_element_size = -1
-
-    if Setup.buffer_element_type == "":
-        if Setup.buffer_element_size in [1, 2, 4]:
-            Setup.buffer_element_type = { 
-                1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
-            }[Setup.buffer_element_size]
-        elif Setup.buffer_element_size == -1:
-            pass
-        else:
-            error_msg("Buffer element type cannot be determined for size '%i' which\n" \
-                      % Setup.buffer_element_size + 
-                      "has been specified by '-b' or '--buffer-element-size'.")
 
     type_info = global_character_type_db.get(Setup.buffer_element_type)
     if     type_info is not None and len(type_info) >= 4 \

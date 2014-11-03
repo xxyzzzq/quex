@@ -8,27 +8,26 @@ class HopcroftMinization:
     """Combine sets of states that are equivalent. 
 
        Example:
-                      .-- 'a' --->( 2 )--- 'a' --.           (( 3 )) accepts
+                      .-- 'a' --->( 2 )--- 'a' --.           
                      /                            \ 
                   ( 1 )                         (( 3 ))
                      \                            /
                       '-- 'b' --->( 4 )--- 'a' --'
 
-        Triggers exactly the same as 
+        Where (( 3 )) is an acceptance state. Triggers exactly the same as 
 
                   ( 1 )--- [ab] --->( 2 )--- 'a' -->(( 3 ))
 
-        Therefore state 2 and 4 from the first machine can be combined.
-        Which allows one state to be spared. In practical applications the
-        Hopcroft Minization can tremendously reduce the size of a state
-        machine.
+        Therefore state 2 and 4 from the first machine can be combined and one
+        state can be spared. In practical applications the Hopcroft Minization
+        can tremendously reduce the size of a state machine.
 
         The mathematics behind it can be found at 
         
                     http://en.wikipedia.org/wiki/DFA_minimization
 
-        The algorithm below adapted the hopcroft algorithm in order to
-        cope with the large trigger sets.
+        The algorithm below adapted the hopcroft algorithm in order to cope
+        with the large trigger sets.
 
         (1) Basic Idea of Hopcroft Minimization _______________________________
 
@@ -54,15 +53,15 @@ class HopcroftMinization:
 
         (2) Frank-Rene Schaefer's Adaptations _________________________________
 
-             In many cases, already the difference in target_sets reveals that
-             a state set needs to be split. The term 'homogenous' is defined for
-             the algorithm below:
+        In many cases, already the difference in target_sets reveals that a
+        state set needs to be split. The term 'homogenous' is defined for the
+        algorithm below:
 
              homogenous: A state set is homogenous, if and only if all states in the
-                       state set trigger to target states that belong to the
-                       same state set.
+                         state set trigger to target states that belong to the
+                         same state set.
 
-             The split is then separated into two repeated phases:
+        The split is then separated into two repeated phases:
 
                  (1) Split until all non-homogenous state sets disappear.
                  (2) Split all states in the current to do list.
@@ -274,94 +273,21 @@ class HopcroftMinization:
 
     def initial_split(self):
         """Generates initial sets of states. After the initial split, state
-           sets are only split further and never combined. The initial split 
-           separate states that must never, ever, be combined. As they are
+        sets are only split further and never combined. The initial split 
+        separate states that must never, ever, be combined. The knowledge about
+        combinability lies where the operations are known. The function
 
-           (1) Acceptance states of a different origin constellation. The
-               decision making about the winning pattern must be the same for all
-               states of a state set that is possibly combined into one single
-               state. 
+                   .hopcroft_combinability_key()
 
-               In particular, non-acceptance states can never be combined with
-               acceptance states.
-
-           (2) Two states of the same pattern where one stores the input position
-               and the other not, cannot be combined. Otherwise, the input
-               position would be stored in unexpected situations.
+        determines a key for a state. Two states have the same key, if and only
+        if they are combinable during the initial split of hopcroft minimization.
         """
-        # (1) Separate by Acceptance
-        def acceptance_info(state):
-            """Computes a 'key' that allows the state set split in the
-               sense of criteria (1), i.e. acceptance must be the same
-               for states of the same set (== same key).
-            """
-            return tuple(sorted(
-                   [x.acceptance_id() for x in ifilter(lambda y: y.is_acceptance(), state.origins())]
-            ))
-
         distinguisher_db = defaultdict(list)
         for state_index, state in self.sm.states.iteritems():
-            distinguisher_db[acceptance_info(state)].append(state_index)
+            key = state.origins().hopcroft_combinability_key()
+            distinguisher_db[key].append(state_index)
 
-        # (2) Separate by Store-Input-Position Behavior
-        #
-        #     If state A stores the input position for pattern X and another state
-        #     B does not store the input position for pattern X, then they can never
-        #     be combined in a single state. Otherwise, storing of input positions
-        #     would happen in unexpected situations. For state A and B to be in 
-        #     one set, it must hold that
-        #
-        #     |   For every pattern X appearing in origins of A and B the   |
-        #     |   'input_position_store_f' must be the same.                |
-        #   
-        #     Storing input positions happens in 'per pattern position registers'.
-        #     Thus varying input position storage between when different patterns
-        #     are involved are not problematic.
-        def store_info(state):
-            """Two states from the same state machine cannot be combined if they
-               differ in their storing of input positions. Determine for each
-               involved state machine whether the input position is stored or not
-               in the current state.
-            """
-            result = {}
-            for x in state.origins():
-                result[x.acceptance_id()] = x.input_position_store_f()
-            return result
-
-        state_set_iterable = distinguisher_db.values()
-        last_i             = len(state_set_iterable) - 1
-        i = -1
-        while i < last_i:
-            i += 1
-            state_set = state_set_iterable[i]
-            if len(state_set) < 2: continue
-
-            prototype_id = state_set[0]
-            remainder    = islice(state_set, 1, None)
-
-            prototype_db             = store_info(self.sm.states[prototype_id])
-            prototype_pattern_id_set = set(prototype_db.keys())
-            
-            extracted    = set()
-            # Extract those buddies from 'state_set', where there is an origin that differs
-            # where there is a difference in 'input_position_store_f' for a given acceptance_id.
-            for buddy_state_index, buddy_state in ((i, self.sm.states[i]) for i in remainder):
-                buddy_db = store_info(buddy_state)
-                # Only consider the state machines that they have in common
-                # (Origins from different state machines can be combined arbitrarily)
-                for acceptance_id in prototype_pattern_id_set.intersection(buddy_db.keys()):
-                    # Both are storing, or both are not storing, then fine.
-                    if prototype_db[acceptance_id] == buddy_db[acceptance_id]: continue
-                    # Otherwise, extract.
-                    extracted.add(buddy_state_index)
-                    state_set.remove(buddy_state_index)
-                    break
-
-            if len(extracted) != 0:
-                state_set_iterable.append(list(extracted))
-                last_i += 1
-
-        for state_set in state_set_iterable:
+        for state_set in distinguisher_db.itervalues():
             i = self.__add_state_set(state_set)
             if len(state_set) != 1: self.non_homogenous_add(i)
 
@@ -493,12 +419,7 @@ def create_state_machine(SM, Result, Class_StateMachine, Class_State):
 
         new_state_index = map_new_state_index[state_set_idx]
 
-        # Merge all core information of the states inside the state set.
-        # If one state set contains an acceptance state, then the result is 'acceptance'.
-        # (Note: The initial split separates acceptance states from those that are not
-        #  acceptance states. There can be no state set containing acceptance and 
-        #  non-acceptance states) 
-        # (Note, that the prototype's info has not been included yet, consider whole set)
+        # Merge all operations of states which are combined into one.
         result.states[new_state_index] = Class_State.from_state_iterable(
                                                 SM.states[i] for i in state_set)
 

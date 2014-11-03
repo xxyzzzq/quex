@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.17" date="Mon Nov  3 07:26:55 2014">
+<test-database execution-time-sec="1.18" date="Tue Nov  4 00:26:05 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
@@ -36,12 +36,12 @@
            <choice name="" result="OK" time_sec="0.02" crc="None"/>
         </choice-list>
     </test>
-    <test title="Command Line Option Documentation" time-sum-sec="0.08"> 
+    <test title="Command Line Option Documentation" time-sum-sec="0.10"> 
         <application file-name="command_line_options-verify-doc.py" info-request-time="1407997681L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="True">
-           <choice name="man" result="OK" time_sec="0.04" crc="-702367166"/>
-           <choice name="sphinx" result="OK" time_sec="0.04" crc="None"/>
+           <choice name="man" result="OK" time_sec="0.05" crc="-702367166"/>
+           <choice name="sphinx" result="OK" time_sec="0.05" crc="None"/>
         </choice-list>
     </test>
     <test title="Propper undefinition of configuration parameters." time-sum-sec="0.03"> 
@@ -51,11 +51,11 @@
            <choice name="" result="OK" time_sec="0.03" crc="None"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.25"> 
+    <test title="Include Guards for C/C++" time-sum-sec="0.24"> 
         <application file-name="include_guard.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.13" crc="None"/>
+           <choice name="convention" result="OK" time_sec="0.12" crc="None"/>
            <choice name="undefinition" result="OK" time_sec="0.12" crc="None"/>
         </choice-list>
     </test>

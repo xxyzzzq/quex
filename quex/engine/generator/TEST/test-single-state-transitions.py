@@ -35,6 +35,7 @@ from   quex.blackboard                                    import setup as Setup,
 from   collections import defaultdict
 
 Setup.language_db = languages.db["C++"]
+Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_prepare("unicode", None)
 
 dial_db.clear()
