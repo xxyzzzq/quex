@@ -1,4 +1,4 @@
-<test-database execution-time-sec="206.23" date="Tue Nov  4 00:26:07 2014">
+<test-database execution-time-sec="314.06" date="Tue Nov  4 08:33:16 2014">
     <last-used-diff-display-program name=""/>
     <test title="Mode Changes" time-sum-sec="2.27"> 
         <application file-name="test-mode-changes.py" info-request-time="1387873735L" vanished="False"/>
@@ -373,16 +373,16 @@
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="0.72"> 
-            <application file-name="test-single-state-transitions.py" info-request-time="1415057101L" vanished="False"/>
+        <test title="Transition Code Generation" time-sum-sec="108.55"> 
+            <application file-name="test-single-state-transitions.py" info-request-time="1415086282L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
-               <choice name="A" result="FAIL" time_sec="0.09" crc="287456115"/>
-               <choice name="B" result="FAIL" time_sec="0.11" crc="-980690464"/>
-               <choice name="C" result="FAIL" time_sec="0.15" crc="650677590"/>
-               <choice name="A-UTF8" result="FAIL" time_sec="0.10" crc="287456115"/>
-               <choice name="B-UTF8" result="FAIL" time_sec="0.11" crc="-980690464"/>
-               <choice name="C-UTF8" result="FAIL" time_sec="0.15" crc="650677590"/>
+               <choice name="A" result="OK" time_sec="0.27" crc="287456115"/>
+               <choice name="B" result="OK" time_sec="4.58" crc="-980690464"/>
+               <choice name="C" result="OK" time_sec="47.46" crc="650677590"/>
+               <choice name="A-UTF8" result="OK" time_sec="0.39" crc="287456115"/>
+               <choice name="B-UTF8" result="OK" time_sec="6.83" crc="-980690464"/>
+               <choice name="C-UTF8" result="OK" time_sec="49.03" crc="650677590"/>
             </choice-list>
         </test>
     </group>

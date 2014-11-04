@@ -1,4 +1,4 @@
-< if     ( input >= 0xB )  goto _3;/* ['\v', oo] */
+< if     ( input >= 0xB )  goto _3;/* ['\v', 'ÿ'] */
 < 
 < else if( input == 0xA )  goto _4;/* '\n' */
 < 
@@ -10,25 +10,25 @@
 > else if( input == 0xA )  goto _4;
 > else if( input == 0x9 )  goto _2;
 > else                     goto _3;
-< goto _5;/* [\0, oo] */
+< goto _5;/* [\0, 'ÿ'] */
 < 
 > goto _5;
-< goto _6;/* [\0, oo] */
+< goto _6;/* [\0, 'ÿ'] */
 < 
 > goto _6;
-< goto _7;/* [\0, oo] */
+< goto _7;/* [\0, 'ÿ'] */
 < 
 > goto _7;
 <     /* BEGIN: STATE MACHINE
 <      * init-state = 12L
-<      * 00012  
+<      * 00012 
 <      *      == 'a' ==> 00013
 <      *     
 <      * 00013 A(0)
 <      *     
 <      * END: STATE MACHINE
 <      */
-< if     ( input >= 0x62 )  goto _5;/* ['b', oo] */
+< if     ( input >= 0x62 )  goto _5;/* ['b', 'ÿ'] */
 < 
 < else if( input == 0x61 )  goto _4;/* 'a' */
 < 
@@ -39,7 +39,7 @@
 > if     ( input == 0x61 )  goto _4;
 > else if( input == 0x0 )   goto _9;
 > else                      goto _5;
-< goto _6;/* [\0, oo] */
+< goto _6;/* [\0, 'ÿ'] */
 < 
 > goto _6;
 <     /* BEGIN: MODE PATTERNS

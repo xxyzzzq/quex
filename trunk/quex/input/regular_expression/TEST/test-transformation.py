@@ -11,6 +11,7 @@ from   quex.blackboard                             import setup as Setup
 
 Setup.buffer_limit_code = -1
 Setup.path_limit_code   = -1
+Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
 
 if "--hwut-info" in sys.argv:

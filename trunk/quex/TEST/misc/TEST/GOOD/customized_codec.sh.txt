@@ -1,4 +1,5 @@
 customized_codec.qx:25:warning: Pattern contains elements not found in engine codec 'customized_codec'.
+customized_codec.qx:25:warning: (Buffer element size is 1 [byte])
  *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf8)(...)
  *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf16)(...)
  *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf32)(...)
@@ -25,3 +26,4 @@ QUEX_CONVERTER_CHAR_DEF(customized_codec, utf16)(const QUEX_TYPE_CHARACTER** inp
 QUEX_CONVERTER_CHAR_DEF(customized_codec, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
 #define __QUEX_FROM           customized_codec
 #endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec_I */
+
