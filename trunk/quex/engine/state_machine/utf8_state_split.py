@@ -76,7 +76,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 from   quex.engine.utf8                     import utf8_to_unicode, unicode_to_utf8, UTF8_MAX, UTF8_BORDERS
 from   quex.engine.interval_handling        import Interval, NumberSet
 import quex.engine.state_machine            as     state_machine
-from   quex.engine.state_machine.core       import State
+from   quex.engine.state_machine.state.core import State
 import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 

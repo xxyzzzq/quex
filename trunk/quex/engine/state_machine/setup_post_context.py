@@ -71,7 +71,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     assert post_context_sm is None or not post_context_sm.has_origins()
 
     for state in the_state_machine.get_acceptance_state_list():
-        for origin in state.origins(): 
+        for origin in state.single_entry: 
             assert origin.pre_context_id() == E_PreContextIDs.NONE, \
                    "Post Contexts MUST be mounted BEFORE pre-contexts."
 

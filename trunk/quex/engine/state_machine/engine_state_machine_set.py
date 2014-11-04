@@ -238,7 +238,7 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
                       "The initial state is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
-        for dummy in ifilter(lambda origin: origin.is_acceptance(), init_state.origins()):
+        for dummy in ifilter(lambda origin: origin.is_acceptance(), init_state.single_entry):
             error_msg("After '%s'" % Place + "\n" + \
                       "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n")

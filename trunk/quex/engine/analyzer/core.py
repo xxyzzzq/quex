@@ -252,7 +252,7 @@ class Analyzer:
         cmd_list = []
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cmd_list.extend(
-                 PreContextOK(origin.acceptance_id()) for origin in OldState.origins() \
+                 PreContextOK(origin.acceptance_id()) for origin in OldState.single_entry \
                  if origin.is_acceptance() 
             )
 

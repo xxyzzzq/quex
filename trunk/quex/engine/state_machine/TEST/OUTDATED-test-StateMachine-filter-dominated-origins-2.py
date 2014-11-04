@@ -6,8 +6,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.engine.state_machine.index import get_state_machine_by_id, \
-                                state_machine_ranking_db_register
-from quex.engine.state_machine.core  import StateMachine, State, StateOriginInfo
+                                            state_machine_ranking_db_register
+from quex.engine.state_machine.core        import StateMachine
+from quex.engine.state_machine.state.core  import State, StateOriginInfo
 
 if "--hwut-info" in sys.argv:
     print "Ranking of State Machines: Filter Dominated Origins - Part 2"
@@ -49,7 +50,7 @@ def print_this(Title):
     print "(*) " + Title    
     print
 
-    for origin in si.origins():
+    for origin in si.single_entry:
         acceptance_mark = " "
         if origin.is_acceptance(): acceptance_mark = "*"
         print acceptance_mark + repr(origin)
@@ -98,7 +99,7 @@ add_origin(12, False)
 add_origin(13, False)    
 
 print_this("Only Acceptance/Non-Acceptance - Before")
-si.origins().filter_dominated()
+si.single_entry.filter_dominated()
 print_this("Only Acceptance/Non-Acceptance - After")
 
 # (2) acceptance and pre-conditioned states
@@ -121,7 +122,7 @@ add_origin(13, False)
     
 
 print_this("Acceptance and Pre-Conditioned Acceptance - Before")
-si.origins().filter_dominated()
+si.single_entry.filter_dominated()
 print_this("Acceptance and Pre-Conditioned Acceptance - After")
 
 # (3) acceptance and post-conditioned states
@@ -142,6 +143,6 @@ add_origin(12, True, PostConditionedAcceptanceF=1L)
 add_origin(13, True, PostConditionedAcceptanceF=1L)    
 
 print_this("Acceptance and Post-Conditioned Acceptance - Before")
-si.origins().filter_dominated()
+si.single_entry.filter_dominated()
 print_this("Acceptance and Post-Conditioned Acceptance - After")
 

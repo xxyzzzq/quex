@@ -1,7 +1,7 @@
 from quex.engine.state_machine.state_core_info import StateOperation
 from quex.blackboard                           import E_PreContextIDs, E_IncidenceIDs
 
-class OperationPot(object):
+class SingleEntry(object):
     __slots__ = ('__list')
 
     def __init__(self):
@@ -9,18 +9,18 @@ class OperationPot(object):
 
     @staticmethod
     def from_iterable(Iterable):
-        result = OperationPot()
+        result = SingleEntry()
         result.merge(Iterable)
         return result
 
     @staticmethod
     def from_one(Operation):
-        result = OperationPot()
+        result = SingleEntry()
         result.__list.append(Operation)
         return result
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
-        return OperationPot.from_iterable(x.clone(ReplDbPreContext=ReplDbPreContext, ReplDbAcceptance=ReplDbAcceptance) for x in self.__list)
+        return SingleEntry.from_iterable(x.clone(ReplDbPreContext=ReplDbPreContext, ReplDbAcceptance=ReplDbAcceptance) for x in self.__list)
 
     def get_list(self):
         return self.__list

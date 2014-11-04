@@ -1,4 +1,5 @@
-from   quex.engine.state_machine.core                 import StateMachine, State
+from   quex.engine.state_machine.core                 import StateMachine
+from   quex.engine.state_machine.state.core           import State
 from   quex.engine.state_machine.index                import map_state_combination_to_index
 import quex.engine.state_machine.index                as     index
 import quex.engine.state_machine.algorithm.beautifier as     beautifier

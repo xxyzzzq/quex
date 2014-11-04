@@ -39,7 +39,7 @@ class X:
                     s_idx = result.states[s_idx].target_map.get_resulting_target_state_index(byte)
 
                 # All acceptance flags must belong to the original state machine
-                for origin in result.states[s_idx].origins():
+                for origin in result.states[s_idx].single_entry:
                     if not origin.is_acceptance(): continue
                     # HERE: As soon as something is wrong --> fire an exception
                     assert origin.acceptance_id() == self.id
@@ -61,7 +61,7 @@ def check_negative(SM, ImpossibleIntervals):
             if s_idx is None: continue
 
             # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
-            for origin in result.states[s_idx].origins():
+            for origin in result.states[s_idx].single_entry:
                 assert not origin.is_acceptance()
 
     print " (OK)"

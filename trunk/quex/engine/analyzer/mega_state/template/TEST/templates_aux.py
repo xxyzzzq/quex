@@ -16,7 +16,7 @@ from   quex.engine.analyzer.mega_state.template.state       import TemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
 from   quex.engine.analyzer.commands.core                   import CommandList
 from   quex.engine.analyzer.commands.tree                   import CommandTree
-from   quex.engine.state_machine.core                       import State
+from   quex.engine.state_machine.state.core                 import State
 from   quex.engine.interval_handling                        import NumberSet, Interval
 from   quex.engine.tools                                    import typed
 

@@ -38,12 +38,12 @@ def do(SM):
     # -- We need to cancel any acceptance, because the inverted engine now starts
     #    from a combination of the acceptance states and ends at the initial state.
     for state_index, state in SM.states.items():
-        original_origin_list = [origin.clone() for origin in state.origins()]
+        original_origin_list = [origin.clone() for origin in state.single_entry]
         for origin in original_origin_list:
             origin.set_input_position_restore_f(False)
             origin.set_pre_context_id(E_PreContextIDs.NONE)
             origin.set_acceptance_f(False)
-        result.states[state_index].origins().set(original_origin_list) # deepcopy implicit
+        result.states[state_index].single_entry.set(original_origin_list) # deepcopy implicit
 
     # -- only the ORIGINAL initial state becomes an acceptance state (end of inverse)
     result.states[SM.init_state_index].set_acceptance(True)

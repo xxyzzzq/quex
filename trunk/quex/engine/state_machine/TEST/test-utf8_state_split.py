@@ -5,7 +5,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling              import NumberSet, Interval
 import quex.engine.state_machine.utf8_state_split as trafo
-from   quex.engine.state_machine.core             import StateMachine, State
+from   quex.engine.state_machine.core             import StateMachine
+from   quex.engine.state_machine.state.core       import State
 import quex.engine.state_machine                  as state_machine
 
 if "--hwut-info" in sys.argv:
