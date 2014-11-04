@@ -1,7 +1,8 @@
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.check.special        as     special
 import quex.engine.state_machine.index                as     index
-from   quex.engine.state_machine.core                 import State, StateMachine
+from   quex.engine.state_machine.core                 import StateMachine
+from   quex.engine.state_machine.state.core           import State
 from   quex.engine.misc.tree_walker                   import TreeWalker
 
 

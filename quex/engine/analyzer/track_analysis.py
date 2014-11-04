@@ -358,7 +358,7 @@ class _Trace(object):
         #     acceptances and store-input-position events.
         #     Origins must be sorted with the highest priority LAST, so that they will
         #     appear on top of the acceptance trace list.
-        for origin in sorted(State.origins(), key=lambda x: x.acceptance_id(), reverse=True):
+        for origin in sorted(State.single_entry, key=lambda x: x.acceptance_id(), reverse=True):
             # Acceptance 
             if origin.is_acceptance():
                 result.__acceptance_trace_add_at_front(origin, StateIndex)

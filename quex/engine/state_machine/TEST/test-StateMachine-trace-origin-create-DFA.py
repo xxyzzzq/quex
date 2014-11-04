@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.engine.state_machine.core import *
+from quex.engine.state_machine.state.core import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
@@ -12,7 +13,7 @@ if "--hwut-info" in sys.argv:
     
 def set_origins(StateIndex, *TheList):
     global sm
-    sm.states[StateIndex].origins().set(
+    sm.states[StateIndex].single_entry.set(
         [ StateOperation(long(sm_id), long(state_index), acceptance_f) 
           for sm_id, state_index, acceptance_f in TheList ]
     )
@@ -54,7 +55,7 @@ sm.add_epsilon_transition(n8, n3)
 set_origins(n0, (66, 0, False), (77, 0, False), (88, 0, False))
 set_origins(n4, (77, 1, False))
 set_origins(n6, (88, 22, False))
-sm.states[n6].origins().get_list()[0].set_input_position_store_f(True)
+sm.states[n6].single_entry.get_list()[0].set_input_position_store_f(True)
 
 
 # (*) create the DFA from the specified NFA

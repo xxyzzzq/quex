@@ -1,190 +1,19 @@
-from   quex.engine.misc.string_handling          import blue_print
+from   quex.engine.misc.string_handling             import blue_print
 #
-from   quex.engine.interval_handling             import NumberSet, Interval
-import quex.engine.state_machine.index           as     state_machine_index
-from   quex.engine.state_machine.target_map      import TargetMap
-from   quex.engine.state_machine.state_core_info import StateOperation
-from   quex.engine.state_machine.origin_list     import OperationPot
-from   quex.engine.tools                         import flatten_list_of_lists, typed
-from   quex.blackboard                           import E_IncidenceIDs, \
-                                                        E_PreContextIDs, \
-                                                        E_Border
+from   quex.engine.interval_handling                import NumberSet, Interval
+import quex.engine.state_machine.index              as     state_machine_index
+from   quex.engine.state_machine.state.core         import State
+
+from   quex.engine.tools  import flatten_list_of_lists
+from   quex.blackboard    import E_IncidenceIDs, \
+                                 E_PreContextIDs, \
+                                 E_Border
 
 from   copy      import deepcopy
 from   operator  import attrgetter, itemgetter
 from   itertools import ifilter, imap
 from   collections import defaultdict
 import sys
-
-class Accept:
-    def __init__(self):
-        self.__acceptance_id                = None
-        self.__pre_context_id               = None
-        self.__position_register_register_f = False
-
-    def set_acceptance_id(self, PatternId):
-        self.__acceptance_id = PatternId
-
-    def acceptance_id(self):
-        return self.__acceptance_id
-
-    def set_pre_context_id(self, PatternId):
-        self.__pre_context_id = PatternId
-
-    def pre_context_id(self):
-        return self.__pre_context_id
-
-    def set_restore_position_register_f(self):
-        self.__position_register_register_f = True
-
-    def restore_position_register_f(self):
-        return self.__position_register_register_f
-
-class StoreInputPosition:
-    @typed(RegisterId=long)
-    def __init__(self, RegisterId):
-        self.__position_register_register = RegisterId
-
-class State:
-    """A state consisting of ONE entry and multiple transitions to other
-    states.  One entry means that the exact same actions are applied upon state
-    entry, independent from where the state is entered.
-
-           ...   ----->---.                               .--->   ...
-                           \                     .-----.-'
-           ...   ----->-----+--->[ StateOp ]----( State )----->   ...
-                           /                     '-----'
-           ...   ----->---'        
-
-    Transitions are of two types:
-    
-     -- normal transitions: Happen when an input character fits a trigger set.
-     -- epsilon transition: Happen without any input.
-    
-    Collections of states connected by transitions build a StateMachine. States 
-    may be used in NFA-s (non-deterministic finite state automatons) and DFA-s
-    (deterministic finite state automatons). Where NFA-s put no restrictions on
-    transitions, DFA-s do. A state in a DFA has the following properties:
-    
-       -- Trigger sets of normal transitions do not intersect.
-       -- There are no epsilon transitions. 
-
-    Whether or not a state complies to the requirements of a DFA can be checked
-    by '.is_DFA_compliant()'.
-    """
-    def __init__(self, AcceptanceF=False, CloneF=False):
-        """Contructor of a State, i.e. a aggregation of transitions.
-        """
-        if CloneF: return
-
-        self.__target_map  = TargetMap()
-        self.__origin_list = OperationPot()
-        self.__origin_list.add(
-            StateOperation(AcceptanceID = E_IncidenceIDs.MATCH_FAILURE, 
-                           StateIndex   = -1L, 
-                           AcceptanceF  = AcceptanceF))
-
-    def clone(self, ReplDbStateIndex=None, ReplDbPreContext=None, ReplDbAcceptance=None):
-        """Creates a copy of all transitions, but replaces any state index with the ones 
-           determined in the ReplDbStateIndex."""
-        assert ReplDbStateIndex is None or isinstance(ReplDbStateIndex, dict)
-        result = State()
-        result.__target_map  = self.__target_map.clone(ReplDbStateIndex)
-        result.__origin_list = self.__origin_list.clone(ReplDbPreContext=ReplDbPreContext,
-                                                        ReplDbAcceptance=ReplDbAcceptance)
-
-        return result
-
-    @staticmethod
-    def from_state_iterable(StateList):
-        """Does not set '.__target_map'
-        """
-        result = State()
-        result.__target_map  = TargetMap()
-        result.__origin_list = OperationPot() 
-        result.__origin_list.merge_list(state.origins().get_list() for state in StateList)
-        return result
-
-    def origins(self):
-        return self.__origin_list
-
-    @property
-    def target_map(self):
-        return self.__target_map
-
-    def is_acceptance(self):
-        for origin in self.origins():
-            if origin.is_acceptance(): return True
-        return False
-
-    def input_position_store_f(self):
-        for origin in self.origins():
-            if origin.input_position_store_f(): return True
-        return False
-
-    def input_position_restore_f(self):
-        for origin in self.origins():
-            if origin.input_position_restore_f(): return True
-        return False
-
-    def pre_context_id(self):
-        for origin in self.origins():
-            if origin.pre_context_id() != E_PreContextIDs.NONE: 
-                return origin.pre_context_id()
-        return E_PreContextIDs.NONE
-
-    def set_acceptance(self, Value=True):
-        # accept_cmd = self.origins().find_Accept()
-        # assert accept_cmd is None
-        # self.origins().add(Accept())
-        origin = self.origins().get_the_only_one()
-        origin.set_acceptance_f(Value)
-        if Value == False: origin.set_pre_context_id(E_PreContextIDs.NONE)
-
-    def set_input_position_restore_f(self, Value=True):
-        # accept_cmd = self.origins().find_Accept()
-        # assert accept_cmd is not None
-        # accept_cmd.set_input_position_restore_f()
-        origin = self.origins().get_the_only_one()
-        origin.set_input_position_restore_f(Value)
-
-    def set_pre_context_id(self, Value=True):
-        # accept_cmd = self.origins().find_Accept()
-        # assert accept_cmd is not None
-        # accept_cmd.set_pre_context_id(Value)
-        origin = self.origins().get_the_only_one()
-        origin.set_pre_context_id(Value)
-
-    def set_input_position_store_f(self, Value=True):
-        # self.origins().add(StoreInputPosition())
-        origin = self.origins().get_the_only_one()
-        origin.set_input_position_store_f(Value)
-
-    def mark_self_as_origin(self, AcceptanceID, StateIndex):
-        # accept_cmd = self.origins().find_Accept()
-        # if accept_cmd is None: return
-        # accept_cmd.set_acceptance_id(AcceptanceID)
-        origin = self.origins().get_the_only_one()
-        origin.set_pattern_id(AcceptanceID)
-        origin.state_index = StateIndex
-
-    def add_transition(self, Trigger, TargetStateIdx): 
-        self.__target_map.add_transition(Trigger, TargetStateIdx)
-
-    def __repr__(self):
-        return self.get_string()
-
-    def get_string(self, StateIndexMap=None, Option="utf8", OriginalStatesF=True):
-        # if information about origins of the state is present, then print
-        msg = self.origins().get_string(OriginalStatesF)
-
-        # print out transitionts
-        msg += self.target_map.get_string("    ", StateIndexMap, Option)
-        return " " + msg
-
-    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option):
-        assert Option in ["hex", "utf8"]
-        return self.target_map.get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
 class StateMachine(object):
     def __init__(self, InitStateIndex=None, AcceptanceF=False, InitState=None, DoNothingF=False):
@@ -541,7 +370,7 @@ class StateMachine(object):
         if AcceptanceID is None:
             return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
         else:
-            return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.origins().get_the_only_one().acceptance_id() == AcceptanceID ]
+            return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.single_entry.get_the_only_one().acceptance_id() == AcceptanceID ]
 
     def get_to_db(self):
         """RETURNS:
@@ -656,7 +485,7 @@ class StateMachine(object):
                 collection.add(Value)
 
         for state in self.states.itervalues():
-            for origin in state.origins():
+            for origin in state.single_entry:
                 enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
                 enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs)
 
@@ -847,7 +676,7 @@ class StateMachine(object):
 
     def has_origins(self):
         for state in self.states.values():
-            if len(state.origins()) > 1: return True
+            if len(state.single_entry) > 1: return True
         return False
 
     def create_new_init_state(self, AcceptanceF=False):
@@ -1014,7 +843,7 @@ class StateMachine(object):
 
     def filter_dominated_origins(self):
         for state in self.states.values(): 
-            state.origins().delete_dominated()
+            state.single_entry.delete_dominated()
 
     def transform_to_anti_pattern(self):
         """Anti Pattern: 

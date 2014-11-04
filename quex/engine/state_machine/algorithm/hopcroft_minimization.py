@@ -284,7 +284,7 @@ class HopcroftMinization:
         """
         distinguisher_db = defaultdict(list)
         for state_index, state in self.sm.states.iteritems():
-            key = state.origins().hopcroft_combinability_key()
+            key = state.single_entry.hopcroft_combinability_key()
             distinguisher_db[key].append(state_index)
 
         for state_set in distinguisher_db.itervalues():
@@ -458,8 +458,8 @@ def adapt_state_machine(sm, Result):
         else:                                prototype_i = state_set[0]  
 
         # The prototype takes over the role of all
-        sm.states[prototype_i].origins().merge_list(
-            sm.states[i].origins().get_list() for i in state_set if i != prototype_i)
+        sm.states[prototype_i].single_entry.merge_list(
+            sm.states[i].single_entry.get_list() for i in state_set if i != prototype_i)
 
         replacement_dict.update(
             (i, prototype_i) for i in state_set if i != prototype_i)

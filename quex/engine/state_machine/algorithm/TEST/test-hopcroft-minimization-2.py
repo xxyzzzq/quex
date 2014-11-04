@@ -8,6 +8,7 @@ from copy import deepcopy
 
 import quex.engine.state_machine.repeat as repeat
 from   quex.engine.state_machine.core import *
+from   quex.engine.state_machine.state.core import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
@@ -53,7 +54,7 @@ sm = StateMachine()
 
 def set_origins(StateIndex, *TheList):
     global sm
-    sm.states[StateIndex].origins().set(
+    sm.states[StateIndex].single_entry.set(
         [ StateOperation(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
     )
 

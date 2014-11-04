@@ -1,8 +1,9 @@
 # (C) 2005-2011 Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 ###############################################################################
-from   quex.engine.state_machine.core import StateMachine, State
-import quex.engine.state_machine.index as index
+from   quex.engine.state_machine.core          import StateMachine
+from   quex.engine.state_machine.state.core    import State
+import quex.engine.state_machine.index         as index
 import quex.engine.state_machine.check.special as special
 
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
@@ -90,8 +91,8 @@ def __consider_empty_state_machines(sm, EmptyStateMachineList):
        => There is no particular need for an epsilon transition to the common
           new terminal index.
     """
-    init_state_origins = sm.get_init_state().origins()
+    init_state_origins = sm.get_init_state().single_entry
     for esm in EmptyStateMachineList:
-        init_state_origins.merge(esm.get_init_state().origins())
+        init_state_origins.merge(esm.get_init_state().single_entry)
     return sm
 

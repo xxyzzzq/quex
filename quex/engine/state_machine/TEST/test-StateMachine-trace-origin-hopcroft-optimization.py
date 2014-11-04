@@ -39,7 +39,7 @@ print sm
 
 def set_origins(StateIndex, TheList):
     global sm
-    sm.states[StateIndex].origins().set(
+    sm.states[StateIndex].single_entry.set(
         [ StateOperation(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
     )
 
