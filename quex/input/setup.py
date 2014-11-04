@@ -55,6 +55,7 @@ class QuexSetup:
             self.__dict__[Name] = Value
 
     def buffer_element_specification_prepare(self):
+        global global_character_type_db
         if self.buffer_element_size == "wchar_t":
             error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
                       "with option '--buffer-element-size' or '-bes'. Please, specify\n"

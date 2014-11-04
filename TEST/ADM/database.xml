@@ -1,4 +1,4 @@
-<test-database execution-time-sec="351.52" date="Tue Nov  4 00:35:00 2014">
+<test-database execution-time-sec="351.73" date="Tue Nov  4 08:43:46 2014">
     <last-used-diff-display-program name=""/>
     <group name="alexeevm">
         <test title="3022603 0.49.2 Using external buffer with Quex lexer" time-sum-sec="1.83"> 
@@ -270,11 +270,11 @@
                <choice name="GOSUB-2" result="OK" time_sec="2.03" crc="1481663164"/>
             </choice-list>
         </test>
-        <test title="2277660 character count pre-determination" time-sum-sec="4.16"> 
+        <test title="2277660 character count pre-determination" time-sum-sec="4.17"> 
             <application file-name="bug-2277660.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="4.16" crc="-1147398697"/>
+               <choice name="" result="OK" time_sec="4.17" crc="-1147398697"/>
             </choice-list>
         </test>
         <test title="3082041 0.52.4 Buffer Memory Size not Accepted" time-sum-sec="3.14"> 
@@ -469,11 +469,11 @@
                <choice name="" result="OK" time_sec="0.30" crc="-1825870840"/>
             </choice-list>
         </test>
-        <test title="2251359 (feature) Single-character token without name" time-sum-sec="1.67"> 
-            <application file-name="feature-2251359.sh" info-request-time="1407789283L" vanished="False"/>
+        <test title="2251359 (feature) Single-character token without name" time-sum-sec="1.76"> 
+            <application file-name="feature-2251359.sh" info-request-time="1415086870L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">
-               <choice name="good" result="FAIL" time_sec="0.67" crc="-631936717"/>
+               <choice name="good" result="OK" time_sec="0.76" crc="-631936717"/>
                <choice name="1" result="OK" time_sec="0.16" crc="-1240296727"/>
                <choice name="2" result="OK" time_sec="0.16" crc="969843883"/>
                <choice name="3" result="OK" time_sec="0.16" crc="-1047859089"/>
@@ -587,20 +587,20 @@
         </test>
     </group>
     <group name="prade2p">
-        <test title="2914877 0.47.3 RE Exception on [10000-10FFFF]" time-sum-sec="0.16"> 
-            <application file-name="bug-2914877.sh" info-request-time="1407822563L" vanished="False"/>
+        <test title="2914877 0.47.3 RE Exception on [10000-10FFFF]" time-sum-sec="0.20"> 
+            <application file-name="bug-2914877.sh" info-request-time="1415087007L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.16" crc="707309222"/>
+               <choice name="" result="OK" time_sec="0.20" crc="707309222"/>
             </choice-list>
         </test>
     </group>
     <group name="rami-al-rafou">
-        <test title="3476232 0.62.1 Slow C code generation (unicode)" time-sum-sec="20.81"> 
+        <test title="3476232 0.62.1 Slow C code generation (unicode)" time-sum-sec="20.87"> 
             <application file-name="bug-3476232.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="20.81" crc="1764378916"/>
+               <choice name="" result="FAIL" time_sec="20.87" crc="1764378916"/>
             </choice-list>
         </test>
     </group>
@@ -694,11 +694,11 @@
                <choice name="icu" result="OK" time_sec="2.22" crc="-1482504339"/>
             </choice-list>
         </test>
-        <test title="1885855 P{ ...} syntax does not work outside of [" time-sum-sec="0.22"> 
+        <test title="1885855 P{ ...} syntax does not work outside of [" time-sum-sec="0.23"> 
             <application file-name="bug-1885855.sh" info-request-time="1381662255L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="FAIL" time_sec="0.22" crc="797939468"/>
+               <choice name="" result="OK" time_sec="0.23" crc="797939468"/>
             </choice-list>
         </test>
         <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.15"> 

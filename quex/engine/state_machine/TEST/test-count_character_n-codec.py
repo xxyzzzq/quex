@@ -34,6 +34,7 @@ def test(TestString):
     pattern = core.do(TestString, {})
 
     # Prepare transformation info according to choice.
+    Setup.buffer_element_specification_prepare()
     if "UTF8" in sys.argv: 
         Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
     else:                  

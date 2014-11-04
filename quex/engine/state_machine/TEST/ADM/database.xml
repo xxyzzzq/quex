@@ -1,4 +1,4 @@
-<test-database execution-time-sec="21.53" date="Tue Nov  4 00:26:11 2014">
+<test-database execution-time-sec="22.09" date="Tue Nov  4 07:35:39 2014">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Superset/Subset Determination" time-sum-sec="1.40"> 
         <application file-name="test-subset_checker.py" info-request-time="1336071109L" vanished="True"/>
@@ -132,12 +132,12 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Codec Engine" time-sum-sec="0.12"> 
-            <application file-name="test-count_character_n-codec.py" info-request-time="1411067162L" vanished="False"/>
+        <test title="Codec Engine" time-sum-sec="0.68"> 
+            <application file-name="test-count_character_n-codec.py" info-request-time="1415082934L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="UTF8" result="FAIL" time_sec="0.06" crc="-1386448566"/>
-               <choice name="UTF16" result="FAIL" time_sec="0.06" crc="1678539783"/>
+               <choice name="UTF8" result="OK" time_sec="0.35" crc="-1386448566"/>
+               <choice name="UTF16" result="OK" time_sec="0.34" crc="1678539783"/>
             </choice-list>
         </test>
         <test title="Newlines" time-sum-sec="1.15"> 
