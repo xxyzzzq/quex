@@ -1,4 +1,0 @@
-input_p      = 9 (--> '0')	lexeme start = 0 (--> '1')
-input_p      = 4 (--> '5')	lexeme start = 4 (--> '5')
-input_p      = 0 (--> '1')	lexeme start = 0 (--> '1')
-input_p      = 0 (--> '1')	lexeme start = 0 (--> '1')

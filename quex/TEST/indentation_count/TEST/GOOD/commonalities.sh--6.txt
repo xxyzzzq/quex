@@ -1,3 +1,0 @@
-## commonalities of the suppressor are no longer forbidden.
-src/error-6.qx:8:error: Trying to implement default whitespace ' ' or '\t' failed.
-src/error-6.qx:8:error: Characters are occupied by other elements.

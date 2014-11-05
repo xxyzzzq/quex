@@ -1,0 +1,119 @@
+The previous sections discussed how to generate a state machine for one
+isolated regular expression using the Thomson Construction.  The final lexical
+analyzer, though, needs to have all possible patterns present, i.e. combined
+into an automaton in order to judge which pattern matches from the current
+input position. The approach that was chosen in quex was to produce a single
+deterministic automaton from the set of state machines for each pattern.  This
+process is described in the following sections.
+
+It was already discussed that information about acceptance
+\myref{sec:basics/pattern-matching}, storing of input
+positions\myref{sec:inside-quex/intro/post-conditions} and dependence on
+pre-conditions \myref{sec:inside-quex/intro/pre-conditions} need to be stored
+as hidden state variables\cite{} inside the states of the isolated pattern
+state machines. Those informations need to be maintained when the states
+dissolve into the 'super state machine' that contains all patterns. This happens
+by labeling them with origin information.
+
+As for acceptance, no special information carrier is required since the Thomson
+Construction and the Hopcroft Optimization treat them appropriately. A 
+state in the 'super state machine' has acceptance if one of its original states had
+acceptance and it does not have acceptance if none of its original states had
+acceptance. It remains to store information about which pattern has raised
+the acceptance in a particular acceptance state, i.e. some type of pattern-id.
+
+Without post-conditions an acceptance state stands for storing the input position.
+If the pattern that raised acceptance at this point wins, then the analyzer's focus
+must be set back to this position and the next analysis starts from this point. With
+post-conditions acceptance and storing the input position are no longer the same.
+When the core pattern has ended, the input position must be saved. But, at this
+point the state machine has not yet reached acceptance. It must first reach the end
+of the post condition. Then the input position can be put back to the end of the
+core pattern. Thus a flag is required telling wether or not it is required to store
+the input position.
+
+The input positions for different post-conditions must be stored in different variables,
+since only at the end of the match it can be decided which pattern  actually 
+succeeded. A flag indicating that the original pattern was post-conditioned 
+tells the code generator to use the pattern-id as indicator for the variable
+storing the input positions.
+
+The existence of pre-conditions imply the check at an acceptance state
+if a particular pre-condition has been met. Thus a variable is required
+containing the pre-condition which has to be met in order to trigger acceptance.
+A special pre-condition is the begin-of-line pre-condition. It is a trivial 
+pre-condition, since it does not involve an inverse state machine. Thus
+it is treated as a separate flag.
+
+Inside Quex, there is a data structure dedicated to store
+this information, called class`StateOriginInfo`. It contains
+the following fields:
+
+\begin{description}
+
+\item [\tt state\_machine\_id] carries the id of the original state machine. 
+      This identifies the pattern to which the state belongs.
+
+\item [\tt state\_index] contains the index of the original state.
+
+\item [\tt store\_input\_position\_f()] gives information about the input
+      position to be stored or not. In the table below referenced as {\bf S}.
+
+\item [\tt post\_conditioned\_acceptance\_f()] indicates whether the origin of the 
+      state relates to a post condition. In the table below referenced as {\bf post}.
+
+\item [\tt pre\_condition\_id] indicates the id of the pre-condition that has to be fulfilled
+      so that the acceptance of the state is valid. In the table below referenced as {\bf pre}.
+
+\item [\tt trivial\_precondition\_begin\_of\_line\_f] indicates wether the pattern
+      is supposed to start at the beginning of a line, i.e. after newline or the
+      start of the buffer. In the table below referenced as {\bf bol}.
+\end{description}
+
+Note, that there is nothing like a flag to indicate 'trivial post-condition end of line'.
+This is for the simple reason that this 'trivial' post condition is internally translated
+into a post-condition 'end of line or end of file'. There is no mechanism that could
+gain some speed here. For the begin of line pre-condition though, one can rely on the
+last character that was considered. 
+
+A state in the 'super state machine' contains a list of origins, each origin
+corresponds to an original state of the isolated patterns.  The following table
+shows the possible combinations of these parameters together with the
+acceptance flag {\bf AccF} of the state that may be labeled with these origins:
+
+\begin{center}
+\begin{tabular}{c|c|c|c|c|c|}
+{\bf Original State}          & \multicolumn{5}{c|}{State containing the Original State}  \\
+	                      &            & \multicolumn{4}{c|}{One of its Origins}      \\ \hline
+                              & {\bf AccF} & {\bf S} & {\bf post} & {\bf pre} & {\bf bof} \\ \hline \hline
+%%			      
+normal acceptance state       & must       & yes     & ---        & ---       & --- \\ \hline
+normal non-acceptance state   &  ?         & ---     & ---        & ---       & --- \\ \hline
+end of post-conditioned core  &  ?         & yes     & yes        & ---       & --- \\ 
+pattern                       &            &         &            &           &     \\ \hline
+end of post-condition         & must       & ---     & yes        & ---       & --- \\ \hline
+acceptance of pre-conditioned & must       & yes     & ---        & yes       & no! \\
+pattern                       &            &         &            &           &     \\ \hline
+acceptance of begin-of-line   & must       & yes     & ---        & no!       & --- \\
+pre-conditioned pattern       &            &         &            &           &     \\ \hline
+\end{tabular}
+\end{center}
+
+Note, that 'must' for the acceptance flag means that the state in the final
+state machine that contains this origin _has to be_ an acceptance state.
+The '?' means that in the original state machine the state was not an
+acceptance state, thus the state that contains it together with others may or
+may not be an acceptance state. Note also, that pre-conditioned patterns
+and trivially pre-conditioned patterns are mutually exclusive. 
+
+In order to help to get easy access to the origin's state type the member
+function `type`' returns direct information about the type of the original
+state, i.e. if it was a normal acceptance, a non-acceptance, a post-conditioned
+state (end of core pattern), an end of a post condition or a pre-conditioned
+acceptance state. In case the constitution does not lead to any valid
+interpretation, the function replies with an error. This would indicate that
+some functions do not work propperly. This allows for a double-check that
+all origins have passed the state machine construction propperly.
+    
+
+

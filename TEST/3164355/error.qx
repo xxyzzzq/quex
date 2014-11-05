@@ -1,2 +1,0 @@
-token { Y; }
-mode X { \C{ sum} => QUEX_TKN_Y; }

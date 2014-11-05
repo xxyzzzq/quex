@@ -1,0 +1,76 @@
+Object oriented programming introduced the concept of_ 
+inheritance_\cite{}, in the sense that two classes can have a 'is-a'
+relationship. The class of 'cars' may for example be related to the class of
+'vehicles' by an 'is-a' relationship. This means that 'cars' inherit all
+attributes of the broader class 'vehicles' and may add some specific
+attributes to it. Such inheritance relationships are directional. In our
+example this means that every object that belongs to the class of cars also
+belongs to the class of vehicles (every car is a vehicle). However, not every
+object that belongs to the class of vehicles (e.g. a submarine) does belong to
+the the class of cars. Mode inheritance in quex works similar and effects
+the following three mechanisms:
+
+Pattern Dispatching:: 
+
+    If a mode B is derived\footnote{The statements
+    'B is derived from A', 'A is base class of B', and 'B inherits from A'
+    are equivalent in meaning in the context of object oriented programming. 
+    In the same way the term 'derivation', 'base class', and 'inheritance'
+    shall express mode relations in mode oriented lexical analysis.}
+  from a mode A, then it overtakes all of its patterns and the correspondent
+  pattern match actions. This is practical if one wants to ensure that 
+  a certain mode does react on certain patterns. In this case it has to be
+    derived from the mode that shows the desired behavior. 
+    + 
+    {\bf Rule}: If mode B is derived from A and both have a common pattern
+    {\sf XYZ} where mode B relates it to a pattern action $XYZ_B$ and mode A
+    relates it to a pattern action $XYZ_A$, then the pattern action $XYZ_B$ is
+    canceled. _A base pattern-action pair overrides any derived pattern
+    action pair of the same pattern._ 
+
+  
+Event Handlers:: 
+
+  If a mode B is derived from a mode A, then B's
+  event handler will be executed after A's event handlers. For example, A may
+  have an event handler '`on\_entry`' for entering mode A. Mode B itself
+  might have an event handler for '`on\_entry`'. If the lexical analyser
+  now enters mode B, the event handler of its base mode A is first executed
+  and then the event handler of class B itself.
+  +
+  {\bf Rule:} _Event handlers are executed in sequence from base to
+    derived classes._
+  
+Mode Access::
+
+  If a mode B is derived from a mode A, then 
+  any permission of entry or exit to A is also a permission for B to
+  enter or exit. The philosophy behind this is that that due to pattern
+  inheritance mode B will behave like mode A, so it can be trusted the same
+  way that one trusts A. 
+  +
+  {\bf Rule:} _Entrys and exits that are allowed for a base class
+  are also allowed for all its derived classes._
+
+Figure <<fig:mode-inheritance, style=ref>> shows an example where a mode A acts as a
+base mode for mode B. Internally, quex creates a new mode B* that contains
+the patterns that were explicitly givent by the definition of B and the
+patterns that are inherited from A. The pattern match action of {\sf XYZ} from
+mode B is omitted, since mode B has to behave like mode A for patterns
+specified in mode A. The `on\_entry` and `on\_exit` functions are of
+mode A are pasted into the own event handlers so that they are executed before
+them. What is not displayed in the figure is access inheritance. When Quex
+checks the entry and exits of a mode it consideres automatically also the
+base classes. If there is no base mode that acts like a door opener to a
+particular mode, then transits will cause a run-time error.
+
+[[fig:mode-inheritance]]
+.Mode Inheritance.
+image::figures/mode-inheritance.png[]
+
+In conclusion, it can be said that inheritance is a very useful tool to
+implement some 'standard' behavior in a base mode. Derived modes can then
+comply to this standard simply by being derived from this mode. Also, for the
+control of mode transitions the is-a relationships of inheritance provides
+much flexibility. Mode inheritance allows to think about mode relationships
+very naturally and helps to avoid code duplication.

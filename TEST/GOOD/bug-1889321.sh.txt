@@ -1,6 +1,0 @@
-Use Case 1:
-
-Use Case 2:
-error-2.qx:9:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
-error-2.qx:9:warning: <inheritable: only> has been set automatically.
-

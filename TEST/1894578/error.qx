@@ -1,9 +1,0 @@
-token {
-A;
-}
-header {
-void my_function(void);
-}
-mode MODE {
-"print" { my_function(); }
-}

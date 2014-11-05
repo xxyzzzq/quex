@@ -1,3 +1,0 @@
-token { MATCHED; A; B; }
-mode X { a/[ ]*/[^a ] => QUEX_TKN_MATCHED; a => QUEX_TKN_A; b => QUEX_TKN_B; \n {} }
-

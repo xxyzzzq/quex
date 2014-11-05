@@ -1,0 +1,42 @@
+The most dangerous pitfall is related to precedence and length. Note, that a 
+pattern that is defined {\it before} another pattern has a higher
+precedence. Also, if a pattern can match a longer chain of characters it wins.
+Thus, if there are for example two patterns
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     [A-Z]+     => TKN_IDENTIFIER(Lexeme);
+     "PRINT"    => TKN_KEYWORD_PRINT;
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+then the keyword `PRINT` will never be matched. This is so, because
+`[A-Z]` matches also the character chain `PRINT` and has
+a higher precedence, because it is defined first. To illustrate the
+danger of 'greedy matching', i.e. the fact that length matters, let
+two patterns be defined as:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     "Else"             => TKN_KEYWORD_ELSE;
+     "Else\tAugenstein" => TKN_SWABIAN_LADY(Lexeme);
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now, the `Else` statement may be matched, but only if it is not
+followed by tabulator and `Augenstein`. On the first glance, this
+case does not seem to be very probable. Sometimes it may be necessary,
+     though, to define delimiters to avoid such confusion. In the very large majority of
+     cases 'greedy matching' is a convienient blessing. Imagine the problem with 
+     identifiers, i.e. any chain of alphabetic characters, and a keyword '`for`'.
+     If there was no greedy matching (longest match), then any variable starting
+     with `for` could not propperly be detected, since the first three letters
+     would result in the `for`-keyword token.
+
+
+Another pitfall is related to character codes that the lexical analyser 
+uses to indicate _begin-of-file_, _end-of-file_, or _buffer-limit_. The
+values for those codes are chosen to be out of the range for sound 
+regular expressions parsing human written text (0x0 for buffer-limit, 0x1A for end-of-file, and 
+0x19 for begin-of-file). If it is intended to parse binary files, and these
+values are supposes to occur in patterns, then these codes need to be changed.
+Section <<sec:formal/command-line-options>> mentions how to specify their
+codes on the command line.

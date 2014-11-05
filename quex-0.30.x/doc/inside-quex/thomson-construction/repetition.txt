@@ -1,0 +1,69 @@
+Repetition must govern the following scenarios:
+
+`$$R*$$`:: 
+
+    repetition of a pattern`R` zero or an arbitrary number of times.
+
+`$$R+$$`:: 
+
+   repetition of a pattern`R` one or an arbitrary number of times.
+
+`$$R{x}$$`:: 
+
+   repetition of a pattern exactly `x` times.
+
+`$$R{x,y}$$:: 
+
+   repetition of a pattern at least x and at maximum y times.
+
+`$$R{x,}$$`:: 
+
+   repetition of a pattern an arbitrary number of times, 
+     but at least`x` times.
+
+`$$R?$$`:: 
+
+   repetition of a pattern`R` zero or one time.
+
+The first case`R$$*$$` is the so called 'Kleene-closure' \cite{}. Again, by means
+of the $\epsilon$-transition this can be achieved by the following steps:
+
+
+-  Create a new initial state and a new terminal state. The new terminal state
+      is an acceptance state.
+
+-  Mount the new intial state and the new terminal state via $\epsilon$-transition
+      to the old initial state and the old acceptance states. The
+      old acceptance states remain acceptance states.
+      
+-  Connect all acceptance states backwards to the old initial state
+      via $\epsilon$ transition. This way the same character sequence can 
+      be entered in the state machine again.
+
+-  Connect the new initial state forwards to the new terminal state
+      via $\epsilon$-transition.
+
+
+Figure <<fig:pattern-repeat-kleene-closure, style=ref>> shows the example of a
+Kleene-Closure for the pattern `$$[A-Z]+":"$$`}, which would match a C-style
+label. The other forms of repetitition are closely related to that. The one or
+arbitrary repetition $$R+$$ can be achieved by mounting the same state
+machine in front of the Kleene closure, ensuring that the pattern has to match
+at least once. Similarly minimum repetitions are achieved by mounting the state
+machines N times in front of the Kleene-Closure, where N is the minimum number
+of times the pattern has to be matched. 
+
+[[fig:pattern-repeat-kleene-closure]]
+.Pattern repetion by Kleene Closure.
+image::figures/pattern-repeat-kleene-closure.pdf[]
+
+Where a maximum number M of repetitions is involved, one cannot rely on the Kleene
+Closure anymore. The state machines have to be mounted M-N times in sequence, where
+the acceptance states in between remain acceptance states. This way one can be 
+sure that any number of matches from N to M corresponds to an acceptance state.
+
+A special case is the case of where zero and a maximum number of repetions are
+involved, i.e.  $$R?$$ and $$R{x,y}$$ with `x=0`. 
+In this case, simply the initial state is raised to an acceptance state, and then
+the usual algorithm for generating a maximum number of repetitions is applied.
+

@@ -1,2 +1,0 @@
-command line:1:error: Regular expression parsing:
-command line:1:error: Missing set expression list after 'intersection' operation.

@@ -1,9 +1,0 @@
-    union {
-    } content;
-    type get_a() const     { return content.a; }
-    type get_a() const     { return content.a; }
-    void set_a(type& Value) { content.a = Value; }
-    void set_a(type& Value) { content.a = Value; }
-    { _id = ID; content.a = Value0; }
-        void                      set_line_number(const QUEX_TYPE_TOKEN_LINE_N Value) { _line_n = Value; }
-        void                      set_column_number(const QUEX_TYPE_TOKEN_COLUMN_N Value) { _column_n = Value; }

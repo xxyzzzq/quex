@@ -1,7 +1,0 @@
-token {
-TERMINATION;
-}
-start = START;
-mode START {
-"a" => QUEX_TKN_TERMINATION;
-}

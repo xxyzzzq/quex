@@ -1,4 +1,0 @@
-0o12340    -->  5344 True
-0o567      -->  375 True
-0o8        -->  command line:1:error: Digit '8' cannot be part of an expression of base 8.
-0o0        -->  0 True

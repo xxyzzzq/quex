@@ -1,3 +1,0 @@
-   Accumulator = 'a'
-Lexical Analyzer Receives:
-   'a'

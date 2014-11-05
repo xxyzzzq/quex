@@ -1,9 +1,0 @@
-token {
-A;
-}
-header {
-#include "foo"
-}
-mode MODE {
-"a" => QUEX_TKN_A;
-}

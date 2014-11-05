@@ -1,0 +1,47 @@
+(1) --token-class without --token-class-file
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: User defined token class 'Otto':
+command line: Specifying a user-defined token class via '--token-class' requires
+command line: that the token class file, also, needs to be specified via '--token-class-file'.
+(2) --token-class without --token-class-file
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: User defined token class file 'Otto':
+command line: Specifying a user-defined token class file via '--token-class-file' requires
+command line: that the token class, also, needs to be specified via '--token-class'.
+(3a) --token-class-file without argument
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: User defined token class file '--token-class':
+command line: Specifying a user-defined token class file via '--token-class-file' requires
+command line: that the token class, also, needs to be specified via '--token-class'.
+(3b) --token-class-file without argument
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: User defined token class 'Otto':
+command line: Specifying a user-defined token class via '--token-class' requires
+command line: that the token class file, also, needs to be specified via '--token-class-file'.
+(4a) --token-class-file without argument
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: Token class name must be a valid identifier ('--token-class').
+command line: Received: '--token-class-file'
+(4b) --token-class-file without argument
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+command line: User defined token class file 'Otto':
+command line: Specifying a user-defined token class file via '--token-class-file' requires
+command line: that the token class, also, needs to be specified via '--token-class'.

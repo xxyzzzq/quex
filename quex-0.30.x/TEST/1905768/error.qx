@@ -1,0 +1,25 @@
+token {
+STRING_LITERAL
+}
+start = MODULE
+mode MODULE {
+<<EOF>> => TKN_TERMINATION;
+
+"\"" { self << U1_STRING; }
+}
+
+mode STRING : <inheritable: only> {
+on_entry { self.accumulator.clear(); }
+
+<<EOF>> => TKN_TERMINATION;
+
+"\"" { self << MODULE; }
+
+. { self.accumulator.add(Lexeme); }
+}
+
+mode U1_STRING : STRING {
+on_exit {
+self.accumulator.flush(TKN_STRING_LITERAL);
+}
+}

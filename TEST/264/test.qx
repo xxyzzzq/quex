@@ -1,3 +1,0 @@
-mode Test {
-     "1"/"23456789" => QUEX_TKN_OPEN(Lexeme);
-}    

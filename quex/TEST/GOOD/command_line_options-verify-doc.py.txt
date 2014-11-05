@@ -1,5 +1,0 @@
-## Consider File:
-##    /home/fschaef/prj/quex/trunk/doc/manpage/quex.1
-(*) Options which are not documented (no output is good output)
-error: --debug-exception is not documented
-(*) Options which are reported, but are not available in application  (no output is good output)

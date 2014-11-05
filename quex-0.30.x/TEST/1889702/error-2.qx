@@ -1,0 +1,5 @@
+mode BASE : <inheritable: only> {
+}
+mode DERIVED : BASE {
+on_exit { foo(); }
+}

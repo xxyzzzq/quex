@@ -1,0 +1,140 @@
+// -*- C++ -*- vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+
+#include<quex/code_base/definitions>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
+#       include<quex/code_base/buffer/MemoryPositionMimiker>
+#    endif
+namespace quex { 
+#endif
+#   include<quex/code_base/temporary_macros_on>
+
+    TEMPLATIFIER
+    struct QuexBufferMemory { 
+#       if ! defined(__QUEX_SETTING_PLAIN_C)
+#          if defined (QUEX_OPTION_ACTIVATE_ASSERTS)
+           typedef MemoryPositionMimiker<CharacterCarrierType>   Position;
+#          else
+           typedef CharacterCarrierType*                         Position;
+#          endif
+#       endif
+        // (*) Buffer Memory Setup:
+        //      memory[0]             = lower buffer limit code character
+        //      memory[1]             = first char of content
+        //      ...
+        //      memory[BUFFER_SIZE-2] = last char of content
+        //      memory[BUFFER_SIZE-1] = upper buffer limit code character
+        CharacterCarrierType*  _front;   // first character in buffer 
+        CharacterCarrierType*  _back;    // last character in buffer
+        // (*) 'Owner' (who is to delete it's memory?)
+        bool                   _external_owner_f; 
+    };
+
+    TEMPLATE_IN void    QuexBufferMemory_setup(BUFFER_MEMORY_TYPE*, 
+                                               CharacterCarrierType* memory, size_t Size, 
+                                               bool ExternalOwnerF, CharacterCarrierType BLC); 
+    TEMPLATE_IN size_t  QuexBufferMemory_size(BUFFER_MEMORY_TYPE*);
+
+#   if ! defined(__QUEX_SETTING_PLAIN_C)
+#      define QUEX_CHARACTER_POSITION_TYPE   typename quex::QuexBufferMemory<CharacterCarrierType>::Position 
+#   else
+       typedef CharacterCarrierType* QUEX_CHARACTER_POSITION_TYPE;
+#   endif
+
+    TEMPLATIFIER
+    struct QuexBuffer { 
+        BUFFER_MEMORY_TYPE     _memory;
+
+        // (*) Iterator positions for lexical analysis
+        CharacterCarrierType*  _input_p;
+        CharacterCarrierType*  _lexeme_start_p;
+
+        // (*) Origin of the content in the input stream:
+        //     -- pointer to position in buffer that corresponds EOF 
+        CharacterCarrierType*  _end_of_file_p;  
+        //     -- character index in the stream that corresponds to the character
+        //        at the first character (see above: _front[1])
+        size_t                 _content_first_character_index;
+        
+        // (*) Information about characters that passed.
+        //     This is required to temporarily store a terminating zero and to
+        //     check for the 'begin of line' pre-condition.
+        //
+        //     NOTE: The terminating zero is stored in the first character **after** the
+        //           lexeme (matching character sequence). The begin of line pre-condition
+        //           is concerned with the last character in the lexeme, which is the one
+        //           before the 'char_covered_by_terminating_zero'.
+        CharacterCarrierType   _character_at_lexeme_start;      // --> terminating zero helper
+#       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        CharacterCarrierType   _character_before_lexeme_start;  // --> begin of line
+#       endif
+    };
+
+    TEMPLATE_IN void  QuexBuffer_init(BUFFER_TYPE*, 
+                                      CharacterCarrierType* memory_chunk, const size_t Size, 
+                                      CharacterCarrierType  BLC);
+
+    TEMPLATE_IN CharacterCarrierType   QuexBuffer_input_get(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_input_p_increment(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_input_p_decrement(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_mark_lexeme_start(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_seek_lexeme_start(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType*  QuexBuffer_content_front(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType*  QuexBuffer_content_back(BUFFER_TYPE*);
+    TEMPLATE_IN size_t                 QuexBuffer_content_size(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType   QuexBuffer_get_BLC(BUFFER_TYPE*);
+
+    TEMPLATE_IN QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(BUFFER_TYPE*);
+    TEMPLATE_IN void                          QuexBuffer_seek_memory_adr(BUFFER_TYPE*, 
+                                                                         QUEX_CHARACTER_POSITION_TYPE Position);
+    
+    TEMPLATE_IN void  QuexBuffer_set_terminating_zero_for_lexeme(BUFFER_TYPE*);
+    TEMPLATE_IN void  QuexBuffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE*);
+    TEMPLATE_IN void  QuexBuffer_end_of_file_set(BUFFER_TYPE*, CharacterCarrierType* Position);
+    TEMPLATE_IN void  QuexBuffer_end_of_file_unset(BUFFER_TYPE*);
+    TEMPLATE_IN bool  QuexBuffer_is_end_of_file(BUFFER_TYPE*);
+    TEMPLATE_IN bool  QuexBuffer_is_begin_of_file(BUFFER_TYPE*);
+
+
+    TEMPLATIFIER struct QuexBufferFiller {
+        BUFFER_TYPE*         client;
+
+        size_t   _min_fallback_n;
+
+        // -- 'Tell' returns the character index of the last character read. This corresponds
+        //    to the character index of the last character that is currently in the buffer.
+        size_t   (*tell_character_index)(BUFFER_FILLER_TYPE*);
+        // -- 'Seek' sets the input position for the next buffer-read-action.
+        void     (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t Index);
+        // -- 'Read' reads N characters from a stream into a buffer (independent of their size)
+        size_t   (*read_characters)(BUFFER_FILLER_TYPE*,
+                                    CharacterCarrierType* buffer, const size_t N);
+
+        // void   register_begin_of_file() = 0;
+        // void   seek_begin_of_file() = 0;
+
+        // -- User defined handler for the case that the distance from lexeme start
+        //    to lexeme end exceeds the buffer size.
+        bool   (*_on_overflow)(BUFFER_TYPE*, bool ForwardF);
+    };
+
+    TEMPLATE_IN size_t  QuexBufferFiller_load_backward(BUFFER_FILLER_TYPE* me);
+    TEMPLATE_IN size_t  QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me);
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   ifdef QUEX_CHARACTER_TYPE
+    struct BufferMemory : public QuexBufferMemory<QUEX_CHARACTER_TYPE> { };
+    struct Buffer       : public QuexBuffer<QUEX_CHARACTER_TYPE> { };
+    struct BufferFiller : public QuexBufferFiller<QUEX_CHARACTER_TYPE> { };
+#   endif
+} // namespace quex
+#endif
+#include <quex/code_base/temporary_macros_off>
+
+#include <quex/code_base/buffer/Buffer.i>
+
+#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__

@@ -1,7 +1,0 @@
-#---------------------------------------------------------------------------
-mode X { A+ {a}        0 {b} [A-Za-z]+ PRIORITY-MARK; }
-
-<string>:1:warning: PRIORITY mark does not have any effect.
-Mode: 'X'
-(0) A+ {a}
-(1) 0 {b}

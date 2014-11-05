@@ -1,0 +1,30 @@
+(1)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: Missing hexadecimal number.
+(2)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-1.qx:2:error: Regular expression parsing:
+error-1.qx:2:error: Missing hexadecimal number.
+(3)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-2.qx:2:error: Regular expression parsing:
+error-2.qx:2:error: Missing hexadecimal number.
+(4)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-3.qx:8:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
+error-3.qx:8:warning: <inheritable: only> has been added automatically.
+consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
+consistency check: modes are = 'Hallo'

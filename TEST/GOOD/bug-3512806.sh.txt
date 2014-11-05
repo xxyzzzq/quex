@@ -1,4 +1,0 @@
-## Generation Code for 'C'
-No output is good output.
-Code Generation Done
-Compiling Done

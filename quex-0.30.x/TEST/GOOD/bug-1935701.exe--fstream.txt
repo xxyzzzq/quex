@@ -1,0 +1,3 @@
+1 byte mode: loaded characters = 44
+2 byte mode: loaded characters = 22
+4 byte mode: loaded characters = 11

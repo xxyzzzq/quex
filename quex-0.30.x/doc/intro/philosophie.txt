@@ -1,0 +1,86 @@
+The lexical analyser is traditionally implemented using an approach of a
+finite automaton \cite{} based on regular expressions \cite{}, thus not
+allowing {\it recursion of sub-patterns} inside patterns.  Such an automaton
+simply sends particular token, when a particular pattern matches. Grammars, in
+contrast, do allow recursion. So, the ability of recursion was considered as a
+major difference between lexical analysis and parsing. However, 
+there are approaches to express lexical patterns with grammar \cite{ANTLR}.
+%% recently the re-discovery of {\it parsing expression grammars}
+%% \cite{Birn-guy:1970} \cite{Ford:04} made it possible to overcome this
+%% restriction.
+%% Together with their ability to describe grammars more effectively than
+%% traditional {\it context free grammars}\cite{} and {\it context sensitive
+%%  grammars}\cite{}.
+In general, grammars are a stronger tool to describe patterns than regular
+expressions, because they do allow recursive sub-patterns.  The author of this
+text, though, says: "This is an evil development!". First of all, recursion is
+a means to model sub-blocks of information or to present parenting
+relationships. This is in total contrast to the idea an atomic information
+chunk as basis for a grammar, since atoms should be inseparable and should
+not be some higher level construct. But, there are more very strong arguments
+for not melting the lexical analyser with the parser.
+
+Oringinaly, the quex system was developped inside a interpreter called
+{\SaferTeX}\cite{TUG-2004}. The goal was to produce a beautiful programming
+language for typesetting. The beauty of its source code appearance was to be
+achieved through redundancy reduction, i.e. the programmer only should provide
+information that is absolutely necessary, thus avoiding visual noise. In
+{\LaTeX}, for example, an item list is specified as follows:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\begin{itemize}
+\item This is the first item ...
+\item This is the second item ...
+...
+\end{itemize}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An sophisticated lexical analyser, though, should be able to recognize that
+when an {\tt \verb|\|item} token arrives there must be an item list that
+starts, if it is not already started. It should notice, that a token {\tt
+  \verb|\|begin\{itemize\}} has to be implicitly be sent. Also, indentation
+based language, such as Python, require the production of {\it implicit
+  tokens} for block closure when lower indentations occur. Since implicit
+tokens build an important pillar for redundancy reduction, the lexical
+analyser system of {\SaferTeX} was therefore designed for the support of {\it
+  implicit tokens}. 
+
+Another issue are {\it modes of lexical analysis}. For example, while
+analysing a format string, it does not make sense to scan for mathematical
+patterns such as '+', '-', 'sin', and 'cos'. When analysing a format string
+one expects patterns of the type '\%s', '\%02x', '\%7.1f' or so. Different
+subjects such as string formatting, mathematical algorithms, or compile time
+computation are best described by a dedicated mini-sub-language. Such
+dedicated languages shall allow the presentation of information with minimum
+usage of language constructions. Each a mini-sub-language may have its own
+bank of patterns to be recognized. On the other hand, some patterns such as
+'end-of-file', 'comment-start', and 'comment-end' shall exist in all
+mini-sub-language and produce exactly the same tokens. Lexical analyser modes
+that can have inheritance relationships are a powerful means to mode this.
+
+In grammars, sub-languages are tamed by 'bracket' tokens and {\it not by
+  parser modes}. If it is desired to have a mini-graph-plotting language, for
+example inside a main language, one would expect a grammer like this:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+plot_program = PLOT_BEGIN plot_statement_list PLOT_END
+
+plot_statement_list = plot_statement
+                    = plot_statement_list  plot_statement
+
+plot_statement  = 'plot' plot_range file_name 
+
+plot_range = '[' number ':' number ']' 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lexical mode transitions and mode inheritance relations have become key
+concepts for the lexical analyser of the {\SaferTeX} system. Since these
+features seemed to be unique to the author, an effort was done to extract the
+lexical analyser from {\SaferTeX} into an independent program quex, and
+make it available to a broader public. Together, with a PEG parser\cite{}, it
+is now possible to parse even language such as Python, which cannot not be
+parsed without implicit tokens. quex, therefore, {\it extends} the space of
+parsable languages.
+

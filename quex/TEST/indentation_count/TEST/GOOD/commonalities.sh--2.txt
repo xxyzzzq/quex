@@ -1,4 +1,0 @@
-## commonalities of the suppressor are no longer forbidden.
-src/error-2.qx:14:error: The pattern '<indentation newline>' matches on some common lexemes as
-src/error-2.qx:9:error: pattern '[\n]'.
-src/error-2.qx:9:error: ('--suppress 3' to avoid this message)

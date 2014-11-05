@@ -1,0 +1,20 @@
+// -*- C++ -*- vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
+#define __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
+
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()                                          \
+    {                                                                                       \
+        __quex_assert(_line_number_at_begin   <= _line_number_at_end);                      \
+        /* if line number remained the same, then column number **must** have increased. */ \
+        /* there is not pattern of a length less than 1                                  */ \
+        __quex_assert(_line_number_at_begin != _line_number_at_end ||                       \
+                      _column_number_at_begin < _column_number_at_end);                     \
+    }
+#else
+#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()
+#endif
+
+
+#endif /* __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_LINE_COLUMN_COMMON */
+

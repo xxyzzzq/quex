@@ -1,0 +1,42 @@
+Many programming languages provide an 'include' feature. This means that they
+allow the user to get some input from another file and then returning to the
+file itself. If in C one specifies 'stdio.h' to be included, then the content
+of this file will be treated before one continues parsing the current file.
+Such features are popular and provide a lot of convenience to the user. In a
+more general sense, what happens is that the input stream changes and needs to
+return after the alternative input has finished. This sounds like a case for
+the memento pattern \cite{} where the state of the lexical analyzer needs to be
+stored and restored---and it is.
+
+The decision of what information about the lexical analyzer is to be stored
+during a input channel change, i.e. an 'include' is not left to the user. The
+generated analyzer class provides the user with handy functions that do the
+whole job. Those are the following:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
+                              const char* IConvInputCodingName = 0x0);
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const quex_mode&,
+                              const char* IConvInputCodingName = 0x0);
+
+	bool   include_stack_pop();
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The functions can be grouped according to two actions: pushing the current state
+of the lexical analyzer on an include stack and popping the last pushed state
+of the lexical analyzer from the include stack. The overloaded functions
+`include\_stack\_push(...)` require as a first argument a `FILE*`
+or an `istream*` pointer of the stream which is supposed to be the new
+input stream. The analyzer then automatically creates a new buffer object and
+sets everything up for the input from the new stream. Also, the current
+state is stored in a stack. If the program feels that is has finished parsing 
+an _included file_\footnote{This happens usually on the occasion of 'end of file'.}
+then it may want to return to the _including file_. The reset of the old 
+state is now easily possible using the function `include\_stack\_pop()`. 
+It _deletes_ the buffer of the included file, but it does not delete
+the related input stream. If there is something to do with it, it has to be done
+_before_ calling `include\_stack\_pop()`. In particular, it 
+is generally a good idea to close the file stream when reading has finished.

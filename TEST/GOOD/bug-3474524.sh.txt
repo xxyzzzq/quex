@@ -1,8 +1,0 @@
-digraph state_machine_8 {
-rankdir=LR;
-size="8,5"
-node [shape = doublecircle]; 24;
-node [shape = circle];
-23 -> 24 [label ="['\\t', '\\n'], '\\r', ' '"];
-24 -> 24 [label ="['\\t', '\\n'], '\\r', ' '"];
-}

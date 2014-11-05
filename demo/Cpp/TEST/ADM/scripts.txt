@@ -1,9 +1,0 @@
-*.sh
---not core.sh
---not core-new.sh
---not *-side-kick.sh
---not *side-kick.sh
---not *watcom*.sh
---not *sun*.sh
---not *intel*.sh
---not show-valgrind.py

@@ -1,0 +1,16 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=/opt/sun/sunstudio12/bin/sunCC ##
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+INCLUDE	
+IDENTIFIER	auxiliary/hallo.txt
+>> including: auxiliary/hallo.txt
+IDENTIFIER	Hallo
+<TERMINATION>	
+<< return from include
+<TERMINATION>	
+| [END] number of token = 4
+`------------------------------------------------------------------------------------
+cleaning ...

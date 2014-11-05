@@ -1,7 +1,0 @@
-simple.qx:9:warning: Detected implicit token identifier definitions. Proposal:
-simple.qx:9:warning:    token {
-simple.qx:9:warning:      X;
-simple.qx:10:warning:      Y;
-simple.qx:10:warning:    }
-No error -- is just fine
-Simple.o

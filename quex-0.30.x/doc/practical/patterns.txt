@@ -1,0 +1,34 @@
+In the simple example, only very basic patterns have to be defined. There is a
+pattern for _whitespace_, consisting of space, tabulator and newline.
+There are two bracket types for opening and closing brackets, an assignment
+operator `=`, the two keywords `if` and `struct`, identifiers
+consisting of letters from A-Z in capital and lower-case, floating point
+numbers and string delimeters. The listing in figure <<fig:pattern-code>>
+shows the content of the `define` section in `simple.qx` describing all required
+patterns in terms of regular expressions.
+
+
+[[fig:pattern-code]]
+.Definition of pattern shorthands in a `define`-section.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+define {
+    // patterns of interest for all modes
+    P_WHITESPACE          [ \t\n]
+    P_IDENTIFIER          [_a-zA-Z]+
+    P_NUMBER              [0-9]+
+    // string mode related patterns
+    P_STRING_DELIMITER                "\""
+    P_BACKSLASHED_STRING_DELIMITER    "\\\""
+    P_BACKSLASHED_BACKSLASH           "\\\\"
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The filename including the extension is, of course, totally freely chooseable.
+Note, that all pattern names are 'global'. They are not local to a specific
+mode. That means, that all modes can access the pattern definitions. Note also,
+   that inside the `define`-range only '`//`'-comments are allowed.
+The `P_`-prefix was chosen to indicate to the reader, that this is a 
+pattern definition. There is no danger of interfering with the program namespace.
+These shorthand names are only considered for the definition of regular expressions.
+The later generated engine does not contain them as variables.

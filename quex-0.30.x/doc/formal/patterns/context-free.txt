@@ -1,0 +1,191 @@
+Context free regular expressions match against an input independent on what 
+ come before or after it. For example the regular expression $$for$$
+ will match against the letters `f`, `o`, and `r` independent
+ if there was a whitespace or whatsoever before it or after it. This is
+ the 'usual' way to define patterns. More sophisticated techniques are 
+ explained in the subsequent section. This sections explains how to 
+ define simple _chains of characters_ and `operations`
+ to combine them into powerful patterns.
+
+*Chains of Characters*
+
+`x`:: 
+     matches the character 'x'. 
+     That means, lonestanding characters match simply the character that they represent.
+     This is true, as long as those characters are not operators by which regular
+     expressions describe some fancy mechanisms---see below.
+
+`.`:: 
+      matches any character (byte) except newline and EOF. Note, that on systems
+      where newline is coded as $0D,\,0A$ this matches also the $0D$ character whenever 
+      a newline occurs (subject to possible change).
+
+`[xyz]`::
+     a "character class" or "character set"; in this case, the pattern matches either an
+     `x', a `y', or a `z'. The brackets '$[$' and '$]$' are examples for lonestanding
+     characters that are operators. If they are to be matched quotes or backslashes
+     have to be used as shown below. Character sets are a form of _alternative_ expressions--
+     for one single character. For more sophisticated alternative expressions see the
+     paragraphs below. 
+
+`$$[: expression :]$$`
+     matches a set of characters that result from a character set expression `expression`.
+     Section <<formal/patterns/character-set-expressions>> discusses this feature in detail.
+     In particual $$[:alnum:]$$, $$[:alpha:]$$ and the like are the character sets
+     as defined as POSIX bracket expressions.
+
+`[abj-oZ]`::
+     a "character class" with a range in it; matches an `a', a `b', any
+     letter from `j' through `o', or a `Z'. The minus '-' determines the
+     range specification. Its left hand side is the start of the range.
+     Its right hand sinde the end of the range (here 'j-o' means from 'j' to 'o').
+     Note, that '-' standards for 'range from to' where the character code
+     of the right hand side needs to be greater than the character code of the
+     left hand side.
+
+`[^A-Z\n]`::
+     a "negated character class", i.e., any character but those in the
+     class.  The $$^$$ character indicates _negation_ at this point. 
+     This expression matches any character _except_ an uppercase letter or newline.
+
+`"[xyz]\"foo"`::
+     the literal string: `$[$xyz$]$"foo'.
+     That is, inside quotes the characters which are used as operators for
+     regular expressions can be applied in their original sense. A '$[$'
+     stands for code point 91 (hex. 5B), matches against a '$[$' and does
+     not mean 'open character set'. Note, than inside strings one can 
+     still use the ANSI-C backslashed characters $$\n$$, $$\t$$, etc. as
+     well as the Unicode name property $$\N$$. However, general Unicode
+     property expression $$\P$$ that result in _character sets_ are not dealt
+     with inside strings.
+	  
+`\0`:: 
+     a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!
+       The NULL character is also used aa buffer limitting character!
+       Same as with the code for 'begin-of-file' and 'end-of-file', if these codes
+       are used inside regular expressions, their values have to be re-assigned.
+       See section <<sec:formal/command-line-options>> for specifying a different
+       value for the buffer limit code.
+
+`\U11A0FF`:: 
+      the character with hexadecimal value 11A0FF. A maximum of _six_
+      hexadecimal digits can be specified.  Hexadecimal numbers with less than
+      six digits must either be followed by a non-hex-digit, a delimiter such
+      as `"`, `[`, or `(`, or specified with leading zeroes (i.e. use \U00071F,
+      for hexadecimal 71F). The latter choice is probably the best candidate
+      for an 'established habit'. Hexadecimal digits can contain be uppercase or
+      lowercase letters (from A to F).
+
+`\X7A27`:: 
+      the character with hexadecimal value 7A27. A
+      maximum of _four_ hexadecimal digits can be specified. The
+      delimiting rules are are ananlogous to the rules for `\U`. 
+
+`\x27`:: 
+    the character with hexadecimal value 27. A maximum
+     of _two_ hexadecimal digits can be specified. The
+      delimiting rules are are ananlogous to the rules for `\U`. 
+
+`\123`:: 
+    the character with octal value 123, a maximum of three
+     digits less than 8 can follow the backslash. The
+      delimiting rules are ananlogous to the rules for `\U`. 
+
+
+`\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\r`, or `\v`::
+     the ANSI-C interpretation of the backslashed character.
+
+`\P{ Unicode Property Expression }`::
+     the set of characters for which the `Unicode Property Expression` holds.
+     Note, that these expressions cannot be used inside quoted strings.
+
+`\N{ UNICODE CHARACTER NAME }`::
+     the code of the character with the given Unicode character name. This is 
+     a shortcut for `$$\P{Name=UNICODE CHARACTER NAME}$$`. For possible
+     settings of this character see \cite{Unicode 5.0}.
+
+`\G{ X }`::
+     the code of the character with the given _General Category_ \cite{}. This is 
+     a shortcut for `$$\P{General_Category=X}$$`. Note, that these expressions 
+     cannot be used inside quoted strings. For possible settings of the 
+     General_Category property, see section <<sec:formal-unicode-properties>>.
+
+
+Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
+are considered to be unicode code points. For applications in english spoken
+cultures this is identical to the ASCII encoding. For details about unicode
+code tables consider the standard \cite{Unicode50}. Section
+<<formal/ucs-properties>> is dedicated to an introduction to Unicode
+properties.
+
+Two special rules have to appear isolatedly, out of the context of regular
+expressions. With the following two rules the actions for the event of end of
+file and the failure event can be specified:
+
+`$$<<EOF>>$$`:: 
+
+    the event of an end-of-file (end of data-stream). 
+
+`$$<<FAIL>>$$`:: 
+
+    the event of failure, i.e. no single pattern matched. 
+    Note, this rule is of the 'lex' style, but is only available with the 
+    quex core engine.
+
+
+This syntax is more 'in recognition' of the traditional `lex` syntax. In fact
+the two event handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
+a one-to-one correspondance to what is mentioned above. Possibly some later
+versions will totally dismiss the lex related engine core, and then also
+these constructs will disappear in favor of the mentioned two event handlers.
+
+*Operations*    
+
+Let `R` and `S` be regular expressions, i.e. a chain of characters specified in the
+way mentioned above, or a regular expression as a result from the operations below.
+Much of the syntax is directly based on POSIX extended regular expressions \cite{}.
+     
+`R*`:: 
+
+    _zero_ or more occurencies of the regular expression `R`.
+
+`R+`:: 
+
+    _one_ or more repetition of the regular expression `R`.
+
+`R?`:: 
+
+    _zero_ or _one_ `R`. That means, there maybe an `R` or not.
+
+`R{2,5}`:: 
+
+    anywhere from two to five repetitions of the regular expressions `R`.
+
+`R{2,}`:: 
+
+    two or more repetitions of the regular expression `R`.
+
+`$$R{4}$$`:: 
+
+    exactly four repetitions of the regular expression `R`.
+
+`+++(R)+++`:: 
+
+    match an `R`; parentheses are used to _group_ operations, i.e. to override
+    precedence, in the same way as the brackets in $(a\, +\, b)\,\cdot\,c$
+    override the precedence of multiplication over addition.
+
+`RS`:: 
+
+    the regular expression `R` followed by the regular expression `S`. This
+    is usually called a _concatenation_ or a _sequence_.
+
+`R|S`:: 
+
+    either an R or an S, i.e. `R` and `S`. This is usually called an _alternative_.
+
+`$++{++NAME}`:: 
+
+    the expansion of the defined pattern "NAME". Pattern names can
+    be defined in `define` sections (see section <<sec:practical/patterns>>).
+

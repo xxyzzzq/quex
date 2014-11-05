@@ -1,3 +1,0 @@
-No character in [0x00D800, 0x00DFFF]
-No character in [0x110000, 0x110000]
-Errors = 0

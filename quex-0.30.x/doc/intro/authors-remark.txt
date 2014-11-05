@@ -1,0 +1,41 @@
+Maybe, an even greater contribution than the program itself is that it makes a
+strong argument, that even with the rise of PEG parsers lexical analysis and
+parsing are two different, separate things. the production of implicit tokens
+has nothing to do with grammar and necessitates the abstraction of a lower
+level module for lexical analysis. The on- and off-switching of pattern sets
+for mini-sub-languages are naturally described by modes of lexical analysis.
+Grammars do not support the concept of modes. Finally, a last argument is a
+more philosophical one: Interpretation is all about understanding some traces
+that are supposed to contain information.  Before one can hope to understand
+anything there {\it must be} some {\it signals}, i.e. something in the traces
+must have a clear meaning and must be related to some known concept. Otherwise
+no content can ever be identified.  In spoken language the words $[$George$]$,
+$[$Erwin$]$, $[$beat$]$, and $[$Joe$]$ are signals with a clear and distinct
+meaning. Being able to identify them and knowing to what they relate are a
+first step to understand a sentence.  Composition, is a powerful tool to leave
+the set of signals to be known small while spanning a large space of possible
+information. One could, for example, invent a new signal for each message of
+the type 'A-guy-named-Joe- beats-a-guy-named-George' and
+'A-guy-named-George-beats-a-guy-named-Erwin'.  But, the sheer number of
+possible permutations and arrangements will make the set of signals so huge
+that it grows beyond the capability of any (carbon- or silicon-based) system
+to maintain a codebook of all signals. In contrast, one can define a
+composition rule such as 'The first signal is a doer. The second signal is an
+action. The third signal is the thing on which the action is applied'. Now, A
+sequence of signals $[$Joe$]$ $[$beats$]$ $[$Erwin$]$ or any other combination
+can be easily interpreted. Thus, the two step approach of {\it signals which
+  are easy to identify} (lexical tokens) and {\it composition} (grammar) is
+optimal with respect to the ability to handle complex information. Again, the
+linear structure of regular expressions supports the ease of indentification,
+where else the recursive nature of grammar supports complexity. Thus, lexical
+analysis as the unit for producing signals shall not given the opportunity to
+treat recursive patterns. Thus, melting parsing and lexical analysis is
+evil\footnote{An exception might be made for tiny quick-and-dirty languages.
+  If there is no need for mini-sub languages and implicit tokens, and if the
+  language grammar is small enough for not getting confused by lexical
+  analysis rules, then there might be an advantage of convinience.}!
+
+%% A final remark on history: {\SaferTeX}, the project in whichs frame quex
+%% evolved, is now renamed {\Boox} and tries to implement a next generation
+%% typesetting system, i.e. a successor of {\TeX}.
+

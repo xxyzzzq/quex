@@ -1,4 +1,0 @@
-data/DELETION-good.qx:4:warning: Detected implicit token identifier definitions. Proposal:
-data/DELETION-good.qx:4:warning:    token {
-data/DELETION-good.qx:4:warning:      THING;
-data/DELETION-good.qx:4:warning:    }

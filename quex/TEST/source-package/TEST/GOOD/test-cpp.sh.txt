@@ -1,6 +1,0 @@
-(0) Running Quex (no output is good output)
-(1) Running g++ (no output is good output)
-(2) Double check that output file exists
-pkg/EasyLexer.o
-(2.1) Double check that nothing in current directory. (no output is good output).
-ls: cannot access EasyLexer*: No such file or directory

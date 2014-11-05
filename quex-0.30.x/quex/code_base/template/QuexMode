@@ -1,0 +1,58 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+
+#include<quex/code_base/definitions>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
+#       include<quex/code_base/buffer/MemoryPositionMimiker>
+#    endif
+
+#include<quex/code_base/temporary_macros_on>
+namespace quex { 
+#endif
+
+    TEMPLATIFIER
+    struct QuexMode {  
+        int                     id;
+        const char*             name;
+        MINIMAL_ANALYZER_TYPE*  the_lexer;
+
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(analyser_function))(MINIMAL_ANALYZER_TYPE*);
+
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        void (*on_indentation)(CLASS*, const int Indentation);
+#       endif
+        void (*on_entry)(CLASS*, const QUEX_MODE_TYPE* FromMode);
+        void (*on_exit)(CLASS*, const QUEX_MODE_TYPE* ToMode);
+#       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
+        bool (*has_base)(const QUEX_MODE_TYPE* Mode);
+        bool (*has_entry_from)(const QUEX_MODE_TYPE* Mode);
+        bool (*has_exit_to)(const QUEX_MODE_TYPE* Mode);
+#       endif
+    };
+    
+#   ifdef __QUEX_SETTING_PLAIN_C
+    QUEX_INLINE_KEYWORD __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
+    QuexMode_uncallable_analyser_function(MINIMAL_ANALYZER_TYPE*)
+#   else
+    QUEX_INLINE_KEYWORD __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
+    QuexMode_uncallable_analyser_function(MINIMAL_ANALYZER_TYPE*)
+#   endif
+    { __quex_assert(0); return (__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE)(0); }
+
+    QUEX_INLINE_KEYWORD void
+    QuexMode_on_indentation_null_function(MINIMAL_ANALYZER_TYPE*, const int) 
+    { }
+
+    QUEX_INLINE_KEYWORD void
+    QuexMode_on_entry_exit_null_function(MINIMAL_ANALYZER_TYPE*, const QUEX_MODE_TYPE*) 
+    { }
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} /* namespace quex */
+#endif
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__ */

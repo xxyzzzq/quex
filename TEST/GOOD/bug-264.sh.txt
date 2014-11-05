@@ -1,5 +1,0 @@
-test.qx:2:warning: Detected implicit token identifier definitions. Proposal:
-test.qx:2:warning:    token {
-test.qx:2:warning:      OPEN;
-test.qx:2:warning:    }
-__QUEX_IF_COUNT_COLUMNS_ADD(1);

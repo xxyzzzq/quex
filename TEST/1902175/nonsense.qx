@@ -1,7 +1,0 @@
-define {
-// P_A [\k]
-}
-
-mode X {
-    [^a] => QUEX_TKN_HALLO();
-}

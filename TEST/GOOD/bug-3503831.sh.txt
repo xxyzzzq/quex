@@ -1,1 +1,0 @@
-error.qx:1:error: Pre- or post contexts are not allowed in anti-pattern operator \A{...} expressions.

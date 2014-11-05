@@ -1,0 +1,117 @@
+The design of modes, their relations and the transitions is something 
+to be done informally with a drawing program or on a sheet of paper.
+It is basically a help for the user to develop a clear design of the lexical
+analysis process. In our simple example, there are only three modes:
+
+`END_OF_FILE`:: 
+ 
+  This mode describes the reaction to end-of-file.
+  All modes in the simple example share this behavior, so they are derived
+  from this mode. On the other hand, this is more an _abstract_
+  mode\footnote{In the C++ sense of the word, there is no 'real' existing mode
+  of that type. Only derived modes can exists.}. The lexical analyser shall
+  never be in an `END\_OF\_FILE` mode, but in a derived mode of it.
+  
+`PROGRAM`:: 
+
+  In this mode, we detect program related tokens. It is
+  derived from `END\_OF\_FILE`. Thus, an if an end-of-file arrives in this
+  mode it behaves propperly. When a string delimiter arrives, this mode shall
+  transit into the `STRING\_READER` mode.
+  
+`STRING\_READER`:: 
+  
+  This mode shall also treat end-of-file in the
+  'standard' way, so it is also derived from `END\_OF\_FILE`. However,
+  all patterns for number detection, keywords and brackets are totally
+  meaningless inside the string. A string-delimiter shall trigger the return
+  to the `PROGRAM` mode.
+
+The inheritance relationships in this example are displayed in figure
+<<fig:inheritance-modes, style=ref>>. Both 'real' modes `PROGRAM` and` 
+  STRING_READER` are derived from `END_OF_FILE` so that they implement
+the standard behavior for the end-of-file event.
+
+[[fig:inheritance-modes]]
+.Inheritance relationships of the modes in the example lexical analyser.
+image::figures/inheritance-modes.png[]
+
+In this examples their are only two modes in which the lexical analyser can
+be. The posible transitions are shown in figure
+<<fig:mode-transition-example.png, style=ref>>. `PROGRAM` mode can transit into
+`STRING_READER` mode and vice versa. The mode inheritances and
+transitions are only pinpointed in non-machine readable form.  This
+information can be used to write the first stubs of the modes in
+which one will later fill in the pattern-action pairs. 
+
+[[fig:mode-transition-example]]
+.Scratch of mode transitions in the simple example.
+image::figures/mode-transition-example.png[]
+
+.Example code stubs for lexical analyser modes.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode END_OF_FILE :
+<inheritable: only>  
+{
+...
+}
+
+mode PROGRAM :
+     END_OF_FILE
+<exit:  STRING_READER>
+<entry: STRING_READER>
+{
+...
+}
+
+mode STRING_READER :
+     END_OF_FILE
+<exit:  PROGRAM>
+<entry: PROGRAM>
+{
+...
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The three code-stubs for the three modes are shown in figure
+<<fig:example-mode-stubs, style=ref>>. Until now, there are no pattern action pairs
+defined inside the modes. The dots `...` inside the curly braces will
+later be replaced by the pattern-action pairs. First of all, mode `END_OF_FILE` 
+is defined. It does not inherit any mode, but can only be
+used as a base mode. Thus the option 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    <inheritable: only> 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+is specified in edgy brackets.  Second, the `PROGRAM` mode is 
+derived from `END\_OF\_FILE` which is
+indicated by its name following the colon. The options 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    <exit:  STRING_READER> 
+    <entry: STRING_READER> 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+tell that this mode can
+be entered from `STRING\_READER` mode, and that it can exit to this mode.
+Any transition to another mode (that is not derived from `STRING\_READER`)
+is detected as an error\footnote{Note, that inside quex `assert()`
+  commands are used. According to ISO9899 (ANSI-C) the command only takes
+  effect, if `NDEBUG` is not defined. If it is, the mode transitions are
+  consequently not checked by the quex engine. The general rule applies here
+  also: only define `NDEBUG` if it is 100\% safe to say that no use-case
+  will violate the design.}. Analogously, the `STRING\_READER` mode is
+defined specifying its base class and the allowed transitions to `PROGRAM`.
+
+Note, that all options given here are indeed _optional_.  They are not
+necessary to define pattern-action pairs, and they do not contribute to the
+functioning of the generated lexical analyser. However, they allow to check
+wether mode definitions and mode transitions are according to the design or
+not. The detection of usage against design specifications is of great help to
+avoid errors or find their causes. 
+
+

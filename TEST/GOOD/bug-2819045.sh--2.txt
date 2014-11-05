@@ -1,2 +1,0 @@
-error-2.qx:11:error: Pattern definition with pre- and/or post-context.
-error-2.qx:11:error: Pre- and Post-Contexts can only be defined inside mode definitions.

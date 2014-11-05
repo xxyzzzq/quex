@@ -1,0 +1,73 @@
+Traditional lexical analyzer generators concentrate on the ASCII \cite{}
+character set for encoding of character. With the raise of UTF-8 \cite{} those
+generators could even be used to parse unicode character sets, since they were
+unaware of escape characters.   The
+problem with this approach is first of all a lack of flexibility.  UTF-8 is for
+most languages, i.e. unicode code pages, a highly redundant coding. Second the
+UTF-8 standard (ISO-10646) is a dynamic length coding where characters are
+coded with different numbers of bytes.  Counting of columns or lexeme lengthes
+is no longer trivial and is prone to consume significant computation time. 
+For lex, for example, the definition of character ranges such as
+`$$[a-z]$$` for non-latin languages is not possible because it considers
+only the two bytes around the '-' where the characters might actually be
+represented by more than one byte.
+
+[[fig:character-encoding]]
+.Character encodings involved in quex's generation process.}
+image::figures/character-encoding.png[]
+
+Under Unix, a utility called 'iconv' \cite{} is the quasi standard for
+character set conversions. It is freely available for any major operating
+system.  Quex uses the library of this utility and has it webbed into its
+buffer handling. This way `quex` is able to analyze character streams of
+all the hundreds of character encodings that iconv supports. It is essential to
+understand that there are _three_ different places where character
+encodings are involved in the lexical analyzer generation. As shown in figure
+<<fig:character-encodings, style=ref>> these are the following:
+
+Lexical Analyzer Description:: 
+
+    The encoding of the lexical analyzer generator, i.e. the quex-files which
+    are used as input to quex and _must_ use UTF-8.  This encoding is
+    independent of the coding of the files the generated lexical analyzer takes
+    as input.
+
+Files to Be Analyzed:: 
+
+    The coding format of the files that the generated lexical analyzer reads.
+    Note, that this format is tied to a buffer. Quex, though, provides the
+    flexibility to switch buffers and to allow to read files in different
+    encodings with the same lexical analyzer.
+
+Internal Engine:: 
+
+    The internal character encoding. This is _always_ Unicode Standard \cite{}.
+    The user, though, can specify whether one, two, or four bytes are to be
+    used for the character representation. Accordingly, it uses ASCII, UCS-2,
+    or UCS-4 as internal coding. Note, that this encoding determines the lexeme
+    type.  It might be a good idea to adapt the character width to the
+    definition of `wchar\_t`\footnote{The type `wchar\_t` which stands for wide
+        character type, is usually 32 bits, i.e. 4 bytes on Unix systems and 16
+            bit on Windows based platforms.}. 
+        
+
+There only three things required to get the encoding support for a particular coding. First
+one needs to make sure that the quex files, i.e. the files that describe the lexical
+analyzer are stored in UTF-8 format by your editor. Most editors do this anyway by default.
+You need to pass the option `$$--iconv$$` to quex when calling it. Third, the constructor
+of quex is to be called with the encoding name of the files you want to parse, i.e. one might
+type
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    quex::my_lexer*  qlex = new quex::my_lexer("program.mine", "GREEK-CCITT");
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+if one intends to create a purely greek programming language. If you set the command
+line option for 'byte per character' `-b wchar\_t`, then quex will use
+the number of bytes that corresponds to `wchar\_t` on your platform. For
+anything else then ASCII input encodings do not specify a byte per character
+less than two.  At the time of this writing quex does not support internal
+engines that are not based on Unicode. Clearly, in the above example the greek
+encoding is treated internally as character codes in the range of code points from 
+\$370 to \$3FF and \$1F00 to \$1FFF.

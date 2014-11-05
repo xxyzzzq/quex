@@ -1,0 +1,33 @@
+With a similar ease as patterns, token-ids can be specified. A `token`-section  containing
+token-ids only has to contain a newline separated list of token names.
+Quex will create a set of constants with unique numerical values. Figure
+<<fig:token-ids-code>> shows the definition of token-ids for the example.
+
+[[fig:token-ids-code]]
+.Definition of token-ids in a `token`-section.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+token {
+    BRACKET_O            // appears as TKN_BRACKET_O
+    BRACKET_C            //            TKN_BRACKET_C
+    CURLY_BRACKET_O      // ...
+    CURLY_BRACKET_C
+    OP_ASSIGNMENT
+    IF
+    STRUCT
+    SEMICOLON
+    IDENTIFIER
+    NUMBER
+    STRING
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note, that quex pastes a prefix in front of the numerical constants for the tokens.
+A token-id of `STRUCT` will be called `TOK_STRUCT`, if `TOK` is
+specified as token-prefix. This is discussed briefly in the section
+<<sec:formal/command-line-options>>. It is also important to remind that
+the token-ids _are_ relevant to the namespace. They name constant variables
+inside the namespace `quex`. It is not advisable to set the token-id prefix
+to an empty string and name a token-id '`i`' or '`x`' because those 
+names are likely to interfer with names of other variables.
+

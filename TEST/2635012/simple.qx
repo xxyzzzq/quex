@@ -1,8 +1,0 @@
-token {
-    EGAL;
-}
-
-mode EGAL 
-{
-    egal => QUEX_TKN_EGAL;
-}

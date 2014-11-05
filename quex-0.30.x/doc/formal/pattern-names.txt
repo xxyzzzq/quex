@@ -1,0 +1,18 @@
+TODO: Describe
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+define {
+    // short shorthands
+    n            [0-9]+
+    a	         [a-zA-Z0-9]
+    
+    // global shorthands to be used inside of modes
+    IDENTIFIER   {a}({a}|"_")*
+    FLOAT        ("."{n}|{n}"."|{n}"."{n})([eE][\+\-]?{n})
+}    
+
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Those identifiers do not enter the program namespace at all, they
+are only relevant for pattern definitions.

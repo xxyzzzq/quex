@@ -1,0 +1,23 @@
+The generated lexical analyser contains also virtual functions that do not do
+anything but wait for being overriden by a derived class. Those functions are
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   void   on_action_entry(const char* Pattern, const int Length); 
+   void   on_include(const char* Filename);
+   void   on_include_exit();
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Function {\tt on\_action\_entry(...)} allows to write a user defined function
+that is executed whenever a pattern matches. The last two functions are
+executed at the moment when a file is included or one returns from an included 
+file. The default implementation is that they do not do anything. Only if one
+derives a class from the lexical analyser, then one creates its own 
+handlers for these events. If you do not want to use these functions 
+at all, you are free to outcomment the definition 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

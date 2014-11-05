@@ -1,2 +1,0 @@
-nonsense.qx:4:error: Pattern definition 'gim/me|lem/me|d' not followed by whitespace.
-nonsense.qx:4:error: Found subsequent character '/'.

@@ -1,4 +1,0 @@
-interfere-indentation-newline.qx:2:error: The pattern '<indentation newline>' matches on some common lexemes as
-interfere-indentation-newline.qx:2:error: pattern '"x"'.
-interfere-indentation-newline.qx:2:error: ('--suppress 3' to avoid this message)
-

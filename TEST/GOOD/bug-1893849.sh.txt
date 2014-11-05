@@ -1,2 +1,0 @@
-command line: Trailing characters '-e' in 'quex::Engin-e'
-command line: for analyzer class (options -o, --analyzer-class) name specification.

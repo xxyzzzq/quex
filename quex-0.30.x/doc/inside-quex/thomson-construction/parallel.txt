@@ -1,0 +1,28 @@
+In order to implement the logical 'or' operation in regular expressions it must
+be possible to mount in parallel.  Therefore, all acceptance states of the
+original state machines to be mounted in parallel need to remain acceptance
+states. All initial states need to remain initial states. However, there can be
+only one initial state. At this point the $\epsilon$-transition comes handy
+again. The following steps describe the process of mounting state machines in
+parallel:
+
+
+-  Clone both state machines (see \ref{sec:thomson-construction/serial}).
+-  Mount an epsilon transition from all acceptance states of all 
+      state machines
+      to a new terminal state T. Let T be an acceptance state.
+-  Disable original acceptance of all acceptance states in all state machines.
+-  Create a new initial state I and mount an $\epsilon$-transition to 
+      all initial states of all state machines.
+
+
+Figure <<fig:mount-parallel, style=ref>> shows the result of combining three state
+machines in parallel. By means of this procedure there is only one initial
+state and one terminal acceptance state for the state machine. Now, regular
+expression such as $$"hello"|"bonjour"$$ can be implemented as two parallel
+state machines for $$"hello"$$ and $$"bonjour"$$.
+
+[[fig:mount-parallel]]
+.Mounting two state machines in parallel.
+image::figures/pattern-parallelize.pdf[]
+

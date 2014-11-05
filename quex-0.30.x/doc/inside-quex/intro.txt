@@ -1,0 +1,23 @@
+The quex program is provided in source code with an LPGL license in order
+to support understanding the process of lexical analysis in its practical
+application. The source code may be used for teaching or to enhance 
+the functionality or performance of the software. In order to allow
+programmers to get into quex' source code programming, the following sections
+describe the way that quex generates lexical analysers step by step. 
+Clearly, this chapter is a hacker's guide to quex. Users interested
+only in the application of quex may skip this chapter without hesitating.
+
+The generation of the core engine is separate from the handling of modes and
+their relationships. In the following sections, only the generation of the core
+engine, i.e. a lexical analyser for a single mode, is explained. Each mode
+consists of such an engine. The aggregation of engines for each mode to one
+single analyser engine is trivial and not subject of further explanation\footnote{The
+switching between modes is not much more than the bending of a function pointer to
+the mode's analyzer function.}. For further support to get into programming, the
+unit tests for each sub-module in the source code may be considered. They can
+be found in the`./TEST/` sub-directory of each module. 
+
+The engine produced by quex is a directly coded engine, rather than a table
+driven approach followed by the lex/flex family of analyzer generators. It is
+more suited for the handling of unicode and provides advantages in terms of
+system memory usage and calculation speed.

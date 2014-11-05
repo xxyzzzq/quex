@@ -1,2 +1,0 @@
-command line: Quex requires ASCII or UTF8 input character format.
-command line: File 'GBK.qx' is not ASCII or UTF8 encoded. Or, it contains encoding errors.

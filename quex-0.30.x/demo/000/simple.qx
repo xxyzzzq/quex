@@ -1,0 +1,37 @@
+// -*- C++ -*-
+header {
+#include <cstdlib>  // for: atoi()
+}
+
+token {
+   IDENTIFIER
+   STRUCT
+   TYPE_INT
+   TYPE_DOUBLE
+   SEND
+   EXPECT
+   SEMICOLON
+   BRACKET_OPEN
+   BRACKET_CLOSE
+   NUMBER
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>>     => TKN_TERMINATION;
+
+    [ \t\r\n]+  { }
+    "struct"    => TKN_STRUCT;
+    "int"       => TKN_TYPE_INT;
+    "double"    => TKN_TYPE_DOUBLE;
+    "send"      => TKN_SEND;
+    "expect"    => TKN_EXPECT;
+    ";"         => TKN_SEMICOLON;
+    "{"         => TKN_BRACKET_OPEN;
+    "}"         => TKN_BRACKET_CLOSE;
+    [0-9]+      => TKN_NUMBER(atoi((char*)Lexeme));
+    [_a-zA-Z]+  { self.send(TKN_IDENTIFIER, Lexeme); RETURN; }
+}
+
+
+

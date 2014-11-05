@@ -1,0 +1,34 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
+#define __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
+#include <quex/code_base/temporary_macros_on>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
+    /* The following presents a minimal structure for a lexical analyser to work with the 
+     * constructed engine. Actually, it should only be useful for unit tests. Else, it has
+     * more a documentary character telling: This is the heart of the matter--anything else
+     * is just decoration! Any 'real' lexical analyser should be derived from this class. */
+    TEMPLATIFIER
+    struct QuexAnalyser {
+        BUFFER_TYPE               buffer;
+        BUFFER_FILLER_TYPE*       buffer_filler;
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(MINIMAL_ANALYZER_TYPE*);
+#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(DEBUG_analyser_function_at_entry))(MINIMAL_ANALYZER_TYPE*);
+#       endif
+    };
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   if defined(QUEX_CHARACTER_TYPE)
+    struct Analyser : public QuexAnalyser<QUEX_CHARACTER_TYPE> { };
+#   endif
+} // namespace quex
+#endif
+
+#include <quex/code_base/temporary_macros_off>
+
+#include <quex/code_base/template/Analyser.i>
+#endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__ */

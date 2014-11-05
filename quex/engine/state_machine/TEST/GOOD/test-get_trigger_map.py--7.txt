@@ -1,9 +1,0 @@
-
-## Map: Target Index --> Trigger Set
-
-      1 <--- [[0, oo]]
-
-## Map: Trigger Intervals (sorted) --> Target Index
-
-    [-oo, -1] 	---> DROP_OUT
-    [0, oo] 	---> 1L

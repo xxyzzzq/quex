@@ -1,0 +1,17 @@
+define {
+P_LETTER [: intersection(\G{Ll}, [\X0-\XFFFF]) :]
+P_WORD [a-z]*{P_LETTER}+
+}
+
+token {
+WORD
+NONE
+}
+
+mode ONE_AND_ONLY
+{
+<<EOF>> => TKN_TERMINATION;
+
+{P_WORD} => TKN_WORD(Lexeme);
+. => TKN_NONE(Lexeme);
+}

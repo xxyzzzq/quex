@@ -1,8 +1,0 @@
-
-## Map: Target Index --> Trigger Set
-
-      1 <--- [[-oo, oo]]
-
-## Map: Trigger Intervals (sorted) --> Target Index
-
-    [-oo, oo] 	---> 1L

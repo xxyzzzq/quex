@@ -1,4 +1,0 @@
-id=ID text=[a]
-id=ID text=[b]
-id=ID text=[c]
-id=STRING text=[]

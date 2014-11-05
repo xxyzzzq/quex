@@ -1,6 +1,0 @@
-token {
-A#A;
-}
-mode START {
-"b" => QUEX_TKN_B;
-}

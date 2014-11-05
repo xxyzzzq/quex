@@ -1,5 +1,0 @@
-(*) With QUEX_OPTION_INCLUDE_STACK
-(*) With QUEX_OPTION_INCLUDE_STACK_DISABLED
-rm -f Simple*
-rm -f *.o
-rm -f lexer error-lexer

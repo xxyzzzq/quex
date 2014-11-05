@@ -1,0 +1,7 @@
+define {
+QUESTION ?
+}
+mode X { 
+    {QUESTION}  => TKN_A();
+
+}

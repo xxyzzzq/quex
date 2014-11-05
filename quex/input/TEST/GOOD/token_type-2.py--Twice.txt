@@ -1,9 +1,0 @@
------------------------------
-IN:
-    [{ name : std::string;
-     name : std::vector<int>; }]
-
-OUT:
-
-string:2:warning: Token type member name 'name' defined twice.
-string:1:error: Previously defined here.

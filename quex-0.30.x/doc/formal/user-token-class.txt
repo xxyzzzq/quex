@@ -1,0 +1,64 @@
+Quex provides a default token class that allows the storage of a `string`
+object, an `int` value. Note, that any complex structure might be
+transformed later on by the parser based on the given string. In some cases,
+though, it may be promising to implement a dedicated token class that is
+optimal in memory and speed with respect to a specific problem. For these
+cases, quex allows the user to specify his own token class. The token queue 
+does not require any adaption, since it is implemented as a template. The 
+context of usages of tokens, however, imposes that it complies to some policies:
+
+
+  -  The token class must be specified in namespace `quex`.
+    
+  -  A `typedef` inside the class must define a type for` 
+      id\_type`.
+
+    -  A member function that maps token-ids to token-names
+       +
+       static const std::string&  map_id_to_name(token::id_type);
+       +
+       that maps any token-id to a human readable string. Note, that quex
+       does generate this function automatically, as long as it is not told not
+       to do so by specifying command line option
+         `--user-token-id-file 'filename'`
+      
+    - Member functions that set token content, e.g.
+      +
+      void  set(token::id_type TokenID, const char*);
+      void  set(token::id_type TokenID, int, int);
+      void  set(token::id_type TokenID, double);
+      void  set(token::id_type TokenID, double, my_type&);
+      +
+      As soon as the user defines those functions, the interface
+      for sending those tokens  
+      from the lexer is also in place. The magic of templates
+      lets the generated lexer class provide an interface
+      for sending of tokens that is equivalent to the 
+      following function definitions:
+      +
+      void  send(token::id_type TokenID, const char*);
+      void  send(token::id_type TokenID, int, int);
+      void  send(token::id_type TokenID, double);
+      void  send(token::id_type TokenID, int, my_type&);
+      +
+      Thus, inside the pattern action pairs one can send tokens,
+      for example using the `self` reference the following way:
+      +
+        {MY_PATTERN} {
+              // map lexeme to my_type-object
+              my_type tmp(split(Lexeme, ":"), LexemeL); 
+              self.send(LexemeL, tmp);
+              RETURN;
+        }
+
+As long as these conventions are respected the user created token class will
+interoperate with the framework smoothly. The inner structure of the token
+class can be freely implemented according to the programmer's optimization
+concepts. Note, that the name of the token class is also of free choice.  When
+invoquing quex, the command line option `--token-class` needs to be
+followed by the user defined token class name. The command line option 
+`--token-class-file` tells quex the name of the file where this class is
+defined. As long as this options are not defined quex will not consider
+user defined token classes and provide the standard token class.
+
+

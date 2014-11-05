@@ -1,7 +1,0 @@
-mode START {
-"x" => QUEX_TKN_B;
-"a" => QUEX_TKN_A;
-"b" => QUEX_TKN_B;
-"c" => QUEX_TKN_C;
-"a" => QUEX_TKN_B;
-}

@@ -1,3 +1,0 @@
-No output is good output
-error.qx:2:warning: Pattern contains elements not found in engine codec 'unicode'.
-error.qx:2:warning: (Buffer element size is 1 [byte])

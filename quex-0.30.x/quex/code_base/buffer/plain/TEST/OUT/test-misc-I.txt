@@ -1,0 +1,136 @@
+-(total size = 11, border = 10)-stdio-------------------------------------
+
+(*) read to end of file
+- end of file
+<Im Wald steht ein Baum.>
+||     S   :C|| EOFC
+|| ein Baum.]||
+start-pos:  13
+stream-pos: 23
+EOF = 1, BOF = 0
+current_p (offset)    = 10
+lexeme start (offset) = 5
+
+(*) read to begin of file
+- begin of file
+<.muaB nie thets dlaW mI>
+C[  S      : || <out>
+|[Im Wald ste||
+start-pos:  0
+stream-pos: 1
+EOF = 0, BOF = 1
+current_p (offset)    = -2
+lexeme start (offset) = 2
+
+(*) read to end of buffer
+end of buffer
+<Im Wald ste>
+|[        S: C| BLC
+|[Im Wald ste||
+start-pos:  0
+stream-pos: 1
+EOF = 0, BOF = 1
+current_p (offset)    = 11
+lexeme start (offset) = 8
+
+(*) load_forward:
+||       S C || 'e'
+||m Wald steh||
+start-pos:  1
+stream-pos: 12
+EOF = 0, BOF = 0
+current_p (offset)    = 9
+lexeme start (offset) = 7
+
+(*) read to end of buffer
+end of buffer
+<h>
+||       S : C| BLC
+||m Wald steh||
+start-pos:  1
+stream-pos: 12
+EOF = 0, BOF = 0
+current_p (offset)    = 11
+lexeme start (offset) = 7
+
+(*) load_forward:
+||      S  C || 'h'
+|| Wald steht||
+start-pos:  2
+stream-pos: 13
+EOF = 0, BOF = 0
+current_p (offset)    = 9
+lexeme start (offset) = 6
+
+(*) read to end of file
+- end of file
+<t ein Baum.>
+||     S   :C|| EOFC
+|| ein Baum.]||
+start-pos:  13
+stream-pos: 23
+EOF = 1, BOF = 0
+current_p (offset)    = 10
+lexeme start (offset) = 5
+
+(*) read to begin of buffer
+begin of buffer
+<.muaB nie >
+C|S        : || <out>
+|| ein Baum.]||
+start-pos:  13
+stream-pos: 23
+EOF = 1, BOF = 0
+current_p (offset)    = -2
+lexeme start (offset) = 0
+
+(*) load_backward:
+||  CS     : || 't'
+||eht ein Bau||
+start-pos:  10
+stream-pos: 13
+EOF = 0, BOF = 0
+current_p (offset)    = 2
+lexeme start (offset) = 3
+
+(*) read to begin of buffer
+begin of buffer
+<the>
+C|   S     : || <out>
+||eht ein Bau||
+start-pos:  10
+stream-pos: 13
+EOF = 0, BOF = 0
+current_p (offset)    = -2
+lexeme start (offset) = 3
+
+(*) load_backward:
+||  C   S  : || 't'
+|| steht ein ||
+start-pos:  7
+stream-pos: 10
+EOF = 0, BOF = 0
+current_p (offset)    = 2
+lexeme start (offset) = 6
+
+(*) read to begin of file
+- begin of file
+<ts dlaW mI>
+C[  S      : || <out>
+|[Im Wald ste||
+start-pos:  0
+stream-pos: 1
+EOF = 0, BOF = 1
+current_p (offset)    = -2
+lexeme start (offset) = 2
+
+(*) read to end of file
+- end of file
+<Im Wald steht ein Baum.>
+||     S   :C|| EOFC
+|| ein Baum.]||
+start-pos:  13
+stream-pos: 23
+EOF = 1, BOF = 0
+current_p (offset)    = 10
+lexeme start (offset) = 5

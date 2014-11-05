@@ -1,0 +1,66 @@
+When quex creates a lexical analyser it leaves some switches in the code
+that can be turned on and off in order to control certain
+charactersistics. First of all, quex makes heavy use of`assert`s to
+make sure that the code is executed appropriately. These asserts can be turned
+off by defining the`NDEBUG` macro.  The following macros are quex
+specific and can be specified with the '-D' option of your compiler:
+
+QUEX_OPTION_LINE_NUMBER_COUNTING::	    
+ 
+  If this macro is defined, then the lexical analyzer class contains support
+  for line number counting. This means, that according member functions are
+  present and internal related bookkeeping is activated. Note, that activating
+  this feature may consume some calculation time. However, the solution for
+  number counting provided by quex is likely to beat any user-provided approach.
+  Note, that quex is able to analyze regular expressions to the point that it
+  tries to determine constant line offsets for a pattern, before the engine actually
+  runs.
+
+QUEX_OPTION_COLUMN_NUMBER_COUNTING::	    
+
+  Same as `QUEX_OPTION_LINE_NUMBER_COUNTING` for column number counting.
+
+QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK::
+
+  This flag is only interesting if the flag `--no-mode-transition-check` was _not_
+  set, i.e. that code for mode-transition check has been produced by quex. This macro
+  allows to activate these mode transition checks. Note, that pushing and popping
+  of modes requires a run time mode transition check.
+
+QUEX_OPTION_DEBUG_TOKEN_SENDING::
+  
+  If this option is activated a message is printed each time a token is sent to
+  the token queue. Together with a printout of the token after reception with
+  `get\_token()` this helps to see if tokens are flushed $$'in time'$$.
+  This feature is only available if the engine is produced with the `$$--debug$$`
+  flag.
+
+QUEX_OPTION_DEBUG_MODE_TRANSITIONS::
+
+  If defined, the lexical analyser engine displays any mode transition on the
+  standard error output.  This feature is only available if the engine is
+  produced with the `$$--debug$$` flag.
+
+QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES::
+
+  If defined every pattern match is going to be displayed on the standard error
+  output.  This feature is only available if the engine is produced with the
+  `$$--debug$$` flag.
+
+QUEX_OPTION_INCLUDE_STACK_SUPPORT::
+
+  If enabled, then this macro activates support for the 'include stack', i.e.
+  the member functions to switch the input buffer elegantly to parse from 
+  included files and return back to the including file.
+
+QUEX_SETTING_BUFFER_SIZE::  
+
+  The internal input buffer size. (DEFAULT = 65536)
+
+QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE::  
+
+  The initial size of the token queue. The token queue extends itself if there
+  is not enough space to store tokens. However, in order to avoid such memory
+  allocations, it might be set to a reasonable number. (DEFAULT = 2048, but
+  something like 32 should actually be 'reasonable')
+

@@ -1,8 +1,0 @@
------------------------------
-IN:
-    [{ kolunm_numba : uint8_t; }]
-
-OUT:
-
-string:1:error: Member name 'kolunm_numba' not allowed in token_type section 'standard'.
-string:1:error: Did you mean 'column_number'?

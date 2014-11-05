@@ -1,0 +1,45 @@
+
+
+   transitions:
+
+   for all origins X that have a store position of post conditioned expression:
+      save input position in pos(X)
+
+   map incoming trigger to follow state. set the 
+   non-matching trigger to the general terminal state.
+
+   ** optional: check whether a trigger leads to a state
+   **           that contains no further triggers, then transit to
+   **           the corresponding terminal state immediately.
+   **           -- double check that this state is an acceptance state
+   **              otherwise, there's something seriously wrong with
+   **              the algorithms that create the analyzer.
+
+   non-acceptance states:
+
+       (0) only transition(trigger)
+
+   acceptance state:
+
+       ** in case of acceptance only ONE pattern can be the winner. a first filtering
+       ** is accomplished by 'filtering dominated origins'. pre-conditioned patterns
+       ** are not filtered, because one might be triggered that is lower precedence.
+       ** however only one non-conditioned pattern.
+       
+       for all origins that are acceptance states and depend on pre-conditions
+          (in the order of their dominance)
+          if( precondition(X) ) i
+	     last acceptance = origins id
+	     if X = post conditioned => store input position = pos(X)
+             else                       store input position = position
+          else ...
+
+       last acceptanice = dominating state
+       store input position = position
+    
+
+   terminal states (when a pattern has been triggered)
+
+       -- perform pattern match action
+       -- set input position to the place where it is to be stored
+       -- return/continue lexical analysis    

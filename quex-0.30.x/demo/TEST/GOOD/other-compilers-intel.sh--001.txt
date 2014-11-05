@@ -1,0 +1,28 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=icpc ##
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+(1, 1)  	STRUCT
+(1, 16)  	IDENTIFIER
+(1, 16)  	CURLY_BRACKET_O
+(2, 11)  	IDENTIFIER
+(2, 11)  	IDENTIFIER
+(2, 11)  	SEMICOLON
+(3, 11)  	IDENTIFIER
+(3, 11)  	IDENTIFIER
+(3, 11)  	SEMICOLON
+(4, 1)  	CURLY_BRACKET_C
+(4, 2)  	SEMICOLON
+(6, 1)  	IF
+(6, 4)  	CURLY_BRACKET_O
+(7, 16)  	QUOTE
+(7, 16)  	STRING
+(7, 16)  	QUOTE
+(7, 16)  	SEMICOLON
+(8, 1)  	CURLY_BRACKET_C
+(8, 2)  	<TERMINATION>
+| [END] number of token = 19
+`------------------------------------------------------------------------------------
+cleaning ...

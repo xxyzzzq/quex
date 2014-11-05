@@ -1,0 +1,11 @@
+
+-- The trailing context problem, where 'x+/xy' meaning 
+   x+ with post condition 'xy'. This is a problem that flex
+   cannot solve. I could solve it with a inverted state machine
+   that goes back when the post condition matched where a 
+   trailing context problem is detected.
+
+   07y3m18d fschaef
+
+
+   

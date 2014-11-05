@@ -1,0 +1,90 @@
+With the rise of the Python programming language the use of indentation as
+scope delimiter has become popular. Indeed, it maybe the most efficient method
+to delimit scope with the least amount of additional characters
+\cite{Safer2004}, such as '\{' and '\}' in C-styled languages.  Quex
+provides a convinient mechanism to handle indentations which runs quasi in
+paralell to the pattern matching: _indentation events_.  
+
+Figure <<fig:indentation-principle, style=ref>> displays in an example the principle of
+indentation events. Whenever the lexical analyser reaches the first
+non-whitespace in a line, an indentation event (indicated as a little star in
+the figure) is triggered. The lexical analyser engine then calls a user
+defined indentation handler. The numbers at the indentation events indicate
+the number of characters that the indentation spans. They are passed to the
+user's indentation handler as arguments. The indentation handler, then, can
+then keep track of indentation blocks or whatever his little heart desires.
+
+
+[[fig:indentation-principle]]
+.Principle of Indentation Events.
+image::figures/indentation.png[]
+
+Note, that it is not trivial to express indentation in terms of pattern action
+pairs solely based on regular expressions. It is not enough to define a
+pattern such as 
+
+--------------------------------------------------------
+          P_INDENTATION_CATCHER    "\n"[ ]*
+--------------------------------------------------------
+
+That is a newline followed by whitespace. Imagine, one introduces a comment
+sign such as the traditional '\#' for 'comment until newline'. The comment
+eating pattern would be at first glance:
+
+--------------------------------------------------------
+          P_COMMENT_EATER    "#"[^\n]*\n
+--------------------------------------------------------
+
+That is a '\#' followed by anything but newline and then one newline. The
+action related to this pattern would have to put pack the last newline.
+Otherwise the indentation catcher which starts with a newline can never
+trigger. In this particular case, this problem can be solved by deleting the
+last newline from the comment eater pattern, knowing that after 'as many
+not-newline as possible' there must be a newline, i.e.
+
+--------------------------------------------------------
+          P_COMMENT_EATER    "#"[^\n]*
+--------------------------------------------------------
+
+The last newline is then eaten by the indentation catcher. However, the main
+problem remains: with such a design _patterns need to know about each
+  other_ to work propperly! In an environment of many different modes which
+are additionally related by inheritance, it is difficult to guarantee that all
+patterns 'respect' the quirks of each other. They better work independently.
+The indentation events of quex provide a means that allows one to avoid
+inter-pattern dependencies.
+
+Similarly, catching indentation with 'pre-condition newline plus whitespace',
+i.e.  `\verb|^[ \t]*|` is fragile, in a sense that another pattern that
+contains newline plus whitespace might hinder this pattern from triggering.
+In a lexical analyzer with dozens or hundreds of patterns this becomes
+quickly unmanageable. Errors that arise from patterns defined somewhere
+else are very hard to find and require a lot of insight into the actual
+process of lexical analysis. Using the '`on\_indentation`' event
+handler ends up in a much clearer and safer design. For more information
+about the pre-condition newline pitfall see section
+\ref{sec:formal/patterns/context-dependent-pitfalls}, page
+\pageref{formal/patterns/context-dependent-pitfalls}.
+
+{\bf Caveat:} 
+
+Note, that if a pattern contains more than one newline then
+only the indentation event concerning the last newline ist triggered! Imagine
+a pattern
+
+--------------------------------------------------------
+      STRANGER   " "*"hello"[\n]+" "*"world"[\n]+" "*"how are you?"
+--------------------------------------------------------
+
+then the following pattern would match 
+
+--------------------------------------------------------
+     hello
+   world
+        how are you?
+--------------------------------------------------------
+
+If this matches, then the lines of 'hello' and 'world' do not trigger an
+indentation event. So, when dealing with indentation based scoping such strange
+things are best avoided\footnote{Probably, it is anyway hard to think of a case
+    where such pattern definitions are not to be avoided.}.

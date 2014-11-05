@@ -1,0 +1,35 @@
+Previous chapters and sections introduced different code sections where
+patterns, token identifier, modes, and engine code could be specified. The
+following table summarizes these section in order to serve as an overview. It
+associates the code section's keyword with its content and the section and page
+reference of its explanation.
+
+///////////////////////////////////////////////////////////////////////////
+[grid="all"]
+````~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Keyword, Task, Section, Page 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`mode`,     Pattern-action pairs i.e. the 'behavior' of the lexical analyzer., \ref{sec:formal/modes}, \pageref{sec:formal/modes} 
+      , ,                                                                      \ref{sec:formal/pattern-action}, \pageref{sec:formal/pattern-action}  
+`define`,   Pattern name defintions i.e. naming of regular , \ref{sec:practical/patterns}  
+                                                                , \pageref{sec:practical/patterns}  
+	    ,   expressions to be used in pattern-action pairs. ,         ,              
+`token`   , Definition of token-ids.                       , \ref{sec:practical/token-ids}  , \pageref{sec:practical/token-ids}   
+`header`  , Code to be pasted above the engine class.      , \ref{sec:formal/pasting-header}  , \pageref{sec:formal/pasting-header}   
+`body`    , Code to be pasted into the engine class definition.  , \ref{sec:formal/generated-class/class-body-extension}  , \pageref{sec:formal/generated-class/class-body-extension}  
+`init`    , Code to be pasted into the engine's constructor.    , \ref{sec:formal/generated-class/constructor-extension}  , \pageref{sec:formal/generated-class/constructor-extension}  
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///////////////////////////////////////////////////////////////////////////
+
+For convinience, even though, it is not a 'region', let it be mentioned here, that he 
+assignment 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    start = MY_MODE
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+defines the starting mode of the lexical analyzer. If no starting mode is explicitly defined
+quex assumes the first mode defined in the source code as starting mode and produces a 
+warning of the console.

@@ -1,0 +1,39 @@
+A Pre-Condition is a condition on the character stream before the pattern is
+actually being parsed. Starting from the current position X, the analyser needs
+to go backwards to check whether the pre-condition is
+met.  After determining whether it is met or not, the 'real' pattern is
+analysed starting from position X.
+	  
+Intuitively, it does not make sense to try to match against a pattern if it is
+known from the beginning that the pre-condition is not met. For this reason, it is tempting to
+consider a single analyzer function for each case of 'pre-condition met' and
+'pre-condition not met'.  With this approach, though, the total number of
+analysers to deal with $N$ pre-conditions is $2^N$ since any combination of
+'pre-condition met' and 'pre-condition not met' has to be considered. Very few
+pre-conditions would then blow the number of analysers beyond what is
+practical. Quex could not be a general solution for pre-conditions.
+
+Rather than creating an analyser for each pre-condition constallation, one
+single analyser containing all pre-conditioned and non-pre-conditioned patterns
+is created. Pre-conditions are simply implemented by a conditional acceptance
+at the end of the pattern, i.e.
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // acceptance state ...
+    if( pre_condition_X_fulfilled_f ) last_acceptance = X;
+    ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When the analyser reaches the acceptance state of a pre-conditioned pattern it
+notifies a match only under the condition that the pre-condition flag was
+raised before. From one point of view, this is inefficient since in some cases the analyser tries 
+to match against a pattern, even though the pre-condition disallows an acceptance. 
+On the other hand, the states of the pre-conditioned patterns
+are webbed altogether into one single state machine and the overhead for doing
+so is minimal. 
+
+\TODO{It would be an improvement to allow the user control when a 
+    pre-conditioned pattern constallation is webbed into the combined
+	state machine and when not.}
+

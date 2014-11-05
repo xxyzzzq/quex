@@ -1,7 +1,0 @@
-define {
-B "b"
-C {B
-}
-mode START {
-{B} => QUEX_TKN_A;
-}

@@ -1,5 +1,0 @@
-uuu.qx:5:error: Mode 'ONE' was defined without the option <inheritable: only>.
-uuu.qx:5:error: However, it contains no matches--only event handlers. Without pattern
-uuu.qx:5:error: matches it cannot act as a pattern detecting state machine, and thus
-uuu.qx:5:error: cannot be an independent lexical analyzer mode. Define the option
-uuu.qx:5:error: <inheritable: only>.

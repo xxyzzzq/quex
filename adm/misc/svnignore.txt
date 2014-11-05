@@ -1,7 +1,0 @@
-tmp.*
-*.pyc
-*~
-*.swp
-*.swo
-OUT
-__pycache__

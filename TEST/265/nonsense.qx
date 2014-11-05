@@ -1,1 +1,0 @@
-/* token { A; } */ mode X { a => TKN_A; }

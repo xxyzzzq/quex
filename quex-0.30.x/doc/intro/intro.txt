@@ -1,0 +1,85 @@
+The quex program generates a lexical analyser that scans text and
+identifies patterns. The result of this lexical analysis is a list of 
+  _tokens_. A token is a piece of atomic information directly relating to a
+pattern, or an _event_. It consists of a type-identifier, i.e. the 
+  _token type_, and content wich is extracted from the text fragment that
+matched the pattern. 
+
+Figure <<fig_lexical_analyser, (here),style=ref>> shows the principle of lexical
+analysis.  The lexical analyser receives a stream of characters "`if( x> 3.1 )
+{ ...`" and produces a list of tokens that tells what the stream signifies. A first
+  token tells that there was an `if` statement, the second token tells
+  that there was an opening bracket, the third one tells that there was an
+  identifier with the content `x`, and so on. 
+  
+In compilers for serious programming languages the token stream is received by
+a parser that interpretes the given input according to a specific grammar.
+However, for simple scripting languages this token stream might be treated
+immediately. Using a lexical analyser generator for handcrafted ad-hoc
+scripting languages has the advantages that it can be developped faster and it
+is much easier and safer to provide some flexibility and power. This is to be
+demonstrated in the following chapters.
+
+.The process of lexical analysis.
+[[fig_lexical_analyser]]
+image::figures/lexical-analysis-process.png[]
+
+The following features distinguish quex from the traditional lexical
+analysers such as lex or flex:
+
+- _Ease_. A simple as well as a complicated lexical analyzer can 
+      be specified in a very elegant and transparent manner. Do not get confused
+      over the set of features and philosophies. If you do not use them, then
+      simple skip the concerning regions in the text. Start from the ready-to-rumble
+      examples in the `./demo` subdirectory.
+
+-  A generator for a directly _coded lexical analyzer_ featuring
+  pre- and post-condtions. The generated lexical analyzer is up to 2.5 times
+  faster than an analyzer created by flex/lex.
+  
+- Sophisticated lexical _modes_ in which only exclusively specified
+  patterns are active. In contrast to normal 'lex' modes they provide
+  the following functionality:
+
+ *  Inheritance _relationships_ between lexical analyser modes. This
+    allows the systematic inclusion of patterns from other modes, as well as
+    convinient transition control.
+
+ * _transition control_, i.e. restriction can be made to what mode
+   a certain mode can exit or from which mode it can be entered. This helps 
+   to avoid that the lexical analyser drops by accident into an unwanted
+   lexical analyses mode.
+
+ * Mode _transition events_, i.e. event handlers can be defined for
+    the events of exiting or entering from or to a particular mode.    
+    
+ * Indentation _events_, i.e it is possible to provide an event handler
+    for the event of the first appearing non-whitespace in a line. This event
+    handling happens quasi-paralell to the pattern matching.
+  
+- A default general purpose _token_ class. Additionally, Quex
+  provides an interface to run the lexical analyser with a user-defined token
+  class.
+  
+- A _token queue_ so that tokens can be communicated without returning
+  from the analyser function.  The token queue is a key for the production of
+  '_implicit tokens_', i.e.  tokens that do not relate directly to
+  characters in an analysed character stream. Those tokens are derived from
+  context. This again, is a key for defining redundancy reduced languages.
+  
+- Automatic _line_ and _column numbering_. These features can be
+  turned off, in case that one fears performance loss. It can be determined
+  excactly from which line and which column a recognized pattern started and
+  where it ended.
+
+- Automatic generation of transition graphs. Using the `--plot` command line
+  option initiates quex to produce a graphical representation of the underlying
+  state machines.
+
+The present text first explains briefly the basic concepts of lexical analysis
+in quex. Here, a short review is given on lexical analysis, but then it
+concentrates on the introduction of the features mentioned above. The
+subsequent chapter dicusses a simple example of a complete application for
+lexical analysis. Finally, the last chapter elaborates on the formal usage of
+all features of quex. 
+

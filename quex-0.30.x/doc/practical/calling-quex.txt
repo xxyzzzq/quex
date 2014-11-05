@@ -1,0 +1,177 @@
+With the files from directory \$(QUEX\_PATH)`/DEMO/001/` the creation of the
+example lexical analyser application is as simple as can be. Type `make`
+in the command line and the application is built. The Makefile that comes with
+the sample application is written in a way that makes it very easy to adapt
+and extend its contents for other user's needs. The core of this make file 
+explains how to call quex:
+
+[makefile]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (*) definitions
+MODE_FILES  = ./in/simple.qx
+#
+ENGINE_NAME = tiny_lexer
+#
+ENGINE_SOURCES = $(ENGINE_NAME)             \
+                 $(ENGINE_NAME).cpp         \
+                 $(ENGINE_NAME)-internal.h  \
+                 $(ENGINE_NAME)-token_ids   \
+                 $(ENGINE_NAME)-core-engine.cpp
+...
+
+# (*) build rule
+$(ENGINE_SOURCES): $(PATTERN_FILE) $(MODE_FILES) $(TOKEN_DB)
+        quex --mode-files $(MODE_FILES)      \
+             --engine     $(ENGINE_NAME)
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The build rule says that whenever one of the files containing mode descriptions
+changes the source code for the lexical analyser has to be rebuild. In our
+example the only mode file is `simple.qx`. Quex receives the names of the 
+input file names as 'no-minus' followers of the command line option 
+'`--mode-files`'.
+
+The output of quex is determined by the option `--engine`. The name
+that follows it specifies the name of the class that implements the engine.
+But, it also acts as filestem for all output files. In our example, the
+engine's name is `tiny\_lexer`. Therefore, there will be four files
+created:
+
+`tiny\_lexer`:: 
+  containing the header file that contains the class
+  definition of class `quex::tiny\_lexer`. This is _the only output file
+  that is of direct interest to the user_. It has to be included in each file
+  that interacts with the produced lexical analyser.
+
+`tiny\_lexer.cpp`:: 
+  containing the created lexical analyser
+  engine. The user does not need to touch it, but it has to be compiled
+  sometime and linked to the application. The example Makefile does this
+  already. _The user is not directly concerned with this file_.
+  
+`tiny\_lexer-token-ids`:: 
+  containing definitions of token-ids.
+  That means it provides variables with the names of token-ids that carry
+  unique numerical values. It also defines the member function
+  +
+  string token::map_id_to_name(const id_type TokenID)
+  +
+  which maps a token-id to a token-id name. This comes practical in many
+  stages of the development. However, this file is included inside the header
+  file for the lexer class definition and _the user does not worry
+  about this file at all_.
+  
+`tiny-lexer-core-engine.cpp`:: 
+  is a generated C++ code file containing the generated lexical analyzer
+  engines for all modes.  
+
+Once the engine sources are built by quex, an
+example application can be built that uses the lexical analyser.  The source
+code for the example is specified in file '`lexer.cpp`'. The content
+of this file is shown in figure \ref{ref:sample-application}.
+
+[[ref:sample-application]]
+.A sample application using the generated lexical analyser` tiny\_lexer`.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#include<fstream>    
+#include<iostream> 
+
+// (*) include lexical analyser header
+#include <./tiny_lexer>
+
+using namespace std;
+
+int 
+main(int argc, char** argv) 
+{        
+    // (*) create token
+    quex::token        Token;
+    // (*) create the lexical analyser
+    //     if no command line argument is specified user file 'example.txt'
+    quex::tiny_lexer*  qlex = new quex::tiny_lexer("example.txt");
+
+    // (*) print the version 
+    cout << qlex->version() << endl;
+
+    cout << ",------------------------------------------------------\n";
+    cout << "| [START]\n";
+
+    int number_of_tokens = 0;
+    // (*) loop until the 'termination' token arrives
+    do {
+        // (*) get next token from the token stream
+        qlex->get_token(&Token);
+
+        // (*) print out token information
+        //     -- line number and column number
+        cout << "(" << qlex->line_number()   << ", ";
+        cout <<        qlex->column_number() << ")  \t";
+        cout << Token.type_id_name() << endl;
+
+        ++number_of_tokens;
+
+        // (*) check against 'termination'
+    } while( Token.type_id() != quex::TKN_TERMINATION );
+
+    cout << "| [END] number of token = " << number_of_tokens << "\n";
+    cout << ",------------------------------------------------------\n";
+
+    return 0;
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Initially, the lexical analyser needs to be created as an object of type` 
+  quex::tiny\_lexer`. The filename of the file to be analysed is directly
+passed to the constructor of the class. Then, one needs to set the initial
+lexical analysis mode. In our example, `PROGRAM` shall be the initial
+mode. Since it shall not trigger any mode transitions or protection
+algorithms, it is set using the function `set\_mode\_brutally()`. 
+
+After printing out the version information, the loop over the token stream
+starts. In the sample application it does not more than getting the a token
+using `get\_token()` and printing it out. In a more realistic application
+this token is to be passed to a parser that does its syntactic analysis on it.
+When a token arrives with an identifier equal to` 
+  quex::TKN_TERMINATION`, then the loop exits and the program
+terminates.
+
+At this point in time everything is ready for compilation. Using the Makefile
+coming with the example, typing `make` shall produce a ready-to-run
+application called `lexer`  in the current directory. If one types now
+
+-------------------------------------
+     > ./lexer example.txt
+-------------------------------------
+
+on the command line essentially the following output is produced:
+
+-------------------------------------
+tiny_lexer: Version 0.0.0-pre-release. Date Fri Sep 7 7:51:20 2007
+Generated by Quex 0.15.3
+,-----------------------------------------------------------------
+| [START]
+(0, 0)          STRUCT
+(0, 7)          IDENTIFIER
+(0, 15)         CURLY_BRACKET_O
+(1, 2)          IDENTIFIER
+(1, 9)          IDENTIFIER
+(1, 10)         SEMICOLON
+(2, 2)          IDENTIFIER
+(2, 9)          IDENTIFIER
+(2, 10)         SEMICOLON
+(3, 0)          CURLY_BRACKET_C
+(3, 1)          SEMICOLON
+(5, 0)          IF
+(5, 3)          IDENTIFIER
+(5, 12)         CURLY_BRACKET_O
+(6, 2)          IDENTIFIER
+(6, 7)          IDENTIFIER
+(6, 14)         NUMBER
+(6, 34)         STRING
+(6, 35)         SEMICOLON
+(7, 0)          CURLY_BRACKET_C
+(7, 1)          <TERMINATION>
+| [END] number of token = 21
+`-----------------------------------------------------------------
+--------------------------------------

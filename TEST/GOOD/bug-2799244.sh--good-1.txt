@@ -1,3 +1,0 @@
-(*) Full Error
-
-(*) perform compilation

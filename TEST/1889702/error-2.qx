@@ -1,8 +1,0 @@
-mode BASE : <inheritable: only> {
-}
-mode DERIVED : BASE {
-on_exit { foo(); }
-}
-token { A; B; }
-mode A { a => QUEX_TKN_A; }
-mode B { b => QUEX_TKN_B; }

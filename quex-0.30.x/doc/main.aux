@@ -1,0 +1,235 @@
+\relax 
+\@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{5}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:intro/intro}{{1}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1.1}{\ignorespaces The process of lexical analysis}}{5}}
+\newlabel{fig:lexical-analyser}{{1.1}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.1}Installation}{6}}
+\newlabel{sec:intro/installation}{{1.1}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.2}Licensing Information}{7}}
+\newlabel{sec:intro/license}{{1.2}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.3}The Name of the Game}{8}}
+\newlabel{sec:intro/naming}{{1.3}{8}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {2}Basics}{9}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:basics/intro}{{2}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Pattern Matching}{9}}
+\newlabel{sec:basics/pattern-matching}{{2.1}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A state machine to detect a floating point number pattern.}}{9}}
+\newlabel{fig:pattern-state-machine}{{2.1}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}The Token Queue}{10}}
+\newlabel{sec:basics/token-queue}{{2.2}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Lexical Analysis Modes}{11}}
+\newlabel{sec:basics/modes}{{2.3}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Sequence diagram displaying the token-passing from the pattern-match action to the caller of {\tt get\_token()}.}}{12}}
+\newlabel{fig:token-queue}{{2.2}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Mode Inheritance}{12}}
+\newlabel{sec:basics/mode-inheritance}{{2.3.1}{12}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.3}{\ignorespaces Mode Inheritance.}}{14}}
+\newlabel{fig:mode-inheritance}{{2.3}{14}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Mode Transitions}{14}}
+\newlabel{sec:basics/mode-transitions}{{2.3.2}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.4}{\ignorespaces Event handling during lexical mode transitions.}}{15}}
+\newlabel{fig:mode-transitions}{{2.4}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.5}{\ignorespaces Restricted mode transitions.}}{15}}
+\newlabel{fig:mode-transition-control}{{2.5}{15}}
+\citation{Safer2004}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Indentation}{16}}
+\newlabel{sec:basics/indentation}{{2.4}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.6}{\ignorespaces Principle of Indentation Events}}{16}}
+\newlabel{fig:indentation-principle}{{2.6}{16}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Line and Column Counting}{17}}
+\newlabel{sec:basics/line-column-counting}{{2.5}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.6}Summary}{18}}
+\newlabel{sec:basics/summary}{{2.6}{18}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Practical Usage}{19}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:practical/intro}{{3}{19}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Patterns}{19}}
+\newlabel{sec:practical/patterns}{{3.1}{19}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Definition of pattern shorthands in a {\tt define}-section.}}{20}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Token-ID}{20}}
+\newlabel{sec:practical/token-ids}{{3.2}{20}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}Modes}{20}}
+\newlabel{sec:practical/modes}{{3.3}{20}}
+\newlabel{fig:token-ids-code}{{3.2}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Definition of token-ids in a {\tt token}-section.}}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Inheritance relationships of the modes in the example lexical analyser.}}{22}}
+\newlabel{fig:inheritance-modes}{{3.3}{22}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.4}{\ignorespaces Scratch of mode transitions in the simple example.}}{22}}
+\newlabel{fig:mode-transition-example}{{3.4}{22}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Example code stubs for lexical analyser modes.}}{23}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.4}Pattern-Action Pairs}{24}}
+\newlabel{sec:practical/pattern-action-pairs}{{3.4}{24}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces The {\tt END\_OF\_FILE} mode handling the end-of-file pattern.}}{25}}
+\newlabel{fig:eof-pattern-action-pairs}{{3.6}{25}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces The {\tt PROGRAM} mode.}}{26}}
+\newlabel{fig:program-mode}{{3.7}{26}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.5}Calling Quex}{26}}
+\newlabel{sec:practical/calling-quex}{{3.5}{26}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces The {\tt STRING\_READER} mode.}}{27}}
+\newlabel{fig:string-reader-mode}{{3.8}{27}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces A sample application using the generated lexical analyser {\tt tiny\_lexer}.}}{29}}
+\newlabel{ref:sample-application}{{3.9}{29}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Summary}{30}}
+\newlabel{sec:practical/summary}{{3.6}{30}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Formal Ussage}{33}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:formal/intro}{{4}{33}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Patterns}{33}}
+\newlabel{sec:formal/patterns/intro}{{4.1}{33}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Context Free Regular Expressions}{33}}
+\newlabel{sec:formal/patterns/context-free}{{4.1.1}{33}}
+\citation{Unicode50}
+\@writefile{toc}{\contentsline {subsubsection}{Pitfalls}{36}}
+\newlabel{sec:formal/patterns/context-free-pitfalls}{{4.1.1}{36}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Pre- and Post-Conditions}{36}}
+\newlabel{sec:formal/patterns/context-dependent}{{4.1.2}{36}}
+\@writefile{toc}{\contentsline {subsubsection}{Pitfalls}{37}}
+\newlabel{sec:formal/patterns/context-dependent-pitfalls}{{4.1.2}{37}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}The Starting Mode {\tt start}}{39}}
+\newlabel{sec:basics/start-mode}{{4.1.3}{39}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Mode Characteristics}{39}}
+\newlabel{sec:formal/modes}{{4.2}{39}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Definition of mode characteristics.}}{40}}
+\newlabel{fig:formal-mode-definition}{{4.1}{40}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Pattern-Action Pairs}{41}}
+\newlabel{sec:formal/pattern-action}{{4.3}{41}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Pattern Action Shortcuts}{42}}
+\newlabel{sec:formal/pattern-action-shortcuts}{{4.3.1}{42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Priorities}{43}}
+\newlabel{sec:formal/pattern-action-priorities}{{4.3.2}{43}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Dispatch of pattern actions in case of concurrent matches.}}{44}}
+\newlabel{fig:pattern-priorities}{{4.2}{44}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.3}The Match Event}{45}}
+\newlabel{sec:formal/match_event}{{4.3.3}{45}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Avoiding {\tt PRIORITY-MARK} through re-design.}}{46}}
+\newlabel{fig:resolve-priority-mark}{{4.3}{46}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Mode Transition Events}{46}}
+\newlabel{sec:formal/mode-transitions}{{4.4}{46}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Caveat}{47}}
+\newlabel{sec:formal/mode-transitions-caveat}{{4.4.1}{47}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Indentation Events}{47}}
+\newlabel{sec:formal/indentation-events}{{4.5}{47}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Lexical Analyser Class}{48}}
+\newlabel{sec:formal/generated-class/intro}{{4.6}{48}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.1}General User Interface}{49}}
+\newlabel{sec:formal/generated-class/ui}{{4.6.1}{49}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.2}Mode Handling}{50}}
+\newlabel{sec:formal/generated-class/mode-handling}{{4.6.2}{50}}
+\@writefile{toc}{\contentsline {subsubsection}{Mode Objects}{51}}
+\newlabel{sec:formal/generated-class/mode-objects}{{4.6.2}{51}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.3}Token Handling}{52}}
+\newlabel{sec:formal/generated-class/token-handling}{{4.6.3}{52}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.4}The Accumulator}{52}}
+\newlabel{sec:formal/generated-class/accumulator}{{4.6.4}{52}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.5}Class Body Extensions: {\tt body}}{52}}
+\newlabel{sec:formal/generated-class/class-body-extension}{{4.6.5}{52}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.6}Constructor Extensions: {\tt init}}{53}}
+\newlabel{sec:formal/generated-class/constructor-extension}{{4.6.6}{53}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6.7}Including Files/Switching Buffers}{54}}
+\newlabel{sec:formal/generated-class/switching-buffers}{{4.6.7}{54}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}Character Encoding (Unicode Support)}{55}}
+\newlabel{sec:formal/character-encoding/intro}{{4.7}{55}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Character encodings involved in {{que{$\chi $}}}'s generation process.}}{55}}
+\newlabel{fig:character-encoding}{{4.4}{55}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.8}Pasting Header Information: {\tt header}}{56}}
+\newlabel{sec:formal/pasting-header}{{4.8}{56}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.9}Deriving from Lexical Analyser}{57}}
+\newlabel{sec:formal/derivation}{{4.9}{57}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.10}User defined Token Classes}{57}}
+\newlabel{sec:formal/user-token-class}{{4.10}{57}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.11}Summary of Code Sections}{59}}
+\newlabel{sec:formal/code-sections}{{4.11}{59}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.12}Macro Switches}{59}}
+\newlabel{sec:formal/macro}{{4.12}{59}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.13}Command Line Options}{60}}
+\newlabel{sec:formal/command-line-options}{{4.13}{60}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}{{Que{$\chi $}}} Intern: Generation of the Core Engine}{65}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:inside-quex/intro}{{A}{65}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Introduction}{65}}
+\newlabel{sec:inside-quex/intro/intro}{{A.1}{65}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.1}The Big Picture}{66}}
+\newlabel{sec:inside-quex/intro/the-big-picture}{{A.1.1}{66}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.1}{\ignorespaces Three example patterns implemented as state machines}}{67}}
+\newlabel{fig:pattern-bank}{{A.1}{67}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.2}{\ignorespaces State machine matching agains all three patterns from figure A.1\hbox {} }}{68}}
+\newlabel{fig:pattern-bank-merged}{{A.2}{68}}
+\@writefile{toc}{\contentsline {subsubsection}{Post-Conditions}{68}}
+\newlabel{sec:inside-quex/intro/post-conditions}{{A.1.1}{68}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.3}{\ignorespaces State machine matching a post condition pattern.}}{69}}
+\newlabel{fig:example-post-condition}{{A.3}{69}}
+\@writefile{toc}{\contentsline {subsubsection}{Pre-Conditions}{69}}
+\newlabel{sec:inside-quex/intro/pre-conditions}{{A.1.1}{69}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.4}{\ignorespaces Sequence of analysing steps detecting a post-conditioned pattern.}}{70}}
+\newlabel{fig:example-post-condition-sequence}{{A.4}{70}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.5}{\ignorespaces States of a post-conditioned pattern in the combined state machine.}}{70}}
+\newlabel{fig:post-conditions-merged}{{A.5}{70}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1.2}Generation Steps}{71}}
+\newlabel{sec:inside-quex/intro/generation-steps}{{A.1.2}{71}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}Thomson Construction}{72}}
+\newlabel{sec:inside-quex/thomson-construction/intro}{{A.2}{72}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2.1}Mounting State Machines in Sequence}{73}}
+\newlabel{sec:inside-quex/thomson-construction/serial}{{A.2.1}{73}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.6}{\ignorespaces Mounting two state machines in a sequence.}}{73}}
+\newlabel{fig:mount-sequential}{{A.6}{73}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2.2}Mounting State Machines in Parallel}{74}}
+\newlabel{sec:inside-quex/thomson-construction/parallel}{{A.2.2}{74}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.7}{\ignorespaces Mounting two state machines in parallel.}}{74}}
+\newlabel{fig:mount-parallel}{{A.7}{74}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2.3}Implementing Repeated State Machines}{74}}
+\newlabel{sec:inside-quex/thomson-construction/repetition}{{A.2.3}{74}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.8}{\ignorespaces Pattern repetion by Kleene Closure.}}{75}}
+\newlabel{fig:pattern-repeat-kleene-closure}{{A.8}{75}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.3}Labeling State Origins}{76}}
+\newlabel{sec:inside-quex/labeling-states}{{A.3}{76}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.4}Subset Construction---NFA to DFA}{78}}
+\newlabel{sec:inside-quex/NFA-to-DFA}{{A.4}{78}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.9}{\ignorespaces The $\epsilon $-closure.}}{79}}
+\newlabel{fig:epsilon-closure}{{A.9}{79}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.10}{\ignorespaces Transscription of a state set into a single state of an DFA.}}{80}}
+\newlabel{fig:NFA-to-DFA}{{A.10}{80}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.11}{\ignorespaces Combinations of follow-up states displayed against the code points of a character set -- similar to a time history}}{80}}
+\newlabel{fig:NFA-to-DFA-ranges}{{A.11}{80}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.5}Hopcroft Optimization}{82}}
+\newlabel{sec:inside-quex/hopcroft-optimization}{{A.5}{82}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.12}{\ignorespaces Combining equivalent states of a state machine.}}{83}}
+\newlabel{fig:hopcroft-1}{{A.12}{83}}
+\@writefile{lof}{\contentsline {figure}{\numberline {A.13}{\ignorespaces Combining equivalent states of a state machine with states of different origin.}}{84}}
+\newlabel{fig:hopcroft-2}{{A.13}{84}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.6}Code Generation}{85}}
+\newlabel{sec:inside-quex/code-generation/core}{{A.6}{85}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.1}State Transition Header}{87}}
+\newlabel{sec:inside-quex/code-generation/header}{{A.6.1}{87}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6.2}State Transition Triggering}{88}}
+\newlabel{sec:inside-quex/code-generation/state-transitions}{{A.6.2}{88}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}The Buffer}{91}}
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{sec:inside-quex/buffer/intro}{{B}{91}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces Structure of {{que{$\chi $}}}'s buffer.}}{91}}
+\newlabel{fig:basic-buffer}{{B.1}{91}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.1}Programming Interface}{92}}
+\newlabel{sec:inside-quex/buffer/API}{{B.1}{92}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}Mechanisms}{93}}
+\newlabel{sec:inside-quex/buffer/mechanisms}{{B.2}{93}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.2}{\ignorespaces Interaction of buffer and the lexical analyser state machine.}}{93}}
+\newlabel{fig:algorithm}{{B.2}{93}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.3}Loading from File}{94}}
+\newlabel{sec:inside-quex/buffer/load}{{B.3}{94}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.3}{\ignorespaces Loading new contents 'forwards' from the stream into the buffer.}}{94}}
+\newlabel{fig:load-forward}{{B.3}{94}}
+\gdef\scr@tpo@lst{0}
+\global\@altsecnumformattrue
+\@writefile{lof}{\contentsline {figure}{\numberline {B.4}{\ignorespaces Loading new contents 'backwards' from the stream into the buffer.}}{95}}
+\newlabel{fig:load-backward}{{B.4}{95}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.4}Creation of A Buffer Object}{95}}
+\newlabel{sec:inside-quex/buffer/constructor}{{B.4}{95}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.5}Input Methods}{96}}
+\newlabel{sec:inside-quex/buffer/input-methods}{{B.5}{96}}

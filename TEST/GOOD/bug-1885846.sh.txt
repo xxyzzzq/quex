@@ -1,1 +1,0 @@
-missing-regex-in-define.qx:3:error: Missing regular expression for pattern definition 'XXX'.

@@ -1,0 +1,73 @@
+\contentsline {chapter}{\numberline {1}Introduction}{5}
+\contentsline {section}{\numberline {1.1}Installation}{6}
+\contentsline {section}{\numberline {1.2}Licensing Information}{7}
+\contentsline {section}{\numberline {1.3}The Name of the Game}{8}
+\contentsline {chapter}{\numberline {2}Basics}{9}
+\contentsline {section}{\numberline {2.1}Pattern Matching}{9}
+\contentsline {section}{\numberline {2.2}The Token Queue}{10}
+\contentsline {section}{\numberline {2.3}Lexical Analysis Modes}{11}
+\contentsline {subsection}{\numberline {2.3.1}Mode Inheritance}{12}
+\contentsline {subsection}{\numberline {2.3.2}Mode Transitions}{14}
+\contentsline {section}{\numberline {2.4}Indentation}{16}
+\contentsline {section}{\numberline {2.5}Line and Column Counting}{17}
+\contentsline {section}{\numberline {2.6}Summary}{18}
+\contentsline {chapter}{\numberline {3}Practical Usage}{19}
+\contentsline {section}{\numberline {3.1}Patterns}{19}
+\contentsline {section}{\numberline {3.2}Token-ID}{20}
+\contentsline {section}{\numberline {3.3}Modes}{20}
+\contentsline {section}{\numberline {3.4}Pattern-Action Pairs}{24}
+\contentsline {section}{\numberline {3.5}Calling Quex}{26}
+\contentsline {section}{\numberline {3.6}Summary}{30}
+\contentsline {chapter}{\numberline {4}Formal Ussage}{33}
+\contentsline {section}{\numberline {4.1}Patterns}{33}
+\contentsline {subsection}{\numberline {4.1.1}Context Free Regular Expressions}{33}
+\contentsline {subsubsection}{Pitfalls}{36}
+\contentsline {subsection}{\numberline {4.1.2}Pre- and Post-Conditions}{36}
+\contentsline {subsubsection}{Pitfalls}{37}
+\contentsline {subsection}{\numberline {4.1.3}The Starting Mode {\tt start}}{39}
+\contentsline {section}{\numberline {4.2}Mode Characteristics}{39}
+\contentsline {section}{\numberline {4.3}Pattern-Action Pairs}{41}
+\contentsline {subsection}{\numberline {4.3.1}Pattern Action Shortcuts}{42}
+\contentsline {subsection}{\numberline {4.3.2}Priorities}{43}
+\contentsline {subsection}{\numberline {4.3.3}The Match Event}{45}
+\contentsline {section}{\numberline {4.4}Mode Transition Events}{46}
+\contentsline {subsection}{\numberline {4.4.1}Caveat}{47}
+\contentsline {section}{\numberline {4.5}Indentation Events}{47}
+\contentsline {section}{\numberline {4.6}Lexical Analyser Class}{48}
+\contentsline {subsection}{\numberline {4.6.1}General User Interface}{49}
+\contentsline {subsection}{\numberline {4.6.2}Mode Handling}{50}
+\contentsline {subsubsection}{Mode Objects}{51}
+\contentsline {subsection}{\numberline {4.6.3}Token Handling}{52}
+\contentsline {subsection}{\numberline {4.6.4}The Accumulator}{52}
+\contentsline {subsection}{\numberline {4.6.5}Class Body Extensions: {\tt body}}{52}
+\contentsline {subsection}{\numberline {4.6.6}Constructor Extensions: {\tt init}}{53}
+\contentsline {subsection}{\numberline {4.6.7}Including Files/Switching Buffers}{54}
+\contentsline {section}{\numberline {4.7}Character Encoding (Unicode Support)}{55}
+\contentsline {section}{\numberline {4.8}Pasting Header Information: {\tt header}}{56}
+\contentsline {section}{\numberline {4.9}Deriving from Lexical Analyser}{57}
+\contentsline {section}{\numberline {4.10}User defined Token Classes}{57}
+\contentsline {section}{\numberline {4.11}Summary of Code Sections}{59}
+\contentsline {section}{\numberline {4.12}Macro Switches}{59}
+\contentsline {section}{\numberline {4.13}Command Line Options}{60}
+\contentsline {chapter}{\numberline {A}{{Que{$\chi $}}} Intern: Generation of the Core Engine}{65}
+\contentsline {section}{\numberline {A.1}Introduction}{65}
+\contentsline {subsection}{\numberline {A.1.1}The Big Picture}{66}
+\contentsline {subsubsection}{Post-Conditions}{68}
+\contentsline {subsubsection}{Pre-Conditions}{69}
+\contentsline {subsection}{\numberline {A.1.2}Generation Steps}{71}
+\contentsline {section}{\numberline {A.2}Thomson Construction}{72}
+\contentsline {subsection}{\numberline {A.2.1}Mounting State Machines in Sequence}{73}
+\contentsline {subsection}{\numberline {A.2.2}Mounting State Machines in Parallel}{74}
+\contentsline {subsection}{\numberline {A.2.3}Implementing Repeated State Machines}{74}
+\contentsline {section}{\numberline {A.3}Labeling State Origins}{76}
+\contentsline {section}{\numberline {A.4}Subset Construction---NFA to DFA}{78}
+\contentsline {section}{\numberline {A.5}Hopcroft Optimization}{82}
+\contentsline {section}{\numberline {A.6}Code Generation}{85}
+\contentsline {subsection}{\numberline {A.6.1}State Transition Header}{87}
+\contentsline {subsection}{\numberline {A.6.2}State Transition Triggering}{88}
+\contentsline {chapter}{\numberline {B}The Buffer}{91}
+\contentsline {section}{\numberline {B.1}Programming Interface}{92}
+\contentsline {section}{\numberline {B.2}Mechanisms}{93}
+\contentsline {section}{\numberline {B.3}Loading from File}{94}
+\contentsline {section}{\numberline {B.4}Creation of A Buffer Object}{95}
+\contentsline {section}{\numberline {B.5}Input Methods}{96}

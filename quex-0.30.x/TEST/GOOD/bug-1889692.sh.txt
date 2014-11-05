@@ -1,0 +1,16 @@
+Use Case (1)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: End of file reached while parsing quoted string.
+
+Use Case (2)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-2.qx:3:warning: Token id 'TKN_A' defined implicitly.
+error-2.qx:4:error: Unbalanced '"', reached end of file before closing '"' was found.
+

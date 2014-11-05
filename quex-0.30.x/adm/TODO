@@ -1,0 +1,138 @@
+(*) 08y5m9d:
+
+    Ensure, that 'drop-outs' are in the else statement if possible, because
+    then they might be dropped easier, e.g.
+
+        if( input < 10) {
+            if( input != 9) {
+                goto STATE_155_DROP_OUT;    /* [-oo, \8] */
+            } else {
+                goto STATE_156;    /* '\t' */
+            }
+        } else {
+            goto STATE_155_DROP_OUT;
+        }
+
+    might become
+
+        if( input < 10) {
+            if( input == 9) {
+                goto STATE_156;    /* '\t' */
+            } else {
+                goto STATE_155_DROP_OUT;    /* [-oo, \8] */
+            }
+        } else {
+            goto STATE_155_DROP_OUT;
+        }
+
+    and thus:
+
+        if( input < 10) {
+            if( input == 9) {
+                goto STATE_156;    /* '\t' */
+            } 
+        }
+
+(*) 08y3m10d:
+
+    The constructor of the state machine allows for an initial acceptance state.
+    This does not make sense, since we would allow nothing to be fine and
+    the resulting lexical analyzer generator would be caught up in an 
+    endless loop. Later on in the process these state machines are 
+    forbidden anyway.
+
+(*) 08y3m2d:
+
+    Check buffer code for exception safety.
+
+(*) 08y2m24d:
+
+    ActionInfo objects can be immediately created at parsing time. 
+    Please, do so.
+
+(*) 07y12m28d:
+
+    There is an inconsistency with respect to drop out. sometimes
+    '-1' is used to indicate drop out, sometime 'None'. Unify this.
+
+(*) 07y12m17d:
+
+    When creating the backward iterator, delete recursions, i.e. if an 
+    acceptance state is reached, there is no need to go further. This is 
+    important because one needs to implement the 'greedy' approach,
+    where as many characters are swallowed as possible. This means that
+    one tries to enter the core pattern as less as possible. Practically
+    this has no significance since it cannot enter backwards because it 
+    does not interfere .... but it makes the machine a little smaller.
+
+(*) 07y12m11d:
+
+    Use the functions to determine fixed character count in order to handle
+    some backward detections (ambiguous post condition) with just one single
+    addition (instead of going backwards 3 times).
+
+(*) 07y12m1d:
+
+    When a trigger triggers to an empty non-acceptance state, it can be taken out.
+    This is so, since the 'remaining triggers' of a state trigger to non-acceptance
+    anyway---IF THE STATE ITSELF IS NOT ACCEPTANCE.
+
+    00125 <~ (34, 118)
+          == 'z' ==> 00126
+          == 'x' ==> 00127
+          <no epsilon>
+    00126* <~ (34, 119, S)
+          <no epsilon>
+    00127 <~ (34, 120)
+          <no epsilon>
+
+    The contrary holds probably if the state is acceptance and a trigger triggers
+    to an empty acceptance state.
+
+
+(*) 07y7m2d:
+
+    NOTE: Once, the solution for pseudo ambiguous post conditions is completed,
+          the following functions need to be revised:
+
+           get_fixed_number_of_newlines_to_acceptance 
+	       get_fixed_number_of_characters_to_acceptance
+
+
+(*) 07y7m2d:
+
+    Try to identify used and unused functions.
+
+
+(*) 07y5m17d:
+
+    check the unit test for get-backward-2, make a unit test for mark_lexeme_start
+    consider the placement of the lexeme start at buffer limits or _end_of_file_p!
+
+(*) 07y5m16:
+
+    The trivial pre-conditions, that run on the same scheme as the 
+    begin_of_line_pre-condition, i.e. they do not need a whole 
+    inverse state machine, but consider simply the last character
+    that was passed.
+
+(*) 07y4m30d
+    Rethink: Efficiency of quex::get_token(token&)
+
+    Many tokens are only interesting with respect to their ID, there
+    is no need to pass a Token-object or to fill it. How can this be 
+    dealt with? Consider communication scheme with the parser.
+
+    Gain: -- one pointer less to put on the stack for each detected token.
+          -- one copy less of a token object for each detected token.
+
+
+
+(*) 07y8m11d:
+
+    support **internal** codings other than ASCII, UCS-2 and UCS-4
+
+(*) 07y8m4d:
+
+    Unit tests for move_forward, move_backward in buffer handling.
+

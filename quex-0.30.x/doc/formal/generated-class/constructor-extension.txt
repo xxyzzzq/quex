@@ -1,0 +1,37 @@
+The last section discussed how additional contents can be pasted into the
+defintion of the class' body that represents the lexical analyser. Naturally,
+those new contents need to be initialized. This happens inside the constructor
+of the generated lexical analyser. Quex allows to specify additional
+content to be executed inside the constructor using the `init` keyword
+outside any mode definition. The following code fragment shows a setup as
+it might occur in a lexical analyser that supports indentation based 
+statement blocks:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+body {
+    std::vector<int>  indentation_stack;
+    bool              allow_opening_indentation_f;
+}
+
+init {
+    // first indentation at column = 0
+    self.indentation_stack.push_back(0);
+    // default: do not allow to open a sub-block.
+    // only function definitions, if statements, and for loops
+    // shoul allow to open a new indentation block in the next line.
+    self.allow_opening_indentation_f = false;
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `body` fragment adds an indentation stack as a member to keep track of
+line indentations. A second member variable tells if a higher indentation is
+supposed to appear that opens a statement block. These two variables need to
+be initialized. Therefore, the `init` fragment contains an initial block
+starting at column '0'. This indentation block cannot be closed (except by
+'end-of-file') because no column can have a negative indentation. Also, by
+default open sub-blocks is disallowed, so the correspondent member variable is
+set to `false`. This code fragment will then appear in any constructor
+of the generated lexical analyser class.
+
+

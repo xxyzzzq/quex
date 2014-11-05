@@ -1,0 +1,42 @@
+Figure <<fig:load-forward, style=ref>> shows the process of loading the buffer with fresh content in forward direction.
+Loading data from a device into a buffer is very costy. So, it is a good idea to introduce
+some fallback area where the end of the current buffer content is stored at the beginning.
+This prevents an immediate load backwards as soon as a character is required from before the
+current position. Also, since the current lexeme may be post-treated by some pattern action,
+the pointer to the lexeme start also has to lie inside the buffer. The maximum of both values defines the 
+fallback border. 
+	
+[[fig:load-forward]]
+.Loading new contents 'forwards' from the stream into the buffer.
+image::figures/load-forward.pdf[]
+
+The new content from the file is then stored behind this border. If an
+end of file occurs, internally an 'end of file pointer' is set to the position in the
+buffer where this occurs (most probably before the end of the buffer, but not necessarily).
+It is stored in a pointer, because it needs to be moved during backward loading. Running through the
+whole buffer searching for EOF would imply a tremendous slow-down.
+Also, the end of file character is stored at the position where end of
+file occured. This way, the`get\_forward()` function will return
+it and the state transition can react on it.
+
+The setting and unsetting of the buffer limit characters and end of
+file characters at the borders is handled by the load function. Basically, when a border
+of the buffer does not represent a begin or end of file, it is set to the buffer limit code character.
+Else, it contains either the begin of file or the end of file character. Note, that the
+begin of file character, if it occurs, occurs only at the begin of the buffer. The
+end of file character may occur at any position.
+
+[[fig:load-backward]]
+.Loading new contents 'backwards' from the stream into the buffer.
+image::figures/load-backward.pdf[]
+
+Figure <<fig:load-backward, style=ref>> shows the process of backward loading. Unlike loading forward not such a large amount
+of memory is newly loaded. Note, that backward loading is only necessary if the fallback buffer
+was not enough. Thus, it implies some 'abuse of design' that is caught and treated seeminglessly.
+However, a basic assumption about lexical analysis is that the main direction is`forward\/`.
+Instead of loading a large bunch of memory before the current position, loading backwards only
+loads about the first third of the buffer with backwards content from the file. The two thirds
+of buffer remain intact. Thus, when lexical analysis finally goes forward again, there is still
+much room before a forward loading is necessary.
+
+

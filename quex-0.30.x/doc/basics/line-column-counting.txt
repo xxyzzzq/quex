@@ -1,0 +1,30 @@
+Any compiler or lexical analyzer imposes rules on the text that is has to
+treat.  Most of thoses texts are written by humans and humans make sometimes
+errors and disrespect rules.  A gentle compiler tells its user about his
+errors and tells it also about the place where the error occured. Here line
+numbering becomes crucial. Additionally columns can be counted. This provides
+even more detailed information. 
+
+
+There is general default algorithm to count lines and columns which is always
+applied in case that there is no better alternative. Quex analyzes the patterns
+and adapts the way of counting lines and columns according to special
+characteristics\footnote{Actually, even the indentation count algorithm is
+    adapted to profit from knowledge about the patterns internal structure.}.
+    If the pattern contains for example a fixed number of newlines, than only a
+    fixed number is added and no newlines are counted at runtime. The
+    mechanisms for line and column counting are optimized for the most
+    'reasonable' pattern characteristics. There are strange
+    cases\footnote{Example: A pattern that contains a newline which is followed
+        by a fixed number of characters. The determination of this in the
+            context of post-conditions is complicated. On the other hand, such
+            patterns are considered strange and seldom, so the expected gain
+            with an optimized algorithm was considered neglectable by the
+            author.}, though, for which a slightly better counting mechanism
+            might be found. For reasonable applications as known from popular
+            programming languages the mechanisms of counting should be optimal.
+
+Note, that line and column counting can be turned off individually by pre-processor
+switches. By these switches the generated analyzer is 'naked' of any counting mechanism
+and it is likely that it runs a little faster. For serious applications, though, at least line number
+counting should be in place for error reporting.

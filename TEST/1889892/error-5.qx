@@ -1,4 +1,0 @@
-define {
-A X
-A Y    # Double definition shall be refused
-}

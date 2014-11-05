@@ -1,0 +1,7 @@
+token {
+A,
+B
+}
+mode START {
+"b" => TKN_B;
+}

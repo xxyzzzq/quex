@@ -1,6 +1,0 @@
-error.qx:6:warning: Detected implicit token identifier definitions. Proposal:
-error.qx:6:warning:    token {
-error.qx:6:warning:      WS;
-error.qx:6:warning:    }
-error.qx:6:warning: Pattern contains elements not found in engine codec 'unicode'.
-error.qx:6:warning: (Buffer element size is 1 [byte])

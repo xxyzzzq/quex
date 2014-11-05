@@ -1,1 +1,0 @@
-1      mini_1 big_1 2      mini_2 big_2  3      mini_3 big_3  who    

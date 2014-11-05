@@ -1,0 +1,16 @@
+// -*- C++ -*-
+mode ONE_AND_ONLY
+{
+    <<EOF>>   => TKN_TERMINATION;
+
+    "hey"                    => TKN_HEY________________(Lexeme);
+    "hallo"                  => TKN_HALLO______________(Lexeme);
+    [a-z]                    => TKN_LETTER_____________(Lexeme);
+    (hey)+/hey               => TKN_HEY_P___HEY________(Lexeme);
+    hey/(hey|hallo)+         => TKN_HEY_____HEY_HALLO_P(Lexeme);
+    (hey)+/((he[y]?)|hallo)+ => TKN_HEY_P___HEY_ETC____(Lexeme);
+    hey/hey                  => TKN_HEY_____HEY________(Lexeme);
+    heyhey                   => TKN_HEY_HEY____________(Lexeme);
+    [ \n]+                   => TKN_WHITESPACE();
+}
+

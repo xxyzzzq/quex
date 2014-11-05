@@ -1,7 +1,0 @@
-token {
-    X;
-}
-
-mode X {
-    "absd1|absd2|absd3|absd4|absd5|absd6|absd7|absd8|absd9|absd1|absd21|absd31|absd41|absd51|absd61|absd71|absd81|absd91|absd12|absd22|absd32|absd42|absd52|absd62|absd72|absd82|absd92|absd13|absd23|absd33|absd43|absd53|absd63|absd73|absd83|absd93|absd18|absd28|absd38|absd48|absd58|absd68|absd78|absd88|absd98|absd18|absd218|absd318|absd418|absd518|absd618|absd718|absd818|absd918|absd128|absd228|absd328|absd428|absd528|absd628|absd728|absd828|absd928|absd138|absd238|absd338|absd438|absd538|absd638|absd738|absd838|absd938|absd19|absd29|absd39|absd49|absd59|absd69|absd79|absd89|absd99|absd19|absd219|absd319|absd419|absd519|absd619|absd719|absd819|absd919|absd129|absd229|absd329|absd429|absd529|absd629|absd729|absd829|absd929|absd139|absd239|absd339|absd439|absd539|absd639|absd739|absd839|absd939|absd10|absd20|absd30|absd40|absd50|absd60|absd70|absd80|absd90|absd10|absd210|absd310|absd410|absd510|absd610|absd710|absd810|absd910|absd120|absd220|absd320|absd420|absd520|absd620|absd720|absd820|absd920|absd130|absd230|absd330|absd430|absd530|absd630|absd730|absd830|absd930" => QUEX_TKN_X;
-}

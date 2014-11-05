@@ -1,2 +1,0 @@
-command line: Quex requires ASCII or UTF8 input character format.
-command line: File 'utf16.qx' contains many '0' characters. Is it UTF16/UTF32 encoded?.

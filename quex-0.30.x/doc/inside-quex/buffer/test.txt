@@ -1,0 +1,26 @@
+\documentclass{book}
+\input{../../DOC/header.tex}
+
+
+
+\begin{document}
+\tableofcontents
+
+
+
+\mychapter{The Buffer}
+          {intro}
+
+\mysection{Programming Interface}
+          {API}
+
+\mysection{Mechanisms}
+          {mechanisms}
+	  
+\mysection{Loading from File}
+          {load}
+	  
+\mysection{Creation of A Buffer Object}
+          {constructor}
+   
+\end{document}

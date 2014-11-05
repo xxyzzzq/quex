@@ -1,0 +1,7 @@
+define {
+B "b"
+C {B
+}
+mode START {
+{B} => TKN_A;
+}

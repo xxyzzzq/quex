@@ -1,2 +1,0 @@
-token { FLOAT; }
-mode X { [0-9]+\.[0-9]+ => QUEX_TKN_FLOAT(Lexeme); }

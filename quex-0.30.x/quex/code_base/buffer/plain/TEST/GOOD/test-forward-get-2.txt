@@ -1,0 +1,38 @@
+|[S   :                         || 'L'
+|[La vie est belle.]||||||||||||||
+|[SC  :                         || 'a'
+|[La vie est belle.]||||||||||||||
+|[S C :                         || ' '
+|[La vie est belle.]||||||||||||||
+|[  SC:                         || 'v'
+|[La vie est belle.]||||||||||||||
+|[  S C                         || 'i'
+|[La vie est belle.]||||||||||||||
+|[  S :C                        || 'e'
+|[La vie est belle.]||||||||||||||
+|[  S : C                       || ' '
+|[La vie est belle.]||||||||||||||
+|[    : SC                      || 'e'
+|[La vie est belle.]||||||||||||||
+|[    : S C                     || 's'
+|[La vie est belle.]||||||||||||||
+|[    : S  C                    || 't'
+|[La vie est belle.]||||||||||||||
+|[    : S   C                   || ' '
+|[La vie est belle.]||||||||||||||
+|[    :     SC                  || 'b'
+|[La vie est belle.]||||||||||||||
+|[    :     S C                 || 'e'
+|[La vie est belle.]||||||||||||||
+|[    :     S  C                || 'l'
+|[La vie est belle.]||||||||||||||
+|[    :     S   C               || 'l'
+|[La vie est belle.]||||||||||||||
+|[    :     S    C              || 'e'
+|[La vie est belle.]||||||||||||||
+|[    :     S     C             || '.'
+|[La vie est belle.]||||||||||||||
+|[    :     S      C            || BLC
+|[La vie est belle.]||||||||||||||
+try load
+end of file

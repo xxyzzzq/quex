@@ -1,0 +1,90 @@
+From the given set of modes, quex creates a set of mode-information objects
+as members of the lexical analyser class. The names of the members are exactly
+the same names as the names of the modes. In the example of the last section,
+the following three objects are members of the class `tiny\_lexer`:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        END_OF_FILE_tag    END_OF_FILE;  
+        STRING_READER_tag  STRING_READER; 
+        PROGRAM_tag        PROGRAM;       
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The three classes `END\_OF\_FILE\_tag`, `STRING\_READER\_tag`, and
+`PROGRAM\_tag` are all derived from class `quex\_mode`. Thus pointers
+and references to them can do the job, whenever a pointer to a` 
+  quex\_mode` can. The lexical analyser class provides the following functions
+to access information about the current mode.
+
+
+ - `$$quex_mode&      mode();$$` 
+ - `$$const string&   mode_name() const;$$` 
+ - `$$const int       mode_id() const;$$` 
+
+The first function returns a reference to the mode-information object that
+represents the current mode. The second returns a
+string with the name of the current mode. Those member functions shall be
+accessed using the `self` member, i.e. for example
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     if( self.mode() != PROGRAM )
+         cerr << self.mode_name() << endl;      
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The third function `mode\_id()` returns a mode-identifier, i.e. an integer
+value that is unique for the current mode. This identifier was historically
+used by the flex generated engine under the hood. Since version 0.10.0 quex
+produces its own engine and does not rely on flex anymore. However, these ids
+might still be useful for administration of modes, or for tagging of tokens.
+The mode-ids can be mapped to mode objects using the member functions:
+
+  - `quex_mode&  map_mode_id_to_mode(const int          ModeID); ` 
+
+  - `const int   map_mode_to_mode_id(const quex_mode\& Mode) const`;
+
+A direct transition to another mode is initiated through the $<$$<$-operator or
+the function `enter\_mode()`, i.e.
+
+  - `void  operator<<(const int MODE_ID);` 
+  - `void  operator<<(quex_mode& Mode);` 
+  - `void  enter_mode(quex_mode& TargetMode)`;
+
+The operators return `void` deliberately because mode transitions are not
+thought to be done in concatination without pattern matching. If so, one can
+still write multiple mode transitions in a row. In any case of the three above
+the following three steps are guaranteed:
+
+  . Call `on\_exit` handler of current mode.
+  . Set the target mode.
+  . Call `on\_entry` handler of target mode.
+
+Additionally to direct mode transitions modes can be pushed and popped similar
+to subroutine calls (without arguments). This is provided by the functions:
+
+   - `void  push_mode(quex_mode& new_mode);` 
+   - `void  pop_mode();` 
+   - `void  pop_drop_mode();` 
+
+The member function `push\_mode(new\_mode)` pushed the current mode on a
+last-in-first-out stack and set the `new\_mode` as the current mode.  A
+call to `pop\_mode()` pops the last mode from the stack and sets it as the
+current mode. Note, that the mode transitions with push and pop follow the
+same mode transition procedure as for entering a mode directly. This means,
+that the `on\_exit` and `on\_entry` handler of the source and 
+target mode are called. The function `pop\_drop\_mode()` pops
+a mode from the mode-stack, but does not set it as current mode. It is
+rather dropped and forgotten.
+
+If one wants to avoid the call of exit and enter event handlers, then
+modes can also set brutally using the member functions:
+
+  - `void  set\_mode\_brutally(const int        LexerMode);`
+  - `void  set\_mode\_brutally(const quex\_mode\& Mode);`
+
+Using these functions only the current mode is adapted, but no event handlers
+are called. This also means that _mode transition control is turned off_.
+Inadmissible transitions triggered with these functions cannot be detected
+during run-time.
+
+

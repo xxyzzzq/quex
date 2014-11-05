@@ -1,0 +1,33 @@
+(1)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:2:warning: Token id 'TKN_A' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'BASE' as initial mode
+
+(2)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+warning: no initial mode defined via 'start'
+warning: using mode 'DERIVED' as initial mode
+error-2.qx:3:error: mode 'DERIVED' was allowed without <inheritable: only> despite it contains no matches
+error-2.qx:3:error: because it contains event handlers. Finally, though, it seems not want to inherit
+error-2.qx:3:error: any mode that contains matches. Therefore, it cannot act as a pattern detecting
+error-2.qx:3:error: state machine and cannot be a lexical analyzer mode.
+
+(3)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+warning: no initial mode defined via 'start'
+warning: using mode 'DERIVED' as initial mode
+error-3.qx:1:error: mode 'DERIVED' was allowed without <inheritable: only> despite it contains no matches
+error-3.qx:1:error: because it contains event handlers. Finally, though, it seems not want to inherit
+error-3.qx:1:error: any mode that contains matches. Therefore, it cannot act as a pattern detecting
+error-3.qx:1:error: state machine and cannot be a lexical analyzer mode.
+

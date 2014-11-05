@@ -1,0 +1,12 @@
+token {
+  ID
+}
+define {
+  P_IDC [: intersection(\P{XIDC}, [\x0-\XFBFF]) :]
+  P_ID  {P_IDC}+
+}
+start = START
+mode START {
+  {P_ID}  => TKN_ID;
+  <<EOF>> => TKN_TERMINATION;
+}

@@ -1,4 +1,0 @@
-interfere-skip.qx:4:error: The pattern '<skip>' matches on some common lexemes as
-interfere-skip.qx:4:error: pattern '[ ]+'.
-interfere-skip.qx:4:error: ('--suppress 3' to avoid this message)
-

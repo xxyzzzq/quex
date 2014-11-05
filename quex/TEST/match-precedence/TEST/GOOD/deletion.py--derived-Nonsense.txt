@@ -1,5 +1,0 @@
-<string>:1:warning: DELETION mark does not have any effect.
-Mode: 'X'
-(0) A {a}
-Mode: 'Y'
-(0) A {a}

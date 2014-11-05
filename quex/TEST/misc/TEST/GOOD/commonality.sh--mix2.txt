@@ -1,4 +1,0 @@
-interfere-mix2.qx:4:error: The pattern '<skip>' matches on some common lexemes as
-interfere-mix2.qx:3:error: pattern '<skip_range>'.
-interfere-mix2.qx:3:error: ('--suppress 3' to avoid this message)
-

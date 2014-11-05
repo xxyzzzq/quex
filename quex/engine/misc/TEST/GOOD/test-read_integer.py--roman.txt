@@ -1,8 +1,0 @@
-0rMDCLXVI  -->  1666 True
-0rMMMMDCCXI -->  4711 True
-0rMXXIV    -->  1024 True
-0rMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMDXXXVI -->  65536 True
-0rG        -->  command line:1:error: Missing digits after for number of base roman, found 'G'.
-
-0rI        -->  1 True
-0rX        -->  10 True

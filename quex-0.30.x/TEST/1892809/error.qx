@@ -1,0 +1,17 @@
+define {
+    A \x041
+    B \X00042
+    C \U0000043
+    D \x44
+    E \X0045
+    F \U000046
+}
+
+mode X {
+    {A} => TKN_A();
+    {B} => TKN_B();
+    {C} => TKN_C();
+    {D} => TKN_D();
+    {E} => TKN_E();
+    {F} => TKN_F();
+}

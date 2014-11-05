@@ -1,0 +1,1 @@
+argv[0] == 'EOFC=0_BOFC=1_BLC=2' --- unrecognized choice

@@ -1,1 +1,0 @@
-eins /* alpha */ zwei /** beta */ drei /* caesar **/ vier /** dora **/ fuenf /* emil ***/ sechs /* friedrich ****/.

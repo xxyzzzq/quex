@@ -1,0 +1,25 @@
+// -*- C++ -*-
+
+token {
+   INCLUDE
+   IDENTIFIER
+   BRACKET_OPEN
+   BRACKET_CLOSE
+   NUMBER
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>>     => TKN_TERMINATION;
+
+    "("         => TKN_BRACKET_OPEN;
+    ")"         => TKN_BRACKET_CLOSE;
+    //
+    "include"   => TKN_INCLUDE;
+    //
+    ([_a-zA-Z]|("/"|"."|"'"))+  => TKN_IDENTIFIER(Lexeme); 
+    [ \t\r\n]+                  { }
+}
+
+
+

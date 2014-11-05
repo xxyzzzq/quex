@@ -1,0 +1,228 @@
+// -*- C++ -*-    vim: set syntax=cpp:
+//
+// Token handling is **very** time critical ! We have two types of tokens:
+//
+//   class Token: a token as presented to the 'parser' for example.
+//                such tokens are reference counted. they can therefore
+//                be copied arround very efficiently and speedy.
+//
+//   Both classes share the Token_data_core, i.e. the content of a token
+//   is in both cases the same and defined in the base class of both
+//   token classes.
+//
+//
+//   (C) 2006-2008 Frank R. Schaefer
+//////////////////////////////////////////////////////////////////////////////////////////
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN__
+#define __INCLUDE_GUARD__QUEX__TOKEN__
+
+// Depends on 'QUEX_CHARACTER_TYPE' being defined!
+
+#include<iostream>
+#include<string>
+#include <quex/code_base/definitions>
+
+namespace quex {
+
+    class Token {
+    public:
+        // Quex Token Policy: _____________________________________________________
+        static const QUEX_TOKEN_ID_TYPE ID_UNINITIALIZED = -1;  // token-id for 'uninitialized'	
+        static const QUEX_TOKEN_ID_TYPE ID_TERMINATION   = 0;   // token-id for 'termination'	
+        // NOTE: Returning '0' is almost standard for this token! Think trice,
+        //       before choosing a difrent value! You might run into trouble with
+        //       your parser generator.
+        static const std::string&  map_id_to_name(QUEX_TOKEN_ID_TYPE);
+        //_________________________________________________________________________
+
+    private:
+        typedef std::basic_string<QUEX_CHARACTER_TYPE> __string;
+
+        QUEX_TOKEN_ID_TYPE     _id;
+        __string           _text;
+        int                _number;
+
+    public:
+        Token() {} 
+        Token(const Token& That) { __copy(That); }     
+
+        // note, that tokens are created in a bunch on the token stack and only
+        // set with the .set(..) functions when pushed.
+        //
+        Token(QUEX_TOKEN_ID_TYPE ID, const QUEX_CHARACTER_TYPE* Text) { set(ID, Text); }
+
+        // (*) convert data to string
+        const __string   type_string() const;
+        operator         const std::string() const;
+        __string         xml(const int Depth) const;
+
+
+        // (*) member acces
+        //     -- read
+        const QUEX_TOKEN_ID_TYPE  type_id() const      { return _id; }
+        const std::string&        type_id_name() const { return map_id_to_name(_id); }
+        const __string&           text() const         { return _text; }
+        const int                 number()             { return _number; }
+
+        //     -- write 
+        void    set(QUEX_TOKEN_ID_TYPE ID);
+        void    set(QUEX_TOKEN_ID_TYPE ID, const QUEX_CHARACTER_TYPE* Text);
+        void    set(QUEX_TOKEN_ID_TYPE ID, const int   Number1);
+
+    private:
+        void __copy(const Token& That);
+    };
+
+    inline int unicode_to_utf8(int UCS_CharacterCode, uint8_t* utf8_result);
+
+    inline void 
+        Token::__copy(const Token& That) 
+        {
+            _id     = That._id;
+            _text   = That._text;
+            _number = That._number;
+        }
+
+    inline void    
+        Token::set(QUEX_TOKEN_ID_TYPE Type, const QUEX_CHARACTER_TYPE* Text)
+        { _id = Type; _text = __string(Text); }
+
+    inline void    
+        Token::set(QUEX_TOKEN_ID_TYPE Type, const int Number1)
+        { _id = Type; _number = Number1; }
+
+    inline void    
+        Token::set(QUEX_TOKEN_ID_TYPE Type) 
+        { _id = Type; }
+
+    inline std::ostream&
+        operator<<(std::ostream& ostr, const Token& Tok)
+        { ostr << std::string(Tok); return ostr; }
+
+    inline
+        Token::operator const std::string() const
+        {
+            uint8_t                 utf8[7];
+            int                     utf8_length = -1;
+            std::string             tmp;
+            __string                tmp2 = _text;
+            std::string::size_type  pos  = 0;
+            // const char   dummy[64];
+
+            tmp = map_id_to_name(this->_id);
+
+            if( tmp2.length() > 32 ) tmp2 = tmp2.substr(0, 32);
+
+            // Convert Character To UTF-8
+            tmp += " '";
+            for(__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
+                utf8_length = unicode_to_utf8(*it, utf8);
+                if( utf8_length < 0 || utf8_length > 6) continue;
+                utf8[utf8_length] = '\0';
+                tmp += std::string((const char*)utf8);        
+            }
+            tmp += "' ";
+
+            while( (pos = tmp.find("\n") ) != __string::npos )
+                tmp.replace(pos, 1, std::string("\\n"));
+            while( (pos = tmp.find("\t") ) != __string::npos ) 
+                tmp.replace(pos, 1, std::string("\\t"));
+
+            return tmp;
+        }
+
+    inline int unicode_to_utf8(int UCS_CharacterCode, uint8_t* utf8_result)
+    {
+        // PURPOSE: This function converts the specified unicode character
+        //          into its utf8 representation. The result is stored
+        //          at the location where utf8_result points to. Thus, the
+        //          user has to make sure, that enough space is allocated!
+        //
+        // NOTE:    For general applicability let utf8_result point to a space
+        //          of 7 bytes! This way you can store always a terminating
+        //          zero after the last byte of the representation.
+        //
+        // RETURNS: Number of bytes that was required to convert the character
+        //          into its utf8 representation.
+        //
+        // ACKNOWLEDGEMENT: The following function was derived from segments of the
+        // utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.
+        //
+        const uint8_t NEXT	= 0x80;
+        const uint8_t LEN2	= 0xc0;
+        const uint8_t LEN3	= 0xe0;
+        const uint8_t LEN4	= 0xf0;
+        const uint8_t LEN5	= 0xf8;
+        const uint8_t LEN6	= 0xfc;
+        //
+        uint8_t*  p = utf8_result;
+        size_t    n = 0;
+
+        __quex_assert(UCS_CharacterCode >= 0);
+
+        // cannot convert surrogate pairs
+        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return -1;
+
+        // Determine number of bytes in the utf8 representation of the character
+        if      (UCS_CharacterCode <= 0x0000007f)       n = 1;
+        else if (UCS_CharacterCode <= 0x000007ff)       n = 2;
+        else if (UCS_CharacterCode <= 0x0000ffff)       n = 3;
+        else if (UCS_CharacterCode <= 0x001fffff)       n = 4;
+        else if (UCS_CharacterCode <= 0x03ffffff)       n = 5;
+        else /* if (UCS_CharacterCode <= 0x7fffffff) */ n = 6;
+
+        /* make it work under different endians */
+        uint8_t byte3 = (UCS_CharacterCode & 0xFF);
+        uint8_t byte2 = (UCS_CharacterCode & 0xFF00) >> 8;
+        uint8_t byte1 = (UCS_CharacterCode & 0xFF0000) >> 16;
+        uint8_t byte0 = (UCS_CharacterCode & 0xFF000000) >> 24;
+
+        switch (n) {
+        case 1:
+            *p = UCS_CharacterCode;
+            break;
+
+        case 2:
+            p[1] = NEXT | (byte3 & 0x3f);
+            p[0] = LEN2 | (byte3 >> 6) | ((byte2 & 0x07) << 2);
+            break;
+
+        case 3:
+            p[2] = NEXT | (byte3 & 0x3f);
+            p[1] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
+            p[0] = LEN3 | ((byte2 & 0xf0) >> 4);
+            break;
+
+        case 4:
+            p[3] = NEXT | (byte3 & 0x3f);
+            p[2] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
+            p[1] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
+            p[0] = LEN4 | ((byte1 & 0x1f) >> 2);
+            break;
+
+        case 5:
+            p[4] = NEXT | (byte3 & 0x3f);
+            p[3] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
+            p[2] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
+            p[1] = NEXT | (byte1 >> 2);
+            p[0] = LEN5 | (byte0 & 0x03);
+            break;
+
+        case 6:
+            p[5] = NEXT | (byte3 & 0x3f);
+            p[4] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
+            p[3] = NEXT | (byte2 >> 4) | ((byte1 & 0x03) << 4);
+            p[2] = NEXT | (byte1 >> 2);
+            p[1] = NEXT | (byte0 & 0x3f);
+            p[0] = LEN6 | ((byte0 & 0x40) >> 6);
+            break;
+        }
+
+        // NOTE: Do not check here for forbitten UTF-8 characters.
+        // They cannot appear here because we do proper convertion.
+        return n;
+    }
+
+}
+
+#endif // #define __INCLUDE_GUARD__QUEX__TOKEN__

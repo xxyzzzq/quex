@@ -1,3 +1,0 @@
-error.qx:4:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
-error.qx:4:warning: <inheritable: only> has been set automatically.
-command line: No mode that can be implemented--all modes <inheritable: only>.

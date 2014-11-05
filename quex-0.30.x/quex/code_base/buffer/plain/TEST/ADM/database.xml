@@ -1,0 +1,23 @@
+<test-database execution-time-sec="0.02" date="Mon Jul  7 08:48:33 2008">
+    <last-used-diff-display-program name=""/>
+    <test title="Backwards Iteration" make-required="True" time-sum-sec="0.01"> 
+        <application file-name="test-backward-get" info-request-time="1215055708L"/>
+        <make-procedure success="True" />
+        <choice-list number="3">
+           <choice name="BLC=0" result="OK" time-sec="0.00" crc="1430500599"/>
+           <choice name="BLC=1" result="OK" time-sec="0.00" crc="1430500599"/>
+           <choice name="BLC=0xFF" result="OK" time-sec="0.00" crc="1430500599"/>
+        </choice-list>
+    </test>
+    <group name="Forward Iteration">
+        <test title="Multiple Loads." make-required="True" time-sum-sec="0.01"> 
+            <application file-name="test-forward-get" info-request-time="1215055708L"/>
+            <make-procedure success="True" />
+            <choice-list number="3">
+               <choice name="BLC=0" result="OK" time-sec="0.00" crc="1580015112"/>
+               <choice name="BLC=1" result="OK" time-sec="0.00" crc="1580015112"/>
+               <choice name="BLC=0xFF" result="OK" time-sec="0.00" crc="1580015112"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

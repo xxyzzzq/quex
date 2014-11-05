@@ -1,0 +1,62 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
+
+#include<cstdlib>
+#include<quex/code_base/compatibility/inttypes.h>
+
+#ifndef QUEX_TOKEN_ID_TYPE
+#   define QUEX_TOKEN_ID_TYPE  uint32_t
+#endif
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   define QUEX_INLINE_KEYWORD     inline
+    /* Input handle type is determined automagically via templates */
+#else
+#   define QUEX_INLINE_KEYWORD     static
+#   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
+#   ifndef QUEX_CHARACTER_TYPE
+#      define QUEX_CHARACTER_TYPE  /* inttypes' */ uint8_t   
+#   endif
+#endif
+
+#ifndef  QUEX_SETTING_BUFFER_LIMIT_CODE
+#   define  QUEX_SETTING_BUFFER_LIMIT_CODE  0x0
+#endif
+
+/* Detect the compiler */
+#if    defined(__GNUC__) \
+    && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
+#    if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+#        define __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#    endif
+#endif
+
+/* Support of computed goto */
+#ifdef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+    typedef  void*    QUEX_GOTO_LABEL_TYPE;
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       &&TERMINAL_DEFAULT
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (0x0)
+#   define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
+#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
+#   define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
+#   define QUEX_GOTO_last_acceptance()               goto *last_acceptance;
+
+#else
+    typedef  uint32_t QUEX_GOTO_LABEL_TYPE;
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (-1)
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (-1)
+#   define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
+#   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
+#   define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
+#   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
+#endif
+
+/* Return type of analyser function */
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+    typedef void                 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
+#else
+    typedef QUEX_TOKEN_ID_TYPE   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
+#endif
+
+#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__

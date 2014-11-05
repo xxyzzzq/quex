@@ -1,5 +1,0 @@
-token { A; }
-define {
-}
-
-mode Hallo { }

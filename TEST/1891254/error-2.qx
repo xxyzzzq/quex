@@ -1,3 +1,0 @@
-mode START {
-? => QUEX_TKN_A;
-}

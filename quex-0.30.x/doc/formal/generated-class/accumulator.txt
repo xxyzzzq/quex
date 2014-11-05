@@ -1,0 +1,21 @@
+The `accumulator` is a member that allows to stock strings to communicate
+them between pattern-actions. In the practical example in section
+\ref{sec:practical/intro} the string contained in string delimiter marks is
+accumulated until the `on\_exit` handler was activated, i.e. the` 
+    STRING\_READER` mode is left. Insider the handler, the string is flushed
+    into a token with a specific id `TKN\_STRING`.  The accumulator
+    provides the following functions:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  void   add(const char*);                  
+  void   add(const char);                    
+  void   flush(const token::id\_type TokenID);
+  void   clear(); 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `add`-functions add a string or a character to the accumulated string,
+the `flush()` function sends a token with the accumulated string and the
+specified token-id. Finally, the `clear()` function clears the accumulated
+string without sending any token.
+

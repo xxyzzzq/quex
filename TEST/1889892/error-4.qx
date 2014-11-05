@@ -1,6 +1,0 @@
-token { A; }
-define {
-A \0
-}
-
-mode MINE { {A} {}}

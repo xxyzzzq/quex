@@ -1,0 +1,88 @@
+---------------------------------------------------------
+core pattern            = ab
+post condition pattern  = ab
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = ab
+post condition pattern  = ab
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = a(b)*
+post condition pattern  = ab
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = ab
+post condition pattern  = a(b)*
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = (a)+
+post condition pattern  = ab
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = ab
+post condition pattern  = (a)+
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = "xyz"
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = "xyz"
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = True ,  True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = True ,  True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = [a-z]{4}
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = [a-z]{4}
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = ("abc"|"xyz")
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = ("abc"|"xyz")
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = "xyz"+
+post condition pattern  = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+post condition pattern  = "xyz"+
+ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = ("abc"+|"xyz")+
+post condition pattern  = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = ("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))
+post condition pattern  = ("abc"+|"xyz")+
+ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = ("xyz")+hello
+post condition pattern  = "xyz"hello
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = "xyz"hello
+post condition pattern  = ("xyz")+hello
+ambiguity (fw), (bw)    = False ,  False
+---------------------------------------------------------
+core pattern            = (("xyz")+hello)+
+post condition pattern  = "xyz"hello
+ambiguity (fw), (bw)    = True ,  False
+---------------------------------------------------------
+core pattern            = "xyz"hello
+post condition pattern  = (("xyz")+hello)+
+ambiguity (fw), (bw)    = False ,  True

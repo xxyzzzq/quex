@@ -1,0 +1,18 @@
+The last chapter provided a functioning example for the usage of quex.  At
+this point the user should have a clear idea about the basic concepts and how
+they are applied. This chapter discusses the details of usage and minor
+features that may not have been mentioned in the previous chapters. The first
+sections discuss the specification of patterns, mode characteristics,
+pattern-action pairs, and mode transitions. Section
+\ref{sec:formal/generated-class} discusses the lexical analyser class that
+quex creates with all members and member functions that the user might want
+to use.
+
+In some cases, the provided functionality of the generated lexical analyser
+class might not be sufficient, so section \ref{sec:formal/derivation}
+discusses the formalities to implement a derived class and its usage. The
+generated code contains some macro switches that allow to control the behavior of
+the analyser at compile time. Section \ref{sec:formal/macros} discusses the
+usage of those macros. Finally, section \ref{sec:formal/command-line-options}
+explains all command line arguments that can be passed to quex.
+

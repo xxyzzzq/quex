@@ -1,0 +1,14 @@
+(1)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:3:error: missing code fragment after S::on_entry event handler definition.
+
+(2)
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-2.qx:1:error: missing identifier at beginning of mode definition.
+
