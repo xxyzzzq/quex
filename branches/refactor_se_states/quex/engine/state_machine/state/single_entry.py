@@ -13,12 +13,6 @@ class SingleEntry(object):
         result.merge(Iterable)
         return result
 
-    @staticmethod
-    def from_one(Operation):
-        result = SingleEntry()
-        result.__list.append(Operation)
-        return result
-
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
         return SingleEntry.from_iterable(x.clone(ReplDbPreContext=ReplDbPreContext, ReplDbAcceptance=ReplDbAcceptance) for x in self.__list)
 
@@ -50,20 +44,17 @@ class SingleEntry(object):
             return
         self.__list.append(Origin.clone())
 
-    def get_the_only_one(self):
-        """Returns a origin that belongs to the list. If there is no origin on
-           the list, then one is created and then returned.
-        """
-        L = len(self.__list)
-        if   L == 0: 
-            new_origin = StateOperation(E_IncidenceIDs.MATCH_FAILURE, -1L, AcceptanceF=False)
-            self.__list.append(new_origin)
-            # NOTE: Here the object is in a state where there is a 'nonsense origin'. It is
-            #       expected from the caller to fix this.
-            return new_origin
+    def has_acceptance_id(self, AcceptanceID):
+        for cmd in self:
+            if cmd.__class__ == Accept and cmd.acceptance_id() == AcceptanceID:
+                return True
+        return False
 
-        assert L == 1, "Calling function not permitted on aggregated states. len(self.__list) == %s" % len(self.__list)
-        return self.__list[0]
+    def has_begin_of_line_pre_context(self):
+        for cmd in self:
+            if cmd.__class__ == Accept and cmd.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE:
+                return True
+        return False
 
     def hopcroft_combinability_key(self):
         """Two states have the same hopcroft-combinability key, if and only if

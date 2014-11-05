@@ -187,8 +187,8 @@ class CharacterSetStateMachine:
             if TriggerSet.is_empty(): return
             target_state_index = sm.add_transition(StateIndex, TriggerSet)
             target_state       = sm.states[target_state_index]
-            target_state.mark_self_as_origin(IncidenceId, target_state_index)
-            target_state.set_acceptance(True)
+            target_state.set_acceptance()
+            target_state.mark_acceptance_id(IncidenceId)
 
         sm = StateMachine()
         for character_set, incidence_id in IncidenceIdMap:
