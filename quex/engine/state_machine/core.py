@@ -368,9 +368,16 @@ class StateMachine(object):
 
     def get_acceptance_state_index_list(self, AcceptanceID=None):
         if AcceptanceID is None:
-            return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
-        else:
-            return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.single_entry.get_the_only_one().acceptance_id() == AcceptanceID ]
+            return [ 
+                index for index, state in self.states.iteritems() 
+                      if state.is_acceptance() 
+            ]
+
+        return [ 
+            index for index, state in self.states.iteritems() 
+                  if     state.is_acceptance() 
+                     and state.single_entry.has_acceptance_id(AcceptanceID) 
+        ]
 
     def get_to_db(self):
         """RETURNS:
@@ -764,7 +771,7 @@ class StateMachine(object):
         else:                          state_machine_id = OtherStateMachineID
 
         for state_idx, state in self.states.items():
-            state.mark_self_as_origin(state_machine_id, state_idx)
+            state.mark_acceptance_id(state_machine_id)
 
     def mount_to_acceptance_states(self, MountedStateIdx, 
                                    CancelStartAcceptanceStateF=True):
