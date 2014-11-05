@@ -1,0 +1,29 @@
+customized_codec.qx:25:warning: Pattern contains elements not found in engine codec 'customized_codec'.
+customized_codec.qx:25:warning: (Buffer element size is 1 [byte])
+ *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf8)(...)
+ *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf16)(...)
+ *    QUEX_CONVERTER_CHAR_DEF(customized_codec, utf32)(...)
+ *    QUEX_CONVERTER_CHAR_DEF(customized_codec, char)(...)
+ *    QUEX_CONVERTER_CHAR_DEF(customized_codec, wchar_t)(...)
+ *    QUEX_CONVERTER_STRING_DEF(customized_codec, utf8)(...)     for string and buffer 
+ *    QUEX_CONVERTER_STRING_DEF(customized_codec, utf16)(...)    for string and buffer 
+ *    QUEX_CONVERTER_STRING_DEF(customized_codec, utf32)(...)    for string and buffer 
+ *    QUEX_CONVERTER_STRING_DEF(customized_codec, char)(...)     for string and buffer 
+ *    QUEX_CONVERTER_STRING_DEF(customized_codec, wchar_t)(...)  for string and buffer 
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec__) \
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec__
+#define __QUEX_FROM                customized_codec
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec__ */
+ * FROM the buffer's customized_codec to utf8, utf16, utf32, char, and wchar_t.
+ * (1) Implement the character converters from buffer's customized_codec to 
+ * (1b) Derive the converts from customized_codec to char and wchar_t from
+#if    ! defined(__QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec_I) \
+#        define  __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec_I
+#include "Simple-converter-customized_codec"
+QUEX_CONVERTER_CHAR_DEF(customized_codec, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+QUEX_CONVERTER_CHAR_DEF(customized_codec, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+    QUEX_CONVERTER_CHAR(customized_codec, utf32)(input_pp, &unicode_p);
+QUEX_CONVERTER_CHAR_DEF(customized_codec, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+#define __QUEX_FROM           customized_codec
+#endif /* __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__customized_codec_I */
+

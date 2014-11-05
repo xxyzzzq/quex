@@ -1,0 +1,2 @@
+token { EMPTY; }
+mode X : <skip_nested_range: "/*" "*/"> { "/*-" => QUEX_TKN_EMPTY; }

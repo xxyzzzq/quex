@@ -1,0 +1,32 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+    
+00001 
+     == 'x' ==> 00002
+    
+00002 A(1)
+    
+
+State 0:
+  .entry:
+    .from NONE: 
+
+.drop_out:
+QuexAssertNoPassage
+
+State 1:
+  .entry:
+    .from 0: 
+
+.drop_out:
+QuexAssertNoPassage
+
+State 2:
+  .entry:
+    .from 1: 
+
+.drop_out:
+QuexDebug: { string=pattern 0: backward input position detected\n,  }
+InputPIncrement
+GotoDoorId: DoorID(s=21, d=BIPD_RETURN)

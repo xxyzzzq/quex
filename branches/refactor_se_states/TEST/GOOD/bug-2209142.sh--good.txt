@@ -1,0 +1,44 @@
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+## An Assert-Abortion might be an intended element of the experiment.
+(1, 1)  	IDENTIFIER 'eins' 
+(1, 5)  	WHITESPACE '' 
+(1, 6)  	COMMENT '' 
+(1, 17)  	WHITESPACE '' 
+(1, 18)  	IDENTIFIER 'zwei' 
+(1, 22)  	WHITESPACE '' 
+(1, 23)  	COMMENT '' 
+(1, 34)  	WHITESPACE '' 
+(1, 35)  	IDENTIFIER 'drei' 
+(1, 39)  	WHITESPACE '' 
+(1, 40)  	COMMENT '' 
+(1, 53)  	WHITESPACE '' 
+(1, 54)  	IDENTIFIER 'vier' 
+(1, 58)  	WHITESPACE '' 
+(1, 59)  	COMMENT '' 
+(1, 71)  	WHITESPACE '' 
+(1, 72)  	IDENTIFIER 'fuenf' 
+(1, 77)  	WHITESPACE '' 
+(1, 78)  	COMMENT '' 
+(1, 90)  	WHITESPACE '' 
+(1, 91)  	IDENTIFIER 'sechs' 
+(1, 96)  	WHITESPACE '' 
+(1, 97)  	COMMENT '' 
+Simple.cpp:683:	terminate called after throwing an instance of 'std::runtime_error'
+  what():  
+    Match failure in mode 'ALL'.
+    No 'on_failure' section provided for this mode.
+    Proposal: Define 'on_failure' and analyze 'Lexeme'.
+
+clean

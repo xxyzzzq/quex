@@ -1,0 +1,44 @@
+
+(*) Intervals over borders 1
+
+    [000000,000081) --> 1000000
+
+    [0] at 00000000: Codec Interval [1000000,1000080)
+    [1] at 00000080: Codec Interval [1000080,1000081)
+
+(*) Intervals over borders 2
+
+    [000081,000801) --> 2000081
+
+    [1] at 00000081: Codec Interval [2000081,2000800)
+    [2] at 00000800: Codec Interval [2000800,2000801)
+
+(*) Intervals over borders 3
+
+    [000801,010001) --> 3000801
+
+    [2] at 00000801: Codec Interval [3000801,3010000)
+    [3] at 00010000: Codec Interval [3010000,3010001)
+
+(*) Intervals over borders 4
+
+    [010001,200001) --> 4010001
+
+    [3] at 00010001: Codec Interval [4010001,4200000)
+    [4] at 00200000: Codec Interval [4200000,4200001)
+
+(*) Intervals over borders (all)
+
+    [000000,000081) --> 1000000
+    [000081,000801) --> 2000081
+    [000801,010001) --> 3000801
+    [010001,200001) --> 4010001
+
+    [0] at 00000000: Codec Interval [1000000,1000080)
+    [1] at 00000080: Codec Interval [1000080,1000081)
+    [1] at 00000081: Codec Interval [2000081,2000800)
+    [2] at 00000800: Codec Interval [2000800,2000801)
+    [2] at 00000801: Codec Interval [3000801,3010000)
+    [3] at 00010000: Codec Interval [3010000,3010001)
+    [3] at 00010001: Codec Interval [4010001,4200000)
+    [4] at 00200000: Codec Interval [4200000,4200001)

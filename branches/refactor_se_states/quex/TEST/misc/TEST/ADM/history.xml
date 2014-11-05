@@ -1,0 +1,70 @@
+<history date="Tue Nov  4 23:25:40 2014" element-n="34">
+    <day year="2011" month="02" day="10">
+        <history-init time="20:32:09"/>
+    </day>
+    <day year="2011" month="02" day="13">
+        <crc-error time="07:07:32" application="comment.sh" choice="" database-crc="-1663713497" real-crc="-868935868"/>
+    </day>
+    <day year="2011" month="03" day="18">
+        <crc-error time="06:45:06" application="comment.sh" choice="" database-crc="683586817" real-crc="-244584835"/>
+        <crc-error time="06:45:15" application="comment.sh" choice="" database-crc="-244584835" real-crc="248321084"/>
+        <crc-error time="06:45:45" application="comment.sh" choice="" database-crc="248321084" real-crc="977201913"/>
+    </day>
+    <day year="2011" month="10" day="07">
+        <crc-error time="06:11:47" application="debug_show.sh" choice="" database-crc="-218739515" real-crc="-1401362288"/>
+    </day>
+    <day year="2011" month="10" day="21">
+        <crc-error time="20:56:57" application="comment.sh" choice="" database-crc="592330964" real-crc="-989588451"/>
+    </day>
+    <day year="2012" month="02" day="19">
+        <crc-error time="06:25:48" application="debug_show.sh" choice="" database-crc="1416435023" real-crc="-358434626"/>
+    </day>
+    <day year="2012" month="02" day="27">
+        <crc-error time="22:19:09" application="debug_show.sh" choice="" database-crc="2104957585" real-crc="1894641361"/>
+    </day>
+    <day year="2012" month="02" day="29">
+        <crc-error time="07:11:05" application="debug_show.sh" choice="" database-crc="1134940786" real-crc="310378258"/>
+    </day>
+    <day year="2012" month="03" day="14">
+        <crc-error time="07:00:41" application="customized_codec.sh" choice="" database-crc="1025570625" real-crc="1446890530"/>
+    </day>
+    <day year="2012" month="03" day="24">
+        <crc-error time="05:55:19" application="customized_codec.sh" choice="" database-crc="271317904" real-crc="650831960"/>
+    </day>
+    <day year="2012" month="04" day="30">
+        <crc-error time="23:28:23" application="commonality.sh" choice="skip" database-crc="484539934" real-crc="-1206532317"/>
+        <crc-error time="23:28:37" application="commonality.sh" choice="skip_range" database-crc="618632385" real-crc="990727274"/>
+        <crc-error time="23:28:46" application="commonality.sh" choice="skip_nested_range" database-crc="-1328238844" real-crc="-1390754149"/>
+        <crc-error time="23:29:28" application="outrun.sh" choice="" database-crc="613632710" real-crc="-1663477159"/>
+    </day>
+    <day year="2012" month="05" day="03">
+        <crc-error time="19:03:37" application="commonality.sh" choice="skip_range" database-crc="990727274" real-crc="866845879"/>
+        <crc-error time="19:04:02" application="commonality.sh" choice="skip" database-crc="-1206532317" real-crc="-1846901022"/>
+        <crc-error time="19:04:25" application="commonality.sh" choice="skip_nested_range" database-crc="-1390754149" real-crc="1031458892"/>
+        <crc-error time="19:05:26" application="commonality.sh" choice="skip_nested_range" database-crc="1031458892" real-crc="1543015886"/>
+        <crc-error time="19:05:48" application="commonality.sh" choice="mix2" database-crc="-1551530639" real-crc="-1229871854"/>
+    </day>
+    <day year="2012" month="05" day="05">
+        <crc-error time="04:46:55" application="commonality.sh" choice="skip" database-crc="-1846901022" real-crc="1880356985"/>
+        <crc-error time="04:47:05" application="commonality.sh" choice="skip_range" database-crc="866845879" real-crc="-1168719918"/>
+        <crc-error time="04:47:14" application="commonality.sh" choice="skip_nested_range" database-crc="1543015886" real-crc="1149177006"/>
+        <crc-error time="04:55:46" application="commonality.sh" choice="indentation-newline" database-crc="-527157586" real-crc="1030757705"/>
+        <crc-error time="04:56:59" application="commonality.sh" choice="mix" database-crc="-822522933" real-crc="-1903462956"/>
+        <crc-error time="05:00:27" application="commonality.sh" choice="mix2" database-crc="-1229871854" real-crc="1961052899"/>
+    </day>
+    <day year="2012" month="06" day="23">
+        <crc-error time="13:18:31" application="debug_show.sh" choice="" database-crc="1355188255" real-crc="-1355517512"/>
+    </day>
+    <day year="2012" month="12" day="29">
+        <crc-error time="22:33:57" application="debug_show.sh" choice="" database-crc="2062661725" real-crc="1245678740"/>
+    </day>
+    <day year="2012" month="12" day="31">
+        <crc-error time="08:12:59" application="customized_codec.sh" choice="" database-crc="650831960" real-crc="283545631"/>
+        <crc-error time="08:36:18" application="commonality.sh" choice="skip" database-crc="1880356985" real-crc="-817173023"/>
+        <crc-error time="08:36:48" application="commonality.sh" choice="mix" database-crc="-1903462956" real-crc="1240842059"/>
+        <crc-error time="08:37:18" application="commonality.sh" choice="mix2" database-crc="1961052899" real-crc="-1420751046"/>
+    </day>
+    <day year="2014" month="06" day="07">
+        <crc-error time="06:31:19" application="debug_show.sh" choice="" database-crc="-824189198" real-crc="1027607323"/>
+    </day>
+</history>

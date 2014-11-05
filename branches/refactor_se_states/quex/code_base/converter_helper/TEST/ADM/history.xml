@@ -1,0 +1,23 @@
+<history date="Tue Nov  4 23:28:33 2014" element-n="13">
+    <day year="2010" month="11" day="07">
+        <history-init time="11:07:19"/>
+        <crc-error time="11:45:41" application="test-utf8" choice="Source_Empty" database-crc="-111483674" real-crc="-1971904517"/>
+    </day>
+    <day year="2010" month="11" day="16">
+        <crc-error time="22:34:23" application="from-utf8" choice="Normal" database-crc="2033684287" real-crc="-1857111717"/>
+        <crc-error time="22:34:23" application="from-utf8" choice="Source_Empty" database-crc="1272391215" real-crc="-975538654"/>
+        <crc-error time="23:31:51" application="from-utf32" choice="Source_Empty" database-crc="490986972" real-crc="-975538654"/>
+        <crc-error time="23:32:21" application="from-utf32" choice="Source_Empty" database-crc="-975538654" real-crc="490986972"/>
+    </day>
+    <day year="2010" month="11" day="17">
+        <crc-error time="22:20:19" application="from-utf16" choice="Drain_ToSmall" database-crc="1596360208" real-crc="834269970"/>
+        <crc-error time="22:20:42" application="from-utf32" choice="Drain_ToSmall" database-crc="-346671736" real-crc="834269970"/>
+        <crc-error time="22:21:33" application="from-utf16" choice="Drain_ToSmall" database-crc="834269970" real-crc="-765338234"/>
+        <crc-error time="22:21:33" application="from-utf32" choice="Drain_ToSmall" database-crc="834269970" real-crc="1140718619"/>
+    </day>
+    <day year="2012" month="03" day="17">
+        <crc-error time="07:51:45" application="from-utf8" choice="Source_TestFile" database-crc="-1181361604" real-crc="294941333"/>
+        <crc-error time="07:52:03" application="from-utf16" choice="Source_TestFile" database-crc="-2128203092" real-crc="38892956"/>
+        <crc-error time="07:57:58" application="from-utf32" choice="Source_TestFile" database-crc="-992793919" real-crc="1201958385"/>
+    </day>
+</history>

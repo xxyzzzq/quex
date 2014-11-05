@@ -1,0 +1,13 @@
+token { 
+    A;
+    B;
+}
+
+mode X :
+<indentation: 
+    (\r\n)|\n"Newline" => newline; 
+    [ \t] => whitespace; 
+>
+{
+    \n => QUEX_TKN_A;
+}

@@ -1,0 +1,80 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+    
+00001 S1, S2
+     == 'b' ==> 00002
+    
+00002 
+     == 'b' ==> 00002
+     == 'd' ==> 00003
+     == 'e' ==> 00004
+    
+00003 A(1,R1)
+    
+00004 A(2,R2)
+    
+
+State 0:
+  .entry:
+    .from NONE: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 1:
+  .entry:
+    .from 0: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 2:
+  .entry:
+    .from 1:
+        position[PostContext_1]  = input_p;
+        position[PostContext_2]  = input_p;
+    .from 2: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 3:
+  .entry:
+    .from 2: 
+
+.drop_out:
+pos = position[PostContext_1] ; goto Pattern1;
+
+State 4:
+  .entry:
+    .from 2: 
+
+.drop_out:
+pos = position[PostContext_2] ; goto Pattern2;
+
+
+--- Optimized States ---
+
+State 2:
+  .entry:
+    .from 1: position[PostContext_0]  = input_p;
+    .from 2: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 3:
+  .entry:
+    .from 2: 
+
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern1;
+
+State 4:
+  .entry:
+    .from 2: 
+
+.drop_out:
+pos = position[PostContext_0] ; goto Pattern2;
+
