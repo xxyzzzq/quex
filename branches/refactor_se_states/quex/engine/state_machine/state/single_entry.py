@@ -1,5 +1,102 @@
-from quex.engine.state_machine.state_core_info import StateOperation
-from quex.blackboard                           import E_PreContextIDs, E_IncidenceIDs
+from quex.engine.tools import typed
+
+from quex.blackboard import E_PreContextIDs, \
+                            E_IncidenceIDs
+
+class SeCmd:
+    def __init__(self):
+        self.__acceptance_id = None
+
+    def set_acceptance_id(self, PatternId):
+        self.__acceptance_id = PatternId
+
+    def acceptance_id(self):
+        return self.__acceptance_id
+
+    def _string_annotate(self, Str):
+        if self.__acceptance_id == E_IncidenceIDs.MATCH_FAILURE: return Str
+        return "%s%s" % (Str, self.__acceptance_id)
+
+    def __eq__(self, Other):
+        return self.__acceptance_id == Other.__acceptance_id
+
+    def __ne__(self, Other):
+        """This function implements '__ne__' for all derived classes. It relies
+        on the possibly overwritten '__eq__' operator.
+        """
+        return not self.__eq__(self, Other)
+
+class Accept(SeCmd):
+    def __init__(self):
+        SeCmd.__init__(self)
+        self.__pre_context_id               = E_PreContextIDs.NONE
+        self.__position_register_register_f = False
+
+    def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
+        result = Accept()
+        if ReplDbAcceptance is None: result.set_acceptance_id(self.acceptance_id())
+        else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
+        if ReplDbPreContext is None: result.__pre_context_id = self.__pre_context_id
+        else:                        result.__pre_context_id = ReplDbPreContext[self.__pre_context_id]
+        result.__position_register_register_f = self.__position_register_register_f
+        return result
+
+    def set_pre_context_id(self, PatternId):
+        self.__pre_context_id = PatternId
+
+    def pre_context_id(self):
+        return self.__pre_context_id
+
+    def set_restore_position_register_f(self):
+        self.__position_register_register_f = True
+
+    def restore_position_register_f(self):
+        return self.__position_register_register_f
+
+    def __eq__(self, Other):
+        if   Other.__class__ != Accept:     return False
+        elif not SeCmd.__eq__(self, Other): return False
+        elif not self.__pre_context_id != Other.__pre_context_id: return False
+        return self.__position_register_register_f == Other.__position_register_register_f
+
+    def __str__(self):
+        acceptance_id_txt = ""
+        pre_txt           = ""
+        restore_txt       = ""
+        if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
+            acceptance_id_txt = repr(self.__pattern_id).replace("L", "")
+        if self.__pre_context_id != E_PreContextIDs.NONE:            
+            if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
+                pre_txt = "pre=bol"
+            else: 
+                pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
+        if self.__input_position_restore_f: 
+            restore_txt = self._string_annotate("R")
+
+        txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
+        if txt: return "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
+        else:   return "A"
+
+class StoreInputPosition(SeCmd):
+    @typed(RegisterId=long)
+    def __init__(self, RegisterId):
+        SeCmd.__init__(self)
+        self.__position_register_id = RegisterId
+
+    def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
+        result = StoreInputPosition()
+        if ReplDbAcceptance is None: result.set_acceptance_id(self.acceptance_id())
+        else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
+        result.__position_register_id = self.__position_register_id
+        return result
+
+    def __eq__(self, Other):
+        if   Other.__class__ != StoreInputPosition: return False
+        elif not SeCmd.__eq__(self, Other):         return False
+        return self.__position_register_id == Other.__position_register_id
+
+    def __str__(self):
+        return self._string_annotate("S")
 
 class SingleEntry(object):
     __slots__ = ('__list')
@@ -26,23 +123,14 @@ class SingleEntry(object):
     def __len__(self):
         return len(self.__list)
 
-    def __add(self, Origin):
-        """Check if origin has already been mentioned, else append the new origin.
-        """
-        # NOT: if not Origin.is_meaningful(): return
-        #      We need even non-meaningful origins, to detect whether a state can be 
-        #      combined with another during Hopcroft optimization.
-            
-        AcceptanceID = Origin.acceptance_id()
-        if AcceptanceID != E_IncidenceIDs.MATCH_FAILURE:
-            self.take_out_FAILURE()
-        elif self.is_there_a_non_FAILURE():
-            return
+    @typed(Cmd=SeCmd)
+    def add(self, Cmd):
+        self.__list.append(Cmd.clone())
 
-        for same in (origin for origin in self.__list if origin.acceptance_id() == AcceptanceID):
-            same.merge(Origin)
-            return
-        self.__list.append(Origin.clone())
+    def find_Accept(self):
+        for cmd in self.__list:
+            if cmd.__class__ == Accept: return cmd
+        return None
 
     def has_acceptance_id(self, AcceptanceID):
         for cmd in self:
@@ -54,6 +142,11 @@ class SingleEntry(object):
         for cmd in self:
             if cmd.__class__ == Accept and cmd.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE:
                 return True
+        return False
+
+    def has(self, Cmd):
+        for candidate in self.__list:
+            if candidate == Cmd: return True
         return False
 
     def hopcroft_combinability_key(self):
@@ -84,8 +177,7 @@ class SingleEntry(object):
             sequence of acceptance ids identifies the acceptance behavior.
             """
             return tuple(sorted(x.acceptance_id() 
-                                for x in self if x.is_acceptance()
-            ))
+                                for x in self if x.__class__ == Accept))
 
         # (2) Separate by Store-Input-Position Behavior
         def store_info():
@@ -97,52 +189,25 @@ class SingleEntry(object):
             is a distinct description of the position storing behavior.
             """
             return tuple(sorted(x.acceptance_id() 
-                                for x in self if x.input_position_store_f()))
+                                for x in self if x.__class__ == StoreInputPosition))
 
-        return (acceptance_info(), store_info())
+        result = (acceptance_info(), store_info())
+        return result
 
-    def add(self, X, StateIndex=None, 
-            StoreInputPositionF   = False, 
-            AcceptanceF           = False, 
-            RestoreInputPositionF = False, 
-            PreContextID          = E_PreContextIDs.NONE):
-        """Add the StateMachineID and the given StateIdx to the list of origins of 
-           this state.
-           NOTE: The rule is that by default the 'input_position_store_f' flag
-                 follows the acceptance state flag (i.e. by default any acceptance
-                 state stores the input position). Thus when an origin is  added
-                 to a state that is an acceptance state, the 'input_position_store_f'
-                 has to be raised for all incoming origins.      
-        """
-        assert type(X) == long or X == E_IncidenceIDs.MATCH_FAILURE or X.__class__ == StateOperation
-        assert StateIndex is None or type(StateIndex) == long
-        assert StoreInputPositionF is not None
-            
-        if isinstance(X, StateOperation):
-            self.__add(X.clone())
-        else:
-            self.__add(StateOperation(AcceptanceID          = X, 
-                                      StateIndex            = StateIndex, 
-                                      AcceptanceF           = AcceptanceF,
-                                      PreContextID          = PreContextID,
-                                      StoreInputPositionF   = StoreInputPositionF, 
-                                      RestoreInputPositionF = RestoreInputPositionF))
+    def merge(self, CmdIterable):
+        self.__list.extend(cmd.clone() for cmd in CmdIterable if not self.has(cmd))
 
-    def merge(self, OriginIterable):
-        for origin in OriginIterable: 
-            self.__add(origin)
-
-    def merge_list(self, OriginIterableIterable):
-        for origin_iterable in OriginIterableIterable:
+    def merge_list(self, CmdIterableIterable):
+        for origin_iterable in CmdIterableIterable:
             self.merge(origin_iterable)
 
-    def set(self, OriginList, ArgumentIsYoursF=False):
-        assert type(OriginList) == list
+    def set(self, CmdList, ArgumentIsYoursF=False):
+        assert type(CmdList) == list
         if ArgumentIsYoursF: 
-            self.__list = OriginList
+            self.__list = CmdList
             return
         self.__list = []
-        self.merge(OriginList)
+        self.merge(CmdList)
 
     def clear(self):
         self.__list = []
@@ -158,47 +223,30 @@ class SingleEntry(object):
         ... i.e. segmentation faults.
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
-        self.__list.sort(key=lambda x: (not x.is_acceptance(), x.acceptance_id()))
-        new_origin_list                  = []
-        unconditional_acceptance_found_f = False
-        for origin in self.__list:
-            if not origin.is_acceptance():
-                new_origin_list.append(origin)  # Out of consideration. 
-                continue
+        min_acceptance_id = None
+        for cmd in (x for x in self.__list if x.__class__ == Accept):
+            if min_acceptance_id is None or min_acceptance_id > cmd.acceptance_id():
+                min_acceptance_id = cmd.acceptance_id()
 
-            # Only append acceptance origins until the first unconditional acceptance.
-            if not unconditional_acceptance_found_f:
-                if origin.pre_context_id() == E_PreContextIDs.NONE:
-                    unconditional_acceptance_found_f = True # prevent entering this part again
-                new_origin_list.append(origin)
+        # Delete any Accept command where '.acceptance_id() > min_acceptance_id'
+        i = len(self.__list) - 1
+        while i >= 0:
+            cmd = self.__list[i]
+            if cmd.__class__ == Accept and cmd.acceptance_id() > min_acceptance_id:
+                del self.__list[i]
+            i -= 1
 
-        self.__list = new_origin_list 
+    def get_string(self, CmdalStatesF=True):
+        if not self.__list: 
+            return "\n"
 
-    def get_string(self, OriginalStatesF=True):
+        def key(X):
+            if   X.__class__ == Accept:              
+                return (0, X.acceptance_id(), X.pre_context_id(), X.restore_position_register_f())
+            elif X.__class__ == StoreInputPositionF: 
+                return (1, X.acceptance_id())
 
-        txt = "" 
-        if len(self.__list) == 0: 
-            return txt + "\n"
-
-        for origin in self.__list:
-            if   origin.is_acceptance():                          break
-            elif origin.pre_context_id() != E_PreContextIDs.NONE: break
-            elif origin.input_position_store_f():                 break
-            elif origin.input_position_restore_f():               break
-        else:
-            # All origins are 'harmless'. Sort by acceptance_id for the 'camera'.
-            for origin in sorted(self.__list, key=lambda x: x.acceptance_id()):
-                ostr = origin.get_string() 
-                if ostr: txt += "%s, " % ostr
-            txt = (txt[:-2] + "\n").replace("L","")     
-            return txt
-
-        # for origin in sorted(self.__list, key=attrgetter("state_machine_id")):
-        for origin in self.__list:
-            ostr = origin.get_string() 
-            if ostr: txt += "%s, " % ostr
-        txt = (txt[:-2] + "\n").replace("L","")     
-        return txt
+        return reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key))
 
     def take_out_FAILURE(self):
         L = len(self.__list)
