@@ -1,7 +1,8 @@
 from quex.engine.tools import typed
 
 from quex.blackboard import E_PreContextIDs, \
-                            E_IncidenceIDs
+                            E_IncidenceIDs, \
+                            E_PostContextIDs
 
 class SeCmd:
     def __init__(self):
@@ -30,7 +31,7 @@ class Accept(SeCmd):
     def __init__(self):
         SeCmd.__init__(self)
         self.__pre_context_id               = E_PreContextIDs.NONE
-        self.__position_register_register_f = False
+        self.__restore_position_register_f = False
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
         result = Accept()
@@ -38,7 +39,7 @@ class Accept(SeCmd):
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         if ReplDbPreContext is None: result.__pre_context_id = self.__pre_context_id
         else:                        result.__pre_context_id = ReplDbPreContext[self.__pre_context_id]
-        result.__position_register_register_f = self.__position_register_register_f
+        result.__restore_position_register_f = self.__restore_position_register_f
         return result
 
     def set_pre_context_id(self, PatternId):
@@ -48,16 +49,16 @@ class Accept(SeCmd):
         return self.__pre_context_id
 
     def set_restore_position_register_f(self):
-        self.__position_register_register_f = True
+        self.__restore_position_register_f = True
 
     def restore_position_register_f(self):
-        return self.__position_register_register_f
+        return self.__restore_position_register_f
 
     def __eq__(self, Other):
         if   not Other.__class__ == Accept:                       return False
         elif not SeCmd.__eq__(self, Other):                       return False
         elif not self.__pre_context_id == Other.__pre_context_id: return False
-        return self.__position_register_register_f == Other.__position_register_register_f
+        return self.__restore_position_register_f == Other.__restore_position_register_f
 
     def __str__(self):
         acceptance_id_txt = ""
@@ -70,7 +71,7 @@ class Accept(SeCmd):
                 pre_txt = "pre=bol"
             else: 
                 pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
-        if self.__position_register_register_f: 
+        if self.__restore_position_register_f: 
             restore_txt = self._string_annotate("R")
 
         txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
@@ -79,7 +80,7 @@ class Accept(SeCmd):
 
 class StoreInputPosition(SeCmd):
     @typed(RegisterId=long)
-    def __init__(self, RegisterId):
+    def __init__(self, RegisterId=E_PostContextIDs.NONE):
         SeCmd.__init__(self)
         self.__position_register_id = RegisterId
 
@@ -120,21 +121,21 @@ class SingleEntry(object):
     def add(self, Cmd):
         self.__list.append(Cmd.clone())
 
-    def find_Accept(self):
+    def find(self, CmdClass):
         for cmd in self.__list:
-            if cmd.__class__ == Accept: return cmd
+            if cmd.__class__ == CmdClass: return cmd
         return None
 
-    def add_Accept(self):
-        cmd = self.find_Accept()
+    def add_Cmd(self, CmdClass):
+        cmd = self.find(CmdClass)
         if cmd is not None: return
-        self.__list.append(Accept())
+        self.__list.append(CmdClass())
 
-    def remove_Accept(self):
+    def remove_Cmd(self, CmdClass):
         L = len(self.__list)
         for i in xrange(L-1, -1, -1):
             cmd = self.__list[i]
-            if cmd.__class__ == Accept: del self.__list[i]
+            if cmd.__class__ == CmdClass: del self.__list[i]
 
     def has_acceptance_id(self, AcceptanceID):
         for cmd in self:
@@ -248,7 +249,7 @@ class SingleEntry(object):
         def key(X):
             if   X.__class__ == Accept:              
                 return (0, X.acceptance_id(), X.pre_context_id(), X.restore_position_register_f())
-            elif X.__class__ == StoreInputPositionF: 
+            elif X.__class__ == StoreInputPosition: 
                 return (1, X.acceptance_id())
 
         return reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key=key))
