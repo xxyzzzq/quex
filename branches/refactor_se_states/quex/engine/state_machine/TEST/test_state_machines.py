@@ -18,11 +18,26 @@
 import sys
 
 from quex.engine.state_machine.core import *
+from quex.engine.state_machine.state.single_entry import *
 from quex.engine.interval_handling import *
 
+def get_cmd(SmId, StateIndex, AcceptanceF):
+    if AcceptanceF: 
+        cmd = Accept()
+        cmd.set_acceptance_id(SmId)
+    else:
+        cmd = StoreInputPosition()
+        cmd.set_acceptance_id(SmId)
+    return cmd
+
 def add_origin(state, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
-    state.single_entry.add(StateMachineID_or_StateOriginInfo, StateIdx, 
-                        StoreInputPositionF, state.is_acceptance())
+    if state.is_acceptance():
+        cmd = Accept()
+        cmd.set_acceptance_id(StateMachineID_or_StateOriginInfo)
+        state.single_entry.add(cmd)
+    elif StoreInputPositionF:
+        cmd = StoreInputPosition()
+        state.single_entry.add(cmd)
 
 # (*) set up some state machines
 #

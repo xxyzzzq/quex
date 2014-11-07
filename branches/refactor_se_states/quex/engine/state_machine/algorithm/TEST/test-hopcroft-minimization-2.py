@@ -9,6 +9,7 @@ from copy import deepcopy
 import quex.engine.state_machine.repeat as repeat
 from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.state.core import *
+from   quex.engine.state_machine.state.single_entry import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
@@ -52,17 +53,18 @@ txt = """
 """
 sm = StateMachine()
 
-def set_origins(StateIndex, *TheList):
+def set_cmd_list(StateIndex, *TheList):
     global sm
-    sm.states[StateIndex].single_entry.set(
-        [ StateOperation(long(sm_id), long(state_index), acceptance_f) for sm_id, state_index, acceptance_f in TheList ]
-    )
+    sm.states[StateIndex].single_entry.set([ 
+        get_cmd(long(sm_id), long(state_index), acceptance_f) 
+        for sm_id, state_index, acceptance_f in TheList 
+    ])
 
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-set_origins(n1, (5555, 1, True))
+set_cmd_list(n1, (5555, 1, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
-set_origins(n2, (7777, 1, True))
+set_cmd_list(n2, (7777, 1, True))
 test(sm, txt)
 
 txt = """
@@ -71,9 +73,9 @@ txt = """
 sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-set_origins(n1, (5555, 1, True))
+set_cmd_list(n1, (5555, 1, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
-set_origins(n2, (5555, 1, True))
+set_cmd_list(n2, (5555, 1, True))
 test(sm, txt)
 
 txt = """
@@ -86,10 +88,10 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 add_origin(sm.states[n1], 5555L, 1L)
-set_origins(n1, (5555, 1, True))
+set_cmd_list(n1, (5555, 1, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
 n2 = sm.add_transition(n2, ord('a'), n2, AcceptanceF=True)
-set_origins(n2, (5555, 1, True))
+set_cmd_list(n2, (5555, 1, True))
 test(sm, txt)
 
 
@@ -102,12 +104,12 @@ txt = """
 sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
 n2 = sm.add_transition(n2, ord('a'), n2, AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 n3 = sm.add_transition(n1, ord('b'), AcceptanceF=True)
-set_origins(n3, (7777L, 1L, True))
+set_cmd_list(n3, (7777L, 1L, True))
 test(sm, txt)
 
 
@@ -122,13 +124,13 @@ txt = """
 sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
 n2 = sm.add_transition(n2, ord('a'), n2, AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 n3 = sm.add_transition(n1, ord('b'), AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (5555L, 1L, True))
+set_cmd_list(n3, (5555L, 1L, True))
 test(sm, txt)
 
 
@@ -145,14 +147,14 @@ txt = """
 sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
 n2 = sm.add_transition(n2, ord('a'), n2, AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 n3 = sm.add_transition(n1, ord('b'),     AcceptanceF=False)
 n3 = sm.add_transition(n3, ord('b'), n3, AcceptanceF=False)
 n4 = sm.add_transition(n3, ord('a'),     AcceptanceF=True)
-set_origins(n4, (5555L, 1L, True))
+set_cmd_list(n4, (5555L, 1L, True))
 test(sm, txt)
 
 
@@ -166,17 +168,17 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (5555L, 1L, True))
+set_cmd_list(n3, (5555L, 1L, True))
 
 n4 = sm.add_transition(n1, ord('b'),     AcceptanceF=True)
-set_origins(n4, (7777L, 1L, True))
+set_cmd_list(n4, (7777L, 1L, True))
 test(sm, txt)
 
 txt = """
@@ -189,17 +191,17 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (5555L, 1L, True))
+set_cmd_list(n3, (5555L, 1L, True))
 
 n4 = sm.add_transition(n1, ord('b'),     AcceptanceF=True)
-set_origins(n4, (5555L, 1L, True))
+set_cmd_list(n4, (5555L, 1L, True))
 test(sm, txt)
 
 txt = """
@@ -212,17 +214,17 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (5555L, 1L, True))
+set_cmd_list(n3, (5555L, 1L, True))
 
 n4 = sm.add_transition(n2, ord('b'),     AcceptanceF=True)
-set_origins(n4, (7777L, 1L, True))
+set_cmd_list(n4, (7777L, 1L, True))
 test(sm, txt)
 
 txt = """
@@ -235,17 +237,17 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (7777L, 1L, True))
+set_cmd_list(n3, (7777L, 1L, True))
 
 n4 = sm.add_transition(n2, ord('b'),     AcceptanceF=True)
-set_origins(n4, (7777L, 1L, True))
+set_cmd_list(n4, (7777L, 1L, True))
 test(sm, txt)
 
 
@@ -267,27 +269,27 @@ n0 = sm.init_state_index
 
 # branch 1
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=True)
-set_origins(n1, (5555L, 1L, True))
+set_cmd_list(n1, (5555L, 1L, True))
 
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=True)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=True)
-set_origins(n3, (5555L, 1L, True))
+set_cmd_list(n3, (5555L, 1L, True))
 
 # branch 2
 n4 = sm.add_transition(n0, ord('b'),     AcceptanceF=True)
-set_origins(n4, (5555L, 1L, True))
+set_cmd_list(n4, (5555L, 1L, True))
 
 n5 = sm.add_transition(n4, ord('a'),     AcceptanceF=True)
 n5 = sm.add_transition(n5, ord('a'), n5, AcceptanceF=True)
-set_origins(n5, (5555L, 1L, True))
+set_cmd_list(n5, (5555L, 1L, True))
 
 # branch 3
 n6 = sm.add_transition(n0, ord('c'),     AcceptanceF=True)
 n6 = sm.add_transition(n6, ord('a'), n6, AcceptanceF=True)
-set_origins(n6, (5555L, 1L, True))
+set_cmd_list(n6, (5555L, 1L, True))
 
 test(sm, txt)
 
@@ -314,7 +316,7 @@ n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=False)
 n3 = sm.add_transition(n2, ord('a'),     AcceptanceF=False)
 n3 = sm.add_transition(n3, ord('a'), n3, AcceptanceF=False)
 n4 = sm.add_transition(n3, ord('b'),     AcceptanceF=True)
-set_origins(n4, (5555L, 1L, True))
+set_cmd_list(n4, (5555L, 1L, True))
 
 # branch 2
 n5 = sm.add_transition(n0, ord('b'),     AcceptanceF=False)
@@ -322,13 +324,13 @@ n6 = sm.add_transition(n5, ord('a'),     AcceptanceF=False)
 n7 = sm.add_transition(n6, ord('a'),     AcceptanceF=False)
 n7 = sm.add_transition(n7, ord('a'), n7, AcceptanceF=False)
 n8 = sm.add_transition(n7, ord('b'),     AcceptanceF=True)
-set_origins(n8, (5555L, 1L, True))
+set_cmd_list(n8, (5555L, 1L, True))
 
 # branch 3
 n9  = sm.add_transition(n0, ord('c'),     AcceptanceF=True)
 n9  = sm.add_transition(n9, ord('a'), n9, AcceptanceF=True)
 n10 = sm.add_transition(n9, ord('b'),     AcceptanceF=True)
-set_origins(n10, (5555L, 1L, True))
+set_cmd_list(n10, (5555L, 1L, True))
 
 test(sm, txt)
 
@@ -350,13 +352,13 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('b'),     AcceptanceF=False)
 n1 = sm.add_transition(n1, ord('c'), n1, AcceptanceF=False)
 n2 = sm.add_transition(n1, ord('b'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 # branch 2
 n1 = sm.add_transition(n0, ord('c'),     AcceptanceF=False)
 n1 = sm.add_transition(n1, ord('b'), n1, AcceptanceF=False)
 n2 = sm.add_transition(n1, ord('c'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 test(sm, txt)
 
@@ -374,13 +376,13 @@ n0 = sm.init_state_index
 # branch 1
 n1 = sm.add_transition(n0, ord('a'),     AcceptanceF=False)
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 # branch 2
 n1 = sm.add_transition(n0, ord('b'),     AcceptanceF=False)
 n1 = sm.add_transition(n1, ord('b'), n1, AcceptanceF=False)
 n2 = sm.add_transition(n1, ord('a'),     AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 test(sm, txt)
 
@@ -398,12 +400,12 @@ n0 = sm.init_state_index
 # branch 1
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=False)
 n2 = sm.add_transition(n1, ord('a'), AcceptanceF=True)
-set_origins(n2, (5555L, 1L, True))
+set_cmd_list(n2, (5555L, 1L, True))
 
 # branch 2
 n3 = sm.add_transition(n0, ord('b'),                         AcceptanceF=False)
 n4 = sm.add_transition(n3, Interval(ord('a'), ord('b') + 1), AcceptanceF=True)
-set_origins(n4, (5555L, 1L, True))
+set_cmd_list(n4, (5555L, 1L, True))
 
 # middle branch
 n4 = sm.add_transition(n1, ord('b'), n4, AcceptanceF=True)
