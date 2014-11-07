@@ -5,7 +5,9 @@ from   quex.engine.state_machine.core          import StateMachine
 from   quex.engine.state_machine.state.core    import State
 import quex.engine.state_machine.index         as index
 import quex.engine.state_machine.check.special as special
+from   quex.engine.tools import typed
 
+@typed(StateMachineList=[StateMachine])
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     """Connect state machines paralell.
 
@@ -23,10 +25,7 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
                             If Cloning is disabled the state machines themselves
                             will be altered--which brings some advantage in speed.
     """
-    assert type(StateMachineList) == list
     assert len(StateMachineList) != 0
-    for x in StateMachineList:
-        assert isinstance(x, StateMachine), x.__class__.__name__
               
     # filter out empty state machines from the consideration          
     state_machine_list       = [ sm for sm in StateMachineList if not (sm.is_empty() or special.is_none(sm))]
@@ -69,8 +68,8 @@ def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):
     
     # (*) Connect from the new initial state to the initial states of the
     #     clones via epsilon transition. 
-    #     Connect from each success state of the clones to the new end state
-    #     via epsilon transition.
+    #     Connect from each success state of the clones to the new terminal
+    #     state via epsilon transition.
     for clone in clone_list:
         result.mount_to_initial_state(clone.init_state_index)
 
@@ -91,8 +90,8 @@ def __consider_empty_state_machines(sm, EmptyStateMachineList):
        => There is no particular need for an epsilon transition to the common
           new terminal index.
     """
-    init_state_origins = sm.get_init_state().single_entry
+    single_entry = sm.get_init_state().single_entry
     for esm in EmptyStateMachineList:
-        init_state_origins.merge(esm.get_init_state().single_entry)
+        single_entry.merge(esm.get_init_state().single_entry)
     return sm
 
