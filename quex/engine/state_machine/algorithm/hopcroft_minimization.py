@@ -459,7 +459,7 @@ def adapt_state_machine(sm, Result):
 
         # The prototype takes over the role of all
         sm.states[prototype_i].single_entry.merge_list(
-            sm.states[i].single_entry.get_list() for i in state_set if i != prototype_i)
+            sm.states[i].single_entry for i in state_set if i != prototype_i)
 
         replacement_dict.update(
             (i, prototype_i) for i in state_set if i != prototype_i)
