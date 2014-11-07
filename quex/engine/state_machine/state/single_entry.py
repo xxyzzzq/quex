@@ -5,7 +5,7 @@ from quex.blackboard import E_PreContextIDs, \
 
 class SeCmd:
     def __init__(self):
-        self.__acceptance_id = None
+        self.__acceptance_id = E_IncidenceIDs.MATCH_FAILURE
 
     def set_acceptance_id(self, PatternId):
         self.__acceptance_id = PatternId
@@ -54,23 +54,23 @@ class Accept(SeCmd):
         return self.__position_register_register_f
 
     def __eq__(self, Other):
-        if   Other.__class__ != Accept:     return False
-        elif not SeCmd.__eq__(self, Other): return False
-        elif not self.__pre_context_id != Other.__pre_context_id: return False
+        if   not Other.__class__ == Accept:                       return False
+        elif not SeCmd.__eq__(self, Other):                       return False
+        elif not self.__pre_context_id == Other.__pre_context_id: return False
         return self.__position_register_register_f == Other.__position_register_register_f
 
     def __str__(self):
         acceptance_id_txt = ""
         pre_txt           = ""
         restore_txt       = ""
-        if self.__pattern_id != E_IncidenceIDs.MATCH_FAILURE:
-            acceptance_id_txt = repr(self.__pattern_id).replace("L", "")
+        if self.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE:
+            acceptance_id_txt = repr(self.acceptance_id()).replace("L", "")
         if self.__pre_context_id != E_PreContextIDs.NONE:            
             if self.__pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
                 pre_txt = "pre=bol"
             else: 
                 pre_txt = "pre=%s" % repr(self.__pre_context_id).replace("L", "")
-        if self.__input_position_restore_f: 
+        if self.__position_register_register_f: 
             restore_txt = self._string_annotate("R")
 
         txt = [ x for x in (acceptance_id_txt, pre_txt, restore_txt) if x ]
@@ -101,13 +101,13 @@ class StoreInputPosition(SeCmd):
 class SingleEntry(object):
     __slots__ = ('__list')
 
-    def __init__(self):
-        self.__list = []
+    def __init__(self, CloneF=False):
+        if not CloneF: self.__list = []
 
     @staticmethod
     def from_iterable(Iterable):
         result = SingleEntry()
-        result.merge(Iterable)
+        result.set(Iterable)
         return result
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
@@ -115,13 +115,6 @@ class SingleEntry(object):
 
     def get_list(self):
         return self.__list
-
-    def __iter__(self):
-        for x in self.__list:
-            yield x
-
-    def __len__(self):
-        return len(self.__list)
 
     @typed(Cmd=SeCmd)
     def add(self, Cmd):
@@ -131,6 +124,17 @@ class SingleEntry(object):
         for cmd in self.__list:
             if cmd.__class__ == Accept: return cmd
         return None
+
+    def add_Accept(self):
+        cmd = self.find_Accept()
+        if cmd is not None: return
+        self.__list.append(Accept())
+
+    def remove_Accept(self):
+        L = len(self.__list)
+        for i in xrange(L-1, -1, -1):
+            cmd = self.__list[i]
+            if cmd.__class__ == Accept: del self.__list[i]
 
     def has_acceptance_id(self, AcceptanceID):
         for cmd in self:
@@ -194,20 +198,22 @@ class SingleEntry(object):
         result = (acceptance_info(), store_info())
         return result
 
-    def merge(self, CmdIterable):
-        self.__list.extend(cmd.clone() for cmd in CmdIterable if not self.has(cmd))
+    def merge(self, Other):
+        assert isinstance(Other, SingleEntry)
+        self.__list.extend(
+            cmd.clone() for cmd in Other.__list if not self.has(cmd)
+        )
 
     def merge_list(self, CmdIterableIterable):
         for origin_iterable in CmdIterableIterable:
             self.merge(origin_iterable)
 
     def set(self, CmdList, ArgumentIsYoursF=False):
-        assert type(CmdList) == list
         if ArgumentIsYoursF: 
+            assert type(CmdList) == list
             self.__list = CmdList
-            return
-        self.__list = []
-        self.merge(CmdList)
+        else:                
+            self.__list = [ cmd.clone() for cmd in CmdList ]
 
     def clear(self):
         self.__list = []
@@ -229,16 +235,15 @@ class SingleEntry(object):
                 min_acceptance_id = cmd.acceptance_id()
 
         # Delete any Accept command where '.acceptance_id() > min_acceptance_id'
-        i = len(self.__list) - 1
-        while i >= 0:
+        L = len(self.__list) 
+        for i in xrange(L-1, -1, -1):
             cmd = self.__list[i]
             if cmd.__class__ == Accept and cmd.acceptance_id() > min_acceptance_id:
                 del self.__list[i]
-            i -= 1
 
     def get_string(self, CmdalStatesF=True):
-        if not self.__list: 
-            return "\n"
+        if   not self.__list:       return "\n"
+        elif len(self.__list) == 1: return "%s\n" % self.__list[0]
 
         def key(X):
             if   X.__class__ == Accept:              
@@ -246,7 +251,7 @@ class SingleEntry(object):
             elif X.__class__ == StoreInputPositionF: 
                 return (1, X.acceptance_id())
 
-        return reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key))
+        return reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key=key))
 
     def take_out_FAILURE(self):
         L = len(self.__list)
@@ -259,4 +264,11 @@ class SingleEntry(object):
             if origin.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE:
                 return True
         return False
+
+    def __iter__(self):
+        for x in self.__list:
+            yield x
+
+    def __len__(self):
+        return len(self.__list)
 
