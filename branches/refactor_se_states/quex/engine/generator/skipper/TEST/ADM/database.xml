@@ -1,4 +1,4 @@
-<test-database execution-time-sec="46.95" date="Sat Nov  8 09:28:35 2014">
+<test-database execution-time-sec="46.96" date="Sat Nov  8 21:47:01 2014">
     <last-used-diff-display-program name=""/>
     <test title="Indentation Counting" time-sum-sec="2.94"> 
         <application file-name="test-indentation-counter.py" info-request-time="1415174550L" vanished="False"/>
@@ -56,7 +56,7 @@
         </test>
     </group>
     <group name="Skip-Range">
-        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.20"> 
+        <test title="DelimiterLength=2, BufferSize=5" time-sum-sec="8.21"> 
             <application file-name="test-skip_range.py" info-request-time="1415174550L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">

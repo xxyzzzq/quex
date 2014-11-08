@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.59" date="Sat Nov  8 09:21:12 2014">
+<test-database execution-time-sec="0.56" date="Sat Nov  8 21:47:00 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
@@ -30,7 +30,7 @@
         </test>
     </group>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.02"> 
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="strange_stream.exe" info-request-time="1415434870L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.515225"/>

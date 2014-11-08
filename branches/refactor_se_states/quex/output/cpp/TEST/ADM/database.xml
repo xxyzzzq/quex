@@ -1,4 +1,4 @@
-<test-database execution-time-sec="8.47" date="Sat Nov  8 09:29:54 2014">
+<test-database execution-time-sec="8.45" date="Sat Nov  8 21:47:02 2014">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" time-sum-sec="0.08"> 
         <application file-name="test-token_class.py" info-request-time="1415174546L" vanished="False"/>
@@ -10,7 +10,7 @@
         </choice-list>
     </test>
     <group name="Character Counter">
-        <test title="Default Implementation" time-sum-sec="6.05"> 
+        <test title="Default Implementation" time-sum-sec="6.03"> 
             <application file-name="test-counter.py" info-request-time="1415174546L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="18" same_result="True">

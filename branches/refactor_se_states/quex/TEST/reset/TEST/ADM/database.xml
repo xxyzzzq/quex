@@ -1,6 +1,6 @@
-<test-database execution-time-sec="0.29" date="Sat Nov  8 09:20:34 2014">
+<test-database execution-time-sec="0.24" date="Sat Nov  8 21:47:00 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.05"> 
+    <test title="Normal Reset" make-dependent="True" time-sum-sec="0.02"> 
         <application file-name="lexer-x" info-request-time="1415434829L" vanished="False"/>
         <analogy open="((" close="))"/>
         <make-procedure success="True" time_sec="2.262479"/>
@@ -37,7 +37,7 @@
                <choice name="136" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.06"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.07"> 
             <application file-name="icu-lexer" info-request-time="1415434826L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.419825"/>
@@ -55,7 +55,7 @@
                <choice name="1000" result="OK" time_sec="0.01" crc="319410180"/>
             </choice-list>
         </test>
-        <test title="Plain" make-dependent="True" time-sum-sec="0.06"> 
+        <test title="Plain" make-dependent="True" time-sum-sec="0.05"> 
             <application file-name="lexer" info-request-time="1415434831L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.253593"/>
@@ -73,7 +73,7 @@
                <choice name="136" result="OK" time_sec="0.00" crc="759753114"/>
             </choice-list>
         </test>
-        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.05"> 
+        <test title="Plain w/ Engine Codec" make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="iconv-lexer" info-request-time="1415434833L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.194409"/>

@@ -1,7 +1,7 @@
-<test-database execution-time-sec="1.65" date="Sat Nov  8 09:28:37 2014">
+<test-database execution-time-sec="1.64" date="Sat Nov  8 21:47:01 2014">
     <last-used-diff-display-program name=""/>
     <group name="Code generation">
-        <test title="Comparison Sequence" time-sum-sec="0.61"> 
+        <test title="Comparison Sequence" time-sum-sec="0.62"> 
             <application file-name="test-comparison_sequence.py" info-request-time="1415174549L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
@@ -15,7 +15,7 @@
                <choice name="C-5-bw" result="OK" time_sec="0.08" crc="None"/>
             </choice-list>
         </test>
-        <test title="Branch Table (switch-case)" time-sum-sec="0.30"> 
+        <test title="Branch Table (switch-case)" time-sum-sec="0.29"> 
             <application file-name="test-branch_table.py" info-request-time="1415174549L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -25,7 +25,7 @@
                <choice name="C-5" result="OK" time_sec="0.08" crc="None"/>
             </choice-list>
         </test>
-        <test title="Branch Table (switch-case) II" time-sum-sec="0.66"> 
+        <test title="Branch Table (switch-case) II" time-sum-sec="0.65"> 
             <application file-name="test-branch_table-2.py" info-request-time="1415174549L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">

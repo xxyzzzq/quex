@@ -1,4 +1,4 @@
-<test-database execution-time-sec="175.41" date="Sat Nov  8 09:15:28 2014">
+<test-database execution-time-sec="175.42" date="Sat Nov  8 21:47:00 2014">
     <last-used-diff-display-program name=""/>
     <test title="Makefile Differences to C++ Version" time-sum-sec="0.13"> 
         <application file-name="makefile-diff.sh" info-request-time="1415174552L" vanished="False"/>
@@ -20,7 +20,7 @@
         </choice-list>
     </test>
     <group name="demo/000">
-        <test title="Single Mode Example" time-sum-sec="4.52"> 
+        <test title="Single Mode Example" time-sum-sec="4.53"> 
             <application file-name="000.sh" info-request-time="1415174552L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
@@ -50,7 +50,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.22"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" time-sum-sec="13.21"> 
             <application file-name="003.sh" info-request-time="1415174552L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="True">
@@ -61,7 +61,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="2.41" crc="766281751"/>
             </choice-list>
         </test>
-        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="11.08"> 
+        <test title="Byte Order Mark (BOM) Cutting" time-sum-sec="11.09"> 
             <application file-name="003-bom.sh" info-request-time="1415174552L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="3" same_result="False">
@@ -152,7 +152,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="44.10"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" time-sum-sec="44.11"> 
             <application file-name="010.sh" info-request-time="1415174552L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -169,7 +169,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="9.07"> 
+        <test title="Engine Encoding (Example ISO8859-7)" time-sum-sec="9.06"> 
             <application file-name="011.sh" info-request-time="1415174552L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="True">
