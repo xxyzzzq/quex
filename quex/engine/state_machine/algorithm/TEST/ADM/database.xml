@@ -1,8 +1,8 @@
-<test-database execution-time-sec="0.51" date="Sat Nov  8 11:00:09 2014">
+<test-database execution-time-sec="0.51" date="Sat Nov  8 21:47:01 2014">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Hopcroft optimization (minimize state set) II" time-sum-sec="0.18"> 
-            <application file-name="test-hopcroft-minimization-2.py" info-request-time="1415432726L" vanished="False"/>
+            <application file-name="test-hopcroft-minimization-2.py" info-request-time="1415452826L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="True">
                <choice name="NEW" result="OK" time_sec="0.09" crc="-455287609"/>
@@ -27,18 +27,18 @@
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA - Special Case" time-sum-sec="0.06"> 
-            <application file-name="test-nfa-to-dfa-special.py" info-request-time="1415174548L" vanished="False"/>
-            <analogy open="((" close="))"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-538930774"/>
-            </choice-list>
-        </test>
         <test title="Conversion to DFA (subset construction)" time-sum-sec="0.05"> 
             <application file-name="test-nfa-to-dfa.py" info-request-time="1415174548L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.05" crc="816185042"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA - Special Case" time-sum-sec="0.06"> 
+            <application file-name="test-nfa-to-dfa-special.py" info-request-time="1415174548L" vanished="False"/>
+            <analogy open="((" close="))"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.06" crc="-538930774"/>
             </choice-list>
         </test>
     </group>

@@ -112,29 +112,51 @@ class SingleEntry(object):
         return result
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
-        return SingleEntry.from_iterable(x.clone(ReplDbPreContext=ReplDbPreContext, ReplDbAcceptance=ReplDbAcceptance) for x in self.__list)
-
-    @typed(Cmd=SeCmd)
-    def add(self, Cmd):
-        self.__list.append(Cmd.clone())
+        return SingleEntry.from_iterable(
+            x.clone(ReplDbPreContext=ReplDbPreContext,
+                    ReplDbAcceptance=ReplDbAcceptance) 
+            for x in self.__list)
 
     def find(self, CmdClass):
         for cmd in self.__list:
             if cmd.__class__ == CmdClass: return cmd
         return None
-    
-    def get_list(self):
-        return self.__list
 
     def get_iterable(self, CmdClass):
         for cmd in self.__list:
             if cmd.__class__ == CmdClass: yield cmd
         
+    def has(self, Cmd):
+        for candidate in self.__list:
+            if candidate == Cmd: return True
+        return False
+
+    @typed(Cmd=SeCmd)
+    def add(self, Cmd):
+        if self.has(Cmd): return
+        self.__list.append(Cmd.clone())
+
     def add_Cmd(self, CmdClass):
         cmd = self.find(CmdClass)
         if cmd is not None: return
-        self.__list.append(CmdClass())
+        self.add(CmdClass())
 
+    def merge(self, Other):
+        assert isinstance(Other, SingleEntry)
+        self.__list.extend(
+            cmd.clone() for cmd in Other.__list if not self.has(cmd)
+        )
+
+    def merge_list(self, CmdIterableIterable):
+        for origin_iterable in CmdIterableIterable:
+            self.merge(origin_iterable)
+
+    def set(self, CmdList):
+        self.clear()
+        self.__list.extend(
+            cmd.clone() for cmd in CmdList if not self.has(cmd)
+        )
+        
     def remove_Cmd(self, CmdClass):
         L = len(self.__list)
         for i in xrange(L-1, -1, -1):
@@ -153,10 +175,30 @@ class SingleEntry(object):
                 return True
         return False
 
-    def has(self, Cmd):
-        for candidate in self.__list:
-            if candidate == Cmd: return True
-        return False
+    def clear(self):
+        del self.__list[:]
+
+    def delete_dominated(self):
+        """Simplification to make Hopcroft Minimization more efficient. The first unconditional
+        acceptance makes any lower priorized acceptances meaningless. 
+
+        This function is to be seen in analogy with the function 'get_acceptance_detector'. 
+        Except for the fact that it requires the 'end of core pattern' markers of post
+        conditioned patterns. If the markers are not set, the store input position commands
+        are not called properly, and when restoring the input position bad bad things happen 
+        ... i.e. segmentation faults.
+        """
+        # NOTE: Acceptance origins sort before non-acceptance origins
+        min_acceptance_id = None
+        for cmd in self.get_iterable(Accept):
+            if min_acceptance_id is None or min_acceptance_id > cmd.acceptance_id():
+                min_acceptance_id = cmd.acceptance_id()
+
+        # Delete any Accept command where '.acceptance_id() > min_acceptance_id'
+        for i in xrange(len(self.__list)-1, -1, -1):
+            cmd = self.__list[i]
+            if cmd.__class__ == Accept and cmd.acceptance_id() > min_acceptance_id:
+                del self.__list[i]
 
     def hopcroft_combinability_key(self):
         """Two states have the same hopcroft-combinability key, if and only if
@@ -198,49 +240,6 @@ class SingleEntry(object):
 
         result = (acceptance_info, store_info)
         return result
-
-    def merge(self, Other):
-        assert isinstance(Other, SingleEntry)
-        self.__list.extend(
-            cmd.clone() for cmd in Other.__list if not self.has(cmd)
-        )
-
-    def merge_list(self, CmdIterableIterable):
-        for origin_iterable in CmdIterableIterable:
-            self.merge(origin_iterable)
-
-    def set(self, CmdList, ArgumentIsYoursF=False):
-        if ArgumentIsYoursF: 
-            assert type(CmdList) == list
-            self.__list = CmdList
-        else:                
-            self.__list = [ cmd.clone() for cmd in CmdList ]
-
-    def clear(self):
-        self.__list = []
-
-    def delete_dominated(self):
-        """Simplification to make Hopcroft Minimization more efficient. The first unconditional
-        acceptance makes any lower priorized acceptances meaningless. 
-
-        This function is to be seen in analogy with the function 'get_acceptance_detector'. 
-        Except for the fact that it requires the 'end of core pattern' markers of post
-        conditioned patterns. If the markers are not set, the store input position commands
-        are not called properly, and when restoring the input position bad bad things happen 
-        ... i.e. segmentation faults.
-        """
-        # NOTE: Acceptance origins sort before non-acceptance origins
-        min_acceptance_id = None
-        for cmd in self.get_iterable(Accept):
-            if min_acceptance_id is None or min_acceptance_id > cmd.acceptance_id():
-                min_acceptance_id = cmd.acceptance_id()
-
-        # Delete any Accept command where '.acceptance_id() > min_acceptance_id'
-        L = len(self.__list) 
-        for i in xrange(L-1, -1, -1):
-            cmd = self.__list[i]
-            if cmd.__class__ == Accept and cmd.acceptance_id() > min_acceptance_id:
-                del self.__list[i]
 
     def get_string(self, CmdalStatesF=True):
         if   not self.__list:       return "\n"

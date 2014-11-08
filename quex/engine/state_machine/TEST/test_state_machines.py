@@ -39,6 +39,13 @@ def add_origin(state, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInp
         cmd = StoreInputPosition()
         state.single_entry.add(cmd)
 
+def set_cmd_list(sm, StateIndex, *TheList):
+    sm.states[StateIndex].single_entry.set([ 
+        get_cmd(long(sm_id), long(state_index), acceptance_f) 
+        for sm_id, state_index, acceptance_f in TheList 
+    ])
+
+
 # (*) set up some state machines
 #
 # NOTE: We use globally unique state indices!

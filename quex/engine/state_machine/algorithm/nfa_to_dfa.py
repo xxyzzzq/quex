@@ -7,8 +7,8 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
     - which may be a NFA (non-deterministic finite automaton). 
     
     This is a generalized version of the 'subset construction' algorithm. Where
-    subsection construction focusses on letters of an alphabet for the
-    investigation of transitions, this algorithm focusses on elementary trigger
+    subsection construction focuses on letters of an alphabet for the
+    investigation of transitions, this algorithm focuses on elementary trigger
     sets. A very good description of the subset construction algorithm can be
     found in 'Engineering a Compiler' by Keith Cooper.
     """

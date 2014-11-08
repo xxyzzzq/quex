@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.14" date="Sat Nov  8 09:19:34 2014">
+<test-database execution-time-sec="1.14" date="Sat Nov  8 22:04:24 2014">
     <last-used-diff-display-program name=""/>
     <test title="(*) Exceptions during 'import'" time-sum-sec="0.39"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1415174545L" vanished="False"/>
@@ -40,7 +40,7 @@
         <application file-name="command_line_options-verify-doc.py" info-request-time="1415174545L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="True">
-           <choice name="man" result="FAIL" time_sec="0.04" crc="-702367166"/>
+           <choice name="man" result="OK" time_sec="0.04" crc="-702367166"/>
            <choice name="sphinx" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>

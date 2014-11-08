@@ -33,10 +33,12 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     # -- trivial pre-conditions should be added last, for simplicity
 
     #___________________________________________________________________________________________
-    if pre_context_sm is None and BeginOfLinePreContextF:
-        # Mark all acceptance states with the 'trivial pre-context BeginOfLine' flag
-        for state in the_state_machine.get_acceptance_state_list():
-            state.set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
+    if pre_context_sm is None:
+        # NOT: 'and ...' !
+        if BeginOfLinePreContextF:
+            # Mark all acceptance states with the 'trivial pre-context BeginOfLine' flag
+            for state in the_state_machine.get_acceptance_state_list():
+                state.set_pre_context_id(E_PreContextIDs.BEGIN_OF_LINE)
         return None
 
     # (*) Reverse the state machine of the pre-condition 
@@ -44,7 +46,7 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         
     if BeginOfLinePreContextF:
         # Extend the existing pre-context with a preceeding 'begin-of-line'.
-        reverse_newline_sm = reverse.do(StateMachine_Newline())
+        reverse_newline_sm  = reverse.do(StateMachine_Newline())
         reverse_pre_context = sequentialize.do([reverse_pre_context, 
                                                 reverse_newline_sm])
 

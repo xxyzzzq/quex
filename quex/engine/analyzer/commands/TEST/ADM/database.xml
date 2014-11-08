@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.60" date="Sat Nov  8 09:22:53 2014">
+<test-database execution-time-sec="4.60" date="Sat Nov  8 21:47:01 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -54,7 +54,7 @@
                <choice name="multiple" result="OK" time_sec="0.09" crc="-1427481276"/>
             </choice-list>
         </test>
-        <test title="can_be_moved_to_tail" time-sum-sec="0.15"> 
+        <test title="can_be_moved_to_tail" time-sum-sec="0.16"> 
             <application file-name="can_be_moved_to_tail.py" info-request-time="1415174548L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
