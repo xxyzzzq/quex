@@ -90,11 +90,12 @@ ________________________________________________________________________________
 ABSOLUTELY NO WARRANTY
 ________________________________________________________________________________
 """
+from   quex.engine.state_machine.state.single_entry import Accept, StoreInputPosition
+from   quex.engine.misc.tree_walker        import TreeWalker
+from   quex.engine.analyzer.paths_to_state import PathsToState
 from   quex.blackboard                     import E_IncidenceIDs, \
                                                   E_PreContextIDs, \
                                                   E_TransitionN
-from   quex.engine.misc.tree_walker        import TreeWalker
-from   quex.engine.analyzer.paths_to_state import PathsToState
 
 from   itertools   import izip
 from   copy        import copy
@@ -358,32 +359,33 @@ class _Trace(object):
         #     acceptances and store-input-position events.
         #     Origins must be sorted with the highest priority LAST, so that they will
         #     appear on top of the acceptance trace list.
-        for origin in sorted(State.single_entry, key=lambda x: x.acceptance_id(), reverse=True):
+        for cmd in sorted(State.single_entry.get_iterable(Accept), 
+                          key=lambda x: x.acceptance_id(), reverse=True):
             # Acceptance 
-            if origin.is_acceptance():
-                result.__acceptance_trace_add_at_front(origin, StateIndex)
+            result.__acceptance_trace_add_at_front(cmd, StateIndex)
 
+        for cmd in sorted(State.single_entry.get_iterable(StoreInputPosition), 
+                          key=lambda x: x.acceptance_id(), reverse=True):
             # Store Input Position Information
-            if origin.input_position_store_f():
-                result.__storage_db[origin.acceptance_id()] = _StoreInfo([StateIndex], 0)
+            result.__storage_db[cmd.acceptance_id()] = _StoreInfo([StateIndex], 0)
 
         assert len(result.__acceptance_trace) >= 1
         result.__compute_equivalence_hash()
         return result
 
-    def __acceptance_trace_add_at_front(self, Origin, StateIndex):
-        """Assume that the 'Origin' belongs to a state with index 'StateIndex' that
+    def __acceptance_trace_add_at_front(self, Cmd, StateIndex):
+        """Assume that the 'Cmd' belongs to a state with index 'StateIndex' that
            comes after all states on the before considered path.
-           Assume that the 'Origin' talks about 'acceptance'.
+           Assume that the 'Cmd' talks about 'acceptance'.
         """
         # If there is an unconditional acceptance, it dominates all previous 
         # occurred acceptances (philosophy of longest match).
-        if Origin.pre_context_id() == E_PreContextIDs.NONE:
+        if Cmd.pre_context_id() == E_PreContextIDs.NONE:
             del self.__acceptance_trace[:]
 
         # Input Position Store/Restore
-        acceptance_id = Origin.acceptance_id()
-        if Origin.input_position_restore_f():
+        acceptance_id = Cmd.acceptance_id()
+        if Cmd.restore_position_register_f():
             # Restorage of Input Position (Post Contexts): refer to the 
             # input position at the time when it was stored.
             entry                          = self.__storage_db[acceptance_id]
@@ -402,7 +404,7 @@ class _Trace(object):
             # From the above rule, it follows that there is only one entry per acceptance_id.
             break
 
-        entry = _AcceptInfo(Origin.pre_context_id(), acceptance_id,
+        entry = _AcceptInfo(Cmd.pre_context_id(), acceptance_id,
                            AcceptingStateIndex         = StateIndex, 
                            PathSincePositioning        = path_since_positioning, 
                            TransitionNSincePositioning = transition_n_since_positioning) 
