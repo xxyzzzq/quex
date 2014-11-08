@@ -195,8 +195,8 @@ def do(SM, ToDB):
                     if not trace.is_equivalent(pioneer, end_of_road_f): 
                         continue
                     if trace.has_parent(pioneer):
-                        # Loop detected -- Continuation unecessary. 
-                        # Nothing new happend since last passage.
+                        # Loop detected -- Continuation unnecessary. 
+                        # Nothing new happened since last passage.
                         # If trace was not equivalent, the loop would have to be stepped through again.
                         #if StateIndex == 6: print "#has parent", pioneer
                         return None
@@ -405,9 +405,9 @@ class _Trace(object):
             break
 
         entry = _AcceptInfo(Cmd.pre_context_id(), acceptance_id,
-                           AcceptingStateIndex         = StateIndex, 
-                           PathSincePositioning        = path_since_positioning, 
-                           TransitionNSincePositioning = transition_n_since_positioning) 
+                            AcceptingStateIndex         = StateIndex, 
+                            PathSincePositioning        = path_since_positioning, 
+                            TransitionNSincePositioning = transition_n_since_positioning) 
 
         # Insert at the beginning, because what comes last has the highest
         # priority.  (Philosophy of longest match). The calling function must
