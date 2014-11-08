@@ -3,6 +3,7 @@ from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.interval_handling                import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
+from   quex.engine.state_machine.state.single_entry import Accept
 
 from   quex.engine.tools  import flatten_list_of_lists
 from   quex.blackboard    import E_IncidenceIDs, \
@@ -484,33 +485,25 @@ class StateMachine(object):
 
         return index_map, inverse_index_map, index_sequence
 
-    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, AcceptanceID_Offset=None):
-        pre_context_id_set = set()
-        pattern_id_set     = set()
-        def enter(collection, Value, TheEnum):
-            if Value not in TheEnum:
-                collection.add(Value)
+    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, 
+                                                  AcceptanceID_Offset=None):
+        repl_db_pre_context_id = {}
+        repl_db_acceptance_id  = {}
 
+        def enter(db, Value, TheEnum, NewId):
+            if Value in TheEnum: db[Value] = Value;  return NewId
+            else:                db[Value] = NewId;  return NewId + 1
+
+        count_i = 1 # --> new pre-context ids
+        count_k = 1 # --> new pattern ids
         for state in self.states.itervalues():
-            for origin in state.single_entry:
-                enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
-                enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs)
+            for cmd in state.single_entry.get_iterable(Accept):            
+                count_i = enter(repl_db_pre_context_id, cmd.pre_context_id(), 
+                                E_PreContextIDs, count_i)
+                count_k = enter(repl_db_acceptance_id,  cmd.acceptance_id(),  
+                                E_IncidenceIDs, count_k)
 
-        def get_map(id_set, Offset):
-            """The 'order' of the IDs must be maintained! In particular, a 
-            AcceptanceID with higher precedence than another, must remain of 
-            higher precedence."""
-            result = {}
-            for x in sorted(id_set):
-                result[x] = long(len(result) + Offset)
-            return result
-
-        if PreContextID_Offset is None: PreContextID_Offset = 1 # Avoid ID = 0
-        if AcceptanceID_Offset is None: AcceptanceID_Offset    = 1 # Avoid ID = 0
-        assert PreContextID_Offset > 0
-        assert AcceptanceID_Offset    > 0
-        return get_map(pre_context_id_set, PreContextID_Offset), \
-               get_map(pattern_id_set, AcceptanceID_Offset)
+        return repl_db_pre_context_id, repl_db_acceptance_id
 
     def get_string(self, NormalizeF=False, Option="utf8", OriginalStatesF=True):
         assert Option in ["utf8", "hex"]

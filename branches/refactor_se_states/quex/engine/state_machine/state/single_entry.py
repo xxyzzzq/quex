@@ -126,6 +126,10 @@ class SingleEntry(object):
             if cmd.__class__ == CmdClass: return cmd
         return None
 
+    def get_iterable(self, CmdClass):
+        for cmd in self.__list:
+            if cmd.__class__ == CmdClass: yield cmd
+        
     def add_Cmd(self, CmdClass):
         cmd = self.find(CmdClass)
         if cmd is not None: return
