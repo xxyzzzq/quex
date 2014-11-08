@@ -16,7 +16,7 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
     initial_state_epsilon_closure = SM.get_epsilon_closure(SM.init_state_index) 
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
-    #     -- add the origin list of all states in the epsilon closure
+    #     -- add the command list of all states in the epsilon closure
     InitState = Class_State.from_state_iterable(
                            SM.states[i] for i in initial_state_epsilon_closure)
 

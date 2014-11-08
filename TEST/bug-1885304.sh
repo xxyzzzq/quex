@@ -20,7 +20,7 @@ if [[ $1 == "--hwut-info" ]]; then
 fi
 
 tmp=`pwd`
-pushd 1885304/ 
+pushd 1885304/  >& /dev/null
 
 rm -f Dos* Unix* tmp*.txt
 
@@ -60,4 +60,4 @@ echo
 echo "DONE"
 
 rm -f Dos* Unix* tmp*.txt
-popd
+popd >& /dev/null

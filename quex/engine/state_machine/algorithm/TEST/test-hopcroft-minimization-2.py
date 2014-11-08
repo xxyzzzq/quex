@@ -28,7 +28,7 @@ else:
     sys.exit(-1)
 
 
-print "NOTE: '((4[a])) stands for 'state number 4 which has origin pattern 4'"
+print "NOTE: '((4[a])) stands for 'state number 4 which has accepts pattern 4'"
 
 test_i = 0
 def test(sm, txt):

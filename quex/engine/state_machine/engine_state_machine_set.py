@@ -232,16 +232,10 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
                   "Orphan state(s) = " + repr(orphan_state_list)) 
 
     def __check_on_init_state_not_acceptance(Place, sm):
-        init_state = sm.get_init_state()
-        if init_state.is_acceptance():
+        if sm.get_init_state().is_acceptance():
             error_msg("After '%s'" % Place + "\n" + \
-                      "The initial state is 'acceptance'. This should never appear.\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
-
-        for dummy in ifilter(lambda origin: origin.is_acceptance(), init_state.single_entry):
-            error_msg("After '%s'" % Place + "\n" + \
-                      "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
+                      "Initial state 'accepts'. This should never happen.\n" + \
+                      "Please, log a defect at the projects web site quex.sourceforge.net.\n")
 
     # (1) mark at each state machine the machine and states as 'original'.
     #      

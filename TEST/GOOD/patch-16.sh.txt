@@ -5,6 +5,6 @@ quex -i simple.qx \
 		 --token-memory-management-by-user \
 		 --debug-exception \
 		-o simple
-gcc -ggdb -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0  -I. -Wimplicit -c simple.c -o simple.o
-gcc -ggdb -I/home/fschaef/prj/quex/trunk -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0  -I. -Wimplicit -c main.c -o main.o
+gcc -ggdb -I<<QUEX_PATH>> -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0  -I. -Wimplicit -c simple.c -o simple.o
+gcc -ggdb -I<<QUEX_PATH>> -DQUEX_OPTION_ASSERTS_DISABLED -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0  -I. -Wimplicit -c main.c -o main.o
 gcc -o lexer simple.o main.o

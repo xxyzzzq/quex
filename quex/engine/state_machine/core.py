@@ -487,16 +487,16 @@ class StateMachine(object):
 
     def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, AcceptanceID_Offset=None):
 
-        def enter(db, Value, TheEnum, NewId):
-            if Value in TheEnum: db[Value] = Value; return NewId
-            else:                db[Value] = NewId; return NewId + 1
-
         pre_context_id_set = set()
         acceptance_id_set  = set()
         for state in self.states.itervalues():
             for cmd in state.single_entry.get_iterable(Accept):
                 pre_context_id_set.add(cmd.pre_context_id())
                 acceptance_id_set.add(cmd.acceptance_id())
+                
+        def enter(db, Value, TheEnum, NewId):
+            if Value in TheEnum: db[Value] = Value; return NewId
+            else:                db[Value] = NewId; return NewId + 1
 
         i = 1L
         repl_db_pre_context_id = {}
@@ -757,11 +757,6 @@ class StateMachine(object):
            If OtherStateMachineID and StateIdx are specified other origins
               than the current state machine can be defined (useful for pre- and post-
               conditions).         
-
-           DontMarkIfOriginsPresentF can be set to ensure that origin data structures
-              are only provided for states where non is set yet. This can be unsed
-              to ensure that every state has an origin structure related to it, without
-              overiding existing ones.
         """
         assert type(OtherStateMachineID) == long
 
