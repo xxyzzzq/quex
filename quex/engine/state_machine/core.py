@@ -485,23 +485,28 @@ class StateMachine(object):
 
         return index_map, inverse_index_map, index_sequence
 
-    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, 
-                                                  AcceptanceID_Offset=None):
-        repl_db_pre_context_id = {}
-        repl_db_acceptance_id  = {}
+    def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, AcceptanceID_Offset=None):
 
         def enter(db, Value, TheEnum, NewId):
-            if Value in TheEnum: db[Value] = Value;  return NewId
-            else:                db[Value] = NewId;  return NewId + 1
+            if Value in TheEnum: db[Value] = Value; return NewId
+            else:                db[Value] = NewId; return NewId + 1
 
-        count_i = 1 # --> new pre-context ids
-        count_k = 1 # --> new pattern ids
+        pre_context_id_set = set()
+        acceptance_id_set  = set()
         for state in self.states.itervalues():
-            for cmd in state.single_entry.get_iterable(Accept):            
-                count_i = enter(repl_db_pre_context_id, cmd.pre_context_id(), 
-                                E_PreContextIDs, count_i)
-                count_k = enter(repl_db_acceptance_id,  cmd.acceptance_id(),  
-                                E_IncidenceIDs, count_k)
+            for cmd in state.single_entry.get_iterable(Accept):
+                pre_context_id_set.add(cmd.pre_context_id())
+                acceptance_id_set.add(cmd.acceptance_id())
+
+        i = 1L
+        repl_db_pre_context_id = {}
+        for pre_context_id in sorted(pre_context_id_set):
+            i = enter(repl_db_pre_context_id, pre_context_id, E_PreContextIDs, i)
+
+        i = 1L
+        repl_db_acceptance_id  = {}
+        for acceptance_id in sorted(acceptance_id_set):
+            i = enter(repl_db_acceptance_id, acceptance_id, E_IncidenceIDs, i)
 
         return repl_db_pre_context_id, repl_db_acceptance_id
 
