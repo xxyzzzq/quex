@@ -8,8 +8,9 @@ fi
 tmp=`pwd`
 cd $bug/ 
 make >& tmp.txt
-cat tmp.txt | awk '(/[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ '
+cat tmp.txt | awk '(/[Ee][Rr][Rr][Oo][Rr]/) && ! /ASSERTS/ ' > tmp.log
 rm tmp.txt
+../quex_pathify.sh tmp.log
 
 echo "Only output shall be: No memory leaks!"
 valgrind ./lexer >& tmp.txt

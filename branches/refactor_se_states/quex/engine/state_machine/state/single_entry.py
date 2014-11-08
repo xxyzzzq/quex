@@ -114,9 +114,6 @@ class SingleEntry(object):
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
         return SingleEntry.from_iterable(x.clone(ReplDbPreContext=ReplDbPreContext, ReplDbAcceptance=ReplDbAcceptance) for x in self.__list)
 
-    def get_list(self):
-        return self.__list
-
     @typed(Cmd=SeCmd)
     def add(self, Cmd):
         self.__list.append(Cmd.clone())
@@ -125,6 +122,9 @@ class SingleEntry(object):
         for cmd in self.__list:
             if cmd.__class__ == CmdClass: return cmd
         return None
+    
+    def get_list(self):
+        return self.__list
 
     def get_iterable(self, CmdClass):
         for cmd in self.__list:
@@ -142,14 +142,14 @@ class SingleEntry(object):
             if cmd.__class__ == CmdClass: del self.__list[i]
 
     def has_acceptance_id(self, AcceptanceID):
-        for cmd in self:
-            if cmd.__class__ == Accept and cmd.acceptance_id() == AcceptanceID:
+        for cmd in self.get_iterable(Accept):
+            if cmd.acceptance_id() == AcceptanceID:
                 return True
         return False
 
     def has_begin_of_line_pre_context(self):
-        for cmd in self:
-            if cmd.__class__ == Accept and cmd.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE:
+        for cmd in self.get_iterable(Accept):
+            if cmd.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE:
                 return True
         return False
 
@@ -163,7 +163,7 @@ class SingleEntry(object):
         they are combinable during the initial state split in the hopcroft
         minimization. Criteria:
         
-        (1) Acceptance states of a different origin constellation. The
+        (1) Acceptance states of a different acceptance schemes. The
             decision making about the winning pattern must be the same for all
             states of a state set that is possibly combined into one single
             state. 
@@ -180,27 +180,23 @@ class SingleEntry(object):
         tuples is used during the hopcroft minimization to distinguish between
         combinable states and those that are not.
         """
-        def acceptance_info():
-            """Before the track analysis, the acceptance in a state is simple
-            given by its precedence, i.e. its acceptance id. Thus, the sorted
-            sequence of acceptance ids identifies the acceptance behavior.
-            """
-            return tuple(sorted(x.acceptance_id() 
-                                for x in self if x.__class__ == Accept))
 
-        # (2) Separate by Store-Input-Position Behavior
-        def store_info():
-            """The storing of input positions in registers is independent of its
-            position in the command list (as long as it all happens before the increment
-            of the input pointer, of course).
+        # Before the track analysis, the acceptance in a state is simple
+        # given by its precedence, i.e. its acceptance id. Thus, the sorted
+        # sequence of acceptance ids identifies the acceptance behavior.
+        acceptance_info = tuple(sorted(x.acceptance_id() 
+                                       for x in self.get_iterable(Accept)))
 
-            The sorted list of position storage registers where positions are stored
-            is a distinct description of the position storing behavior.
-            """
-            return tuple(sorted(x.acceptance_id() 
-                                for x in self if x.__class__ == StoreInputPosition))
+        # The storing of input positions in registers is independent of its
+        # position in the command list (as long as it all happens before the increment
+        # of the input pointer, of course).
+        #
+        # The sorted list of position storage registers where positions are stored
+        # is a distinct description of the position storing behavior.
+        store_info = tuple(sorted(x.acceptance_id() 
+                                  for x in self.get_iterable(StoreInputPosition)))
 
-        result = (acceptance_info(), store_info())
+        result = (acceptance_info, store_info)
         return result
 
     def merge(self, Other):
@@ -235,7 +231,7 @@ class SingleEntry(object):
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
         min_acceptance_id = None
-        for cmd in (x for x in self.__list if x.__class__ == Accept):
+        for cmd in self.get_iterable(Accept):
             if min_acceptance_id is None or min_acceptance_id > cmd.acceptance_id():
                 min_acceptance_id = cmd.acceptance_id()
 
@@ -255,20 +251,10 @@ class SingleEntry(object):
                 return (0, X.acceptance_id(), X.pre_context_id(), X.restore_position_register_f())
             elif X.__class__ == StoreInputPosition: 
                 return (1, X.acceptance_id())
+            else:
+                assert False
 
-        return reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key=key))
-
-    def take_out_FAILURE(self):
-        L = len(self.__list)
-        for i in xrange(L-1, -1, -1):
-            if self.__list[i].acceptance_id() == E_IncidenceIDs.MATCH_FAILURE:
-                del self.__list[i]
-
-    def is_there_a_non_FAILURE(self):
-        for origin in self.__list:
-            if origin.acceptance_id() != E_IncidenceIDs.MATCH_FAILURE:
-                return True
-        return False
+        return "%s\n" % reduce(lambda x, y: "%s, %s" % (x, y), sorted(self.__list, key=key))
 
     def __iter__(self):
         for x in self.__list:

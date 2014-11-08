@@ -44,8 +44,7 @@ class X:
                        (i, interval.begin, interval.end - 1, repr(map(lambda x: "%04X." % x, utf16_seq)))
 
                 # All acceptance flags must belong to the original state machine
-                for cmd in result.states[s_idx].single_entry:
-                    if not cmd.__class__ == Accept: continue
+                for cmd in result.states[s_idx].single_entry.get_iterable(Accept):
                     # HERE: As soon as something is wrong --> fire an exception
                     assert cmd.acceptance_id() == self.id
 
@@ -67,8 +66,8 @@ def check_negative(SM, ImpossibleIntervals):
             if s_idx is None: continue
 
             # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
-            for origin in result.states[s_idx].single_entry:
-                assert not origin.is_acceptance()
+            for cmd in result.states[s_idx].single_entry:
+                assert not cmd.is_acceptance()
 
     print " (OK)"
 

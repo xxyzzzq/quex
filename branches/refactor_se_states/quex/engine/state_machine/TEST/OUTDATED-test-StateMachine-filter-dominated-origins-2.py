@@ -50,10 +50,10 @@ def print_this(Title):
     print "(*) " + Title    
     print
 
-    for origin in si.single_entry:
+    for cmd in si.single_entry:
         acceptance_mark = " "
-        if origin.is_acceptance(): acceptance_mark = "*"
-        print acceptance_mark + repr(origin)
+        if cmd.is_acceptance(): acceptance_mark = "*"
+        print acceptance_mark + repr(cmd)
 
     print "---------------------------------------------------------------------"
 
