@@ -1,4 +1,4 @@
-from   quex.engine.analyzer.commands.core import CommandList
+from   quex.engine.commands.core import CommandList
 
 from   quex.blackboard import E_StateIndices, \
                               E_TriggerIDs

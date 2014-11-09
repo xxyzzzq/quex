@@ -27,7 +27,7 @@ where its leafs are the entries from other states.
 _______________________________________________________________________________
 """
 from   quex.engine.analyzer.door_id_address_label import IfDoorIdReferencedLabel
-from   quex.engine.analyzer.commands.tree         import CommandTree
+from   quex.engine.commands.tree         import CommandTree
 from   quex.engine.tools                          import flatten_list_of_lists, \
                                                          typed
 from   quex.blackboard                            import Lng

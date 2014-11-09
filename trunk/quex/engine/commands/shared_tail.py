@@ -27,7 +27,7 @@ lists can be implemented as
 
 (C) Frank-Rene Schaefer
 """
-import quex.engine.analyzer.commands.core as commands
+import quex.engine.commands.core as commands
 
 
 def r_find_last_common(CL0_r, DoneSet0, CL1_r, DoneSet1):

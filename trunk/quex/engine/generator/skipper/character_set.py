@@ -1,5 +1,5 @@
 from   quex.engine.counter                        import CountCmdFactory
-from   quex.engine.analyzer.commands.core         import GotoDoorId
+from   quex.engine.commands.core         import GotoDoorId
 
 import quex.engine.generator.loop                 as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine

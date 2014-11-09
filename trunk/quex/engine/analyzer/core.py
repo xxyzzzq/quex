@@ -46,14 +46,14 @@ from   quex.engine.analyzer.state.core            import Processor, \
                                                          ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionAction
-from   quex.engine.analyzer.commands.core         import InputPDereference, \
+from   quex.engine.commands.core         import InputPDereference, \
                                                          InputPIncrement, \
                                                          InputPDecrement,  \
                                                          PreContextOK, \
                                                          Accepter, \
                                                          Router
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
-from   quex.engine.analyzer.commands.core         import CommandList
+from   quex.engine.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 

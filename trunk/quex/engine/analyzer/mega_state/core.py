@@ -56,7 +56,7 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.analyzer.commands.core         import Command, \
+from quex.engine.commands.core         import Command, \
                                                        CommandList, \
                                                        RouterOnStateKey
 from quex.engine.analyzer.door_id_address_label import dial_db

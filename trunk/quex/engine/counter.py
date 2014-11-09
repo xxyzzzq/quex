@@ -5,7 +5,7 @@ from   quex.engine.interval_handling              import NumberSet
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.generator.code.core            import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label import dial_db
-from   quex.engine.analyzer.commands.core         import E_R, \
+from   quex.engine.commands.core                  import E_R, \
                                                          AssignConstant, \
                                                          ColumnCountAdd, \
                                                          ColumnCountGridAdd, \

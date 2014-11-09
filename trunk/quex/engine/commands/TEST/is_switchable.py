@@ -17,8 +17,8 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                            import E_Cmd
-from   quex.engine.analyzer.commands.core         import *
-from   quex.engine.analyzer.commands.TEST.helper  import example_db
+from   quex.engine.commands.core         import *
+from   quex.engine.commands.TEST.helper  import example_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
 
 from   collections import defaultdict

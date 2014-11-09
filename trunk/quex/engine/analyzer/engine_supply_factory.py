@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.analyzer.commands.core      import CommandList, \
+from   quex.engine.commands.core      import CommandList, \
                                                       GotoDoorId, \
                                                       InputPIncrement, \
                                                       QuexAssertNoPassage, \

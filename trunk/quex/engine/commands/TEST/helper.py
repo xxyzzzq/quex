@@ -1,7 +1,7 @@
-from   quex.engine.analyzer.commands.core         import *
-from   quex.engine.analyzer.commands.core         import _cost_db
+from   quex.engine.commands.core         import *
+from   quex.engine.commands.core         import _cost_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
-import quex.engine.analyzer.commands.shared_tail  as command_list_shared_tail
+import quex.engine.commands.shared_tail  as command_list_shared_tail
 from   quex.engine.generator.languages.core       import db
 import quex.engine.analyzer.engine_supply_factory as     engine
 
