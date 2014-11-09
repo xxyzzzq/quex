@@ -16,7 +16,7 @@ from   quex.blackboard                   import setup as Setup, \
 from   quex.input.code.base   import SourceRef
 from   quex.input.setup                  import NotificationDB
 import quex.input.regular_expression.snap_backslashed_character as snap_backslashed_character
-from   quex.engine.unicode_db.parser     import ucs_property_db
+from   quex.engine.codec_db.unicode.parser     import ucs_property_db
 from   quex.engine.misc.utf8                  import __read_one_utf8_code_from_stream
 from   quex.input.code.core   import CodeUser 
 

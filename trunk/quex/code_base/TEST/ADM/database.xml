@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.62" date="Sun Nov  9 22:52:14 2014">
+<test-database execution-time-sec="1.13" date="Mon Nov 10 00:37:01 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
@@ -19,37 +19,37 @@
         </test>
     </group>
     <group name="Consistency">
-        <test title="Files in multi.i are not included elsewhere." time-sum-sec="0.58"> 
+        <test title="Files in multi.i are not included elsewhere." time-sum-sec="1.06"> 
             <application file-name="test-include-Multi.sh" info-request-time="1406100104L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+\ files"/>
             <happy-pattern re="[0-9]+\ files"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.58" crc="-2071775558"/>
+               <choice name="" result="OK" time_sec="1.06" crc="-2071775558"/>
             </choice-list>
         </test>
     </group>
     <group name="StrangeStream">
-        <test title="char stream based." make-dependent="True" time-sum-sec="0.02"> 
+        <test title="char stream based." make-dependent="True" time-sum-sec="0.04"> 
             <application file-name="strange_stream.exe" info-request-time="1415566916L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.686914"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="4" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="4" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
-        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.02"> 
+        <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.03"> 
             <application file-name="strange_wstream.exe" info-request-time="1415566918L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.604029"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
                <choice name="4" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="5" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="5" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
     </group>
