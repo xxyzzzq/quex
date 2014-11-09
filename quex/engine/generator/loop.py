@@ -2,7 +2,7 @@ from   quex.engine.state_machine.engine_state_machine_set import CharacterSetSta
 from   quex.engine.generator.languages.variable_db     import variable_db
 import quex.engine.generator.base                      as     generator
 import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.analyzer.commands.core              import E_R, \
+from   quex.engine.commands.core              import E_R, \
                                                               CommandList, \
                                                               GotoDoorIdIfInputPNotEqualPointer, \
                                                               ColumnCountReferencePDeltaAdd, \

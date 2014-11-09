@@ -9,7 +9,7 @@ from   quex.engine.analyzer.transition_map                         import Transi
 import quex.engine.analyzer.mega_state.template.core               as     templates
 from   quex.engine.analyzer.mega_state.template.state              import combine_maps, TemplateState
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
-import quex.engine.analyzer.commands.tree                 as     entry_door_tree
+import quex.engine.commands.tree                 as     entry_door_tree
 
 from   quex.engine.interval_handling import *
 

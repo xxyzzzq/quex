@@ -40,9 +40,9 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                            import E_Cmd
-from   quex.engine.analyzer.commands.core         import *
-from   quex.engine.analyzer.commands.shared_tail  import r_can_be_moved_to_tail
-from   quex.engine.analyzer.commands.TEST.helper  import *
+from   quex.engine.commands.core         import *
+from   quex.engine.commands.shared_tail  import r_can_be_moved_to_tail
+from   quex.engine.commands.TEST.helper  import *
 from   quex.engine.analyzer.door_id_address_label import DoorID
 
 from   collections import defaultdict

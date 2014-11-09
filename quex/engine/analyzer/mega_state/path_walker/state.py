@@ -1,5 +1,5 @@
 # (C) 2010-2014 Frank-Rene Schaefer
-from   quex.engine.analyzer.commands.core         import PathIteratorSet
+from   quex.engine.commands.core         import PathIteratorSet
 from   quex.engine.analyzer.mega_state.core       import MegaState, \
                                                          StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \

@@ -16,7 +16,7 @@ import quex.engine.generator.languages.cpp               as     cpp
 from   quex.engine.generator.code.base                   import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
-from   quex.engine.analyzer.commands.core                import E_R, \
+from   quex.engine.commands.core                import E_R, \
                                                                 RouterContentElement
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState

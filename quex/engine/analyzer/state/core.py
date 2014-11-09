@@ -4,7 +4,7 @@ from   quex.engine.analyzer.transition_map         import TransitionMap
 from   quex.engine.analyzer.state.entry            import Entry
 from   quex.engine.analyzer.state.entry_action     import TransitionAction
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.analyzer.commands.core          import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference, \
+from   quex.engine.commands.core          import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference, \
                                                           RouterOnStateKey
 from   quex.engine.tools import typed
 from   quex.blackboard  import setup as Setup, \

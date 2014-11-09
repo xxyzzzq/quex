@@ -83,7 +83,7 @@ FUNCTIONS:
 _______________________________________________________________________________
 """
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
-import quex.engine.analyzer.commands.shared_tail  as     shared_tail
+import quex.engine.commands.shared_tail  as     shared_tail
 from   quex.engine.tools                          import flatten_list_of_lists
 
 from quex.engine.tools import typed, TypedDict

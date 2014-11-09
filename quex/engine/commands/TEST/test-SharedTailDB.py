@@ -23,10 +23,10 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.blackboard                            import E_Cmd
-from   quex.engine.analyzer.commands.core         import *
-import quex.engine.analyzer.commands.shared_tail  as     shared_tail
-from   quex.engine.analyzer.commands.tree         import SharedTailDB
-from   quex.engine.analyzer.commands.TEST.helper  import *
+from   quex.engine.commands.core         import *
+import quex.engine.commands.shared_tail  as     shared_tail
+from   quex.engine.commands.tree         import SharedTailDB
+from   quex.engine.commands.TEST.helper  import *
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 
 from   collections import defaultdict
