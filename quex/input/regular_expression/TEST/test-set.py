@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from StringIO import StringIO
-from quex.exception import RegularExpressionException
+from quex.input.regular_expression.exception import RegularExpressionException
 
 import quex.input.regular_expression.traditional_character_set as character_set
 from   quex.engine.state_machine.core import StateMachine

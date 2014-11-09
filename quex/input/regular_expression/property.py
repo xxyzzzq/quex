@@ -1,6 +1,6 @@
 from quex.engine.unicode_db.parser    import ucs_property_db
 from quex.engine.misc.file_in         import skip_whitespace
-from quex.exception              import RegularExpressionException
+from quex.input.regular_expression.exception              import RegularExpressionException
 
 from quex.input.regular_expression.auxiliary import __snap_until 
 

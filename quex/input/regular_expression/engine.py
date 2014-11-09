@@ -69,7 +69,7 @@ from   quex.engine.misc.file_in       import error_msg, \
                                              read_until_letter
 import quex.engine.utf8               as utf8
 from   quex.blackboard                import setup as Setup
-from   quex.exception                 import RegularExpressionException
+from   quex.input.regular_expression.exception                 import RegularExpressionException
 
 from   StringIO import StringIO
 import sys

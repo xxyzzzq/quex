@@ -4,7 +4,7 @@ import os
 import StringIO
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
-import quex.exception as exception
+import quex.input.regular_expression.exception as exception
 from   quex.input.regular_expression.engine import snap_character_set_expression
 
 if "--hwut-info" in sys.argv:

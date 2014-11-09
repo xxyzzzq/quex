@@ -1,4 +1,4 @@
-from quex.exception import RegularExpressionException
+from quex.input.regular_expression.exception import RegularExpressionException
 from StringIO       import StringIO
 
 backslashed_character_db = { 

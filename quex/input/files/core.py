@@ -37,7 +37,7 @@ from   quex.engine.generator.code.base     import SourceRef
 from   quex.engine.generator.code.core     import CodeUser
 from   quex.blackboard                     import setup as Setup, Lng
 import quex.blackboard                     as     blackboard
-from   quex.exception                      import RegularExpressionException
+from   quex.input.regular_expression.exception                      import RegularExpressionException
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
