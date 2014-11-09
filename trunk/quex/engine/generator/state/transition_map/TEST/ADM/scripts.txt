@@ -1,0 +1,2 @@
+python *.py
+--not run_coverage.sh

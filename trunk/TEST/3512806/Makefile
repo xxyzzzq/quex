@@ -21,4 +21,4 @@ tiny_lexer.c:
 
 clean: 
 	rm -rf ./lexer
-	rm -f ./tiny_lexer.*
+	rm -f ./tiny_lexer*
