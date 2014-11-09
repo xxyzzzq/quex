@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.01" date="Sun Nov  9 00:35:13 2014">
+<test-database execution-time-sec="0.01" date="Sun Nov  9 08:23:47 2014">
     <last-used-diff-display-program name=""/>
     <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="statistics.exe" info-request-time="1415485629L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="0.240749"/>
+        <make-procedure success="False" time_sec="0.240749"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1432648595"/>
         </choice-list>
@@ -11,7 +11,7 @@
     <test title="Accumulator" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="accumulator.exe" info-request-time="1415485632L" vanished="False"/>
         <analogy open="((" close="))"/>
-        <make-procedure success="True" time_sec="0.527850"/>
+        <make-procedure success="False" time_sec="0.527850"/>
         <choice-list number="5" same_result="False">
            <choice name="String" result="OK" time_sec="0.00" crc="1490722418"/>
            <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
@@ -31,7 +31,7 @@
         <test title="Enter" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="post-categorizer-find.exe" info-request-time="1415485628L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.776175"/>
+            <make-procedure success="False" time_sec="0.776175"/>
             <choice-list number="7" same_result="True">
                <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
@@ -45,7 +45,7 @@
         <test title="Remove Total" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="post-categorizer-remove-total.exe" info-request-time="1415485632L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.959490"/>
+            <make-procedure success="False" time_sec="0.959490"/>
             <choice-list number="7" same_result="True">
                <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
@@ -59,7 +59,7 @@
         <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="post-categorizer-remove-2.exe" info-request-time="1415485629L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.922733"/>
+            <make-procedure success="False" time_sec="0.922733"/>
             <choice-list number="7" same_result="False">
                <choice name="Ab" result="OK" time_sec="0.00" crc="156350769"/>
                <choice name="Ad" result="OK" time_sec="0.00" crc="-615592824"/>
@@ -73,7 +73,7 @@
         <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="post-categorizer-remove.exe" info-request-time="1415485630L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.801158"/>
+            <make-procedure success="False" time_sec="0.801158"/>
             <choice-list number="8" same_result="True">
                <choice name="Aa" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
@@ -88,7 +88,7 @@
         <test title="Enter" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="post-categorizer-enter.exe" info-request-time="1415485631L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.787101"/>
+            <make-procedure success="False" time_sec="0.787101"/>
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.00" crc="-998642932"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-271066271"/>
