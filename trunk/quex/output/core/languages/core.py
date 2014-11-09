@@ -476,7 +476,7 @@ class Lng_Cpp(dict):
     @typed(DoorId=DoorID)
     def GOTO(self, DoorId):
         if DoorId.last_acceptance_f():
-             return "QUEX_GOTO_TERMINAL(last_acceptance);"
+            return "QUEX_GOTO_TERMINAL(last_acceptance);"
         return "goto %s;" % dial_db.get_label_by_door_id(DoorId, GotoedF=True)
 
     def GOTO_BY_VARIABLE(self, VariableName):

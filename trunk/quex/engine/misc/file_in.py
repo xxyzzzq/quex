@@ -546,13 +546,6 @@ def write_safely_and_close(FileName, txt):
     fh.write(txt)
     fh.close()
 
-def read_next_word(fh):
-    skip_whitespace(fh)
-    word = read_until_whitespace(fh)
-
-    if word == "": raise EndOfStreamException()
-    return word
-
 def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
     # fh        = filehandle [1] or filename [2]
     # LineN     = line_number of error
