@@ -6,7 +6,7 @@
 # Replace occurrencies of the QUEX_PATH in the output 
 # by "<<QUEX_PATH>>".
 #
-extra=`echo $QUEX_PATH | sed -e 's/\\//\\\\\\//g'`
+extra=`echo $QUEX_PATH | sed -e 's/\\/$//g' | sed -e 's/\\//\\\\\\//g'`
 
 case $1 in
     --string)

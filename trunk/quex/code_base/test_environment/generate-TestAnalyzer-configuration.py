@@ -3,12 +3,13 @@ import sys
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.output.cpp.configuration   as configuration
-from   quex.blackboard                 import Lng, setup as Setup
-from   quex.engine.generator.languages.core        import db
 import quex.input.command_line.core    as command_line
-from   quex.engine.misc.file_in        import open_file_or_die
 import quex.input.files.core           as quex_file_parser
+from   quex.engine.misc.file_in        import open_file_or_die
+from   quex.output.core.languages.core import db
+import quex.output.cpp.configuration   as configuration
+
+from   quex.blackboard                 import Lng, setup as Setup
 
 Setup.language_db = db[Setup.language]
 

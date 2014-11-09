@@ -4,7 +4,7 @@ from   quex.engine.misc.tools                          import typed
 from   quex.engine.misc.file_in                   import error_msg
 from   quex.engine.state_machine.core             import StateMachine  
 import quex.engine.state_machine.algorithm.beautifier as beautifier    
-from   quex.engine.generator.code.base            import SourceRefObject, \
+from   quex.output.core.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
 from   quex.engine.misc.interval_handling              import NumberSet

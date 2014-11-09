@@ -1,4 +1,4 @@
-<<QUEX_PATH>>quex/code_base/buffer/BufferFiller.i:161:	terminate called after throwing an instance of 'std::runtime_error'
+<<QUEX_PATH>>/quex/code_base/buffer/BufferFiller.i:161:	terminate called after throwing an instance of 'std::runtime_error'
   what():  
 The provided input stream behaves strangely. Number of read
 characters is not proportional to the stream position increase.

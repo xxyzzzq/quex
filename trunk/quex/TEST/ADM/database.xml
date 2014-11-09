@@ -1,10 +1,10 @@
-<test-database execution-time-sec="1.15" date="Sun Nov  9 08:23:47 2014">
+<test-database execution-time-sec="1.14" date="Sun Nov  9 12:43:37 2014">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.39"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.40"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.39" crc="None"/>
+           <choice name="" result="OK" time_sec="0.40" crc="None"/>
         </choice-list>
     </test>
     <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.02"> 

@@ -9,7 +9,7 @@ import quex.input.command_line.query      as      query
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
                                                  NotificationDB
-from   quex.engine.generator.code.base    import SourceRef
+from   quex.output.core.code.base    import SourceRef
 from   quex.engine.misc.file_in           import error_msg,                \
                                                  get_integer_parameter_value, \
                                                  open_file_or_die

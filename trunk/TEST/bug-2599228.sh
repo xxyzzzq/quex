@@ -12,6 +12,8 @@ echo "This variable ensures that the unit tests are re-compiled as soon"
 echo "as one of the quex headers changes. This is not necessary for"
 echo "installed versions of quex."
 echo "## CONSIDER: QUEX_PATH and QUEX_DEV_PATH environment variables!"
+echo "## QUEX_PATH:     $QUEX_PATH"
+echo "## QUEX_DEV_PATH: $QUEX_DEV_PATH"
 
 tmp=`pwd`
 cd $bug/ 
@@ -20,7 +22,7 @@ if [[ $1 == "Else" ]]; then
     export QUEX_PATH=$1
     make all
 elif [[ $1 == "Developper" ]]; then
-    make all 2>&1 > tmp2.txt     
+    make all  2>&1 > tmp2.txt     
     ../quex_pathify.sh tmp2.txt 
 else
     echo

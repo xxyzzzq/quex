@@ -33,8 +33,8 @@ import quex.input.regular_expression.core  as regular_expression
 from   quex.input.regular_expression.auxiliary  import PatternShorthand
 from   quex.input.setup                    import NotificationDB
 from   quex.output.cpp.token_id_maker      import TokenInfo, prepare_default_standard_token_ids
-from   quex.engine.generator.code.base     import SourceRef
-from   quex.engine.generator.code.core     import CodeUser
+from   quex.output.core.code.base     import SourceRef
+from   quex.output.core.code.core     import CodeUser
 from   quex.blackboard                     import setup as Setup, Lng
 import quex.blackboard                     as     blackboard
 from   quex.input.regular_expression.exception                      import RegularExpressionException

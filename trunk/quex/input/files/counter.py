@@ -1,7 +1,7 @@
 import quex.input.regular_expression.core         as     regular_expression
 from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation
-from   quex.engine.generator.code.base            import SourceRef
+from   quex.output.core.code.base            import SourceRef
 from   quex.engine.misc.file_in                   import error_msg, \
                                                          check, \
                                                          check_or_die, \
