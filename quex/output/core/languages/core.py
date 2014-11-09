@@ -62,12 +62,8 @@ class Lng_Cpp(dict):
     #------------------------------------------------------------------------------
     # Define Regular Expressions
     #------------------------------------------------------------------------------
-    Match_input                 = re.compile("\\binput\\b", re.UNICODE)
-    Match_iterator              = re.compile("\\iterator\\b", re.UNICODE)
     Match_Lexeme                = re.compile("\\bLexeme\\b", re.UNICODE)
     Match_LexemeBegin           = re.compile("\\bLexemeBegin\\b", re.UNICODE)
-    Match_goto                  = re.compile("\\bgoto\\b", re.UNICODE)
-    Match_QUEX_GOTO_RELOAD      = re.compile("\\bQUEX_GOTO_RELOAD_", re.UNICODE)
     Match_string                = re.compile("\\bstring\\b", re.UNICODE) 
     Match_vector                = re.compile("\\bvector\\b", re.UNICODE) 
     Match_map                   = re.compile("\\bmap\\b", re.UNICODE)
@@ -78,7 +74,6 @@ class Lng_Cpp(dict):
         self.__analyzer                                   = None
         self.__code_generation_reload_label               = None
         self.__code_generation_on_reload_fail_adr         = None
-        self.__state_machine_identifier                   = None
 
     def register_analyzer(self, TheAnalyzer):
         self.__analyzer = TheAnalyzer
@@ -87,17 +82,6 @@ class Lng_Cpp(dict):
         # Unregistering an analyzer ensures that no one else works with the 
         # analyzer on something unrelated.
         self.__analyzer = None
-
-    def code_generation_reload_label_set(self, Value):
-        assert Value is None or self.__code_generation_reload_label is None
-        self.__code_generation_reload_label = Value
-
-    def code_generation_on_reload_fail_adr_set(self, Value):
-        assert Value is None or self.__code_generation_on_reload_fail_adr is None
-        self.__code_generation_on_reload_fail_adr = Value
-
-    def set_state_machine_identifier(self, SM_Id):
-        self.__state_machine_identifier = SM_Id
 
     @property
     def analyzer(self):
@@ -124,9 +108,6 @@ class Lng_Cpp(dict):
     ELSE_SIMPLE             = "else"
 
     PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
-    BUFFER_LIMIT_CODE        = "QUEX_SETTING_BUFFER_LIMIT_CODE"
-    STATE_LABEL_VOID         = "QUEX_GOTO_LABEL_VOID"
-    COMMENT_DELIMITERS       = [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]]
     def LEXEME_START_SET(self, PositionStorage=None):
         if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
@@ -142,13 +123,11 @@ class Lng_Cpp(dict):
     def LEXEME_MACRO_CLEAN_UP(self):
         return cpp.lexeme_macro_clean_up
 
-    def CHARACTER_BEGIN_P(self):                   return "character_begin_p"
     def INPUT_P(self):                             return "me->buffer._input_p"
     def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
     def INPUT_P_DECREMENT(self):                   return "--(me->buffer._input_p);"
     def INPUT_P_ADD(self, Offset):                 return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
     def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._input_p = me->buffer._lexeme_start_p;"
-    def INPUT_P_TO_TEXT_END(self):                 return "me->buffer._input_p = (me->buffer._end_of_file_p != (void*)0) ? me->buffer._end_of_file_p : me->buffer._memory._back;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
         if Offset == 0:  return "*(me->buffer._input_p)"
         elif Offset > 0: return "*(me->buffer._input_p + %i)" % Offset
@@ -620,25 +599,6 @@ class Lng_Cpp(dict):
         if AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
         else:                                            return "%i" % AcceptanceID
 
-    def UNREACHABLE_BEGIN(self):
-        return "if( 0 ) {"
-
-    def UNREACHABLE_END(self):
-        return "}"
-
-    def IF_MULTI_OR(self, LOR_List):
-        L = len(LOR_List)
-        decision = []
-        for i, info in enumerate(LOR_List): 
-            lvalue, operator, rvalue = info
-            if i == 0: 
-                decision.append("if(   (%s %s %s)" % (lvalue, operator, rvalue))
-            else:
-                decision.append("\n   || (%s %s %s)" % (lvalue, operator, rvalue))
-            if i != L - 1:
-                decision.append("\n")
-        decision.append(" ) {\n")
-
     def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False, SpaceF=False):
         if isinstance(RValue, (str,unicode)): decision = "%s %s %s"   % (LValue, Operator, RValue)
         else:                                 decision = "%s %s 0x%X" % (LValue, Operator, RValue)
@@ -684,12 +644,6 @@ class Lng_Cpp(dict):
         else:                                       txt.extend(Consequence)
         txt.extend(closing)
         return
-
-    def IF_END_OF_FILE(self):
-        return "if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {\n"
-
-    def IF_INPUT_P_EQUAL_LEXEME_START_P(self, FirstF=True):
-        return self.IF(self.INPUT_P(), "==", self.LEXEME_START_P(), FirstF)
 
     def END_IF(self):
         return "}"
@@ -751,9 +705,6 @@ class Lng_Cpp(dict):
             return "    __quex_debug_state(%i);\n" % TheState.index
         else:
             return ""
-
-    def POSITION_REGISTER(self, Index):
-        return "position[%i]" % Index
 
     @typed(X=RouterContentElement)
     def POSITIONING(self, X):
@@ -822,7 +773,6 @@ class Lng_Cpp(dict):
             return [ "case %s: %s\n" % (item, get_content(C)) ]
 
         return self._branch_table_core(Selector, CaseList, case_string)
-
 
     def BRANCH_TABLE_ON_INTERVALS(self, Selector, CaseList, CaseFormat="hex", DefaultConsequence=None):
         case_str = self.CASE_STR(CaseFormat)
@@ -912,24 +862,6 @@ class Lng_Cpp(dict):
 
         assert type(VariableDB) != dict
         return cpp._local_variable_definitions(VariableDB.get()) 
-
-    def RELOAD_SPECIAL(self, BeforeReloadAction, AfterReloadAction):
-        assert self.__code_generation_reload_label is not None
-        assert type(BeforeReloadAction) == list
-        assert type(AfterReloadAction) == list
-
-        result = [ 
-           cpp_reload_forward_str[0],
-           "%s:\n" % self.__code_generation_reload_label,
-           cpp_reload_forward_str[1],
-        ]
-        result.extend(BeforeReloadAction)
-        result.append(cpp_reload_forward_str[2])
-        result.extend(AfterReloadAction)
-        result.append(cpp_reload_forward_str[3])
-        dial_db.mark_door_id_as_gotoed(DoorID.global_state_router())
-
-        return result
 
     def RELOAD_PROCEDURE(self, ForwardF):
         assert self.__code_generation_reload_label is None

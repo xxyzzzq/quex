@@ -139,14 +139,6 @@ def check_or_die(fh, What, Comment = "."):
     if not check(fh, What):
         error_msg("Missing '%s'" % What + Comment, fh)
 
-def parse_assignment(fh, Comment=""):
-    check_or_die(fh, "=", " for assignment.")
-
-    skip_whitespace(fh)
-    identifier = read_until_letter(fh, [";"])
-
-    return identifier.strip()
-
 def parse_identifier_assignment(fh):
     # NOTE: Catching of EOF happens in caller
     check_or_die(fh, "=", " for assignment")
@@ -351,26 +343,6 @@ def __napier_number(Text, fh):
 
     return sum(2**value(c) for c in Text)
 
-def extract_identifiers_with_specific_sub_string(Content, SubString):
-    L = len(Content)
-    i = 0
-    finding_list = []
-    while 1 + 1 == 2:
-        i = Content.find(SubString, i)
-        # not found?
-        if i == -1: break
-        # is it inside an identifier?
-
-        # go back to the begin of the identifier
-        while i > 0 and (is_identifier_continue(Content[i]) or is_identifier_continue(Content[i])): 
-            i -= 1
-
-        if i != 0 and is_identifier_start(Content[i-1]): i += 1; continue
-        end_i = find_end_of_identifier(Content, i, L)
-        finding_list.append([Content[i:end_i], get_text_line_n(Content, i)])
-        i = end_i
-    return finding_list
-
 def extract_identifiers_with_specific_prefix(Content, Prefix):
     L = len(Content)
     i = 0
@@ -522,18 +494,6 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
             else:       return txt
         txt += tmp
 
-def read_until_line_contains(in_fh, LineContent):
-    line = in_fh.readline()
-    if line == "": return ""
-
-    collector = ""
-    while line.find(LineContent) == -1:
-        collector += line
-        line = in_fh.readline()
-        if line == "":  break
-
-    return collector
-
 def get_file_content_or_die(FileName, Mode="rb"):
     fh = open_file_or_die(FileName, Mode)
     txt = fh.read()
@@ -586,58 +546,12 @@ def write_safely_and_close(FileName, txt):
     fh.write(txt)
     fh.close()
 
-def indented_open(Filename, Indentation = 3, Reference="quex"):
-    """Opens a file but indents all the lines in it. In fact, a temporary
-    file is created with all lines of the original file indented. The filehandle
-    returned points to the temporary file."""
-    
-    IndentString = " " * Indentation
-    
-    file_name = Filename.replace("//","/")
-    try:
-        fh = open(file_name, "rb")
-    except:
-        error_msg("%s:error: failed to open file '%s' " % (Reference, Filename))
-    new_content = ""
-    for line in fh.readlines():
-        new_content += IndentString + line
-    fh.close()
-
-    tmp_filename = Filename + ".tmp"
-
-    if tmp_filename not in temporary_files:
-        temporary_files.append(copy(tmp_filename))
-
-    fh = open(tmp_filename, "wb")
-    fh.write(new_content)
-    fh.close()
-
-    fh = open(tmp_filename)
-
-    return fh
-
 def read_next_word(fh):
     skip_whitespace(fh)
     word = read_until_whitespace(fh)
 
     if word == "": raise EndOfStreamException()
     return word
-
-def read_word_list(fh, EndMarkers, Verbose=False):
-    """Reads whitespace separated words until the arrivel
-    of a string mentioned in the array 'EndMarkers'. If
-    the Verbose flag is set not only the list of found words
-    is returned. Moreover the index of the end marker which
-    triggered is given as a second return value."""
-    word_list = []
-    while 1 + 1 == 2:
-        skip_whitespace(fh)
-        word = read_next_word(fh)        
-        if word == "": raise EndOfStreamException()
-        if word in EndMarkers:
-            if Verbose: return word_list, EndMarkers.index(word)
-            else:       return word_list
-        word_list.append(word)
 
 def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
     # fh        = filehandle [1] or filename [2]
@@ -742,12 +656,6 @@ def check(fh, Word):
         if dummy == Word: return True
     except:
         pass
-    fh.seek(position)
-    return False
-
-def check_letter_from_list(fh, LetterList):
-    position = fh.tell()
-    if fh.read(1) in LetterList: return True
     fh.seek(position)
     return False
 
