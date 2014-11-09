@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-from quex.engine.interval_handling import *
+from quex.engine.misc.interval_handling import *
 from quex.engine.state_machine.core import *
 
 if "--hwut-info" in sys.argv:

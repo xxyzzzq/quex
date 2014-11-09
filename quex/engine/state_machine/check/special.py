@@ -2,7 +2,7 @@ import quex.engine.state_machine.algorithm.beautifier as     beautifier
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.state.core           import State
 import quex.engine.state_machine.index                as     index
-from   quex.engine.interval_handling                  import NumberSet, Interval
+from   quex.engine.misc.interval_handling                  import NumberSet, Interval
 
 import sys
 

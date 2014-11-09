@@ -2,7 +2,7 @@ from   quex.engine.commands.core         import StoreInputPosition, Command, Com
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import dial_db, \
                                                          DoorID
-from   quex.engine.tools                          import typed, \
+from   quex.engine.misc.tools                          import typed, \
                                                          TypedDict
 from   quex.blackboard                            import E_Cmd, \
                                                          E_StateIndices, \

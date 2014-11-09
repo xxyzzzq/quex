@@ -60,7 +60,7 @@ import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.state_machine.core               import StateMachine
 from   quex.engine.state_machine.state.single_entry import Accept      
 
-from   quex.engine.tools                            import typed
+from   quex.engine.misc.tools                            import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
                                E_TransitionN, \

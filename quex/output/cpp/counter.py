@@ -10,7 +10,7 @@ from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID
 from   quex.engine.commands.core           import GotoDoorId
 from   quex.engine.counter                          import CountCmdFactory
-from   quex.engine.tools                            import typed
+from   quex.engine.misc.tools                            import typed
 
 from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \

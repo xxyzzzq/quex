@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine as re2sm
-import quex.engine.utf8                    as utf8
+import quex.engine.misc.utf8                    as utf8
 from quex.blackboard import setup as Setup
 Setup.buffer_limit_code = -1
 Setup.path_limit_code   = -1

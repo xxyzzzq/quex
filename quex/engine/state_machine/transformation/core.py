@@ -3,7 +3,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
 from   quex.blackboard                                 import setup as Setup
 
-from   quex.engine.tools import typed, \
+from   quex.engine.misc.tools import typed, \
                                 flatten_list_of_lists
 
 @typed(SmIn=(StateMachine,None))

@@ -1,4 +1,4 @@
-from quex.engine.tools import flatten_list_of_lists
+from quex.engine.misc.tools import flatten_list_of_lists
 from quex.blackboard   import E_IncidenceIDs, E_TransitionN
 
 from operator        import attrgetter

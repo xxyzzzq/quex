@@ -38,7 +38,7 @@ import quex.input.regular_expression.engine    as     core
 import quex.input.files.counter                as     counter_parser
 from   quex.input.files.parser_data.counter    import CounterSetupLineColumn_Default
 from   quex.engine.counter                     import CountCmdFactory
-from   quex.engine.interval_handling           import NumberSet, Interval, NumberSet_All
+from   quex.engine.misc.interval_handling           import NumberSet, Interval, NumberSet_All
 import quex.engine.generator.languages.core    as     languages
 import quex.engine.codec_db.core               as     codec_db
 import quex.output.cpp.counter                 as     counter

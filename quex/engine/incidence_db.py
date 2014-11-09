@@ -1,4 +1,4 @@
-from   quex.engine.tools import typed
+from   quex.engine.misc.tools import typed
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
 from   quex.engine.generator.code.base                 import CodeFragment, \
                                                               SourceRef_DEFAULT

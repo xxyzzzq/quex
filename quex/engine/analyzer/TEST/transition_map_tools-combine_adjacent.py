@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling       import Interval
+from   quex.engine.misc.interval_handling       import Interval
 import quex.engine.analyzer.transition_map as     transition_map_tools
 from   quex.engine.analyzer.transition_map import TransitionMap
 from   copy import deepcopy

@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling   import *
+from   quex.engine.misc.interval_handling   import *
 import quex.engine.state_machine.core  as core
 import quex.engine.analyzer.mega_state.path_walker.core  as paths 
 import quex.engine.analyzer.engine_supply_factory      as     engine

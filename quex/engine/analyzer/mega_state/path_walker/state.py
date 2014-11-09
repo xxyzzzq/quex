@@ -5,7 +5,7 @@ from   quex.engine.analyzer.mega_state.core       import MegaState, \
 from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \
                                                                   DropOutConsideration_relate
 import quex.engine.state_machine.index             as     index
-from   quex.engine.tools                           import UniformObject
+from   quex.engine.misc.tools                           import UniformObject
 from   quex.blackboard                             import E_Compression, E_Cmd
 
 from   itertools import izip

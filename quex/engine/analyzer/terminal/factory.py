@@ -3,7 +3,7 @@ from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.analyzer.terminal.core          import Terminal, TerminalGenerated
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.generator.code.core             import CodeTerminal
-from   quex.engine.tools                           import typed
+from   quex.engine.misc.tools                           import typed
 from   quex.engine.misc.string_handling            import safe_string, \
                                                           pretty_code
 

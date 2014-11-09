@@ -1,8 +1,8 @@
 import quex.input.regular_expression.snap_backslashed_character as     snap_backslashed_character
-from   quex.engine.interval_handling                            import Interval, \
+from   quex.engine.misc.interval_handling                            import Interval, \
                                                                        NumberSet
 
-import quex.engine.utf8 as utf8
+import quex.engine.misc.utf8 as utf8
 from   quex.input.regular_expression.exception  import RegularExpressionException
 from   quex.blackboard import setup as Setup
 

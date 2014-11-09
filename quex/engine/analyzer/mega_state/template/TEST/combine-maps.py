@@ -11,7 +11,7 @@ from   quex.engine.analyzer.mega_state.template.state              import combin
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 import quex.engine.commands.tree                 as     entry_door_tree
 
-from   quex.engine.interval_handling import *
+from   quex.engine.misc.interval_handling import *
 
 if "--hwut-info" in sys.argv:
     print "Combination of Two Transition Maps"

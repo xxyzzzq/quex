@@ -58,7 +58,7 @@ import quex.engine.state_machine.construction.parallelize             as paralle
 import quex.engine.state_machine.construction.repeat                  as repeat
 import quex.engine.unicode_db.case_fold_parser           as ucs_case_fold
 
-from   quex.engine.interval_handling  import Interval, NumberSet
+from   quex.engine.misc.interval_handling  import Interval, NumberSet
 from   quex.engine.misc.file_in       import error_msg, \
                                              check, \
                                              check_whitespace, \
@@ -67,7 +67,7 @@ from   quex.engine.misc.file_in       import error_msg, \
                                              read_until_character, \
                                              verify_word_in_list, \
                                              read_until_letter
-import quex.engine.utf8               as utf8
+import quex.engine.misc.utf8               as utf8
 from   quex.blackboard                import setup as Setup
 from   quex.input.regular_expression.exception                 import RegularExpressionException
 

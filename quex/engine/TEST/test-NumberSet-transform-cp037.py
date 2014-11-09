@@ -5,7 +5,7 @@ from   random import random
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-from   quex.engine.interval_handling import Interval, NumberSet
+from   quex.engine.misc.interval_handling import Interval, NumberSet
 import quex.engine.codec_db.core     as     codec_db
 
 

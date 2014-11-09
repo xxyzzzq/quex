@@ -4,7 +4,7 @@ from   copy import deepcopy
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-from quex.engine.interval_handling import Interval, NumberSet
+from quex.engine.misc.interval_handling import Interval, NumberSet
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Transform"

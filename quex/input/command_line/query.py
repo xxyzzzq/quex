@@ -1,8 +1,8 @@
 import sys
 
 from quex.engine.misc.file_in       import error_msg
-from quex.engine.utf8               import map_unicode_to_utf8
-from quex.engine.interval_handling  import NumberSet, Interval
+from quex.engine.misc.utf8               import map_unicode_to_utf8
+from quex.engine.misc.interval_handling  import NumberSet, Interval
 from quex.engine.unicode_db.parser  import ucs_property_db
 
 from quex.input.regular_expression.exception                 import RegularExpressionException

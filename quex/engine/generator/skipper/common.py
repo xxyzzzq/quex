@@ -1,4 +1,4 @@
-import quex.engine.utf8                  as     utf8
+import quex.engine.misc.utf8                  as     utf8
 from   quex.engine.misc.string_handling  import safe_string
 from   quex.blackboard                   import setup as Setup, \
                                                 Lng

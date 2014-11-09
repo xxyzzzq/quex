@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.mega_state.path_walker.path  import CharacterPath
-from   quex.engine.tools                                 import flatten_list_of_lists
+from   quex.engine.misc.tools                                 import flatten_list_of_lists
 from   quex.engine.misc.tree_walker                      import TreeWalker
 from   quex.blackboard                                   import E_Compression, E_StateIndices
 

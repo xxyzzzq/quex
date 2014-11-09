@@ -16,8 +16,8 @@
 
 
 # import quex.engine.generator.languages.core as languages
-import quex.engine.utf8 as utf8
-from   quex.engine.tools import r_enumerate, \
+import quex.engine.misc.utf8 as utf8
+from   quex.engine.misc.tools import r_enumerate, \
                                 typed, \
                                 flatten_list_of_lists
 

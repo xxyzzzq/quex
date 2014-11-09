@@ -8,8 +8,8 @@ from   quex.engine.misc.file_in      import get_file_content_or_die, \
                                             open_file_or_die, \
                                             error_msg, \
                                             verify_word_in_list
-from   quex.engine.interval_handling import Interval, NumberSet
-from   quex.engine.tools             import typed
+from   quex.engine.misc.interval_handling import Interval, NumberSet
+from   quex.engine.misc.tools             import typed
 
 import os
 

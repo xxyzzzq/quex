@@ -8,7 +8,7 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
 import quex.engine.state_machine.index             as     sm_index
 import quex.engine.state_machine.transformation.core    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
-from   quex.engine.tools                           import r_enumerate, \
+from   quex.engine.misc.tools                           import r_enumerate, \
                                                           typed, \
                                                           flatten_list_of_lists
 

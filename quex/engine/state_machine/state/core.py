@@ -3,7 +3,7 @@ from   quex.engine.state_machine.state.single_entry import SingleEntry, \
                                                            StoreInputPosition
 from   quex.engine.state_machine.state.target_map   import TargetMap
 
-from   quex.engine.tools  import typed
+from   quex.engine.misc.tools  import typed
 
 from   quex.blackboard    import E_IncidenceIDs, \
                                  E_PreContextIDs

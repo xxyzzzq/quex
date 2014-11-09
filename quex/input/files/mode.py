@@ -24,7 +24,7 @@ from   quex.engine.misc.file_in                        import EndOfStreamExcepti
                                                               skip_whitespace, \
                                                               verify_word_in_list
 from   quex.engine.incidence_db                        import IncidenceDB
-from   quex.engine.tools import typed, all_isinstance
+from   quex.engine.misc.tools import typed, all_isinstance
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               standard_incidence_db, \

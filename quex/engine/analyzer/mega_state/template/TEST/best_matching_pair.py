@@ -11,7 +11,7 @@ from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 from   quex.engine.state_machine.core                   import StateMachine
 import quex.engine.analyzer.engine_supply_factory       as     engine
 from   quex.blackboard                                  import E_Compression
-from   quex.engine.interval_handling                    import *
+from   quex.engine.misc.interval_handling                    import *
 
 
 if "--hwut-info" in sys.argv:

@@ -3,7 +3,7 @@ from   quex.engine.generator.code.core  import CodeTerminal, \
 from   quex.engine.analyzer.state.core  import Processor
 from   quex.engine.analyzer.state.entry import Entry
 import quex.engine.state_machine.index  as     index
-from   quex.engine.tools                import typed
+from   quex.engine.misc.tools                import typed
 
 from   types import FunctionType
 from   copy  import copy

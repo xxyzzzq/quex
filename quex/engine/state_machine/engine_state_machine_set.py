@@ -6,7 +6,7 @@ import quex.engine.state_machine.transformation.core   as     transformation
 from   quex.engine.commands.core              import E_R, \
                                                               InputPDecrement, \
                                                               Assign
-from   quex.engine.tools                               import all_isinstance, \
+from   quex.engine.misc.tools                               import all_isinstance, \
                                                               all_true, \
                                                               concatinate, \
                                                               typed

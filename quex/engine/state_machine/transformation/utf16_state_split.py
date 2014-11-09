@@ -31,8 +31,8 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.engine.utf16                    import utf16_to_unicode, unicode_to_utf16
-from   quex.engine.interval_handling        import Interval, NumberSet
+from   quex.engine.misc.utf16                    import utf16_to_unicode, unicode_to_utf16
+from   quex.engine.misc.interval_handling        import Interval, NumberSet
 import quex.engine.state_machine.algorithm.beautifier as beautifier
 
 ForbiddenRange = Interval(0xD800, 0xE000)

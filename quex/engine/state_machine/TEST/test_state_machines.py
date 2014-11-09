@@ -19,7 +19,7 @@ import sys
 
 from quex.engine.state_machine.core import *
 from quex.engine.state_machine.state.single_entry import *
-from quex.engine.interval_handling import *
+from quex.engine.misc.interval_handling import *
 
 def get_cmd(SmId, StateIndex, AcceptanceF):
     if AcceptanceF: 

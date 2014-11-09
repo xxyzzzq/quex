@@ -10,7 +10,7 @@ import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.algebra.reverse      as     reverse
 from   quex.engine.misc.file_in                       import error_msg
 #                                                         
-from   quex.engine.tools               import typed
+from   quex.engine.misc.tools               import typed
 
 class Pattern(object):
     __slots__ = ("__sr", # Source Reference (filename, line_n)

@@ -9,7 +9,7 @@ import quex.engine.analyzer.engine_supply_factory      as     engine
 from   quex.engine.analyzer.terminal.core              import Terminal
 import quex.engine.analyzer.core                       as     analyzer_generator
 
-from   quex.engine.tools                               import typed
+from   quex.engine.misc.tools                               import typed
 from   quex.blackboard import E_IncidenceIDs, \
                               setup as Setup, \
                               Lng

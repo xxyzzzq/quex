@@ -1,5 +1,5 @@
 from quex.DEFINITIONS              import QUEX_CODEC_DB_PATH
-from quex.engine.interval_handling import NumberSet, Interval
+from quex.engine.misc.interval_handling import NumberSet, Interval
 from quex.engine.misc.file_in      import open_file_or_die, \
                                           EndOfStreamException, \
                                           read_integer, \

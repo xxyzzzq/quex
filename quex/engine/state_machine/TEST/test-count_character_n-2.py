@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.interval_handling        import NumberSet, Interval
+from   quex.engine.misc.interval_handling        import NumberSet, Interval
 import quex.input.regular_expression.engine as     core
 import quex.input.files.counter             as     counter
 from   StringIO                             import StringIO

@@ -1,7 +1,7 @@
-from   quex.engine.tools        import typed, \
+from   quex.engine.misc.tools        import typed, \
                                        all_isinstance
 from   quex.engine.misc.file_in import get_current_line_info_number
-from   quex.engine.tools        import none_isinstance
+from   quex.engine.misc.tools        import none_isinstance
 
 from   collections import namedtuple
 

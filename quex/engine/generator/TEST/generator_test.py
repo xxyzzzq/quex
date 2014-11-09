@@ -21,7 +21,7 @@ from   quex.engine.generator.languages.core        import db
 from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.state_router          as     state_router_generator
 from   quex.engine.misc.string_handling            import blue_print
-from   quex.engine.tools                           import all_isinstance
+from   quex.engine.misc.tools                           import all_isinstance
 import quex.output.cpp.core                        as     cpp_generator
 #
 import quex.blackboard as blackboard
