@@ -1,67 +1,67 @@
-<test-database execution-time-sec="2.06" date="Sun Nov  9 12:46:46 2014">
+<test-database execution-time-sec="2.59" date="Sun Nov  9 22:04:08 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Combination of Two Transition Maps" time-sum-sec="0.37"> 
+    <test title="Combination of Two Transition Maps" time-sum-sec="0.49"> 
         <application file-name="combine-maps.py" info-request-time="1415531762L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="1" result="OK" time_sec="0.08" crc="751842598"/>
-           <choice name="2" result="OK" time_sec="0.07" crc="1886175805"/>
-           <choice name="2b" result="OK" time_sec="0.07" crc="1628655231"/>
-           <choice name="3" result="OK" time_sec="0.07" crc="-1573112414"/>
-           <choice name="4" result="OK" time_sec="0.07" crc="1319313977"/>
+           <choice name="1" result="OK" time_sec="0.10" crc="751842598"/>
+           <choice name="2" result="OK" time_sec="0.10" crc="1886175805"/>
+           <choice name="2b" result="OK" time_sec="0.10" crc="1628655231"/>
+           <choice name="3" result="OK" time_sec="0.10" crc="-1573112414"/>
+           <choice name="4" result="OK" time_sec="0.10" crc="1319313977"/>
         </choice-list>
     </test>
-    <test title="Combine Simple" time-sum-sec="0.25"> 
+    <test title="Combine Simple" time-sum-sec="0.33"> 
         <application file-name="combine-simple.py" info-request-time="1415531762L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
-           <choice name="plain" result="OK" time_sec="0.08" crc="-1161485993"/>
-           <choice name="recursive" result="OK" time_sec="0.09" crc="287197039"/>
-           <choice name="distinguished" result="OK" time_sec="0.08" crc="-1963706776"/>
+           <choice name="plain" result="OK" time_sec="0.11" crc="-1161485993"/>
+           <choice name="recursive" result="OK" time_sec="0.11" crc="287197039"/>
+           <choice name="distinguished" result="OK" time_sec="0.12" crc="-1963706776"/>
         </choice-list>
     </test>
-    <test title="Template states handling recursion" time-sum-sec="0.39"> 
+    <test title="Template states handling recursion" time-sum-sec="0.49"> 
         <application file-name="recursion.py" info-request-time="1415531762L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="0" result="OK" time_sec="0.08" crc="1560569670"/>
-           <choice name="0b" result="OK" time_sec="0.08" crc="1104360742"/>
-           <choice name="1b" result="OK" time_sec="0.08" crc="-265675705"/>
-           <choice name="1" result="OK" time_sec="0.08" crc="-1517067324"/>
-           <choice name="1c" result="OK" time_sec="0.08" crc="-1963784925"/>
+           <choice name="0" result="OK" time_sec="0.10" crc="1560569670"/>
+           <choice name="0b" result="OK" time_sec="0.11" crc="1104360742"/>
+           <choice name="1b" result="OK" time_sec="0.10" crc="-265675705"/>
+           <choice name="1" result="OK" time_sec="0.09" crc="-1517067324"/>
+           <choice name="1c" result="OK" time_sec="0.09" crc="-1963784925"/>
         </choice-list>
     </test>
     <group name="Transition Map Templates">
-        <test title="Get Best Matching Pair" time-sum-sec="0.38"> 
+        <test title="Get Best Matching Pair" time-sum-sec="0.44"> 
             <application file-name="best_matching_pair.py" info-request-time="1415531763L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
-               <choice name="0" result="OK" time_sec="0.08" crc="-1156851576"/>
-               <choice name="1" result="OK" time_sec="0.08" crc="-373353205"/>
-               <choice name="2" result="OK" time_sec="0.08" crc="-326735393"/>
-               <choice name="3" result="OK" time_sec="0.08" crc="-436647206"/>
-               <choice name="recursive" result="OK" time_sec="0.08" crc="961507194"/>
+               <choice name="0" result="OK" time_sec="0.09" crc="-1156851576"/>
+               <choice name="1" result="OK" time_sec="0.09" crc="-373353205"/>
+               <choice name="2" result="OK" time_sec="0.09" crc="-326735393"/>
+               <choice name="3" result="OK" time_sec="0.09" crc="-436647206"/>
+               <choice name="recursive" result="OK" time_sec="0.09" crc="961507194"/>
             </choice-list>
         </test>
-        <test title="Combine Combined Trigger Maps" time-sum-sec="0.16"> 
+        <test title="Combine Combined Trigger Maps" time-sum-sec="0.19"> 
             <application file-name="combine-maps-2.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="1" result="OK" time_sec="0.08" crc="813714795"/>
-               <choice name="2" result="OK" time_sec="0.08" crc="-1615454940"/>
+               <choice name="1" result="OK" time_sec="0.09" crc="813714795"/>
+               <choice name="2" result="OK" time_sec="0.09" crc="-1615454940"/>
             </choice-list>
         </test>
-        <test title="Target Idx Combination Metric" time-sum-sec="0.52"> 
+        <test title="Target Idx Combination Metric" time-sum-sec="0.65"> 
             <application file-name="metric.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="316750510"/>
-               <choice name="2" result="OK" time_sec="0.07" crc="-1835208730"/>
-               <choice name="2b" result="OK" time_sec="0.07" crc="-1393103537"/>
+               <choice name="1" result="OK" time_sec="0.09" crc="316750510"/>
+               <choice name="2" result="OK" time_sec="0.10" crc="-1835208730"/>
+               <choice name="2b" result="OK" time_sec="0.08" crc="-1393103537"/>
                <choice name="3" result="OK" time_sec="0.08" crc="-487991081"/>
-               <choice name="4" result="OK" time_sec="0.07" crc="1821567828"/>
-               <choice name="recursive" result="OK" time_sec="0.07" crc="-1922550798"/>
-               <choice name="3b" result="OK" time_sec="0.08" crc="767792552"/>
+               <choice name="4" result="OK" time_sec="0.08" crc="1821567828"/>
+               <choice name="recursive" result="OK" time_sec="0.10" crc="-1922550798"/>
+               <choice name="3b" result="OK" time_sec="0.10" crc="767792552"/>
             </choice-list>
         </test>
     </group>

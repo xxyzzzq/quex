@@ -15,7 +15,7 @@ from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
 from   quex.engine.analyzer.terminal.factory       import TerminalFactory
-from   quex.output.core.code.core             import CodeTerminal
+from   quex.input.code.core             import CodeTerminal
 import quex.output.core.languages.variable_db as     variable_db
 from   quex.output.core.languages.core        import db
 from   quex.output.core.languages.variable_db import VariableDB

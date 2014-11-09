@@ -8,7 +8,7 @@ import quex.output.core.skipper.indentation_counter as     indentation_counter
 from   quex.output.core.TEST.generator_test   import *
 from   quex.output.core.languages.variable_db import variable_db
 from   quex.output.core.TEST.generator_test   import __Setup_init_language_database
-from   quex.output.core.code.base             import CodeFragment
+from   quex.input.code.base             import CodeFragment
 from   quex.output.core.base                  import do_state_router
 from   quex.engine.state_machine.core              import StateMachine
 from   quex.engine.analyzer.door_id_address_label  import get_plain_strings

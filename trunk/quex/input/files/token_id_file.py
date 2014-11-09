@@ -1,5 +1,5 @@
 from   quex.input.setup                 import NotificationDB
-from   quex.output.core.code.base  import SourceRef, \
+from   quex.input.code.base  import SourceRef, \
                                                SourceRef_VOID
 from   quex.engine.misc.file_in         import get_file_content_or_die, \
                                                open_file_or_die, \

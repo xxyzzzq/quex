@@ -1,4 +1,4 @@
-from   quex.output.core.code.base import SourceRef, CodeFragment, SourceRef_VOID
+from   quex.input.code.base import SourceRef, CodeFragment, SourceRef_VOID
 from   quex.blackboard import Lng
 from   quex.engine.misc.tools import typed
 

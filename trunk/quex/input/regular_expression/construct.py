@@ -1,5 +1,5 @@
 #from   quex.input.files.parser_data.counter           import ParserDataLineColumn
-from   quex.output.core.code.base                import SourceRef_VOID, \
+from   quex.input.code.base                import SourceRef_VOID, \
                                                              SourceRef
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.character_counter    import CountInfo

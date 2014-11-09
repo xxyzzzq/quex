@@ -1,8 +1,8 @@
 from   quex.engine.misc.tools import typed
 from   quex.engine.analyzer.terminal.factory           import TerminalFactory
-from   quex.output.core.code.base                 import CodeFragment, \
+from   quex.input.code.base                 import CodeFragment, \
                                                               SourceRef_DEFAULT
-from   quex.output.core.code.core                 import CodeTerminal
+from   quex.input.code.core                 import CodeTerminal
 from   quex.blackboard import standard_incidence_db, \
                               E_IncidenceIDs, \
                               E_TerminalType

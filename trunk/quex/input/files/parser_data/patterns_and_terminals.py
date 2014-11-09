@@ -9,7 +9,7 @@ import quex.output.core.skipper.character_set       as     skip_character_set
 import quex.output.core.skipper.range               as     skip_range
 import quex.output.core.skipper.nested_range        as     skip_nested_range
 import quex.output.core.skipper.indentation_counter as     indentation_counter
-from   quex.output.core.code.core                   import CodeTerminal, \
+from   quex.input.code.core                   import CodeTerminal, \
                                                                 CodeTerminalOnMatch, \
                                                                 CodeGeneratedBlock, \
                                                                 CodeGenerated

@@ -9,7 +9,7 @@ from   quex.engine.commands.core           import \
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountCmdFactory
-from   quex.output.core.code.core              import CodeTerminal
+from   quex.input.code.core              import CodeTerminal
 import quex.output.core.loop                   as     loop
 from   quex.engine.state_machine.character_counter  import CountInfo
 from   quex.blackboard                              import Lng, \
