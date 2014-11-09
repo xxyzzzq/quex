@@ -4,7 +4,7 @@ import os
 from   copy import copy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.engine.interval_handling import NumberSet, Interval
+from quex.engine.misc.interval_handling import NumberSet, Interval
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Algebraic Relations;"

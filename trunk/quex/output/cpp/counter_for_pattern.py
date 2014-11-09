@@ -3,7 +3,7 @@
 _______________________________________________________________________________
 """
 import quex.engine.state_machine.character_counter as character_counter
-from   quex.engine.tools import typed
+from   quex.engine.misc.tools import typed
 from   quex.blackboard import E_Count, \
                               E_IncidenceIDs, \
                               Lng

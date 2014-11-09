@@ -42,7 +42,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.engine.state_machine.index                             as index
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
-from   quex.engine.interval_handling import *
+from   quex.engine.misc.interval_handling import *
 from   quex.blackboard               import E_StateIndices
 
 

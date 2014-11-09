@@ -12,7 +12,7 @@ import quex.engine.analyzer.mega_state.template.core               as templates
 from   quex.engine.analyzer.mega_state.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
-from   quex.engine.interval_handling import *
+from   quex.engine.misc.interval_handling import *
 from   quex.blackboard               import E_StateIndices
 
 

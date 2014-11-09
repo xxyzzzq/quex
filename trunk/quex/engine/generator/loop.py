@@ -9,7 +9,7 @@ from   quex.engine.commands.core              import E_R, \
                                                               GotoDoorId
 import quex.engine.state_machine.index                 as     index
 from   quex.engine.analyzer.door_id_address_label      import DoorID
-from   quex.engine.tools                               import typed
+from   quex.engine.misc.tools                               import typed
 from   quex.blackboard import E_StateIndices, \
                               E_CharacterCountType, \
                               setup as Setup

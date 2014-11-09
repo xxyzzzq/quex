@@ -1,6 +1,6 @@
 from quex.engine.analyzer.door_id_address_label import DoorID
 from quex.engine.analyzer.state.entry_action    import TransitionID
-from quex.engine.tools                          import UniformObject
+from quex.engine.misc.tools                          import UniformObject
 from quex.blackboard                            import E_StateIndices
 
 from   collections import namedtuple

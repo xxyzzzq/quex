@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import quex.engine.misc.file_in      as     file_in
 from   quex.engine.misc.enum         import Enum
-from   quex.engine.interval_handling import NumberSet
+from   quex.engine.misc.interval_handling import NumberSet
 import quex.engine.codec_db.core     as     codec_db
 from   quex.DEFINITIONS              import QUEX_PATH
 

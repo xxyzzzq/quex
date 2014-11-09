@@ -18,7 +18,7 @@ from   copy import copy
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.generator.state.transition_map.branch_table import BranchTable   
 from   quex.engine.generator.languages.core import db
-from   quex.engine.interval_handling        import Interval
+from   quex.engine.misc.interval_handling        import Interval
 from   quex.engine.analyzer.transition_map  import TransitionMap   
 from   quex.blackboard                      import setup as Setup, \
                                                    Lng

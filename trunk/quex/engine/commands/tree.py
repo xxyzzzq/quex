@@ -84,9 +84,9 @@ _______________________________________________________________________________
 """
 from   quex.engine.analyzer.door_id_address_label import DoorID, dial_db
 import quex.engine.commands.shared_tail  as     shared_tail
-from   quex.engine.tools                          import flatten_list_of_lists
+from   quex.engine.misc.tools                          import flatten_list_of_lists
 
-from quex.engine.tools import typed, TypedDict
+from quex.engine.misc.tools import typed, TypedDict
 
 from operator         import attrgetter
 

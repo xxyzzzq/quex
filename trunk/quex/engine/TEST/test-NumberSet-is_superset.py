@@ -3,7 +3,7 @@ import test_NumberSet_base
 import sys
 import os
 sys.path.append(os.environ["QUEX_PATH"])
-from quex.engine.interval_handling import Interval, NumberSet
+from quex.engine.misc.interval_handling import Interval, NumberSet
 
 if "--hwut-info" in sys.argv:
     print "NumberSet: Super Set;"

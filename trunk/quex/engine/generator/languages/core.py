@@ -27,7 +27,7 @@ from   quex.engine.misc.string_handling                  import blue_print, \
                                                                 pretty_code
 from   quex.engine.misc.file_in                          import open_file_or_die, \
                                                                 write_safely_and_close
-from   quex.engine.tools import typed, \
+from   quex.engine.misc.tools import typed, \
                                 none_isinstance, \
                                 flatten_list_of_lists
 from   quex.blackboard   import setup as Setup, \

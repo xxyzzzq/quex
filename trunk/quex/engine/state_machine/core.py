@@ -1,11 +1,11 @@
 from   quex.engine.misc.string_handling             import blue_print
 #
-from   quex.engine.interval_handling                import NumberSet, Interval
+from   quex.engine.misc.interval_handling                import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
 from   quex.engine.state_machine.state.single_entry import Accept
 
-from   quex.engine.tools  import flatten_list_of_lists
+from   quex.engine.misc.tools  import flatten_list_of_lists
 from   quex.blackboard    import E_IncidenceIDs, \
                                  E_PreContextIDs, \
                                  E_Border

@@ -3,13 +3,13 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.input.regular_expression.construct           import Pattern
-from   quex.engine.interval_handling                     import NumberSet, Interval
+from   quex.engine.misc.interval_handling                     import NumberSet, Interval
 from   quex.engine.counter                               import ParserDataIndentation
 from   quex.engine.analyzer.door_id_address_label        import dial_db
 from   quex.engine.generator.code.base                   import SourceRef_VOID
 from   quex.engine.generator.languages.variable_db       import variable_db
 from   quex.engine.generator.TEST.generator_test         import __Setup_init_language_database
-from   quex.engine.interval_handling                     import NumberSet, Interval
+from   quex.engine.misc.interval_handling                     import NumberSet, Interval
 
 from   helper                                            import *
 

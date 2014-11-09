@@ -5,7 +5,7 @@ from   quex.engine.state_machine.core          import StateMachine
 from   quex.engine.state_machine.state.core    import State
 import quex.engine.state_machine.index         as index
 import quex.engine.state_machine.check.special as special
-from   quex.engine.tools import typed
+from   quex.engine.misc.tools import typed
 
 @typed(StateMachineList=[StateMachine])
 def do(StateMachineList, CommonTerminalStateF=True, CloneF=True):

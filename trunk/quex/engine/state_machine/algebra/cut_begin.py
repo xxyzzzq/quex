@@ -3,7 +3,7 @@ from   quex.engine.state_machine.state.core           import State
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.index                as     index
 from   quex.engine.misc.tree_walker                   import TreeWalker
-from   quex.engine.tools                              import r_enumerate
+from   quex.engine.misc.tools                              import r_enumerate
 
 from   itertools import islice
 

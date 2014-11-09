@@ -5,7 +5,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine        as regex
-from   quex.engine.interval_handling               import NumberSet, Interval
+from   quex.engine.misc.interval_handling               import NumberSet, Interval
 import quex.engine.state_machine.transformation.utf8_state_split  as trafo
 from   quex.engine.state_machine.transformation.utf8_state_split  import unicode_to_utf8
 import quex.input.regular_expression.engine        as regex

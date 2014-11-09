@@ -1,4 +1,4 @@
-from   quex.engine.interval_handling import NumberSet, Interval
+from   quex.engine.misc.interval_handling import NumberSet, Interval
 from   quex.blackboard               import E_Border, setup as Setup
 from   operator import attrgetter
 

@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.door_id_address_label import DoorID, \
                                                          dial_db
-from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.misc.interval_handling              import NumberSet
 from   operator import itemgetter
 #
 

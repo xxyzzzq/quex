@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import sys
 sys.path.append("../")
-from quex.engine.interval_handling import Interval
+from quex.engine.misc.interval_handling import Interval
 
 
 def the_union(Comment, A, B):

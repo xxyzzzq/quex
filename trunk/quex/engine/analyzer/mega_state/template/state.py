@@ -5,8 +5,8 @@ from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.state.core              import Processor
 from   quex.engine.commands.core           import TemplateStateKeySet
 import quex.engine.state_machine.index              as     index
-from   quex.engine.interval_handling                import Interval
-from   quex.engine.tools                            import typed, \
+from   quex.engine.misc.interval_handling                import Interval
+from   quex.engine.misc.tools                            import typed, \
                                                            UniformObject
 
 class TemplateState(MegaState):

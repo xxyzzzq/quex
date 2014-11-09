@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 from quex.engine.state_machine.core import StateMachine
-from quex.engine.tools import typed
+from quex.engine.misc.tools import typed
 
 
 @typed(the_state_machine_list=[StateMachine])

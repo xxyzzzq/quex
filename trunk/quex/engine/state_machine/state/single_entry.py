@@ -1,4 +1,4 @@
-from quex.engine.tools import typed
+from quex.engine.misc.tools import typed
 
 from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \

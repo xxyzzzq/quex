@@ -6,7 +6,7 @@ import quex.engine.state_machine.index              as     sm_index
 from   quex.engine.analyzer.door_id_address_label   import __nice, \
                                                            dial_db
 from   quex.engine.misc.string_handling             import blue_print
-from   quex.engine.tools                            import typed
+from   quex.engine.misc.tools                            import typed
 from   quex.blackboard                              import Lng
 
 def do(Data, TheAnalyzer):

@@ -63,12 +63,12 @@ from quex.engine.analyzer.door_id_address_label import dial_db
 from quex.engine.analyzer.state.core            import AnalyzerState
 from quex.engine.analyzer.state.entry           import Entry
 from quex.engine.analyzer.transition_map        import TransitionMap
-from quex.engine.interval_handling              import Interval
+from quex.engine.misc.interval_handling              import Interval
 from quex.blackboard                            import setup as Setup, \
                                                        E_StateIndices, \
                                                        E_Compression
 
-from quex.engine.tools import typed
+from quex.engine.misc.tools import typed
 
 from operator import itemgetter
 

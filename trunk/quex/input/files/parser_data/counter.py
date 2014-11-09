@@ -1,13 +1,13 @@
 # (C) Frank-Rene Schaefer
 from   quex.input.setup                           import NotificationDB
-from   quex.engine.tools                          import typed
+from   quex.engine.misc.tools                          import typed
 from   quex.engine.misc.file_in                   import error_msg
 from   quex.engine.state_machine.core             import StateMachine  
 import quex.engine.state_machine.algorithm.beautifier as beautifier    
 from   quex.engine.generator.code.base            import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
-from   quex.engine.interval_handling              import NumberSet
+from   quex.engine.misc.interval_handling              import NumberSet
 from   quex.blackboard                            import E_CharacterCountType
 
 from   quex.blackboard import setup as Setup

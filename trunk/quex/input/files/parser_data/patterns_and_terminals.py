@@ -18,7 +18,7 @@ import quex.engine.state_machine.check.identity          as     identity_checker
 import quex.engine.state_machine.construction.sequentialize           as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier    as     beautifier
 
-from   quex.engine.tools import typed
+from   quex.engine.misc.tools import typed
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               Lng, \

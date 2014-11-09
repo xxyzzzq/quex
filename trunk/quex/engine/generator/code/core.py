@@ -1,6 +1,6 @@
 from   quex.engine.generator.code.base import SourceRef, CodeFragment, SourceRef_VOID
 from   quex.blackboard import Lng
-from   quex.engine.tools import typed
+from   quex.engine.misc.tools import typed
 
 from   copy import deepcopy
 

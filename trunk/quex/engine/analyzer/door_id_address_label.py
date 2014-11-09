@@ -1,5 +1,5 @@
 import quex.engine.state_machine.index  as     sm_index
-from   quex.engine.tools                import print_callstack, TypedDict, TypedSet
+from   quex.engine.misc.tools                import print_callstack, TypedDict, TypedSet
 from   quex.blackboard                  import E_IncidenceIDs, E_StateIndices, E_DoorIdIndex
 
 from   collections import namedtuple
