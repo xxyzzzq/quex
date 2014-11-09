@@ -1,4 +1,4 @@
-import quex.engine.state_machine.parallelize          as     parallelize
+import quex.engine.state_machine.construction.parallelize          as     parallelize
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 
 def do(SM_List):

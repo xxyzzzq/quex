@@ -8,9 +8,9 @@ import quex.input.regular_expression.engine           as regex
 from   quex.engine.state_machine.state.single_entry   import Accept     
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.interval_handling                  import NumberSet, Interval
-import quex.engine.state_machine.utf16_state_split    as trafo
-from   quex.engine.state_machine.utf16_state_split    import unicode_to_utf16
-from   quex.engine.state_machine.engine_state_machine_set                 import get_combined_state_machine
+import quex.engine.state_machine.transformation.utf16_state_split    as trafo
+from   quex.engine.state_machine.transformation.utf16_state_split    import unicode_to_utf16
+from   quex.engine.state_machine.engine_state_machine_set  import get_combined_state_machine
 
 if "--hwut-info" in sys.argv:
     print "UTF16 State Split: Larger Number Sets"

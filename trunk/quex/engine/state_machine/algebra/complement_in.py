@@ -1,8 +1,8 @@
-import quex.engine.state_machine.check.special            as     special
-import quex.engine.state_machine.algorithm.beautifier     as     beautifier
-import quex.engine.state_machine.sequentialize            as     sequentialize
-import quex.engine.state_machine.repeat                   as     repeat
-import quex.engine.state_machine.algebra.complement_begin as     complement_begin
+import quex.engine.state_machine.check.special              as special
+import quex.engine.state_machine.algorithm.beautifier       as beautifier
+import quex.engine.state_machine.construction.sequentialize as sequentialize
+import quex.engine.state_machine.construction.repeat        as repeat
+import quex.engine.state_machine.algebra.complement_begin   as complement_begin
 
 def do(SM_A, SM_B):
     """\NotIn{P Q} = \NotBegin{P \Any*(Q+)}

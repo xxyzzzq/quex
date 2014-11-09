@@ -1,8 +1,8 @@
 from   quex.input.regular_expression.construct         import Pattern
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.parallelize           as     parallelize
-import quex.engine.state_machine.transformation        as     transformation
+import quex.engine.state_machine.construction.parallelize           as     parallelize
+import quex.engine.state_machine.transformation.core   as     transformation
 from   quex.engine.analyzer.commands.core              import E_R, \
                                                               InputPDecrement, \
                                                               Assign

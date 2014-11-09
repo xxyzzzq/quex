@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from copy import deepcopy
 
 
-import quex.engine.state_machine.repeat as repeat
+import quex.engine.state_machine.construction.repeat as repeat
 from   quex.engine.state_machine.core import *
 from   quex.engine.state_machine.state.core import *
 from   quex.engine.state_machine.state.single_entry import *

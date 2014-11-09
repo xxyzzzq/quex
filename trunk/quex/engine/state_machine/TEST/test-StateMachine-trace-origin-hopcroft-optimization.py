@@ -6,7 +6,6 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.state_machine.core import *
-from   quex.engine.state_machine.state_core_info import *
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft
 

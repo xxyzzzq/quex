@@ -4,8 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.interval_handling              import Interval
-import quex.engine.state_machine.utf16_state_split as trafo
-from   quex.engine.state_machine.utf16_state_split import unicode_to_utf16
+import quex.engine.state_machine.transformation.utf16_state_split as trafo
+from   quex.engine.state_machine.transformation.utf16_state_split import unicode_to_utf16
 
 if "--hwut-info" in sys.argv:
     print "UTF16 State Split: Contigous Word Sequence Ranges"

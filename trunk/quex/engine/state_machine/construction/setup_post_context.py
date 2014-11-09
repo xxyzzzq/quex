@@ -2,11 +2,12 @@
 from   quex.engine.misc.file_in                         import error_msg
 from   quex.engine.state_machine.core                   import StateMachine
 from   quex.engine.state_machine.state.single_entry     import Accept
-import quex.engine.state_machine.sequentialize          as     sequentialize
+import quex.engine.state_machine.construction.sequentialize          as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier   as     beautifier
-import quex.engine.state_machine.ambiguous_post_context as     ambiguous_post_context
-from   quex.blackboard                                  import E_PreContextIDs, \
-                                                               setup as Setup
+import quex.engine.state_machine.construction.ambiguous_post_context as     ambiguous_post_context
+
+from   quex.blackboard import E_PreContextIDs, \
+                              setup as Setup
 
 
 def do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReference):

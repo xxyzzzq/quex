@@ -15,7 +15,7 @@ from   quex.engine.generator.code.core                   import CodeTerminal, \
                                                                 CodeGenerated
 import quex.engine.state_machine.check.superset          as     superset_check
 import quex.engine.state_machine.check.identity          as     identity_checker
-import quex.engine.state_machine.sequentialize           as     sequentialize
+import quex.engine.state_machine.construction.sequentialize           as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier    as     beautifier
 
 from   quex.engine.tools import typed

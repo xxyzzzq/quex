@@ -42,8 +42,8 @@ from   quex.engine.interval_handling           import NumberSet, Interval, Numbe
 import quex.engine.generator.languages.core    as     languages
 import quex.engine.codec_db.core               as     codec_db
 import quex.output.cpp.counter                 as     counter
-import quex.engine.state_machine.utf8_state_split  as utf8_state_split
-import quex.engine.state_machine.utf16_state_split as utf16_state_split
+import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split
+import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split
 
 from   quex.blackboard                         import setup as Setup, Lng
 from   itertools                               import chain

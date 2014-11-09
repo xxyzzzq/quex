@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from   quex.engine.state_machine.core import *
-import quex.engine.state_machine.parallelize as parallelize 
+import quex.engine.state_machine.construction.parallelize as parallelize 
 from   quex.engine.state_machine.TEST.test_state_machines import *
 
 if "--hwut-info" in sys.argv:

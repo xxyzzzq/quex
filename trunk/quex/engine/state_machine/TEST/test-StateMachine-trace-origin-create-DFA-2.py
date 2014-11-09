@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from   quex.engine.state_machine.core import *
 import quex.input.regular_expression.engine as regex
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
-import quex.engine.state_machine.parallelize as parallelize
+import quex.engine.state_machine.construction.parallelize as parallelize
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: NFA to DFA (subset construction) II"

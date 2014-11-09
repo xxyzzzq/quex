@@ -3,9 +3,9 @@ from   quex.engine.generator.code.base                import SourceRef_VOID, \
                                                              SourceRef
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.character_counter    import CountInfo
-import quex.engine.state_machine.setup_post_context   as     setup_post_context
-import quex.engine.state_machine.setup_pre_context    as     setup_pre_context
-import quex.engine.state_machine.transformation       as     transformation
+import quex.engine.state_machine.construction.setup_post_context   as     setup_post_context
+import quex.engine.state_machine.construction.setup_pre_context    as     setup_pre_context
+import quex.engine.state_machine.transformation.core       as     transformation
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.algebra.reverse      as     reverse
 from   quex.engine.misc.file_in                       import error_msg

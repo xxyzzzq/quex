@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.engine.state_machine.core import *
-import quex.engine.state_machine.repeat as repeat
+import quex.engine.state_machine.construction.repeat as repeat
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 
 

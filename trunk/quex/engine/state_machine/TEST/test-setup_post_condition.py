@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.generator.code.base              import SourceRef_VOID
-import quex.engine.state_machine.setup_post_context as setup_post_context
+import quex.engine.state_machine.construction.setup_post_context as setup_post_context
 from   quex.engine.state_machine.TEST.test_state_machines import *
 import quex.engine.state_machine.algorithm.nfa_to_dfa as nfa_to_dfa
 import quex.engine.state_machine.algorithm.hopcroft_minimization as hopcroft

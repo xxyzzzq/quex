@@ -17,8 +17,8 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-import quex.engine.state_machine.utf8_state_split         as utf8_state_split
-import quex.engine.state_machine.utf16_state_split        as utf16_state_split 
+import quex.engine.state_machine.transformation.utf8_state_split         as utf8_state_split
+import quex.engine.state_machine.transformation.utf16_state_split        as utf16_state_split 
 import quex.engine.analyzer.engine_supply_factory         as     engine
 from   quex.engine.interval_handling                      import Interval, NumberSet
 import quex.engine.generator.languages.core               as     languages

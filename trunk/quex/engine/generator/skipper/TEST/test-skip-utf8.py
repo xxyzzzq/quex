@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.insert(0, os.getcwd())
 from   helper import *
-import quex.engine.state_machine.utf8_state_split  as utf8_state_split
+import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split
 from   quex.engine.interval_handling               import NumberSet, Interval
 from   quex.engine.generator.TEST.generator_test   import __Setup_init_language_database
 from   quex.engine.codec_db.core                   import CodecDynamicInfo

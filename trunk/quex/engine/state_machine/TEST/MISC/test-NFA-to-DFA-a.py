@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # PURPOSE:
 #   Tests the function "get_follow_state_combinations(state_combination)"
-#   from the module state_machine.paralellize.
+#   from the module state_machine.construction.paralellize.
 #
 ################################################################################
 
