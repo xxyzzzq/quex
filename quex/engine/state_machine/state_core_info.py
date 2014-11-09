@@ -2,7 +2,6 @@ from quex.blackboard import E_IncidenceIDs, \
                             E_PreContextIDs, \
                             E_IncidenceIDs_SubsetAcceptanceIDs
 
-
 class StateOperation(object): 
     """A StateOperation tells about a state how it should behave in a state
        machine that represents one single isolated pattern. This is in 

@@ -25,10 +25,10 @@ def construct_path(sm, StartStateIdx, String, Skeleton):
         for target_idx, trigger_set in Skeleton.items():
             adapted_trigger_set = trigger_set.difference(NumberSet(char))
             end = sm.add_transition(state_idx, trigger_set, target_idx, True)
-            sm.states[end].mark_self_as_origin(target_idx + 1000, end)
+            sm.states[end].mark_acceptance_id(target_idx + 1000)
         
         state_idx = sm.add_transition(state_idx, char, None, True)
-        sm.states[state_idx].mark_self_as_origin((long)(i + 10000), end)
+        sm.states[state_idx].mark_acceptance_id((long)(i + 10000))
 
     return state_idx # Return end of the string path
 

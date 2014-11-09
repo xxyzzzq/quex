@@ -8,7 +8,7 @@ class CodeUser(CodeFragment):
     """User code as it is taken from some input file. It contains:
 
           .get_code() -- list of strings or text formatting instructions
-                         (including possibly annotations about its origin)
+                         (including possibly annotations about its source code origin)
           .sr         -- the source reference where it was taken from
           .mode_name  -- Mode where the code was defined
     """

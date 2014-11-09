@@ -33,7 +33,8 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     # -- trivial pre-conditions should be added last, for simplicity
 
     #___________________________________________________________________________________________
-    if pre_context_sm is  None:
+    if pre_context_sm is None:
+        # NOT: 'and ...' !
         if BeginOfLinePreContextF:
             # Mark all acceptance states with the 'trivial pre-context BeginOfLine' flag
             for state in the_state_machine.get_acceptance_state_list():
@@ -45,7 +46,7 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
         
     if BeginOfLinePreContextF:
         # Extend the existing pre-context with a preceeding 'begin-of-line'.
-        reverse_newline_sm = reverse.do(StateMachine_Newline())
+        reverse_newline_sm  = reverse.do(StateMachine_Newline())
         reverse_pre_context = sequentialize.do([reverse_pre_context, 
                                                 reverse_newline_sm])
 
@@ -60,10 +61,8 @@ def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
     pre_context_sm_id = reverse_pre_context.get_id()
 
-    # (*) create origin data, in case where there is none yet create new one.
-    #     (do not delete, otherwise existing information gets lost)
-    for state in the_state_machine.states.itervalues():
-        if not state.is_acceptance(): continue
+    # (*) Associate acceptance with pre-context id. 
+    for state in the_state_machine.get_acceptance_state_list():
         state.set_pre_context_id(pre_context_sm_id)
     
     return reverse_pre_context

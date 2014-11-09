@@ -7,8 +7,8 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
     - which may be a NFA (non-deterministic finite automaton). 
     
     This is a generalized version of the 'subset construction' algorithm. Where
-    subsection construction focusses on letters of an alphabet for the
-    investigation of transitions, this algorithm focusses on elementary trigger
+    subsection construction focuses on letters of an alphabet for the
+    investigation of transitions, this algorithm focuses on elementary trigger
     sets. A very good description of the subset construction algorithm can be
     found in 'Engineering a Compiler' by Keith Cooper.
     """
@@ -16,7 +16,7 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
     initial_state_epsilon_closure = SM.get_epsilon_closure(SM.init_state_index) 
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
-    #     -- add the origin list of all states in the epsilon closure
+    #     -- add the command list of all states in the epsilon closure
     InitState = Class_State.from_state_iterable(
                            SM.states[i] for i in initial_state_epsilon_closure)
 
