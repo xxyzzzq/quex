@@ -12,7 +12,7 @@ import re
 import fnmatch
 from   copy import deepcopy
 
-unicode_db_directory = QUEX_PATH + "/quex/engine/unicode_db/database"
+unicode_db_directory = QUEX_PATH + "/quex/engine/codec_db/unicode/database"
 comment_deleter_re   = re.compile("#[^\n]*")
 
 def open_data_base_file(Filename):

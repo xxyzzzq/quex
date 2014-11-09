@@ -9,7 +9,7 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-import quex.engine.unicode_db.case_fold_parser as parser
+import quex.engine.codec_db.unicode.case_fold_parser as parser
 from   quex.engine.misc.utf8              import map_unicode_to_utf8
 
 

@@ -56,7 +56,7 @@ from   quex.input.regular_expression.auxiliary                  import __snap_un
 import quex.engine.state_machine.construction.sequentialize           as sequentialize
 import quex.engine.state_machine.construction.parallelize             as parallelize
 import quex.engine.state_machine.construction.repeat                  as repeat
-import quex.engine.unicode_db.case_fold_parser           as ucs_case_fold
+import quex.engine.codec_db.unicode.case_fold_parser           as ucs_case_fold
 
 from   quex.engine.misc.interval_handling  import Interval, NumberSet
 from   quex.engine.misc.file_in       import error_msg, \
