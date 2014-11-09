@@ -6,6 +6,11 @@ from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
+from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
+from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
+from   quex.input.regular_expression.auxiliary     import PatternShorthand
+import quex.input.regular_expression.engine        as     regex
+from   quex.input.regular_expression.exception     import RegularExpressionException
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
@@ -17,13 +22,7 @@ from   quex.engine.generator.languages.variable_db import VariableDB
 import quex.engine.generator.state_router          as     state_router_generator
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import all_isinstance
-from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
-from   quex.input.files.mode                       import PatternActionInfo, IncidenceDB
-from   quex.input.regular_expression.auxiliary     import PatternShorthand
-import quex.input.regular_expression.engine        as     regex
 import quex.output.cpp.core                        as     cpp_generator
-
-from   quex.exception  import RegularExpressionException
 #
 import quex.blackboard as blackboard
 from   quex.blackboard import E_Compression, \

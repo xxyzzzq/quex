@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
-from quex.exception import *
+from quex.input.regular_expression.exception import *
 from quex.blackboard import setup
 setup.buffer_limit_code = -1
 setup.path_limit_code   = -1

@@ -3,7 +3,7 @@ from   quex.engine.interval_handling                            import Interval,
                                                                        NumberSet
 
 import quex.engine.utf8 as utf8
-from   quex.exception  import RegularExpressionException
+from   quex.input.regular_expression.exception  import RegularExpressionException
 from   quex.blackboard import setup as Setup
 
 import StringIO

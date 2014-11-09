@@ -5,7 +5,7 @@ from quex.engine.utf8               import map_unicode_to_utf8
 from quex.engine.interval_handling  import NumberSet, Interval
 from quex.engine.unicode_db.parser  import ucs_property_db
 
-from quex.exception                 import RegularExpressionException
+from quex.input.regular_expression.exception                 import RegularExpressionException
 
 import quex.input.regular_expression.core as regular_expression
 from   quex.DEFINITIONS                   import QUEX_VERSION 

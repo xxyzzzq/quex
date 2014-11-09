@@ -4,7 +4,7 @@ import os
 import StringIO
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
-import quex.exception as exception
+import quex.input.regular_expression.exception as exception
 import quex.input.regular_expression.engine as engine
 from   quex.blackboard import setup as Setup
 Setup.set_all_character_set_UNIT_TEST(-sys.maxint, sys.maxint)
