@@ -33,7 +33,7 @@ except:
 import sys
 import os
 
-import quex.exception_checker as exception_checker
+import quex.engine.misc.exception_checker as exception_checker
 
 if sys.version_info[0] >= 3: 
     print("error: This version of quex was not implemented for Python >= 3.0")
