@@ -8,9 +8,9 @@ from   quex.engine.misc.file_in        import EndOfStreamException, \
                                               read_namespaced_name, \
                                               check, \
                                               read_until_letter
-from   quex.engine.generator.code.core import CodeUser, \
+from   quex.output.core.code.core import CodeUser, \
                                               CodeUser_NULL
-from   quex.engine.generator.code.base import SourceRef, \
+from   quex.output.core.code.base import SourceRef, \
                                               CodeFragment, \
                                               SourceRef_VOID
 import quex.input.files.code_fragment  as     code_fragment

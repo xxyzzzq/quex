@@ -7,12 +7,12 @@ import quex.input.files.mode_option                    as     mode_option
 from   quex.input.files.mode_option                    import OptionDB
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
-from   quex.engine.generator.code.core                 import CodeUser
+from   quex.output.core.code.core                 import CodeUser
 
 import quex.engine.state_machine.check.same            as     same_check
 import quex.engine.state_machine.check.outrun          as     outrun_checker
 import quex.engine.state_machine.check.superset        as     superset_check
-from   quex.engine.generator.code.base                 import SourceRef
+from   quex.output.core.code.base                 import SourceRef
 from   quex.engine.misc.file_in                        import EndOfStreamException, \
                                                               check, \
                                                               check_or_die, \

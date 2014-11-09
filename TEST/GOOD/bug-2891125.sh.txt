@@ -4,6 +4,6 @@
 ./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
 ./DEFINITIONS.py:LineN:        sys.exit(-1) # sys.exit(-1) is acceptable
 ./DEFINITIONS.py:LineN:    sys.exit(-1) # sys.exit(-1) is acceptable
+./engine/misc/exception_checker.py:LineN:    sys.exit(-1)
 ./engine/misc/file_in.py:LineN:    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
-./exception_checker.py:LineN:    sys.exit(-1)
 ./input/regular_expression/engine.py:LineN:                if not, the function sys.exit()-s.

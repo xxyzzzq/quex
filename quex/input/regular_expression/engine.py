@@ -40,7 +40,7 @@ import quex.engine.state_machine.algebra.complement_end       as complement_end
 import quex.engine.state_machine.algebra.complement_in        as complement_in   
 import quex.engine.state_machine.algebra.union                as union
 from   quex.engine.state_machine.check.special                import get_any, get_none
-from   quex.engine.generator.code.base                        import SourceRef
+from   quex.output.core.code.base                        import SourceRef
 
 import quex.input.regular_expression.traditional_character_set as traditional_character_set
 import quex.input.regular_expression.property                  as property

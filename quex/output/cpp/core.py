@@ -3,8 +3,8 @@
 from   quex.engine.analyzer.door_id_address_label         import get_plain_strings, \
                                                                  dial_db
 from   quex.engine.analyzer.terminal.core                 import Terminal
-from   quex.engine.generator.languages.variable_db        import variable_db
-import quex.engine.generator.base                         as     generator
+from   quex.output.core.languages.variable_db        import variable_db
+import quex.output.core.base                         as     generator
 from   quex.engine.state_machine.engine_state_machine_set import EngineStateMachineSet
 from   quex.engine.counter                                import CountCmdFactory
 from   quex.engine.misc.tools                                  import all_isinstance, \

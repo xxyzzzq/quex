@@ -5,11 +5,11 @@ from   quex.engine.incidence_db                          import IncidenceDB
 from   quex.engine.analyzer.terminal.core                import Terminal
 from   quex.engine.analyzer.terminal.factory             import TerminalFactory
 from   quex.engine.analyzer.door_id_address_label        import DoorID, dial_db
-import quex.engine.generator.skipper.character_set       as     skip_character_set
-import quex.engine.generator.skipper.range               as     skip_range
-import quex.engine.generator.skipper.nested_range        as     skip_nested_range
-import quex.engine.generator.skipper.indentation_counter as     indentation_counter
-from   quex.engine.generator.code.core                   import CodeTerminal, \
+import quex.output.core.skipper.character_set       as     skip_character_set
+import quex.output.core.skipper.range               as     skip_range
+import quex.output.core.skipper.nested_range        as     skip_nested_range
+import quex.output.core.skipper.indentation_counter as     indentation_counter
+from   quex.output.core.code.core                   import CodeTerminal, \
                                                                 CodeTerminalOnMatch, \
                                                                 CodeGeneratedBlock, \
                                                                 CodeGenerated

@@ -3,7 +3,7 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools import typed
-from   quex.engine.generator.code.core            import CodeTerminal
+from   quex.output.core.code.core            import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.commands.core                  import E_R, \

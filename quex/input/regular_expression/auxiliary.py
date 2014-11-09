@@ -4,7 +4,7 @@ from quex.engine.misc.file_in        import skip_whitespace, \
                                             verify_word_in_list, \
                                             error_msg
 from quex.engine.state_machine.core  import StateMachine
-from quex.engine.generator.code.base import SourceRef
+from quex.output.core.code.base import SourceRef
 from quex.input.regular_expression.exception                  import RegularExpressionException
 
 from copy import deepcopy

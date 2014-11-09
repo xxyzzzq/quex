@@ -8,10 +8,10 @@ from   quex.core                                   import blackboard_mode_db_set
 import quex.input.files.mode                       as     mode
 from   quex.input.files.mode                       import Mode
 import quex.blackboard                             as     blackboard
-from   quex.engine.generator.code.base             import SourceRef
-from   quex.engine.generator.code.core             import CodeUser
+from   quex.output.core.code.base             import SourceRef
+from   quex.output.core.code.core             import CodeUser
 from   quex.engine.analyzer.door_id_address_label  import dial_db
-import quex.engine.generator.languages.core        as     languages
+import quex.output.core.languages.core        as     languages
 
 blackboard.setup.language_db = languages.db["C++"]
 

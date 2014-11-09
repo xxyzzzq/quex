@@ -1,4 +1,4 @@
-from   quex.engine.generator.code.core  import CodeTerminal, \
+from   quex.output.core.code.core  import CodeTerminal, \
                                                CodeTerminal_NULL
 from   quex.engine.analyzer.state.core  import Processor
 from   quex.engine.analyzer.state.entry import Entry
