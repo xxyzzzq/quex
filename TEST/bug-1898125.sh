@@ -16,5 +16,5 @@ echo
 
 
 # cleansening
-rm -f Simple  Simple.cpp Simple-token_ids Simplism
+rm -f Simple*
 cd $tmp
