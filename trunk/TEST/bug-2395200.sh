@@ -10,7 +10,7 @@ tmp=`pwd`
 cd $bug/ 
 make $1 >& /dev/null
 ./$1 >& tmp.txt
-cat tmp.txt
+../quex_pathify.sh tmp.txt
 make clean >& /dev/null
 
 cd $tmp

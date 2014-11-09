@@ -51,8 +51,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
 
     begin_of_line_f = None
     for state in result.get_acceptance_state_list():
-        BOF = (   state.single_entry.get_the_only_one().pre_context_id() 
-               == E_PreContextIDs.BEGIN_OF_LINE)
+        BOF = state.single_entry.has_begin_of_line_pre_context()
         if begin_of_line_f is None: begin_of_line_f = BOF
         else:                       assert begin_of_line_f == BOF
 

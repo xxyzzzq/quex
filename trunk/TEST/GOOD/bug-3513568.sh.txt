@@ -1,4 +1,3 @@
-gcc -Wall -Werror -ggdb -DQUEX_OPTION_MULTI boeck_Lexer.o lexer.o Common-token.o -o  lexer `icu-config --ldflags` -I/home/fschaef/prj/quex/trunk 
+gcc -Wall -Werror -ggdb -DQUEX_OPTION_MULTI boeck_Lexer.o lexer.o Common-token.o -o  lexer `icu-config --ldflags` -I<<QUEX_PATH>> 
 Only output shall be: No memory leaks!
 VALGRIND:   All heap blocks were freed -- no leaks are possible
-

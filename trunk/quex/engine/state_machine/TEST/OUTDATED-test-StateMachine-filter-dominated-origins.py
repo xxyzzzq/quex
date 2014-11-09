@@ -58,14 +58,14 @@ for i in range(10):
     except: pass
 
 print "---------------------------------------------------------------------"
-print "(1) state machine with all its origin information"    
+print "(1) state machine with all its single entry command information"    
 print
 for state_idx, state in sm.states.items():
     acceptance_mark = " "
     if state.is_acceptance(): acceptance_mark = "*"
     print ("[%s]%s <~ " % (repr(state_idx), acceptance_mark)) + repr(state.single_entry.get_list()).replace("L", "")
 print "---------------------------------------------------------------------"
-print "(2) state machine with origins filtered"    
+print "(2) state machine with without single entry commands"    
 print
 sm.filter_dominated_origins()
 for state_idx, state in sm.states.items():

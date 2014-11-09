@@ -3,6 +3,7 @@ from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.interval_handling                import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
+from   quex.engine.state_machine.state.single_entry import Accept
 
 from   quex.engine.tools  import flatten_list_of_lists
 from   quex.blackboard    import E_IncidenceIDs, \
@@ -368,9 +369,16 @@ class StateMachine(object):
 
     def get_acceptance_state_index_list(self, AcceptanceID=None):
         if AcceptanceID is None:
-            return [ index for index, state in self.states.iteritems() if state.is_acceptance() ]
-        else:
-            return [ index for index, state in self.states.iteritems() if state.is_acceptance() and state.single_entry.get_the_only_one().acceptance_id() == AcceptanceID ]
+            return [ 
+                index for index, state in self.states.iteritems() 
+                      if state.is_acceptance() 
+            ]
+
+        return [ 
+            index for index, state in self.states.iteritems() 
+                  if     state.is_acceptance() 
+                     and state.single_entry.has_acceptance_id(AcceptanceID) 
+        ]
 
     def get_to_db(self):
         """RETURNS:
@@ -478,32 +486,29 @@ class StateMachine(object):
         return index_map, inverse_index_map, index_sequence
 
     def get_pattern_and_pre_context_normalization(self, PreContextID_Offset=None, AcceptanceID_Offset=None):
+
         pre_context_id_set = set()
-        pattern_id_set     = set()
-        def enter(collection, Value, TheEnum):
-            if Value not in TheEnum:
-                collection.add(Value)
-
+        acceptance_id_set  = set()
         for state in self.states.itervalues():
-            for origin in state.single_entry:
-                enter(pre_context_id_set, origin.pre_context_id(), E_PreContextIDs)
-                enter(pattern_id_set,     origin.acceptance_id(),  E_IncidenceIDs)
+            for cmd in state.single_entry.get_iterable(Accept):
+                pre_context_id_set.add(cmd.pre_context_id())
+                acceptance_id_set.add(cmd.acceptance_id())
+                
+        def enter(db, Value, TheEnum, NewId):
+            if Value in TheEnum: db[Value] = Value; return NewId
+            else:                db[Value] = NewId; return NewId + 1
 
-        def get_map(id_set, Offset):
-            """The 'order' of the IDs must be maintained! In particular, a 
-            AcceptanceID with higher precedence than another, must remain of 
-            higher precedence."""
-            result = {}
-            for x in sorted(id_set):
-                result[x] = long(len(result) + Offset)
-            return result
+        i = 1L
+        repl_db_pre_context_id = {}
+        for pre_context_id in sorted(pre_context_id_set):
+            i = enter(repl_db_pre_context_id, pre_context_id, E_PreContextIDs, i)
 
-        if PreContextID_Offset is None: PreContextID_Offset = 1 # Avoid ID = 0
-        if AcceptanceID_Offset is None: AcceptanceID_Offset    = 1 # Avoid ID = 0
-        assert PreContextID_Offset > 0
-        assert AcceptanceID_Offset    > 0
-        return get_map(pre_context_id_set, PreContextID_Offset), \
-               get_map(pattern_id_set, AcceptanceID_Offset)
+        i = 1L
+        repl_db_acceptance_id  = {}
+        for acceptance_id in sorted(acceptance_id_set):
+            i = enter(repl_db_acceptance_id, acceptance_id, E_IncidenceIDs, i)
+
+        return repl_db_pre_context_id, repl_db_acceptance_id
 
     def get_string(self, NormalizeF=False, Option="utf8", OriginalStatesF=True):
         assert Option in ["utf8", "hex"]
@@ -752,11 +757,6 @@ class StateMachine(object):
            If OtherStateMachineID and StateIdx are specified other origins
               than the current state machine can be defined (useful for pre- and post-
               conditions).         
-
-           DontMarkIfOriginsPresentF can be set to ensure that origin data structures
-              are only provided for states where non is set yet. This can be unsed
-              to ensure that every state has an origin structure related to it, without
-              overiding existing ones.
         """
         assert type(OtherStateMachineID) == long
 
@@ -764,7 +764,7 @@ class StateMachine(object):
         else:                          state_machine_id = OtherStateMachineID
 
         for state_idx, state in self.states.items():
-            state.mark_self_as_origin(state_machine_id, state_idx)
+            state.mark_acceptance_id(state_machine_id)
 
     def mount_to_acceptance_states(self, MountedStateIdx, 
                                    CancelStartAcceptanceStateF=True):

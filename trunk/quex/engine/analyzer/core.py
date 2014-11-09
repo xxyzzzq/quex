@@ -56,10 +56,13 @@ import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 from   quex.engine.analyzer.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
-from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.tools                          import typed
-from   quex.blackboard  import setup as Setup
-from   quex.blackboard  import E_IncidenceIDs, \
+
+from   quex.engine.state_machine.core               import StateMachine
+from   quex.engine.state_machine.state.single_entry import Accept      
+
+from   quex.engine.tools                            import typed
+from   quex.blackboard  import setup as Setup, \
+                               E_IncidenceIDs, \
                                E_TransitionN, \
                                E_PreContextIDs, \
                                E_Cmd, \
@@ -252,8 +255,8 @@ class Analyzer:
         cmd_list = []
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cmd_list.extend(
-                 PreContextOK(origin.acceptance_id()) for origin in OldState.single_entry \
-                 if origin.is_acceptance() 
+                 PreContextOK(cmd.acceptance_id()) 
+                 for cmd in OldState.single_entry.get_iterable(Accept)
             )
 
         if state.transition_map is None and False: 

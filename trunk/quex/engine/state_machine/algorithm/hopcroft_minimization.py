@@ -331,7 +331,7 @@ class HopcroftMinization:
                     for state_set_index in ifilter(lambda x: len(self.state_set_list[x]) != 1, considerable_set):
                         self.non_homogenous_add(state_set_index)
                 else:
-                    # (*) This is the short version, if there is only one origin
+                    # (*) This is the short version, if there is only one accept command
                     state_set_index = self.map[origin_state_list[0]]
                     if len(self.state_set_list[state_set_index]) != 1:
                         self.non_homogenous_add(state_set_index)
@@ -374,7 +374,7 @@ def do(SM, CreateNewStateMachineF=True, Class_StateMachine=StateMachine, Class_S
        with two sets: 
        
             (1) the set of acceptance states, 
-                -- these states need to be split again according to their origin.
+                -- these states need to be split again according to their acceptance id.
                    Acceptance of state machine A is not equal to acceptance of 
                    state machine B.
             (2) the set of non-acceptance states.
@@ -459,7 +459,7 @@ def adapt_state_machine(sm, Result):
 
         # The prototype takes over the role of all
         sm.states[prototype_i].single_entry.merge_list(
-            sm.states[i].single_entry.get_list() for i in state_set if i != prototype_i)
+            sm.states[i].single_entry for i in state_set if i != prototype_i)
 
         replacement_dict.update(
             (i, prototype_i) for i in state_set if i != prototype_i)
