@@ -7,8 +7,8 @@ from   quex.input.setup                     import global_extension_db,      \
 from   quex.input.files.token_type          import TokenTypeDescriptorManual
 from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.engine.generator.languages.core import db as output_language_db
-import quex.engine.state_machine.utf8_state_split  as utf8_state_split      
-import quex.engine.state_machine.utf16_state_split as utf16_state_split      
+import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split      
+import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split      
 from   quex.engine.misc.file_in             import read_namespaced_name, \
                                                    verify_word_in_list, \
                                                    error_msg

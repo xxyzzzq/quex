@@ -12,7 +12,7 @@
 # (C) Frank-Rene Schaefer
 ##############################################################################
 
-import quex.engine.state_machine.sequentialize         as sequentialize
+import quex.engine.state_machine.construction.sequentialize         as sequentialize
 import quex.engine.state_machine.algorithm.beautifier  as beautifier
 import quex.engine.state_machine.algebra.reverse       as reverse
 from   copy import deepcopy

@@ -11,7 +11,7 @@ setup.path_limit_code   = -1
 
 import quex.engine.state_machine.index as sm_index
 import quex.input.regular_expression.engine as regex
-import quex.engine.state_machine.ambiguous_post_context as ambiguous_post_context 
+import quex.engine.state_machine.construction.ambiguous_post_context as ambiguous_post_context 
 import quex.engine.state_machine.algorithm.beautifier as beautifier
 import quex.engine.state_machine.algebra.reverse         as reverse
 

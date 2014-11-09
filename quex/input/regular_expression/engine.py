@@ -53,9 +53,9 @@ from   quex.input.regular_expression.auxiliary                  import __snap_un
                                                                        __debug_print, \
                                                                        snap_replacement
 
-import quex.engine.state_machine.sequentialize           as sequentialize
-import quex.engine.state_machine.parallelize             as parallelize
-import quex.engine.state_machine.repeat                  as repeat
+import quex.engine.state_machine.construction.sequentialize           as sequentialize
+import quex.engine.state_machine.construction.parallelize             as parallelize
+import quex.engine.state_machine.construction.repeat                  as repeat
 import quex.engine.unicode_db.case_fold_parser           as ucs_case_fold
 
 from   quex.engine.interval_handling  import Interval, NumberSet

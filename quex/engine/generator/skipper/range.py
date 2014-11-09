@@ -6,7 +6,7 @@ from   quex.engine.generator.skipper.common        import line_counter_in_loop, 
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
 import quex.engine.state_machine.index             as     sm_index
-import quex.engine.state_machine.transformation    as     transformation
+import quex.engine.state_machine.transformation.core    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.tools                           import r_enumerate, \
                                                           typed, \

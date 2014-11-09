@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # TEST: get_trigger_set_for_macro_state_transition(StateCombination0,
 #                                                  StateCombination1)
-#       from the module state_machine.paralellize.
+#       from the module state_machine.construction.paralellize.
 import sys
 sys.path.append("../")
                         

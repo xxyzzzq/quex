@@ -7,8 +7,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine        as     core
 import quex.input.files.counter                    as     counter
 from   quex.engine.codec_db.core                   import CodecDynamicInfo
-import quex.engine.state_machine.utf8_state_split  as     utf8_state_split
-import quex.engine.state_machine.utf16_state_split as     utf16_state_split
+import quex.engine.state_machine.transformation.utf8_state_split  as     utf8_state_split
+import quex.engine.state_machine.transformation.utf16_state_split as     utf16_state_split
 from   quex.blackboard import setup as Setup
 from   StringIO                                    import StringIO
 

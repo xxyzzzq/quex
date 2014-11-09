@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.exception                                          import RegularExpressionException
 from quex.engine.state_machine.core                     import *
 import quex.input.regular_expression.engine              as regex
-import quex.engine.state_machine.ambiguous_post_context as apc
+import quex.engine.state_machine.construction.ambiguous_post_context as apc
 from   quex.blackboard import setup
 setup.buffer_limit_code = -1
 setup.path_limit_code   = -1

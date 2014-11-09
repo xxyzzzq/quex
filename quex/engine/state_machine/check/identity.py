@@ -1,4 +1,3 @@
-# from quex.engine.state_machine.state_core_info     import E_PostContextIDs      
 from quex.blackboard import E_PreContextIDs
 from quex.engine.state_machine.core import StateMachine
 

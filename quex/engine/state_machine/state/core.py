@@ -1,7 +1,8 @@
 from   quex.engine.state_machine.state.single_entry import SingleEntry, \
                                                            Accept, \
                                                            StoreInputPosition
-from   quex.engine.state_machine.target_map         import TargetMap
+from   quex.engine.state_machine.state.target_map   import TargetMap
+
 from   quex.engine.tools  import typed
 
 from   quex.blackboard    import E_IncidenceIDs, \
