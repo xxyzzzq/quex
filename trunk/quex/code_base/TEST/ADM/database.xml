@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.77" date="Sun Nov  9 00:35:13 2014">
+<test-database execution-time-sec="0.77" date="Sun Nov  9 08:23:47 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
         <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bom-istream.exe" info-request-time="1415485626L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.506669"/>
+            <make-procedure success="False" time_sec="0.506669"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
@@ -12,7 +12,7 @@
         <test title="FILE" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="bom.exe" info-request-time="1415485626L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.116858"/>
+            <make-procedure success="False" time_sec="0.116858"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
@@ -33,7 +33,7 @@
         <test title="char stream based." make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="strange_stream.exe" info-request-time="1415485625L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.483260"/>
+            <make-procedure success="False" time_sec="0.483260"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.00" crc="None"/>
                <choice name="3" result="OK" time_sec="0.00" crc="None"/>
@@ -44,7 +44,7 @@
         <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.02"> 
             <application file-name="strange_wstream.exe" info-request-time="1415485626L" vanished="False"/>
             <analogy open="((" close="))"/>
-            <make-procedure success="True" time_sec="0.486238"/>
+            <make-procedure success="False" time_sec="0.486238"/>
             <choice-list number="4" same_result="False">
                <choice name="2" result="OK" time_sec="0.01" crc="None"/>
                <choice name="3" result="OK" time_sec="0.00" crc="None"/>
