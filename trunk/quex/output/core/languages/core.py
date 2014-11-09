@@ -12,11 +12,11 @@
 # AUTHOR: Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
-import quex.output.core.languages.cpp               as     cpp
-from   quex.output.core.code.base                   import SourceRef, \
+import quex.output.cpp.templates                         as     cpp
+from   quex.output.core.code.base                        import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
-from   quex.engine.commands.core                import E_R, \
+from   quex.engine.commands.core                         import E_R, \
                                                                 RouterContentElement
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
@@ -28,8 +28,8 @@ from   quex.engine.misc.string_handling                  import blue_print, \
 from   quex.engine.misc.file_in                          import open_file_or_die, \
                                                                 write_safely_and_close
 from   quex.engine.misc.tools import typed, \
-                                none_isinstance, \
-                                flatten_list_of_lists
+                                     none_isinstance, \
+                                     flatten_list_of_lists
 from   quex.blackboard   import setup as Setup, \
                                 E_StateIndices,  \
                                 E_IncidenceIDs, \
