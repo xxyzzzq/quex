@@ -20,7 +20,7 @@
 #            imports are 'flat' and only cause environment or outer modules.   #
 #_______________________________________________________________________________
 from quex.engine.misc.enum           import Enum
-from quex.output.core.code.base import CodeFragment_NULL
+from quex.input.code.base import CodeFragment_NULL
 from quex.input.setup                import QuexSetup, SETUP_INFO
 
 #------------------------------------------------------------------------------

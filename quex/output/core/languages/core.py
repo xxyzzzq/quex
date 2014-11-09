@@ -13,7 +13,7 @@
 # ABSOLUTELY NO WARRANTY
 #########################################################################################################
 import quex.output.cpp.templates                         as     cpp
-from   quex.output.core.code.base                        import SourceRef, \
+from   quex.input.code.base                        import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
 from   quex.engine.commands.core                         import E_R, \

@@ -2,7 +2,7 @@ import quex.input.files.counter             as     counter
 import quex.input.regular_expression.core   as     regular_expression
 from   quex.input.files.parser_data.counter import CounterSetupLineColumn_Default
 from   quex.engine.misc.tools                    import all_isinstance
-from   quex.output.core.code.base      import SourceRef
+from   quex.input.code.base      import SourceRef
 from   quex.engine.misc.tools                    import typed, \
                                                    flatten_list_of_lists
 from   quex.engine.misc.file_in             import error_msg, \

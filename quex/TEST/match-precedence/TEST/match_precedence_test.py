@@ -4,14 +4,15 @@ sys.path.append(os.environ["QUEX_PATH"])
 sys.path.insert(0, os.getcwd())
 
 
-from   quex.core                                   import blackboard_mode_db_setup
-import quex.input.files.mode                       as     mode
-from   quex.input.files.mode                       import Mode
-import quex.blackboard                             as     blackboard
-from   quex.output.core.code.base             import SourceRef
-from   quex.output.core.code.core             import CodeUser
+from   quex.core                        import blackboard_mode_db_setup
+import quex.input.files.mode            as     mode
+from   quex.input.files.mode            import Mode
+from   quex.input.code.base             import SourceRef
+from   quex.input.code.core             import CodeUser
 from   quex.engine.analyzer.door_id_address_label  import dial_db
-import quex.output.core.languages.core        as     languages
+import quex.output.core.languages.core  as     languages
+
+import quex.blackboard                  as     blackboard
 
 blackboard.setup.language_db = languages.db["C++"]
 
