@@ -1,30 +1,30 @@
 from   quex.input.regular_expression.construct           import Pattern           
 from   quex.input.files.consistency_check                import __error_message as c_error_message
+from   quex.input.code.core                              import CodeTerminal, \
+                                                                CodeTerminalOnMatch, \
+                                                                CodeGeneratedBlock, \
+                                                                CodeGenerated
 from   quex.engine.counter                               import CountCmdFactory
 from   quex.engine.incidence_db                          import IncidenceDB
 from   quex.engine.analyzer.terminal.core                import Terminal
 from   quex.engine.analyzer.terminal.factory             import TerminalFactory
 from   quex.engine.analyzer.door_id_address_label        import DoorID, dial_db
-import quex.output.core.skipper.character_set       as     skip_character_set
-import quex.output.core.skipper.range               as     skip_range
-import quex.output.core.skipper.nested_range        as     skip_nested_range
-import quex.output.core.skipper.indentation_counter as     indentation_counter
-from   quex.input.code.core                   import CodeTerminal, \
-                                                                CodeTerminalOnMatch, \
-                                                                CodeGeneratedBlock, \
-                                                                CodeGenerated
+import quex.output.core.skipper.character_set            as     skip_character_set
+import quex.output.core.skipper.range                    as     skip_range
+import quex.output.core.skipper.nested_range             as     skip_nested_range
+import quex.output.core.skipper.indentation_counter      as     indentation_counter
 import quex.engine.state_machine.check.superset          as     superset_check
 import quex.engine.state_machine.check.identity          as     identity_checker
 import quex.engine.state_machine.construction.sequentialize           as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier    as     beautifier
 
 from   quex.engine.misc.tools import typed
+import quex.engine.misc.error   as     error
 import quex.blackboard as blackboard
 from   quex.blackboard import setup as Setup, \
                               Lng, \
                               E_IncidenceIDs, \
                               E_TerminalType
-from   quex.engine.misc.file_in import error_msg
 from   copy        import deepcopy
 from   collections import namedtuple
 from   operator    import attrgetter
@@ -155,7 +155,7 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     #               Related data (skip character set, ... ) is NOT transformed!
     for pattern in pattern_list:
         if not pattern.transform(Setup.buffer_codec):
-            error_msg("Pattern contains elements not found in engine codec '%s'.\n" % Setup.buffer_codec.name \
+            error.log("Pattern contains elements not found in engine codec '%s'.\n" % Setup.buffer_codec.name \
                       + "(Buffer element size is %s [byte])" % Setup.buffer_element_size,
                       pattern.sr, DontExitF=True)
 
@@ -292,7 +292,7 @@ def _pattern_reprioritization(ppt_list, BaseModeSequence):
             priority.pattern_index        = Info.new_pattern_index
 
         if not done_f and Info.sr.mode_name == ModeName:
-            error_msg("PRIORITY mark does not have any effect.", 
+            error.log("PRIORITY mark does not have any effect.", 
                       Info.sr.file_name, Info.sr.line_n, DontExitF=True)
 
     history = []
@@ -323,7 +323,7 @@ def _pattern_deletion(ppt_list, BaseModeSequence):
                 i += 1
 
         if not done_f and Info.sr.mode_name == ModeName:
-            error_msg("DELETION mark does not have any effect.", 
+            error.log("DELETION mark does not have any effect.", 
                       Info.sr.file_name, Info.sr.line_n, DontExitF=True)
 
     history = []

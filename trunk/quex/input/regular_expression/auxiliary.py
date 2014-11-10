@@ -1,8 +1,7 @@
+import quex.engine.misc.error        as     error
 from quex.engine.misc.file_in        import skip_whitespace, \
                                             check, \
-                                            read_identifier, \
-                                            verify_word_in_list, \
-                                            error_msg
+                                            read_identifier
 from quex.engine.state_machine.core  import StateMachine
 from quex.input.code.base import SourceRef
 from quex.input.regular_expression.exception                  import RegularExpressionException
@@ -110,9 +109,9 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
         raise RegularExpressionException("Pattern replacement expression misses closing '}' after '%s'." \
                                          % pattern_name)
 
-    verify_word_in_list(pattern_name, PatternDict.keys(),
-                        "Specifier '%s' not found in any preceeding 'define { ... }' section." % pattern_name, 
-                        stream)
+    error.verify_word_in_list(pattern_name, PatternDict.keys(),
+                             "Specifier '%s' not found in any preceeding 'define { ... }' section." % pattern_name, 
+                             stream)
 
     reference = PatternDict[pattern_name]
     assert reference.__class__ == PatternShorthand
@@ -132,7 +131,7 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
         # A state machine, that contains pre- or post- conditions cannot be part
         # of a replacement. The addition of new post-contexts would mess up the pattern.
         ## if state_machine.has_pre_or_post_context():
-        ##    error_msg("Pre- or post-conditioned pattern was used in replacement.\n" + \
+        ##    error.log("Pre- or post-conditioned pattern was used in replacement.\n" + \
         ##              "Quex's regular expression grammar does not allow this.", stream)
             
         return state_machine
@@ -141,11 +140,11 @@ def snap_replacement(stream, PatternDict, StateMachineF=True):
         # Get a cloned version of character set
         character_set = reference.get_character_set()
         if character_set is None:
-            error_msg("Replacement in character set expression must be a character set.\n"
+            error.log("Replacement in character set expression must be a character set.\n"
                       "Specifier '%s' relates to a pattern state machine." % pattern_name, stream)
 
         if character_set.is_empty():
-            error_msg("Referenced character set '%s' is empty.\nAborted." % pattern_name, stream)
+            error.log("Referenced character set '%s' is empty.\nAborted." % pattern_name, stream)
 
         return character_set
 

@@ -1,5 +1,5 @@
-from quex.engine.misc.file_in import open_file_or_die, \
-                                     write_safely_and_close 
+from quex.engine.misc.file_operations import open_file_or_die, \
+                                             write_safely_and_close 
 from quex.blackboard          import setup as Setup, \
                                      Lng
 

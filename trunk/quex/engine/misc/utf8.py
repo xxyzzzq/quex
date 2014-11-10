@@ -1,6 +1,6 @@
 import sys
-from copy import copy
-from quex.engine.misc.file_in import error_msg
+from   copy import copy
+import quex.engine.misc.error as error
 
 import StringIO
 
@@ -57,7 +57,7 @@ def unicode_to_utf8(UnicodeValue):
                  0x80 | ((UnicodeValue >>  6) & 0x3F),
                  0x80 | ((UnicodeValue      ) & 0x3F)]
     else:
-        error_msg("Unicode character 0x%8X > 0x7FFFFFFF detected. Cannot be handled." % UnicodeValue)
+        error.log("Unicode character 0x%8X > 0x7FFFFFFF detected. Cannot be handled." % UnicodeValue)
 
 def unicode_to_pretty_utf8(Code):
     global utf8_char_db
@@ -96,7 +96,7 @@ def utf8_to_unicode(ByteSequence):
         value |=  (byte & 0x3F)   # blend off the highest two bits
         # The highest two bits in a follow byte in utf8 MUST be '10'. Thus:
         if (byte & 0xC0) != 0x80:
-            error_msg("Error in UTF8 encoded file. Inadmissible byte sequence detected. Found byte '%02X'" % byte)
+            error.log("Error in UTF8 encoded file. Inadmissible byte sequence detected. Found byte '%02X'" % byte)
 
     return value
 

@@ -1,5 +1,4 @@
 
-import quex.input.files.parser_data.patterns_and_terminals as patterns_and_terminals
 from   quex.input.setup                                import NotificationDB
 import quex.input.regular_expression.core              as     regular_expression
 from   quex.input.regular_expression.construct         import Pattern           
@@ -7,22 +6,21 @@ import quex.input.files.mode_option                    as     mode_option
 from   quex.input.files.mode_option                    import OptionDB
 import quex.input.files.code_fragment                  as     code_fragment
 from   quex.input.files.consistency_check              import __error_message as c_error_message
-from   quex.input.code.core                 import CodeUser
+import quex.input.files.parser_data.patterns_and_terminals as patterns_and_terminals
+from   quex.input.code.core                            import CodeUser
+from   quex.input.code.base                            import SourceRef
 
 import quex.engine.state_machine.check.same            as     same_check
 import quex.engine.state_machine.check.outrun          as     outrun_checker
 import quex.engine.state_machine.check.superset        as     superset_check
-from   quex.input.code.base                 import SourceRef
+import quex.engine.misc.error                          as     error
 from   quex.engine.misc.file_in                        import EndOfStreamException, \
                                                               check, \
                                                               check_or_die, \
-                                                              error_msg, \
-                                                              error_eof, \
                                                               read_identifier, \
                                                               read_until_letter, \
                                                               read_until_whitespace, \
-                                                              skip_whitespace, \
-                                                              verify_word_in_list
+                                                              skip_whitespace
 from   quex.engine.incidence_db                        import IncidenceDB
 from   quex.engine.misc.tools import typed, all_isinstance
 import quex.blackboard as blackboard
@@ -291,8 +289,8 @@ class Mode:
             return abstract_f
 
         elif abstract_f == False:
-            error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
-                      "<inheritable: only> has been set automatically.", self.sr.file_name, self.sr.line_n,  
+            error.log("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
+                      "<inheritable: only> has been set automatically.", self.sr,  
                       DontExitF=True)
             abstract_f = True # Change to 'inheritable: only', i.e. abstract_f == True.
 
@@ -331,15 +329,15 @@ class Mode:
                 msg += "   inherits mode '%s'\n" % mode_name
             msg += "   inherits mode '%s'" % ModeDescr.name
 
-            error_msg("circular inheritance detected:\n" + msg, ModeDescr.sr.file_name, ModeDescr.sr.line_n)
+            error.log("circular inheritance detected:\n" + msg, ModeDescr.sr)
 
         base_mode_name_list_reversed = deepcopy(ModeDescr.derived_from_list)
         #base_mode_name_list_reversed.reverse()
         for name in base_mode_name_list_reversed:
             # -- does mode exist?
-            verify_word_in_list(name, blackboard.mode_description_db.keys(),
-                                "Mode '%s' inherits mode '%s' which does not exist." % (ModeDescr.name, name),
-                                ModeDescr.sr.file_name, ModeDescr.sr.line_n)
+            error.verify_word_in_list(name, blackboard.mode_description_db.keys(),
+                                      "Mode '%s' inherits mode '%s' which does not exist." % (ModeDescr.name, name),
+                                      ModeDescr.sr)
 
             if name in map(lambda m: m.name, base_mode_sequence): continue
 
@@ -356,18 +354,18 @@ class Mode:
         #     __base_mode_sequence[-1] == the mode itself.
         for base_mode in self.__base_mode_sequence[:-1]:
             if base_mode.option_db.value("inheritable") == "no":
-                error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
-                          (self.name, base_mode.name), self.sr.file_name, self.sr.line_n)
+                error.log("mode '%s' inherits mode '%s' which is not inheritable." % \
+                          (self.name, base_mode.name), self.sr)
 
         # (*) Empty modes which are not inheritable only?
         # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
         if (not self.__abstract_f)  and len(self.__pattern_list) == 0:
-            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
+            error.log("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
                       "However, it contains no matches--only event handlers. Without pattern\n"     + \
                       "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
                       "cannot be an independent lexical analyzer mode. Define the option\n"         + \
                       "<inheritable: only>.", \
-                      self.sr.file_name, self.sr.line_n)
+                      self.sr)
 
     def unique_pattern_pair_iterable(self):
         """Iterates over pairs of patterns:
@@ -505,7 +503,7 @@ def parse(fh):
     skip_whitespace(fh)
     dummy = fh.read(1)
     if dummy not in [":", "{"]:
-        error_msg("missing ':' or '{' after mode '%s'" % mode_name, fh)
+        error.log("missing ':' or '{' after mode '%s'" % mode_name, fh)
 
     if dummy == ":":
         __parse_option_list(new_mode, fh)
@@ -524,14 +522,14 @@ def determine_start_mode(mode_db):
         if mode.abstract_f(): 
             continue
         elif first_candidate is not None:
-            error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
+            error.log("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
                       "Use for example 'start = %s;' in the quex source file to define an initial mode." \
                       % first_candidate.name)
         else:
             first_candidate = mode
 
     if first_candidate is None:
-        error_msg("No mode that can be implemented--all modes <inheritable: only>.")
+        error.log("No mode that can be implemented--all modes <inheritable: only>.")
     else:
         blackboard.initial_mode = CodeUser(first_candidate.name, SourceReference=first_candidate.sr)
 
@@ -548,7 +546,7 @@ def __parse_option_list(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof("mode '%s'." % new_mode.name, fh)
+        error.error_eof("mode '%s'." % new_mode.name, fh)
 
 def __parse_base_mode_list(fh, new_mode):
     new_mode.derived_from_list = []
@@ -568,7 +566,7 @@ def __parse_base_mode_list(fh, new_mode):
 
 
     if trailing_comma_f:
-        error_msg("Trailing ',' after base mode '%s'." % new_mode.derived_from_list[-1], fh, 
+        error.log("Trailing ',' after base mode '%s'." % new_mode.derived_from_list[-1], fh, 
                   DontExitF=True, WarningF=True)
         
     elif len(new_mode.derived_from_list) != 0:
@@ -577,7 +575,7 @@ def __parse_base_mode_list(fh, new_mode):
         skip_whitespace(fh)
         dummy_identifier = read_identifier(fh)
         if dummy_identifier != "":
-            error_msg("Missing separating ',' between base modes '%s' and '%s'.\n" \
+            error.log("Missing separating ',' between base modes '%s' and '%s'.\n" \
                       % (new_mode.derived_from_list[-1], dummy_identifier) + \
                       "(The comma separator is mandatory since quex 0.53.1)", fh)
         fh.seek(pos)
@@ -613,7 +611,7 @@ def __parse_element(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof(description, fh)
+        error.error_eof(description, fh)
 
     return True
 
@@ -649,14 +647,14 @@ def __parse_action(new_mode, fh, pattern_str, pattern):
             new_mode.add_match_deletion(pattern, fh)
             
         else:
-            error_msg("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern_str + \
+            error.log("Missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern_str + \
                       "found: '%s'. Note, that since quex version 0.33.5 it is required to add a ';'\n" % word + \
                       "to the commands PRIORITY-MARK and DELETION.", fh)
 
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof("pattern action", fh)
+        error.error_eof("pattern action", fh)
 
 def __parse_event(new_mode, fh, word):
     pos = fh.tell()
@@ -665,7 +663,7 @@ def __parse_event(new_mode, fh, word):
     if   word == "<<EOF>>":                  word = "on_end_of_stream"
     elif word == "<<FAIL>>":                 word = "on_failure"
     elif word in blackboard.all_section_title_list:
-        error_msg("Pattern '%s' is a quex section title. Has the closing '}' of mode %s \n" % (word, new_mode.name) \
+        error.log("Pattern '%s' is a quex section title. Has the closing '}' of mode %s \n" % (word, new_mode.name) \
                   + "been forgotten? Else use quotes, i.e. \"%s\"." % word, fh)
     elif len(word) < 3 or word[:3] != "on_": return False
 
@@ -674,7 +672,8 @@ def __parse_event(new_mode, fh, word):
               "use double quotes to bracket patterns that start with 'on_'."
 
     __general_validate(fh, new_mode, word, pos)
-    verify_word_in_list(word, standard_incidence_db.keys(), comment, fh)
+    error.verify_word_in_list(word, standard_incidence_db.keys(), comment, 
+                              fh)
     __validate_required_token_policy_queue(word, fh, pos)
 
     continue_f = True
@@ -694,20 +693,16 @@ def __parse_event(new_mode, fh, word):
 def __general_validate(fh, Mode, Name, pos):
     if Name == "on_indentation":
         fh.seek(pos)
-        error_msg("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
+        error.log("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
                   "Please, use 'on_indent' for the event of an opening indentation, 'on_dedent'\n"
                   "for closing indentation, and 'on_nodent' for no change in indentation.", fh) 
 
 
     def error_dedent_and_ndedent(code, A, B):
-        filename = "(unknown)"
-        line_n   = "0"
-        if hasattr(code, "filename"): filename = code.sr.file_name
-        if hasattr(code, "line_n"):   line_n   = code.sr.line_n
-        error_msg("Indentation event handler '%s' cannot be defined, because\n" % A,
+        error.log("Indentation event handler '%s' cannot be defined, because\n" % A,
                   fh, DontExitF=True, WarningF=False)
-        error_msg("the alternative '%s' has already been defined." % B,
-                  filename, line_n)
+        error.log("the alternative '%s' has already been defined." % B,
+                  code.sr)
 
     if Name == "on_dedent" and Mode.incidence_db.has_key("on_n_dedent"):
         fh.seek(pos)
@@ -734,7 +729,7 @@ def __validate_required_token_policy_queue(Name, fh, pos):
 
     pos_before = fh.tell()
     fh.seek(pos)
-    error_msg("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
+    error.log("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
               "Use '--token-policy queue', so then tokens can be sent safer\n" + \
               "from inside this event handler.", fh,
               DontExitF=True, SuppressCode=NotificationDB.warning_on_no_token_queue) 

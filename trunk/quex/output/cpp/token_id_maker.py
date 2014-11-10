@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 from   quex.input.files.token_id_file   import TokenInfo, \
                                                space
-from   quex.engine.misc.file_in         import get_include_guard_extension, \
-                                               error_msg
+from   quex.engine.misc.file_in         import get_include_guard_extension
+import quex.engine.misc.error           as     error
 from   quex.engine.misc.string_handling import blue_print
 from   quex.blackboard                  import setup as Setup, \
                                                Lng, \
@@ -218,12 +218,12 @@ def __warn_on_double_definition():
         item_list = clash_db.items()
         item_list.sort()
         sr = find_source_reference(item_list[0][1])
-        error_msg("Following token ids have the same numeric value assigned:", 
+        error.log("Following token ids have the same numeric value assigned:", 
                   sr, DontExitF=True)
         for x, token_id_list in item_list:
             sr = find_source_reference(token_id_list)
             token_ids_sorted = sorted(list(set(token_id_list)), key=attrgetter("name")) # Ensure uniqueness
-            error_msg("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
+            error.log("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
                       sr, DontExitF=True)
                       
 def __warn_implicit_token_definitions():
@@ -238,16 +238,16 @@ def __warn_implicit_token_definitions():
     if len(Setup.token_id_foreign_definition_file) == 0:
         msg += " Proposal:\n"
         msg += "   token {"
-        error_msg(msg, sr, DontExitF=True, WarningF=True)
+        error.log(msg, sr, DontExitF=True, WarningF=True)
         for token_name, sr in blackboard.token_id_implicit_list:
-            error_msg("     %s;" % token_name, sr, DontExitF=True, WarningF=True)
-        error_msg("   }", sr, DontExitF=True, WarningF=True)
+            error.log("     %s;" % token_name, sr, DontExitF=True, WarningF=True)
+        error.log("   }", sr, DontExitF=True, WarningF=True)
     else:
-        error_msg(msg, sr, DontExitF=True, WarningF=True)
+        error.log(msg, sr, DontExitF=True, WarningF=True)
         for token_name, sr in blackboard.token_id_implicit_list:
-            error_msg("     %s;" % (Setup.token_id_prefix + token_name), 
+            error.log("     %s;" % (Setup.token_id_prefix + token_name), 
                       sr, DontExitF=True, WarningF=True)
-        error_msg("Above token ids must be defined in '%s'" % Setup.token_id_foreign_definition_file,
+        error.log("Above token ids must be defined in '%s'" % Setup.token_id_foreign_definition_file,
                   sr, DontExitF=True, WarningF=True)
 
 def __error_on_no_specific_token_ids():
@@ -261,7 +261,7 @@ def __error_on_no_specific_token_ids():
         for name in sorted(token_id_db.iterkeys())
     ]
 
-    error_msg("No token id beyond the standard token ids are defined. Found:\n" \
+    error.log("No token id beyond the standard token ids are defined. Found:\n" \
               + "".join(token_id_str) \
               + "Refused to proceed.") 
 
@@ -270,7 +270,7 @@ def __error_on_mandatory_token_id_missing(AssertF=False):
         if AssertF:
             assert TokenID_Name in token_id_db
         elif TokenID_Name not in token_id_db:
-            error_msg("Definition of token id '%s' is mandatory!" % (Setup.token_id_prefix + TokenID_Name))
+            error.log("Definition of token id '%s' is mandatory!" % (Setup.token_id_prefix + TokenID_Name))
 
     check(AssertF, "TERMINATION")
     check(AssertF, "UNINITIALIZED")

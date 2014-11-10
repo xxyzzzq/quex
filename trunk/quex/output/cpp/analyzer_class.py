@@ -2,8 +2,8 @@
 import os
 
 from   quex.engine.misc.string_handling import blue_print
-from   quex.engine.misc.file_in         import get_file_content_or_die, \
-                                               get_include_guard_extension
+from   quex.engine.misc.file_operations import get_file_content_or_die
+from   quex.engine.misc.file_in         import get_include_guard_extension
 from   quex.DEFINITIONS                 import QUEX_PATH, QUEX_VERSION
 import quex.blackboard                  as     blackboard
 from   quex.blackboard                  import setup as Setup, \

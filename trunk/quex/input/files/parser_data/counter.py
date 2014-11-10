@@ -1,7 +1,7 @@
 # (C) Frank-Rene Schaefer
 from   quex.input.setup                           import NotificationDB
-from   quex.engine.misc.tools                          import typed
-from   quex.engine.misc.file_in                   import error_msg
+from   quex.engine.misc.tools                     import typed
+import quex.engine.misc.error                     as     error
 from   quex.engine.state_machine.core             import StateMachine  
 import quex.engine.state_machine.algorithm.beautifier as beautifier    
 from   quex.input.code.base            import SourceRefObject, \
@@ -68,15 +68,15 @@ class CountCmdMap(object):
         global cc_type_db
 
         if self.__else is not None:
-            error_msg("'\\else has been defined more than once.", sr, 
+            error.log("'\\else has been defined more than once.", sr, 
                       DontExitF=True, WarningF=False)
-            error_msg("Previously, defined here.", self.__else.sr)
+            error.log("Previously, defined here.", self.__else.sr)
         self.__else = CountCmdMapEntry(cc_type_db[Identifier], Value, sr)
 
     def add(self, CharSet, Identifier, Value, sr):
         global cc_type_db
         if CharSet.is_empty(): 
-            error_msg("Empty character set found for '%s'." % Identifier, sr)
+            error.log("Empty character set found for '%s'." % Identifier, sr)
         elif Identifier == "grid":
             self.check_grid_specification(Value, sr)
         cc_type = cc_type_db[Identifier]
@@ -156,7 +156,7 @@ class CountCmdMap(object):
         """
         if self.__else is None: 
             else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_DEFAULT)
-            error_msg("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
+            error.log("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
                       DontExitF=True, WarningF=True, 
                       SuppressCode=NotificationDB.warning_counter_setup_without_else)
         else:                   
@@ -276,7 +276,7 @@ class CountCmdMap(object):
         if len(filter(lambda x: x % min_info.value == 0, grid_value_list)) != len(grid_value_list):
             return
 
-        error_msg("Setup does not contain spaces, only grids (tabulators). All grid\n" \
+        error.log("Setup does not contain spaces, only grids (tabulators). All grid\n" \
                   "widths are multiples of %i. The grid setup %s\n" \
                   % (min_info.value, repr(sorted(grid_value_list))[1:-1]) + \
                   "is equivalent to a setup with space counts %s.\n" \
@@ -304,7 +304,7 @@ class CountCmdMap(object):
         if common is None:
             return
             
-        error_msg("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
+        error.log("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
                   % common.value + \
                   "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
                   "of 1 are the fastest to compute.", 
@@ -320,15 +320,15 @@ class CountCmdMap(object):
             if info.cc_type == CCT: 
                 return
 
-        error_msg("Setup does not define '%s'." % cc_type_name_db[CCT], SourceReference, 
+        error.log("Setup does not define '%s'." % cc_type_name_db[CCT], SourceReference, 
                   DontExitF=True, WarningF=True, 
                   SuppressCode=NotificationDB.warning_counter_setup_without_newline)
 
     def check_grid_specification(self, Value, sr):
         if   Value == 0: 
-            error_msg("A grid count of 0 is nonsense. May be define a space count of 0.", sr)
+            error.log("A grid count of 0 is nonsense. May be define a space count of 0.", sr)
         elif Value == 1:
-            error_msg("Indentation grid counts of '1' are equivalent of to a space\n" + \
+            error.log("Indentation grid counts of '1' are equivalent of to a space\n" + \
                       "count of '1'. The latter is faster to compute.",
                           sr, DontExitF=True)
 
@@ -511,7 +511,7 @@ class ParserDataIndentation(Base):
 
         before = self.count_command_map.find_occupier(newline_set, set())
         if before is not None:
-            error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+            error.log("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
                       "The '\\n' option is not possible, since it has been occupied by '%s'.\n" \
                       "No newline can be defined by default."
                       % cc_type_name_db[before.cc_type], before.sr, DontExitF=True, 
@@ -524,7 +524,7 @@ class ParserDataIndentation(Base):
         if Setup.dos_carriage_return_newline_f:
             before = self.count_command_map.find_occupier(retour_set, set())
             if before is not None:
-                error_msg("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                error.log("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
                           "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." \
                           % cc_type_name_db[before.cc_type],
                           before.sr, DontExitF=True, 
@@ -547,7 +547,7 @@ class ParserDataIndentation(Base):
             result.unite_with(cs1)
 
         if result.is_empty():
-            error_msg("Trying to implement default whitespace ' ' or '\\t' failed.\n"
+            error.log("Trying to implement default whitespace ' ' or '\\t' failed.\n"
                       "Characters are occupied by other elements.", self.sr)
         return result
 
@@ -569,7 +569,7 @@ class ParserDataIndentation(Base):
         self.count_command_map.check_defined(self.sr, E_CharacterCountType.BEGIN_NEWLINE)
         if self.sm_newline_suppressor.get() is not None:
             if self.sm_newline.get() is None:
-                error_msg("A newline 'suppressor' has been defined.\n"
+                error.log("A newline 'suppressor' has been defined.\n"
                           "But there is no 'newline' in indentation defintion.", 
                           self.sm_newline_suppressor.sr)
 
@@ -616,21 +616,21 @@ def _error_set_intersection(CcType, Before, sr):
         E_CharacterCountType.BEGIN_COMMENT_TO_NEWLINE: "beginning ",
     }[CcType]
 
-    error_msg("The %scharacter set defined in '%s' intersects" % (prefix, cc_type_name_db[CcType]),
+    error.log("The %scharacter set defined in '%s' intersects" % (prefix, cc_type_name_db[CcType]),
               sr, DontExitF=True, WarningF=False)
-    error_msg("with '%s' at this place." % cc_type_name_db[Before.cc_type], 
+    error.log("with '%s' at this place." % cc_type_name_db[Before.cc_type], 
               Before.sr, DontExitF=note_f, WarningF=False)
 
     if note_f:
-        error_msg("Note, for example, 'newline' cannot end with a character which is subject\n"
+        error.log("Note, for example, 'newline' cannot end with a character which is subject\n"
                   "to indentation counting (i.e. 'space' or 'grid').", sr)
 
 def _error_if_defined_before(Before, sr):
     if not Before.set_f(): return
 
-    error_msg("'%s' has been defined before;" % Before.name, sr, 
+    error.log("'%s' has been defined before;" % Before.name, sr, 
               DontExitF=True, WarningF=False)
-    error_msg("at this place.", Before.sr.file_name, Before.sr.line_n)
+    error.log("at this place.", Before.sr.file_name, Before.sr.line_n)
 
 def extract_trigger_set(sr, Keyword, Pattern):
     if Pattern is None:
@@ -656,7 +656,7 @@ def extract_trigger_set(sr, Keyword, Pattern):
                 bad_f = True
 
         if bad_f:
-            error_msg("For '%s' only patterns are addmissible which\n" % Keyword + \
+            error.log("For '%s' only patterns are addmissible which\n" % Keyword + \
                       "can be matched by a single character, e.g. \" \" or [a-z].", sr)
 
     check_can_be_matched_by_single_character(Pattern.sm)

@@ -25,7 +25,7 @@ from   quex.engine.analyzer.door_id_address_label        import DoorID, \
                                                                 get_plain_strings
 from   quex.engine.misc.string_handling                  import blue_print, \
                                                                 pretty_code
-from   quex.engine.misc.file_in                          import open_file_or_die, \
+from   quex.engine.misc.file_operations                  import open_file_or_die, \
                                                                 write_safely_and_close
 from   quex.engine.misc.tools import typed, \
                                      none_isinstance, \

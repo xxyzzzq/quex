@@ -5,10 +5,10 @@ from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.character_counter    import CountInfo
 import quex.engine.state_machine.construction.setup_post_context   as     setup_post_context
 import quex.engine.state_machine.construction.setup_pre_context    as     setup_pre_context
-import quex.engine.state_machine.transformation.core       as     transformation
+import quex.engine.state_machine.transformation.core  as     transformation
 import quex.engine.state_machine.algorithm.beautifier as     beautifier
 import quex.engine.state_machine.algebra.reverse      as     reverse
-from   quex.engine.misc.file_in                       import error_msg
+import quex.engine.misc.error                         as     error
 #                                                         
 from   quex.engine.misc.tools               import typed
 
@@ -186,7 +186,7 @@ class Pattern(object):
         pre- and bipd are mounted.
         """
         def my_error(Name, Pattern):
-            error_msg("Pattern becomes empty after deleting signal character '%s'." % Name,
+            error.log("Pattern becomes empty after deleting signal character '%s'." % Name,
                       Pattern.sr)
 
         for character, name in CharacterList:
@@ -226,7 +226,7 @@ class Pattern(object):
         # (*) It is essential that state machines defined as patterns do not 
         #     have origins.
         if self.__sm.has_origins():
-            error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
+            error.log("Regular expression parsing resulted in state machine with origins.\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n", Sr)
 
         # (*) Acceptance states shall not store the input position when they are 'normally'
@@ -238,12 +238,12 @@ class Pattern(object):
                 acceptance_f = True
             if     state.input_position_store_f() \
                and state.is_acceptance():
-                error_msg("Pattern with post-context: An irregularity occurred.\n" + \
+                error.log("Pattern with post-context: An irregularity occurred.\n" + \
                           "(end of normal post-contexted core pattern is an acceptance state)\n" 
                           "Please, log a defect at the projects website quex.sourceforge.net.", Sr)
 
         if acceptance_f == False:
-            error_msg("Pattern has no acceptance state and can never match.\n" + \
+            error.log("Pattern has no acceptance state and can never match.\n" + \
                       "Aborting generation process.", Sr)
 
         self.check_consistency()
@@ -292,12 +292,12 @@ class Pattern(object):
                 return
 
             elif Sm.has_orphaned_states(): 
-                error_msg("Orphaned state(s) detected in %spattern (optimization lack).\n" % Name + \
+                error.log("Orphaned state(s) detected in %spattern (optimization lack).\n" % Name + \
                           "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
                           "Orphan state(s) = " + repr(Sm.get_orphaned_state_index_list()), 
                           Sr, DontExitF=True)
             elif Sm.is_empty():
-                error_msg("Empty %spattern." % Name, Sr)
+                error.log("Empty %spattern." % Name, Sr)
 
             elif not AllowNothingIsNecessaryF:
                 # 'Nothing is necessary' cannot be accepted. 
@@ -340,5 +340,5 @@ class Pattern(object):
             msg += "\n"                                                          \
                    "Note: A post context does not change anything to that fact." 
 
-        error_msg(msg, fh)
+        error.log(msg, fh)
 

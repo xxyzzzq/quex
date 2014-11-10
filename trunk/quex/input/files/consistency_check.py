@@ -1,5 +1,6 @@
-from   quex.engine.misc.file_in                    import error_msg, verify_word_in_list
+import quex.engine.misc.error                      as     error
 from   quex.input.setup                            import NotificationDB
+from   quex.input.code.base                        import SourceRef
 import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup
 from   quex.blackboard import E_IncidenceIDs
@@ -16,18 +17,18 @@ def do(ModeDB):
     """
     if Setup.token_class_only_f:
         if len(ModeDB) != 0:
-            error_msg("Modes found in input files. However, only a token class is generated.", DontExitF=True)
+            error.log("Modes found in input files. However, only a token class is generated.", DontExitF=True)
         return
 
     if len(ModeDB) == 0:
-        error_msg("No single mode defined - bailing out", Prefix="consistency check")
+        error.log("No single mode defined - bailing out", Prefix="consistency check")
 
     mode_name_list             = sorted([mode.name for mode in ModeDB.itervalues()]) 
     # Applicable modes can only be determined after possible addition of "inheritable: only"
     implemented_mode_name_list = sorted([mode.name for mode in ModeDB.itervalues() if not mode.abstract_f()]) 
 
     if len(implemented_mode_name_list) == 0:
-        error_msg("There is no mode that can be implemented---all existing modes are 'inheritable only'.\n" + \
+        error.log("There is no mode that can be implemented---all existing modes are 'inheritable only'.\n" + \
                   "modes are = " + repr(ModeDB.keys())[1:-1],
                   Prefix="consistency check")
 
@@ -40,7 +41,7 @@ def do(ModeDB):
         for mode in ModeDB.values():
             # Later ... 
             if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
-                error_msg("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
+                error.log("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
                           "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
                           "The feature is not yet supported, but the infrastructure is currently setup for it.",
                           mode.sr.file_name, mode.sr.line_n, DontExitF=True, WarningF=True, 
@@ -79,21 +80,17 @@ def do(ModeDB):
 
 def __error_message(This, That, ThisComment, ThatComment="", EndComment="", ExitF=True, SuppressCode=None):
     
-    file_name, line_n, mode_name = This.sr
-    error_msg("The pattern '%s' %s" % (This.pattern_string(), ThisComment), 
-              file_name, line_n, 
-              DontExitF=True, WarningF=not ExitF)
-
-    FileName, LineN, mode_name  = That.sr
+    error.log("The pattern '%s' %s" % (This.pattern_string(), ThisComment), 
+              This.sr, DontExitF=True, WarningF=not ExitF)
 
     msg = "pattern '%s'." % That.pattern_string()
 
     if len(EndComment) == 0:
-        error_msg(msg,        FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, 
+        error.log(msg, That.sr, DontExitF=not ExitF, WarningF=not ExitF, 
                   SuppressCode=SuppressCode)
     else:
-        error_msg(msg,        FileName, LineN, DontExitF=True,      WarningF=not ExitF)
-        error_msg(EndComment, FileName, LineN, DontExitF=not ExitF, WarningF=not ExitF, 
+        error.log(msg,        That.sr, DontExitF=True,      WarningF=not ExitF)
+        error.log(EndComment, That.sr, DontExitF=not ExitF, WarningF=not ExitF, 
                   SuppressCode=SuppressCode)
 
 def __start_mode(implemented_mode_name_list, mode_name_list):
@@ -105,24 +102,20 @@ def __start_mode(implemented_mode_name_list, mode_name_list):
     assert blackboard.initial_mode is not None
 
     start_mode = blackboard.initial_mode.get_pure_text()
-    FileName   = blackboard.initial_mode.sr.file_name
-    LineN      = blackboard.initial_mode.sr.line_n
 
     # Start mode present and applicable?
-    verify_word_in_list(start_mode, mode_name_list,
+    error.verify_word_in_list(start_mode, mode_name_list,
                         "Start mode '%s' is not defined." % start_mode,
-                        FileName, LineN)
-    verify_word_in_list(start_mode, implemented_mode_name_list,
+                        blackboard.initial_mode.sr)
+    error.verify_word_in_list(start_mode, implemented_mode_name_list,
                         "Start mode '%s' is inheritable only and cannot be instantiated." % start_mode,
-                        FileName, LineN)
+                        blackboard.initial_mode.sr)
 
 def __entry_exit_transitions(mode, mode_name_list):
-    FileName = mode.sr.file_name
-    LineN    = mode.sr.line_n
     for mode_name in mode.exit_mode_name_list:
-        verify_word_in_list(mode_name, mode_name_list,
+        error.verify_word_in_list(mode_name, mode_name_list,
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                            (mode.name, mode_name), FileName, LineN)
+                            (mode.name, mode_name), mode.sr)
 
         that_mode = blackboard.mode_db[mode_name]
 
@@ -134,17 +127,17 @@ def __entry_exit_transitions(mode, mode_name_list):
         for base_mode in mode.get_base_mode_sequence():
             if base_mode.name in that_mode.entry_mode_name_list: break
         else:
-            error_msg("Mode '%s' has an exit to mode '%s' but" % (mode.name, mode_name),
-                      FileName, LineN, DontExitF=True, WarningF=False)
-            error_msg("mode '%s' has no entry for mode '%s'\n" % (mode_name, mode.name) + \
+            error.log("Mode '%s' has an exit to mode '%s' but" % (mode.name, mode_name),
+                      base_mode.sr, DontExitF=True, WarningF=False)
+            error.log("mode '%s' has no entry for mode '%s'\n" % (mode_name, mode.name) + \
                       "or any of its base modes.",
-                      that_mode.sr.file_name, that_mode.sr.line_n)
+                      that_mode.sr)
 
     for mode_name in mode.entry_mode_name_list:
         # Does that mode exist?
-        verify_word_in_list(mode_name, mode_name_list,
+        error.verify_word_in_list(mode_name, mode_name_list,
                             "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                            (mode.name, mode_name), FileName, LineN)
+                            (mode.name, mode_name), mode.sr)
 
         that_mode = blackboard.mode_db[mode_name]
         # Other mode allows all exits => don't worry.
@@ -155,9 +148,9 @@ def __entry_exit_transitions(mode, mode_name_list):
         for base_mode in mode.get_base_mode_sequence():
             if base_mode.name in that_mode.exit_mode_name_list: break
         else:
-            error_msg("Mode '%s' has an entry for mode '%s' but" % (mode.name, mode_name),
-                      FileName, LineN, DontExitF=True, WarningF=False)
-            error_msg("mode '%s' has no exit to mode '%s'\n" % (mode_name, mode.name) + \
+            error.log("Mode '%s' has an entry for mode '%s' but" % (mode.name, mode_name),
+                      base_mode.sr, DontExitF=True, WarningF=False)
+            error.log("mode '%s' has no exit to mode '%s'\n" % (mode_name, mode.name) + \
                       "or any of its base modes.",
-                      that_mode.sr.file_name, that_mode.sr.line_n)
+                      that_mode.sr)
            

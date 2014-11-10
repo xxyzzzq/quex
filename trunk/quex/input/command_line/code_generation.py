@@ -9,9 +9,8 @@ from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.output.core.languages.core import db as output_language_db
 import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split      
 import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split      
-from   quex.engine.misc.file_in             import read_namespaced_name, \
-                                                   verify_word_in_list, \
-                                                   error_msg
+from   quex.engine.misc.file_in             import read_namespaced_name
+import quex.engine.misc.error               as     error 
 
 
 from   quex.blackboard import setup as Setup, E_Compression
@@ -36,15 +35,15 @@ def prepare(command_line, argv):
 
     # (*) Output programming language        
     Setup.language = Setup.language.upper()
-    verify_word_in_list(Setup.language, output_language_db.keys(),
-                        "Programming language '%s' is not supported." % Setup.language)
+    error.verify_word_in_list(Setup.language, output_language_db.keys(),
+                              "Programming language '%s' is not supported." % Setup.language)
     Setup.language_db  = output_language_db[Setup.language]
     Setup.extension_db = global_extension_db[Setup.language]
 
     # Is the output file naming scheme provided by the extension database
     # (Validation must happen immediately)
     if Setup.extension_db.has_key(Setup.output_file_naming_scheme) == False:
-        error_msg("File extension scheme '%s' is not provided for language '%s'.\n" \
+        error.log("File extension scheme '%s' is not provided for language '%s'.\n" \
                   % (Setup.output_file_naming_scheme, Setup.language) + \
                   "Available schemes are: %s." % repr(Setup.extension_db.keys())[1:-1])
 
@@ -70,7 +69,7 @@ def prepare(command_line, argv):
     if     type_info is not None and len(type_info) >= 4 \
        and type_info[3] != -1 and Setup.buffer_element_size != -1 \
        and type_info[3] != Setup.buffer_element_size:
-        error_msg("\nBuffer element type ('--bet' or '--buffer-element-type') was set to '%s'.\n" \
+        error.log("\nBuffer element type ('--bet' or '--buffer-element-type') was set to '%s'.\n" \
                   % Setup.buffer_element_type \
                   + "It is well known to be of size %s[byte]. However, the buffer element size\n" \
                   % type_info[3] \
@@ -99,7 +98,7 @@ def prepare(command_line, argv):
 
     if len(Setup.token_id_foreign_definition) != 0: 
         if len(Setup.token_id_foreign_definition) > 3: 
-            error_msg("Option '--foreign-token-id-file' received > 3 followers.\n"
+            error.log("Option '--foreign-token-id-file' received > 3 followers.\n"
                       "Found: %s" % str(Setup.token_id_foreign_definition)[1:-1])
         if len(Setup.token_id_foreign_definition) > 1:
             Setup.token_id_foreign_definition_file_region_begin_re = \
@@ -137,7 +136,7 @@ def __compile_regular_expression(Str, Name):
     try:
         return re.compile(tmp)
     except:
-        error_msg("Invalid %s: %s" % (Name, Str))
+        error.log("Invalid %s: %s" % (Name, Str))
 
 def __setup_analyzer_class(Setup):
     """ X0::X1::X2::ClassName --> analyzer_class_name = ClassName
@@ -250,7 +249,7 @@ def __setup_token_id_prefix(Setup):
                               AllowEmptyF=True)
 
     if len(Setup.token_id_prefix_name_space) != 0 and Setup.language.upper() == "C":
-         error_msg("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
+         error.log("Token id prefix cannot contain a namespaces if '--language' is set to 'C'.")
 
 def prepare_file_names(Setup):
     # BEFORE file names can be prepared, determine the output directory!

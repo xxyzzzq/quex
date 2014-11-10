@@ -6,12 +6,13 @@ import quex.engine.state_machine.transformation.core   as     transformation
 from   quex.engine.commands.core              import E_R, \
                                                               InputPDecrement, \
                                                               Assign
+import quex.engine.misc.error                 as     error
 from   quex.engine.misc.tools                               import all_isinstance, \
                                                               all_true, \
                                                               concatinate, \
                                                               typed
 from   quex.engine.analyzer.door_id_address_label      import dial_db
-from   quex.engine.misc.file_in import error_msg
+
 from   quex.blackboard import setup as Setup
 from   itertools       import ifilter
 
@@ -226,14 +227,14 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
     def __check_on_orphan_states(Place, sm):
         orphan_state_list = sm.get_orphaned_state_index_list()
         if len(orphan_state_list) == 0: return
-        error_msg("After '%s'" % Place + "\n" + \
+        error.log("After '%s'" % Place + "\n" + \
                   "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
                   "Orphan state(s) = " + repr(orphan_state_list)) 
 
     def __check_on_init_state_not_acceptance(Place, sm):
         if sm.get_init_state().is_acceptance():
-            error_msg("After '%s'" % Place + "\n" + \
+            error.log("After '%s'" % Place + "\n" + \
                       "Initial state 'accepts'. This should never happen.\n" + \
                       "Please, log a defect at the projects web site quex.sourceforge.net.\n")
 

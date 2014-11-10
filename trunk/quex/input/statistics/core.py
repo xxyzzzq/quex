@@ -1,7 +1,8 @@
 """
 """
-from quex.engine.misc.file_in import read_until_letter, skip_whitespace, check_or_die, error_msg, read_integer
-from quex.blackboard import setup as Setup
+import quex.engine.misc.error as     error
+from quex.engine.misc.file_in import read_until_letter, skip_whitespace, check_or_die, read_integer
+from quex.blackboard          import setup as Setup
 
 from bisect import bisect_left
 from itertools import islice
@@ -118,7 +119,7 @@ class StateStatistics:
         return i_begin
 
     def on_error(self):
-        error_msg("Statistics of state %i in mode %s do not fit analyzer structure." \
+        error.log("Statistics of state %i in mode %s do not fit analyzer structure." \
                   % (self.state_index, self.mode_name))
 
 def do(Filename):

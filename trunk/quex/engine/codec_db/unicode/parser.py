@@ -3,10 +3,10 @@ import sys
 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.DEFINITIONS              import QUEX_PATH
-from quex.engine.misc.file_in      import error_msg
+from   quex.DEFINITIONS              import QUEX_PATH
+import quex.engine.misc.error        as     error
 
-from quex.engine.misc.interval_handling import Interval, NumberSet
+from   quex.engine.misc.interval_handling import Interval, NumberSet
 
 import re
 import fnmatch
@@ -19,7 +19,7 @@ def open_data_base_file(Filename):
     try: 
         fh = open(unicode_db_directory + "/" + Filename, "rb")
     except:
-        error_msg("Fatal---Unicode Database File '%s' not found!\n" % Filename + \
+        error.log("Fatal---Unicode Database File '%s' not found!\n" % Filename + \
                   "QUEX_PATH='%s'\n" % QUEX_PATH + \
                   "Unicode Database Directory: '%s'" % unicode_db_directory)
     return fh

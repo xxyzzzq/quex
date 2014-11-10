@@ -1,9 +1,11 @@
 #! /usr/bin/env python
-import quex.engine.misc.file_in      as     file_in
-from   quex.engine.misc.enum         import Enum
+import quex.engine.misc.error             as     error
+import quex.engine.misc.file_in           as     file_in
+from   quex.engine.misc.file_operations   import get_propperly_slash_based_file_name
+from   quex.engine.misc.enum              import Enum
 from   quex.engine.misc.interval_handling import NumberSet
-import quex.engine.codec_db.core     as     codec_db
-from   quex.DEFINITIONS              import QUEX_PATH
+import quex.engine.codec_db.core          as     codec_db
+from   quex.DEFINITIONS                   import QUEX_PATH
 
 import os  
 import sys
@@ -57,7 +59,7 @@ class QuexSetup:
     def buffer_element_specification_prepare(self):
         global global_character_type_db
         if self.buffer_element_size == "wchar_t":
-            error_msg("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
+            error.log("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
                       "with option '--buffer-element-size' or '-bes'. Please, specify\n"
                       "'--buffer-element-type wchar_t' or '--bet'.")
 
@@ -83,7 +85,7 @@ class QuexSetup:
             elif self.buffer_element_size == -1:
                 pass
             else:
-                error_msg("Buffer element type cannot be determined for size '%i' which\n" \
+                error.log("Buffer element type cannot be determined for size '%i' which\n" \
                           % self.buffer_element_size + 
                           "has been specified by '-b' or '--buffer-element-size'.")
 
@@ -104,7 +106,7 @@ class QuexSetup:
             try: 
                os.path.splitext(os.path.basename(BufferCodecFileName))
             except:
-                file_in.error_msg("cannot interpret string following '--codec-file'")
+                error.log("cannot interpret string following '--codec-file'")
             result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
         elif BufferCodecName == "unicode":
             # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
@@ -152,10 +154,10 @@ class QuexSetup:
         try:
             result = 256 ** buffer_element_size
         except:
-            file_in.error_msg("Error while trying to compute 256 to the 'buffer-element-size' (%i bytes)\n"   \
-                              % buffer_element_size + \
-                              "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                              "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
+            error.log("Error while trying to compute 256 to the 'buffer-element-size' (%i bytes)\n"   \
+                      % buffer_element_size + \
+                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
+                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
 
         if result > sys.maxint: return sys.maxint
         else:                   return result
@@ -172,7 +174,7 @@ class QuexSetup:
                .  (current dir)          --> source-package-dir     
         """
         def clean(X):
-            return file_in.get_propperly_slash_based_file_name(X)
+            return get_propperly_slash_based_file_name(X)
 
         code_base_directory = self.language_db["$code_base"]
         # The starting backslash must be assumed for many things ...
