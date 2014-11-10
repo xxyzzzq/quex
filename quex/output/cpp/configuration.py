@@ -1,5 +1,5 @@
-from   quex.engine.misc.file_in         import get_file_content_or_die, \
-                                               get_include_guard_extension, \
+from   quex.engine.misc.file_operations import get_file_content_or_die
+from   quex.engine.misc.file_in         import get_include_guard_extension, \
                                                make_safe_identifier
 
 from   quex.engine.misc.string_handling import blue_print

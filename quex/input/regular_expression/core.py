@@ -1,4 +1,5 @@
-from   quex.engine.misc.file_in             import EndOfStreamException, error_msg, error_eof
+import quex.engine.misc.error               as     error
+from   quex.engine.misc.file_in             import EndOfStreamException 
 from   quex.engine.state_machine.core       import StateMachine 
 from   quex.input.regular_expression.exception                       import RegularExpressionException
 import quex.blackboard                      as     blackboard
@@ -34,11 +35,11 @@ def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None,
 
     except RegularExpressionException, x:
         sh.seek(start_position)
-        error_msg("Regular expression parsing:\n" + x.message, sh)
+        error.log("Regular expression parsing:\n" + x.message, sh)
 
     except EndOfStreamException:
         sh.seek(start_position)
-        error_eof("regular expression", sh)
+        error.error_eof("regular expression", sh)
 
     # (*) Extract the object as required 
     if ExtractFunction is not None:
@@ -50,7 +51,7 @@ def __parse(Txt_or_File, ExtractFunction=None, Name=None, Terminator=None,
             txt = "Regular expression '%s' cannot be interpreted as plain %s." % (pattern_str, Name) 
             if len(pattern_str) != 0 and pattern_str[-1] == Terminator:
                 txt += "\nMissing delimiting whitespace ' ' between the regular expression and '%s'.\n" % Terminator
-            error_msg(txt, sh)
+            error.log(txt, sh)
     else:
         result = None
 

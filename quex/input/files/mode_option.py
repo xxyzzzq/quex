@@ -1,15 +1,13 @@
 import quex.input.files.counter             as     counter
 import quex.input.regular_expression.core   as     regular_expression
 from   quex.input.files.parser_data.counter import CounterSetupLineColumn_Default
-from   quex.engine.misc.tools                    import all_isinstance
-from   quex.input.code.base      import SourceRef
-from   quex.engine.misc.tools                    import typed, \
+from   quex.input.code.base                 import SourceRef
+from   quex.engine.misc.tools               import all_isinstance
+from   quex.engine.misc.tools               import typed, \
                                                    flatten_list_of_lists
-from   quex.engine.misc.file_in             import error_msg, \
-                                                   get_current_line_info_number, \
-                                                   skip_whitespace, \
+import quex.engine.misc.error               as     error
+from   quex.engine.misc.file_in             import skip_whitespace, \
                                                    read_identifier, \
-                                                   verify_word_in_list, \
                                                    EndOfStreamException
 
 from   quex.blackboard import mode_description_db
@@ -150,7 +148,7 @@ class OptionDB(dict):
         # Is the option of the appropriate value?
         info = mode_option_info_db[Name]
         if info.domain is not None and Value not in info.domain:
-            error_msg("Tried to set value '%s' for option '%s'. " % (Value, Name) + \
+            error.log("Tried to set value '%s' for option '%s'. " % (Value, Name) + \
                       "Though, possible for this option are only: %s." % repr(info.domain)[1:-1], 
                       SourceReference)
 
@@ -239,14 +237,14 @@ class OptionDB(dict):
             txt += "mode '%s'." % OptionNow.mode_name
         else:
             txt += "inheritance tree of mode '%s'." % OptionNow.mode_name
-        error_msg(txt, OptionNow.sr.file_name, OptionNow.sr.line_n, DontExitF=True, WarningF=False) 
+        error.log(txt, OptionNow.sr.file_name, OptionNow.sr.line_n, DontExitF=True, WarningF=False) 
 
         txt = "Previous definition was here"
         if OptionBefore.mode_name == OptionNow.mode_name:
             txt += " in mode '%s'." % OptionBefore.mode_name
         else:
             txt += "."
-        error_msg(txt, OptionBefore.sr.file_name, OptionBefore.sr.line_n)
+        error.log(txt, OptionBefore.sr.file_name, OptionBefore.sr.line_n)
 
 def parse(fh, new_mode):
     source_reference = SourceRef.from_FileHandle(fh)
@@ -254,8 +252,8 @@ def parse(fh, new_mode):
     identifier = read_option_start(fh)
     if identifier is None: return False
 
-    verify_word_in_list(identifier, mode_option_info_db.keys(),
-                        "mode option", fh.name, get_current_line_info_number(fh))
+    error.verify_word_in_list(identifier, mode_option_info_db.keys(),
+                              "mode option", fh)
 
     if   identifier == "skip":
         value = __parse_skip_option(fh, new_mode, identifier)
@@ -291,9 +289,9 @@ def __parse_skip_option(fh, new_mode, identifier):
     skip_whitespace(fh)
 
     if fh.read(1) != ">":
-        error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
+        error.log("missing closing '>' for mode option '%s'." % identifier, fh)
     elif trigger_set.is_empty():
-        error_msg("Empty trigger set for skipper." % identifier, fh)
+        error.log("Empty trigger set for skipper." % identifier, fh)
 
     return pattern, trigger_set
 
@@ -311,11 +309,11 @@ def __parse_range_skipper_option(fh, identifier, new_mode):
     # -- closer
     skip_whitespace(fh)
     if fh.read(1) != ">":
-        error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+        error.log("missing closing '>' for mode option '%s'" % identifier, fh)
     elif len(opener_sequence) == 0:
-        error_msg("Empty sequence for opening delimiter.", fh)
+        error.log("Empty sequence for opening delimiter.", fh)
     elif len(closer_sequence) == 0:
-        error_msg("Empty sequence for closing delimiter.", fh)
+        error.log("Empty sequence for closing delimiter.", fh)
 
     return SkipRangeData(opener_pattern, opener_sequence, \
                          closer_pattern, closer_sequence)
@@ -332,7 +330,7 @@ def read_option_start(fh):
     identifier = read_identifier(fh, OnMissingStr="Missing identifer after start of mode option '<'").strip()
 
     skip_whitespace(fh)
-    if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
+    if fh.read(1) != ":": error.log("missing ':' after option name '%s'" % identifier, fh)
     skip_whitespace(fh)
 
     return identifier
@@ -348,7 +346,7 @@ def read_option_value(fh, ListF=False):
             letter = fh.read(1)
         except EndOfStreamException:
             fh.seek(position)
-            error_msg("missing closing '>' of mode option.", fh)
+            error.log("missing closing '>' of mode option.", fh)
 
         if letter == "<": 
             depth += 1

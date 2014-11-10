@@ -1,7 +1,6 @@
-from   quex.engine.misc.tools        import typed, \
+from   quex.engine.misc.tools   import typed, \
                                        all_isinstance
-from   quex.engine.misc.file_in import get_current_line_info_number
-from   quex.engine.misc.tools        import none_isinstance
+from   quex.engine.misc.tools   import none_isinstance
 
 from   collections import namedtuple
 
@@ -145,4 +144,15 @@ class SourceRefObject:
 
     def set_f(self):
         return self.__set_f
+
+def get_current_line_info_number(fh):
+    return __get_line_number_at_position(fh, fh.tell())
+
+def __get_line_number_at_position(fh, Pos):
+    fh.seek(0)
+    # When reading 'position' number of characters from '0', then we are
+    # at position 'position' at the end of the read. That means, we are where
+    # we started.
+    passed_text = fh.read(Pos)
+    return passed_text.count("\n") + 1
 

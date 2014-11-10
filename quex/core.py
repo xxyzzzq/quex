@@ -7,7 +7,7 @@ from   quex.input.files.mode                    import determine_start_mode, Mod
 import quex.input.files.consistency_check       as     consistency_check
 #
 from   quex.engine.analyzer.door_id_address_label  import dial_db
-from   quex.engine.misc.file_in                 import write_safely_and_close
+from   quex.engine.misc.file_operations            import write_safely_and_close
 #
 import quex.output.cpp.core                     as cpp_generator
 import quex.output.cpp.token_id_maker           as token_id_maker

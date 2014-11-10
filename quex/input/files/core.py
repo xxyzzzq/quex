@@ -15,17 +15,15 @@
 #
 ################################################################################
 #
+import quex.engine.misc.error              as     error
+from   quex.engine.misc.file_operations    import open_file_or_die
 from   quex.engine.misc.file_in            import EndOfStreamException, \
                                                   check, \
-                                                  error_msg, \
-                                                  error_eof, \
-                                                  open_file_or_die, \
                                                   os, \
                                                   parse_identifier_assignment, \
                                                   read_identifier, \
                                                   read_integer, \
-                                                  skip_whitespace, \
-                                                  verify_word_in_list 
+                                                  skip_whitespace
 import quex.input.files.mode               as mode
 import quex.input.files.token_type         as token_type
 import quex.input.files.code_fragment      as code_fragment
@@ -41,7 +39,7 @@ from   quex.input.regular_expression.exception                      import Regul
 
 def do(file_list):
     if len(file_list) == 0 and not Setup.token_class_only_f: 
-        error_msg("No input files.")
+        error.log("No input files.")
 
     # If a foreign token-id file was presented even the standard token ids
     # must be defined there.
@@ -58,7 +56,7 @@ def do(file_list):
         except EndOfStreamException:
             pass
         except RegularExpressionException, x:
-            error_msg(x.message, fh)
+            error.log(x.message, fh)
         
     if blackboard.token_type_definition is None:
         parse_default_token_definition()
@@ -76,7 +74,7 @@ def parse_section(fh):
     skip_whitespace(fh)
     word = read_identifier(fh, OnMissingStr="Missing section title")
 
-    verify_word_in_list(word, blackboard.all_section_title_list, 
+    error.verify_word_in_list(word, blackboard.all_section_title_list, 
                         "Unknown quex section '%s'" % word, fh)
     try:
         # (*) determine what is defined
@@ -104,11 +102,11 @@ def parse_section(fh):
         elif word == "start":
             mode_name = parse_identifier_assignment(fh)
             if mode_name == "":
-                error_msg("Missing mode_name after 'start ='", fh)
+                error.log("Missing mode_name after 'start ='", fh)
 
             elif not blackboard.initial_mode.sr.is_void():
-                error_msg("start mode defined more than once!", fh, DontExitF=True)
-                error_msg("previously defined here", blackboard.initial_mode.sr)
+                error.log("start mode defined more than once!", fh, DontExitF=True)
+                error.log("previously defined here", blackboard.initial_mode.sr)
              
             blackboard.initial_mode = CodeUser(mode_name, SourceRef.from_FileHandle(fh))
             return
@@ -116,10 +114,10 @@ def parse_section(fh):
         elif word == "repeated_token":
             blackboard.token_repetition_token_id_list = parse_token_id_definitions(fh, NamesOnlyF=True)
             for token_name in blackboard.token_repetition_token_id_list:
-                verify_word_in_list(token_name[len(Setup.token_id_prefix):],
+                error.verify_word_in_list(token_name[len(Setup.token_id_prefix):],
                                     blackboard.token_id_db.keys(),
-                                    "Token ID '%s' not yet defined." % token_name,
-                                    fh, ExitF=False, 
+                                    "Token ID '%s' not yet defined." % token_name, fh,
+                                    ExitF=False, 
                                     SuppressCode=NotificationDB.warning_repeated_token_not_yet_defined)
             return
             
@@ -129,7 +127,7 @@ def parse_section(fh):
 
         elif word == "token":       
             if Setup.token_id_foreign_definition:
-                error_msg("Token id file '%s' has been specified.\n" \
+                error.log("Token id file '%s' has been specified.\n" \
                           % Setup.token_id_foreign_definition_file \
                           + "All token ids must be specified there. Section 'token'\n" \
                           + "is not allowed.", fh)
@@ -140,10 +138,11 @@ def parse_section(fh):
         elif word == "token_type":       
 
             if Setup.token_class_file != "":
-                error_msg("Section 'token_type' is intended to generate a token class.\n" \
+                error.log("Section 'token_type' is intended to generate a token class.\n" \
                           + "However, the manually written token class file '%s'" \
                           % repr(Setup.token_class_file) \
-                          + "has been specified on the command line.", fh)
+                          + "has been specified on the command line.", 
+                          fh)
        
             if blackboard.token_type_definition is None:
                 blackboard.token_type_definition = token_type.parse(fh)
@@ -151,12 +150,13 @@ def parse_section(fh):
 
             # Error case:
             if default_token_type_definition_triggered_by_mode_definition_f:
-                error_msg("Section 'token_type' must appear before first mode definition.", fh)
+                error.log("Section 'token_type' must appear before first mode definition.", 
+                          fh)
             else:
-                error_msg("Section 'token_type' has been defined twice.", fh, DontExitF=True)
-                error_msg("Previously defined here.",
-                          blackboard.token_type_definition.sr.file_name,
-                          blackboard.token_type_definition.sr.line_n)
+                error.log("Section 'token_type' has been defined twice.", 
+                          SourceRef.from_FileHandle(fh), DontExitF=True)
+                error.log("Previously defined here.",
+                          blackboard.token_type_definition.sr)
             return
 
         elif word == "mode":
@@ -175,7 +175,7 @@ def parse_section(fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof(word, fh)
+        error.error_eof(word, fh)
 
 def parse_pattern_name_definitions(fh):
     """Parses pattern definitions of the form:
@@ -193,7 +193,7 @@ def parse_pattern_name_definitions(fh):
     """
     skip_whitespace(fh)
     if not check(fh, "{"):
-        error_msg("define region must start with opening '{'.", fh)
+        error.log("define region must start with opening '{'.", fh)
 
     while 1 + 1 == 2:
         skip_whitespace(fh)
@@ -206,13 +206,13 @@ def parse_pattern_name_definitions(fh):
         pattern_name = read_identifier(fh, OnMissingStr="Missing identifier for pattern definition.")
 
         if blackboard.shorthand_db.has_key(pattern_name):
-            error_msg("Second definition of pattern '%s'.\n" % pattern_name + \
+            error.log("Second definition of pattern '%s'.\n" % pattern_name + \
                       "Pattern names must be unique.", fh)
 
         skip_whitespace(fh)
 
         if check(fh, "}"): 
-            error_msg("Missing regular expression for pattern definition '%s'." % \
+            error.log("Missing regular expression for pattern definition '%s'." % \
                       pattern_name, fh)
 
         # A regular expression state machine
@@ -222,8 +222,9 @@ def parse_pattern_name_definitions(fh):
         pattern = regular_expression.parse(fh, AllowNothingIsFineF = True) 
 
         if pattern.has_pre_or_post_context():
-            error_msg("Pattern definition with pre- and/or post-context.\n" + \
-                      "Pre- and Post-Contexts can only be defined inside mode definitions.", fh)
+            error.log("Pattern definition with pre- and/or post-context.\n" + \
+                      "Pre- and Post-Contexts can only be defined inside mode definitions.", 
+                      fh)
         state_machine = pattern.sm
 
         blackboard.shorthand_db[pattern_name] = \
@@ -247,7 +248,8 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
 
     skip_whitespace(fh)
     if not check(fh, "{"):
-        error_msg("Missing opening '{' for after 'token' section identifier.", fh)
+        error.log("Missing opening '{' for after 'token' section identifier.", 
+                  fh)
 
     while check(fh, "}") == False:
         skip_whitespace(fh)
@@ -262,12 +264,12 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
             suspicious_prefix = prefix_plain
 
         if suspicious_prefix is not None:
-            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" \
+            error.log("Token identifier '%s' starts with token prefix '%s'.\n" \
                       % (candidate, suspicious_prefix) \
                       + "Token prefix is mounted automatically. This token id appears in the source\n" \
                       + "code as '%s%s'." \
                       % (prefix, candidate), \
-                      fh, DontExitF=True,
+                      SourceRef.from_FileHandle(fh), DontExitF=True,
                       SuppressCode=NotificationDB.warning_token_id_prefix_appears_in_token_id_name)
 
         skip_whitespace(fh)
@@ -275,7 +277,7 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
         if NamesOnlyF:
             result.add(prefix + candidate)
             if check(fh, ";") == False:
-                error_msg("Missing ';' after token identifier '%s'.\n" \
+                error.log("Missing ';' after token identifier '%s'.\n" \
                           % candidate, fh)
             continue
 
@@ -285,10 +287,12 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
             skip_whitespace(fh)
             numeric_value = read_integer(fh)
             if numeric_value is None:
-                error_msg("Missing number after '=' for token identifier '%s'." % candidate, fh)
+                error.log("Missing number after '=' for token identifier '%s'." % candidate, 
+                          fh)
 
         if check(fh, ";") == False:
-            error_msg("Missing ';' after token identifier '%s'." % candidate, fh)
+            error.log("Missing ';' after token identifier '%s'." % candidate, 
+                      fh)
 
         if not NamesOnlyF:
             ti = TokenInfo(candidate, numeric_value, 

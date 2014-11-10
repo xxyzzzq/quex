@@ -1,16 +1,14 @@
+import quex.engine.misc.error          as     error
 from   quex.engine.misc.file_in        import EndOfStreamException, \
                                               skip_whitespace, \
                                               check_or_die, \
-                                              error_msg, \
-                                              error_eof, \
                                               read_identifier, \
-                                              verify_word_in_list, \
                                               read_namespaced_name, \
                                               check, \
                                               read_until_letter
-from   quex.input.code.core import CodeUser, \
+from   quex.input.code.core            import CodeUser, \
                                               CodeUser_NULL
-from   quex.input.code.base import SourceRef, \
+from   quex.input.code.base            import SourceRef, \
                                               CodeFragment, \
                                               SourceRef_VOID
 import quex.input.files.code_fragment  as     code_fragment
@@ -238,7 +236,7 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         # Is 'take_text' section defined
         if self.take_text is not None: return
 
-        error_msg(_warning_msg, self.sr.file_name, self.sr.line_n, DontExitF=True, WarningF=True,
+        error.log(_warning_msg, self.sr, DontExitF=True, WarningF=True,
                   SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
 
 class TokenTypeDescriptorManual:
@@ -274,7 +272,7 @@ def parse(fh):
     descriptor = TokenTypeDescriptorCore()
 
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type definition", fh)
+        error.log("Missing opening '{' at begin of token_type definition", fh)
 
     already_defined_list = []
     position             = fh.tell()
@@ -286,12 +284,12 @@ def parse(fh):
             result = parse_section(fh, descriptor, already_defined_list)
         except EndOfStreamException:
             fh.seek(position)
-            error_eof("token_type", fh)
+            error.error_eof("token_type", fh)
 
         
     if not check(fh, "}"):
         fh.seek(position)
-        error_msg("Missing closing '}' at end of token_type definition.", fh);
+        error.log("Missing closing '}' at end of token_type definition.", fh);
 
     result = TokenTypeDescriptor(descriptor, sr_begin)
     if     len(result.get_member_db()) == 0       \
@@ -299,7 +297,7 @@ def parse(fh):
        and result.token_id_type.sr.is_void()      \
        and result.column_number_type.sr.is_void() \
        and result.line_number_type.sr.is_void():
-        error_msg("Section 'token_type' does not define any members, does not\n" + \
+        error.log("Section 'token_type' does not define any members, does not\n" + \
                   "modify any standard member types, nor does it define a class\n" + \
                   "different from 'Token'.", fh)
 
@@ -312,7 +310,7 @@ def parse_section(fh, descriptor, already_defined_list):
         return __parse_section(fh, descriptor, already_defined_list)
     except EndOfStreamException:
         fh.seek(pos)
-        error_eof("token_type", fh)
+        error.error_eof("token_type", fh)
 
 def __parse_section(fh, descriptor, already_defined_list):
     global token_type_code_fragment_db
@@ -329,17 +327,18 @@ def __parse_section(fh, descriptor, already_defined_list):
         if check(fh, "}"): 
             fh.seek(position) 
             return False
-        error_msg("Missing token_type section ('standard', 'distinct', or 'union').", fh)
+        error.log("Missing token_type section ('standard', 'distinct', or 'union').", fh)
 
-    verify_word_in_list(word, SubsectionList, 
-                        "Subsection '%s' not allowed in token_type section." % word, fh)
+    error.verify_word_in_list(word, SubsectionList, 
+                        "Subsection '%s' not allowed in token_type section." % word, 
+                        fh)
 
     if word == "name":
         if not check(fh, "="):
-            error_msg("Missing '=' in token_type 'name' specification.", fh)
+            error.log("Missing '=' in token_type 'name' specification.", fh)
         descriptor.class_name, descriptor.name_space, descriptor.class_name_safe = read_namespaced_name(fh, "token_type")
         if not check(fh, ";"):
-            error_msg("Missing terminating ';' in token_type 'name' specification.", fh)
+            error.log("Missing terminating ';' in token_type 'name' specification.", fh)
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
@@ -351,10 +350,10 @@ def __parse_section(fh, descriptor, already_defined_list):
 
     elif word == "file_name":
         if not check(fh, "="):
-            error_msg("Missing '=' in token_type 'file_name' specification.", fh)
+            error.log("Missing '=' in token_type 'file_name' specification.", fh)
         descriptor.set_file_name(read_until_letter(fh, ";"))
         if not check(fh, ";"):
-            error_msg("Missing terminating ';' in token_type 'file_name' specification.", fh)
+            error.log("Missing terminating ';' in token_type 'file_name' specification.", fh)
 
     elif word in ["standard", "distinct", "union"]:
         if   word == "standard": parse_standard_members(fh, word, descriptor, already_defined_list)
@@ -363,7 +362,7 @@ def __parse_section(fh, descriptor, already_defined_list):
 
         if not check(fh, "}"):
             fh.seek(position)
-            error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
+            error.log("Missing closing '}' at end of token_type section '%s'." % word, fh);
 
     elif word in token_type_code_fragment_db.keys():
         fragment     = code_fragment.parse(fh, word, AllowBriefTokenSenderF=False)        
@@ -377,7 +376,7 @@ def __parse_section(fh, descriptor, already_defined_list):
             
 def parse_standard_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
+        error.log("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     position = fh.tell()
 
@@ -386,7 +385,7 @@ def parse_standard_members(fh, section_name, descriptor, already_defined_list):
             result = parse_variable_definition(fh) 
         except EndOfStreamException:
             fh.seek(position)
-            error_eof("standard", fh)
+            error.error_eof("standard", fh)
 
         if result is None: return
         type_code_fragment, name = result[0], result[1]
@@ -404,21 +403,21 @@ def parse_standard_members(fh, section_name, descriptor, already_defined_list):
 
 def parse_distinct_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
+        error.log("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     result = parse_variable_definition_list(fh, "distinct", already_defined_list)
     if result == {}: 
-        error_msg("Missing variable definition in token_type 'distinct' section.", fh)
+        error.log("Missing variable definition in token_type 'distinct' section.", fh)
     descriptor.distinct_db = result
 
 def parse_union_members(fh, section_name, descriptor, already_defined_list):
     if not check(fh, "{"):
-        error_msg("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
+        error.log("Missing opening '{' at begin of token_type section '%s'." % section_name, fh);
 
     result = parse_variable_definition_list(fh, "union", already_defined_list, 
                                                          GroupF=True)
     if result == {}: 
-        error_msg("Missing variable definition in token_type 'union' section.", fh)
+        error.log("Missing variable definition in token_type 'union' section.", fh)
     descriptor.union_db = result
 
 def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF=False):
@@ -430,7 +429,7 @@ def parse_variable_definition_list(fh, SectionName, already_defined_list, GroupF
             result = parse_variable_definition(fh, GroupF=True, already_defined_list=already_defined_list) 
         except EndOfStreamException:
             fh.seek(position)
-            error_eof(SectionName, fh)
+            error.error_eof(SectionName, fh)
 
         if result is None: 
             return db
@@ -507,50 +506,49 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
         sub_db = parse_variable_definition_list(fh, "Concurrent union variables", already_defined_list)
         if not check(fh, "}"): 
             fh.seek(position)
-            error_msg("Missing closing '}' after concurrent variable definition.", fh)
+            error.log("Missing closing '}' after concurrent variable definition.", fh)
         return [ sub_db ]
 
     else:
         name_str = name_str.strip()
-        if not check(fh, ":"): error_msg("Missing ':' after identifier '%s'." % name_str, fh)
+        if not check(fh, ":"): error.log("Missing ':' after identifier '%s'." % name_str, fh)
         
         if fh.read(1).isspace() == False:
-            error_msg("Missing whitespace after ':' after identifier '%s'.\n" % name_str \
+            error.log("Missing whitespace after ':' after identifier '%s'.\n" % name_str \
                     + "The notation has to be: variable-name ':' type ';'.", fh)
 
         type_str, i = read_until_letter(fh, ";", Verbose=True)
-        if i == -1: error_msg("missing ';'", fh)
+        if i == -1: error.log("missing ';'", fh)
         type_str = type_str.strip()
 
         return [ CodeUser(type_str, SourceRef.from_FileHandle(fh)), name_str ]
 
 def __validate_definition(TheCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):
-    FileName = TheCodeFragment.sr.file_name
-    LineN    = TheCodeFragment.sr.line_n
     if StandardMembersF:
-        verify_word_in_list(NameStr, TokenType_StandardMemberList, 
+        error.verify_word_in_list(NameStr, TokenType_StandardMemberList, 
                             "Member name '%s' not allowed in token_type section 'standard'." % NameStr, 
-                            FileName, LineN)
+                            TheCodeFragment.sr)
 
         # Standard Members are all numeric types
         if    TheCodeFragment.contains_string(Lng.Match_string) \
            or TheCodeFragment.contains_string(Lng.Match_vector) \
            or TheCodeFragment.contains_string(Lng.Match_map):
             type_str = TheCodeFragment.get_text()
-            error_msg("Numeric type required.\n" + \
-                      "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, FileName, LineN)
+            error.log("Numeric type required.\n" + \
+                      "Example: <token_id: uint16_t>, Found: '%s'\n" % type_str, 
+                      TheCodeFragment.sr)
     else:
         if NameStr in TokenType_StandardMemberList:
-            error_msg("Member '%s' only allowed in 'standard' section." % NameStr,
-                      FileName, LineN)
+            error.log("Member '%s' only allowed in 'standard' section." % NameStr,
+                      TheCodeFragment.sr)
 
     for candidate in AlreadyMentionedList:
         if candidate[0] != NameStr: continue 
-        error_msg("Token type member name '%s' defined twice." % NameStr,
-                  FileName, LineN, DontExitF=True)
-        error_msg("Previously defined here.",
-                  candidate[1].sr.file_name, candidate[1].sr.line_n)
+        error.log("Token type member name '%s' defined twice." % NameStr,
+                  TheCodeFragment.sr, DontExitF=True)
+        error.log("Previously defined here.",
+                  candidate[1].sr)
 
 _warning_msg = \
 """Section token_type does not contain a 'take_text' section. It would be

@@ -2,12 +2,11 @@
 #
 # (C) Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
-from   quex.DEFINITIONS              import QUEX_PATH, QUEX_CODEC_DB_PATH
-import quex.engine.codec_db.parser   as     parser
-from   quex.engine.misc.file_in      import get_file_content_or_die, \
-                                            open_file_or_die, \
-                                            error_msg, \
-                                            verify_word_in_list
+from   quex.DEFINITIONS                   import QUEX_PATH, QUEX_CODEC_DB_PATH
+import quex.engine.codec_db.parser        as     parser
+import quex.engine.misc.error             as     error
+from   quex.engine.misc.file_operations   import get_file_content_or_die, \
+                                                 open_file_or_die
 from   quex.engine.misc.interval_handling import Interval, NumberSet
 from   quex.engine.misc.tools             import typed
 
@@ -60,7 +59,7 @@ def get_codecs_for_language(Language):
         if Language in record[2]: 
             result.append(record[0])
     if len(result) == 0:
-        verify_word_in_list(Language, get_supported_language_list(),
+        error.verify_word_in_list(Language, get_supported_language_list(),
                             "No codec found for language '%s'." % Language)
     return result
 
@@ -232,7 +231,7 @@ class CodecTransformationInfo(CodecInfo, list):
         source_set, drain_set, error_str = parser.do(self, fh)
 
         if error_str is not None:
-            error_msg(error_str, fh, DontExitF=not ExitOnErrorF)
+            error.log(error_str, fh, DontExitF=not ExitOnErrorF)
             self.__set_invalid() # Transformation is not valid.
 
         return source_set, drain_set
@@ -242,17 +241,17 @@ class CodecTransformationInfo(CodecInfo, list):
         self.source_set = None
         self.drain_set  = None
 
-def _get_distinct_codec_name_for_alias(CodecAlias, FH=-1, LineN=None):
-    """Arguments FH and LineN correspond to the arguments of error_msg."""
+def _get_distinct_codec_name_for_alias(CodecAlias, FH=-1):
+    """Arguments FH and LineN correspond to the arguments of error.log."""
     assert len(CodecAlias) != 0
 
     for record in parser.get_codec_list_db():
         if CodecAlias in record[1] or CodecAlias == record[0]: 
             return record[0]
 
-    verify_word_in_list(CodecAlias, get_supported_codec_list(), 
+    error.verify_word_in_list(CodecAlias, get_supported_codec_list(), 
                         "Character encoding '%s' unknown to current version of quex." % CodecAlias,
-                        FH, LineN)
+                        FH)
 
 def get_supported_unicode_character_set(CodecAlias=None, FileName=None):
     """RETURNS:

@@ -1,10 +1,10 @@
 from   quex.input.setup                 import NotificationDB
-from   quex.input.code.base  import SourceRef, \
+from   quex.input.code.base             import SourceRef, \
                                                SourceRef_VOID
-from   quex.engine.misc.file_in         import get_file_content_or_die, \
-                                               open_file_or_die, \
-                                               error_msg, \
-                                               delete_comment
+import quex.engine.misc.error           as     error
+from   quex.engine.misc.file_operations import get_file_content_or_die, \
+                                               open_file_or_die
+from   quex.engine.misc.file_in         import delete_comment
 from   quex.blackboard                  import setup as Setup, \
                                                token_id_db, \
                                                token_id_foreign_set
@@ -110,7 +110,7 @@ def parse(ForeignTokenIdFile, CommentDelimiterList):
 
     if Setup.token_id_foreign_definition_file_show_f:
         if len(found_db) == 0:
-            error_msg(  "No token ids with prefix '%s' found in" % Setup.token_id_prefix
+            error.log(  "No token ids with prefix '%s' found in" % Setup.token_id_prefix
                       + "'%s' or included files." % Setup.token_id_foreign_definition_file, 
                      NoteF=True)
         else:
@@ -127,30 +127,30 @@ def parse(ForeignTokenIdFile, CommentDelimiterList):
                 txt.append("\n")
 
             if txt: txt = txt[:-1]
-            error_msg("".join(txt), NoteF=True)
+            error.log("".join(txt), NoteF=True)
             
     ErrorN = NotificationDB.token_id_ignored_files_report
     if ErrorN not in Setup.suppressed_notification_list:
         if len(not_found_list) != 0:
             not_found_list.sort()
-            error_msg("Files not found:", 
+            error.log("Files not found:", 
                       not_found_list[0][0], LineN=not_found_list[0][1], 
                       DontExitF=True)
             for file_name, line_n, included_file in not_found_list:
-                error_msg("%s" % included_file, file_name, LineN=line_n, DontExitF=True)
+                error.log("%s" % included_file, SourceRef(file_name, line_n), DontExitF=True)
 
         if len(recursive_list) != 0:
             recursive_list.sort()
-            error_msg("Files recursively included (ignored second inclusion):", 
-                      recursive_list[0][0], LineN=recursive_list[0][1], 
-                      DontExitF=True)
+            sr = SourceRef(recursive_list[0][0], LineN=recursive_list[0][1]) 
+            error.log("Files recursively included (ignored second inclusion):", 
+                      sr, DontExitF=True)
             for file_name, line_n, included_file in recursive_list:
-                error_msg("%s" % included_file, file_name, LineN=line_n, DontExitF=True)
+                error.log("%s" % included_file, SourceRef(file_name, line_n), DontExitF=True)
 
         if len(not_found_list) != 0 or len(recursive_list) != 0:
             # file_name and line_n will be taken from last iteration of last for loop.
-            error_msg("\nNote, that quex does not handle C-Preprocessor instructions.",
-                      file_name, LineN=line_n, DontExitF=True, SuppressCode=ErrorN)
+            error.log("\nNote, that quex does not handle C-Preprocessor instructions.",
+                      SourceRef(file_name, line_n), DontExitF=True, SuppressCode=ErrorN)
 
 def cut_token_id_prefix(TokenName, FH_Error=False):
     if TokenName.find(Setup.token_id_prefix) == 0:
@@ -160,7 +160,7 @@ def cut_token_id_prefix(TokenName, FH_Error=False):
     elif not FH_Error:
         return TokenName
     else:
-        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
+        error.log("Token identifier does not begin with token prefix '%s'\n" % Setup.token_id_prefix + \
                   "found: '%s'" % TokenName, FH_Error)
 
 def __delete_comments(Content, CommentDelimiterList):

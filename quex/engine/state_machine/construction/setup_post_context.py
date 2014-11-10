@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from   quex.engine.misc.file_in                         import error_msg
+import quex.engine.misc.error                           as     error
 from   quex.engine.state_machine.core                   import StateMachine
 from   quex.engine.state_machine.state.single_entry     import Accept
 import quex.engine.state_machine.construction.sequentialize          as     sequentialize
@@ -90,7 +90,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     # A post context with an initial state that is acceptance is not really a
     # 'context' since it accepts anything. The state machine remains un-post context.
     if post_context_sm.get_init_state().is_acceptance():
-        error_msg("Post context accepts anything--replaced by no post context.", SourceReference, 
+        error.log("Post context accepts anything--replaced by no post context.", SourceReference, 
                   DontExitF=True)
         return the_state_machine, None
     
@@ -105,7 +105,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
         if ambiguous_post_context.detect_backward(the_state_machine, post_context_sm):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
-            error_msg("Post context requires philosophical cut--handle with care!\n"
+            error.log("Post context requires philosophical cut--handle with care!\n"
                       "Proposal: Isolate pattern and ensure results are as expected!", SourceReference, 
                       DontExitF=True)
             post_context_sm = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)

@@ -6,7 +6,8 @@ sys.path.append(os.environ["QUEX_PATH"])
 from StringIO import StringIO
 
 import quex.input.files.counter as counter
-from   quex.engine.misc.file_in import EndOfStreamException, error_msg, error_eof
+import quex.engine.misc.error   as     error
+from   quex.engine.misc.file_in import EndOfStreamException
 from   quex.blackboard import setup as Setup
 
 Setup.buffer_element_specification_prepare()
@@ -38,7 +39,7 @@ def test(Text):
         pass
 
     except EndOfStreamException:
-        error_msg("End of file reached while parsing 'counter' section.", sh, DontExitF=True, WarningF=False)
+        error.log("End of file reached while parsing 'counter' section.", sh, DontExitF=True, WarningF=False)
 
     except:
         print "Exception!"

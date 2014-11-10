@@ -6,7 +6,8 @@ sys.path.append(os.environ["QUEX_PATH"])
 from StringIO import StringIO
 
 import quex.input.files.counter as     counter
-from   quex.engine.misc.file_in import EndOfStreamException, error_msg
+import quex.engine.misc.error   as     error
+from   quex.engine.misc.file_in import EndOfStreamException
 
 if "--hwut-info" in sys.argv:
     print "Parse Indentation Setup;"
@@ -32,7 +33,7 @@ def test(Text):
     try:    
         descr = counter.parse_indentation(sh)
     except EndOfStreamException:
-        error_msg("End of file reached while parsing 'indentation' section.", sh, DontExitF=True, WarningF=False)
+        error.log("End of file reached while parsing 'indentation' section.", sh, DontExitF=True, WarningF=False)
 
     except:
         print "Exception!"

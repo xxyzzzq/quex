@@ -1,13 +1,11 @@
+import quex.engine.misc.error            as     error
 from   quex.engine.misc.file_in          import EndOfStreamException, \
                                                 check, \
                                                 check_or_die, \
-                                                error_msg, \
-                                                error_eof, \
                                                 read_integer, \
                                                 read_namespaced_name, \
                                                 read_until_closing_bracket, \
-                                                skip_whitespace, \
-                                                verify_word_in_list
+                                                skip_whitespace
 from   quex.output.cpp.token_id_maker    import TokenInfo 
 from   quex.input.files.token_id_file    import cut_token_id_prefix
 import quex.blackboard                   as     blackboard
@@ -44,7 +42,8 @@ def parse(fh, CodeFragmentName,
         fh.seek(-2,1)
         return None
     else:
-        error_msg("Missing code fragment after %s definition." % CodeFragmentName, fh)
+        error.log("Missing code fragment after %s definition." % CodeFragmentName, 
+                  fh)
 
 def __parse_normal(fh, code_fragment_name):
     code   = read_until_closing_bracket(fh, "{", "}")
@@ -90,7 +89,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof("token", fh)
+        error.error_eof("token", fh)
 
 def read_character_code(fh):
     # NOTE: This function is tested with the regeression test for feature request 2251359.
@@ -111,10 +110,12 @@ def read_character_code(fh):
             character_code = __read_one_utf8_code_from_stream(fh)
 
         if character_code is None:
-            error_msg("Missing utf8-character for definition of character code by character.", fh)
+            error.log("Missing utf8-character for definition of character code by character.", 
+                      fh)
 
         elif fh.read(1) != '\'':
-            error_msg("Missing closing ' for definition of character code by character.", fh)
+            error.log("Missing closing ' for definition of character code by character.", 
+                      fh)
 
         return character_code
 
@@ -129,11 +130,12 @@ def read_character_code(fh):
         # is supposed to be one.
         character_code = ucs_property_db.get_character_set("Name", ucs_name)
         if type(character_code) in [str, unicode]:
-            verify_word_in_list(ucs_name, ucs_property_db["Name"].code_point_db,
-                                "The string %s\ndoes not identify a known unicode character." % ucs_name, 
-                                fh)
+            error.verify_word_in_list(ucs_name, ucs_property_db["Name"].code_point_db,
+                                      "The string %s\ndoes not identify a known unicode character." % ucs_name, 
+                                      fh)
         elif type(character_code) not in [int, long]:
-            error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
+            error.log("%s relates to more than one character in unicode database." % ucs_name, 
+                      fh) 
         return character_code
 
     fh.seek(pos)
@@ -212,7 +214,7 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
             msg += "'%s' has been defined in a token { ... } section!\n" % \
                    (Setup.token_id_prefix + TokenName)
             msg += "Token ids in the token { ... } section are automatically prefixed."
-            error_msg(msg, fh, DontExitF=True, 
+            error.log(msg, SourceRef.from_FileHandle(fh), DontExitF=True, 
                       SuppressCode=NotificationDB.warning_usage_of_undefined_token_id_name)
         else:
             # Warning is posted later when all implicit tokens have been
@@ -259,17 +261,18 @@ def __create_token_sender_by_token_name(fh, TokenName):
                 return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeNull, LexemeNull);\n" \
                        "self_send(%s);\n" % (TokenName)
             else:
-                error_msg("If one unnamed argument is specified it must be 'Lexeme'\n"          + \
+                error.log("If one unnamed argument is specified it must be 'Lexeme'\n"          + \
                           "or 'LexemeNull'. Found '%s'.\n" % argument_list[0]                     + \
                           "To cut parts of the lexeme, please, use the 2 argument sender, e.g.\n" + \
                           "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
-                          "Alternatively, use named parameters such as 'number=...'.", fh)
+                          "Alternatively, use named parameters such as 'number=...'.", 
+                          fh)
 
         elif len(argument_list) == 0:
             return "self_send(%s);\n" % TokenName
 
         else:
-            error_msg("Since 0.49.1, there are only the following brief token senders that can take\n"
+            error.log("Since 0.49.1, there are only the following brief token senders that can take\n"
                       "unnamed token arguments:\n"
                       "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
                       "     two arguments:  Begin, End =>  token.take_text(..., Begin, End);\n"
@@ -281,25 +284,24 @@ def __create_token_sender_by_token_name(fh, TokenName):
     txt = ""
     for member, value in member_value_pairs:
         if value == "":
-            error_msg("One explicit argument name mentioned requires all arguments to\n"  + \
+            error.log("One explicit argument name mentioned requires all arguments to\n"  + \
                       "be mentioned explicitly. Value '%s' mentioned without argument.\n"   \
                       % member, fh)
 
         if Setup.token_class_file != "":
-            error_msg("Member assignments in brief token senders are inadmissible\n" + \
+            error.log("Member assignments in brief token senders are inadmissible\n" + \
                       "with manually written token classes. User provided file '%s'.\n" % Setup.token_class_file + \
                       "Found member assignment: '%s' = '%s'." % (member, value), fh)
         else:
             member_name = member.strip()
-            verify_word_in_list(member_name, blackboard.token_type_definition.get_member_db(), 
-                                "No member:   '%s' in token type description." % member_name, 
-                                fh)
+            error.verify_word_in_list(member_name, blackboard.token_type_definition.get_member_db(), 
+                                      "No member:   '%s' in token type description." % member_name, fh)
             idx = value.find("Lexeme")
             if idx != -1:
                 if idx != 0 and value[idx-1] == "(":
                     pass
                 else:
-                    error_msg("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
+                    error.log("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
                               "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
                               "\n"
                               "Proposals:\n\n"
@@ -344,25 +346,28 @@ def __create_mode_transition_and_token_sender(fh, Command):
             skip_whitespace(fh)
 
             if check(fh, ","):
-                error_msg("Missing opening '(' after token name specification.\n" 
+                error.log("Missing opening '(' after token name specification.\n" 
                           "Note, that since version 0.50.1 the syntax for token senders\n"
                           "inside brief mode transitions is like:\n\n"
-                          "     => GOTO(MYMODE, QUEX_TKN_MINE(Argument0, Argument1, ...));\n", fh)
+                          "     => GOTO(MYMODE, QUEX_TKN_MINE(Argument0, Argument1, ...));\n", 
+                          fh)
 
             token_sender = __create_token_sender_by_token_name(fh, token_name) 
 
             if check(fh, ")") == False:
-                error_msg("Missing closing ')' or ',' after '%s'." % Command, fh)
+                error.log("Missing closing ')' or ',' after '%s'." % Command, 
+                          fh)
 
         else:
             fh.seek(position)
-            error_msg("Missing closing ')' or ',' after '%s'." % Command, fh)
+            error.log("Missing closing ')' or ',' after '%s'." % Command, fh)
 
     if check(fh, ";") == False:
-        error_msg("Missing ')' or ';' after '%s'." % Command, fh)
+        error.log("Missing ')' or ';' after '%s'." % Command, fh)
 
     if Command in ["GOTO", "GOSUB"] and target_mode == "": 
-        error_msg("Command %s requires at least one argument: The target mode." % Command, fh)
+        error.log("Command %s requires at least one argument: The target mode." % Command, 
+                  fh)
 
     # Code for mode change
     if   Command == "GOTO":  txt = Lng.MODE_GOTO(target_mode)

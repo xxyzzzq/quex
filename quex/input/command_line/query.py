@@ -1,17 +1,17 @@
 import sys
 
-from quex.engine.misc.file_in       import error_msg
-from quex.engine.misc.utf8               import map_unicode_to_utf8
-from quex.engine.misc.interval_handling  import NumberSet, Interval
-from quex.engine.codec_db.unicode.parser  import ucs_property_db
+import quex.engine.misc.error                   as error
+from   quex.engine.misc.utf8                    import map_unicode_to_utf8
+from   quex.engine.misc.interval_handling       import NumberSet, Interval
+from   quex.engine.codec_db.unicode.parser      import ucs_property_db
 
-from quex.input.regular_expression.exception                 import RegularExpressionException
+from   quex.input.regular_expression.exception  import RegularExpressionException
 
-import quex.input.regular_expression.core as regular_expression
-from   quex.DEFINITIONS                   import QUEX_VERSION 
-import quex.engine.codec_db.core          as codec_db
+import quex.input.regular_expression.core       as regular_expression
+from   quex.DEFINITIONS                         import QUEX_VERSION 
+import quex.engine.codec_db.core                as codec_db
 
-from quex.blackboard import setup as Setup
+from   quex.blackboard import setup as Setup
 
 OPTION_DB = {
         "--codec-info":         ["Information about supported characters of a codec."],
@@ -49,7 +49,7 @@ def run(cl, Argv):
         else:
             assert False # No query option(s) !
     except RegularExpressionException, x:
-        error_msg(x.message)
+        error.log(x.message)
 
     Setup.buffer_limit_code = backup_buffer_limit_code
     Setup.path_limit_code   = backup_path_limit_code
@@ -72,7 +72,7 @@ def search_and_validate(CL, Option):
     # Validate command line
     ufos = CL.unidentified_options(OPTION_DB.keys())
     if len(ufos) != 0:
-        error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
+        error.log("Unidentified option(s) = " +  repr(ufos) + "\n" + \
                   get_supported_command_line_option_description())
     return True
 
@@ -88,7 +88,7 @@ def __handle_codec(cl):
             if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
         txt += line_txt
         txt = txt[:-2] + "."
-        error_msg(txt)
+        error.log(txt)
 
     character_set = codec_db.get_supported_unicode_character_set(CodecAlias=codec_name)
     __display_set(character_set, cl)
@@ -115,7 +115,7 @@ def __handle_codec_for_language(cl):
             if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
         txt += line_txt
         txt = txt[:-2] + "."
-        error_msg(txt)
+        error.log(txt)
 
     print "Possible Codecs: " + repr(codec_db.get_codecs_for_language(language_name))[1:-1]
 
@@ -141,7 +141,7 @@ def __handle_property_match(cl):
 
     fields = map(lambda x: x.strip(), property_follower.split("="))
     if len(fields) != 2:
-        error_msg("Wrong property setting '%s'." % property_follower)
+        error.log("Wrong property setting '%s'." % property_follower)
 
     # -- determine name and value
     name                 = fields[0]
@@ -154,7 +154,7 @@ def __handle_property_match(cl):
 
     # -- find the character set for the given expression
     if property.type == "Binary":
-        error_msg("Binary property '%s' is not subject to value wild card matching.\n" % property.name)
+        error.log("Binary property '%s' is not subject to value wild card matching.\n" % property.name)
 
     for value in property.get_wildcard_value_matches(wild_card_expression):
         print value
@@ -169,7 +169,7 @@ def __handle_set_by_property(cl):
     sys.stderr.write("(please, wait for database parsing to complete)\n")
     fields = map(lambda x: x.strip(), result.split("="))
     if len(fields) not in [1, 2]:
-        error_msg("Wrong property setting '%s'." % result)
+        error.log("Wrong property setting '%s'." % result)
 
     # -- determine name and value
     name = fields[0]
@@ -183,12 +183,12 @@ def __handle_set_by_property(cl):
 
     # -- find the character set for the given expression
     if property.type == "Binary" and value is not None:
-        error_msg("Binary property '%s' cannot have a value assigned to it.\n" % property.name + \
+        error.log("Binary property '%s' cannot have a value assigned to it.\n" % property.name + \
                   "Setting ignored. Printing set of characters with the given property.")
 
     character_set = property.get_character_set(value)
     if character_set.__class__.__name__ != "NumberSet":
-        error_msg(character_set)
+        error.log(character_set)
 
     __display_set(character_set, cl)
 

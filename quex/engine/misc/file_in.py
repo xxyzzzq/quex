@@ -14,20 +14,19 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 ################################################################################
-from   copy     import copy
-from   string   import split
+from   quex.engine.misc.tools       import typed
+import quex.engine.misc.error       as     error
+import quex.engine.misc.similarity  as     similarity
+
 from   StringIO import StringIO
-import codecs
 import os
 import sys
-
-import quex.engine.misc.similarity  as     similarity
-#from  quex.blackboard              import setup as Setup
 
 __reference_to_setup = None
 def specify_setup_object(TheSetup):
     global __reference_to_setup 
     __reference_to_setup = TheSetup
+    error.specify_setup_object(TheSetup)
 
 class EndOfStreamException(Exception):
     pass
@@ -74,7 +73,7 @@ def is_identifier_start(character):
     if len(character) != 1:
         # It is theoretically possible that a character > 0x10000 arrives on a python
         # narrow build.
-        error_msg("The underlying python build cannot handle character '%s'." % character)
+        error.log("The underlying python build cannot handle character '%s'." % character)
 
     char_value = ord(character)
     return    character == "_" \
@@ -85,7 +84,7 @@ def is_identifier_continue(character):
     if len(character) != 1:
         # It is theoretically possible that a character > 0x10000 arrives on a python
         # narrow build.
-        error_msg("The underlying python build cannot handle character '%s'." % character)
+        error.log("The underlying python build cannot handle character '%s'." % character)
 
     char_value = ord(character)
     return    is_identifier_start(character) \
@@ -126,7 +125,7 @@ def read_identifier(fh, TolerantF=False, OnMissingStr=None):
     result = __read(fh, TolerantF)
 
     if len(result) == 0 and OnMissingStr is not None: 
-        error_msg(OnMissingStr, fh)
+        error.log(OnMissingStr, fh)
     return result
 
 def find_end_of_identifier(Txt, StartIdx, L):
@@ -137,7 +136,7 @@ def find_end_of_identifier(Txt, StartIdx, L):
 
 def check_or_die(fh, What, Comment = "."):
     if not check(fh, What):
-        error_msg("Missing '%s'" % What + Comment, fh)
+        error.log("Missing '%s'" % What + Comment, fh)
 
 def parse_identifier_assignment(fh):
     # NOTE: Catching of EOF happens in caller
@@ -179,12 +178,12 @@ def read_namespaced_name(FileHandle_or_String, Meaning, AllowEmptyF=False):
     if len(name_list[-1]) == 0: # Empty, or last name missing?
         if not AllowEmptyF: 
             if string_f: fh = -1
-            error_msg("Missing identifier in %s name specification." % Meaning, fh)
+            error.log("Missing identifier in %s name specification." % Meaning, fh)
 
     if string_f: 
         trailing_chars = fh.read()
         if len(trailing_chars) != 0:
-            error_msg("Trailing characters '%s' in '%s'\nfor %s name specification." % \
+            error.log("Trailing characters '%s' in '%s'\nfor %s name specification." % \
                       (trailing_chars, FileHandle_or_String, Meaning))
 
     return name_list[-1], name_list[:-1], reduce(lambda x, y: x + "_" + y, name_list)  
@@ -241,7 +240,7 @@ def get_number_base(fh):
         fh.seek(-1, 1)
         return 10, decimal_digits
     elif second == ".":
-        error_msg("Decimal integer number cannot contain '.'.", fh)
+        error.log("Decimal integer number cannot contain '.'.", fh)
     elif not second.isalpha():
         fh.seek(pos)
         return 10, decimal_digits
@@ -255,7 +254,7 @@ def get_number_base(fh):
             "n": ("Napier", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
         }[second]
     except:
-        error_msg("Number format '0%s' is not supported by quex.\n" % second + \
+        error.log("Number format '0%s' is not supported by quex.\n" % second + \
                   "Use prefix '0x' for hexadecimal numbers.\n" + \
                   "           '0o' for octal numbers.\n"       + \
                   "           '0b' for binary numbers.\n"      + \
@@ -278,12 +277,12 @@ def read_integer(fh):
 
     # If we drop out on a digit, then let us assume that the user just missed a point
     if tmp.isdigit() or (tmp in list("ABCDEFabcdef")):
-        error_msg("Digit '%s' cannot be part of an expression of base %s." % (tmp, base), fh)
+        error.log("Digit '%s' cannot be part of an expression of base %s." % (tmp, base), fh)
 
     txt = txt.replace(".", "")
     if len(txt) == 0:
         if base in [2, 8, 16, "roman", "Napier"]:
-            error_msg("Missing digits after for number of base %s, found '%s'." % (str(base), tmp), fh)
+            error.log("Missing digits after for number of base %s, found '%s'." % (str(base), tmp), fh)
         fh.seek(pos)
         return None
 
@@ -320,12 +319,12 @@ def __roman_number(Text, fh):
         while input[index: index + len(numeral)] == numeral:
             count += 1 # how many of this numeral we have
             if maxcount is not None and count > maxcount:
-                error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
+                error.log("input 0r%s is not a valid roman numeral." % Text, fh)
             result += value
             index  += len(numeral)
 
     if index < len(input): # There are characters unaccounted for.
-        error_msg("input 0r%s is not a valid roman numeral." % Text, fh)
+        error.log("input 0r%s is not a valid roman numeral." % Text, fh)
 
     return result
 
@@ -448,7 +447,7 @@ def read_until_closing_bracket(fh, Opener, Closer,
                 except:
                     fh.seek(position)
                            
-                    error_msg("Unbalanced '%s', reached end of file before closing '%s' was found." % \
+                    error.log("Unbalanced '%s', reached end of file before closing '%s' was found." % \
                               (delimiter[0].replace("\n", "\\n"), delimiter[1].replace("\n", "\\n")), 
                               fh)
 
@@ -494,57 +493,10 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
             else:       return txt
         txt += tmp
 
-def get_file_content_or_die(FileName, Mode="rb"):
-    fh = open_file_or_die(FileName, Mode)
-    txt = fh.read()
-    fh.close()
-    return txt
-
-def get_current_line_info_number(fh):
-    return get_line_number_at_position(fh, fh.tell())
-
-def get_line_number_at_position(fh, Pos):
-    fh.seek(0)
-    # When reading 'position' number of characters from '0', then we are
-    # at position 'position' at the end of the read. That means, we are where
-    # we started.
-    passed_text = fh.read(Pos)
-    return passed_text.count("\n") + 1
-
 def clean_up():
     # -- delete temporary files
     for file in temporary_files:
         os.system("rm %s" % file)
-
-def open_safely(FileName, Mode="rb"):
-    file_name = FileName.replace("//","/")
-    file_name = os.path.normpath(file_name)
-    try:
-        return open(file_name, Mode)
-    except:
-        return None
-
-def open_file_or_die(FileName, Mode="rb", Env=None, CodecCheckF=True):
-    fh = open_safely(FileName, Mode)
-    if fh is None:
-        if Env is not None:
-            error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
-        error_msg("Cannot open file '%s'" % FileName)
-
-    if CodecCheckF and Mode.find("w") == -1: 
-        __check_codec(fh, FileName)
-
-    return fh
-
-def write_safely_and_close(FileName, txt):
-    fh = open_file_or_die(FileName, Mode="wb", CodecCheckF=False)
-    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
-    # NOTE: According to bug 2813381, maybe due to an error in python,
-    #       there appeared two "\r" instead of one "\r\r".
-    while txt.find("\r\r") != -1:
-        txt = txt.replace("\r\r", "\r")
-    fh.write(txt)
-    fh.close()
 
 def make_safe_identifier(String, NoCodeF=True):
     txt = ""
@@ -552,7 +504,7 @@ def make_safe_identifier(String, NoCodeF=True):
         if len(letter) != 1:
             # It is theoretically possible that a character > 0x10000 arrives on a python
             # narrow build.
-            error_msg("The underlying python build cannot handle character '%s'." % letter)
+            error.log("The underlying python build cannot handle character '%s'." % letter)
 
         if letter.isalpha() or letter.isdigit() or letter == "_": txt += letter.upper()
         elif letter == ":":                                       txt += "_"
@@ -581,204 +533,12 @@ def check(fh, Word):
     fh.seek(position)
     return False
 
-def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True, SuppressCode=None):
-    """FH, and LineN work exactly the same as for error_msg(...)"""
-    if     __reference_to_setup is not None \
-       and SuppressCode in __reference_to_setup.suppressed_notification_list:
-        return
-
-    if len(WordList) == 0:
-        error_msg(Comment + "\n'%s' is not addmissible here." % Word, FH, LineN, DontExitF=False, 
-                  SuppressCode=SuppressCode)
-        return
-
-    position_known_f = False
-    if type(WordList) == dict:
-        word_list = WordList.keys()
-    elif WordList[0].__class__.__name__ == "UserCodeFragment":
-        word_list        = map(lambda x: x.get_code(), WordList)
-        position_known_f = True
-    else:
-        word_list        = WordList
-
-    if Word in word_list: return True
-
-    # Word was not in list
-    similar_index = similarity.get(Word, word_list)
-
-    if similar_index == -1:
-        txt = "Acceptable: "
-        length = len(txt)
-        for word in WordList:
-            L = len(word)
-            if length + L > 80: 
-                txt += "\n"; length = 0
-            txt += word + ", "
-            length += L
-
-        if txt != "": txt = txt[:-2] + "."
-        error_msg(Comment + "\n" + txt, FH, LineN, DontExitF=False,
-                  SuppressCode=SuppressCode)
-
-    else:
-        similar_word = word_list[similar_index]
-        if position_known_f:
-            error_msg(Comment, FH, LineN, DontExitF=True)
-            error_msg("Did you mean '%s'?" % similar_word,
-                      WordList[similar_index].sr.file_name, 
-                      WordList[similar_index].sr.line_n, 
-                      DontExitF=not ExitF, 
-                      SuppressCode=SuppressCode)
-        else:
-            error_msg(Comment + "\n" + "Did you mean '%s'?" % similar_word,
-                      FH, LineN, DontExitF=not ExitF, 
-                      SuppressCode=SuppressCode)
-
-    return False
-
-def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
-    # fh        = filehandle [1] or filename [2]
-    # LineN     = line_number of error
-    # DontExitF = True then no exit from program
-    #           = False then total exit from program
-    # WarningF  = Asked only if DontExitF is set. 
-    #
-    # count line numbers (this is a kind of 'dirty' solution for not
-    # counting line numbers on the fly. it does not harm at all and
-    # is much more direct to be programmed.)
-    global __reference_to_setup
-
-    PlainMessageF = (fh is None and LineN is None)
-    #if not PlainMessageF:
-    #    if LineN is None:
-    #        LineN = 0
-
-    if     __reference_to_setup is not None \
-       and SuppressCode in __reference_to_setup.suppressed_notification_list:
-        return
-
-    if NoteF: DontExitF = True
-
-    if fh == -1:
-        if Prefix == "": prefix = "command line"
-        else:            prefix = Prefix
-
-    elif fh == "assert":
-        if type(LineN) != str: 
-            error_msg("3rd argument needs to be a string,\n" + \
-                      "if message type == 'assert'", "assert", 
-                      "file_in.error_msg()")
-        file_name = LineN    
-        prefix = "internal assert:" + file_name + ":"   
-    else:
-        if fh.__class__.__name__ == "SourceRef":
-            line_n   = fh.line_n
-            Filename = fh.file_name
-        elif type(fh) == str:
-            line_n   = LineN
-            Filename = fh 
-        else:
-            if fh is not None:
-                line_n   = get_current_line_info_number(fh)
-                if hasattr(fh, "name"): Filename = fh.name
-                else:                   Filename = "command line"
-            else:
-                line_n   = -1
-                Filename = ""
-
-        if PlainMessageF:
-            prefix = "message"
-        elif NoteF:
-            prefix = "%s:%i:note" % (Filename, line_n)   
-        elif DontExitF and WarningF: 
-            prefix = "%s:%i:warning" % (Filename, line_n)   
-        else:
-            prefix = "%s:%i:error" % (Filename, line_n)   
-        
-    if len(ErrMsg) != 0:
-        for line in split(ErrMsg, "\n"):
-            print prefix + ": %s" % line
-
-    if SuppressCode is not None:
-        print prefix + ": ('--suppress %s' to avoid this message)" % SuppressCode
-
-    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
-
-def error_eof(title, fh):
-    error_msg("End of file reached while parsing '%s' section." % title, fh)
-
-def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
-    """FH and LineN follow format of 'error_msg(...)'"""
-    directory = os.path.dirname(FileName)
-    if directory == "": directory = os.path.normpath("./"); suffix = "."
-    else:               suffix = " in directory\n'%s'." % directory
-    comment = ""
-    if Comment != "": comment = "(%s) " % Comment
-    try:
-        ext = os.path.splitext(FileName)[1]
-
-        files_in_directory = [
-            file for file in os.listdir(directory) 
-            if file.rfind(ext) == len(file) - len(ext)
-        ]
-    except:
-        error_msg("File '%s' (%s) not found." % (FileName, comment), FH, LineN)
-    verify_word_in_list(FileName, files_in_directory, 
-                        "File '%s' %snot found%s" % (FileName, comment, suffix), FH, LineN)
-    
-def get_propperly_slash_based_file_name(PathName):
-    """Replaces backslashes '\\' by '/' and replaces adjacent
-       slashes by single slashes.
-    """
-    path = PathName.replace("\\", "/")
-    while path.find("//") != -1:
-        path = path.replace("//", "/")
-    return path
-
-# 'Bad' byte order marks (we only treat UTF8)
-Bad_BOM_list = [ 
-    codecs.BOM_BE, 
-    codecs.BOM_LE, 
-    codecs.BOM_UTF16, 
-    codecs.BOM_UTF16_BE, 
-    codecs.BOM_UTF16_LE, 
-    codecs.BOM_UTF32, 
-    codecs.BOM_UTF32_BE, 
-    codecs.BOM_UTF32_LE
-]
-def __check_codec(fh, FileName):
-    global Bad_BOM_list
-
-    begin = fh.read(4)
-    for bom in Bad_BOM_list:
-        if begin.startswith(bom):
-            error_msg("Quex requires ASCII or UTF8 input character format.\n" \
-                      "File '%s' contains Non-UTF8 Byte Order Mark." % FileName)
-
-    start_pos = 0
-    if begin.startswith(codecs.BOM_UTF8):
-        start_pos = len(codecs.BOM_UTF8) # Step over the initial BOM
-
-    content = fh.read()
-    if content.count('\0') > 1:
-        error_msg("Quex requires ASCII or UTF8 input character format.\n" \
-                  "File '%s' contains many '0' characters. Is it UTF16/UTF32 encoded?." % FileName)
-
-    try: 
-        content.decode("utf8")
-    except:
-        error_msg("Quex requires ASCII or UTF8 input character format.\n" \
-                  "File '%s' is not ASCII or UTF8 encoded. Or, it contains encoding errors." % FileName)
-
-    fh.seek(start_pos)
-    return fh
-
 def get_integer_parameter_value(MemberName, ValueStr):
     if type(ValueStr) == int: 
         return ValueStr
     result = read_integer(StringIO(ValueStr))
     if result is None:
-        error_msg("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, MemberName) + \
+        error.log("Cannot convert '%s' into an integer for '%s'.\n" % (ValueStr, MemberName) + \
                   "Use prefix '0x' for hexadecimal numbers.\n" + \
                   "           '0o' for octal numbers.\n"       + \
                   "           '0b' for binary numbers.\n"      + \

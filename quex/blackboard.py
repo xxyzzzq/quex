@@ -19,9 +19,9 @@
 #            For this, it was a designated design goal to make sure that the   #
 #            imports are 'flat' and only cause environment or outer modules.   #
 #_______________________________________________________________________________
-from quex.engine.misc.enum           import Enum
-from quex.input.code.base import CodeFragment_NULL
-from quex.input.setup                import QuexSetup, SETUP_INFO
+from quex.engine.misc.enum  import Enum
+from quex.input.code.base   import CodeFragment_NULL
+from quex.input.setup       import QuexSetup, SETUP_INFO
 
 #------------------------------------------------------------------------------
 # setup: All information of the user's desired setup.

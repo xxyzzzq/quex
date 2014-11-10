@@ -9,10 +9,11 @@ import quex.input.command_line.query      as      query
 from   quex.input.setup                   import SETUP_INFO,               \
                                                  SetupParTypes,            \
                                                  NotificationDB
-from   quex.input.code.base    import SourceRef
-from   quex.engine.misc.file_in           import error_msg,                \
-                                                 get_integer_parameter_value, \
-                                                 open_file_or_die
+from   quex.input.code.base               import SourceRef
+import quex.engine.misc.error             as     error
+from   quex.engine.misc.file_operations   import open_file_or_die
+from   quex.engine.misc.file_in           import get_integer_parameter_value
+                                                 
 
 def do(argv):
     """RETURNS: True,  if CODE GENERATION needs to happen.
@@ -94,7 +95,7 @@ def __extra_option_extract_from_file(FileName):
         line    = fh.readline()
         if line == "":
             fh.seek(pos)
-            error_msg("Missing terminating '%s'." % MARKER, fh)
+            error.log("Missing terminating '%s'." % MARKER, fh)
 
         if line.find(MARKER) != -1: 
             break
@@ -119,12 +120,12 @@ def __extra_option_message(ExtraLocationList):
         return
 
     sr = ExtraLocationList[0][0]
-    error_msg("Command line arguments from inside files:", sr, NoteF=True)
+    error.log("Command line arguments from inside files:", sr, NoteF=True)
     for sr, option in ExtraLocationList:
         if len(option) < 2: option_str = option[0]
         else:               option_str = reduce(lambda x, y: "%s %s" % (x.strip(), y.strip()), option)
-        error_msg("%s" % option_str, sr, NoteF=True)
-    error_msg("", sr, NoteF=True, SuppressCode=NotificationDB.message_on_extra_options)
+        error.log("%s" % option_str, sr, NoteF=True)
+    error.log("", sr, NoteF=True, SuppressCode=NotificationDB.message_on_extra_options)
 
 def argv_interpret(argv):
     """RETURNS:
@@ -191,7 +192,7 @@ def argv_is_query_option(Cl, Option, Name, PrevQueryF):
     # If debug exception is enabled, do not trigger errror
     if Cl.search(SETUP_INFO["_debug_exception_f"][0]): return query_f
 
-    error_msg("Mixed options: query and code generation mode.\n"
+    error.log("Mixed options: query and code generation mode.\n"
               "The option(s) '%s' cannot be combined with preceeding options." \
               % str(SETUP_INFO[Name][0])[1:-1].replace("'",""))
 
@@ -234,7 +235,7 @@ def argv_catch_list(Cl, Option, Default):
 
         the_list = Cl.nominus_followers(Option)
         if len(the_list) == 0:
-            error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
+            error.log("Option %s\nnot followed by anything." % str(Option)[1:-1])
 
         for x in the_list:
             if x not in result: result.append(x)
@@ -247,7 +248,7 @@ def argv_catch_string(Cl, Option, Type):
         if Type == SetupParTypes.OPTIONAL_STRING:
             value = ""
         else:
-            error_msg("Option %s\nnot followed by anything." % str(Option)[1:-1])
+            error.log("Option %s\nnot followed by anything." % str(Option)[1:-1])
     return value
 
 def argv_ufo_detections(Cl):
@@ -262,6 +263,6 @@ def argv_ufo_detections(Cl):
     if not ufo_list: return
 
     option_str = "".join("%s\n" % ufo_list)
-    error_msg("Following command line options are unknown to current version of quex:\n" \
+    error.log("Following command line options are unknown to current version of quex:\n" \
               + option_str, 
              SuppressCode=NotificationDB.error_ufo_on_command_line_f)

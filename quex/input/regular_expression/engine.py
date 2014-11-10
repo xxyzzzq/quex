@@ -59,16 +59,15 @@ import quex.engine.state_machine.construction.repeat                  as repeat
 import quex.engine.codec_db.unicode.case_fold_parser           as ucs_case_fold
 
 from   quex.engine.misc.interval_handling  import Interval, NumberSet
-from   quex.engine.misc.file_in       import error_msg, \
-                                             check, \
-                                             check_whitespace, \
-                                             skip_whitespace, \
-                                             read_identifier, \
-                                             read_until_character, \
-                                             verify_word_in_list, \
-                                             read_until_letter
+import quex.engine.misc.error              as     error
+from   quex.engine.misc.file_in            import check, \
+                                                  check_whitespace, \
+                                                  skip_whitespace, \
+                                                  read_identifier, \
+                                                  read_until_character, \
+                                                  read_until_letter
 import quex.engine.misc.utf8               as utf8
-from   quex.blackboard                import setup as Setup
+from   quex.blackboard                     import setup as Setup
 from   quex.input.regular_expression.exception                 import RegularExpressionException
 
 from   StringIO import StringIO
@@ -96,7 +95,7 @@ def do(UTF8_String_or_Stream, PatternDict,
         end_position = stream.tell() - 1
         stream.seek(InitialPos)
         pattern_str = stream.read(end_position - InitialPos)
-        error_msg("Pattern definition '%s' not followed by whitespace.\n" % pattern_str + \
+        error.log("Pattern definition '%s' not followed by whitespace.\n" % pattern_str + \
                   "Found subsequent character '%s'." % tmp, 
                   stream)
 
@@ -354,21 +353,21 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
 
         if flag_txt == "":
             sh.seek(pos)
-            error_msg("Missing closing ')' in case fold expression.", sh)
+            error.log("Missing closing ')' in case fold expression.", sh)
 
         flag_txt = flag_txt.replace(" ", "").replace("\t", "").replace("\n", "")
 
         for letter in flag_txt:
             if letter not in "smt":
                 sh.seek(pos)
-                error_msg("Letter '%s' not permitted as case fold option.\n" % letter + \
+                error.log("Letter '%s' not permitted as case fold option.\n" % letter + \
                           "Options are:  's' for simple case fold.\n" + \
                           "              'm' for multi character sequence case fold.\n" + \
                           "              't' for special turkish case fold rules.", sh)
 
             if NumberSetF and letter == "m":
                 sh.seek(pos)
-                error_msg("Option 'm' not permitted as case fold option in set expression.\n" + \
+                error.log("Option 'm' not permitted as case fold option in set expression.\n" + \
                           "Set expressions cannot absorb multi character sequences.", sh)
 
         skip_whitespace(sh)
@@ -378,7 +377,7 @@ def  snap_case_folded_pattern(sh, PatternDict, NumberSetF=False):
     if NumberSetF:
         trigger_set = result.get_number_set()
         if trigger_set is None:
-            error_msg("Expression in case fold does not result in character set.\n" + 
+            error.log("Expression in case fold does not result in character set.\n" + 
                       "The content in '\\C{content}' may start with '[' or '[:'.", sh)
 
         # -- perform the case fold for Sets!
@@ -414,7 +413,7 @@ def snap_non_control_character(stream, PatternDict):
     # (*) read first character
     char_code = utf8.__read_one_utf8_code_from_stream(stream)
     if char_code is None:
-        error_msg("Character could not be interpreted as UTF8 code or End of File reached prematurely.", 
+        error.log("Character could not be interpreted as UTF8 code or End of File reached prematurely.", 
                   stream)
     result = StateMachine()
     result.add_transition(result.init_state_index, char_code, AcceptanceF=True)
@@ -480,7 +479,7 @@ def create_ALL_BUT_NEWLINE_state_machine(stream):
     #       generator.
     trigger_set = NumberSet(Interval(ord("\n"))).get_complement(Setup.buffer_codec.source_set)
     if trigger_set.is_empty():
-        error_msg("The set of admissible characters contains only newline.\n"
+        error.log("The set of admissible characters contains only newline.\n"
                   "The '.' for 'all but newline' is an empty set.",
                   SourceRef.from_FileHandle(stream))
 
@@ -604,7 +603,7 @@ def snap_curly_bracketed_expression(stream, PatternDict, Name, TriggerChar, MinN
 
     # Read over the trigger character 
     if not check(stream, "{"):
-        error_msg("Missing opening '{' after %s %s." % (Name, TriggerChar), stream)
+        error.log("Missing opening '{' after %s %s." % (Name, TriggerChar), stream)
 
     result = []
     while 1 + 1 == 2:
@@ -617,20 +616,20 @@ def snap_curly_bracketed_expression(stream, PatternDict, Name, TriggerChar, MinN
         elif check_whitespace(stream):
             continue
         elif check(stream, "/") or check(stream, "$"):
-            error_msg("Pre- or post contexts are not allowed in %s \\%s{...} expressions." % (Name, TriggerChar), stream)
+            error.log("Pre- or post contexts are not allowed in %s \\%s{...} expressions." % (Name, TriggerChar), stream)
         else:
-            error_msg("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
+            error.log("Missing closing '}' %s in \\%s{...}." % (Name, TriggerChar), stream)
 
     if MinN != MaxN:
         if len(result) < MinN:
-            error_msg("At minimum %i pattern%s required between '{' and '}'" \
+            error.log("At minimum %i pattern%s required between '{' and '}'" \
                       % (MinN, "" if MinN == 1 else "s"), stream)
         if len(result) > MaxN:
-            error_msg("At maximum %i pattern%s required between '{' and '}'" \
+            error.log("At maximum %i pattern%s required between '{' and '}'" \
                       % (MaxN, "" if MaxN == 1 else "s"), stream)
     else:
         if len(result) != MinN:
-            error_msg("Exactly %i pattern%s required between '{' and '}'" \
+            error.log("Exactly %i pattern%s required between '{' and '}'" \
                       % (MinN, "" if MinN == 1 else "s"), stream)
 
     return result
@@ -705,10 +704,10 @@ def snap_character_set_expression(stream, PatternDict):
     trigger_set = snap_set_expression(stream, PatternDict)
 
     if trigger_set is None: 
-        error_msg("Regular Expression: snap_character_set_expression called for something\n" + \
+        error.log("Regular Expression: snap_character_set_expression called for something\n" + \
                   "that does not start with '[:', '[' or '\\P'", stream)
     elif trigger_set.is_empty():
-        error_msg("Regular Expression: Character set expression results in empty set.", stream, DontExitF=True)
+        error.log("Regular Expression: Character set expression results in empty set.", stream, DontExitF=True)
 
     # Create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.
@@ -765,11 +764,11 @@ def snap_property_set(stream):
     elif x == "\\E": 
         skip_whitespace(stream)
         if check(stream, "{") == False:
-            error_msg("Missing '{' after '\\E'.", stream)
+            error.log("Missing '{' after '\\E'.", stream)
         encoding_name = __snap_until(stream, "}").strip()
         result = codec_db.get_supported_unicode_character_set(encoding_name)
         if result is None:
-            error_msg("Error occured at this place.", stream)
+            error.log("Error occured at this place.", stream)
         return result
     else:
         stream.seek(position)
@@ -822,8 +821,8 @@ def snap_set_term(stream, PatternDict):
         result   = traditional_character_set.do_string(reg_expr)
 
     elif word != "":
-        verify_word_in_list(word, character_set_list + operation_list, 
-                            "Unknown keyword '%s'." % word, stream)
+        error.verify_word_in_list(word, character_set_list + operation_list, 
+                                  "Unknown keyword '%s'." % word, stream)
     else:
         stream.seek(position)
         result = snap_set_expression(stream, PatternDict)
