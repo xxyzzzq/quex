@@ -546,77 +546,6 @@ def write_safely_and_close(FileName, txt):
     fh.write(txt)
     fh.close()
 
-def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
-    # fh        = filehandle [1] or filename [2]
-    # LineN     = line_number of error
-    # DontExitF = True then no exit from program
-    #           = False then total exit from program
-    # WarningF  = Asked only if DontExitF is set. 
-    #
-    # count line numbers (this is a kind of 'dirty' solution for not
-    # counting line numbers on the fly. it does not harm at all and
-    # is much more direct to be programmed.)
-    global __reference_to_setup
-
-    PlainMessageF = (fh is None and LineN is None)
-    #if not PlainMessageF:
-    #    if LineN is None:
-    #        LineN = 0
-
-    if     __reference_to_setup is not None \
-       and SuppressCode in __reference_to_setup.suppressed_notification_list:
-        return
-
-    if NoteF: DontExitF = True
-
-    if fh == -1:
-        if Prefix == "": prefix = "command line"
-        else:            prefix = Prefix
-
-    elif fh == "assert":
-        if type(LineN) != str: 
-            error_msg("3rd argument needs to be a string,\n" + \
-                      "if message type == 'assert'", "assert", 
-                      "file_in.error_msg()")
-        file_name = LineN    
-        prefix = "internal assert:" + file_name + ":"   
-    else:
-        if fh.__class__.__name__ == "SourceRef":
-            line_n   = fh.line_n
-            Filename = fh.file_name
-        elif type(fh) == str:
-            line_n   = LineN
-            Filename = fh 
-        else:
-            if fh is not None:
-                line_n   = get_current_line_info_number(fh)
-                if hasattr(fh, "name"): Filename = fh.name
-                else:                   Filename = "command line"
-            else:
-                line_n   = -1
-                Filename = ""
-
-        if PlainMessageF:
-            prefix = "message"
-        elif NoteF:
-            prefix = "%s:%i:note" % (Filename, line_n)   
-        elif DontExitF and WarningF: 
-            prefix = "%s:%i:warning" % (Filename, line_n)   
-        else:
-            prefix = "%s:%i:error" % (Filename, line_n)   
-        
-    if len(ErrMsg) != 0:
-        for line in split(ErrMsg, "\n"):
-            print prefix + ": %s" % line
-
-    if SuppressCode is not None:
-        print prefix + ": ('--suppress %s' to avoid this message)" % SuppressCode
-
-    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
-
-def error_eof(title, fh):
-    error_msg("End of file reached while parsing '%s' section." % title, fh)
-
 def make_safe_identifier(String, NoCodeF=True):
     txt = ""
     for letter in String:
@@ -706,6 +635,77 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True, 
                       SuppressCode=SuppressCode)
 
     return False
+
+def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True, NoteF=False, SuppressCode=None):
+    # fh        = filehandle [1] or filename [2]
+    # LineN     = line_number of error
+    # DontExitF = True then no exit from program
+    #           = False then total exit from program
+    # WarningF  = Asked only if DontExitF is set. 
+    #
+    # count line numbers (this is a kind of 'dirty' solution for not
+    # counting line numbers on the fly. it does not harm at all and
+    # is much more direct to be programmed.)
+    global __reference_to_setup
+
+    PlainMessageF = (fh is None and LineN is None)
+    #if not PlainMessageF:
+    #    if LineN is None:
+    #        LineN = 0
+
+    if     __reference_to_setup is not None \
+       and SuppressCode in __reference_to_setup.suppressed_notification_list:
+        return
+
+    if NoteF: DontExitF = True
+
+    if fh == -1:
+        if Prefix == "": prefix = "command line"
+        else:            prefix = Prefix
+
+    elif fh == "assert":
+        if type(LineN) != str: 
+            error_msg("3rd argument needs to be a string,\n" + \
+                      "if message type == 'assert'", "assert", 
+                      "file_in.error_msg()")
+        file_name = LineN    
+        prefix = "internal assert:" + file_name + ":"   
+    else:
+        if fh.__class__.__name__ == "SourceRef":
+            line_n   = fh.line_n
+            Filename = fh.file_name
+        elif type(fh) == str:
+            line_n   = LineN
+            Filename = fh 
+        else:
+            if fh is not None:
+                line_n   = get_current_line_info_number(fh)
+                if hasattr(fh, "name"): Filename = fh.name
+                else:                   Filename = "command line"
+            else:
+                line_n   = -1
+                Filename = ""
+
+        if PlainMessageF:
+            prefix = "message"
+        elif NoteF:
+            prefix = "%s:%i:note" % (Filename, line_n)   
+        elif DontExitF and WarningF: 
+            prefix = "%s:%i:warning" % (Filename, line_n)   
+        else:
+            prefix = "%s:%i:error" % (Filename, line_n)   
+        
+    if len(ErrMsg) != 0:
+        for line in split(ErrMsg, "\n"):
+            print prefix + ": %s" % line
+
+    if SuppressCode is not None:
+        print prefix + ": ('--suppress %s' to avoid this message)" % SuppressCode
+
+    if not DontExitF: sys.exit(-1)  # Here, sys.exit(-1) is accepted
+
+def error_eof(title, fh):
+    error_msg("End of file reached while parsing '%s' section." % title, fh)
 
 def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     """FH and LineN follow format of 'error_msg(...)'"""
