@@ -14,13 +14,10 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
 ################################################################################
-from   quex.engine.misc.tools       import typed
 import quex.engine.misc.error       as     error
-import quex.engine.misc.similarity  as     similarity
 
 from   StringIO import StringIO
 import os
-import sys
 
 __reference_to_setup = None
 def specify_setup_object(TheSetup):

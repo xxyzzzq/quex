@@ -1,6 +1,5 @@
 import quex.engine.misc.error                      as     error
 from   quex.input.setup                            import NotificationDB
-from   quex.input.code.base                        import SourceRef
 import quex.blackboard                             as     blackboard
 from   quex.blackboard                             import setup as Setup
 from   quex.blackboard import E_IncidenceIDs

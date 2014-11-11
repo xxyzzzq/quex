@@ -14,7 +14,6 @@ from   quex.engine.misc.tools                               import all_isinstanc
 from   quex.engine.analyzer.door_id_address_label      import dial_db
 
 from   quex.blackboard import setup as Setup
-from   itertools       import ifilter
 
 class EngineStateMachineSet:
     def __init__(self, PatternList): 
