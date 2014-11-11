@@ -33,7 +33,7 @@ def test(Text):
     try:    
         descr = counter.parse_indentation(sh)
     except EndOfStreamException:
-        error.log("End of file reached while parsing 'indentation' section.", sh, DontExitF=True, WarningF=False)
+        error.log("End of file reached while parsing 'indentation' section.", sh, DontExitF=True)
 
     except:
         print "Exception!"

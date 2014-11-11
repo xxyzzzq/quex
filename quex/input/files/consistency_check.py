@@ -17,7 +17,8 @@ def do(ModeDB):
     """
     if Setup.token_class_only_f:
         if len(ModeDB) != 0:
-            error.log("Modes found in input files. However, only a token class is generated.", DontExitF=True)
+            error.log("Modes found in input files. However, only a token class is generated.", 
+                      DontExitF=True)
         return
 
     if len(ModeDB) == 0:
@@ -41,11 +42,11 @@ def do(ModeDB):
         for mode in ModeDB.values():
             # Later ... 
             if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
-                error.log("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
-                          "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
-                          "The feature is not yet supported, but the infrastructure is currently setup for it.",
-                          mode.sr.file_name, mode.sr.line_n, DontExitF=True, WarningF=True, 
-                          SuppressCode=NotificationDB.warning_codec_error_with_non_unicode)
+                error.warning("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
+                              "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
+                              "The feature is not yet supported, but the infrastructure is currently setup for it.",
+                              mode.sr, 
+                              SuppressCode=NotificationDB.warning_codec_error_with_non_unicode)
 
     # (*) Start mode specified?
     __start_mode(implemented_mode_name_list, mode_name_list)
@@ -128,7 +129,7 @@ def __entry_exit_transitions(mode, mode_name_list):
             if base_mode.name in that_mode.entry_mode_name_list: break
         else:
             error.log("Mode '%s' has an exit to mode '%s' but" % (mode.name, mode_name),
-                      base_mode.sr, DontExitF=True, WarningF=False)
+                      base_mode.sr, DontExitF=True)
             error.log("mode '%s' has no entry for mode '%s'\n" % (mode_name, mode.name) + \
                       "or any of its base modes.",
                       that_mode.sr)
@@ -149,7 +150,7 @@ def __entry_exit_transitions(mode, mode_name_list):
             if base_mode.name in that_mode.exit_mode_name_list: break
         else:
             error.log("Mode '%s' has an entry for mode '%s' but" % (mode.name, mode_name),
-                      base_mode.sr, DontExitF=True, WarningF=False)
+                      base_mode.sr, DontExitF=True)
             error.log("mode '%s' has no exit to mode '%s'\n" % (mode_name, mode.name) + \
                       "or any of its base modes.",
                       that_mode.sr)

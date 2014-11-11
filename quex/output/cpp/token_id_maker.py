@@ -218,13 +218,12 @@ def __warn_on_double_definition():
         item_list = clash_db.items()
         item_list.sort()
         sr = find_source_reference(item_list[0][1])
-        error.log("Following token ids have the same numeric value assigned:", 
-                  sr, DontExitF=True)
+        error.warning("Following token ids have the same numeric value assigned:", sr)
         for x, token_id_list in item_list:
             sr = find_source_reference(token_id_list)
             token_ids_sorted = sorted(list(set(token_id_list)), key=attrgetter("name")) # Ensure uniqueness
-            error.log("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
-                      sr, DontExitF=True)
+            error.warning("  %s: %s" % (x, "".join(["%s, " % t.name for t in token_ids_sorted])), 
+                          sr)
                       
 def __warn_implicit_token_definitions():
     """Output a message on token_ids which have been generated automatically.
@@ -238,17 +237,16 @@ def __warn_implicit_token_definitions():
     if len(Setup.token_id_foreign_definition_file) == 0:
         msg += " Proposal:\n"
         msg += "   token {"
-        error.log(msg, sr, DontExitF=True, WarningF=True)
+        error.warning(msg, sr)
         for token_name, sr in blackboard.token_id_implicit_list:
-            error.log("     %s;" % token_name, sr, DontExitF=True, WarningF=True)
-        error.log("   }", sr, DontExitF=True, WarningF=True)
+            error.warning("     %s;" % token_name, sr)
+        error.warning("   }", sr)
     else:
-        error.log(msg, sr, DontExitF=True, WarningF=True)
+        error.warning(msg, sr)
         for token_name, sr in blackboard.token_id_implicit_list:
-            error.log("     %s;" % (Setup.token_id_prefix + token_name), 
-                      sr, DontExitF=True, WarningF=True)
-        error.log("Above token ids must be defined in '%s'" % Setup.token_id_foreign_definition_file,
-                  sr, DontExitF=True, WarningF=True)
+            error.warning("     %s;" % (Setup.token_id_prefix + token_name), sr)
+        error.warning("Above token ids must be defined in '%s'" \
+                      % Setup.token_id_foreign_definition_file, sr)
 
 def __error_on_no_specific_token_ids():
     all_token_id_set = set(token_id_db.iterkeys())

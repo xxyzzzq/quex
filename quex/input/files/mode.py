@@ -289,9 +289,8 @@ class Mode:
             return abstract_f
 
         elif abstract_f == False:
-            error.log("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
-                      "<inheritable: only> has been set automatically.", self.sr,  
-                      DontExitF=True)
+            error.warning("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
+                          "<inheritable: only> has been set automatically.", self.sr)
             abstract_f = True # Change to 'inheritable: only', i.e. abstract_f == True.
 
         return abstract_f
@@ -566,8 +565,7 @@ def __parse_base_mode_list(fh, new_mode):
 
 
     if trailing_comma_f:
-        error.log("Trailing ',' after base mode '%s'." % new_mode.derived_from_list[-1], fh, 
-                  DontExitF=True, WarningF=True)
+        error.warning("Trailing ',' after base mode '%s'." % new_mode.derived_from_list[-1], fh) 
         
     elif len(new_mode.derived_from_list) != 0:
         # This check is a 'service' -- for those who follow the old convention
@@ -700,7 +698,7 @@ def __general_validate(fh, Mode, Name, pos):
 
     def error_dedent_and_ndedent(code, A, B):
         error.log("Indentation event handler '%s' cannot be defined, because\n" % A,
-                  fh, DontExitF=True, WarningF=False)
+                  fh, DontExitF=True)
         error.log("the alternative '%s' has already been defined." % B,
                   code.sr)
 
@@ -729,9 +727,9 @@ def __validate_required_token_policy_queue(Name, fh, pos):
 
     pos_before = fh.tell()
     fh.seek(pos)
-    error.log("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
-              "Use '--token-policy queue', so then tokens can be sent safer\n" + \
-              "from inside this event handler.", fh,
-              DontExitF=True, SuppressCode=NotificationDB.warning_on_no_token_queue) 
+    error.warning("Using '%s' event handler, while the token queue is disabled.\n" % Name + \
+                  "Use '--token-policy queue', so then tokens can be sent safer\n" + \
+                  "from inside this event handler.", fh,
+                  SuppressCode=NotificationDB.warning_on_no_token_queue) 
     fh.seek(pos_before)
 

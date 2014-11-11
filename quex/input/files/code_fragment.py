@@ -171,7 +171,7 @@ def __parse_function_argument_list(fh, ReferenceName):
                 text = ""
             elif tmp == "":
                 fh.seek(position)
-                error_eof("argument list for %s" % ReferenceName, fh)
+                error.error_eof("argument list for %s" % ReferenceName, fh)
             else:
                 text += tmp
 
@@ -183,7 +183,7 @@ def __parse_function_argument_list(fh, ReferenceName):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_eof("token", fh)
+        error.error_eof("token", fh)
 
 def __parse_token_id_specification_by_character_code(fh):
     character_code = read_character_code(fh)
@@ -214,8 +214,8 @@ def token_id_db_verify_or_enter_token_id(fh, TokenName):
             msg += "'%s' has been defined in a token { ... } section!\n" % \
                    (Setup.token_id_prefix + TokenName)
             msg += "Token ids in the token { ... } section are automatically prefixed."
-            error.log(msg, SourceRef.from_FileHandle(fh), DontExitF=True, 
-                      SuppressCode=NotificationDB.warning_usage_of_undefined_token_id_name)
+            error.warning(msg, fh, 
+                          SuppressCode=NotificationDB.warning_usage_of_undefined_token_id_name)
         else:
             # Warning is posted later when all implicit tokens have been
             # collected. See "token_id_maker.__propose_implicit_token_definitions()"

@@ -155,9 +155,9 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     #               Related data (skip character set, ... ) is NOT transformed!
     for pattern in pattern_list:
         if not pattern.transform(Setup.buffer_codec):
-            error.log("Pattern contains elements not found in engine codec '%s'.\n" % Setup.buffer_codec.name \
-                      + "(Buffer element size is %s [byte])" % Setup.buffer_element_size,
-                      pattern.sr, DontExitF=True)
+            error.warning("Pattern contains elements not found in engine codec '%s'.\n" % Setup.buffer_codec.name \
+                          + "(Buffer element size is %s [byte])" % Setup.buffer_element_size,
+                          pattern.sr)
 
     # (*) Cut the signalling characters from any pattern or state machine
     for pattern in pattern_list:
@@ -292,8 +292,8 @@ def _pattern_reprioritization(ppt_list, BaseModeSequence):
             priority.pattern_index        = Info.new_pattern_index
 
         if not done_f and Info.sr.mode_name == ModeName:
-            error.log("PRIORITY mark does not have any effect.", 
-                      Info.sr.file_name, Info.sr.line_n, DontExitF=True)
+            error.warning("PRIORITY mark does not have any effect.", 
+                          Info.sr)
 
     history = []
     mode_name = BaseModeSequence[-1].name
@@ -323,8 +323,7 @@ def _pattern_deletion(ppt_list, BaseModeSequence):
                 i += 1
 
         if not done_f and Info.sr.mode_name == ModeName:
-            error.log("DELETION mark does not have any effect.", 
-                      Info.sr.file_name, Info.sr.line_n, DontExitF=True)
+            error.warning("DELETION mark does not have any effect.", Info.sr)
 
     history = []
     mode_name = BaseModeSequence[-1].name

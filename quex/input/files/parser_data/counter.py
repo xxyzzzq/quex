@@ -69,7 +69,7 @@ class CountCmdMap(object):
 
         if self.__else is not None:
             error.log("'\\else has been defined more than once.", sr, 
-                      DontExitF=True, WarningF=False)
+                      DontExitF=True)
             error.log("Previously, defined here.", self.__else.sr)
         self.__else = CountCmdMapEntry(cc_type_db[Identifier], Value, sr)
 
@@ -156,9 +156,8 @@ class CountCmdMap(object):
         """
         if self.__else is None: 
             else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_DEFAULT)
-            error.log("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
-                      DontExitF=True, WarningF=True, 
-                      SuppressCode=NotificationDB.warning_counter_setup_without_else)
+            error.warning("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
+                          SuppressCode=NotificationDB.warning_counter_setup_without_else)
         else:                   
             else_cmd = self.__else
         
@@ -276,13 +275,13 @@ class CountCmdMap(object):
         if len(filter(lambda x: x % min_info.value == 0, grid_value_list)) != len(grid_value_list):
             return
 
-        error.log("Setup does not contain spaces, only grids (tabulators). All grid\n" \
-                  "widths are multiples of %i. The grid setup %s\n" \
-                  % (min_info.value, repr(sorted(grid_value_list))[1:-1]) + \
-                  "is equivalent to a setup with space counts %s.\n" \
-                  % repr(map(lambda x: x / min_info.value, sorted(grid_value_list)))[1:-1] + \
-                  "Space counts are faster to compute.", 
-                  min_info.sr, DontExitF=True)
+        error.warning("Setup does not contain spaces, only grids (tabulators). All grid\n" \
+                      "widths are multiples of %i. The grid setup %s\n" \
+                      % (min_info.value, repr(sorted(grid_value_list))[1:-1]) + \
+                      "is equivalent to a setup with space counts %s.\n" \
+                      % repr(map(lambda x: x / min_info.value, sorted(grid_value_list)))[1:-1] + \
+                      "Space counts are faster to compute.", 
+                      min_info.sr)
 
     def check_homogenous_space_counts(self):
         common = None
@@ -304,11 +303,11 @@ class CountCmdMap(object):
         if common is None:
             return
             
-        error.log("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
+        error.warning("Setup does not contain a grid but only homogeneous space counts of %i.\n" \
                   % common.value + \
                   "This setup is equivalent to a setup with space counts of 1. Space counts\n" + \
                   "of 1 are the fastest to compute.", 
-                  common.sr, DontExitF=True)
+                  common.sr)
 
     def check_defined(self, SourceReference, CCT):
         """Checks whether the character counter type has been defined in the 
@@ -320,17 +319,16 @@ class CountCmdMap(object):
             if info.cc_type == CCT: 
                 return
 
-        error.log("Setup does not define '%s'." % cc_type_name_db[CCT], SourceReference, 
-                  DontExitF=True, WarningF=True, 
-                  SuppressCode=NotificationDB.warning_counter_setup_without_newline)
+        error.warning("Setup does not define '%s'." % cc_type_name_db[CCT], SourceReference, 
+                      SuppressCode=NotificationDB.warning_counter_setup_without_newline)
 
     def check_grid_specification(self, Value, sr):
         if   Value == 0: 
             error.log("A grid count of 0 is nonsense. May be define a space count of 0.", sr)
         elif Value == 1:
-            error.log("Indentation grid counts of '1' are equivalent of to a space\n" + \
-                      "count of '1'. The latter is faster to compute.",
-                          sr, DontExitF=True)
+            error.warning("Indentation grid counts of '1' are equivalent of to a space\n" + \
+                          "count of '1'. The latter is faster to compute.",
+                              sr)
 
     def __str__(self):
         def _db_to_text(title, CountCmdInfoList):
@@ -511,11 +509,11 @@ class ParserDataIndentation(Base):
 
         before = self.count_command_map.find_occupier(newline_set, set())
         if before is not None:
-            error.log("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
-                      "The '\\n' option is not possible, since it has been occupied by '%s'.\n" \
-                      "No newline can be defined by default."
-                      % cc_type_name_db[before.cc_type], before.sr, DontExitF=True, 
-                      SuppressCode=NotificationDB.warning_default_newline_0A_impossible)
+            error.warning("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                          "The '\\n' option is not possible, since it has been occupied by '%s'.\n" \
+                          "No newline can be defined by default."
+                          % cc_type_name_db[before.cc_type], before.sr, 
+                          SuppressCode=NotificationDB.warning_default_newline_0A_impossible)
             # In this case, no newline can be defined!
             return
 
@@ -524,10 +522,10 @@ class ParserDataIndentation(Base):
         if Setup.dos_carriage_return_newline_f:
             before = self.count_command_map.find_occupier(retour_set, set())
             if before is not None:
-                error.log("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
+                error.warning("Trying to implement default newline: '\\n' or '\\r\\n'.\n" 
                           "The '\\r\\n' option is not possible, since '\\r' has been occupied by '%s'." \
                           % cc_type_name_db[before.cc_type],
-                          before.sr, DontExitF=True, 
+                          before.sr, 
                           SuppressCode=NotificationDB.warning_default_newline_0D_impossible)
             else:
                 sm.add_transition_sequence(sm.init_state_index, [retour_set, newline_set])
@@ -617,9 +615,9 @@ def _error_set_intersection(CcType, Before, sr):
     }[CcType]
 
     error.log("The %scharacter set defined in '%s' intersects" % (prefix, cc_type_name_db[CcType]),
-              sr, DontExitF=True, WarningF=False)
+              sr, DontExitF=True)
     error.log("with '%s' at this place." % cc_type_name_db[Before.cc_type], 
-              Before.sr, DontExitF=note_f, WarningF=False)
+              Before.sr, DontExitF=note_f)
 
     if note_f:
         error.log("Note, for example, 'newline' cannot end with a character which is subject\n"
@@ -629,8 +627,8 @@ def _error_if_defined_before(Before, sr):
     if not Before.set_f(): return
 
     error.log("'%s' has been defined before;" % Before.name, sr, 
-              DontExitF=True, WarningF=False)
-    error.log("at this place.", Before.sr.file_name, Before.sr.line_n)
+              DontExitF=True)
+    error.log("at this place.", Before.sr)
 
 def extract_trigger_set(sr, Keyword, Pattern):
     if Pattern is None:

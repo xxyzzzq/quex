@@ -237,7 +237,7 @@ class OptionDB(dict):
             txt += "mode '%s'." % OptionNow.mode_name
         else:
             txt += "inheritance tree of mode '%s'." % OptionNow.mode_name
-        error.log(txt, OptionNow.sr.file_name, OptionNow.sr.line_n, DontExitF=True, WarningF=False) 
+        error.log(txt, OptionNow.sr, DontExitF=True) 
 
         txt = "Previous definition was here"
         if OptionBefore.mode_name == OptionNow.mode_name:
