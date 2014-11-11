@@ -1,12 +1,12 @@
-<test-database execution-time-sec="0.43" date="Mon Nov 10 00:37:01 2014">
+<test-database execution-time-sec="0.29" date="Tue Nov 11 21:19:55 2014">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.38"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.24"> 
             <application file-name="queue.exe" info-request-time="1415566908L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.698199"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.38" crc="-264108046"/>
+               <choice name="" result="OK" time_sec="0.24" crc="-264108046"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
