@@ -10,7 +10,6 @@
 from   quex.engine.state_machine.state.single_entry import Accept
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.state_machine.check.special      as special
-from   quex.blackboard import E_PreContextIDs
 
 def do(SM):
     """Creates a state machine that matches the reverse of what 'SM' matches.

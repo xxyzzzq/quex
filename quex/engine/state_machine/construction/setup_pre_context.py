@@ -5,7 +5,7 @@ import quex.engine.state_machine.algorithm.acceptance_pruning    as     acceptan
 import quex.engine.state_machine.algebra.reverse                 as     reverse
 import quex.engine.state_machine.construction.sequentialize      as     sequentialize
 from   quex.engine.state_machine.construction.setup_post_context import StateMachine_Newline
-from   quex.blackboard                                           import E_PreContextIDs, setup as Setup
+from   quex.blackboard                                           import E_PreContextIDs
 
 def do(the_state_machine, pre_context_sm, BeginOfLinePreContextF):
     """Sets up a pre-condition to the given state machine. This process

@@ -1,4 +1,3 @@
-from collections import namedtuple
 
 class AcceptanceScheme_Element(object): 
     def __init__(self):
