@@ -198,7 +198,7 @@ def do(setup, command_line, argv):
         if error_n in setup.suppressed_notification_list: 
            error.warning("The warning upon missing 'take_text' in token type definition is de-\n"
                      + "activated by '--suppress %i'. This is dangerous, if there is a string\n" % error_n
-                     + "accumulator. May be, use '--no-string-accumulator'.", 
+                     + "accumulator. May be, use '--no-string-accumulator'.", -1,
                     SuppressCode=NotificationDB.warning_on_no_warning_on_missing_take_text)
 
 def __check_identifier(setup, Candidate, Name):
