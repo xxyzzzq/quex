@@ -131,26 +131,25 @@ def parse(ForeignTokenIdFile, CommentDelimiterList):
             
     ErrorN = NotificationDB.token_id_ignored_files_report
     if ErrorN not in Setup.suppressed_notification_list:
-        if len(not_found_list) != 0:
+        if not_found_list:
             not_found_list.sort()
-            error.log("Files not found:", 
-                      not_found_list[0][0], LineN=not_found_list[0][1], 
-                      DontExitF=True)
+            sr = SourceRef(not_found_list[0][0], LineN=not_found_list[0][1]) 
+            error.warning("Files not found:", sr)
             for file_name, line_n, included_file in not_found_list:
-                error.log("%s" % included_file, SourceRef(file_name, line_n), DontExitF=True)
+                error.warning("%s" % included_file, SourceRef(file_name, line_n))
 
-        if len(recursive_list) != 0:
+        if recursive_list:
             recursive_list.sort()
             sr = SourceRef(recursive_list[0][0], LineN=recursive_list[0][1]) 
-            error.log("Files recursively included (ignored second inclusion):", 
-                      sr, DontExitF=True)
+            error.warning("Files recursively included (ignored second inclusion):", 
+                          sr)
             for file_name, line_n, included_file in recursive_list:
-                error.log("%s" % included_file, SourceRef(file_name, line_n), DontExitF=True)
+                error.warning("%s" % included_file, SourceRef(file_name, line_n))
 
-        if len(not_found_list) != 0 or len(recursive_list) != 0:
-            # file_name and line_n will be taken from last iteration of last for loop.
-            error.log("\nNote, that quex does not handle C-Preprocessor instructions.",
-                      SourceRef(file_name, line_n), DontExitF=True, SuppressCode=ErrorN)
+        if not_found_list or recursive_list:
+            # source reference is taken from last setting
+            error.log("\nQuex does not handle C-Preprocessor instructions.",
+                      sr, NoteF=True, DontExitF=True, SuppressCode=ErrorN)
 
 def cut_token_id_prefix(TokenName, FH_Error=False):
     if TokenName.find(Setup.token_id_prefix) == 0:

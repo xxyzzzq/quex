@@ -6,7 +6,8 @@ def open_file_or_die(FileName, Mode="rb", Env=None, CodecCheckF=True):
     fh = __open_safely(FileName, Mode)
     if fh is None:
         if Env is not None:
-            error.log("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
+            error.log("Is environment variable '%s' set propperly?" % Env, 
+                      DontExitF=True, NoteF=True)
         error.log("Cannot open file '%s'" % FileName)
 
     if CodecCheckF and Mode.find("w") == -1: 

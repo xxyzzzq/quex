@@ -39,7 +39,7 @@ def test(Text):
         pass
 
     except EndOfStreamException:
-        error.log("End of file reached while parsing 'counter' section.", sh, DontExitF=True, WarningF=False)
+        error.log("End of file reached while parsing 'counter' section.", sh, DontExitF=True)
 
     except:
         print "Exception!"

@@ -154,7 +154,7 @@ def parse_section(fh):
                           fh)
             else:
                 error.log("Section 'token_type' has been defined twice.", 
-                          SourceRef.from_FileHandle(fh), DontExitF=True)
+                          fh, DontExitF=True)
                 error.log("Previously defined here.",
                           blackboard.token_type_definition.sr)
             return
@@ -264,12 +264,12 @@ def parse_token_id_definitions(fh, NamesOnlyF=False):
             suspicious_prefix = prefix_plain
 
         if suspicious_prefix is not None:
-            error.log("Token identifier '%s' starts with token prefix '%s'.\n" \
+            error.warning("Token identifier '%s' starts with token prefix '%s'.\n" \
                       % (candidate, suspicious_prefix) \
                       + "Token prefix is mounted automatically. This token id appears in the source\n" \
                       + "code as '%s%s'." \
                       % (prefix, candidate), \
-                      SourceRef.from_FileHandle(fh), DontExitF=True,
+                      fh, 
                       SuppressCode=NotificationDB.warning_token_id_prefix_appears_in_token_id_name)
 
         skip_whitespace(fh)

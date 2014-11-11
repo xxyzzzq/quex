@@ -90,8 +90,8 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     # A post context with an initial state that is acceptance is not really a
     # 'context' since it accepts anything. The state machine remains un-post context.
     if post_context_sm.get_init_state().is_acceptance():
-        error.log("Post context accepts anything--replaced by no post context.", SourceReference, 
-                  DontExitF=True)
+        error.warning("Post context accepts anything--replaced by no post context.",
+                      SourceReference)
         return the_state_machine, None
     
     # (*) Two ways of handling post-contexts:
@@ -105,9 +105,9 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
         if ambiguous_post_context.detect_backward(the_state_machine, post_context_sm):
             # -- for post contexts that are forward and backward ambiguous
             #    a philosophical cut is necessary.
-            error.log("Post context requires philosophical cut--handle with care!\n"
-                      "Proposal: Isolate pattern and ensure results are as expected!", SourceReference, 
-                      DontExitF=True)
+            error.warning("Post context requires philosophical cut--handle with care!\n"
+                      "Proposal: Isolate pattern and ensure results are as expected!", 
+                      SourceReference) 
             post_context_sm = ambiguous_post_context.philosophical_cut(the_state_machine, post_context_sm)
         
         # NOTE: May be, the_state_machine does contain now an epsilon transition. See

@@ -236,8 +236,8 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
         # Is 'take_text' section defined
         if self.take_text is not None: return
 
-        error.log(_warning_msg, self.sr, DontExitF=True, WarningF=True,
-                  SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
+        error.warning(_warning_msg, self.sr,
+                      SuppressCode=NotificationDB.warning_on_no_token_class_take_text)
 
 class TokenTypeDescriptorManual:
     """Class to mimik as 'real' TokenTypeDescriptor as defined in 
