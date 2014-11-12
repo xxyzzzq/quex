@@ -1,7 +1,7 @@
-<test-database execution-time-sec="2.36" date="Tue Nov 11 22:17:50 2014">
+<test-database execution-time-sec="2.37" date="Wed Nov 12 21:58:17 2014">
     <last-used-diff-display-program name=""/>
     <group name="Paths">
-        <test title="select" time-sum-sec="0.98"> 
+        <test title="select" time-sum-sec="0.96"> 
             <application file-name="select_longest_paths.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="14" same_result="False">
@@ -17,23 +17,23 @@
                <choice name="9" result="OK" time_sec="0.07" crc="1993708865"/>
                <choice name="10" result="OK" time_sec="0.07" crc="1505417187"/>
                <choice name="11a" result="OK" time_sec="0.07" crc="-379941737"/>
-               <choice name="11b" result="OK" time_sec="0.08" crc="889524467"/>
-               <choice name="12" result="OK" time_sec="0.08" crc="-1818699120"/>
+               <choice name="11b" result="OK" time_sec="0.07" crc="889524467"/>
+               <choice name="12" result="OK" time_sec="0.07" crc="-1818699120"/>
             </choice-list>
         </test>
-        <test title="collect" time-sum-sec="0.48"> 
+        <test title="collect" time-sum-sec="0.50"> 
             <application file-name="find.py" info-request-time="1415739647L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="-1505164111"/>
                <choice name="2" result="OK" time_sec="0.08" crc="1211733340"/>
                <choice name="3" result="OK" time_sec="0.08" crc="605339522"/>
-               <choice name="4" result="OK" time_sec="0.09" crc="-2006970915"/>
+               <choice name="4" result="OK" time_sec="0.08" crc="-2006970915"/>
                <choice name="5" result="OK" time_sec="0.09" crc="-1643133387"/>
                <choice name="6" result="OK" time_sec="0.08" crc="300088630"/>
             </choice-list>
         </test>
-        <test title="Plugging Wild Cards" time-sum-sec="0.31"> 
+        <test title="Plugging Wild Cards" time-sum-sec="0.32"> 
             <application file-name="find-3.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -47,7 +47,7 @@
             <application file-name="find-2.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
-               <choice name="1" result="OK" time_sec="0.07" crc="507022156"/>
+               <choice name="1" result="OK" time_sec="0.08" crc="507022156"/>
                <choice name="2" result="OK" time_sec="0.08" crc="-150044201"/>
                <choice name="3" result="OK" time_sec="0.08" crc="448772152"/>
                <choice name="4a" result="OK" time_sec="0.10" crc="246217963"/>

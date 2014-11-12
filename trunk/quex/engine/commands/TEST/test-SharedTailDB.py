@@ -41,13 +41,13 @@ if "--hwut-info" in sys.argv:
 # Generate a set of totally independent commands
 # Here, they are assigned manually, to avoid that changes to E_R might
 # might produce commands that block the 'move to tail'.
-A = Assign(E_R.AcceptanceRegister, E_R.Buffer)
-B = Assign(E_R.Indentation, E_R.Column)
-C = Assign(E_R.Input, E_R.InputP)
-D = Assign(E_R.LexemeStartP, E_R.LexemeEnd)
-E = Assign(E_R.CharacterBeginP, E_R.Line)
-F = Assign(E_R.PathIterator, E_R.PreContextFlags)
-G = Assign(E_R.ReferenceP, E_R.PositionRegister)
+A = Command.Assign(E_R.AcceptanceRegister, E_R.Buffer)
+B = Command.Assign(E_R.Indentation, E_R.Column)
+C = Command.Assign(E_R.Input, E_R.InputP)
+D = Command.Assign(E_R.LexemeStartP, E_R.LexemeEnd)
+E = Command.Assign(E_R.CharacterBeginP, E_R.Line)
+F = Command.Assign(E_R.PathIterator, E_R.PreContextFlags)
+G = Command.Assign(E_R.ReferenceP, E_R.PositionRegister)
 
 alias_db = { A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", }
 

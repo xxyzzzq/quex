@@ -48,7 +48,7 @@
 # function. For clarity, dedicated functions may be used, do provide a more
 # beautiful call to the factory, for example:
 #
-#     cmd = StoreInputPosition(PreContextID, PositionRegister, Offset)
+#     cmd = Command.StoreInputPosition(PreContextID, PositionRegister, Offset)
 #
 # is equivalent to
 #
@@ -102,7 +102,6 @@ E_R = Enum("AcceptanceRegister",
            "TemplateStateKey",
            "ThreadOfControl")
 
-
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     """_________________________________________________________________________
     Information about an operation to be executed. It consists mainly of a 
@@ -146,6 +145,114 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         else:
             content = deepcopy(self.content)
         return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash)
+
+    @staticmethod
+    def StoreInputPosition(PreContextID, PositionRegister, Offset):
+        return Command(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
+    
+    @staticmethod
+    def PreContextOK(PreContextID):
+        return Command(E_Cmd.PreContextOK, PreContextID)
+    
+    @staticmethod
+    def TemplateStateKeySet(StateKey):
+        return Command(E_Cmd.TemplateStateKeySet, StateKey)
+    
+    @staticmethod
+    def PathIteratorSet(PathWalkerID, PathID, Offset):
+        return Command(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
+    
+    @staticmethod
+    def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
+        return Command(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
+    
+    @staticmethod
+    def InputPIncrement():
+        return Command(E_Cmd.InputPIncrement)
+    
+    @staticmethod
+    def InputPDecrement():
+        return Command(E_Cmd.InputPDecrement)
+    
+    @staticmethod
+    def InputPDereference():
+        return Command(E_Cmd.InputPDereference)
+    
+    @staticmethod
+    def LexemeResetTerminatingZero():
+        return Command(E_Cmd.LexemeResetTerminatingZero)
+    
+    @staticmethod
+    def ColumnCountReferencePSet(Pointer, Offset=0):
+        return Command(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
+    
+    @staticmethod
+    def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk, SubtractOneF):
+        return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
+    
+    @staticmethod
+    def ColumnCountAdd(Value):
+        return Command(E_Cmd.ColumnCountAdd, Value)
+    
+    @staticmethod
+    def IndentationHandlerCall(DefaultIhF, ModeName):
+        return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
+    
+    @staticmethod
+    def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
+        #if     PreContextId == E_PreContextIDs.NONE \
+        #   and RouterElement.positioning == 0:
+        #    return GotoDoorId(DoorID.incidence(RouterElement.acceptance_id))
+            
+        return Command(E_Cmd.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
+    
+    @staticmethod
+    def ColumnCountGridAdd(GridSize):
+        return Command(E_Cmd.ColumnCountGridAdd, GridSize)
+    
+    @staticmethod
+    def LineCountAdd(Value):
+        return Command(E_Cmd.LineCountAdd, Value)
+    
+    @staticmethod
+    def GotoDoorId(DoorId):
+        return Command(E_Cmd.GotoDoorId, DoorId)
+    
+    @staticmethod
+    def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
+        return Command(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
+    
+    @staticmethod
+    def Assign(TargetRegister, SourceRegister):
+        return Command(E_Cmd.Assign, TargetRegister, SourceRegister)
+    
+    @staticmethod
+    def AssignConstant(Register, Value):
+        return Command(E_Cmd.AssignConstant, Register, Value)
+    
+    @staticmethod
+    def Accepter():
+        return Command(E_Cmd.Accepter)
+    
+    @staticmethod
+    def Router():
+        return Command(E_Cmd.Router)
+    
+    @staticmethod
+    def RouterOnStateKey(CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
+        result = Command(E_Cmd.RouterOnStateKey)
+    
+        result.content.configure(CompressionType, MegaStateIndex, 
+                                 IterableStateKeyStateIndexPairs, DoorID_provider)
+        return result
+    
+    @staticmethod
+    def QuexDebug(TheString):
+        return Command(E_Cmd.QuexDebug, TheString)
+    
+    @staticmethod
+    def QuexAssertNoPassage():
+        return Command(E_Cmd.QuexAssertNoPassage)
 
     def is_conditionless_goto(self):
         if self.id == E_Cmd.GotoDoorId: 
@@ -756,89 +863,6 @@ def get_register_access_db(Cmd):
         for register_id, right in get_register_access_iterable(Cmd)
     )
 
-def StoreInputPosition(PreContextID, PositionRegister, Offset):
-    return Command(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
-
-def PreContextOK(PreContextID):
-    return Command(E_Cmd.PreContextOK, PreContextID)
-
-def TemplateStateKeySet(StateKey):
-    return Command(E_Cmd.TemplateStateKeySet, StateKey)
-
-def PathIteratorSet(PathWalkerID, PathID, Offset):
-    return Command(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
-
-def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
-    return Command(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
-
-def InputPIncrement():
-    return Command(E_Cmd.InputPIncrement)
-
-def InputPDecrement():
-    return Command(E_Cmd.InputPDecrement)
-
-def InputPDereference():
-    return Command(E_Cmd.InputPDereference)
-
-def LexemeResetTerminatingZero():
-    return Command(E_Cmd.LexemeResetTerminatingZero)
-
-def ColumnCountReferencePSet(Pointer, Offset=0):
-    return Command(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
-
-def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk, SubtractOneF):
-    return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
-
-def ColumnCountAdd(Value):
-    return Command(E_Cmd.ColumnCountAdd, Value)
-
-def IndentationHandlerCall(DefaultIhF, ModeName):
-    return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
-
-def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
-    #if     PreContextId == E_PreContextIDs.NONE \
-    #   and RouterElement.positioning == 0:
-    #    return GotoDoorId(DoorID.incidence(RouterElement.acceptance_id))
-        
-    return Command(E_Cmd.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
-
-def ColumnCountGridAdd(GridSize):
-    return Command(E_Cmd.ColumnCountGridAdd, GridSize)
-
-def LineCountAdd(Value):
-    return Command(E_Cmd.LineCountAdd, Value)
-
-def GotoDoorId(DoorId):
-    return Command(E_Cmd.GotoDoorId, DoorId)
-
-def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
-    return Command(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
-
-def Assign(TargetRegister, SourceRegister):
-    return Command(E_Cmd.Assign, TargetRegister, SourceRegister)
-
-def AssignConstant(Register, Value):
-    return Command(E_Cmd.AssignConstant, Register, Value)
-
-def Accepter():
-    return Command(E_Cmd.Accepter)
-
-def Router():
-    return Command(E_Cmd.Router)
-
-def RouterOnStateKey(CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
-    result = Command(E_Cmd.RouterOnStateKey)
-
-    result.content.configure(CompressionType, MegaStateIndex, 
-                             IterableStateKeyStateIndexPairs, DoorID_provider)
-    return result
-
-def QuexDebug(TheString):
-    return Command(E_Cmd.QuexDebug, TheString)
-
-def QuexAssertNoPassage():
-    return Command(E_Cmd.QuexAssertNoPassage)
-
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
     """
@@ -898,7 +922,7 @@ class CommandList(list):
         for cmd in self:
             if cmd.id == E_Cmd.Accepter: return cmd.content
 
-        accepter = Accepter()
+        accepter = Command.Accepter()
         self.append(accepter)
         return accepter.content
 
@@ -916,7 +940,7 @@ class CommandList(list):
             cmd = self[i]
             if cmd.id == E_Cmd.StoreInputPosition:
                 # Commands are immutable, so create a new one.
-                new_command = StoreInputPosition(cmd.content.pre_context_id, 
+                new_command = Command.StoreInputPosition(cmd.content.pre_context_id, 
                                                  PositionRegisterMap[cmd.content.position_register],
                                                  cmd.content.offset)
                 self[i] = new_command

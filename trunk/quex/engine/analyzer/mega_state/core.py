@@ -56,14 +56,13 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.commands.core         import Command, \
-                                                       CommandList, \
-                                                       RouterOnStateKey
+from quex.engine.commands.core                  import Command, \
+                                                       CommandList
 from quex.engine.analyzer.door_id_address_label import dial_db
 from quex.engine.analyzer.state.core            import AnalyzerState
 from quex.engine.analyzer.state.entry           import Entry
 from quex.engine.analyzer.transition_map        import TransitionMap
-from quex.engine.misc.interval_handling              import Interval
+from quex.engine.misc.interval_handling         import Interval
 from quex.blackboard                            import setup as Setup, \
                                                        E_StateIndices, \
                                                        E_Compression
@@ -426,7 +425,7 @@ class MegaState(AnalyzerState):
         if not self.transition_map.has_drop_out():
             return
 
-        cmd = RouterOnStateKey(CompressionType, self.index,
+        cmd = Command.RouterOnStateKey(CompressionType, self.index,
                                self.ski_db.iterable_state_key_state_index_pairs(),
                                lambda state_index: TheAnalyzer.drop_out_DoorID(state_index))
         TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 

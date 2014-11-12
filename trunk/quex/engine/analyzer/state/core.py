@@ -4,8 +4,7 @@ from   quex.engine.analyzer.transition_map         import TransitionMap
 from   quex.engine.analyzer.state.entry            import Entry
 from   quex.engine.analyzer.state.entry_action     import TransitionAction
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.commands.core          import CommandList, PrepareAfterReload, InputPIncrement, InputPDecrement, InputPDereference, \
-                                                          RouterOnStateKey
+from   quex.engine.commands.core                   import CommandList, Command
 from   quex.engine.misc.tools import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
@@ -138,9 +137,9 @@ class AnalyzerState(Processor):
         # (1) Door for RELOAD SUCCESS
         #
         after_cl = []
-        if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(InputPIncrement())
-        else:                                    after_cl.append(InputPDecrement())
-        after_cl.append(InputPDereference())
+        if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(Command.InputPIncrement())
+        else:                                    after_cl.append(Command.InputPDecrement())
+        after_cl.append(Command.InputPDereference())
         if AfterReloadCmdList is not None:
             after_cl.extend(AfterReloadCmdList)
 
@@ -225,7 +224,7 @@ class ReloadState(Processor):
         """
         assert BeforeReload is None or isinstance(BeforeReload, CommandList) 
         # Before reload: prepare after reload, the jump back to the reloading state.
-        before_cl = CommandList(PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
+        before_cl = CommandList(Command.PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
         if BeforeReload is not None:
             # May be, add additional commands
             before_cl = before_cl.concatinate(BeforeReload)
@@ -268,7 +267,7 @@ class ReloadState(Processor):
                 door_id = TheAnalyzer.drop_out_DoorID(state_index)
             return door_id
 
-        cmd = RouterOnStateKey(
+        cmd = Command.RouterOnStateKey(
             StateKeyRegister, MegaStateIndex,
             Iterable_StateKey_Index_Pairs,
             DoorID_provider

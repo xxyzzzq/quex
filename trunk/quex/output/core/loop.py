@@ -1,15 +1,13 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 from   quex.output.core.languages.variable_db     import variable_db
 import quex.output.core.base                      as     generator
-import quex.engine.analyzer.core                       as     analyzer_generator
-from   quex.engine.commands.core              import E_R, \
-                                                              CommandList, \
-                                                              GotoDoorIdIfInputPNotEqualPointer, \
-                                                              ColumnCountReferencePDeltaAdd, \
-                                                              GotoDoorId
-import quex.engine.state_machine.index                 as     index
-from   quex.engine.analyzer.door_id_address_label      import DoorID
-from   quex.engine.misc.tools                               import typed
+import quex.engine.analyzer.core                  as     analyzer_generator
+from   quex.engine.commands.core                  import E_R, \
+                                                         Command, \
+                                                         CommandList
+import quex.engine.state_machine.index            as     index
+from   quex.engine.analyzer.door_id_address_label import DoorID
+from   quex.engine.misc.tools                     import typed
 from   quex.blackboard import E_StateIndices, \
                               E_CharacterCountType, \
                               setup as Setup
@@ -89,7 +87,7 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
 
     def get_LexemeEndCheck_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
-            return [ GotoDoorId(door_id_loop) ]
+            return [ Command.GotoDoorId(door_id_loop) ]
         #
         #       .---------------.        ,----------.   no
         #   --->| Count Command |-------< LexemeEnd? >------> DoorIdOk
@@ -102,12 +100,12 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
         #  
         elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
-                GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
-                ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk, False),
+                Command.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                Command.ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk, False),
             ] + AfterBeyond
         else:
             return [
-                GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                Command.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
             ] + AfterBeyond
 
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,

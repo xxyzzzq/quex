@@ -1,19 +1,13 @@
+from   quex.input.code.core                       import CodeTerminal
 from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          ParserDataIndentation, \
                                                          CountInfo
-from   quex.engine.misc.interval_handling         import NumberSet
-from   quex.engine.misc.tools import typed
-from   quex.input.code.core            import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.terminal.core         import Terminal
 from   quex.engine.commands.core                  import E_R, \
-                                                         AssignConstant, \
-                                                         ColumnCountAdd, \
-                                                         ColumnCountGridAdd, \
-                                                         ColumnCountReferencePDeltaAdd, \
-                                                         ColumnCountReferencePSet, \
-                                                         LineCountAdd, \
-                                                         GotoDoorId
+                                                         Command
+from   quex.engine.misc.interval_handling         import NumberSet
+from   quex.engine.misc.tools                     import typed
 
 from   quex.blackboard   import E_CharacterCountType, \
                                 setup as Setup, \
@@ -160,47 +154,47 @@ class CountCmdFactory:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
-                    GotoDoorId(self.door_id_on_bad_indentation) 
+                    Command.GotoDoorId(self.door_id_on_bad_indentation) 
                 ]
             elif CC_Type == E_CharacterCountType.COLUMN:
                 return [
-                    ColumnCountAdd(Parameter),
+                    Command.ColumnCountAdd(Parameter),
                 ]
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
-                    ColumnCountGridAdd(Parameter),
+                    Command.ColumnCountGridAdd(Parameter),
                 ]
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
-                    LineCountAdd(Parameter),
-                    AssignConstant(E_R.Column, 1),
+                    Command.LineCountAdd(Parameter),
+                    Command.AssignConstant(E_R.Column, 1),
                 ]
         else:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
-                    ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                    Command.ColumnCountReferencePDeltaAdd(E_R.InputP, 
                                                   self.column_count_per_chunk, 
                                                   False),
-                    ColumnCountReferencePSet(E_R.InputP),
-                    GotoDoorId(self.door_id_on_bad_indentation) 
+                    Command.ColumnCountReferencePSet(E_R.InputP),
+                    Command.GotoDoorId(self.door_id_on_bad_indentation) 
                 ]
             elif CC_Type == E_CharacterCountType.COLUMN:
                 return [
                 ]
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
-                    ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                    Command.ColumnCountReferencePDeltaAdd(E_R.InputP, 
                                                   self.column_count_per_chunk,
                                                   True),
-                    ColumnCountGridAdd(Parameter),
-                    ColumnCountReferencePSet(E_R.InputP)
+                    Command.ColumnCountGridAdd(Parameter),
+                    Command.ColumnCountReferencePSet(E_R.InputP)
                 ]
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
-                    LineCountAdd(Parameter),
-                    AssignConstant(E_R.Column, 1),
-                    ColumnCountReferencePSet(E_R.InputP)
+                    Command.LineCountAdd(Parameter),
+                    Command.AssignConstant(E_R.Column, 1),
+                    Command.ColumnCountReferencePSet(E_R.InputP)
                 ]
 
     def _command_on_lexeme_end(self, CC_Type):
@@ -239,10 +233,10 @@ class CountCmdFactory:
         if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
         else:                                               pointer = E_R.InputP
 
-        on_begin         = [ ColumnCountReferencePSet(pointer) ]
-        on_after_reload  = [ ColumnCountReferencePSet(pointer) ]
-        on_end           = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
-        on_before_reload = [ ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
+        on_begin         = [ Command.ColumnCountReferencePSet(pointer) ]
+        on_after_reload  = [ Command.ColumnCountReferencePSet(pointer) ]
+        on_end           = [ Command.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
+        on_before_reload = [ Command.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
 
         return on_begin, on_end, on_before_reload, on_after_reload
 

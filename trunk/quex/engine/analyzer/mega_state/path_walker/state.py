@@ -1,14 +1,14 @@
 # (C) 2010-2014 Frank-Rene Schaefer
-from   quex.engine.commands.core         import PathIteratorSet
-from   quex.engine.analyzer.mega_state.core       import MegaState, \
-                                                         StateKeyIndexDB
-from   quex.engine.analyzer.mega_state.path_walker.find    import DropOutConsideration_cmp, \
-                                                                  DropOutConsideration_relate
-import quex.engine.state_machine.index             as     index
-from   quex.engine.misc.tools                           import UniformObject
-from   quex.blackboard                             import E_Compression, E_Cmd
+from   quex.engine.commands.core                         import Command
+from   quex.engine.analyzer.mega_state.core              import MegaState, \
+                                                                StateKeyIndexDB
+from   quex.engine.analyzer.mega_state.path_walker.find  import DropOutConsideration_cmp, \
+                                                                DropOutConsideration_relate
+import quex.engine.state_machine.index                   as     index
+from   quex.engine.misc.tools                            import UniformObject
+from   quex.blackboard                                    import E_Compression, E_Cmd
 
-from   itertools import izip
+from   itertools  import izip
 
 class PathWalkerState(MegaState):
     """________________________________________________________________________
@@ -167,7 +167,7 @@ class PathWalkerState(MegaState):
                 # the transition to 'transition_reassignment_candidate_list'.
                 self.entry.action_db_update(From           = prev_state_index, 
                                             To             = step.state_index, 
-                                            FromOutsideCmd = PathIteratorSet(self.index, path_id, state_key),
+                                            FromOutsideCmd = Command.PathIteratorSet(self.index, path_id, state_key),
                                             FromInsideCmd  = None)
 
                 prev_state_index = step.state_index
