@@ -42,42 +42,42 @@ print "(1) Non-branchers: ______________________________________________________
 print
 print "(1.1) Commands with no interferring access to registers ______________________"
 print
-test(StoreInputPosition(0, 0, 0), 
-     StoreInputPosition(0, 1, 0))
-test(Assign(E_R.InputP, E_R.CharacterBeginP), 
-     Assign(E_R.LexemeStartP, E_R.ReferenceP))
-test(ColumnCountAdd(2), 
-     LineCountAdd(3))
+test(Command.StoreInputPosition(0, 0, 0), 
+     Command.StoreInputPosition(0, 1, 0))
+test(Command.Assign(E_R.InputP, E_R.CharacterBeginP), 
+     Command.Assign(E_R.LexemeStartP, E_R.ReferenceP))
+test(Command.ColumnCountAdd(2), 
+     Command.LineCountAdd(3))
 print "(1.2) Commands with interferring access to registers, solely read ____________"
 print
-test(InputPDereference(), 
-     StoreInputPosition(0, 1, 0))
-test(Assign(E_R.InputP,       E_R.ReferenceP), 
-     Assign(E_R.LexemeStartP, E_R.ReferenceP))
-test(ColumnCountReferencePDeltaAdd(E_R.InputP, 5, False), 
-     Assign(E_R.CharacterBeginP, E_R.ReferenceP))
+test(Command.InputPDereference(), 
+     Command.StoreInputPosition(0, 1, 0))
+test(Command.Assign(E_R.InputP,       E_R.ReferenceP), 
+     Command.Assign(E_R.LexemeStartP, E_R.ReferenceP))
+test(Command.ColumnCountReferencePDeltaAdd(E_R.InputP, 5, False), 
+     Command.Assign(E_R.CharacterBeginP, E_R.ReferenceP))
 print "(1.3) Commands with interferring access to registers, one read other write ___"
 print
-test(Assign(E_R.InputP, E_R.CharacterBeginP),    
-     StoreInputPosition(0, 1, 0))                
-test(Assign(E_R.InputP,       E_R.ReferenceP), 
-     Assign(E_R.LexemeStartP, E_R.InputP))
-test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
-     Assign(E_R.ReferenceP, E_R.InputP))
+test(Command.Assign(E_R.InputP, E_R.CharacterBeginP),    
+     Command.StoreInputPosition(0, 1, 0))                
+test(Command.Assign(E_R.InputP,       E_R.ReferenceP), 
+     Command.Assign(E_R.LexemeStartP, E_R.InputP))
+test(Command.ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
+     Command.Assign(E_R.ReferenceP, E_R.InputP))
 print "(1.4) Commands with interferring access to registers, both write _____________"
 print
-test(StoreInputPosition(0, 1, 0),
-     StoreInputPosition(0, 1, 0))                
-test(Assign(E_R.InputP, E_R.ReferenceP), 
-     Assign(E_R.InputP, E_R.InputP))
-test(ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
-     ColumnCountAdd(2))
+test(Command.StoreInputPosition(0, 1, 0),
+     Command.StoreInputPosition(0, 1, 0))                
+test(Command.Assign(E_R.InputP, E_R.ReferenceP), 
+     Command.Assign(E_R.InputP, E_R.InputP))
+test(Command.ColumnCountReferencePDeltaAdd(E_R.ReferenceP, 5, False), 
+     Command.ColumnCountAdd(2))
 print "(2) Branchers: _______________________________________________________________"
 print
-test(GotoDoorId(DoorID(2,2)),
-     GotoDoorIdIfInputPNotEqualPointer(DoorID(1,1), E_R.ReferenceP))                
-test(GotoDoorId(DoorID(2,2)),
-     GotoDoorId(DoorID(1,1)))                
-test(GotoDoorIdIfInputPNotEqualPointer(DoorID(2,2), E_R.ReferenceP),               
-     GotoDoorIdIfInputPNotEqualPointer(DoorID(1,1), E_R.ReferenceP))                
+test(Command.GotoDoorId(DoorID(2,2)),
+     Command.GotoDoorIdIfInputPNotEqualPointer(DoorID(1,1), E_R.ReferenceP))                
+test(Command.GotoDoorId(DoorID(2,2)),
+     Command.GotoDoorId(DoorID(1,1)))                
+test(Command.GotoDoorIdIfInputPNotEqualPointer(DoorID(2,2), E_R.ReferenceP),               
+     Command.GotoDoorIdIfInputPNotEqualPointer(DoorID(1,1), E_R.ReferenceP))                
 

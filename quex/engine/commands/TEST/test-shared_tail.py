@@ -37,14 +37,14 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: one-or-none, two, two-bad, multiple;"
     sys.exit()
 
-A = Assign(E_R.CharacterBeginP,  E_R.Input)
-B = Assign(E_R.CharacterBeginP,  E_R.LexemeEnd)
-C = Assign(E_R.CharacterBeginP,  E_R.Line)
-D = Assign(E_R.TemplateStateKey, E_R.Line)
+A = Command.Assign(E_R.CharacterBeginP,  E_R.Input)
+B = Command.Assign(E_R.CharacterBeginP,  E_R.LexemeEnd)
+C = Command.Assign(E_R.CharacterBeginP,  E_R.Line)
+D = Command.Assign(E_R.TemplateStateKey, E_R.Line)
 
 x = [ remaining for i, remaining in generator() if remaining not in (A, B, C) ]
-x[2] = ColumnCountAdd(1)
-x[3] = ColumnCountGridAdd(1)
+x[2] = Command.ColumnCountAdd(1)
+x[3] = Command.ColumnCountGridAdd(1)
 
 
 def print_tail_vs_cmd_list(CutList, CmdList):
@@ -112,9 +112,9 @@ elif "two-bad" in sys.argv:
     test([ B, A ], [ x[0], A, x[1], B, x[2] ])
 
 elif "multiple" in sys.argv:
-    A = Assign(E_R.Line,            E_R.Input)
-    B = Assign(E_R.Column,          E_R.LexemeEnd)
-    C = Assign(E_R.CharacterBeginP, E_R.CharacterBeginP)
+    A = Command.Assign(E_R.Line,            E_R.Input)
+    B = Command.Assign(E_R.Column,          E_R.LexemeEnd)
+    C = Command.Assign(E_R.CharacterBeginP, E_R.CharacterBeginP)
 
     test([ A, A, B ],    [ A ])
     test([ A, A, B ],    [ A, B ])

@@ -20,63 +20,63 @@ Setup.language_db = db[Setup.language]
 
 example_db = {
     E_Cmd.StoreInputPosition: [ 
-        StoreInputPosition(4711, 7777, 0),
-        StoreInputPosition(4711, 7777, 1000) 
+        Command.StoreInputPosition(4711, 7777, 0),
+        Command.StoreInputPosition(4711, 7777, 1000) 
     ],
-    E_Cmd.PreContextOK:                     [ PreContextOK(4711) ],
-    E_Cmd.TemplateStateKeySet:              [ TemplateStateKeySet(66) ],
-    E_Cmd.PathIteratorSet:                  [ PathIteratorSet(11, 22, 1000) ],
-    E_Cmd.PrepareAfterReload:               [ PrepareAfterReload(DoorID(33, 44), DoorID(55, 66)) ],
-    E_Cmd.InputPIncrement:                  [ InputPIncrement() ],
-    E_Cmd.InputPDecrement:                  [ InputPDecrement() ],
-    E_Cmd.InputPDereference:                [ InputPDereference() ],
-    E_Cmd.LexemeResetTerminatingZero:       [ LexemeResetTerminatingZero() ],
-    E_Cmd.ColumnCountReferencePSet:         [ ColumnCountReferencePSet(E_R.CharacterBeginP, 1000) ],
-    E_Cmd.ColumnCountReferencePDeltaAdd:    [ ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555, False) ],
-    E_Cmd.ColumnCountAdd:                   [ ColumnCountAdd(1) ],
+    E_Cmd.PreContextOK:                     [ Command.PreContextOK(4711) ],
+    E_Cmd.TemplateStateKeySet:              [ Command.TemplateStateKeySet(66) ],
+    E_Cmd.PathIteratorSet:                  [ Command.PathIteratorSet(11, 22, 1000) ],
+    E_Cmd.PrepareAfterReload:               [ Command.PrepareAfterReload(DoorID(33, 44), DoorID(55, 66)) ],
+    E_Cmd.InputPIncrement:                  [ Command.InputPIncrement() ],
+    E_Cmd.InputPDecrement:                  [ Command.InputPDecrement() ],
+    E_Cmd.InputPDereference:                [ Command.InputPDereference() ],
+    E_Cmd.LexemeResetTerminatingZero:       [ Command.LexemeResetTerminatingZero() ],
+    E_Cmd.ColumnCountReferencePSet:         [ Command.ColumnCountReferencePSet(E_R.CharacterBeginP, 1000) ],
+    E_Cmd.ColumnCountReferencePDeltaAdd:    [ Command.ColumnCountReferencePDeltaAdd(E_R.CharacterBeginP, 5555, False) ],
+    E_Cmd.ColumnCountAdd:                   [ Command.ColumnCountAdd(1) ],
     E_Cmd.ColumnCountGridAdd: [ 
-        ColumnCountGridAdd(1),
-        ColumnCountGridAdd(2),
-        ColumnCountGridAdd(3),
-        ColumnCountGridAdd(4),
-        ColumnCountGridAdd(5),
+        Command.ColumnCountGridAdd(1),
+        Command.ColumnCountGridAdd(2),
+        Command.ColumnCountGridAdd(3),
+        Command.ColumnCountGridAdd(4),
+        Command.ColumnCountGridAdd(5),
     ],
-    E_Cmd.LineCountAdd: [ LineCountAdd(1) ],
+    E_Cmd.LineCountAdd: [ Command.LineCountAdd(1) ],
     ## The column number is set to 1 at the newline.
     ## So, no the delta add 'column += (p - reference_p) * c' is not necessary.
-    E_Cmd.GotoDoorId:                        [ GotoDoorId(DoorID(33,44)) ],
-    E_Cmd.GotoDoorIdIfInputPNotEqualPointer: [ GotoDoorIdIfInputPNotEqualPointer(DoorID(33,44), E_R.CharacterBeginP) ],
-    E_Cmd.Assign:                            [ Assign(E_R.InputP, E_R.LexemeStartP) ],
+    E_Cmd.GotoDoorId:                        [ Command.GotoDoorId(DoorID(33,44)) ],
+    E_Cmd.GotoDoorIdIfInputPNotEqualPointer: [ Command.GotoDoorIdIfInputPNotEqualPointer(DoorID(33,44), E_R.CharacterBeginP) ],
+    E_Cmd.Assign:                            [ Command.Assign(E_R.InputP, E_R.LexemeStartP) ],
     E_Cmd.AssignConstant: [ 
-        AssignConstant(E_R.InputP, 0), 
-        AssignConstant(E_R.ReferenceP, 1), 
-        AssignConstant(E_R.Column, 2), 
+        Command.AssignConstant(E_R.InputP, 0), 
+        Command.AssignConstant(E_R.ReferenceP, 1), 
+        Command.AssignConstant(E_R.Column, 2), 
     ],
     E_Cmd.IfPreContextSetPositionAndGoto: [
-        IfPreContextSetPositionAndGoto(24, RouterContentElement(66, 1)),
+        Command.IfPreContextSetPositionAndGoto(24, RouterContentElement(66, 1)),
     ],
     E_Cmd.IndentationHandlerCall: [ 
-        IndentationHandlerCall(True, "SLEEPY"),
-        IndentationHandlerCall(False, "EXITED"),
+        Command.IndentationHandlerCall(True, "SLEEPY"),
+        Command.IndentationHandlerCall(False, "EXITED"),
     ],
     E_Cmd.QuexAssertNoPassage: [
-        QuexAssertNoPassage(),
+        Command.QuexAssertNoPassage(),
     ],
     E_Cmd.QuexDebug: [
-        QuexDebug("Hello Bug!"),
+        Command.QuexDebug("Hello Bug!"),
     ],
     E_Cmd.RouterOnStateKey: [
-        RouterOnStateKey(E_Compression.PATH, 0x4711L, 
+        Command.RouterOnStateKey(E_Compression.PATH, 0x4711L, 
                          [(1L, 100L), (2L, 200L), (3L, 300L)], 
                          lambda x: DoorID(x,1)),
     ],
 }
 
-accepter = Accepter()
+accepter = Command.Accepter()
 accepter.content.add(55L, 66L)
 example_db[E_Cmd.Accepter] = [ accepter ]
 
-router = Router()
+router = Command.Router()
 router.content.add(66, 1)
 example_db[E_Cmd.Router] = [ router ]
 
@@ -124,9 +124,9 @@ def rw_generator(N):
             yield setting 
 
 def rw_get(Flag):
-    if   Flag == "R": return Assign(E_R.InputP,       E_R.LexemeStartP)
-    elif Flag == "W": return Assign(E_R.LexemeStartP, E_R.InputP)
-    else:             return Assign(E_R.Column,       E_R.CharacterBeginP)
+    if   Flag == "R": return Command.Assign(E_R.InputP,       E_R.LexemeStartP)
+    elif Flag == "W": return Command.Assign(E_R.LexemeStartP, E_R.InputP)
+    else:             return Command.Assign(E_R.Column,       E_R.CharacterBeginP)
 
 def string_cl(Name, Cl):
     if len(Cl) == 0:

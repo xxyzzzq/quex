@@ -1,8 +1,8 @@
-from   quex.engine.commands.core         import StoreInputPosition, Command, CommandList
+from   quex.engine.commands.core                  import Command, CommandList
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import dial_db, \
                                                          DoorID
-from   quex.engine.misc.tools                          import typed, \
+from   quex.engine.misc.tools                     import typed, \
                                                          TypedDict
 from   quex.blackboard                            import E_Cmd, \
                                                          E_StateIndices, \
@@ -180,7 +180,7 @@ class Entry(object):
            comment for the reason why we do not store pre-context-id.
         """
         command_list = self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list
-        cmd          = StoreInputPosition(PreContextID, PositionRegister, Offset)
+        cmd          = Command.StoreInputPosition(PreContextID, PositionRegister, Offset)
         # Make sure it is the first!
         command_list.insert(0, cmd)
         # Never store twice in the same position register! 

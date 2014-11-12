@@ -3,10 +3,10 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.core              import Processor
-from   quex.engine.commands.core           import TemplateStateKeySet
+from   quex.engine.commands.core                    import Command
 import quex.engine.state_machine.index              as     index
-from   quex.engine.misc.interval_handling                import Interval
-from   quex.engine.misc.tools                            import typed, \
+from   quex.engine.misc.interval_handling           import Interval
+from   quex.engine.misc.tools                       import typed, \
                                                            UniformObject
 
 class TemplateState(MegaState):
@@ -57,7 +57,7 @@ class TemplateState(MegaState):
             # the transition to 'transition_reassignment_candidate_list'.
             self.entry.action_db_update(From           = state_index,
                                         To             = state_index, 
-                                        FromOutsideCmd = TemplateStateKeySet(state_key),
+                                        FromOutsideCmd = Command.TemplateStateKeySet(state_key),
                                         FromInsideCmd  = None)
         return
 

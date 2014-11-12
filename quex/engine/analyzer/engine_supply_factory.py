@@ -1,9 +1,6 @@
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.commands.core      import CommandList, \
-                                                      GotoDoorId, \
-                                                      InputPIncrement, \
-                                                      QuexAssertNoPassage, \
-                                                      QuexDebug
+from   quex.engine.commands.core                  import CommandList, \
+                                                         Command
 from   quex.blackboard  import E_InputActions, \
                                setup as Setup
 
@@ -85,7 +82,7 @@ class Class_BACKWARD_PRE_CONTEXT(Base):
         return E_InputActions.DECREMENT_THEN_DEREF
 
     def create_DropOut(self, SM_State):                        
-        return CommandList(GotoDoorId(DoorID.global_end_of_pre_context_check()))
+        return CommandList(Command.GotoDoorId(DoorID.global_end_of_pre_context_check()))
 
 class Class_BACKWARD_INPUT_POSITION(Base):
     def __init__(self, IncidenceIdOnBehalfOfWhichBipdOperates):
@@ -113,13 +110,13 @@ class Class_BACKWARD_INPUT_POSITION(Base):
         if SM_State.is_acceptance():
             incidence_id = self.__incidence_id_of_bipd
             return CommandList(
-                QuexDebug('pattern %i: backward input position detected\\n' % incidence_id),
-                InputPIncrement(), 
-                GotoDoorId(DoorID.bipd_return(incidence_id))
+                Command.QuexDebug('pattern %i: backward input position detected\\n' % incidence_id),
+                Command.InputPIncrement(), 
+                Command.GotoDoorId(DoorID.bipd_return(incidence_id))
             )
         else:
             return CommandList(
-                QuexAssertNoPassage()
+                Command.QuexAssertNoPassage()
             )
 
 FORWARD                 = Class_FORWARD()

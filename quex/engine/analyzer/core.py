@@ -46,14 +46,9 @@ from   quex.engine.analyzer.state.core            import Processor, \
                                                          ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionAction
-from   quex.engine.commands.core         import InputPDereference, \
-                                                         InputPIncrement, \
-                                                         InputPDecrement,  \
-                                                         PreContextOK, \
-                                                         Accepter, \
-                                                         Router
+from   quex.engine.commands.core                  import Command, \
+                                                         CommandList
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
-from   quex.engine.commands.core         import CommandList
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 
@@ -255,7 +250,7 @@ class Analyzer:
         cmd_list = []
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cmd_list.extend(
-                 PreContextOK(cmd.acceptance_id()) 
+                 Command.PreContextOK(cmd.acceptance_id()) 
                  for cmd in OldState.single_entry.get_iterable(Accept)
             )
 
@@ -274,11 +269,11 @@ class Analyzer:
             # 'ForceInputDereferencingF'
             assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-            if self.engine_type.is_FORWARD(): cmd_list.append(InputPIncrement())
-            else:                             cmd_list.append(InputPDecrement())
+            if self.engine_type.is_FORWARD(): cmd_list.append(Command.InputPIncrement())
+            else:                             cmd_list.append(Command.InputPDecrement())
         else:
-            if self.engine_type.is_FORWARD(): cmd_list.extend([InputPIncrement(), InputPDereference()])
-            else:                             cmd_list.extend([InputPDecrement(), InputPDereference()])
+            if self.engine_type.is_FORWARD(): cmd_list.extend([Command.InputPIncrement(), Command.InputPDereference()])
+            else:                             cmd_list.extend([Command.InputPDecrement(), Command.InputPDereference()])
 
         ta = TransitionAction(CommandList.from_iterable(cmd_list))
 
@@ -289,7 +284,7 @@ class Analyzer:
 
         if StateIndex == self.init_state_index:
             if self.engine_type.is_FORWARD():
-                ta = TransitionAction(CommandList(InputPDereference()))
+                ta = TransitionAction(CommandList(Command.InputPDereference()))
             state.entry.enter_state_machine_entry(self.__state_machine_id, 
                                                   StateIndex, ta)
 
@@ -402,7 +397,7 @@ class Analyzer:
             # 
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
-            accepter = Accepter() # Accepter content
+            accepter = Command.Accepter() # Accepter content
             for x in accept_sequence:
                 accepter.content.add(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
@@ -427,7 +422,7 @@ class Analyzer:
             # implement the acceptance storage.
 
         # (*) Terminal Router
-        terminal_router = Router()
+        terminal_router = Command.Router()
         for x in TraceList.positioning_info():
             terminal_router.content.add(x.acceptance_id, x.transition_n_since_positioning)
 

@@ -30,9 +30,7 @@ import quex.engine.analyzer.mega_state.template.core               as templates
 from   quex.engine.analyzer.mega_state.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.state.entry_action                     import TransitionID, \
                                                                           TransitionAction
-from   quex.engine.commands.core                          import InputPIncrement, \
-                                                                          InputPDecrement, \
-                                                                          CommandList
+from   quex.engine.commands.core                                   import Command
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
 from   quex.engine.misc.interval_handling import *
@@ -85,19 +83,19 @@ elif "0b" in sys.argv:
 elif "1" in sys.argv:
     analyzer, a, b = basic_setup([10, 10]) # Recursion on trigger = 10 in both states
     print "NOTE: Set SAME command list in recursion."
-    set_recursive_command_list(a, [ InputPIncrement() ])
-    set_recursive_command_list(b, [ InputPIncrement() ])
+    set_recursive_command_list(a, [ Command.InputPIncrement() ])
+    set_recursive_command_list(b, [ Command.InputPIncrement() ])
     
 elif "1b" in sys.argv:
     analyzer, a, b = basic_setup([10, 10]) # Recursion on trigger = 10 in both states
     print "NOTE: Set DIFFERENT command list in recursion."
-    set_recursive_command_list(a, [ InputPIncrement() ])
-    set_recursive_command_list(b, [ InputPDecrement() ])
+    set_recursive_command_list(a, [ Command.InputPIncrement() ])
+    set_recursive_command_list(b, [ Command.InputPDecrement() ])
     
 elif "1c" in sys.argv:
     analyzer, a, b = basic_setup([10, 11]) # Recursion on trigger = 10 in both states
     print "NOTE: Set SAME command list in recursion ON DIFFERENT triggers."
-    set_recursive_command_list(a, [ InputPIncrement() ])
-    set_recursive_command_list(b, [ InputPIncrement() ])
+    set_recursive_command_list(a, [ Command.InputPIncrement() ])
+    set_recursive_command_list(b, [ Command.InputPIncrement() ])
     
 test(analyzer, a, b)

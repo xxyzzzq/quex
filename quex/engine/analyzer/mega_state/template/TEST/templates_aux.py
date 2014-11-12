@@ -14,11 +14,11 @@ from   quex.engine.analyzer.mega_state.target               import TargetByState
 from   quex.engine.analyzer.mega_state.template.state       import TemplateState, \
                                                                    PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
-from   quex.engine.commands.core                   import CommandList
-from   quex.engine.commands.tree                   import CommandTree
+from   quex.engine.commands.core                            import CommandList
+from   quex.engine.commands.tree                            import CommandTree
 from   quex.engine.state_machine.state.core                 import State
-from   quex.engine.misc.interval_handling                        import NumberSet, Interval
-from   quex.engine.misc.tools                                    import typed
+from   quex.engine.misc.interval_handling                   import NumberSet, Interval
+from   quex.engine.misc.tools                               import typed
 
 from   copy        import copy
 from   operator    import attrgetter

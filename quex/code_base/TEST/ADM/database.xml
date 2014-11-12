@@ -1,20 +1,20 @@
-<test-database execution-time-sec="0.60" date="Tue Nov 11 22:16:02 2014">
+<test-database execution-time-sec="0.61" date="Wed Nov 12 21:56:39 2014">
     <last-used-diff-display-program name=""/>
     <group name="BOM Snap">
-        <test title="ifstream" make-dependent="True" time-sum-sec="0.00"> 
+        <test title="ifstream" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="bom-istream.exe" info-request-time="1415740561L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.544563"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
-        <test title="FILE" make-dependent="True" time-sum-sec="0.00"> 
+        <test title="FILE" make-dependent="True" time-sum-sec="0.01"> 
             <application file-name="bom.exe" info-request-time="1415740561L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.152429"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="" result="OK" time_sec="0.01" crc="None"/>
             </choice-list>
         </test>
     </group>
@@ -35,10 +35,10 @@
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.555950"/>
             <choice-list number="4" same_result="False">
-               <choice name="2" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="None"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="None"/>
                <choice name="4" result="OK" time_sec="0.00" crc="None"/>
-               <choice name="5" result="OK" time_sec="0.01" crc="None"/>
+               <choice name="5" result="OK" time_sec="0.00" crc="None"/>
             </choice-list>
         </test>
         <test title="wchar_t stream based." make-dependent="True" time-sum-sec="0.02"> 

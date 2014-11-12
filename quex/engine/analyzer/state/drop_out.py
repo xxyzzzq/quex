@@ -1,5 +1,5 @@
 from   quex.engine.commands.core import CommandList, \
-                                                 IfPreContextSetPositionAndGoto
+                                        Command
 
 def get_CommandList(TheAccepter, TheTerminalRouter):
     """If there is no stored acceptance involved, then one can directly
@@ -35,7 +35,7 @@ def get_CommandList(TheAccepter, TheTerminalRouter):
     router = TheTerminalRouter.content
 
     return CommandList.from_iterable(
-        IfPreContextSetPositionAndGoto(check.pre_context_id, 
+        Command.IfPreContextSetPositionAndGoto(check.pre_context_id, 
                                        router_element(router, check.acceptance_id))
         for check in TheAccepter.content
     )
