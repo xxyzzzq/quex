@@ -4,12 +4,12 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.commands.core                  import E_R, \
-                                                         Command
+from   quex.engine.commands.core                  import Command
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
 
 from   quex.blackboard   import E_CharacterCountType, \
+                                E_R, \
                                 setup as Setup, \
                                 Lng
 from   itertools   import izip, chain

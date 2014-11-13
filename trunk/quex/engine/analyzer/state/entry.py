@@ -176,7 +176,7 @@ class Entry(object):
             ta.command_list.access_accepter().add(PreContextID, AcceptanceID)
 
     def add_StoreInputPosition(self, StateIndex, FromStateIndex, PreContextID, PositionRegister, Offset):
-        """Add 'store input position' to specific door. See 'StoreInputPosition'
+        """Add 'store input position' to specific door. See 'SeStoreInputPosition'
            comment for the reason why we do not store pre-context-id.
         """
         command_list = self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list

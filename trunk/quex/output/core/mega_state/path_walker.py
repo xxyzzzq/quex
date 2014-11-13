@@ -79,7 +79,7 @@
 """
 from quex.engine.analyzer.door_id_address_label        import dial_db
 ##from quex.output.core.state.core                import input_do
-from quex.output.core.languages.variable_db       import variable_db
+from quex.output.core.variable_db       import variable_db
 
 from quex.blackboard import Lng
 

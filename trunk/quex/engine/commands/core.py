@@ -68,39 +68,19 @@
 #
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
-from   quex.engine.misc.enum import Enum
 from   quex.blackboard       import E_Cmd, \
-                                    E_PreContextIDs, \
-                                    E_TransitionN, \
-                                    E_IncidenceIDs, \
-                                    E_Compression, \
-                                    E_PostContextIDs
+                                    E_R, \
+                                    E_PreContextIDs
+from   quex.engine.commands.content_router_on_state_key import RouterOnStateKeyContent
+from   quex.engine.commands.content_accepter            import AccepterContent, \
+                                                               repr_pre_context_id
+from   quex.engine.commands.content_terminal_router     import RouterContent, \
+                                                               repr_position_register
 
 from   collections import namedtuple
-from   operator    import attrgetter
 from   copy        import deepcopy
 import types
-
-E_R = Enum("AcceptanceRegister",
-           "Buffer",
-           "Column",
-           "Input",
-           "Indentation",
-           "InputP",
-           "LexemeStartP",
-           "LexemeEnd",
-           "CharacterBeginP",  # -> dynamic size codecs
-           "Line",
-           "PathIterator",
-           "PreContextFlags",
-           "ReferenceP",
-           "StandardOutput",
-           "PositionRegister",
-           "Pointer",
-           "TargetStateElseIndex",
-           "TargetStateIndex",
-           "TemplateStateKey",
-           "ThreadOfControl")
+import numbers
 
 class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     """_________________________________________________________________________
@@ -110,12 +90,28 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
     ____________________________________________________________________________
     """
     # Commands which shall appear only once in a command list:
-    unique_set = (E_Cmd.TemplateStateKeySet, E_Cmd.PathIteratorSet)
+    unique_set     = (E_Cmd.TemplateStateKeySet, 
+                      E_Cmd.PathIteratorSet)
+
+    # Fly weight pattern: Immutable objects need to exist only once. Every 
+    # other 'new operation' may refer to the existing object. 
+    #
+    # Not all commands are immutable!
+    #
+    # Distinguish between commands that are fly weight candidates by the set 
+    # of fly-weight-able command identifier. Use a positive list, NOT a negative
+    # list. That way, new additions do not enter accidently into the fly weight
+    # set.
+    fly_weight_set = (E_Cmd.InputPDecrement, 
+                      E_Cmd.InputPIncrement, 
+                      E_Cmd.InputPDereference)
+    fly_weight_db  = {}
 
     def __new__(self, Id, *ParameterList):
         global _content_db
-        # TODO: Consider 'Flyweight pattern'. Check wether object with same content exists, 
-        #       then return pointer to object in database.
+        # Fly weight pattern: immutable objects instantiated only once.
+        if Id in self.fly_weight_db: return self.fly_weight_db[Id]
+        
         content_type = _content_db[Id]
         if content_type is None:
             # No content
@@ -133,17 +129,17 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             elif L == 4: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2], ParameterList[3])
 
         hash_value = hash(Id) ^ hash(content)
-        return super(Command, self).__new__(self, Id, content, hash_value)
+        result = super(Command, self).__new__(self, Id, content, hash_value)
+
+        # Store fly-weight-able objects in database.
+        if Id in self.fly_weight_set: self.fly_weight_db[Id] = result
+        return result
 
     def clone(self):         
-        """Cloning should be unnecessary, since objects are constant!
-        """
-        if self.content is None:
-            content = None
-        elif hasattr(self.content, "clone"): 
-            content = self.content.clone()
-        else:
-            content = deepcopy(self.content)
+        # If the fly weight object exists, it must be in the database.
+        if self.id in self.fly_weight_db:    return self
+        elif hasattr(self.content, "clone"): content = self.content.clone()
+        else:                                content = deepcopy(self.content)
         return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash)
 
     @staticmethod
@@ -261,14 +257,41 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             return     self.content.pre_context_id == E_PreContextIDs.NONE \
                    and self.content.router_element.positioning == 0
         return False
+    
+    def get_register_access_iterable(self):
+        """For each command there are rights associated with registers. For example
+        a command that writes into register 'X' associates 'write-access' with X.
+    
+        RETURNS: An iterable over pairs (register_id, access right) meaning that the
+                 command accesses the register with the given access type/right.
+        """
+        global _access_db
+    
+        for register_id, rights in _access_db[self.id].iteritems():
+            if isinstance(register_id, numbers.Integral):
+                register_id = self.content[register_id] # register_id == Argument number which contains E_R
+            elif type(register_id) == tuple:
+                main_id          = register_id[0]       # register_id[0] --> in E_R
+                sub_reference_id = register_id[1]       # register_id[1] --> Argument number containing sub-id
+                sub_id           = self.content[sub_reference_id]
+                register_id = "%s:%s" % (main_id, sub_id)
+            yield register_id, rights
+    
+    def get_register_access_db(self):
+        """RETURNS: map: register_id --> access right(s)
+        """
+        return dict( 
+            (register_id, right)
+            for register_id, right in self.get_register_access_iterable()
+        )
 
     def __hash__(self):      
         return self.my_hash
 
     def __eq__(self, Other):
         if   self.__class__ != Other.__class__: return False
-        elif self.id != Other.id:               return False
-        elif self.content != Other.content:     return False
+        elif self.id        != Other.id:        return False
+        elif self.content   != Other.content:   return False
         else:                                   return True
 
     def __ne__(self, Other):
@@ -307,373 +330,48 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             content_str = "".join("%s=%s, " % (member, value) for member, value in self.content._asdict().iteritems())
             return "%s: { %s }" % (name_str, content_str)   
 
-class AccepterContentElement(namedtuple("AccepterContentElement_tuple", ("pre_context_id", "acceptance_id"))):
-    """Objects of this class shall describe a check sequence such as
+def is_switchable(A, B):
+    """Determines whether the command A and command B can be switched
+    in a sequence of commands. This is NOT possible if:
 
-            if     ( pre_condition_5_f ) last_acceptance = 34;
-            else if( pre_condition_7_f ) last_acceptance = 67;
-            else if( pre_condition_9_f ) last_acceptance = 31;
-            else                         last_acceptance = 11;
+       -- A and B read/write to the same register. 
+          Two reads to the same register are no problem.
 
-       by a list such as [(5, 34), (7, 67), (9, 31), (None, 11)]. Note, that
-       the prioritization is not necessarily by acceptance_id. This is so, since
-       the whole trace is considered and length precedes acceptance_id.
-    
-       The values for .pre_context_id and .acceptance_id are carry the 
-       following meaning:
-
-       .pre_context_id   PreContextID of concern. 
-
-                         is None --> no pre-context (normal pattern)
-                         is -1   --> pre-context 'begin-of-line'
-                         >= 0    --> id of the pre-context state machine/flag
-
-       .acceptance_id    Terminal to be targeted (what was accepted).
-
-                         is None --> acceptance determined by stored value in 
-                                     'last_acceptance', thus "goto *last_acceptance;"
-                         == -1   --> goto terminal 'failure', nothing matched.
-                         >= 0    --> goto terminal given by '.terminal_id'
-
+       -- One of the commands is goto-ing, i.e. branching.
     """
-    def __new__(self, PreContextId, AcceptanceID):
-        return super(AccepterContentElement, self).__new__(self, PreContextId, AcceptanceID)
-
-    def __str_(self):
-        txt = []
-        txt.append("%s: accept = %s" % (repr_pre_context_id(self.pre_context_id),
-                                        repr_acceptance_id(self.acceptance_id)))
-        return "".join(txt)
-
-class AccepterContent:
-    """_________________________________________________________________________
-
-    A list of conditional pattern acceptance actions. It corresponds to a 
-    sequence of if-else statements such as 
-
-          [0]  if   pre_condition_4711_f: acceptance = Pattern32
-          [1]  elif pre_condition_512_f:  acceptance = Pattern21
-          [2]  else:                      acceptance = Pattern56
-    
-    Requires: AccepterContentElement (see above) which stores the elements
-              of the list.
-
-    An element in the sorted list of test/accept commands.  It contains the
-    'pre_context_id' of the condition to be checked and the 'acceptance_id' to
-    be accepted if the condition is true.
-    ___________________________________________________________________________
-    """
-
-    def __init__(self):
-        Command.__init__(self)
-        self.__list = []
-
-    def clone(self):
-        result = AccepterContent()
-        result.__list = [ deepcopy(x) for x in self.__list ]
-        return result
-    
-    def add(self, PreContextID, AcceptanceID):
-        self.__list.append(AccepterContentElement(PreContextID, AcceptanceID))
-
-    def clean_up(self):
-        """Ensure that nothing follows and unconditional acceptance."""
-        self.__list.sort(key=attrgetter("acceptance_id"))
-        for i, x in enumerate(self.__list):
-            if x.pre_context_id == E_PreContextIDs.NONE:
-                break
-        if i != len(self.__list) - 1:
-            del self.__list[i+1:]
-
-    def has_acceptance_without_pre_context(self):
-        for x in self.__list:
-            if x.pre_context_id == E_PreContextIDs.NONE: return True
+    global _brancher_set
+    if A.id in _brancher_set or B.id in _brancher_set:
         return False
 
-    def get_pretty_string(self):
-        txt    = []
-        if_str = "if     "
-        for x in self.__list:
-            if x.pre_context_id != E_PreContextIDs.NONE:
-                txt.append("%s %s: " % (if_str, repr_pre_context_id(x.pre_context_id)))
-            else:
-                if if_str == "else if": txt.append("else: ")
-            txt.append("last_acceptance = %s\n" % repr_acceptance_id(x.acceptance_id))
-            if_str = "else if"
-        return txt
-
-    # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self): 
-        xor_sum = 0
-        for x in self.__list:
-            if isinstance(x.acceptance_id, (int, long)): xor_sum ^= x.acceptance_id
-        return xor_sum
-
-    def __eq__(self, Other):
-        if   not isinstance(Other, AccepterContent):    return False
-        elif len(self.__list) != len(Other.__list):     return False
-
-        for x, y in zip(self.__list, Other.__list):
-            if   x.pre_context_id != y.pre_context_id:  return False
-            elif x.acceptance_id  != y.acceptance_id:   return False
-
-        return True
-
-    def __ne__(self, Other):
-        return not (self == Other)
-
-    def __iter__(self):
-        for x in self.__list:
-            yield x
-
-    def __str__(self):
-        def to_string(X, FirstF):
-            acc_str = "last_acceptance = %s" % repr_acceptance_id(X.acceptance_id)
-            if X.pre_context_id == E_PreContextIDs.NONE:
-                return acc_str
-
-            cond_str = "%s" % repr_pre_context_id(X.pre_context_id)
-            if FirstF:
-                return "if %s:  %s" % (cond_str, acc_str)
-            else:
-                return "else if %s:  %s" % (cond_str, acc_str)
-
-        last_i = len(self.__list) - 1
-        return "".join("%s%s" % (to_string(element, i==0), "\n" if i != last_i else "") 
-                       for i, element in enumerate(self.__list))
-
-    def __len__(self):
-        return len(self.__list)
-
-class RouterContentElement(object):
-    """Objects of this class shall be elements to build a router to the terminal
-       based on the setting 'last_acceptance', i.e.
-
-            switch( last_acceptance ) {
-                case  45: input_p -= 3;                   goto TERMINAL_45;
-                case  43:                                 goto TERMINAL_43;
-                case  41: input_p -= 2;                   goto TERMINAL_41;
-                case  33: input_p = lexeme_start_p - 1;   goto TERMINAL_33;
-                case  22: input_p = position_register[2]; goto TERMINAL_22;
-            }
-
-       That means, the 'router' actually only tells how the positioning has to happen
-       dependent on the acceptance. Then it goes to the action of the matching pattern.
-       Following elements are provided:
-
-        .acceptance_id    Terminal to be targeted (what was accepted).
-
-                         == -1   --> goto terminal 'failure', nothing matched.
-                         >= 0    --> goto terminal given by '.terminal_id'
-
-        .positioning     Adaption of the input pointer, before the terminal is entered.
-
-                         >= 0    
-                                   input_p -= .positioning 
-
-                            This is only possible if the number of transitions
-                            since acceptance is determined before run time.
-
-                         == E_TransitionN.VOID 
-                         
-                                   input_p = position[.position_register]
-
-                            Restore a stored input position from its register.
-                            A loop appeared on the path from 'store input
-                            position' to here.
-
-                         == E_TransitionN.LEXEME_START_PLUS_ONE 
-                         
-                                   input_p = lexeme_start_p + 1
-
-                            Case of failure (actually redundant information).
-    """
-    __slots__ = ("acceptance_id", "positioning", "position_register")
-
-    def __init__(self, AcceptanceID, TransitionNSincePositioning):
-        assert    TransitionNSincePositioning == E_TransitionN.VOID \
-               or TransitionNSincePositioning == E_TransitionN.LEXEME_START_PLUS_ONE \
-               or TransitionNSincePositioning == E_TransitionN.IRRELEVANT \
-               or TransitionNSincePositioning >= 0
-        assert    AcceptanceID in E_IncidenceIDs \
-               or AcceptanceID >= 0
-
-        self.acceptance_id     = AcceptanceID
-        self.positioning       = TransitionNSincePositioning
-        self.position_register = AcceptanceID                 # May later be adapted.
-
-    def replace(self, PositionRegisterMap):
-        """Replace the '.position_register' with the correspondance provided
-        in PositionRegisterMap. This is only relevant, if the position register
-        is actually used. That is, if the position is not VOID, then no 
-        replacement needs to take place.
-        """
-        if self.positioning != E_TransitionN.VOID: return
-        self.position_register = PositionRegisterMap[self.position_register]
-
-    def __hash__(self):
-        return       hash(self.acceptance_id) \
-               + 2 * hash(self.positioning) \
-               + 5 * hash(self.position_register)
-
-    def __eq__(self, Other):
-        return     self.acceptance_id     == Other.acceptance_id   \
-               and self.positioning       == Other.positioning     \
-               and self.position_register == Other.position_register
-
-    def __ne__(self, Other):
-        return not (self == Other)
-
-    def get_string(self):
-        if self.acceptance_id == E_IncidenceIDs.MATCH_FAILURE: assert self.positioning == E_TransitionN.LEXEME_START_PLUS_ONE
-        else:                                                  assert self.positioning != E_TransitionN.LEXEME_START_PLUS_ONE
-
-        if self.positioning != 0:
-            return "%s goto %s;" % (repr_positioning(self.positioning, self.position_register), 
-                                    repr_acceptance_id(self.acceptance_id))
+    a_access_iterable = A.get_register_access_iterable()
+    b_access_db       = B.get_register_access_db()
+    for register_id, access_a in a_access_iterable:
+        access_b = b_access_db.get(register_id)
+        if access_b is None:
+            # Register from command A is not found in command B
+            # => no restriction from this register.
+            continue
+        elif access_a.write_f or access_b.write_f:
+            # => at least one writes.
+            # Also:
+            #   access_b not None => B accesses register_id (read, write, or both)
+            #   access_a not None => A accesses register_id (read, write, or both)
+            # 
+            # => Possible cases here:
+            #
+            #     (A w,  B w), (A w,  B r), (A w,  B rw)
+            #     (A r,  B w), (A r,  B r), (A r,  B rw)
+            #     (A rw, B w), (A rw, B r), (A rw, B rw)
+            #
+            # In all those cases A and B depend on the order that they are executed.
+            # => No switch possible
+            return False
         else:
-            return "goto %s;"    % (repr_acceptance_id(self.acceptance_id))
+            continue
 
-    def __str__(self):
-        return "case %s: %s" % (repr_acceptance_id(self.acceptance_id, PatternStrF=False),
-                                self.get_string())
-        
-class RouterContent:
-    """_________________________________________________________________________
+    return True
 
-    RouterContent: Contains a list of pairs that indicates where to go based
-                   on the setting of the acceptance register. 
 
-          [0]  if   last_acceptance == FAILURE: goto TERMINAL_FAILURE;
-          [1]  elif last_acceptance == 5:       input_p = Position[5]; goto TERMINAL_5;
-          [2]  else:                            goto TERMINAL_Pattern56
-    
-    Requires: RouterContentElement which stores the elements of the list.
-
-    E_R.AcceptanceRegister: Read.
-    E_R.InputP:             Possibly write.
-    E_R.ThreadOfControl:    Write (jumps to terminals). 
-    ___________________________________________________________________________
-    """
-    def __init__(self):
-        Command.__init__(self)
-        self.__list = []
-
-    def clone(self):
-        result = RouterContent()
-        result.__list = [ deepcopy(x) for x in self.__list ]
-        return result
-    
-    def add(self, Value, Address):
-        self.__list.append(RouterContentElement(Value, Address))
-
-    def replace(self, PositionRegisterMap):
-        """Replaces position register indices with the onces given in the map.
-        That is, for each pair (key, value) in the 'PositionRegisterMap' replace
-        any occurrence of 'position_register=key' with 'position_register=value'.
-        """
-        for element in self.__list:
-            if element.positioning != E_TransitionN.VOID: continue
-            element.position_register = PositionRegisterMap[element.position_register]
-
-    # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self): 
-        xor_sum = 0
-        for i, x in enumerate(self.__list):
-            xor_sum ^= i * hash(x)
-        return xor_sum
-
-    def __eq__(self, Other):
-        if   not isinstance(Other, RouterContent):    return False
-        elif len(self.__list) != len(Other.__list):   return False
-
-        for x, y in zip(self.__list, Other.__list):
-            if x != y: return False
-
-        return True
-
-    def __ne__(self, Other):
-        return not (self == Other)
-
-    def __iter__(self):
-        for x in self.__list:
-            assert isinstance(x, RouterContentElement)
-            yield x
-
-    def __str__(self):
-        txt = [ "on last_acceptance:\n" ]
-        def case_str(AcceptanceId):
-            msg = "%s" % AcceptanceId
-            if msg == "MATCH_FAILURE": return "Failure"
-            else:                      return msg
-        txt.extend("case %s: %s\n" % (case_str(x.acceptance_id), x.get_string()) for x in self.__list)
-        return "".join(txt)
-
-    def __len__(self):
-        return len(self.__list)
-
-class RouterOnStateKeyContent:
-    """_________________________________________________________________________
-
-    Implements:
-
-        switch( path_iterator - base ) {
-            0: goto DoorID(drop out of state '0');
-            1: goto DoorID(drop out of state '1');
-            2: goto DoorID(drop out of state '2');
-            ...
-        }
-    ___________________________________________________________________________
-    """
-    def __init__(self):
-        Command.__init__(self)
-        self.mega_state_index = -1
-        self.__list = []
-
-    def configure(self, CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
-        self.register = {
-            E_Compression.PATH:             E_R.PathIterator,
-            E_Compression.PATH_UNIFORM:     E_R.PathIterator,
-            E_Compression.TEMPLATE:         E_R.TemplateStateKey,
-            E_Compression.TEMPLATE_UNIFORM: E_R.TemplateStateKey,
-        }[CompressionType]
-        self.mega_state_index = MegaStateIndex
-        self.__list = [
-            (state_key, DoorID_provider(state_index))
-            for state_key, state_index in IterableStateKeyStateIndexPairs
-        ]
-
-    def clone(self):
-        result = RouterOnStateKeyContent()
-        result.__list = [ deepcopy(x) for x in self.__list ]
-        return result
-    
-    # Require '__hash__' and '__eq__' to be element of a set.
-    def __hash__(self): 
-        xor_sum = 3 * self.mega_state_index
-        for i, x in enumerate(self.__list):
-            xor_sum ^= i * hash(x)
-        return xor_sum
-
-    def __eq__(self, Other):
-        if   not isinstance(Other, self.__class__):           return False
-        elif self.mega_state_index != Other.mega_state_index: return False
-        return self.__list == Other.__list
-
-    def __ne__(self, Other):
-        return not (self == Other)
-
-    def __iter__(self):
-        for x in self.__list:
-            yield x
-
-    def __str__(self):
-        txt = [ "on last_acceptance:\n" ]
-        txt.extend(str(x) for x in self.__list)
-        return "".join(txt)
-
-    def __len__(self):
-        return len(self.__list)
 
 def __configure():
     """Configure the database for commands.
@@ -704,7 +402,6 @@ def __configure():
                     register_id = (register_id, sub_id_reference)
                 self[register_id] = RegisterAccessRight(rights & w, rights & r)
 
-    #                    # 1 + 2 = READ/WRITE
     brancher_set = set() # set of ids of branching/goto-ing commands.
 
     def c(CmdId, ParameterList, *RegisterAccessInfoList):
@@ -786,7 +483,7 @@ _content_db,   \
 _brancher_set, \
 _cost_db       = __configure()
 
-def is_branching(CmdId):
+def DELETED_is_branching(CmdId):
     """RETURNS: True  -- if the command given by CmdId is 'branching' i.e. 
                          if it might cause jumps/gotos.
                 False -- if the command does never cause a jump.
@@ -794,74 +491,6 @@ def is_branching(CmdId):
     global _brancher_set
     assert CmdId in E_Cmd
     return CmdId in _brancher_set
-
-def is_switchable(A, B):
-    """Determines whether the command A and command B can be switched
-    in a sequence of commands. This is NOT possible if:
-
-       -- A and B read/write to the same register. 
-          Two reads to the same register are no problem.
-
-       -- One of the commands is goto-ing, i.e. branching.
-    """
-    global _brancher_set
-    if A.id in _brancher_set or B.id in _brancher_set:
-        return False
-
-    a_access_iterable = get_register_access_iterable(A)
-    b_access_db       = get_register_access_db(B)
-    for register_id, access_a in a_access_iterable:
-        access_b = b_access_db.get(register_id)
-        if access_b is None:
-            # Register from command A is not found in command B
-            # => no restriction from this register.
-            continue
-        elif access_a.write_f or access_b.write_f:
-            # => at least one writes.
-            # Also:
-            #   access_b not None => B accesses register_id (read, write, or both)
-            #   access_a not None => A accesses register_id (read, write, or both)
-            # 
-            # => Possible cases here:
-            #
-            #     (A w,  B w), (A w,  B r), (A w,  B rw)
-            #     (A r,  B w), (A r,  B r), (A r,  B rw)
-            #     (A rw, B w), (A rw, B r), (A rw, B rw)
-            #
-            # In all those cases A and B depend on the order that they are executed.
-            # => No switch possible
-            return False
-        else:
-            continue
-
-    return True
-
-def get_register_access_iterable(Cmd):
-    """For each command there are rights associated with registers. For example
-    a command that writes into register 'X' associates 'write-access' with X.
-
-    RETURNS: An iterable over pairs (register_id, access right) meaning that the
-             command accesses the register with the given access type/right.
-    """
-    global _access_db
-
-    for register_id, rights in _access_db[Cmd.id].iteritems():
-        if isinstance(register_id, int):
-            register_id = Cmd.content[register_id] # register_id == Argument number which contains E_R
-        elif type(register_id) == tuple:
-            main_id          = register_id[0]      # register_id[0] --> in E_R
-            sub_reference_id = register_id[1]      # register_id[1] --> Argument number containing sub-id
-            sub_id           = Cmd.content[sub_reference_id]
-            register_id = "%s:%s" % (main_id, sub_id)
-        yield register_id, rights
-
-def get_register_access_db(Cmd):
-    """RETURNS: map: register_id --> access right(s)
-    """
-    return dict( 
-        (register_id, right)
-        for register_id, right in get_register_access_iterable(Cmd)
-    )
 
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
@@ -1008,34 +637,4 @@ class CommandList(list):
 
     def __str__(self):
         return "".join("%s\n" % str(cmd) for cmd in self)
-
-def repr_acceptance_id(Value, PatternStrF=True):
-    if   Value == E_IncidenceIDs.VOID:          return "last_acceptance"
-    elif Value == E_IncidenceIDs.MATCH_FAILURE: return "Failure"
-    elif Value >= 0:                                    
-        if PatternStrF:                         return "Pattern%i" % Value
-        else:                                   return "%i" % Value
-    else:                                       assert False
-
-def repr_position_register(Register):
-    if Register == E_PostContextIDs.NONE: return "position[Acceptance]"
-    else:                                 return "position[PostContext_%i] " % Register
-
-def repr_pre_context_id(Value):
-    if   Value == E_PreContextIDs.NONE:          return "Always"
-    elif Value == E_PreContextIDs.BEGIN_OF_LINE: return "BeginOfLine"
-    elif Value >= 0:                             return "PreContext_%i" % Value
-    else:                                        assert False
-
-def repr_positioning(Positioning, PositionRegisterID):
-    if   Positioning == E_TransitionN.VOID: 
-        return "pos = %s;" % repr_position_register(PositionRegisterID)
-    elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
-        return "pos = lexeme_start_p + 1; "
-    elif Positioning > 0:   
-        return "pos -= %i; " % Positioning
-    elif Positioning == 0:  
-        return ""
-    else: 
-        assert False
 

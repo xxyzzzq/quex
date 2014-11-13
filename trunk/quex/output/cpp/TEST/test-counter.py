@@ -39,7 +39,7 @@ import quex.input.files.counter                as     counter_parser
 from   quex.input.files.parser_data.counter    import CounterSetupLineColumn_Default
 from   quex.engine.counter                     import CountCmdFactory
 from   quex.engine.misc.interval_handling           import NumberSet, Interval, NumberSet_All
-import quex.output.core.languages.core    as     languages
+import quex.output.core.dictionary    as     languages
 import quex.engine.codec_db.core               as     codec_db
 import quex.output.cpp.counter                 as     counter
 import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split

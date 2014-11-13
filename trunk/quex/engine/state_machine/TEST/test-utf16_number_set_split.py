@@ -5,7 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
 import quex.input.regular_expression.engine           as regex
-from   quex.engine.state_machine.state.single_entry   import Accept     
+from   quex.engine.state_machine.state.single_entry   import SeAccept     
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.misc.interval_handling                  import NumberSet, Interval
 import quex.engine.state_machine.transformation.utf16_state_split    as trafo
@@ -44,7 +44,7 @@ class X:
                        (i, interval.begin, interval.end - 1, repr(map(lambda x: "%04X." % x, utf16_seq)))
 
                 # All acceptance flags must belong to the original state machine
-                for cmd in result.states[s_idx].single_entry.get_iterable(Accept):
+                for cmd in result.states[s_idx].single_entry.get_iterable(SeAccept):
                     # HERE: As soon as something is wrong --> fire an exception
                     assert cmd.acceptance_id() == self.id
 

@@ -7,7 +7,7 @@ from   quex.engine.misc.interval_handling                     import NumberSet, 
 from   quex.engine.counter                               import ParserDataIndentation
 from   quex.engine.analyzer.door_id_address_label        import dial_db
 from   quex.input.code.base                   import SourceRef_VOID
-from   quex.output.core.languages.variable_db       import variable_db
+from   quex.output.core.variable_db       import variable_db
 from   quex.output.core.TEST.generator_test         import __Setup_init_language_database
 from   quex.engine.misc.interval_handling                     import NumberSet, Interval
 

@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.codec_converter_helper    as codec_converter_helper
-import quex.output.core.languages.core as languages
+import quex.output.core.dictionary as languages
 import quex.blackboard
 
 quex.blackboard.setup.language_db = languages.db["C++"]

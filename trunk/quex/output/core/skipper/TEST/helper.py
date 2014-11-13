@@ -6,7 +6,7 @@ import quex.output.core.skipper.range         as range_skipper
 import quex.output.core.skipper.nested_range  as nested_range_skipper
 import quex.output.core.skipper.indentation_counter as     indentation_counter
 from   quex.output.core.TEST.generator_test   import *
-from   quex.output.core.languages.variable_db import variable_db
+from   quex.output.core.variable_db import variable_db
 from   quex.output.core.TEST.generator_test   import __Setup_init_language_database
 from   quex.input.code.base             import CodeFragment
 from   quex.output.core.base                  import do_state_router

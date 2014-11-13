@@ -21,7 +21,7 @@ import quex.engine.state_machine.transformation.utf8_state_split         as utf8
 import quex.engine.state_machine.transformation.utf16_state_split        as utf16_state_split 
 import quex.engine.analyzer.engine_supply_factory         as     engine
 from   quex.engine.misc.interval_handling                      import Interval, NumberSet
-import quex.output.core.languages.core               as     languages
+import quex.output.core.dictionary               as     languages
 from   quex.output.core.base                         import do_analyzer
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator

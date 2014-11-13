@@ -27,14 +27,14 @@ class SeCmd:
         """
         return not self.__eq__(self, Other)
 
-class Accept(SeCmd):
+class SeAccept(SeCmd):
     def __init__(self):
         SeCmd.__init__(self)
         self.__pre_context_id               = E_PreContextIDs.NONE
         self.__restore_position_register_f = False
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
-        result = Accept()
+        result = SeAccept()
         if ReplDbAcceptance is None: result.set_acceptance_id(self.acceptance_id())
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         if ReplDbPreContext is None: result.__pre_context_id = self.__pre_context_id
@@ -55,7 +55,7 @@ class Accept(SeCmd):
         return self.__restore_position_register_f
 
     def __eq__(self, Other):
-        if   not Other.__class__ == Accept:                       return False
+        if   not Other.__class__ == SeAccept:                       return False
         elif not SeCmd.__eq__(self, Other):                       return False
         elif not self.__pre_context_id == Other.__pre_context_id: return False
         return self.__restore_position_register_f == Other.__restore_position_register_f
@@ -78,21 +78,21 @@ class Accept(SeCmd):
         if txt: return "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
         else:   return "A"
 
-class StoreInputPosition(SeCmd):
+class SeStoreInputPosition(SeCmd):
     @typed(RegisterId=long)
     def __init__(self, RegisterId=E_PostContextIDs.NONE):
         SeCmd.__init__(self)
         self.__position_register_id = RegisterId
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
-        result = StoreInputPosition()
+        result = SeStoreInputPosition()
         if ReplDbAcceptance is None: result.set_acceptance_id(self.acceptance_id())
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         result.__position_register_id = self.__position_register_id
         return result
 
     def __eq__(self, Other):
-        if   Other.__class__ != StoreInputPosition: return False
+        if   Other.__class__ != SeStoreInputPosition: return False
         elif not SeCmd.__eq__(self, Other):         return False
         return self.__position_register_id == Other.__position_register_id
 
@@ -164,13 +164,13 @@ class SingleEntry(object):
             if cmd.__class__ == CmdClass: del self.__list[i]
 
     def has_acceptance_id(self, AcceptanceID):
-        for cmd in self.get_iterable(Accept):
+        for cmd in self.get_iterable(SeAccept):
             if cmd.acceptance_id() == AcceptanceID:
                 return True
         return False
 
     def has_begin_of_line_pre_context(self):
-        for cmd in self.get_iterable(Accept):
+        for cmd in self.get_iterable(SeAccept):
             if cmd.pre_context_id() == E_PreContextIDs.BEGIN_OF_LINE:
                 return True
         return False
@@ -190,14 +190,14 @@ class SingleEntry(object):
         """
         # NOTE: Acceptance origins sort before non-acceptance origins
         min_acceptance_id = None
-        for cmd in self.get_iterable(Accept):
+        for cmd in self.get_iterable(SeAccept):
             if min_acceptance_id is None or min_acceptance_id > cmd.acceptance_id():
                 min_acceptance_id = cmd.acceptance_id()
 
-        # Delete any Accept command where '.acceptance_id() > min_acceptance_id'
+        # Delete any SeAccept command where '.acceptance_id() > min_acceptance_id'
         for i in xrange(len(self.__list)-1, -1, -1):
             cmd = self.__list[i]
-            if cmd.__class__ == Accept and cmd.acceptance_id() > min_acceptance_id:
+            if cmd.__class__ == SeAccept and cmd.acceptance_id() > min_acceptance_id:
                 del self.__list[i]
 
     def hopcroft_combinability_key(self):
@@ -227,7 +227,7 @@ class SingleEntry(object):
         # given by its precedence, i.e. its acceptance id. Thus, the sorted
         # sequence of acceptance ids identifies the acceptance behavior.
         acceptance_info = tuple(sorted(x.acceptance_id() 
-                                       for x in self.get_iterable(Accept)))
+                                       for x in self.get_iterable(SeAccept)))
 
         # The storing of input positions in registers is independent of its
         # position in the command list (as long as it all happens before the increment
@@ -236,7 +236,7 @@ class SingleEntry(object):
         # The sorted list of position storage registers where positions are stored
         # is a distinct description of the position storing behavior.
         store_info = tuple(sorted(x.acceptance_id() 
-                                  for x in self.get_iterable(StoreInputPosition)))
+                                  for x in self.get_iterable(SeStoreInputPosition)))
 
         result = (acceptance_info, store_info)
         return result
@@ -246,9 +246,9 @@ class SingleEntry(object):
         elif len(self.__list) == 1: return "%s\n" % self.__list[0]
 
         def key(X):
-            if   X.__class__ == Accept:              
+            if   X.__class__ == SeAccept:              
                 return (0, X.acceptance_id(), X.pre_context_id(), X.restore_position_register_f())
-            elif X.__class__ == StoreInputPosition: 
+            elif X.__class__ == SeStoreInputPosition: 
                 return (1, X.acceptance_id())
             else:
                 assert False

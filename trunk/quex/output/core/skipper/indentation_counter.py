@@ -1,7 +1,6 @@
 from   quex.input.code.core                         import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label   import DoorID
-from   quex.engine.commands.core                    import Command, \
-                                                           E_R
+from   quex.engine.commands.core                    import Command
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountCmdFactory
@@ -9,6 +8,7 @@ from   quex.engine.state_machine.character_counter  import CountInfo
 import quex.output.core.loop                        as     loop
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
+                                                           E_R, \
                                                            setup as Setup
 
 def do(Data, TheAnalyzer):

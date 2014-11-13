@@ -1,6 +1,6 @@
 from   quex.engine.state_machine.state.single_entry import SingleEntry, \
-                                                           Accept, \
-                                                           StoreInputPosition
+                                                           SeAccept, \
+                                                           SeStoreInputPosition
 from   quex.engine.state_machine.state.target_map   import TargetMap
 
 from   quex.blackboard    import E_PreContextIDs
@@ -71,30 +71,30 @@ class State:
         return self.__target_map
 
     def is_acceptance(self):
-        return self.single_entry.find(Accept) is not None
+        return self.single_entry.find(SeAccept) is not None
 
     def input_position_store_f(self):
-        return self.single_entry.find(StoreInputPosition) is not None
+        return self.single_entry.find(SeStoreInputPosition) is not None
 
     def input_position_restore_f(self):
         for cmd in self.single_entry:
-            if cmd.__class__ != Accept: continue
+            if cmd.__class__ != SeAccept: continue
             elif cmd.restore_position_register_f(): return True
         return False
 
     def pre_context_id(self):
-        cmd = self.single_entry.find(Accept)
+        cmd = self.single_entry.find(SeAccept)
         if cmd is None: return E_PreContextIDs.NONE
         else:           return cmd.pre_context_id()
 
     def set_pre_context_id(self, Value=True):
-        accept_cmd = self.single_entry.find(Accept)
+        accept_cmd = self.single_entry.find(SeAccept)
         assert accept_cmd is not None
         accept_cmd.set_pre_context_id(Value)
 
     def set_acceptance(self, Value=True):
-        if Value: self.single_entry.add_Cmd(Accept)
-        else:     self.single_entry.remove_Cmd(Accept)
+        if Value: self.single_entry.add_Cmd(SeAccept)
+        else:     self.single_entry.remove_Cmd(SeAccept)
 
     def mark_acceptance_id(self, AcceptanceID):
         for cmd in self.single_entry:
@@ -102,13 +102,13 @@ class State:
             cmd.set_acceptance_id(AcceptanceID)
 
     def set_input_position_restore_f(self, Value=True):
-        accept_cmd = self.single_entry.find(Accept)
+        accept_cmd = self.single_entry.find(SeAccept)
         assert accept_cmd is not None
         accept_cmd.set_restore_position_register_f()
 
     def set_input_position_store_f(self, Value=True):
-        if Value: self.single_entry.add_Cmd(StoreInputPosition)
-        else:     self.single_entry.remove_Cmd(StoreInputPosition)
+        if Value: self.single_entry.add_Cmd(SeStoreInputPosition)
+        else:     self.single_entry.remove_Cmd(SeStoreInputPosition)
 
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__target_map.add_transition(Trigger, TargetStateIdx)

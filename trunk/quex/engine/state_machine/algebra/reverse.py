@@ -7,7 +7,7 @@
        reverse(union(P, Q))        == union(reverse(P), reverse(Q))
        reverse(intersection(P, Q)) == intersection(reverse(P), reverse(Q))
 """
-from   quex.engine.state_machine.state.single_entry import Accept
+from   quex.engine.state_machine.state.single_entry import SeAccept
 from   quex.engine.state_machine.core               import StateMachine
 import quex.engine.state_machine.check.special      as special
 
@@ -40,7 +40,7 @@ def do(SM):
     for state_index, state in SM.states.items():
         result.states[state_index].single_entry.set(
             cmd.clone() for cmd in state.single_entry
-                if cmd.__class__ != Accept
+                if cmd.__class__ != SeAccept
         ) # deepcopy implicit
 
     # -- only the ORIGINAL initial state becomes an acceptance state (end of inverse)

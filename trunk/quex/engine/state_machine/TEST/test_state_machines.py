@@ -23,20 +23,20 @@ from quex.engine.misc.interval_handling import *
 
 def get_cmd(SmId, StateIndex, AcceptanceF):
     if AcceptanceF: 
-        cmd = Accept()
+        cmd = SeAccept()
         cmd.set_acceptance_id(SmId)
     else:
-        cmd = StoreInputPosition()
+        cmd = SeStoreInputPosition()
         cmd.set_acceptance_id(SmId)
     return cmd
 
 def add_origin(state, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=False):
     if state.is_acceptance():
-        cmd = Accept()
+        cmd = SeAccept()
         cmd.set_acceptance_id(StateMachineID_or_StateOriginInfo)
         state.single_entry.add(cmd)
     elif StoreInputPositionF:
-        cmd = StoreInputPosition()
+        cmd = SeStoreInputPosition()
         state.single_entry.add(cmd)
 
 def set_cmd_list(sm, StateIndex, *TheList):

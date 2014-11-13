@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import quex.engine.misc.error                           as     error
 from   quex.engine.state_machine.core                   import StateMachine
-from   quex.engine.state_machine.state.single_entry     import Accept
+from   quex.engine.state_machine.state.single_entry     import SeAccept
 import quex.engine.state_machine.construction.sequentialize          as     sequentialize
 import quex.engine.state_machine.algorithm.beautifier   as     beautifier
 import quex.engine.state_machine.construction.ambiguous_post_context as     ambiguous_post_context
@@ -73,7 +73,7 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     assert post_context_sm is None or not post_context_sm.has_origins()
 
     for state in the_state_machine.get_acceptance_state_list():
-        for cmd in state.single_entry.get_iterable(Accept): 
+        for cmd in state.single_entry.get_iterable(SeAccept): 
             assert cmd.pre_context_id() == E_PreContextIDs.NONE, \
                    "Post Contexts MUST be mounted BEFORE pre-contexts."
 
