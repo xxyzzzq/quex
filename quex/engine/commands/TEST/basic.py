@@ -25,7 +25,7 @@ from   quex.engine.commands.core         import _cost_db, \
 from   quex.engine.commands.TEST.helper  import example_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
 import quex.engine.commands.shared_tail  as     command_list_shared_tail
-from   quex.output.core.languages.core       import db
+from   quex.output.core.dictionary       import db
 
 from   quex.blackboard import E_Cmd, \
                               setup as Setup, \
@@ -49,7 +49,7 @@ def test(Cmd):
     print "%s" % Cmd.id
     print "   <%s>" % str(Cmd).replace("\n", "")
     print "   Registers:   ", 
-    for register, right in sorted(get_register_access_db(Cmd).items()):
+    for register, right in sorted(Cmd.get_register_access_db().items()):
         txt = ""
         if right.write_f: txt += "w"
         if right.read_f:  txt += "r"

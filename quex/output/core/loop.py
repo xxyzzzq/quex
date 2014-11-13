@@ -1,14 +1,14 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-from   quex.output.core.languages.variable_db     import variable_db
-import quex.output.core.base                      as     generator
 import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.engine.commands.core                  import E_R, \
-                                                         Command, \
+from   quex.engine.commands.core                  import Command, \
                                                          CommandList
 import quex.engine.state_machine.index            as     index
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.misc.tools                     import typed
+from   quex.output.core.variable_db               import variable_db
+import quex.output.core.base                      as     generator
 from   quex.blackboard import E_StateIndices, \
+                              E_R, \
                               E_CharacterCountType, \
                               setup as Setup
 

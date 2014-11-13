@@ -53,7 +53,7 @@ import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
 
 from   quex.engine.state_machine.core               import StateMachine
-from   quex.engine.state_machine.state.single_entry import Accept      
+from   quex.engine.state_machine.state.single_entry import SeAccept      
 
 from   quex.engine.misc.tools                            import typed
 from   quex.blackboard  import setup as Setup, \
@@ -251,7 +251,7 @@ class Analyzer:
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cmd_list.extend(
                  Command.PreContextOK(cmd.acceptance_id()) 
-                 for cmd in OldState.single_entry.get_iterable(Accept)
+                 for cmd in OldState.single_entry.get_iterable(SeAccept)
             )
 
         if state.transition_map is None and False: 

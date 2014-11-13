@@ -1,17 +1,17 @@
-<test-database execution-time-sec="14.02" date="Wed Nov 12 21:59:27 2014">
+<test-database execution-time-sec="14.17" date="Thu Nov 13 22:56:57 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Parse Indentation Setup" time-sum-sec="0.36"> 
+    <test title="Parse Indentation Setup" time-sum-sec="0.35"> 
         <application file-name="indentation_setup.py" info-request-time="1415739647L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
            <choice name="basic" result="OK" time_sec="0.07" crc="-2056482626"/>
-           <choice name="twice" result="OK" time_sec="0.07" crc="1123560300"/>
+           <choice name="twice" result="OK" time_sec="0.06" crc="1123560300"/>
            <choice name="intersection" result="OK" time_sec="0.09" crc="84023524"/>
            <choice name="intersection-2" result="OK" time_sec="0.07" crc="1878621752"/>
-           <choice name="non-numeric" result="OK" time_sec="0.05" crc="780678417"/>
+           <choice name="non-numeric" result="OK" time_sec="0.06" crc="780678417"/>
         </choice-list>
     </test>
-    <test title="Case Folding based on Unicode Database" time-sum-sec="0.29"> 
+    <test title="Case Folding based on Unicode Database" time-sum-sec="0.30"> 
         <application file-name="case_fold.py" info-request-time="1415573282L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -23,7 +23,7 @@
            <choice name="m_multi_turkish" result="OK" time_sec="0.05" crc="447292331"/>
         </choice-list>
     </test>
-    <test title="Parse Counter Setup" time-sum-sec="0.32"> 
+    <test title="Parse Counter Setup" time-sum-sec="0.33"> 
         <application file-name="counter_setup.py" info-request-time="1415739647L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
@@ -31,43 +31,43 @@
            <choice name="twice" result="OK" time_sec="0.06" crc="1611416220"/>
            <choice name="intersection" result="OK" time_sec="0.07" crc="-1272420778"/>
            <choice name="intersection-2" result="OK" time_sec="0.06" crc="-398174721"/>
-           <choice name="non-numeric" result="OK" time_sec="0.06" crc="-975186062"/>
+           <choice name="non-numeric" result="OK" time_sec="0.07" crc="-975186062"/>
         </choice-list>
     </test>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" time-sum-sec="0.92"> 
+        <test title="Character Sets for Property Settings II" time-sum-sec="0.91"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1411422171L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.92" crc="139565825"/>
+               <choice name="" result="OK" time_sec="0.91" crc="139565825"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="5.86"> 
+        <test title="Information about Properties" time-sum-sec="6.02"> 
             <application file-name="test-query.py" info-request-time="1407818507L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="5.25" crc="-2060388148"/>
-               <choice name="PropertyInfo" result="OK" time_sec="0.61" crc="2082058675"/>
+               <choice name="PropertyList" result="OK" time_sec="5.40" crc="-2060388148"/>
+               <choice name="PropertyInfo" result="OK" time_sec="0.62" crc="2082058675"/>
             </choice-list>
         </test>
-        <test title="Wildcard Property Values" time-sum-sec="0.60"> 
+        <test title="Wildcard Property Values" time-sum-sec="0.59"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1407818504L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.60" crc="350926567"/>
+               <choice name="" result="OK" time_sec="0.59" crc="350926567"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="3.13"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="3.19"> 
             <application file-name="test-query-character-set.py" info-request-time="1408142859L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.13" crc="-1727661823"/>
+               <choice name="" result="OK" time_sec="3.19" crc="-1727661823"/>
             </choice-list>
         </test>
     </group>
     <group name="token_type">
-        <test title="Union Members" time-sum-sec="0.65"> 
-            <application file-name="token_type-3.py" info-request-time="1415532612L" vanished="False"/>
+        <test title="Union Members" time-sum-sec="0.63"> 
+            <application file-name="token_type-3.py" info-request-time="1415830286L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
                <choice name="None" result="OK" time_sec="0.07" crc="-1625875659"/>
@@ -81,8 +81,8 @@
                <choice name="Twice-2" result="OK" time_sec="0.07" crc="2017786782"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" time-sum-sec="0.36"> 
-            <application file-name="token_type-4.py" info-request-time="1415532612L" vanished="False"/>
+        <test title="Constructor, Copy, Destructor" time-sum-sec="0.35"> 
+            <application file-name="token_type-4.py" info-request-time="1415830286L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
                <choice name="Constructor" result="OK" time_sec="0.07" crc="963533973"/>
@@ -92,8 +92,8 @@
                <choice name="Copy" result="OK" time_sec="0.07" crc="-993555752"/>
             </choice-list>
         </test>
-        <test title="Class Name and Namespace" time-sum-sec="0.50"> 
-            <application file-name="token_type-5.py" info-request-time="1415532612L" vanished="False"/>
+        <test title="Class Name and Namespace" time-sum-sec="0.49"> 
+            <application file-name="token_type-5.py" info-request-time="1415830476L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="7" same_result="False">
                <choice name="0" result="OK" time_sec="0.07" crc="580574667"/>
@@ -105,11 +105,11 @@
                <choice name="6" result="OK" time_sec="0.07" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" time-sum-sec="0.59"> 
-            <application file-name="token_type-1.py" info-request-time="1415532612L" vanished="False"/>
+        <test title="Buildt-In Members" time-sum-sec="0.56"> 
+            <application file-name="token_type-1.py" info-request-time="1415830286L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
-               <choice name="None" result="OK" time_sec="0.08" crc="865997258"/>
+               <choice name="None" result="OK" time_sec="0.07" crc="865997258"/>
                <choice name="One" result="OK" time_sec="0.07" crc="1060288312"/>
                <choice name="All" result="OK" time_sec="0.07" crc="-665233649"/>
                <choice name="Forbidden" result="OK" time_sec="0.07" crc="-1650465141"/>
@@ -119,15 +119,15 @@
                <choice name="Error-2" result="OK" time_sec="0.07" crc="2076320285"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" time-sum-sec="0.43"> 
-            <application file-name="token_type-2.py" info-request-time="1415532612L" vanished="False"/>
+        <test title="Distinct Members" time-sum-sec="0.45"> 
+            <application file-name="token_type-2.py" info-request-time="1415830286L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="6" same_result="False">
                <choice name="None" result="OK" time_sec="0.07" crc="-1459557591"/>
                <choice name="One" result="OK" time_sec="0.07" crc="844282235"/>
-               <choice name="Some" result="OK" time_sec="0.07" crc="-218909109"/>
-               <choice name="Forbidden" result="OK" time_sec="0.07" crc="227999755"/>
-               <choice name="Error" result="OK" time_sec="0.07" crc="473321804"/>
+               <choice name="Some" result="OK" time_sec="0.08" crc="-218909109"/>
+               <choice name="Forbidden" result="OK" time_sec="0.08" crc="227999755"/>
+               <choice name="Error" result="OK" time_sec="0.08" crc="473321804"/>
                <choice name="Twice" result="OK" time_sec="0.07" crc="592546663"/>
             </choice-list>
         </test>

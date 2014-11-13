@@ -15,7 +15,7 @@
 ################################################################################
 
 
-# import quex.output.core.languages.core as languages
+# import quex.output.core.dictionary as languages
 import quex.engine.misc.utf8 as utf8
 from   quex.engine.misc.tools import r_enumerate, \
                                 typed, \

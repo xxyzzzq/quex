@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from StringIO import StringIO
 import quex.input.regular_expression.engine        as regex
 from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.state_machine.state.single_entry import Accept     
+from   quex.engine.state_machine.state.single_entry import SeAccept     
 from   quex.engine.misc.interval_handling              import NumberSet, Interval
 import quex.engine.state_machine.transformation.utf8_state_split as trafo
 from   quex.engine.state_machine.transformation.utf8_state_split import unicode_to_utf8
@@ -41,7 +41,7 @@ class X:
 
                 # All acceptance flags must belong to the original state machine
                 for cmd in result.states[s_idx].single_entry:
-                    if cmd.__class__ != Accept: continue
+                    if cmd.__class__ != SeAccept: continue
                     # HERE: As soon as something is wrong --> fire an exception
                     assert cmd.acceptance_id() == self.id
         print " (OK=%i)" % self.id

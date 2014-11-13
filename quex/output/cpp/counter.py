@@ -4,7 +4,7 @@ _______________________________________________________________________________
 """
 import quex.output.core.base                   as     generator
 import quex.output.core.loop                   as     loop
-from   quex.output.core.languages.variable_db  import variable_db
+from   quex.output.core.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID

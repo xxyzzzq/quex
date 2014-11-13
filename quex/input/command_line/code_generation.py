@@ -6,7 +6,7 @@ from   quex.input.setup                     import global_extension_db,      \
                                                    E_Files
 from   quex.input.files.token_type          import TokenTypeDescriptorManual
 from   quex.input.files.token_id_file       import parse as token_id_file_parse
-from   quex.output.core.languages.core import db as output_language_db
+from   quex.output.core.dictionary import db as output_language_db
 import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split      
 import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split      
 from   quex.engine.misc.file_in             import read_namespaced_name

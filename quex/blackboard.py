@@ -210,6 +210,27 @@ E_Cmd = Enum("Accepter",
              "TemplateStateKeySet",
              "_DEBUG_Commands")
 
+E_R = Enum("AcceptanceRegister",
+           "Buffer",
+           "Column",
+           "Input",
+           "Indentation",
+           "InputP",
+           "LexemeStartP",
+           "LexemeEnd",
+           "CharacterBeginP",  # -> dynamic size codecs
+           "Line",
+           "PathIterator",
+           "PreContextFlags",
+           "ReferenceP",
+           "StandardOutput",
+           "PositionRegister",
+           "Pointer",
+           "TargetStateElseIndex",
+           "TargetStateIndex",
+           "TemplateStateKey",
+           "ThreadOfControl")
+
 
 #-----------------------------------------------------------------------------------------
 # standard_incidence_db: Stores names of event handler functions as keys and their meaning

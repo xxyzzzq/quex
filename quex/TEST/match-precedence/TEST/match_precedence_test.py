@@ -10,7 +10,7 @@ from   quex.input.files.mode            import Mode
 from   quex.input.code.base             import SourceRef
 from   quex.input.code.core             import CodeUser
 from   quex.engine.analyzer.door_id_address_label  import dial_db
-import quex.output.core.languages.core  as     languages
+import quex.output.core.dictionary  as     languages
 
 import quex.blackboard                  as     blackboard
 

@@ -1,7 +1,7 @@
 # (C) Frank Rene Schaefer
 import quex.output.core.state_machine_coder       as     state_machine_coder
 import quex.output.core.state_router              as     state_router_generator
-from   quex.output.core.languages.variable_db     import variable_db
+from   quex.output.core.variable_db     import variable_db
 from   quex.engine.analyzer.door_id_address_label      import DoorID, \
                                                               dial_db
 import quex.output.core.reload_state              as     reload_state_coder

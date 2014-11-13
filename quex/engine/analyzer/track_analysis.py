@@ -90,7 +90,7 @@ ________________________________________________________________________________
 ABSOLUTELY NO WARRANTY
 ________________________________________________________________________________
 """
-from   quex.engine.state_machine.state.single_entry import Accept, StoreInputPosition
+from   quex.engine.state_machine.state.single_entry import SeAccept, SeStoreInputPosition
 from   quex.engine.misc.tree_walker        import TreeWalker
 from   quex.engine.analyzer.paths_to_state import PathsToState
 from   quex.blackboard                     import E_IncidenceIDs, \
@@ -359,12 +359,12 @@ class _Trace(object):
         #     acceptances and store-input-position events.
         #     Origins must be sorted with the highest priority LAST, so that they will
         #     appear on top of the acceptance trace list.
-        for cmd in sorted(State.single_entry.get_iterable(Accept), 
+        for cmd in sorted(State.single_entry.get_iterable(SeAccept), 
                           key=lambda x: x.acceptance_id(), reverse=True):
             # Acceptance 
             result.__acceptance_trace_add_at_front(cmd, StateIndex)
 
-        for cmd in sorted(State.single_entry.get_iterable(StoreInputPosition), 
+        for cmd in sorted(State.single_entry.get_iterable(SeStoreInputPosition), 
                           key=lambda x: x.acceptance_id(), reverse=True):
             # Store Input Position Information
             result.__storage_db[cmd.acceptance_id()] = _StoreInfo([StateIndex], 0)

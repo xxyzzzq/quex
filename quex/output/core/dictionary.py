@@ -15,9 +15,9 @@
 from   quex.input.code.base                              import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
+from   quex.engine.commands.content_terminal_router      import RouterContentElement
 from   quex.engine.commands.core                         import E_R, \
-                                                                Command, \
-                                                                RouterContentElement
+                                                                Command
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
@@ -48,9 +48,6 @@ import re
 # C++
 #    
 CppBase = {
-    "$indentation_add":          cpp.__indentation_add,
-    "$indentation_check_space":  cpp.__indentation_check_whitespace,
-    #
     "$frame":                   cpp.__frame_of_all,
     "$code_base":               "/quex/code_base/",
     "$token-default-file":      "/token/CppDefault.qx",

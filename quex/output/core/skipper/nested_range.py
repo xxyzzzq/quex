@@ -1,4 +1,4 @@
-from   quex.output.core.languages.variable_db  import variable_db
+from   quex.output.core.variable_db  import variable_db
 from   quex.output.core.skipper.common         import get_character_sequence, \
                                                            get_on_skip_range_open, \
                                                            line_column_counter_in_loop

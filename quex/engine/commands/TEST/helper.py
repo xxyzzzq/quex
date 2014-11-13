@@ -1,11 +1,13 @@
+from   quex.engine.commands.content_terminal_router         import *
 from   quex.engine.commands.core         import *
 from   quex.engine.commands.core         import _cost_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
 import quex.engine.commands.shared_tail  as command_list_shared_tail
-from   quex.output.core.languages.core       import db
 import quex.engine.analyzer.engine_supply_factory as     engine
+from   quex.output.core.dictionary       import db
 
 from   quex.blackboard import E_Cmd, \
+                              E_R, \
                               E_Compression, \
                               setup as Setup, \
                               Lng

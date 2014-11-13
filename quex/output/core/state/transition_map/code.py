@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.transition_map          import TransitionMap
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey
-from   quex.output.core.languages.variable_db  import variable_db
+from   quex.output.core.variable_db  import variable_db
 from   quex.engine.analyzer.door_id_address_label   import dial_db, DoorID 
 from   quex.engine.misc.tools                            import all_isinstance
 from   quex.blackboard import Lng, setup as Setup

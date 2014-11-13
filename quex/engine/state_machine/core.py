@@ -3,7 +3,7 @@ from   quex.engine.misc.string_handling             import blue_print
 from   quex.engine.misc.interval_handling                import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
-from   quex.engine.state_machine.state.single_entry import Accept
+from   quex.engine.state_machine.state.single_entry import SeAccept
 
 from   quex.engine.misc.tools  import flatten_list_of_lists
 from   quex.blackboard    import E_IncidenceIDs, \
@@ -490,7 +490,7 @@ class StateMachine(object):
         pre_context_id_set = set()
         acceptance_id_set  = set()
         for state in self.states.itervalues():
-            for cmd in state.single_entry.get_iterable(Accept):
+            for cmd in state.single_entry.get_iterable(SeAccept):
                 pre_context_id_set.add(cmd.pre_context_id())
                 acceptance_id_set.add(cmd.acceptance_id())
                 

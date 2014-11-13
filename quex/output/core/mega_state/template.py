@@ -1,6 +1,6 @@
 # (C) Frank-Rene Schaefer
 ##from   quex.output.core.state.core             import input_do
-from   quex.output.core.languages.variable_db  import variable_db
+from   quex.output.core.variable_db  import variable_db
 """Template Compression _______________________________________________________
 
    Consider the file 'analyzer/mega_state/template/core.py' for a detailed 

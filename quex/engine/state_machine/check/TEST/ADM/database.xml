@@ -1,15 +1,15 @@
-<test-database execution-time-sec="4.82" date="Wed Nov 12 21:59:13 2014">
+<test-database execution-time-sec="4.84" date="Thu Nov 13 22:56:57 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Pattern Superset/Subset Determination" time-sum-sec="1.51"> 
+    <test title="Pattern Superset/Subset Determination" time-sum-sec="1.52"> 
         <application file-name="test-subset_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="7" same_result="False">
-           <choice name="Easy" result="OK" time_sec="0.11" crc="-443130574"/>
+           <choice name="Easy" result="OK" time_sec="0.10" crc="-443130574"/>
            <choice name="FalseCases" result="OK" time_sec="0.15" crc="-2100744066"/>
            <choice name="GoodCases" result="OK" time_sec="0.10" crc="1129454882"/>
            <choice name="FalseCasesII" result="OK" time_sec="0.21" crc="1052189149"/>
            <choice name="GoodCasesII" result="OK" time_sec="0.46" crc="-1943706133"/>
-           <choice name="Misc" result="OK" time_sec="0.39" crc="239663837"/>
+           <choice name="Misc" result="OK" time_sec="0.41" crc="239663837"/>
            <choice name="Pre-Post-Conditions" result="OK" time_sec="0.09" crc="-752691781"/>
         </choice-list>
     </test>
@@ -27,11 +27,11 @@
            <choice name="" result="OK" time_sec="1.16" crc="360428126"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" time-sum-sec="0.85"> 
+    <test title="Pattern Identity Determination" time-sum-sec="0.86"> 
         <application file-name="test-identity_checker.py" info-request-time="1387873736L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="4" same_result="False">
-           <choice name="True" result="OK" time_sec="0.46" crc="-390242573"/>
+           <choice name="True" result="OK" time_sec="0.47" crc="-390242573"/>
            <choice name="False" result="OK" time_sec="0.21" crc="554533910"/>
            <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.09" crc="-138569557"/>
            <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.09" crc="38876760"/>

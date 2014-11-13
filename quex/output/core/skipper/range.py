@@ -1,6 +1,6 @@
 from   quex.engine.analyzer.door_id_address_label  import __nice, dial_db
 import quex.engine.analyzer.engine_supply_factory  as     engine
-from   quex.output.core.languages.variable_db import variable_db
+from   quex.output.core.variable_db import variable_db
 from   quex.output.core.skipper.common        import line_counter_in_loop, \
                                                           get_character_sequence, \
                                                           get_on_skip_range_open, \
