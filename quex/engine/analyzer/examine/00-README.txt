@@ -11,12 +11,13 @@ performance increase (due to avoided cache misses, for example). Operations are
 preferred to be postponed, because earlier states are passed more often than
 later states.
 
-The basis for the analysis is a 'simple state machine'. What makes the state
-machine simple is the association of states and operations: For any entry into
-the state the exact same operation is applied. As a result of the operation
-reduction and operation postponing, a (non-simple) 'state machine' is
-developed. In this state machine, operations upon entry into a state differ
-depending on the state from which they are entered.
+The analysis works on a state machine composed of 'single-entry states'. That 
+is, in such a state machine is entered through one entry, independent from what
+state it is entered, or through which transition. The result of the analysis
+is a state machine composed of 'multi-entry states'. That is, the operations 
+applied upon entry into a state may be different dependent on from which state
+or through which transition the entry happens. Figure 1 shows a single-entry
+state and a multi-entry state.  
 
       a)
 
@@ -57,55 +58,55 @@ state machine are depicted in figure 1.
               Figure 1: The run through a state machine.
 
 
-Each phenomenon can be associated with a set of variables by which it is
+Each phenomenon can be associated with a set of registers by which it is
 determined. The line and column numbers are determined by the current line and
 column number and the previous line and current number, for example. The sets
-of variables which are associated with an investigated procedure, is called
-SOV.
+of registers which are associated with an investigated procedure, is called
+SCR.
 
 
-DEFINITION: SOV -- Set of Variables
+DEFINITION: SCR -- Set of Concerned Registers
 
-    The term 'set of variables' SOV shall stand for the set of all
-    variables which are relevant to the investigated behavior. 
-
-
-The variables of an SOV evolve along state transitions. Not all variables may
-be necessary in all states. For example, if the lexeme length is not required
-in a terminal, then no state on the path to the terminal is required to
-contribute to the development of that variable. Let the state specific 
-set of variables SOV(i) be defined.
+    The term 'set of concerned registers' SCR shall stand for the set of 
+    all registers which are relevant to the investigated behavior. 
 
 
-DEFINITION: SOV(i) -- The state specific required set of variables.
+The setting of registers of an SCR evolves along state transitions. Not all
+registers may be necessary in all states. For example, if the lexeme length is
+not required in a terminal, then no state on the path to the terminal is
+required to contribute to the development of that register. Let the state
+specific set of registers SCR(i) be defined.
 
-    The set of variables SOV(i) in state 'i' contains all variables which are
-    required to satisfy the requirements of all successor states of state 'i'.
+DEFINITION: SCR(i) -- The state specific set of concerned registers.
 
+    The set of registers SCR(i) in state 'i' allows to determine the operations
+    which are relevant to successor states of state 'i'. 
+    
+    Any operation in state(i) on a register of SCR(i) is subject to 
+    consideration.
 
-As a direct consequence, the 'SOV(i)' for each state can be determined by
+As a direct consequence, the 'SCR(i)' for each state can be determined by
 *back-propagation* of needs. A state or a terminal which requires a specific
-variable tags all of its predecessor states with this requirement. That is, if
-a state 'k' requires a variable 'x' than 'x is element of SOV(i)' for all 'i'
+register tags all of its predecessor states with this requirement. That is, if
+a state 'k' requires a register 'x' than 'x is element of SCR(i)' for all 'i'
 in the set of states that lead to 'k'.
 
-A state machine changes variables of the SOV. These changes are consequences of
-operations that happen upon entry into states. Let an 'operation' be defined as
-follows.
-
+As a consequence of transitions, a state machine changes the content of 
+registers of the SCR. An elementary unit that modifies the content of a 
+register is called an 'operation', as defined here:
 
 DEFINITION: op(i) -- Operation 
 
-    The modification on the SOV upon entry into a state 'i' is called an
-    operation 'op(i)'. With 'x' as the setting of the SOV before entry
-    into a state 'i', the setting of the SOV in state 'i' becomes
+    A modification to a one or more register of the SCR upon entry into a 
+    state 'i' is called an operation 'op(i)'. With 'x' as the setting of 
+    the  before entry into a state 'i', the setting of the SCR in state 'i' 
+    becomes
 
-                         SOV(i) = op(i)(x)
-
+                         SCR(i) = op(i)(x)
 
 That is, 'op(i)' is a function or a procedure that is applied on the set of
-variables of concern. All investigated behavior along the state machine 
-concentrates on operations on the SOV.
+registers of concern. All investigated behavior along the state machine 
+concentrates on operations on the SCR.
 
 -------------------------------------------------------------------------------
 
@@ -125,24 +126,24 @@ DEFINITION: Linear State
 
                 Figure 1: The concept of a linear state.
 
-Since there is only one predecessor state to a linear state the SOV can be
-derived from the SOV at the predecessor and the operation at the entry of the
+Since there is only one predecessor state to a linear state the SCR can be
+derived from the SCR at the predecessor and the operation at the entry of the
 linear state itself. Let 'p(i)' denote the predecessor state of 'i'. Then,
 
-                 SOV(i) = op(i)(SOV(p(i)))
+                 SCR(i) = op(i)(SCR(p(i)))
 
 if 'p(i)' is also a linear state, then the right hand of the above equation can
 be expanded
 
-                 SOV(i) = op(i)(SOV(op(p(i))(SOV(p(p(i))))))
+                 SCR(i) = op(i)(SCR(op(p(i))(SCR(p(p(i))))))
 
-Let OP(i,k) denote the concatinated operations from state 'k' to state 'i'
-along a sequence of linear states, then SOV(i) can be determined by SOV(k)
+Let OP(i,k) denote the concatenated operations from state 'k' to state 'i'
+along a sequence of linear states, then SCR(i) can be determined by SCR(k)
 through
 
-                 SOV(i) = OP(i,k)(SOV(k))
+                 SCR(i) = OP(i,k)(SCR(k))
 
-That is, if SOV(k) is determined, then SOV(i) can be determined without the
+That is, if SCR(k) is determined, then SCR(i) can be determined without the
 operations along the path from 'k' to 'i'.  Figure 2 displays an example, that
 shows how this can be used to reduce computational effort. 
 
@@ -154,14 +155,14 @@ shows how this can be used to reduce computational effort.
 
 For an exit in state 'd' the operations can be described in general terms as
 
-                   SOV(b) = op(b)(SOV(a))
-                   SOV(c) = op(c)(SOV(b))
-                   SOV(d) = op(d)(SOV(c))
-                          = op(d)(op(c)(SOV(b)))
-                          = op(d)(op(c)(op(b)(SOV(a))))
-                          = OP(e,a)(SOV(a))
+                   SCR(b) = op(b)(SCR(a))
+                   SCR(c) = op(c)(SCR(b))
+                   SCR(d) = op(d)(SCR(c))
+                          = op(d)(op(c)(SCR(b)))
+                          = op(d)(op(c)(op(b)(SCR(a))))
+                          = OP(e,a)(SCR(a))
                  
-The SOV in figure 2 is 'x'. The operation 'op(i)' for all states in figure 2 is
+The SCR in figure 2 is 'x'. The operation 'op(i)' for all states in figure 2 is
 'x = x + 1'. Thus, with 'x(i)' as the 'x' in state 'i' the sequence in the
 becomes:
     
@@ -174,41 +175,41 @@ The 'x(d)' in state 'd' can be determined in one operation:
                           x(d) = x(a) + 3
        
 The formula for 'x(d)' together with 'x(a)' build the recipe to determine the
-SOV in state 'd' without knowing the previous operations along the path.  In
+SCR in state 'd' without knowing the previous operations along the path.  In
 the example above, a longer sequence of additions was transformed into a single
 addition.  Let the term recipe be define for the context of this discussion.
 
 DEFINITION: R(i) -- Recipe 
 
    A recipe 'R(i)' for a state 'i' is a description of how to determine 
-   the SOV(i) when the state has been entered. It maps
+   the SCR(i) when the state has been entered. It maps
 
-                     (s, r, c) ---> SOV(i)
+                     (s, r, c) ---> SCR(i)
 
-   where 's' is the current state including his variables. 'r' is a setting of
+   where 's' is the current state including his registers. 'r' is a setting of
    registers that store temporary data, and 'c' is a set of constants. 
 
 Along a sequence of linear states, there is an obvious relation between a
 recipe and the concatinated operations
 
-                   SOV(i) = OP(i,k)(SOV(k))
+                   SCR(i) = OP(i,k)(SCR(k))
 
-If 'i' is reached from 'k' by a sequence of linear states, then the 'SOV(k)' and
-the OP(i,x) build together the recipe R(i). 'SOV(k)' is an example of content
+If 'i' is reached from 'k' by a sequence of linear states, then the 'SCR(k)' and
+the OP(i,x) build together the recipe R(i). 'SCR(k)' is an example of content
 stored in registers, i.e. the 'r' in the definition of a recipe. An example for
 constants 'c' can be observed in the example from figure 2, where 'x' was
 computed as the content of 'x' stored in state 'a' plus a constant number. 
 
-An example for a state variable in a recipe would be, for example, the
+An example for a state register in a recipe would be, for example, the
 computation of the lexeme length 'length(i)' based on the distance to the
 position of first character 'ip0'. Let 'ip' be the pointer to the position where
 the current character is located. Then the lexeme length can be expressed as
 
                         length(i) = (ip - ip0)
 
-and 'ip' is a state variable, i.e. an element of 's' from the definition of a
+and 'ip' is a state register, i.e. an element of 's' from the definition of a
 recipe. The iterative development of recipes can only start at a state where
-the recipe to compute the SOV is determined. Only then, any previous history
+the recipe to compute the SCR is determined. Only then, any previous history
 can be dropped from consideration, because it is reflected in the state's
 recipe.
 
@@ -274,7 +275,7 @@ linear states must rely on the stored value for it.
 
                    Figure 4: Recipes in a mouth state.
 
-Note, that the register 'x(3)' is not part of the SOV. Thus, the newly entered
+Note, that the register 'x(3)' is not part of the SCR. Thus, the newly entered
 computations 'x(3)=x(0)+1' and 'x(3)=x(0)+3' are not operations 'op(i)' as
 defined earlier and are not subject to further considerations.  Now, let the
 process of 'interference' be defined as follows.
@@ -286,7 +287,7 @@ DEFINITION: Interference
     First, it concatenates the recipe of each incoming state with its operation
     'op(i)'. The result is the set of entry recipes. Second, the set of entry
     recipes is used as a basis to determine 'R(i)'. Along with the recipe
-    new non-SOV operations may be injected into the state machine. Those
+    new non-SCR operations may be injected into the state machine. Those
     operations store reference values which are required by 'R(i)'.
 
 Interference cannot happen, if the set of entry recipes is incomplete. That is,
@@ -532,7 +533,7 @@ DEFINITION: Dead-Lock Group Interference
     all unresolved mouth states that are part of a dead-lock group. 
    
     All determined entries are collected into the 'mega-set' of entry recipes.
-    Those values of the SOV which are not uniform must be stored in register.
+    Those values of the SCR which are not uniform must be stored in register.
     The resulting recipe 'R(group)' rely on those stored values.
    
 
@@ -544,7 +545,7 @@ Further, dead-lock groups incorporate loops. So, The position where the
 operation occurs in the sequence and in what sequence with other operations
 cannot be determined. There is only one way to deal with that: The resulting
 recipe must be included into the dead-lock state interference. In the state
-itself, non-uniform values of the SOV must be stored in registers.
+itself, non-uniform values of the SCR must be stored in registers.
 
 -------------------------------------------------------------------------------
 

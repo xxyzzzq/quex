@@ -1,25 +1,25 @@
-<test-database execution-time-sec="50.11" date="Thu Nov 13 22:56:53 2014">
+<test-database execution-time-sec="54.48" date="Fri Nov 14 22:01:30 2014">
     <last-used-diff-display-program name=""/>
-    <test title="(*) Exceptions during 'import'" time-sum-sec="0.41"> 
+    <test title="(*) Exceptions during 'import'" time-sum-sec="0.59"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.41" crc="None"/>
+           <choice name="" result="OK" time_sec="0.59" crc="None"/>
         </choice-list>
     </test>
-    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.02"> 
+    <test title="The Lexeme macro does some safety checks when compiled with" time-sum-sec="0.04"> 
         <application file-name="no-use-of-lexeme-macro.sh" info-request-time="1405659373L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.02" crc="None"/>
+           <choice name="" result="OK" time_sec="0.04" crc="None"/>
         </choice-list>
     </test>
-    <test title="Include Guards for C/C++" time-sum-sec="0.25"> 
-        <application file-name="include_guard.py" info-request-time="1415739647L" vanished="False"/>
+    <test title="Command Line Option Documentation" time-sum-sec="0.24"> 
+        <application file-name="verify_command_line_option_doc.py" info-request-time="1407444338L" vanished="True"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="convention" result="OK" time_sec="0.12" crc="None"/>
-           <choice name="undefinition" result="OK" time_sec="0.13" crc="None"/>
+           <choice name="man" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
+           <choice name="shinx" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
         </choice-list>
     </test>
     <test title="&lt; #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$" time-sum-sec="0.01"> 
@@ -29,14 +29,14 @@
            <choice name="" result="OK" time_sec="0.01" crc="-1229367588"/>
         </choice-list>
     </test>
-    <test title="Code Check with pyflakes" time-sum-sec="48.93"> 
+    <test title="Code Check with pyflakes" time-sum-sec="53.06"> 
         <application file-name="pyflakes-check.sh" info-request-time="1381662240L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="48.93" crc="None"/>
+           <choice name="" result="FAIL" time_sec="53.06" crc="None"/>
         </choice-list>
     </test>
-    <test title="Command Line Option Documentation" time-sum-sec="0.09"> 
+    <test title="Command Line Option Documentation" time-sum-sec="0.08"> 
         <application file-name="command_line_options-verify-doc.py" info-request-time="1407997681L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="True">
@@ -51,16 +51,16 @@
            <choice name="" result="OK" time_sec="0.03" crc="None"/>
         </choice-list>
     </test>
-    <test title="Command Line Option Documentation" time-sum-sec="0.24"> 
-        <application file-name="verify_command_line_option_doc.py" info-request-time="1407444338L" vanished="True"/>
+    <test title="Include Guards for C/C++" time-sum-sec="0.27"> 
+        <application file-name="include_guard.py" info-request-time="1415739647L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="man" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
-           <choice name="shinx" result="NO GOOD FILE" time_sec="0.12" crc="None"/>
+           <choice name="convention" result="OK" time_sec="0.14" crc="None"/>
+           <choice name="undefinition" result="OK" time_sec="0.13" crc="None"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" time-sum-sec="0.13"> 
+        <test title="__parse_token_id_file" time-sum-sec="0.15"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1407962959L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
@@ -68,7 +68,7 @@
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <happy-pattern re="data/example-x-x.h:[0-9]+:"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.13" crc="1902190546"/>
+               <choice name="" result="OK" time_sec="0.15" crc="1902190546"/>
             </choice-list>
         </test>
     </group>

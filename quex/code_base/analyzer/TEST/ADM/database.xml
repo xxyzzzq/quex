@@ -1,22 +1,22 @@
-<test-database execution-time-sec="0.05" date="Thu Nov 13 22:56:53 2014">
+<test-database execution-time-sec="0.14" date="Fri Nov 14 22:02:56 2014">
     <last-used-diff-display-program name=""/>
     <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="statistics.exe" info-request-time="1415740564L" vanished="False"/>
+        <application file-name="statistics.exe" info-request-time="1415996470L" vanished="False"/>
         <analogy open="((" close="))"/>
         <make-procedure success="True" time_sec="0.143495"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.00" crc="1432648595"/>
         </choice-list>
     </test>
-    <test title="Accumulator" make-dependent="True" time-sum-sec="0.00"> 
-        <application file-name="accumulator.exe" info-request-time="1415740567L" vanished="False"/>
+    <test title="Accumulator" make-dependent="True" time-sum-sec="0.02"> 
+        <application file-name="accumulator.exe" info-request-time="1415996473L" vanished="False"/>
         <analogy open="((" close="))"/>
         <make-procedure success="True" time_sec="0.559904"/>
         <choice-list number="5" same_result="False">
            <choice name="String" result="OK" time_sec="0.00" crc="1490722418"/>
            <choice name="Character" result="OK" time_sec="0.00" crc="-276754526"/>
            <choice name="N-Character" result="OK" time_sec="0.00" crc="-1120495017"/>
-           <choice name="N-String" result="OK" time_sec="0.00" crc="932695689"/>
+           <choice name="N-String" result="OK" time_sec="0.01" crc="932695689"/>
            <choice name="Mix" result="OK" time_sec="0.00" crc="142252970"/>
         </choice-list>
     </test>
@@ -28,12 +28,12 @@
         </choice-list>
     </test>
     <group name="Post Categorizer">
-        <test title="Enter" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="post-categorizer-find.exe" info-request-time="1415740563L" vanished="False"/>
+        <test title="Enter" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-find.exe" info-request-time="1415996469L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.917587"/>
             <choice-list number="7" same_result="True">
-               <choice name="0" result="OK" time_sec="0.01" crc="-978220029"/>
+               <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="3" result="OK" time_sec="0.00" crc="-978220029"/>
@@ -42,40 +42,40 @@
                <choice name="6" result="OK" time_sec="0.00" crc="-978220029"/>
             </choice-list>
         </test>
-        <test title="Remove Total" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="post-categorizer-remove-total.exe" info-request-time="1415740567L" vanished="False"/>
+        <test title="Remove Total" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-total.exe" info-request-time="1415996473L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.850016"/>
             <choice-list number="7" same_result="True">
-               <choice name="1" result="OK" time_sec="0.01" crc="312237205"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="3" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="4" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="5" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="6" result="OK" time_sec="0.00" crc="312237205"/>
-               <choice name="7" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="7" result="OK" time_sec="0.01" crc="312237205"/>
             </choice-list>
         </test>
-        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="post-categorizer-remove-2.exe" info-request-time="1415740564L" vanished="False"/>
+        <test title="Remove Existent Node" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove-2.exe" info-request-time="1415996470L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.839030"/>
             <choice-list number="7" same_result="False">
                <choice name="Ab" result="OK" time_sec="0.00" crc="156350769"/>
                <choice name="Ad" result="OK" time_sec="0.00" crc="-615592824"/>
-               <choice name="Af" result="OK" time_sec="0.00" crc="-271613736"/>
-               <choice name="Ah" result="OK" time_sec="0.01" crc="-639697045"/>
+               <choice name="Af" result="OK" time_sec="0.01" crc="-271613736"/>
+               <choice name="Ah" result="OK" time_sec="0.00" crc="-639697045"/>
                <choice name="Bb" result="OK" time_sec="0.00" crc="-1397501183"/>
                <choice name="Bd" result="OK" time_sec="0.00" crc="1509696768"/>
                <choice name="Bf" result="OK" time_sec="0.00" crc="1062816794"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="post-categorizer-remove.exe" info-request-time="1415740565L" vanished="False"/>
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-remove.exe" info-request-time="1415996471L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.984080"/>
             <choice-list number="8" same_result="True">
-               <choice name="Aa" result="OK" time_sec="0.01" crc="1918139693"/>
+               <choice name="Aa" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ae" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ag" result="OK" time_sec="0.00" crc="1918139693"/>
@@ -85,8 +85,8 @@
                <choice name="Be" result="OK" time_sec="0.00" crc="1918139693"/>
             </choice-list>
         </test>
-        <test title="Enter" make-dependent="True" time-sum-sec="0.01"> 
-            <application file-name="post-categorizer-enter.exe" info-request-time="1415740566L" vanished="False"/>
+        <test title="Enter" make-dependent="True" time-sum-sec="0.02"> 
+            <application file-name="post-categorizer-enter.exe" info-request-time="1415996472L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.910960"/>
             <choice-list number="7" same_result="False">

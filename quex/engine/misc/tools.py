@@ -12,6 +12,10 @@ def r_enumerate(x):
     """Reverse enumeration."""
     return izip(reversed(xrange(len(x))), reversed(x))
 
+def delete_if(the_list, condition):
+    for i in xrange(len(the_list)-1, -1, -1):
+        if condition(the_list[i]): del the_list[i]
+
 def print_callstack(BaseNameF=False):
     try:
         i = 1
