@@ -325,22 +325,22 @@ def __create_token_sender_by_token_name(fh, TokenName):
     txt += "self_send(%s);\n" % TokenName
     return txt
 
-def __create_mode_transition_and_token_sender(fh, Command):
-    assert Command in ["GOTO", "GOSUB", "GOUP"]
+def __create_mode_transition_and_token_sender(fh, Op):
+    assert Op in ["GOTO", "GOSUB", "GOUP"]
 
     position     = fh.tell()
     target_mode  = ""
     token_sender = ""
     if check(fh, "("):
         skip_whitespace(fh)
-        if Command != "GOUP":
+        if Op != "GOUP":
             target_mode = __read_token_identifier(fh)
             skip_whitespace(fh)
 
         if check(fh, ")"):
             token_sender = ""
 
-        elif Command == "GOUP" or check(fh, ","):
+        elif Op == "GOUP" or check(fh, ","):
             skip_whitespace(fh)
             token_name = __read_token_identifier(fh)
             skip_whitespace(fh)
@@ -355,23 +355,23 @@ def __create_mode_transition_and_token_sender(fh, Command):
             token_sender = __create_token_sender_by_token_name(fh, token_name) 
 
             if check(fh, ")") == False:
-                error.log("Missing closing ')' or ',' after '%s'." % Command, 
+                error.log("Missing closing ')' or ',' after '%s'." % Op, 
                           fh)
 
         else:
             fh.seek(position)
-            error.log("Missing closing ')' or ',' after '%s'." % Command, fh)
+            error.log("Missing closing ')' or ',' after '%s'." % Op, fh)
 
     if check(fh, ";") == False:
-        error.log("Missing ')' or ';' after '%s'." % Command, fh)
+        error.log("Missing ')' or ';' after '%s'." % Op, fh)
 
-    if Command in ["GOTO", "GOSUB"] and target_mode == "": 
-        error.log("Command %s requires at least one argument: The target mode." % Command, 
+    if Op in ["GOTO", "GOSUB"] and target_mode == "": 
+        error.log("Op %s requires at least one argument: The target mode." % Op, 
                   fh)
 
     # Code for mode change
-    if   Command == "GOTO":  txt = Lng.MODE_GOTO(target_mode)
-    elif Command == "GOSUB": txt = Lng.MODE_GOSUB(target_mode)
+    if   Op == "GOTO":  txt = Lng.MODE_GOTO(target_mode)
+    elif Op == "GOSUB": txt = Lng.MODE_GOSUB(target_mode)
     else:                    txt = Lng.MODE_GOUP()
 
     # Code for token sending

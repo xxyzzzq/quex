@@ -17,7 +17,7 @@ import os
 import sys 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                            import E_Cmd
+from   quex.blackboard                            import E_Op
 from   quex.engine.commands.core         import *
 from   quex.engine.commands.shared_tail  import r_find_last_common
 from   quex.engine.commands.TEST.helper  import *
@@ -28,7 +28,7 @@ from   itertools   import izip, permutations
 from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
-    print "Command.shared_tail: find_last_common;"
+    print "Op.shared_tail: find_last_common;"
     print "CHOICES: EqualOp, no-common, 1-common, 2-common, 3-common, start-indices;"
     print "HAPPY:   [0-9]+/[0-9]+;"
     sys.exit()
@@ -72,21 +72,21 @@ def call(cl0, cl1, Done0, Done1):
     if result[0] is None: return None, None
     else:                 return (len(cl0) - 1 - result[0], len(cl1) - 1 - result[1])
 
-def test(CmdN0, CmdN1, CommonN=0):
+def test(OpN0, OpN1, CommonN=0):
     global shared_i
     print
-    print "[L1=%i; L2=%i; Common=%i]" % (CmdN0, CmdN1, CommonN)
+    print "[L1=%i; L2=%i; Common=%i]" % (OpN0, OpN1, CommonN)
     if CommonN == 0:
         setup()
-        cl0 = [ get(0) for i in xrange(CmdN0) ]
-        cl1 = [ get(0) for i in xrange(CmdN1) ]
+        cl0 = [ get(0) for i in xrange(OpN0) ]
+        cl1 = [ get(0) for i in xrange(OpN1) ]
         print_cl("A", cl0)
         print_cl("B", cl1)
         print "    last common at: %s" % str(call(cl0, cl1, set(), set()))
         print
     else:
-        info0 = [0] * (CmdN0 - CommonN) + [1] * CommonN
-        info1 = [0] * (CmdN1 - CommonN) + [1] * CommonN
+        info0 = [0] * (OpN0 - CommonN) + [1] * CommonN
+        info1 = [0] * (OpN1 - CommonN) + [1] * CommonN
         for selection0 in set(permutations(info0)):
             for selection1 in set(permutations(info1)):
                 setup()

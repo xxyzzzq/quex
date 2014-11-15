@@ -14,7 +14,7 @@ from   quex.engine.analyzer.mega_state.target               import TargetByState
 from   quex.engine.analyzer.mega_state.template.state       import TemplateState, \
                                                                    PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
-from   quex.engine.commands.core                            import CommandList
+from   quex.engine.commands.core                            import OpList
 from   quex.engine.commands.tree                            import CommandTree
 from   quex.engine.state_machine.state.core                 import State
 from   quex.engine.misc.interval_handling                   import NumberSet, Interval
@@ -94,9 +94,9 @@ def get_Analyzer(StatesDescription):
         state.entry.categorize(state.index)
 
     # Make sure that every state has its entry into drop-out
-    empty_cl = CommandList()
+    empty_cl = OpList()
     for i in analyzer.state_db.iterkeys():
-        analyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, i, copy(empty_cl))
+        analyzer.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, i, copy(empty_cl))
     analyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     analyzer.prepare_DoorIDs()

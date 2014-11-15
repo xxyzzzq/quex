@@ -1,10 +1,10 @@
-from   quex.engine.commands.core                  import Command, CommandList
+from   quex.engine.commands.core                  import Op, OpList
 from   quex.engine.analyzer.state.entry_action    import TransitionID, TransitionAction
 from   quex.engine.analyzer.door_id_address_label import dial_db, \
                                                          DoorID
 from   quex.engine.misc.tools                     import typed, \
                                                          TypedDict
-from   quex.blackboard                            import E_Cmd, \
+from   quex.blackboard                            import E_Op, \
                                                          E_StateIndices, \
                                                          E_DoorIdIndex
 
@@ -17,7 +17,7 @@ class Entry(object):
     
     BASICS _________________________________________________________________
 
-    To keep track of entry actions, CommandList-s need to 
+    To keep track of entry actions, OpList-s need to 
     be associated with a TransitionID-s, i.e. pairs of (state_index,
     from_state_index). This happens in the member '.__db', i.e.
     
@@ -39,7 +39,7 @@ class Entry(object):
 
     ensures that
                                   1     1
-                        DoorID  <---------> CommandList
+                        DoorID  <---------> OpList
    
     In words: 
     
@@ -55,7 +55,7 @@ class Entry(object):
     for now, it is important to remember:
 
               .---------------------------------------------------.
-              |  A DoorID distinctly identifies a CommandList to  |
+              |  A DoorID distinctly identifies a OpList to  |
               |       be executed the at entry of a state.        |
               '---------------------------------------------------'
     """
@@ -100,12 +100,12 @@ class Entry(object):
                          if action.door_id == DoorId 
         ]
 
-    def get_door_id_by_command_list(self, TheCommandList):
-        """Finds the DoorID of the door that implements TheCommandList.
-           RETURNS: None if no such door exists that implements TheCommandList.
+    def get_door_id_by_command_list(self, TheOpList):
+        """Finds the DoorID of the door that implements TheOpList.
+           RETURNS: None if no such door exists that implements TheOpList.
         """
         for action in self.__db.itervalues():
-            if action.command_list == TheCommandList:
+            if action.command_list == TheOpList:
                 return action.door_id
         return None
 
@@ -118,15 +118,15 @@ class Entry(object):
         if self.__largest_used_door_sub_index < Other.__largest_used_door_sub_index:
             self.__largest_used_door_sub_index = Other.__largest_used_door_sub_index
 
-    @typed(Cl=CommandList)
-    def enter_CommandList(self, ToStateIndex, FromStateIndex, Cl):
+    @typed(Cl=OpList)
+    def enter_OpList(self, ToStateIndex, FromStateIndex, Cl):
         return self.enter(ToStateIndex, FromStateIndex, TransitionAction(Cl))
 
     @typed(TheAction=TransitionAction)
     def enter(self, ToStateIndex, FromStateIndex, TheAction):
         assert isinstance(TheAction, TransitionAction)
-        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
-        #!! independent! Each transition must have its OWN CommandList!
+        #!! It is ABSOLUTELY essential, that the OpList-s related to actions are
+        #!! independent! Each transition must have its OWN OpList!
         for transition_id, action in self.__db.iteritems():
             assert id(TheAction.command_list) != id(action.command_list) 
 
@@ -140,12 +140,12 @@ class Entry(object):
         ta.door_id = DoorID.state_machine_entry(SM_id)
         return self.enter(ToStateIndex, E_StateIndices.NONE, ta)
 
-    def enter_before(self, ToStateIndex, FromStateIndex, TheCommandList):
+    def enter_before(self, ToStateIndex, FromStateIndex, TheOpList):
         transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
         ta = self.__db.get(transition_id)
         # A transition_action cannot be changed, once it has a DoorID assigned to it.
         assert ta.door_id is None
-        ta.command_list = TheCommandList.concatinate(ta.command_list)
+        ta.command_list = TheOpList.concatinate(ta.command_list)
 
     def __get_trigger_id(self, ToStateIndex, FromStateIndex):
         ft = (ToStateIndex, FromStateIndex)
@@ -180,7 +180,7 @@ class Entry(object):
            comment for the reason why we do not store pre-context-id.
         """
         command_list = self.__db[TransitionID(StateIndex, FromStateIndex, 0)].command_list
-        cmd          = Command.StoreInputPosition(PreContextID, PositionRegister, Offset)
+        cmd          = Op.StoreInputPosition(PreContextID, PositionRegister, Offset)
         # Make sure it is the first!
         command_list.insert(0, cmd)
         # Never store twice in the same position register! 
@@ -197,10 +197,10 @@ class Entry(object):
                 return True
         return False
 
-    def has_command(self, CmdId):
-        assert CmdId in E_Cmd
+    def has_command(self, OpId):
+        assert OpId in E_Op
         for action in self.__db.itervalues():
-            if action.command_list.has_command_id(CmdId): 
+            if action.command_list.has_command_id(OpId): 
                 return True
         return False
 
@@ -259,8 +259,8 @@ class Entry(object):
         return self.__db.iteritems()
 
     def __setitem__(self, Key, Value):
-        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
-        #!! independent! Each transition must have its OWN CommandList!
+        #!! It is ABSOLUTELY essential, that the OpList-s related to actions are
+        #!! independent! Each transition must have its OWN OpList!
         for action in self.__db.itervalues():
             assert id(Value.command_list) != id(action.command_list)
 
@@ -270,14 +270,14 @@ class Entry(object):
     def categorize(self, StateIndex):
         """
         This function considers TransitionActions where '.door_id is None' and
-        assigns them a DoorID.  A DoorID identifies (globally) the CommandList
+        assigns them a DoorID.  A DoorID identifies (globally) the OpList
         and the state which they enter. In other words, if two transition actions
         of a state have the same command lists, they have the same DoorID. 
 
         RETURNS: List of newly assigned pairs of (TransitionID, DoorID)s.
         """
-        #!! It is ABSOLUTELY essential, that the CommandList-s related to actions are
-        #!! independent! Each transition must have its OWN CommandList!
+        #!! It is ABSOLUTELY essential, that the OpList-s related to actions are
+        #!! independent! Each transition must have its OWN OpList!
         cmd_list_ids = [ id(action.command_list) for action in self.__db.itervalues() ]
         assert len(cmd_list_ids) == len(set(cmd_list_ids)) # size(list) == size(unique set)
 
@@ -332,11 +332,11 @@ class Entry(object):
                 return False
 
         # Some commands shall never occur more than once in a command list:
-        # --> Command.unique_set
+        # --> Op.unique_set
         for transition_action in self.__db.itervalues():
             unique_found_set = set()
             for cmd in transition_action.command_list:
-                if   cmd.id not in Command.unique_set: continue
+                if   cmd.id not in Op.unique_set: continue
                 elif cmd.id in unique_found_set:       return False
                 unique_found_set.add(cmd.id)
         return True
@@ -394,8 +394,8 @@ class Entry(object):
             return txt
 
         def get_set_path_iterator_keys(PathIteratorSetKeyList):
-            def sort_key(Cmd):
-                return (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
+            def sort_key(Op):
+                return (Op.content.path_walker_id, Op.content.path_id, Op.content.offset)
             txt = [
                 str(cmd)
                 for cmd in sorted(PathIteratorSetKeyList, key=sort_key)
@@ -410,11 +410,11 @@ class Entry(object):
             ssk_command_list    = []
             spi_command_list    = []
             for cmd in door.command_list:
-                if   cmd.id == E_Cmd.Accepter:            accept_command_list.append(cmd)
-                elif cmd.id == E_Cmd.PreContextOK:        pcok_command_list.append(cmd)
-                elif cmd.id == E_Cmd.TemplateStateKeySet: ssk_command_list.append(cmd)
-                elif cmd.id == E_Cmd.PathIteratorSet:     spi_command_list.append(cmd)
-                elif cmd.id == E_Cmd.StoreInputPosition:  store_command_list.append(cmd)
+                if   cmd.id == E_Op.Accepter:            accept_command_list.append(cmd)
+                elif cmd.id == E_Op.PreContextOK:        pcok_command_list.append(cmd)
+                elif cmd.id == E_Op.TemplateStateKeySet: ssk_command_list.append(cmd)
+                elif cmd.id == E_Op.PathIteratorSet:     spi_command_list.append(cmd)
+                elif cmd.id == E_Op.StoreInputPosition:  store_command_list.append(cmd)
 
             result.append("    .from %s:" % repr(transition_id.source_state_index).replace("L", ""))
             a_txt  = get_accepters(accept_command_list)

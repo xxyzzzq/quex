@@ -8,13 +8,13 @@ where its leafs are the entries from other states.
                    |                    |                  |   
              .-------------.      .-------------.    .-------------.
              |DoorID:      |      |DoorID:      |    |DoorID:      |
-             | CommandList |      | CommandList |    | CommandList |
+             | OpList |      | OpList |    | OpList |
              '-------------'      '-------------'    '-------------'
                parent \             / parent               / parent
                        \           /                      /
                       .-------------.                    /
                       |DoorID:      |                   /
-                      | CommandList |                  /
+                      | OpList |                  /
                       '-------------'                 /
                                    \ parent          /
                                     \               /
@@ -42,7 +42,7 @@ def do(TheState):
     The case where [1] is not None, is actually a special case. It is the case
     of the global entry into the state machine / analyzer function. 
 
-    The actions (CommandLists) to be executed may differ depending from where
+    The actions (OpLists) to be executed may differ depending from where
     the state is entered. On the other hand, there may be shared commands in
     between the doors. To take profit from similarities, command lists are
     organized in a command tree as explained in the entry of the file.
@@ -62,7 +62,7 @@ def do(TheState):
 
     return pre_txt, post_txt
 
-def __select_the_straight(CmdTree, TheState):
+def __select_the_straight(OpTree, TheState):
     """One branch from leaf to root is special: It implements ALL nodes
     including the ROOT node. This branch has to be placed IMMEDIATELY before the
     transition map. All other branches are moveable inside the function.
@@ -76,11 +76,11 @@ def __select_the_straight(CmdTree, TheState):
 
     # (*) Otherwise, take the longest path to the root
     door_id = max(TheState.entry.door_id_set(), 
-                  key=lambda door_id: CmdTree.get_step_n_to_root(door_id))
+                  key=lambda door_id: OpTree.get_step_n_to_root(door_id))
 
     return door_id, False
 
-def do_leafs(TheState, CmdTree, done_set):
+def do_leafs(TheState, OpTree, done_set):
     """Create code starting from the 'leafs' of the command tree. The leafs are 
     the entry points from other states, i.e. the 'doors'.
 
@@ -91,14 +91,14 @@ def do_leafs(TheState, CmdTree, done_set):
     txt_list = []
     for door_id in outer_door_id_set:
         if door_id in done_set: continue
-        branch_txt = do_from_leaf_to_root(TheState, CmdTree, door_id, done_set)
+        branch_txt = do_from_leaf_to_root(TheState, OpTree, door_id, done_set)
         txt_list.append(branch_txt)
 
     # Flatten the list of lists, where the longest list has to come last.
     result = flatten_list_of_lists(sorted(txt_list, key=lambda x: len(x)))
     return result
 
-def do_from_leaf_to_root(TheState, CmdTree, LeafDoorId, done_set, GlobalEntryF=False):
+def do_from_leaf_to_root(TheState, OpTree, LeafDoorId, done_set, GlobalEntryF=False):
     """Code the sequence from a leaf of the command tree to its root. This
     avoids unnecessary gotos from outer nodes to their parents. It stops,
     whenever a parent is already implemented.  Then, the function 'code()'
@@ -118,7 +118,7 @@ def do_from_leaf_to_root(TheState, CmdTree, LeafDoorId, done_set, GlobalEntryF=F
     txt.extend( 
         flatten_list_of_lists(
             __code(node, TheState, done_set, GlobalEntryF)
-            for node in CmdTree.iterable_to_root(LeafDoorId, done_set)
+            for node in OpTree.iterable_to_root(LeafDoorId, done_set)
         )
     )
     return txt

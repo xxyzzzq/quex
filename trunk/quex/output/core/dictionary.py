@@ -17,7 +17,7 @@ from   quex.input.code.base                              import SourceRef, \
 from   quex.engine.analyzer.state.core                   import Processor
 from   quex.engine.commands.content_terminal_router      import RouterContentElement
 from   quex.engine.commands.core                         import E_R, \
-                                                                Command
+                                                                Op
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
@@ -38,7 +38,7 @@ from   quex.blackboard   import setup as Setup, \
                                 E_InputActions,  \
                                 E_TransitionN,   \
                                 E_PreContextIDs, \
-                                E_Cmd
+                                E_Op
 from   copy      import copy
 from   itertools import islice
 from   math      import log
@@ -257,16 +257,16 @@ class Lng_Cpp(dict):
             E_R.LexemeEnd:       "LexemeEnd",
         }[Register]
 
-    def COMMAND_LIST(self, CmdList):
+    def COMMAND_LIST(self, OpList):
         return [ 
-            "%s\n" % self.COMMAND(cmd) for cmd in CmdList
+            "%s\n" % self.COMMAND(cmd) for cmd in OpList
         ]
 
-    def COMMAND(self, Cmd):
-        if Cmd.id == E_Cmd.Accepter:
+    def COMMAND(self, Op):
+        if Op.id == E_Op.Accepter:
             else_str = ""
             txt      = []
-            for element in Cmd.content:
+            for element in Op.content:
                 if element.pre_context_id == E_PreContextIDs.BEGIN_OF_LINE:
                     txt.append("    %sif( me->buffer._character_before_lexeme_start == '\\n' )" % else_str)
                 elif element.pre_context_id != E_PreContextIDs.NONE:
@@ -278,23 +278,23 @@ class Lng_Cpp(dict):
                 else_str = "else "
             return "".join(txt)
 
-        elif Cmd.id == E_Cmd.Router:
+        elif Op.id == E_Op.Router:
             case_list = [
                 (self.ACCEPTANCE(element.acceptance_id), 
                  self.position_and_goto(self.__analyzer.engine_type, element))
-                for element in Cmd.content
+                for element in Op.content
             ]
             txt = self.BRANCH_TABLE_ON_STRING("last_acceptance", case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
-        elif Cmd.id == E_Cmd.RouterOnStateKey:
+        elif Op.id == E_Op.RouterOnStateKey:
             case_list = [
-                (state_key, self.GOTO(door_id)) for state_key, door_id in Cmd.content
+                (state_key, self.GOTO(door_id)) for state_key, door_id in Op.content
             ]
-            if Cmd.content.register == E_R.PathIterator:
-                key_txt = "path_iterator - path_walker_%i_path_base" % Cmd.content.mega_state_index 
-            elif Cmd.content.register == E_R.TemplateStateKey:
+            if Op.content.register == E_R.PathIterator:
+                key_txt = "path_iterator - path_walker_%i_path_base" % Op.content.mega_state_index 
+            elif Op.content.register == E_R.TemplateStateKey:
                 key_txt = "state_key"
             else:
                 assert False
@@ -303,39 +303,39 @@ class Lng_Cpp(dict):
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
-        elif Cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
-            pre_context_id = Cmd.content.pre_context_id
+        elif Op.id == E_Op.IfPreContextSetPositionAndGoto:
+            pre_context_id = Op.content.pre_context_id
             block = self.position_and_goto(self.__analyzer.engine_type, 
-                                           Cmd.content.router_element)
+                                           Op.content.router_element)
             txt = []
             self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)
 
-        elif Cmd.id == E_Cmd.QuexDebug:
-            return '__quex_debug("%s");\n' % Cmd.content.string
+        elif Op.id == E_Op.QuexDebug:
+            return '__quex_debug("%s");\n' % Op.content.string
 
-        elif Cmd.id == E_Cmd.QuexAssertNoPassage:
+        elif Op.id == E_Op.QuexAssertNoPassage:
             return self.UNREACHABLE
 
-        elif Cmd.id == E_Cmd.GotoDoorId:
-            return self.GOTO(Cmd.content.door_id)
+        elif Op.id == E_Op.GotoDoorId:
+            return self.GOTO(Op.content.door_id)
 
-        elif Cmd.id == E_Cmd.GotoDoorIdIfInputPNotEqualPointer:
+        elif Op.id == E_Op.GotoDoorIdIfInputPNotEqualPointer:
             return "if( %s != %s ) %s\n" % (self.INPUT_P(), 
-                                            self.REGISTER_NAME(Cmd.content.pointer), 
-                                            self.GOTO(Cmd.content.door_id))
+                                            self.REGISTER_NAME(Op.content.pointer), 
+                                            self.GOTO(Op.content.door_id))
 
-        elif Cmd.id == E_Cmd.IndentationHandlerCall:
+        elif Op.id == E_Op.IndentationHandlerCall:
             # If mode_specific is None => General default indentation handler.
             # else:                    => specific indentation handler.
-            return self.INDENTATION_HANDLER_CALL(Cmd.content.default_f, Cmd.content.mode_name)
+            return self.INDENTATION_HANDLER_CALL(Op.content.default_f, Op.content.mode_name)
 
-        elif Cmd.id == E_Cmd.Assign:
-            return "    %s = %s;\n" % (self.REGISTER_NAME(Cmd.content[0]), self.REGISTER_NAME(Cmd.content[1]))
+        elif Op.id == E_Op.Assign:
+            return "    %s = %s;\n" % (self.REGISTER_NAME(Op.content[0]), self.REGISTER_NAME(Op.content[1]))
 
-        elif Cmd.id == E_Cmd.AssignConstant:
-            register = Cmd.content.register
-            value    = Cmd.content.value 
+        elif Op.id == E_Op.AssignConstant:
+            register = Op.content.register
+            value    = Op.content.value 
 
             if  register == E_R.Column:
                 assignment = "%s = (size_t)%s" % (self.REGISTER_NAME(register), value)
@@ -347,63 +347,63 @@ class Lng_Cpp(dict):
                 assignment = "%s = %s" % (self.REGISTER_NAME(register), value)
                 return "    %s;\n" % assignment
 
-        elif Cmd.id == E_Cmd.ColumnCountAdd:
-            return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value) 
+        elif Op.id == E_Op.ColumnCountAdd:
+            return "__QUEX_IF_COUNT_COLUMNS_ADD((size_t)%s);\n" % self.VALUE_STRING(Op.content.value) 
 
-        elif Cmd.id == E_Cmd.ColumnCountGridAdd:
+        elif Op.id == E_Op.ColumnCountGridAdd:
             return "".join(self.GRID_STEP("self.counter._column_number_at_end", "size_t",
-                           Cmd.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
+                           Op.content.grid_size, IfMacro="__QUEX_IF_COUNT_COLUMNS"))
 
-        elif Cmd.id == E_Cmd.ColumnCountReferencePSet:
-            pointer_name = self.REGISTER_NAME(Cmd.content.pointer)
-            offset       = Cmd.content.offset
+        elif Op.id == E_Op.ColumnCountReferencePSet:
+            pointer_name = self.REGISTER_NAME(Op.content.pointer)
+            offset       = Op.content.offset
             return self.REFERENCE_P_RESET(pointer_name, offset)
 
-        elif Cmd.id == E_Cmd.ColumnCountReferencePDeltaAdd:
-            return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Cmd.content.pointer), 
-                                               Cmd.content.column_n_per_chunk, 
-                                               Cmd.content.subtract_one_f) 
+        elif Op.id == E_Op.ColumnCountReferencePDeltaAdd:
+            return self.REFERENCE_P_COLUMN_ADD(self.REGISTER_NAME(Op.content.pointer), 
+                                               Op.content.column_n_per_chunk, 
+                                               Op.content.subtract_one_f) 
 
-        elif Cmd.id == E_Cmd.LineCountAdd:
+        elif Op.id == E_Op.LineCountAdd:
             txt = []
-            if Cmd.content.value != 0:
-                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Cmd.content.value))
+            if Op.content.value != 0:
+                txt.append("__QUEX_IF_COUNT_LINES_ADD((size_t)%s);\n" % self.VALUE_STRING(Op.content.value))
             return "".join(txt)
 
-        elif Cmd.id == E_Cmd.StoreInputPosition:
+        elif Op.id == E_Op.StoreInputPosition:
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
-            if Cmd.content.offset == 0:
+            if Op.content.offset == 0:
                 return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
-                       % (Cmd.content.position_register, Cmd.content.position_register)
+                       % (Op.content.position_register, Op.content.position_register)
             else:
                 return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
-                       % (Cmd.content.position_register, Cmd.content.offset, Cmd.content.position_register, Cmd.content.offset)
+                       % (Op.content.position_register, Op.content.offset, Op.content.position_register, Op.content.offset)
 
-        elif Cmd.id == E_Cmd.PreContextOK:
+        elif Op.id == E_Op.PreContextOK:
             return   "    pre_context_%i_fulfilled_f = 1;\n"                         \
-                   % Cmd.content.pre_context_id                                      \
+                   % Op.content.pre_context_id                                      \
                    + "    __quex_debug(\"pre_context_%i_fulfilled_f = true\\n\");\n" \
-                   % Cmd.content.pre_context_id
+                   % Op.content.pre_context_id
 
-        elif Cmd.id == E_Cmd.TemplateStateKeySet:
+        elif Op.id == E_Op.TemplateStateKeySet:
             return   "    state_key = %i;\n"                      \
-                   % Cmd.content.state_key                        \
+                   % Op.content.state_key                        \
                    + "    __quex_debug(\"state_key = %i\\n\");\n" \
-                   % Cmd.content.state_key
+                   % Op.content.state_key
 
-        elif Cmd.id == E_Cmd.PathIteratorSet:
+        elif Op.id == E_Op.PathIteratorSet:
             offset_str = ""
-            if Cmd.content.offset != 0: offset_str = " + %i" % Cmd.content.offset
+            if Op.content.offset != 0: offset_str = " + %i" % Op.content.offset
             txt =   "    path_iterator  = path_walker_%i_path_%i%s;\n"                   \
-                  % (Cmd.content.path_walker_id, Cmd.content.path_id, offset_str)        \
+                  % (Op.content.path_walker_id, Op.content.path_id, offset_str)        \
                   + "    __quex_debug(\"path_iterator = (Pathwalker: %i, Path: %i, Offset: %i)\\n\");\n" \
-                  % (Cmd.content.path_walker_id, Cmd.content.path_id, Cmd.content.offset)
+                  % (Op.content.path_walker_id, Op.content.path_id, Op.content.offset)
             return txt
 
-        elif Cmd.id == E_Cmd.PrepareAfterReload:
-            on_success_door_id = Cmd.content.on_success_door_id 
-            on_failure_door_id = Cmd.content.on_failure_door_id 
+        elif Op.id == E_Op.PrepareAfterReload:
+            on_success_door_id = Op.content.on_success_door_id 
+            on_failure_door_id = Op.content.on_failure_door_id 
 
             on_success_adr = dial_db.get_address_by_door_id(on_success_door_id, RoutedF=True)
             on_failure_adr = dial_db.get_address_by_door_id(on_failure_door_id, RoutedF=True)
@@ -411,20 +411,20 @@ class Lng_Cpp(dict):
             return   "    target_state_index = QUEX_LABEL(%i); target_state_else_index = QUEX_LABEL(%i);\n"  \
                    % (on_success_adr, on_failure_adr)                                                        
 
-        elif Cmd.id == E_Cmd.LexemeResetTerminatingZero:
+        elif Op.id == E_Op.LexemeResetTerminatingZero:
             return "    QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);\n"
 
-        elif Cmd.id == E_Cmd.InputPDereference:
+        elif Op.id == E_Op.InputPDereference:
             return "    %s\n" % self.ASSIGN("input", self.INPUT_P_DEREFERENCE())
 
-        elif Cmd.id == E_Cmd.InputPIncrement:
+        elif Op.id == E_Op.InputPIncrement:
             return "    %s\n" % self.INPUT_P_INCREMENT()
 
-        elif Cmd.id == E_Cmd.InputPDecrement:
+        elif Op.id == E_Op.InputPDecrement:
             return "    %s\n" % self.INPUT_P_DECREMENT()
 
         else:
-            assert False, "Unknown command '%s'" % Cmd.id
+            assert False, "Unknown command '%s'" % Op.id
 
     def TERMINAL_CODE(self, TerminalStateList, TheAnalyzer): 
         text = [

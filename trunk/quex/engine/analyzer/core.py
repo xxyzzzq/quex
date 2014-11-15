@@ -46,8 +46,8 @@ from   quex.engine.analyzer.state.core            import Processor, \
                                                          ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionAction
-from   quex.engine.commands.core                  import Command, \
-                                                         CommandList
+from   quex.engine.commands.core                  import Op, \
+                                                         OpList
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map
 import quex.engine.analyzer.engine_supply_factory as     engine
@@ -60,7 +60,7 @@ from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
                                E_TransitionN, \
                                E_PreContextIDs, \
-                               E_Cmd, \
+                               E_Op, \
                                E_StateIndices
 
 from   collections      import defaultdict
@@ -161,7 +161,7 @@ class Analyzer:
             for state_index, state in SM.states.iteritems():
                 if not self.state_db[state_index].transition_map.has_drop_out(): continue
                 cl = EngineType.create_DropOut(state)
-                self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, 
+                self.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, 
                                                       state_index, cl)
                                                       
             self.__position_register_map = None
@@ -250,7 +250,7 @@ class Analyzer:
         cmd_list = []
         if self.engine_type.is_BACKWARD_PRE_CONTEXT():
             cmd_list.extend(
-                 Command.PreContextOK(cmd.acceptance_id()) 
+                 Op.PreContextOK(cmd.acceptance_id()) 
                  for cmd in OldState.single_entry.get_iterable(SeAccept)
             )
 
@@ -269,13 +269,13 @@ class Analyzer:
             # 'ForceInputDereferencingF'
             assert StateIndex != self.init_state_index # Empty state machine! --> impossible
 
-            if self.engine_type.is_FORWARD(): cmd_list.append(Command.InputPIncrement())
-            else:                             cmd_list.append(Command.InputPDecrement())
+            if self.engine_type.is_FORWARD(): cmd_list.append(Op.InputPIncrement())
+            else:                             cmd_list.append(Op.InputPDecrement())
         else:
-            if self.engine_type.is_FORWARD(): cmd_list.extend([Command.InputPIncrement(), Command.InputPDereference()])
-            else:                             cmd_list.extend([Command.InputPDecrement(), Command.InputPDereference()])
+            if self.engine_type.is_FORWARD(): cmd_list.extend([Op.InputPIncrement(), Op.InputPDereference()])
+            else:                             cmd_list.extend([Op.InputPDecrement(), Op.InputPDereference()])
 
-        ta = TransitionAction(CommandList.from_iterable(cmd_list))
+        ta = TransitionAction(OpList.from_iterable(cmd_list))
 
         # NOTE: The 'from reload transition' is implemented by 'prepare_for_reload()'
         for source_state_index in self.__from_db[StateIndex]: 
@@ -284,7 +284,7 @@ class Analyzer:
 
         if StateIndex == self.init_state_index:
             if self.engine_type.is_FORWARD():
-                ta = TransitionAction(CommandList(Command.InputPDereference()))
+                ta = TransitionAction(OpList(Op.InputPDereference()))
             state.entry.enter_state_machine_entry(self.__state_machine_id, 
                                                   StateIndex, ta)
 
@@ -354,7 +354,7 @@ class Analyzer:
         if not self.__engine_type.is_FORWARD(): 
             return False
         for entry in imap(lambda x: x.entry, self.__state_db.itervalues()):
-            if entry.has_command(E_Cmd.Accepter): return True
+            if entry.has_command(E_Op.Accepter): return True
         return False
 
     @typed(TraceList=PathsToState)
@@ -397,7 +397,7 @@ class Analyzer:
             # 
             #     Use one trace as prototype. No related state needs to store
             #     acceptance at entry. 
-            accepter = Command.Accepter() # Accepter content
+            accepter = Op.Accepter() # Accepter content
             for x in accept_sequence:
                 accepter.content.add(x.pre_context_id, x.acceptance_id)
                 # No further checks necessary after unconditional acceptance
@@ -422,7 +422,7 @@ class Analyzer:
             # implement the acceptance storage.
 
         # (*) Terminal Router
-        terminal_router = Command.Router()
+        terminal_router = Op.Router()
         for x in TraceList.positioning_info():
             terminal_router.content.add(x.acceptance_id, x.transition_n_since_positioning)
 
@@ -436,7 +436,7 @@ class Analyzer:
             # Later, a function will use the 'position_storage_db' to implement
             # the position storage.
 
-        return drop_out.get_CommandList(accepter, terminal_router)
+        return drop_out.get_OpList(accepter, terminal_router)
 
     def configure_all_drop_outs(self):
         acceptance_storage_db = defaultdict(list)
@@ -446,7 +446,7 @@ class Analyzer:
             cl = self.drop_out_configure(state_index, trace_list, 
                                          acceptance_storage_db,
                                          position_storage_db)
-            self.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, 
+            self.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, 
                                                   state_index, cl)
         return acceptance_storage_db, position_storage_db
 

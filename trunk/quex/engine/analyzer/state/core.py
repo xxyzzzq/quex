@@ -4,7 +4,7 @@ from   quex.engine.analyzer.transition_map         import TransitionMap
 from   quex.engine.analyzer.state.entry            import Entry
 from   quex.engine.analyzer.state.entry_action     import TransitionAction
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.commands.core                   import CommandList, Command
+from   quex.engine.commands.core                   import OpList, Op
 from   quex.engine.misc.tools import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \
@@ -59,16 +59,16 @@ class AnalyzerState(Processor):
     @staticmethod
     def from_LinearState(S):
         if EntryRecipe is not None:
-            self.entry.enter_CommandList(S.entry_transition_id,
-                                         S.recipe.get_entry_CommandList())
-        self.on_drop_out = Recipe.get_drop_out_CommandList()
+            self.entry.enter_OpList(S.entry_transition_id,
+                                         S.recipe.get_entry_OpList())
+        self.on_drop_out = Recipe.get_drop_out_OpList()
 
     @staticmethod
     def from_MouthState(S):
         for transition_id, recipe in S.entry_db.iteritems():
-            self.entry.enter_CommandList(transition_id,
-                                         recipe.get_entry_CommandList())
-        self.on_drop_out = S.recipe.get_drop_out_CommandList()
+            self.entry.enter_OpList(transition_id,
+                                         recipe.get_entry_OpList())
+        self.on_drop_out = S.recipe.get_drop_out_OpList()
 
     @staticmethod
     def from_State(SM_State, StateIndex, EngineType):
@@ -85,8 +85,8 @@ class AnalyzerState(Processor):
 
         return x
 
-    def prepare_for_reload(self, TheAnalyzer, BeforeReloadCmdList=None, 
-                           AfterReloadCmdList=None):
+    def prepare_for_reload(self, TheAnalyzer, BeforeReloadOpList=None, 
+                           AfterReloadOpList=None):
         """Prepares state for reload. Reload procedure
 
             .- State 'X' ---.               
@@ -116,8 +116,8 @@ class AnalyzerState(Processor):
               BUFFER LIMIT CODE --> reload procedure.
         """
         assert self.transition_map is not None
-        assert BeforeReloadCmdList is None or isinstance(BeforeReloadCmdList, CommandList)
-        assert AfterReloadCmdList  is None or isinstance(AfterReloadCmdList, CommandList)
+        assert BeforeReloadOpList is None or isinstance(BeforeReloadOpList, OpList)
+        assert AfterReloadOpList  is None or isinstance(AfterReloadOpList, OpList)
 
         if not TheAnalyzer.engine_type.subject_to_reload():
             # Engine type does not require reload => no reload. 
@@ -137,13 +137,13 @@ class AnalyzerState(Processor):
         # (1) Door for RELOAD SUCCESS
         #
         after_cl = []
-        if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(Command.InputPIncrement())
-        else:                                    after_cl.append(Command.InputPDecrement())
-        after_cl.append(Command.InputPDereference())
-        if AfterReloadCmdList is not None:
-            after_cl.extend(AfterReloadCmdList)
+        if TheAnalyzer.engine_type.is_FORWARD(): after_cl.append(Op.InputPIncrement())
+        else:                                    after_cl.append(Op.InputPDecrement())
+        after_cl.append(Op.InputPDereference())
+        if AfterReloadOpList is not None:
+            after_cl.extend(AfterReloadOpList)
 
-        self.entry.enter_CommandList(self.index, reload_state.index, CommandList.from_iterable(after_cl))
+        self.entry.enter_OpList(self.index, reload_state.index, OpList.from_iterable(after_cl))
         self.entry.categorize(self.index) # Categorize => DoorID is available.
         on_success_door_id = self.entry.get_door_id(self.index, reload_state.index)
 
@@ -159,7 +159,7 @@ class AnalyzerState(Processor):
         reload_door_id = reload_state.add_state(self.index, 
                                                 on_success_door_id, 
                                                 on_failure_door_id, 
-                                                BeforeReloadCmdList)
+                                                BeforeReloadOpList)
 
         # (4) Adapt transition map: BUFFER LIMIT CODE --> reload_door_id
         #
@@ -222,14 +222,14 @@ class ReloadState(Processor):
         RETURNS: DoorID into the reload state. Jump to this DoorID in order
                  to trigger the reload for the state given by 'StateIndex'.
         """
-        assert BeforeReload is None or isinstance(BeforeReload, CommandList) 
+        assert BeforeReload is None or isinstance(BeforeReload, OpList) 
         # Before reload: prepare after reload, the jump back to the reloading state.
-        before_cl = CommandList(Command.PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
+        before_cl = OpList(Op.PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId))
         if BeforeReload is not None:
             # May be, add additional commands
             before_cl = before_cl.concatinate(BeforeReload)
 
-        # No two transitions into the reload state have the same CommandList!
+        # No two transitions into the reload state have the same OpList!
         # No two transitions can have the same DoorID!
         # => it is safe to assign a new DoorID withouth .categorize()
         ta         = TransitionAction(before_cl)
@@ -267,13 +267,13 @@ class ReloadState(Processor):
                 door_id = TheAnalyzer.drop_out_DoorID(state_index)
             return door_id
 
-        cmd = Command.RouterOnStateKey(
+        cmd = Op.RouterOnStateKey(
             StateKeyRegister, MegaStateIndex,
             Iterable_StateKey_Index_Pairs,
             DoorID_provider
         )
 
-        ta         = TransitionAction(CommandList(cmd))
+        ta         = TransitionAction(OpList(cmd))
         # Assign a DoorID (without categorization) knowing that no such entry
         # into this state existed before.
         ta.door_id = dial_db.new_door_id(self.index)

@@ -37,7 +37,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.input.regular_expression.engine    as     core
 import quex.input.files.counter                as     counter_parser
 from   quex.input.files.parser_data.counter    import CounterSetupLineColumn_Default
-from   quex.engine.counter                     import CountCmdFactory
+from   quex.engine.counter                     import CountOpFactory
 from   quex.engine.misc.interval_handling           import NumberSet, Interval, NumberSet_All
 import quex.output.core.dictionary    as     languages
 import quex.engine.codec_db.core               as     codec_db
@@ -147,7 +147,7 @@ def get_test_application(counter_db, ReferenceP, CT):
     else:                 
         Setup.buffer_codec_prepare(codec)
     # (*) Generate Code 
-    ccfactory = CountCmdFactory.from_ParserDataLineColumn(counter_db, 
+    ccfactory = CountOpFactory.from_ParserDataLineColumn(counter_db, 
                                                           Setup.buffer_codec.source_set,
                                                           Lng.INPUT_P())
     counter_function_name, \

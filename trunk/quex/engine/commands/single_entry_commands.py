@@ -12,7 +12,7 @@ from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
                             E_PostContextIDs
 
-class SeCmd:
+class SeOp:
     def __init__(self):
         self.__acceptance_id = E_IncidenceIDs.MATCH_FAILURE
 
@@ -35,9 +35,9 @@ class SeCmd:
         """
         return not self.__eq__(self, Other)
 
-class SeAccept(SeCmd):
+class SeAccept(SeOp):
     def __init__(self):
-        SeCmd.__init__(self)
+        SeOp.__init__(self)
         self.__pre_context_id               = E_PreContextIDs.NONE
         self.__restore_position_register_f = False
 
@@ -64,7 +64,7 @@ class SeAccept(SeCmd):
 
     def __eq__(self, Other):
         if   not Other.__class__ == SeAccept:                       return False
-        elif not SeCmd.__eq__(self, Other):                       return False
+        elif not SeOp.__eq__(self, Other):                       return False
         elif not self.__pre_context_id == Other.__pre_context_id: return False
         return self.__restore_position_register_f == Other.__restore_position_register_f
 
@@ -86,10 +86,10 @@ class SeAccept(SeCmd):
         if txt: return "A(%s)" % reduce(lambda x, y: "%s,%s" % (x,y), txt)
         else:   return "A"
 
-class SeStoreInputPosition(SeCmd):
+class SeStoreInputPosition(SeOp):
     @typed(RegisterId=long)
     def __init__(self, RegisterId=E_PostContextIDs.NONE):
-        SeCmd.__init__(self)
+        SeOp.__init__(self)
         self.__position_register_id = RegisterId
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
@@ -101,7 +101,7 @@ class SeStoreInputPosition(SeCmd):
 
     def __eq__(self, Other):
         if   Other.__class__ != SeStoreInputPosition: return False
-        elif not SeCmd.__eq__(self, Other):         return False
+        elif not SeOp.__eq__(self, Other):         return False
         return self.__position_register_id == Other.__position_register_id
 
     def __str__(self):

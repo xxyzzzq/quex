@@ -29,23 +29,23 @@ cc_type_db = {
 cc_type_name_db = dict((value, key) for key, value in cc_type_db.iteritems())
 
 
-class CountCmdMapEntry(namedtuple("CountCmdMapEntry", ("cc_type", "value", "sr"))):
+class CountOpMapEntry(namedtuple("CountOpMapEntry", ("cc_type", "value", "sr"))):
     def __new__(self, CCType, Value, sr):
-        return super(CountCmdMapEntry, self).__new__(self, CCType, Value, sr)
+        return super(CountOpMapEntry, self).__new__(self, CCType, Value, sr)
 
 CountInfo = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
 
-class CountCmdMap(object):
+class CountOpMap(object):
     """Association of character sets with triggered count commands.
     ___________________________________________________________________________
 
-                   list: (character set, CountCmdMapEntry)
+                   list: (character set, CountOpMapEntry)
 
     where the 'character set' specifies a subset of characters for which there
     is a definition by the given 'parameter'. The character sets are disjoint.
 
     This map is used to determine whether actions on character sets are defined 
-    more than once. The CountCmdMapEntry contains source references. This allows
+    more than once. The CountOpMapEntry contains source references. This allows
     for detailed error messages.
     ___________________________________________________________________________
     """
@@ -71,7 +71,7 @@ class CountCmdMap(object):
             error.log("'\\else has been defined more than once.", sr, 
                       DontExitF=True)
             error.log("Previously, defined here.", self.__else.sr)
-        self.__else = CountCmdMapEntry(cc_type_db[Identifier], Value, sr)
+        self.__else = CountOpMapEntry(cc_type_db[Identifier], Value, sr)
 
     def add(self, CharSet, Identifier, Value, sr):
         global cc_type_db
@@ -81,7 +81,7 @@ class CountCmdMap(object):
             self.check_grid_specification(Value, sr)
         cc_type = cc_type_db[Identifier]
         self.check_intersection(cc_type, CharSet, sr)
-        self.__map.append((CharSet, CountCmdMapEntry(cc_type, Value, sr)))
+        self.__map.append((CharSet, CountOpMapEntry(cc_type, Value, sr)))
 
     def get_count_commands(self, CharacterSet):
         """Finds the count command for column, grid, and newline. This does NOT
@@ -152,10 +152,10 @@ class CountCmdMap(object):
 
     def assign_else_count_command(self, GlobalMin, GlobalMax, SourceReference):
         """After all count commands have been assigned to characters, the 
-        remaining character set can be associated with the 'else-CountCmdMapEntry'.
+        remaining character set can be associated with the 'else-CountOpMapEntry'.
         """
         if self.__else is None: 
-            else_cmd = CountCmdMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_DEFAULT)
+            else_cmd = CountOpMapEntry(E_CharacterCountType.COLUMN, 1, SourceRef_DEFAULT)
             error.warning("No '\else' defined in counter setup. Assume '\else => space 1;'", SourceReference, 
                           SuppressCode=NotificationDB.warning_counter_setup_without_else)
         else:                   
@@ -331,9 +331,9 @@ class CountCmdMap(object):
                               sr)
 
     def __str__(self):
-        def _db_to_text(title, CountCmdInfoList):
+        def _db_to_text(title, CountOpInfoList):
             txt = "%s:\n" % title
-            for character_set, info in sorted(CountCmdInfoList, key=lambda x: x[0].minimum()):
+            for character_set, info in sorted(CountOpInfoList, key=lambda x: x[0].minimum()):
                 if type(info.value) in [str, unicode]:
                     txt += "    %s by %s\n" % (info.value, character_set.get_utf8_string())
                 else:
@@ -353,11 +353,11 @@ class CountCmdMap(object):
 
 class Base:
     @typed(sr=SourceRef)
-    def __init__(self, sr, Name, IdentifierList, TheCountCmdMap=None):
+    def __init__(self, sr, Name, IdentifierList, TheCountOpMap=None):
         self.sr   = sr
         self.name = Name
-        if TheCountCmdMap is None: self.count_command_map = CountCmdMap()
-        else:                      self.count_command_map = TheCountCmdMap
+        if TheCountOpMap is None: self.count_command_map = CountOpMap()
+        else:                      self.count_command_map = TheCountOpMap
         self.identifier_list        = IdentifierList
         self.__containing_mode_name = ""
 
@@ -383,12 +383,12 @@ class ParserDataLineColumn(Base):
     """Line/column number count specification.
     ___________________________________________________________________________
     The main result of the parsing the the Base's .count_command_map which is 
-    an instance of CountCmdMap.
+    an instance of CountOpMap.
     ____________________________________________________________________________
     """
     @typed(sr=SourceRef)
-    def __init__(self, sr, TheCountCmdMap=None):
-        Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountCmdMap)
+    def __init__(self, sr, TheCountOpMap=None):
+        Base.__init__(self, sr, "Line/column counter", ("space", "grid", "newline"), TheCountOpMap)
 
     def finalize(self):
         # Assign the 'else' command to all the remaining places in the character map.
@@ -668,7 +668,7 @@ def CounterSetupLineColumn_Default():
     global _CounterSetupLineColumn_Default
 
     if _CounterSetupLineColumn_Default is None:
-        count_command_map = CountCmdMap()
+        count_command_map = CountOpMap()
         count_command_map.add(NumberSet(ord('\n')), "newline", 1, SourceRef_DEFAULT)
         count_command_map.add(NumberSet(ord('\t')), "grid",    4, SourceRef_DEFAULT)
         count_command_map.define_else("space",   1, SourceRef_DEFAULT)    # Define: "\else"

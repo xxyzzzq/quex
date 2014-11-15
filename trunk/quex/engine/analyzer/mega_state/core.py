@@ -56,8 +56,8 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.commands.core                  import Command, \
-                                                       CommandList
+from quex.engine.commands.core                  import Op, \
+                                                       OpList
 from quex.engine.analyzer.door_id_address_label import dial_db
 from quex.engine.analyzer.state.core            import AnalyzerState
 from quex.engine.analyzer.state.entry           import Entry
@@ -105,8 +105,8 @@ class MegaState_Entry(Entry):
     def transition_reassignment_db(self):
         return self.__transition_reassignment_db
 
-    def action_db_update(self, From, To, FromOutsideCmd, FromInsideCmd):
-        """MegaState-s may add 'set-state-key-commands' to the CommandLists of
+    def action_db_update(self, From, To, FromOutsideOp, FromInsideOp):
+        """MegaState-s may add 'set-state-key-commands' to the OpLists of
         the state entries. 
         
         For any state which is implemented in a MegaState and which is entered
@@ -124,8 +124,8 @@ class MegaState_Entry(Entry):
         then this transition happens without leaving the MegaState. It happens
         'inside'. For any action associate with a TransitionID
 
-              TransitionID inside => adorn action with 'FromInsideCmd'
-              else                => adorn action with 'FromOutsideCmd'
+              TransitionID inside => adorn action with 'FromInsideOp'
+              else                => adorn action with 'FromOutsideOp'
 
         DoorIDs of transitions which happen from outside MUST remain the same.
         DoorIDs inside the MegaState are subject to reconfiguration. They are
@@ -134,7 +134,7 @@ class MegaState_Entry(Entry):
         def enter(command_list, cmd):
             if cmd is None: 
                 return
-            elif cmd.id in Command.unique_set:
+            elif cmd.id in Op.unique_set:
                 for i, other in enumerate(command_list):
                     if cmd.id != other.id: continue
                     command_list[i] = cmd
@@ -148,10 +148,10 @@ class MegaState_Entry(Entry):
                 continue
 
             elif transition_id.source_state_index != From:
-                cmd = FromOutsideCmd
+                cmd = FromOutsideOp
 
             else:
-                cmd = FromInsideCmd
+                cmd = FromInsideOp
                 # Later we will try to unify all entries from inside.
                 self.transition_reassignment_candidate_list.append((From, transition_id))
 
@@ -166,7 +166,7 @@ class MegaState_Entry(Entry):
         """
         assert self.__transition_reassignment_db is None
 
-        # All CommandList-s which are subject to DoorID reassignment are set to
+        # All OpList-s which are subject to DoorID reassignment are set to
         # 'None'. Then 'self.categorize()' can determine new DoorID-s.
         for dummy, transition_id in self.transition_reassignment_candidate_list:
             self.get(transition_id).door_id = None
@@ -375,11 +375,11 @@ class MegaState(AnalyzerState):
 
         # (1.2) Configure the entry actions, so that the state key is set 
         #       where necessary.
-        self._finalize_entry_CommandLists()                    # --> derived class!
+        self._finalize_entry_OpLists()                    # --> derived class!
         self._finalize_configure_global_drop_out(CompressionType, TheAnalyzer)
 
         #      Assign: MULTIPLE DoorID ---> ONE Address
-        #      if same entry CommandList-s appear in multiple doors. 
+        #      if same entry OpList-s appear in multiple doors. 
         self.entry.transition_reassignment_db_construct(self.index)
 
         # (2) Reconfigure the transition map for drop-out
@@ -399,7 +399,7 @@ class MegaState(AnalyzerState):
         self.transition_map.adapt_targets(self.entry.transition_reassignment_db, 
                                           get_new_target)
 
-    def _finalize_entry_CommandLists(self): 
+    def _finalize_entry_OpLists(self): 
         assert False, "--> derived class"
 
     def _finalize_configure_global_drop_out(self, CompressionType, TheAnalyzer):
@@ -418,18 +418,18 @@ class MegaState(AnalyzerState):
                        :                     '---'
                        '--------------------------------- - -  -
 
-        The Command, which does that is the RouterOnStateKey. It contains the 
+        The Op, which does that is the RouterOnStateKey. It contains the 
         'StateKeyRegister' which tells the code generator which state key to
         take as a basis for routing.
         """
         if not self.transition_map.has_drop_out():
             return
 
-        cmd = Command.RouterOnStateKey(CompressionType, self.index,
+        cmd = Op.RouterOnStateKey(CompressionType, self.index,
                                self.ski_db.iterable_state_key_state_index_pairs(),
                                lambda state_index: TheAnalyzer.drop_out_DoorID(state_index))
-        TheAnalyzer.drop_out.entry.enter_CommandList(E_StateIndices.DROP_OUT, self.index, 
-                                                     CommandList(cmd))
+        TheAnalyzer.drop_out.entry.enter_OpList(E_StateIndices.DROP_OUT, self.index, 
+                                                     OpList(cmd))
         TheAnalyzer.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
     def prepare_again_for_reload(self, TheAnalyzer):

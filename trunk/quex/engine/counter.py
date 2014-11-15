@@ -4,7 +4,7 @@ from   quex.input.files.parser_data.counter       import ParserDataLineColumn, \
                                                          CountInfo
 from   quex.engine.analyzer.door_id_address_label import dial_db
 from   quex.engine.analyzer.terminal.core         import Terminal
-from   quex.engine.commands.core                  import Command
+from   quex.engine.commands.core                  import Op
 from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.engine.misc.tools                     import typed
 
@@ -28,7 +28,7 @@ def _is_admissible(db, DefaultChar, AllCharSet, Bad):
     elif AllCharSet.contains(DefaultChar):              return False
     else:                                               return True
 
-class CountCmdFactory:
+class CountOpFactory:
     """________________________________________________________________________
     Produces Count Commands
 
@@ -46,7 +46,7 @@ class CountCmdFactory:
         self.on_begin,         \
         self.on_end,           \
         self.on_before_reload, \
-        self.on_after_reload   = CountCmdFactory.__prepare(ColumnNPerChunk)
+        self.on_after_reload   = CountOpFactory.__prepare(ColumnNPerChunk)
 
     @staticmethod
     @typed(CounterDb=ParserDataLineColumn, CharacterSet=NumberSet)
@@ -60,14 +60,14 @@ class CountCmdFactory:
 
         ColumnNPerChunk = CounterDb.count_command_map.get_column_number_per_chunk(CharacterSet)
 
-        return CountCmdFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
+        return CountOpFactory(cmap, ColumnNPerChunk, InputPName, CharacterSet) 
 
     @staticmethod
     @typed(ISetup=ParserDataIndentation, CounterDb=ParserDataLineColumn)
     def from_ParserDataIndentation(ISetup, CounterDb, InputPName, DoorIdBad):
         """Return a factory that produces 'column' and 'grid' counting incidence_id-maps.
         """
-        result = CountCmdFactory.from_ParserDataLineColumn(CounterDb, 
+        result = CountOpFactory.from_ParserDataLineColumn(CounterDb, 
                                  ISetup.whitespace_character_set.get(), 
                                  InputPName)
         # Up to now, the '__map' contains only character sets which intersect with the 
@@ -154,47 +154,47 @@ class CountCmdFactory:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
-                    Command.GotoDoorId(self.door_id_on_bad_indentation) 
+                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
                 ]
             elif CC_Type == E_CharacterCountType.COLUMN:
                 return [
-                    Command.ColumnCountAdd(Parameter),
+                    Op.ColumnCountAdd(Parameter),
                 ]
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
-                    Command.ColumnCountGridAdd(Parameter),
+                    Op.ColumnCountGridAdd(Parameter),
                 ]
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
-                    Command.LineCountAdd(Parameter),
-                    Command.AssignConstant(E_R.Column, 1),
+                    Op.LineCountAdd(Parameter),
+                    Op.AssignConstant(E_R.Column, 1),
                 ]
         else:
 
             if CC_Type == E_CharacterCountType.BAD:
                 return [ 
-                    Command.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
                                                   self.column_count_per_chunk, 
                                                   False),
-                    Command.ColumnCountReferencePSet(E_R.InputP),
-                    Command.GotoDoorId(self.door_id_on_bad_indentation) 
+                    Op.ColumnCountReferencePSet(E_R.InputP),
+                    Op.GotoDoorId(self.door_id_on_bad_indentation) 
                 ]
             elif CC_Type == E_CharacterCountType.COLUMN:
                 return [
                 ]
             elif CC_Type == E_CharacterCountType.GRID:
                 return [
-                    Command.ColumnCountReferencePDeltaAdd(E_R.InputP, 
+                    Op.ColumnCountReferencePDeltaAdd(E_R.InputP, 
                                                   self.column_count_per_chunk,
                                                   True),
-                    Command.ColumnCountGridAdd(Parameter),
-                    Command.ColumnCountReferencePSet(E_R.InputP)
+                    Op.ColumnCountGridAdd(Parameter),
+                    Op.ColumnCountReferencePSet(E_R.InputP)
                 ]
             elif CC_Type == E_CharacterCountType.LINE:
                 return [ 
-                    Command.LineCountAdd(Parameter),
-                    Command.AssignConstant(E_R.Column, 1),
-                    Command.ColumnCountReferencePSet(E_R.InputP)
+                    Op.LineCountAdd(Parameter),
+                    Op.AssignConstant(E_R.Column, 1),
+                    Op.ColumnCountReferencePSet(E_R.InputP)
                 ]
 
     def _command_on_lexeme_end(self, CC_Type):
@@ -233,10 +233,10 @@ class CountCmdFactory:
         if Setup.buffer_codec.variable_character_sizes_f(): pointer = E_R.CharacterBeginP
         else:                                               pointer = E_R.InputP
 
-        on_begin         = [ Command.ColumnCountReferencePSet(pointer) ]
-        on_after_reload  = [ Command.ColumnCountReferencePSet(pointer) ]
-        on_end           = [ Command.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
-        on_before_reload = [ Command.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
+        on_begin         = [ Op.ColumnCountReferencePSet(pointer) ]
+        on_after_reload  = [ Op.ColumnCountReferencePSet(pointer) ]
+        on_end           = [ Op.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
+        on_before_reload = [ Op.ColumnCountReferencePDeltaAdd(pointer, ColumnNPerChunk, False) ]
 
         return on_begin, on_end, on_before_reload, on_after_reload
 

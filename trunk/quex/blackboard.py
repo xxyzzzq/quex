@@ -183,7 +183,7 @@ E_DoorIdIndex = Enum("DROP_OUT",
                      "CONTINUE_WITHOUT_ON_AFTER_MATCH",
                      "_DEBUG_DoorIdIndex") 
 
-E_Cmd = Enum("Accepter",
+E_Op  = Enum("Accepter",
              "Assign",
              "AssignConstant",
              "ColumnCountAdd",

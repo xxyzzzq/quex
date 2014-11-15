@@ -3,7 +3,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.core              import Processor
-from   quex.engine.commands.core                    import Command
+from   quex.engine.commands.core                    import Op
 import quex.engine.state_machine.index              as     index
 from   quex.engine.misc.interval_handling           import Interval
 from   quex.engine.misc.tools                       import typed, \
@@ -29,16 +29,16 @@ class TemplateState(MegaState):
         ski_db = StateKeyIndexDB(StateA.state_index_sequence() + StateB.state_index_sequence())
         MegaState.__init__(self, index.get(), transition_map, ski_db)
 
-        self.uniform_entry_CommandList = UniformObject.from_iterable((
-                                                       StateA.uniform_entry_CommandList,
-                                                       StateB.uniform_entry_CommandList))
+        self.uniform_entry_OpList = UniformObject.from_iterable((
+                                                       StateA.uniform_entry_OpList,
+                                                       StateB.uniform_entry_OpList))
 
         self.__target_scheme_n = target_scheme_n
         self.__engine_type     = None # StateA.engine_type
 
         MegaState.bad_company_set(self, StateA.bad_company().union(StateB.bad_company()))
 
-    def _finalize_entry_CommandLists(self):
+    def _finalize_entry_OpLists(self):
         """If a state is entered from outside, then the 'state_key',
         needs to be set. When a represented state iterates on itself, then the
         state_key does not change and it has not to be set.
@@ -57,8 +57,8 @@ class TemplateState(MegaState):
             # the transition to 'transition_reassignment_candidate_list'.
             self.entry.action_db_update(From           = state_index,
                                         To             = state_index, 
-                                        FromOutsideCmd = Command.TemplateStateKeySet(state_key),
-                                        FromInsideCmd  = None)
+                                        FromOutsideOp = Op.TemplateStateKeySet(state_key),
+                                        FromInsideOp  = None)
         return
 
     def _finalize_content(self, TheAnalyzer):
@@ -107,10 +107,10 @@ class PseudoTemplateState(MegaState):
 
         # Uniform Entry: In contrast to path compression, here we consider 
         #                all entries into the MegaState. 
-        self.uniform_entry_CommandList = UniformObject()
+        self.uniform_entry_OpList = UniformObject()
         for action in Represented_AnalyzerState.entry.itervalues():
-            self.uniform_entry_CommandList <<= action.command_list
-            if self.uniform_entry_CommandList.is_uniform() == False:
+            self.uniform_entry_OpList <<= action.command_list
+            if self.uniform_entry_OpList.is_uniform() == False:
                 break # No more need to investigate
 
         self.entry.absorb(Represented_AnalyzerState.entry)
@@ -122,7 +122,7 @@ class PseudoTemplateState(MegaState):
     def _finalize_transition_map(self, TheAnalyzer):
         pass # Nothing to be done
 
-    def _finalize_entry_CommandLists(self): 
+    def _finalize_entry_OpLists(self): 
         pass
 
     def _finalize_content(self):            

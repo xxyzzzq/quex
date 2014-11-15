@@ -85,22 +85,22 @@ class Recipe:
         """
         assert False
 
-    def get_drop_out_CommandList(self):
+    def get_drop_out_OpList(self):
         """With a given Recipe(i) for a state 'i', the action upon state machine
         exit can be determined.
 
-        RETURNS: A CommandList that corresponds self.
+        RETURNS: A OpList that corresponds self.
         """
         assert False
     
-    def get_entry_CommandList(self, NextRecipe):
+    def get_entry_OpList(self, NextRecipe):
         """Consider the NextRecipe with respect to self. Some contents may 
         have to be stored in registers upon entry into this state. 
 
-        RETURNS: A CommandList that allows 'InterferedRecipe' to operate after 
+        RETURNS: A OpList that allows 'InterferedRecipe' to operate after 
                  the state.
 
-        This is particulary important at mouth states, where 'self' is an 
+        This is particularily important at mouth states, where 'self' is an 
         entry into the mouth state and 'NextRecipe' is the accumulated action
         after the state has been entered.
         """
@@ -455,7 +455,7 @@ class LinearStateWalker(TreeWalker):
 
         TreeWalker.__init__(self)
 
-    def on_enter(Args):
+    def on_enter(self, Args):
         StateIndex = Args[0]
         PrevRecipe = Args[1]
         # Accumulation: Concatenate recipe of previous state with operation

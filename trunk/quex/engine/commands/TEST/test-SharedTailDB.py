@@ -22,7 +22,7 @@ import os
 import sys 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                            import E_Cmd
+from   quex.blackboard                   import E_Op
 from   quex.engine.commands.core         import *
 import quex.engine.commands.shared_tail  as     shared_tail
 from   quex.engine.commands.tree         import SharedTailDB
@@ -41,13 +41,13 @@ if "--hwut-info" in sys.argv:
 # Generate a set of totally independent commands
 # Here, they are assigned manually, to avoid that changes to E_R might
 # might produce commands that block the 'move to tail'.
-A = Command.Assign(E_R.AcceptanceRegister, E_R.Buffer)
-B = Command.Assign(E_R.Indentation, E_R.Column)
-C = Command.Assign(E_R.Input, E_R.InputP)
-D = Command.Assign(E_R.LexemeStartP, E_R.LexemeEnd)
-E = Command.Assign(E_R.CharacterBeginP, E_R.Line)
-F = Command.Assign(E_R.PathIterator, E_R.PreContextFlags)
-G = Command.Assign(E_R.ReferenceP, E_R.PositionRegister)
+A = Op.Assign(E_R.AcceptanceRegister, E_R.Buffer)
+B = Op.Assign(E_R.Indentation, E_R.Column)
+C = Op.Assign(E_R.Input, E_R.InputP)
+D = Op.Assign(E_R.LexemeStartP, E_R.LexemeEnd)
+E = Op.Assign(E_R.CharacterBeginP, E_R.Line)
+F = Op.Assign(E_R.PathIterator, E_R.PreContextFlags)
+G = Op.Assign(E_R.ReferenceP, E_R.PositionRegister)
 
 alias_db = { A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", }
 

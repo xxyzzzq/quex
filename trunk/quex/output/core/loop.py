@@ -1,7 +1,7 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.engine.commands.core                  import Command, \
-                                                         CommandList
+from   quex.engine.commands.core                  import Op, \
+                                                         OpList
 import quex.engine.state_machine.index            as     index
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.misc.tools                     import typed
@@ -52,13 +52,13 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
               transition
               map
               .------.  
-              |  i0  |----------> Terminal0: CommandList0   
+              |  i0  |----------> Terminal0: OpList0   
               +------+
-              |  i1  |----------> Terminal1: CommandList1   
+              |  i1  |----------> Terminal1: OpList1   
               +------+
               |  X2  |----------> Terminal Beyond: input_p--; goto TerminalExit;
               +------+
-              |  i2  |----------> Terminal2: CommandList2
+              |  i2  |----------> Terminal2: OpList2
               +------+
     """
     assert EngineType is not None
@@ -72,14 +72,14 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     if ParallelSmTerminalPairList is not None:
         parallel_sm_list = [ sm for sm, terminal in ParallelSmTerminalPairList ]
 
-    CsSm = CharacterSetStateMachine.from_CountCmdFactory(CcFactory, 
+    CsSm = CharacterSetStateMachine.from_CountOpFactory(CcFactory, 
                                                          LexemeMaintainedF,
                                                          ParallelSmList=parallel_sm_list)
 
     analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
-                                     OnBeforeReload = CommandList.from_iterable(CsSm.on_before_reload), 
-                                     OnAfterReload  = CommandList.from_iterable(CsSm.on_after_reload))
+                                     OnBeforeReload = OpList.from_iterable(CsSm.on_before_reload), 
+                                     OnAfterReload  = OpList.from_iterable(CsSm.on_after_reload))
 
     # -- The terminals 
     #
@@ -87,25 +87,25 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
 
     def get_LexemeEndCheck_appendix(ccfactory, CC_Type):
         if not LexemeEndCheckF: 
-            return [ Command.GotoDoorId(door_id_loop) ]
+            return [ Op.GotoDoorId(door_id_loop) ]
         #
         #       .---------------.        ,----------.   no
-        #   --->| Count Command |-------< LexemeEnd? >------> DoorIdOk
+        #   --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
         #       '---------------'        '----+-----'
         #                                     | yes
         #                              .---------------.
         #                              |  Lexeme End   |
-        #                              | Count Command |----> DoorIdOnLexemeEnd
+        #                              | Count Op |----> DoorIdOnLexemeEnd
         #                              '---------------'
         #  
         elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
-                Command.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
-                Command.ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk, False),
+                Op.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                Op.ColumnCountReferencePDeltaAdd(E_R.InputP, ccfactory.column_count_per_chunk, False),
             ] + AfterBeyond
         else:
             return [
-                Command.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
+                Op.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
             ] + AfterBeyond
 
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
@@ -147,12 +147,12 @@ def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     # OnEntry
     ta_on_entry              = entry.get_action(init_state_index, 
                                                 E_StateIndices.NONE)
-    ta_on_entry.command_list = CommandList.concatinate(ta_on_entry.command_list, 
+    ta_on_entry.command_list = OpList.concatinate(ta_on_entry.command_list, 
                                                        OnBegin)
 
     # OnReEntry
-    tid_reentry = entry.enter_CommandList(init_state_index, index.get(), 
-                                          CommandList.from_iterable(OnStep))
+    tid_reentry = entry.enter_OpList(init_state_index, index.get(), 
+                                          OpList.from_iterable(OnStep))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id

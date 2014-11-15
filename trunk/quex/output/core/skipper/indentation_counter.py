@@ -1,9 +1,9 @@
 from   quex.input.code.core                         import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label   import DoorID
-from   quex.engine.commands.core                    import Command
+from   quex.engine.commands.core                    import Op
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
-from   quex.engine.counter                          import CountCmdFactory
+from   quex.engine.counter                          import CountOpFactory
 from   quex.engine.state_machine.character_counter  import CountInfo
 import quex.output.core.loop                        as     loop
 from   quex.blackboard                              import Lng, \
@@ -84,8 +84,8 @@ def do(Data, TheAnalyzer):
     # -- 'on_indentation' == 'on_beyond': 
     #     A handler is called as soon as an indentation has been detected.
     after_beyond = [
-        Command.IndentationHandlerCall(default_ih_f, mode_name),
-        Command.GotoDoorId(DoorID.continue_without_on_after_match())
+        Op.IndentationHandlerCall(default_ih_f, mode_name),
+        Op.GotoDoorId(DoorID.continue_without_on_after_match())
     ]
 
     # -- 'on_bad_indentation' is invoked if a character appeared that has been
@@ -103,7 +103,7 @@ def do(Data, TheAnalyzer):
     # 'whitespace' --> normal counting
     # 'bad'        --> goto bad character indentation handler
     # else         --> non-whitespace detected => handle indentation
-    ccfactory = CountCmdFactory.from_ParserDataIndentation(isetup, 
+    ccfactory = CountOpFactory.from_ParserDataIndentation(isetup, 
                                                            counter_db, 
                                                            Lng.INPUT_P(), 
                                                            DoorID.incidence(bad_indentation_iid))
@@ -162,9 +162,9 @@ def _add_suppressed_newline(psml, SmSuppressedNewlineOriginal):
     # be a newline being defined.
 
     cl = [
-        Command.LineCountAdd(1),
-        Command.AssignConstant(E_R.Column, 1),
-        Command.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)),
+        Op.LineCountAdd(1),
+        Op.AssignConstant(E_R.Column, 1),
+        Op.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)),
     ]
     terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
                                      "<INDENTATION SUPPRESSED NEWLINE>")
@@ -188,9 +188,9 @@ def _add_newline(psml, SmNewlineOriginal):
     # different incidence id. It is essential to clone!
 
     cl = [
-        Command.LineCountAdd(1),
-        Command.AssignConstant(E_R.Column, 1),
-        Command.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))
+        Op.LineCountAdd(1),
+        Op.AssignConstant(E_R.Column, 1),
+        Op.GotoDoorId(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER))
     ]
     terminal = Terminal(CodeTerminal(Lng.COMMAND_LIST(cl)), 
                         "<INDENTATION NEWLINE>")
@@ -213,16 +213,16 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
     if SmComment.last_character_set().contains_only(ord('\n')):
         code = Lng.COMMAND_LIST([
             LineCountAdd(1),
-            Command.AssignConstant(E_R.Column, 1),
+            Op.AssignConstant(E_R.Column, 1),
         ])
     else:
         count_info = CountInfo.from_StateMachine(SmComment, 
                                                  CounterDb,
                                                  CodecTrafoInfo=Setup.buffer_codec)
         code = [
-            Lng.COMMAND(Command.Assign(E_R.ReferenceP, E_R.LexemeStartP)),
+            Lng.COMMAND(Op.Assign(E_R.ReferenceP, E_R.LexemeStartP)),
             CounterDb.do_CountInfo(count_info),
-            Lng.COMMAND(Command.Assign(E_R.LexemeStartP, E_R.ReferenceP))
+            Lng.COMMAND(Op.Assign(E_R.LexemeStartP, E_R.ReferenceP))
         ]
 
     code.append(Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)))

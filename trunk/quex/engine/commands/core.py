@@ -1,8 +1,8 @@
 # MAIN CLASSES:
 #
-# (*) Command:
+# (*) Op:
 #
-#     .id      -- identifies the command (from E_Cmd)
+#     .id      -- identifies the command (from E_Op)
 #     .content -- 'Arguments' and/or additional information
 #                 (Normally a tuple, 'AccepterContent' is a real class).
 #  
@@ -20,19 +20,19 @@
 #
 #     CommandFactory.db:
 #
-#               Command identifier ----> CommandInfo
+#               Op identifier ----> CommandInfo
 #
-#     Maps from a command identifier (see E_Cmd) to a CommandInfo. The
-#     CommandInfo is used to create a Command.
+#     Maps from a command identifier (see E_Op) to a CommandInfo. The
+#     CommandInfo is used to create a Op.
 #
-# (*) CommandList:
+# (*) OpList:
 #
-#     A class which represents a sequence of Command-s. 
+#     A class which represents a sequence of Op-s. 
 
-#     'command.shared_tail.get(A, B)' find shared Command-s in 'A' and 'B'.
+#     'command.shared_tail.get(A, B)' find shared Op-s in 'A' and 'B'.
 #
 #     This 'shared tail' is used for the 'door tree construction'. That is, 
-#     upon entry into a state the CommandList-s may different dependent on
+#     upon entry into a state the OpList-s may different dependent on
 #     the source state, but some shared commands may be the same. Those
 #     shared commands are then only implemented once and not for each source
 #     state separately.
@@ -40,7 +40,7 @@
 #
 # EXPLANATION:
 #
-# Command-s represent operations such as 'Accept X if Pre-Context Y fulfilled'
+# Op-s represent operations such as 'Accept X if Pre-Context Y fulfilled'
 # or 'Store Input Position in Position Register X'. They are used to control
 # basic operations of the pattern matching state machine.
 #
@@ -48,19 +48,19 @@
 # function. For clarity, dedicated functions may be used, do provide a more
 # beautiful call to the factory, for example:
 #
-#     cmd = Command.StoreInputPosition(PreContextID, PositionRegister, Offset)
+#     cmd = Op.StoreInputPosition(PreContextID, PositionRegister, Offset)
 #
 # is equivalent to
 #
-#     cmd = CommandFactory.do(E_Cmd.StoreInputPosition, 
+#     cmd = CommandFactory.do(E_Op.StoreInputPosition, 
 #                             (PreContextID, PositionRegister, Offset))
 #
 # where, undoubtedly the first is much easier to read. 
 #
 # ADAPTATION:
 #
-# The list of commands is given by 'E_Cmd' and the CommandFactory's '.db' 
-# member. That is, to add a new command requires an identifier in E_Cmd,
+# The list of commands is given by 'E_Op' and the CommandFactory's '.db' 
+# member. That is, to add a new command requires an identifier in E_Op,
 # and an entry in the CommandFactory's '.db' which associates the identifier
 # with a CommandInfo. Additionally, the call to the CommandFactory may be 
 # abbreviated by a dedicated function as in the example above.
@@ -68,7 +68,7 @@
 #
 # (C) Frank-Rene Schaefer
 #______________________________________________________________________________
-from   quex.blackboard       import E_Cmd, \
+from   quex.blackboard       import E_Op, \
                                     E_R, \
                                     E_PreContextIDs
 from   quex.engine.commands.content_router_on_state_key import RouterOnStateKeyContent
@@ -83,16 +83,16 @@ from   copy        import deepcopy
 import types
 import numbers
 
-class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f"))):
+class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
     """_________________________________________________________________________
     Information about an operation to be executed. It consists mainly of a 
-    command identifier (from E_Cmd) and the content which specifies the command 
+    command identifier (from E_Op) and the content which specifies the command 
     further.
     ____________________________________________________________________________
     """
     # Commands which shall appear only once in a command list:
-    unique_set     = (E_Cmd.TemplateStateKeySet, 
-                      E_Cmd.PathIteratorSet)
+    unique_set     = (E_Op.TemplateStateKeySet, 
+                      E_Op.PathIteratorSet)
 
     # Fly weight pattern: Immutable objects need to exist only once. Every 
     # other 'new operation' may refer to the existing object. 
@@ -103,9 +103,9 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
     # of fly-weight-able command identifier. Use a positive list, NOT a negative
     # list. That way, new additions do not enter accidently into the fly weight
     # set.
-    fly_weight_set = (E_Cmd.InputPDecrement, 
-                      E_Cmd.InputPIncrement, 
-                      E_Cmd.InputPDereference)
+    fly_weight_set = (E_Op.InputPDecrement, 
+                      E_Op.InputPIncrement, 
+                      E_Op.InputPDereference)
     fly_weight_db  = {}
 
     def __new__(self, Id, *ParameterList):
@@ -135,7 +135,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
         # -- determine whether command is subject to 'goto/branching'
         branch_f = Id in _brancher_set
 
-        result = super(Command, self).__new__(self, Id, content, hash_value, branch_f)
+        result = super(Op, self).__new__(self, Id, content, hash_value, branch_f)
 
         # Store fly-weight-able objects in database.
         if Id in self.fly_weight_set: self.fly_weight_db[Id] = result
@@ -146,59 +146,59 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
         if self.id in self.fly_weight_db:    return self
         elif hasattr(self.content, "clone"): content = self.content.clone()
         else:                                content = deepcopy(self.content)
-        return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash, self.branch_f)
+        return super(Op, self).__new__(self.__class__, self.id, content, self.my_hash, self.branch_f)
 
     @staticmethod
     def StoreInputPosition(PreContextID, PositionRegister, Offset):
-        return Command(E_Cmd.StoreInputPosition, PreContextID, PositionRegister, Offset)
+        return Op(E_Op.StoreInputPosition, PreContextID, PositionRegister, Offset)
     
     @staticmethod
     def PreContextOK(PreContextID):
-        return Command(E_Cmd.PreContextOK, PreContextID)
+        return Op(E_Op.PreContextOK, PreContextID)
     
     @staticmethod
     def TemplateStateKeySet(StateKey):
-        return Command(E_Cmd.TemplateStateKeySet, StateKey)
+        return Op(E_Op.TemplateStateKeySet, StateKey)
     
     @staticmethod
     def PathIteratorSet(PathWalkerID, PathID, Offset):
-        return Command(E_Cmd.PathIteratorSet, PathWalkerID, PathID, Offset)
+        return Op(E_Op.PathIteratorSet, PathWalkerID, PathID, Offset)
     
     @staticmethod
     def PrepareAfterReload(OnSuccessDoorId, OnFailureDoorId):
-        return Command(E_Cmd.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
+        return Op(E_Op.PrepareAfterReload, OnSuccessDoorId, OnFailureDoorId)
     
     @staticmethod
     def InputPIncrement():
-        return Command(E_Cmd.InputPIncrement)
+        return Op(E_Op.InputPIncrement)
     
     @staticmethod
     def InputPDecrement():
-        return Command(E_Cmd.InputPDecrement)
+        return Op(E_Op.InputPDecrement)
     
     @staticmethod
     def InputPDereference():
-        return Command(E_Cmd.InputPDereference)
+        return Op(E_Op.InputPDereference)
     
     @staticmethod
     def LexemeResetTerminatingZero():
-        return Command(E_Cmd.LexemeResetTerminatingZero)
+        return Op(E_Op.LexemeResetTerminatingZero)
     
     @staticmethod
     def ColumnCountReferencePSet(Pointer, Offset=0):
-        return Command(E_Cmd.ColumnCountReferencePSet, Pointer, Offset)
+        return Op(E_Op.ColumnCountReferencePSet, Pointer, Offset)
     
     @staticmethod
     def ColumnCountReferencePDeltaAdd(Pointer, ColumnNPerChunk, SubtractOneF):
-        return Command(E_Cmd.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
+        return Op(E_Op.ColumnCountReferencePDeltaAdd, Pointer, ColumnNPerChunk, SubtractOneF)
     
     @staticmethod
     def ColumnCountAdd(Value):
-        return Command(E_Cmd.ColumnCountAdd, Value)
+        return Op(E_Op.ColumnCountAdd, Value)
     
     @staticmethod
     def IndentationHandlerCall(DefaultIhF, ModeName):
-        return Command(E_Cmd.IndentationHandlerCall, DefaultIhF, ModeName)
+        return Op(E_Op.IndentationHandlerCall, DefaultIhF, ModeName)
     
     @staticmethod
     def IfPreContextSetPositionAndGoto(PreContextId, RouterElement):
@@ -206,43 +206,43 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
         #   and RouterElement.positioning == 0:
         #    return GotoDoorId(DoorID.incidence(RouterElement.acceptance_id))
             
-        return Command(E_Cmd.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
+        return Op(E_Op.IfPreContextSetPositionAndGoto,PreContextId, RouterElement)
     
     @staticmethod
     def ColumnCountGridAdd(GridSize):
-        return Command(E_Cmd.ColumnCountGridAdd, GridSize)
+        return Op(E_Op.ColumnCountGridAdd, GridSize)
     
     @staticmethod
     def LineCountAdd(Value):
-        return Command(E_Cmd.LineCountAdd, Value)
+        return Op(E_Op.LineCountAdd, Value)
     
     @staticmethod
     def GotoDoorId(DoorId):
-        return Command(E_Cmd.GotoDoorId, DoorId)
+        return Op(E_Op.GotoDoorId, DoorId)
     
     @staticmethod
     def GotoDoorIdIfInputPNotEqualPointer(DoorId, Pointer):
-        return Command(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
+        return Op(E_Op.GotoDoorIdIfInputPNotEqualPointer, DoorId, Pointer)
     
     @staticmethod
     def Assign(TargetRegister, SourceRegister):
-        return Command(E_Cmd.Assign, TargetRegister, SourceRegister)
+        return Op(E_Op.Assign, TargetRegister, SourceRegister)
     
     @staticmethod
     def AssignConstant(Register, Value):
-        return Command(E_Cmd.AssignConstant, Register, Value)
+        return Op(E_Op.AssignConstant, Register, Value)
     
     @staticmethod
     def Accepter():
-        return Command(E_Cmd.Accepter)
+        return Op(E_Op.Accepter)
     
     @staticmethod
     def Router():
-        return Command(E_Cmd.Router)
+        return Op(E_Op.Router)
     
     @staticmethod
     def RouterOnStateKey(CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
-        result = Command(E_Cmd.RouterOnStateKey)
+        result = Op(E_Op.RouterOnStateKey)
     
         result.content.configure(CompressionType, MegaStateIndex, 
                                  IterableStateKeyStateIndexPairs, DoorID_provider)
@@ -250,16 +250,16 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
     
     @staticmethod
     def QuexDebug(TheString):
-        return Command(E_Cmd.QuexDebug, TheString)
+        return Op(E_Op.QuexDebug, TheString)
     
     @staticmethod
     def QuexAssertNoPassage():
-        return Command(E_Cmd.QuexAssertNoPassage)
+        return Op(E_Op.QuexAssertNoPassage)
 
     def is_conditionless_goto(self):
-        if self.id == E_Cmd.GotoDoorId: 
+        if self.id == E_Op.GotoDoorId: 
             return True
-        elif self.id == E_Cmd.IfPreContextSetPositionAndGoto:
+        elif self.id == E_Op.IfPreContextSetPositionAndGoto:
             return     self.content.pre_context_id == E_PreContextIDs.NONE \
                    and self.content.router_element.positioning == 0
         return False
@@ -269,7 +269,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
         a command that writes into register 'X' associates 'write-access' with X.
     
         This is MORE than what is found in '_access_db'. This function may derive 
-        information on accessed registers from actual 'content' of the Command.
+        information on accessed registers from actual 'content' of the Op.
         
         RETURNS: An iterable over pairs (register_id, access right) meaning that the
                  command accesses the register with the given access type/right.
@@ -319,7 +319,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
         if self.content is None:
             return "%s" % name_str
 
-        elif self.id == E_Cmd.StoreInputPosition:
+        elif self.id == E_Op.StoreInputPosition:
             x = self.content
             txt = ""
             if x.pre_context_id != E_PreContextIDs.NONE:
@@ -331,16 +331,16 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f
                 txt += "%s = input_p - %i;" % (pos_str, x.offset)
             return txt
 
-        elif self.id == E_Cmd.Accepter:
+        elif self.id == E_Op.Accepter:
             return str(self.content)
 
-        elif self.id == E_Cmd.Router:
+        elif self.id == E_Op.Router:
             return str(self.content)
 
-        elif self.id == E_Cmd.RouterOnStateKey:
+        elif self.id == E_Op.RouterOnStateKey:
             return str(self.content)
 
-        elif self.id == E_Cmd.PreContextOK:
+        elif self.id == E_Op.PreContextOK:
             return "pre-context-fulfilled = %s;" % self.content.pre_context_id
 
         else:
@@ -417,76 +417,76 @@ def __configure():
 
     brancher_set = set() # set of ids of branching/goto-ing commands.
 
-    def c(CmdId, ParameterList, *RegisterAccessInfoList):
+    def c(OpId, ParameterList, *RegisterAccessInfoList):
         # -- access to related 'registers'
-        access_db[CmdId] = RegisterAccessDB(RegisterAccessInfoList)
+        access_db[OpId] = RegisterAccessDB(RegisterAccessInfoList)
 
         # -- parameters that specify the command
-        if type(ParameterList) != tuple: content_db[CmdId] = ParameterList # Constructor
-        elif len(ParameterList) == 0:    content_db[CmdId] = None
-        else:                            content_db[CmdId] = namedtuple("%s_content" % CmdId, ParameterList)
+        if type(ParameterList) != tuple: content_db[OpId] = ParameterList # Constructor
+        elif len(ParameterList) == 0:    content_db[OpId] = None
+        else:                            content_db[OpId] = namedtuple("%s_content" % OpId, ParameterList)
         
         # -- computational cost of the command
-        cost_db[CmdId] = 1
+        cost_db[OpId] = 1
 
         # -- determine whether command is subject to 'goto/branching'
         for register_id in (info[0] for info in RegisterAccessInfoList):
-            if register_id == E_R.ThreadOfControl: brancher_set.add(CmdId)
+            if register_id == E_R.ThreadOfControl: brancher_set.add(OpId)
 
-    c(E_Cmd.Accepter,                         AccepterContent, 
+    c(E_Op.Accepter,                         AccepterContent, 
                                               (E_R.PreContextFlags,r), (E_R.AcceptanceRegister,w))
-    c(E_Cmd.Assign,                           ("target", "source"), 
+    c(E_Op.Assign,                           ("target", "source"), 
                                               (0,w),     (1,r))
-    c(E_Cmd.AssignConstant,                   ("register", "value"), 
+    c(E_Op.AssignConstant,                   ("register", "value"), 
                                               (0,w))
-    c(E_Cmd.PreContextOK,                     ("pre_context_id",), 
+    c(E_Op.PreContextOK,                     ("pre_context_id",), 
                                               (E_R.PreContextFlags,w))
     #
-    c(E_Cmd.GotoDoorId,                        ("door_id",), 
+    c(E_Op.GotoDoorId,                        ("door_id",), 
                                                (E_R.ThreadOfControl,w))
-    c(E_Cmd.GotoDoorIdIfInputPNotEqualPointer, ("door_id",                              "pointer"),
+    c(E_Op.GotoDoorIdIfInputPNotEqualPointer, ("door_id",                              "pointer"),
                                                (E_R.ThreadOfControl,w), (E_R.InputP,r), (1,r))
     #
-    c(E_Cmd.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
+    c(E_Op.StoreInputPosition,               (               "pre_context_id",        "position_register",       "offset"),
                                               (E_R.InputP,r), (E_R.PreContextFlags,r), (E_R.PositionRegister,w,1)) # Argument '1' --> sub_id_reference
-    c(E_Cmd.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_element"),
+    c(E_Op.IfPreContextSetPositionAndGoto,   ("pre_context_id", "router_element"),
                                               (E_R.PreContextFlags, r), (E_R.PositionRegister, r), (E_R.ThreadOfControl, w), 
                                               (E_R.InputP, r+w))
-    c(E_Cmd.InputPDecrement,                  None, (E_R.InputP,r+w))
-    c(E_Cmd.InputPIncrement,                  None, (E_R.InputP,r+w))
-    c(E_Cmd.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
+    c(E_Op.InputPDecrement,                  None, (E_R.InputP,r+w))
+    c(E_Op.InputPIncrement,                  None, (E_R.InputP,r+w))
+    c(E_Op.InputPDereference,                None, (E_R.InputP,r), (E_R.Input,w))
     #
-    c(E_Cmd.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r), (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
+    c(E_Op.LexemeResetTerminatingZero,       None, (E_R.LexemeStartP,r), (E_R.Buffer,w), (E_R.InputP,r), (E_R.Input,w))
     #
-    c(E_Cmd.IndentationHandlerCall,           ("default_f", "mode_name"),
+    c(E_Op.IndentationHandlerCall,           ("default_f", "mode_name"),
                                               (E_R.Column,r), (E_R.Indentation,r+w), (E_R.ReferenceP,r))
     #
-    c(E_Cmd.ColumnCountAdd,                   ("value",),
+    c(E_Op.ColumnCountAdd,                   ("value",),
                                               (E_R.Column,r+w))
-    c(E_Cmd.ColumnCountGridAdd,               ("grid_size",),
+    c(E_Op.ColumnCountGridAdd,               ("grid_size",),
                                               (E_R.Column,r+w))
-    c(E_Cmd.ColumnCountReferencePSet,         ("pointer", "offset"),
+    c(E_Op.ColumnCountReferencePSet,         ("pointer", "offset"),
                                               (0,r), (E_R.ReferenceP,w))
-    c(E_Cmd.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk", "subtract_one_f"),
+    c(E_Op.ColumnCountReferencePDeltaAdd,    ("pointer", "column_n_per_chunk", "subtract_one_f"),
                                               (E_R.Column,r+w), (0,r), (E_R.ReferenceP,r))
-    c(E_Cmd.LineCountAdd,                     ("value",),
+    c(E_Op.LineCountAdd,                     ("value",),
                                               (E_R.Line,r+w))
     #
-    c(E_Cmd.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
+    c(E_Op.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
                                               (E_R.PathIterator,w))
-    c(E_Cmd.Router,                           RouterContent, 
+    c(E_Op.Router,                           RouterContent, 
                                               (E_R.AcceptanceRegister,r), (E_R.InputP,w), (E_R.ThreadOfControl,w))
-    c(E_Cmd.RouterOnStateKey,                 RouterOnStateKeyContent, 
+    c(E_Op.RouterOnStateKey,                 RouterOnStateKeyContent, 
                                               (E_R.TemplateStateKey,r), (E_R.PathIterator,r), (E_R.ThreadOfControl,w))
-    c(E_Cmd.TemplateStateKeySet,              ("state_key",),
+    c(E_Op.TemplateStateKeySet,              ("state_key",),
                                               (E_R.TemplateStateKey,w))
     #
-    c(E_Cmd.PrepareAfterReload,               ("on_success_door_id", "on_failure_door_id"),
+    c(E_Op.PrepareAfterReload,               ("on_success_door_id", "on_failure_door_id"),
                                               (E_R.TargetStateIndex,w), (E_R.TargetStateElseIndex,w))
     #
-    c(E_Cmd.QuexDebug,                        ("string",), 
+    c(E_Op.QuexDebug,                        ("string",), 
                                               (E_R.StandardOutput,w))
-    c(E_Cmd.QuexAssertNoPassage,              None, 
+    c(E_Op.QuexAssertNoPassage,              None, 
                                               (E_R.StandardOutput,w), (E_R.ThreadOfControl, r+w))
 
     return access_db, content_db, brancher_set, cost_db
@@ -496,51 +496,51 @@ _content_db,   \
 _brancher_set, \
 _cost_db       = __configure()
 
-class CommandList(list):
-    """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
+class OpList(list):
+    """OpList -- a list of commands -- Intend: 'tuple' => immutable.
     """
     def __init__(self, *CL):
         self.__enter_list(CL)
 
-    def __enter_list(self, CmdList):
-        for cmd in CmdList:
-            assert isinstance(cmd, Command), "%s: %s" % (cmd.__class__, cmd)
-        super(CommandList, self).__init__(CmdList)
+    def __enter_list(self, Other):
+        for op in Other:
+            assert isinstance(op, Op), "%s: %s" % (op.__class__, op)
+        super(OpList, self).__init__(Other)
 
     @classmethod
     def from_iterable(cls, Iterable):
-        result = CommandList()
+        result = OpList()
         result.__enter_list(list(Iterable))
         return result
 
     def concatinate(self, Other):
-        """Generate a mew CommandList with .cloned() elements out of self and
-        the Other CommandList.
+        """Generate a mew OpList with .cloned() elements out of self and
+        the Other OpList.
         """ 
-        result = CommandList()
+        result = OpList()
         result.__enter_list([ x.clone() for x in self ] + [ x.clone() for x in Other ])
         return result
 
     def cut(self, NoneOfThis):
         """Delete all commands of SharedTail from this command list.
         """
-        return CommandList.from_iterable(
+        return OpList.from_iterable(
                            cmd for cmd in self if cmd not in NoneOfThis)
 
     def clone(self):
-        return CommandList.from_iterable(x.clone() for x in self)
+        return OpList.from_iterable(x.clone() for x in self)
 
     def is_empty(self):
-        return super(CommandList, self).__len__() == 0
+        return super(OpList, self).__len__() == 0
 
     def cost(self):
         global _cost_db
         return sum(_cost_db[cmd.id] for cmd in self)
 
-    def has_command_id(self, CmdId):
-        assert CmdId in E_Cmd
+    def has_command_id(self, OpId):
+        assert OpId in E_Op
         for cmd in self:
-            if cmd.id == CmdId: return True
+            if cmd.id == OpId: return True
         return False
 
     def access_accepter(self):
@@ -548,9 +548,9 @@ class CommandList(list):
         yet, then it creates one and adds it to the list.
         """
         for cmd in self:
-            if cmd.id == E_Cmd.Accepter: return cmd.content
+            if cmd.id == E_Op.Accepter: return cmd.content
 
-        accepter = Command.Accepter()
+        accepter = Op.Accepter()
         self.append(accepter)
         return accepter.content
 
@@ -566,15 +566,15 @@ class CommandList(list):
 
         for i in xrange(len(self)):
             cmd = self[i]
-            if cmd.id == E_Cmd.StoreInputPosition:
+            if cmd.id == E_Op.StoreInputPosition:
                 # Commands are immutable, so create a new one.
-                new_command = Command.StoreInputPosition(cmd.content.pre_context_id, 
+                new_command = Op.StoreInputPosition(cmd.content.pre_context_id, 
                                                  PositionRegisterMap[cmd.content.position_register],
                                                  cmd.content.offset)
                 self[i] = new_command
-            elif cmd.id == E_Cmd.IfPreContextSetPositionAndGoto:
+            elif cmd.id == E_Op.IfPreContextSetPositionAndGoto:
                 cmd.content.router_element.replace(PositionRegisterMap)
-            elif cmd.id == E_Cmd.Router:
+            elif cmd.id == E_Op.Router:
                 cmd.content.replace(PositionRegisterMap)
 
     def delete_superfluous_commands(self):
@@ -585,18 +585,18 @@ class CommandList(list):
             (This may occur due to register set optimization!)
         """
         for cmd in self:
-            assert isinstance(cmd, Command), "%s" % cmd
+            assert isinstance(cmd, Op), "%s" % cmd
 
         # (1) Unconditional rules out conditional
         unconditional_position_register_set = set(
             cmd.content.position_register
             for cmd in self \
-                if     cmd.id == E_Cmd.StoreInputPosition \
+                if     cmd.id == E_Op.StoreInputPosition \
                    and cmd.content.pre_context_id == E_PreContextIDs.NONE
         )
         delete_if(self,
                   lambda cmd:
-                       cmd.id == E_Cmd.StoreInputPosition \
+                       cmd.id == E_Op.StoreInputPosition \
                    and cmd.content.position_register in unconditional_position_register_set \
                    and cmd.content.pre_context_id != E_PreContextIDs.NONE)
 
@@ -607,7 +607,7 @@ class CommandList(list):
         i           = 0
         while i < size:
             cmd = self[i]
-            if cmd.id == E_Cmd.StoreInputPosition: 
+            if cmd.id == E_Op.StoreInputPosition: 
                 if cmd not in occured_set: 
                     occured_set.add(cmd)
                 else:
@@ -624,8 +624,8 @@ class CommandList(list):
         return xor_sum
 
     def __eq__(self, Other):
-        if isinstance(Other, CommandList) == False: return False
-        return super(CommandList, self).__eq__(Other)
+        if isinstance(Other, OpList) == False: return False
+        return super(OpList, self).__eq__(Other)
 
     def __ne__(self, Other):
         return not (self == Other)
