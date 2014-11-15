@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.14" date="Sat Nov 15 12:08:23 2014">
+<test-database execution-time-sec="3.01" date="Sat Nov 15 13:26:04 2014">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.06"> 
         <application file-name="test-pattern-matching.py" info-request-time="1415531929L" vanished="False"/>
@@ -21,12 +21,12 @@
            <choice name="" result="OK" time_sec="0.06" crc="2071623899"/>
         </choice-list>
     </test>
-    <test title="Case Folding" time-sum-sec="0.18"> 
+    <test title="Case Folding" time-sum-sec="0.16"> 
         <application file-name="test-case_fold.py" info-request-time="1415530215L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
-           <choice name="set" result="OK" time_sec="0.09" crc="-883659249"/>
-           <choice name="pattern" result="OK" time_sec="0.09" crc="-229484464"/>
+           <choice name="set" result="OK" time_sec="0.08" crc="-883659249"/>
+           <choice name="pattern" result="OK" time_sec="0.08" crc="-229484464"/>
         </choice-list>
     </test>
     <test title="Operations" time-sum-sec="0.42"> 
@@ -34,7 +34,7 @@
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
            <choice name="0" result="OK" time_sec="0.05" crc="-492283134"/>
-           <choice name="1" result="OK" time_sec="0.09" crc="2135757403"/>
+           <choice name="1" result="OK" time_sec="0.08" crc="2135757403"/>
            <choice name="2" result="OK" time_sec="0.11" crc="-689253293"/>
            <choice name="3" result="OK" time_sec="0.11" crc="-1020301645"/>
            <choice name="special" result="OK" time_sec="0.06" crc="1514759360"/>
@@ -64,18 +64,18 @@
                <choice name="" result="OK" time_sec="0.05" crc="-1055637304"/>
             </choice-list>
         </test>
-        <test title="Map character *range* to state machine" time-sum-sec="0.04"> 
+        <test title="Map character *range* to state machine" time-sum-sec="0.05"> 
             <application file-name="test-set.py" info-request-time="1415530212L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="560629563"/>
+               <choice name="" result="OK" time_sec="0.05" crc="560629563"/>
             </choice-list>
         </test>
-        <test title="Map character *string* to state machine" time-sum-sec="0.04"> 
+        <test title="Map character *string* to state machine" time-sum-sec="0.05"> 
             <application file-name="test-string.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-1516801858"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-1516801858"/>
             </choice-list>
         </test>
     </group>
@@ -156,18 +156,18 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Set Operations" time-sum-sec="0.70"> 
+        <test title="Set Operations" time-sum-sec="0.59"> 
             <application file-name="test-properties-2.py" info-request-time="1415530195L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.70" crc="-1215673322"/>
+               <choice name="" result="OK" time_sec="0.59" crc="-1215673322"/>
             </choice-list>
         </test>
-        <test title="Simple" time-sum-sec="0.57"> 
+        <test title="Simple" time-sum-sec="0.56"> 
             <application file-name="test-properties.py" info-request-time="1415530208L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.57" crc="-2049050227"/>
+               <choice name="" result="OK" time_sec="0.56" crc="-2049050227"/>
             </choice-list>
         </test>
     </group>
