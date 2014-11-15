@@ -1,7 +1,7 @@
 from  collections     import namedtuple
 from  quex.blackboard import E_PreContextIDs, \
                              E_IncidenceIDs
-from copy import deepcopy
+from copy     import deepcopy
 from operator import attrgetter
 
 class AccepterContentElement(namedtuple("AccepterContentElement_tuple", ("pre_context_id", "acceptance_id"))):

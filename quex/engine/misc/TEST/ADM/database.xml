@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.36" date="Sat Nov 15 21:41:06 2014">
+<test-database execution-time-sec="0.35" date="Sat Nov 15 23:27:32 2014">
     <last-used-diff-display-program name=""/>
     <test title="Enums -- Functionality Test" time-sum-sec="0.03"> 
         <application file-name="enum.py" info-request-time="1387873735L" vanished="False"/>
@@ -46,11 +46,11 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.03"> 
+        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.02"> 
             <application file-name="test-trim.py" info-request-time="1387873735L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.03" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

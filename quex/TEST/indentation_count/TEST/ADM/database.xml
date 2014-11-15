@@ -1,23 +1,23 @@
-<test-database execution-time-sec="14.13" date="Sat Nov 15 21:40:18 2014">
+<test-database execution-time-sec="13.93" date="Sat Nov 15 23:25:01 2014">
     <last-used-diff-display-program name=""/>
-    <test title="Indentation Counting and Range Skipper" time-sum-sec="3.68"> 
+    <test title="Indentation Counting and Range Skipper" time-sum-sec="3.58"> 
         <application file-name="with-skip-range.sh" info-request-time="1381662239L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="3" same_result="False">
-           <choice name="range" result="OK" time_sec="1.25" crc="1422842574"/>
+           <choice name="range" result="OK" time_sec="1.29" crc="1422842574"/>
            <choice name="range-2" result="OK" time_sec="1.15" crc="1422842574"/>
-           <choice name="nested_range" result="OK" time_sec="1.28" crc="-1046346403"/>
+           <choice name="nested_range" result="OK" time_sec="1.14" crc="-1046346403"/>
         </choice-list>
     </test>
-    <test title="Bad character detection." time-sum-sec="3.61"> 
+    <test title="Bad character detection." time-sum-sec="3.37"> 
         <application file-name="bad.sh" info-request-time="1404101244L" vanished="False"/>
         <analogy open="((" close="))"/>
         <happy-pattern re="EasyLexer.c:[0-9]+:"/>
         <happy-pattern re="EasyLexer.c:[0-9]+:"/>
         <choice-list number="3" same_result="False">
-           <choice name="default" result="OK" time_sec="1.18" crc="485045761"/>
-           <choice name="customized" result="OK" time_sec="1.19" crc="2010419295"/>
-           <choice name="customized-2" result="OK" time_sec="1.24" crc="1369669822"/>
+           <choice name="default" result="OK" time_sec="1.12" crc="485045761"/>
+           <choice name="customized" result="OK" time_sec="1.12" crc="2010419295"/>
+           <choice name="customized-2" result="OK" time_sec="1.13" crc="1369669822"/>
         </choice-list>
     </test>
     <test title="" time-sum-sec="0.00"> 
@@ -27,27 +27,27 @@
            <choice name="" result="NO GOOD FILE" time_sec="0.00" crc="0"/>
         </choice-list>
     </test>
-    <test title="Customized Event Handlers" time-sum-sec="5.44"> 
+    <test title="Customized Event Handlers" time-sum-sec="5.55"> 
         <application file-name="handlers.sh" info-request-time="1404016088L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="5" same_result="False">
-           <choice name="check-eof" result="OK" time_sec="1.04" crc="-180552726"/>
-           <choice name="on_dedent" result="OK" time_sec="1.06" crc="-215364705"/>
-           <choice name="on_n_dedent" result="OK" time_sec="1.06" crc="-215364705"/>
-           <choice name="empty-lines" result="OK" time_sec="1.22" crc="-215364705"/>
-           <choice name="on_indentation_error" result="OK" time_sec="1.06" crc="1111494244"/>
+           <choice name="check-eof" result="OK" time_sec="1.17" crc="-180552726"/>
+           <choice name="on_dedent" result="OK" time_sec="1.08" crc="-215364705"/>
+           <choice name="on_n_dedent" result="OK" time_sec="1.21" crc="-215364705"/>
+           <choice name="empty-lines" result="OK" time_sec="1.06" crc="-215364705"/>
+           <choice name="on_indentation_error" result="OK" time_sec="1.03" crc="1111494244"/>
         </choice-list>
     </test>
-    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.40"> 
+    <test title="Commonalities of Indentation Counter vs. Patterns" time-sum-sec="1.42"> 
         <application file-name="commonalities.sh" info-request-time="1403765169L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="7" same_result="False">
-           <choice name="1" result="OK" time_sec="0.21" crc="-2094617251"/>
+           <choice name="1" result="OK" time_sec="0.22" crc="-2094617251"/>
            <choice name="2" result="OK" time_sec="0.23" crc="343509802"/>
-           <choice name="3" result="OK" time_sec="0.24" crc="-2003025723"/>
+           <choice name="3" result="OK" time_sec="0.26" crc="-2003025723"/>
            <choice name="4" result="OK" time_sec="0.25" crc="774002524"/>
            <choice name="5" result="OK" time_sec="0.15" crc="72017042"/>
-           <choice name="6" result="OK" time_sec="0.16" crc="546786984"/>
+           <choice name="6" result="OK" time_sec="0.15" crc="546786984"/>
            <choice name="5b" result="OK" time_sec="0.16" crc="894491002"/>
         </choice-list>
     </test>

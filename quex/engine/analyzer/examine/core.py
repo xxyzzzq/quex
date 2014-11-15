@@ -5,7 +5,7 @@ from   collections import defaultdict
 from   itertools   import chain
 
 class Recipe:
-    """Base class for SOV recipes. The general recipe depends on:
+    """Base class for SCR recipes. The general recipe depends on:
 
         -- The current state.
         -- Constants which can be pre-determined.
@@ -14,42 +14,42 @@ class Recipe:
     See 00-README.txt the according DEFINITION.
     """
     @staticmethod
-    def get_terminal_SOV_db(SM):
+    def get_terminal_SCR_db(SM):
         """Determines terminals in the state machine which absolutely require
-        some information about a set of variables (SOV) for the investigated
+        some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during
         analysis or at run-time. 
 
-        Only 'terminals' need to be specified, because the SOV(i) for each 
+        Only 'terminals' need to be specified, because the SCR(i) for each 
         state 'i' is determined by BACK-PROPAGATION of needs.
 
-        RETURNS: defaultdict(set): state index --> set of variables
+        RETURNS: defaultdict(set): state index --> set of registers
 
-        The 'variables' are best determined in form of 'Enum' values. The 
+        The 'registers' are best determined in form of 'Enum' values. The 
         return type must be 'defaultdict(set)' so that it can be easily 
         extended by further processing.
         """
         assert False
 
     @staticmethod
-    def get_SOV_operation(TheState):
-        """Extracts from a given state machine state the operation on the SOV, 
-        i.e. the set of variables that describe the behavior (see 00-README.txt).
+    def get_SCR_operation(TheState):
+        """Extracts from a given state machine state the operation on the SCR, 
+        i.e. the set of registers that describe the behavior (see 00-README.txt).
 
-        RETURNS: A description of the operations on the SOV upon entry into 
+        RETURNS: A description of the operations on the SCR upon entry into 
                  'TheState'.
         """
         assert False
 
     @staticmethod
-    def is_spring(TheState, SOV):
+    def is_spring(TheState, SCR):
         """RETURNS: True  -- if TheState complies with the requirements of a 
                              spring state.
                     False -- else.
 
         In a spring the Recipe(i) must be determined. That is, as soon as this
         state is entered any history becomes unimportant. The setting of the
-        SOV(i) can be determined from an Recipe(i). The SOV of the state which
+        SCR(i) can be determined from an Recipe(i). The SCR of the state which
         may have been developed by 'back-propagation' of needs.
         """
         assert False
@@ -57,7 +57,7 @@ class Recipe:
     @staticmethod
     def from_spring(SpringState):
         """RETURNS: An accumulated action that determines the setting of the
-                    SOV(i) after the SpringState has been entered.
+                    SCR(i) after the SpringState has been entered.
         """
         assert False
 
@@ -66,7 +66,7 @@ class Recipe:
         """RETURNS: An accumulated action that expresses the concatenation of
                     the given Recipe, with the operation at entry of LinearState.
 
-        The resulting accumulated action determines the setting of SOV(i) after
+        The resulting accumulated action determines the setting of SCR(i) after
         the linear state has been entered.
         """
         assert False
@@ -107,7 +107,7 @@ class Recipe:
         assert False
     
 class LinearStateInfo:
-    """.recipe        = Recipemulated action Recipe(i) that determines SOV(i) after 
+    """.recipe        = Recipemulated action Recipe(i) that determines SCR(i) after 
                         state has been entered.
 
     The '.recipe' is determined from a spring state, or through accumulation of
@@ -117,7 +117,7 @@ class LinearStateInfo:
     __slots__ = ("recipe")
 
 class MouthStateInfo:
-    """.recipe   = Recipemulated action Recipe(i) that determines SOV(i) 
+    """.recipe   = Recipemulated action Recipe(i) that determines SCR(i) 
                         after state has been entered.
        .entry_db = map: from 'TransitionID' to accumulated action at entry 
                         into mouth state.
@@ -125,7 +125,7 @@ class MouthStateInfo:
     The '.entry_db' is filled each time a walk along a sequence of linear
     states reaches a mouth state. It is complete, as soon as all entries into
     the state are present in the keys of '.entry_db'. Then, an interference
-    may derive the '.recipe' which determines the SOV(i) as soon as the state has
+    may derive the '.recipe' which determines the SCR(i) as soon as the state has
     been entered.  
     """
     __slots__ = ("recipe", "entry_db")
@@ -142,7 +142,7 @@ class Examiner:
         """Associate all states in the state machine with an 'R(i)' and 
         determine what actions have to be implemented at what place.
         """
-        self.sov_db = self.determine_SOVs()
+        self.scr_db = self.determine_SCRs()
 
         # Determine what states are entered only by one state. Those are the 
         # 'linear states'. States which are entered by more than one state are
@@ -165,40 +165,40 @@ class Examiner:
         # the theory in 00-README.txt.
         assert self.determined_set == set(self.sm.states.iterkeys())
 
-    def determine_SOVs(self):
-        """Determines SOV(i), that is it determines the variables which are 
+    def determine_SCRs(self):
+        """Determines SCR(i), that is it determines the registers which are 
         important for each state. For that the 'terminals' are requested from 
         the recipe type (representing the investigated behavior). 
         
-        If a state 'i' requires a variable 'x' for its drop-out procedure, then
+        If a state 'i' requires a register 'x' for its drop-out procedure, then
         the development of 'x' along the states on the path to 'i' must be 
-        implemented. In other words, 'x' is part of any SOV(k) where 'k' is a
+        implemented. In other words, 'x' is part of any SCR(k) where 'k' is a
         predecessor state of 'i'.
 
         The method to resolve this is 'back-propagation' of needs.
         """
-        # terminal_sov_db = defaultdict(set)
-        terminal_sov_db = self.recipe_type.get_terminal_SOV_db(self.sm)
+        # terminal_scr_db = defaultdict(set)
+        terminal_scr_db = self.recipe_type.get_terminal_SCR_db(self.sm)
 
-        # SOV(i) for all states determined => back-propagation not necessary.
-        if len(terminal_sov_db) == len(self.sm.states):
-            return terminal_sov_db
+        # SCR(i) for all states determined => back-propagation not necessary.
+        if len(terminal_scr_db) == len(self.sm.states):
+            return terminal_scr_db
 
-        # Determine SOV(i) of states on which determined states depend
+        # Determine SCR(i) of states on which determined states depend
         propagated_db = defaultdict(set)
-        for si, sov in terminal_sov_db:
+        for si, sov in terminal_scr_db:
             predecessor_set = self.predecessor_db[si]
             propagated_db.update(
                 (psi, sov) for psi in predecessor_set
             )
 
         # Include propagated sovs into already known ones
-        sov_db = terminal_sov_db
+        scr_db = terminal_scr_db
         for si, sov in propagated_db.iteritems():
-            # SOV(i) takes over what is reported in 'propagated_db[i]'
-            sov_db[si].update(sov)
+            # SCR(i) takes over what is reported in 'propagated_db[i]'
+            scr_db[si].update(sov)
 
-        return sov_db
+        return scr_db
 
     def categorize_states(self):
         """Seperates the states in state machine into two sets:
@@ -244,7 +244,7 @@ class Examiner:
         to '_accumulate()'.
         """
         return set(si for si, state in self.sm.states.iteritems()
-                      if self.recipe_type.is_spring(state, self.sov_db[i]))
+                      if self.recipe_type.is_spring(state, self.scr_db[i]))
 
     def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
@@ -462,7 +462,7 @@ class LinearStateWalker(TreeWalker):
         #               of current state.
         # => recipe of current state.
         state  = self.state_db[StateIndex]
-        op     = self.recipe_type.get_SOV_operation(state)
+        op     = self.recipe_type.get_SCR_operation(state)
         recipe = self.recipe_type.from_accumulation(PrevRecipe, op)
         walker.add_recipe(StateIndex, recipe)
 
@@ -477,7 +477,7 @@ class LinearStateWalker(TreeWalker):
             if mouth_info is not None:
                 # (ii) Consider mouth state --> not in 'todo'.
                 target   = self.state_db[target_index]
-                op       = self.recipe_type.get_SOV_operation(target)
+                op       = self.recipe_type.get_SCR_operation(target)
                 e_recipe = self.recipe_type.from_accumulation(recipe, op)
                 mouth_info.entry_db.enter(transition_id, e_recipe)
                 if mouth_info.is_determined():
