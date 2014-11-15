@@ -1,4 +1,4 @@
-<test-database execution-time-sec="15.26" date="Sat Nov 15 13:24:34 2014">
+<test-database execution-time-sec="15.43" date="Sat Nov 15 21:41:06 2014">
     <last-used-diff-display-program name=""/>
     <test title="Categorize Entry Door Actions" time-sum-sec="1.36"> 
         <application file-name="categorize_doors.py" info-request-time="1368636318L" vanished="True"/>
@@ -36,7 +36,7 @@
            <choice name="10" result="NO GOOD FILE" time_sec="0.09" crc="1511814662"/>
         </choice-list>
     </test>
-    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.72"> 
+    <test title="Position Register vs. Post-Context and Last Acceptance" time-sum-sec="0.73"> 
         <application file-name="test-position_register_map.py" info-request-time="1399871052L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="6" same_result="False">
@@ -78,12 +78,12 @@
                <choice name="10" result="FAIL" time_sec="0.08" crc="None"/>
             </choice-list>
         </test>
-        <test title="Single Pattern" time-sum-sec="1.03"> 
+        <test title="Single Pattern" time-sum-sec="1.04"> 
             <application file-name="paths_analysis-single-pattern.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="11" same_result="False">
                <choice name="0" result="OK" time_sec="0.09" crc="354041082"/>
-               <choice name="1" result="OK" time_sec="0.09" crc="1916979859"/>
+               <choice name="1" result="OK" time_sec="0.10" crc="1916979859"/>
                <choice name="2" result="OK" time_sec="0.09" crc="-1088031044"/>
                <choice name="3" result="OK" time_sec="0.10" crc="512600050"/>
                <choice name="4" result="OK" time_sec="0.09" crc="416576752"/>
@@ -91,13 +91,13 @@
                <choice name="6" result="OK" time_sec="0.09" crc="-1915401168"/>
                <choice name="7" result="OK" time_sec="0.09" crc="1304237598"/>
                <choice name="8" result="OK" time_sec="0.09" crc="1393704771"/>
-               <choice name="9" result="OK" time_sec="0.10" crc="1828585154"/>
+               <choice name="9" result="OK" time_sec="0.11" crc="1828585154"/>
                <choice name="10" result="OK" time_sec="0.09" crc="-1729556701"/>
             </choice-list>
         </test>
     </group>
     <group name="Paths Analyzis">
-        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.09"> 
+        <test title="Without Pre- and Post-Contexts" time-sum-sec="1.15"> 
             <application file-name="paths_analysis.py" info-request-time="1387873736L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="11" same_result="False">
@@ -109,7 +109,7 @@
                <choice name="5" result="OK" time_sec="0.10" crc="-1547075113"/>
                <choice name="6" result="OK" time_sec="0.10" crc="-1268828562"/>
                <choice name="7" result="OK" time_sec="0.11" crc="1557254239"/>
-               <choice name="8" result="OK" time_sec="0.11" crc="1038801605"/>
+               <choice name="8" result="OK" time_sec="0.16" crc="1038801605"/>
                <choice name="9" result="OK" time_sec="0.10" crc="-1421910595"/>
                <choice name="10" result="OK" time_sec="0.11" crc="1560628877"/>
             </choice-list>
@@ -135,17 +135,17 @@
         </test>
     </group>
     <group name="Track Analyzis">
-        <test title="With Post-Contexts" time-sum-sec="0.85"> 
+        <test title="With Post-Contexts" time-sum-sec="0.88"> 
             <application file-name="paths_analysis-post.py" info-request-time="1414473389L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="8" same_result="False">
                <choice name="3" result="OK" time_sec="0.10" crc="262361420"/>
                <choice name="4" result="OK" time_sec="0.10" crc="-1944229674"/>
                <choice name="5" result="OK" time_sec="0.10" crc="-433864515"/>
-               <choice name="6" result="OK" time_sec="0.10" crc="-1328595226"/>
-               <choice name="7" result="OK" time_sec="0.10" crc="2001421542"/>
+               <choice name="6" result="OK" time_sec="0.11" crc="-1328595226"/>
+               <choice name="7" result="OK" time_sec="0.11" crc="2001421542"/>
                <choice name="8" result="OK" time_sec="0.12" crc="2037512235"/>
-               <choice name="9" result="OK" time_sec="0.11" crc="-1348182270"/>
+               <choice name="9" result="OK" time_sec="0.12" crc="-1348182270"/>
                <choice name="10" result="OK" time_sec="0.12" crc="509040750"/>
             </choice-list>
         </test>
@@ -156,12 +156,12 @@
                <choice name="0" result="OK" time_sec="0.09" crc="1811815984"/>
                <choice name="1" result="OK" time_sec="0.09" crc="495143508"/>
                <choice name="2" result="OK" time_sec="0.09" crc="-1380231108"/>
-               <choice name="3" result="OK" time_sec="0.09" crc="864564729"/>
+               <choice name="3" result="OK" time_sec="0.10" crc="864564729"/>
                <choice name="4" result="OK" time_sec="0.09" crc="1383905694"/>
                <choice name="5" result="OK" time_sec="0.10" crc="-1945633555"/>
                <choice name="6" result="OK" time_sec="0.10" crc="368166302"/>
                <choice name="7" result="OK" time_sec="0.11" crc="-65438692"/>
-               <choice name="8" result="OK" time_sec="0.11" crc="-1783598879"/>
+               <choice name="8" result="OK" time_sec="0.10" crc="-1783598879"/>
                <choice name="9" result="OK" time_sec="0.09" crc="-884448773"/>
                <choice name="10" result="OK" time_sec="0.11" crc="1078159250"/>
             </choice-list>
@@ -172,11 +172,11 @@
             <choice-list number="15" same_result="False">
                <choice name="0" result="OK" time_sec="0.09" crc="-2081704960"/>
                <choice name="1" result="OK" time_sec="0.09" crc="1385447973"/>
-               <choice name="2" result="OK" time_sec="0.09" crc="2059501133"/>
-               <choice name="3" result="OK" time_sec="0.09" crc="-1272752868"/>
+               <choice name="2" result="OK" time_sec="0.10" crc="2059501133"/>
+               <choice name="3" result="OK" time_sec="0.10" crc="-1272752868"/>
                <choice name="4" result="OK" time_sec="0.09" crc="-1589501306"/>
                <choice name="5" result="OK" time_sec="0.10" crc="721442661"/>
-               <choice name="6" result="OK" time_sec="0.10" crc="1298646115"/>
+               <choice name="6" result="OK" time_sec="0.11" crc="1298646115"/>
                <choice name="7" result="OK" time_sec="0.10" crc="1950586892"/>
                <choice name="8" result="OK" time_sec="0.10" crc="285304367"/>
                <choice name="9" result="OK" time_sec="0.10" crc="-2057107165"/>
@@ -192,10 +192,10 @@
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
                <choice name="0" result="OK" time_sec="0.09" crc="-1737594044"/>
-               <choice name="1" result="OK" time_sec="0.09" crc="-509218225"/>
+               <choice name="1" result="OK" time_sec="0.10" crc="-509218225"/>
             </choice-list>
         </test>
-        <test title="With Pre- and Post-Contexts" time-sum-sec="1.05"> 
+        <test title="With Pre- and Post-Contexts" time-sum-sec="1.10"> 
             <application file-name="paths_analysis-pre-post.py" info-request-time="1392275226L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="9" same_result="False">
@@ -203,11 +203,11 @@
                <choice name="2" result="OK" time_sec="0.11" crc="816082516"/>
                <choice name="3" result="OK" time_sec="0.11" crc="1561804555"/>
                <choice name="4" result="OK" time_sec="0.11" crc="-1996973945"/>
-               <choice name="5" result="OK" time_sec="0.11" crc="-681660730"/>
+               <choice name="5" result="OK" time_sec="0.12" crc="-681660730"/>
                <choice name="6" result="OK" time_sec="0.11" crc="-308138795"/>
-               <choice name="7" result="OK" time_sec="0.16" crc="-938698973"/>
+               <choice name="7" result="OK" time_sec="0.15" crc="-938698973"/>
                <choice name="8" result="OK" time_sec="0.12" crc="-976114364"/>
-               <choice name="9" result="OK" time_sec="0.13" crc="-770142065"/>
+               <choice name="9" result="OK" time_sec="0.17" crc="-770142065"/>
             </choice-list>
         </test>
         <test title="Backward Input Position Detection" time-sum-sec="0.09"> 
@@ -224,7 +224,7 @@
                <choice name="0" result="OK" time_sec="0.18" crc="1051455443"/>
                <choice name="1" result="OK" time_sec="0.19" crc="-1807628119"/>
                <choice name="2" result="OK" time_sec="0.12" crc="822244814"/>
-               <choice name="3" result="OK" time_sec="0.16" crc="-1855114775"/>
+               <choice name="3" result="OK" time_sec="0.15" crc="-1855114775"/>
                <choice name="4" result="OK" time_sec="0.12" crc="-407956297"/>
                <choice name="5" result="OK" time_sec="0.12" crc="1585178537"/>
                <choice name="6" result="OK" time_sec="0.14" crc="-1767062360"/>
@@ -233,7 +233,7 @@
         </test>
     </group>
     <group name="Transition Map Tools">
-        <test title="combine_adjacent" time-sum-sec="0.34"> 
+        <test title="combine_adjacent" time-sum-sec="0.35"> 
             <application file-name="transition_map_tools-combine_adjacent.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -244,7 +244,7 @@
                <choice name="3-diff" result="OK" time_sec="0.07" crc="78032644"/>
             </choice-list>
         </test>
-        <test title="set" time-sum-sec="0.31"> 
+        <test title="set" time-sum-sec="0.30"> 
             <application file-name="transition_map_tools.py" info-request-time="1415531759L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">
@@ -271,7 +271,7 @@
                <choice name="" result="OK" time_sec="0.06" crc="833975462"/>
             </choice-list>
         </test>
-        <test title="fill_gaps" time-sum-sec="0.34"> 
+        <test title="fill_gaps" time-sum-sec="0.35"> 
             <application file-name="transition_map_tools-fill_gaps.py" info-request-time="1415531762L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="5" same_result="False">

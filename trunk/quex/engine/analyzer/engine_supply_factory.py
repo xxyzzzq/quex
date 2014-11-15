@@ -1,5 +1,5 @@
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.engine.commands.core                  import OpList, \
+from   quex.engine.operations.operation_list                  import OpList, \
                                                          Op
 from   quex.blackboard  import E_InputActions, \
                                setup as Setup

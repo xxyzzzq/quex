@@ -19,12 +19,12 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.commands.core         import *
-from   quex.engine.commands.core         import _cost_db, \
+from   quex.engine.operations.operation_list         import *
+from   quex.engine.operations.operation_list         import _cost_db, \
                                                 _brancher_set
-from   quex.engine.commands.TEST.helper  import example_db
+from   quex.engine.operations.TEST.helper  import example_db
 from   quex.engine.analyzer.door_id_address_label import DoorID
-import quex.engine.commands.shared_tail  as     command_list_shared_tail
+import quex.engine.operations.shared_tail  as     command_list_shared_tail
 from   quex.output.core.dictionary       import db
 
 from   quex.blackboard import E_Op, \

@@ -1,5 +1,5 @@
 from   quex.engine.counter                        import CountOpFactory
-from   quex.engine.commands.core                  import Op
+from   quex.engine.operations.operation_list                  import Op
 
 import quex.output.core.loop                      as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine

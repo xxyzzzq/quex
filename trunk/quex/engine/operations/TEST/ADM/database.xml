@@ -1,4 +1,4 @@
-<test-database execution-time-sec="6.52" date="Sat Nov 15 13:32:23 2014">
+<test-database execution-time-sec="18.09" date="Sat Nov 15 21:41:18 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -20,7 +20,7 @@
         </choice-list>
     </test>
     <test title="SharedTailDB" time-sum-sec="0.18"> 
-        <application file-name="test-SharedTailDB.py" info-request-time="1416047701L" vanished="False"/>
+        <application file-name="test-SharedTailDB.py" info-request-time="1416082779L" vanished="False"/>
         <analogy open="((" close="))"/>
         <choice-list number="2" same_result="False">
            <choice name="init" result="OK" time_sec="0.09" crc="-1551608524"/>
@@ -29,7 +29,7 @@
     </test>
     <group name="Command">
         <test title="Basic" time-sum-sec="0.08"> 
-            <application file-name="basic.py" info-request-time="1416047605L" vanished="False"/>
+            <application file-name="basic.py" info-request-time="1416082779L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.08" crc="-419580407"/>
@@ -49,17 +49,17 @@
         </test>
     </group>
     <group name="Op">
-        <test title="is_switchable" time-sum-sec="0.08"> 
+        <test title="is_switchable" time-sum-sec="2.01"> 
             <application file-name="is_switchable.py" info-request-time="1416044271L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="-2029124413"/>
+               <choice name="" result="FAIL" time_sec="2.01" crc="-2029124413"/>
             </choice-list>
         </test>
     </group>
     <group name="Op.shared_tail">
         <test title="find_last_common" time-sum-sec="0.33"> 
-            <application file-name="test-shared_tail.py" info-request-time="1416047701L" vanished="False"/>
+            <application file-name="test-shared_tail.py" info-request-time="1416082779L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
                <choice name="one-or-none" result="OK" time_sec="0.08" crc="-1132255075"/>
@@ -68,15 +68,15 @@
                <choice name="multiple" result="OK" time_sec="0.09" crc="-1427481276"/>
             </choice-list>
         </test>
-        <test title="can_be_moved_to_tail" time-sum-sec="0.16"> 
-            <application file-name="can_be_moved_to_tail.py" info-request-time="1416047701L" vanished="False"/>
+        <test title="can_be_moved_to_tail" time-sum-sec="0.17"> 
+            <application file-name="can_be_moved_to_tail.py" info-request-time="1416082778L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="2" same_result="False">
-               <choice name="no-exceptions" result="OK" time_sec="0.08" crc="433423739"/>
+               <choice name="no-exceptions" result="OK" time_sec="0.09" crc="433423739"/>
                <choice name="with-exceptions" result="OK" time_sec="0.08" crc="-1859076765"/>
             </choice-list>
         </test>
-        <test title="find_last_common" time-sum-sec="2.43"> 
+        <test title="find_last_common" time-sum-sec="12.06"> 
             <application file-name="find_last_common.py" info-request-time="1416047701L" vanished="False"/>
             <analogy open="((" close="))"/>
             <happy-pattern re="[0-9]+/[0-9]+"/>
@@ -85,11 +85,11 @@
             <happy-pattern re="[0-9]+/[0-9]+"/>
             <happy-pattern re="[0-9]+/[0-9]+"/>
             <choice-list number="6" same_result="False">
-               <choice name="EqualOp" result="OK" time_sec="0.09" crc="699489179"/>
-               <choice name="no-common" result="OK" time_sec="0.08" crc="1380064187"/>
-               <choice name="1-common" result="OK" time_sec="0.08" crc="-1548344298"/>
-               <choice name="2-common" result="OK" time_sec="0.09" crc="-697374857"/>
-               <choice name="3-common" result="OK" time_sec="0.08" crc="523673866"/>
+               <choice name="EqualOp" result="FAIL" time_sec="2.01" crc="699489179"/>
+               <choice name="no-common" result="FAIL" time_sec="2.01" crc="1380064187"/>
+               <choice name="1-common" result="FAIL" time_sec="2.02" crc="-1548344298"/>
+               <choice name="2-common" result="FAIL" time_sec="2.01" crc="-697374857"/>
+               <choice name="3-common" result="FAIL" time_sec="2.01" crc="523673866"/>
                <choice name="start-indices" result="OK" time_sec="2.01" crc="-1857179644"/>
             </choice-list>
         </test>

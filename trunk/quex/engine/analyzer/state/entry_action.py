@@ -1,4 +1,4 @@
-from   quex.engine.commands.core import OpList
+from   quex.engine.operations.operation_list import OpList
 
 from   quex.blackboard import E_StateIndices, \
                               E_TriggerIDs

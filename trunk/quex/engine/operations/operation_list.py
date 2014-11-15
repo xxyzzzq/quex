@@ -28,7 +28,7 @@
 # (*) OpList:
 #
 #     A class which represents a sequence of Op-s. 
-
+#
 #     'command.shared_tail.get(A, B)' find shared Op-s in 'A' and 'B'.
 #
 #     This 'shared tail' is used for the 'door tree construction'. That is, 
@@ -71,10 +71,10 @@
 from   quex.blackboard       import E_Op, \
                                     E_R, \
                                     E_PreContextIDs
-from   quex.engine.commands.content_router_on_state_key import RouterOnStateKeyContent
-from   quex.engine.commands.content_accepter            import AccepterContent, \
+from   quex.engine.operations.content_router_on_state_key import RouterOnStateKeyContent
+from   quex.engine.operations.content_accepter            import AccepterContent, \
                                                                repr_pre_context_id
-from   quex.engine.commands.content_terminal_router     import RouterContent, \
+from   quex.engine.operations.content_terminal_router     import RouterContent, \
                                                                repr_position_register
 from   quex.engine.misc.tools import delete_if
 

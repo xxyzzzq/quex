@@ -56,7 +56,7 @@ AnalyzerState-s:
 _______________________________________________________________________________
 (C) 2012 Frank-Rene Schaefer
 """
-from quex.engine.commands.core                  import Op, \
+from quex.engine.operations.operation_list                  import Op, \
                                                        OpList
 from quex.engine.analyzer.door_id_address_label import dial_db
 from quex.engine.analyzer.state.core            import AnalyzerState
