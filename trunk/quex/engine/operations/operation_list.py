@@ -73,9 +73,9 @@ from   quex.blackboard       import E_Op, \
                                     E_PreContextIDs
 from   quex.engine.operations.content_router_on_state_key import RouterOnStateKeyContent
 from   quex.engine.operations.content_accepter            import AccepterContent, \
-                                                               repr_pre_context_id
+                                                                 repr_pre_context_id
 from   quex.engine.operations.content_terminal_router     import RouterContent, \
-                                                               repr_position_register
+                                                                 repr_position_register
 from   quex.engine.misc.tools import delete_if
 
 from   collections import namedtuple
@@ -265,7 +265,7 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return False
     
     def get_register_access_iterable(self):
-        """For each command there are rights associated with registers. For example
+        """For each command there are access infos associated with registers. For example
         a command that writes into register 'X' associates 'write-access' with X.
     
         This is MORE than what is found in '_access_db'. This function may derive 
@@ -276,7 +276,7 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         """
         global _access_db
     
-        for register_id, rights in _access_db[self.id].iteritems():
+        for register_id, access in _access_db[self.id].iteritems():
             if isinstance(register_id, numbers.Integral):
                 register_id = self.content[register_id] # register_id == Argument number which contains E_R
             elif type(register_id) == tuple:
@@ -284,7 +284,7 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
                 sub_reference_id = register_id[1]       # register_id[1] --> Argument number containing sub-id
                 sub_id           = self.content[sub_reference_id]
                 register_id = "%s:%s" % (main_id, sub_id)
-            yield register_id, rights
+            yield register_id, access
     
     def get_access_rights(self, RegisterId):
         """Provides information about how the command modifies the register

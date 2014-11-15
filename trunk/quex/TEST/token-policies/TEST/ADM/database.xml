@@ -1,12 +1,12 @@
-<test-database execution-time-sec="0.28" date="Sat Nov 15 21:41:05 2014">
+<test-database execution-time-sec="0.27" date="Sat Nov 15 23:25:54 2014">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy 'queue'">
-        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.25"> 
+        <test title="Pseudo Analysis" make-dependent="True" time-sum-sec="0.24"> 
             <application file-name="queue.exe" info-request-time="1416054166L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.030631"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.25" crc="-264108046"/>
+               <choice name="" result="OK" time_sec="0.24" crc="-264108046"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
@@ -27,12 +27,12 @@
                <choice name="" result="OK" time_sec="0.00" crc="-1396014048"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.01"> 
+        <test title="Real Analysis" make-dependent="True" time-sum-sec="0.00"> 
             <application file-name="users_token-real.exe" info-request-time="1416054170L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="2.120921"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="178235029"/>
+               <choice name="" result="OK" time_sec="0.00" crc="178235029"/>
             </choice-list>
         </test>
     </group>
