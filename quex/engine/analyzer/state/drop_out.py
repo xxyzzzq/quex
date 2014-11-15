@@ -1,7 +1,7 @@
-from   quex.engine.commands.core import CommandList, \
-                                        Command
+from   quex.engine.commands.core import OpList, \
+                                        Op
 
-def get_CommandList(TheAccepter, TheTerminalRouter):
+def get_OpList(TheAccepter, TheTerminalRouter):
     """If there is no stored acceptance involved, then one can directly
     conclude from the pre-contexts to the acceptance_id. Then the drop-
     out action can be described as a sequence of checks
@@ -20,12 +20,12 @@ def get_CommandList(TheAccepter, TheTerminalRouter):
     # If the 'last_acceptance' is not determined in this state, then it
     # must bee derived from previous storages. We cannot simplify here.
     if TheAccepter is None: 
-        return CommandList(TheTerminalRouter)
+        return OpList(TheTerminalRouter)
 
     elif not TheAccepter.content.has_acceptance_without_pre_context():
         # If no pre-context is met, then 'last_acceptance' needs to be 
         # considered.
-        return CommandList(TheAccepter, TheTerminalRouter)
+        return OpList(TheAccepter, TheTerminalRouter)
 
     def router_element(TerminalRouter, AcceptanceId):
         for x in TerminalRouter:
@@ -34,8 +34,8 @@ def get_CommandList(TheAccepter, TheTerminalRouter):
 
     router = TheTerminalRouter.content
 
-    return CommandList.from_iterable(
-        Command.IfPreContextSetPositionAndGoto(check.pre_context_id, 
+    return OpList.from_iterable(
+        Op.IfPreContextSetPositionAndGoto(check.pre_context_id, 
                                        router_element(router, check.acceptance_id))
         for check in TheAccepter.content
     )

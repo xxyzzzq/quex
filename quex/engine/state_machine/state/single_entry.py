@@ -1,5 +1,5 @@
 from quex.engine.misc.tools                     import typed
-from quex.engine.commands.single_entry_commands import SeCmd, \
+from quex.engine.commands.single_entry_commands import SeOp, \
                                                        SeAccept, \
                                                        SeStoreInputPosition
 from quex.blackboard import E_PreContextIDs
@@ -22,29 +22,29 @@ class SingleEntry(object):
                     ReplDbAcceptance=ReplDbAcceptance) 
             for x in self.__list)
 
-    def find(self, CmdClass):
+    def find(self, OpClass):
         for cmd in self.__list:
-            if cmd.__class__ == CmdClass: return cmd
+            if cmd.__class__ == OpClass: return cmd
         return None
 
-    def get_iterable(self, CmdClass):
+    def get_iterable(self, OpClass):
         for cmd in self.__list:
-            if cmd.__class__ == CmdClass: yield cmd
+            if cmd.__class__ == OpClass: yield cmd
         
-    def has(self, Cmd):
+    def has(self, Op):
         for candidate in self.__list:
-            if candidate == Cmd: return True
+            if candidate == Op: return True
         return False
 
-    @typed(Cmd=SeCmd)
-    def add(self, Cmd):
-        if self.has(Cmd): return
-        self.__list.append(Cmd.clone())
+    @typed(Op=SeOp)
+    def add(self, Op):
+        if self.has(Op): return
+        self.__list.append(Op.clone())
 
-    def add_Cmd(self, CmdClass):
-        cmd = self.find(CmdClass)
+    def add_Op(self, OpClass):
+        cmd = self.find(OpClass)
         if cmd is not None: return
-        self.add(CmdClass())
+        self.add(OpClass())
 
     def merge(self, Other):
         assert isinstance(Other, SingleEntry)
@@ -52,21 +52,21 @@ class SingleEntry(object):
             cmd.clone() for cmd in Other.__list if not self.has(cmd)
         )
 
-    def merge_list(self, CmdIterableIterable):
-        for origin_iterable in CmdIterableIterable:
+    def merge_list(self, OpIterableIterable):
+        for origin_iterable in OpIterableIterable:
             self.merge(origin_iterable)
 
-    def set(self, CmdList):
+    def set(self, OpList):
         self.clear()
         self.__list.extend(
-            cmd.clone() for cmd in CmdList if not self.has(cmd)
+            cmd.clone() for cmd in OpList if not self.has(cmd)
         )
         
-    def remove_Cmd(self, CmdClass):
+    def remove_Op(self, OpClass):
         L = len(self.__list)
         for i in xrange(L-1, -1, -1):
             cmd = self.__list[i]
-            if cmd.__class__ == CmdClass: del self.__list[i]
+            if cmd.__class__ == OpClass: del self.__list[i]
 
     def has_acceptance_id(self, AcceptanceID):
         for cmd in self.get_iterable(SeAccept):
@@ -146,7 +146,7 @@ class SingleEntry(object):
         result = (acceptance_info, store_info)
         return result
 
-    def get_string(self, CmdalStatesF=True):
+    def get_string(self, OpalStatesF=True):
         if   not self.__list:       return "\n"
         elif len(self.__list) == 1: return "%s\n" % self.__list[0]
 

@@ -1,4 +1,4 @@
-from   quex.engine.commands.core import CommandList
+from   quex.engine.commands.core import OpList
 
 from   quex.blackboard import E_StateIndices, \
                               E_TriggerIDs
@@ -47,14 +47,14 @@ class TransitionAction(object):
                           'EntryActionDB.categorize()'.
     """
     __slots__ = ("door_id", "_command_list")
-    def __init__(self, InitCommandList=None):
+    def __init__(self, InitOpList=None):
         # NOTE: 'DoorId' is not accepted as argument. Is needs to be assigned
         #       by '.categorize()' in the action_db. Then, transition actions
-        #       with the same CommandList-s share the same DoorID.
-        assert InitCommandList is None or isinstance(InitCommandList, CommandList), "%s: %s" % (InitCommandList.__class__, InitCommandList)
+        #       with the same OpList-s share the same DoorID.
+        assert InitOpList is None or isinstance(InitOpList, OpList), "%s: %s" % (InitOpList.__class__, InitOpList)
         self.door_id = None 
-        if InitCommandList is None: self._command_list = CommandList() 
-        else:                       self._command_list = InitCommandList
+        if InitOpList is None: self._command_list = OpList() 
+        else:                       self._command_list = InitOpList
  
     @property
     def command_list(self): 
@@ -62,7 +62,7 @@ class TransitionAction(object):
 
     @command_list.setter
     def command_list(self, CL): 
-        assert isinstance(CL, CommandList) or CL is None
+        assert isinstance(CL, OpList) or CL is None
         self._command_list = CL
         
     def clone(self):

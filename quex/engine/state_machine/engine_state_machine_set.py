@@ -4,7 +4,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.construction.parallelize           as     parallelize
 import quex.engine.state_machine.transformation.core   as     transformation
 from   quex.engine.analyzer.door_id_address_label      import dial_db
-from   quex.engine.commands.core                       import Command
+from   quex.engine.commands.core                       import Op
 import quex.engine.misc.error                          as     error
 from   quex.engine.misc.tools                          import all_isinstance, \
                                                               all_true, \
@@ -115,7 +115,7 @@ class CharacterSetStateMachine:
         self.incidence_id_beyond = BeyondIid
 
     @staticmethod
-    def from_CountCmdFactory(ccfactory, LexemeMaintainedF, ParallelSmList=None):
+    def from_CountOpFactory(ccfactory, LexemeMaintainedF, ParallelSmList=None):
         """The function 'get_terminal_list' returns a list of termins which 
         fit the incidence ids of the counting actions.
         """
@@ -140,13 +140,13 @@ class CharacterSetStateMachine:
             # 1 character == 1 chunk
             # => rest to last character: 'input_p = input_p - 1'
             self.on_step    = []
-            self.on_putback = [ Command.InputPDecrement() ]
+            self.on_putback = [ Op.InputPDecrement() ]
         else:
             # 1 character == variable number of chunks
             # => store begin of character in 'lexeme_start_p'
             # => rest to last character: 'input_p = lexeme_start_p'
-            self.on_step    = [ Command.Assign(E_R.CharacterBeginP, E_R.InputP) ]
-            self.on_putback = [ Command.Assign(E_R.InputP, E_R.CharacterBeginP) ]
+            self.on_step    = [ Op.Assign(E_R.CharacterBeginP, E_R.InputP) ]
+            self.on_putback = [ Op.Assign(E_R.InputP, E_R.CharacterBeginP) ]
         self.on_begin = concatinate(self.on_step, OnBegin)
         self.on_end   = concatinate(self.on_putback, OnEnd)
 
@@ -167,16 +167,16 @@ class CharacterSetStateMachine:
         """
         if Setup.buffer_codec.variable_character_sizes_f():
             if not self.maintain_lexeme_f:
-                on_before_reload = [ Command.Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
-                on_after_reload  = [ Command.Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
+                on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.CharacterBeginP) ]
+                on_after_reload  = [ Op.Assign(E_R.CharacterBeginP, E_R.LexemeStartP) ]
             else:
                 assert False
                 # Here, the character begin p needs to be adapted to what has been reloaded.
                 on_before_reload = [ ] # LexemeBegin is enough.
                 on_after_reload  = [ ]
         else:
-            on_before_reload = [ Command.Assign(E_R.LexemeStartP, E_R.InputP) ] 
-            on_after_reload  = [ ] # Command.Assign(E_R.InputP, E_R.LexemeStartP) ]
+            on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.InputP) ] 
+            on_after_reload  = [ ] # Op.Assign(E_R.InputP, E_R.LexemeStartP) ]
 
         self.on_before_reload = concatinate(on_before_reload,OnBeforeReload)
         self.on_after_reload  = concatinate(on_after_reload, OnAfterReload)

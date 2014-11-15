@@ -1,25 +1,25 @@
-<test-database execution-time-sec="0.47" date="Sat Nov 15 10:24:23 2014">
+<test-database execution-time-sec="0.66" date="Sat Nov 15 12:08:23 2014">
     <last-used-diff-display-program name=""/>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.14"> 
+        <test title="Core state machine." time-sum-sec="0.20"> 
             <application file-name="plot-core.py" info-request-time="1404516548L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.14" crc="-1273735805"/>
+               <choice name="" result="OK" time_sec="0.20" crc="-1273735805"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.19"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.28"> 
             <application file-name="plot-papc.py" info-request-time="1415565085L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.19" crc="1475873564"/>
+               <choice name="" result="OK" time_sec="0.28" crc="1475873564"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." time-sum-sec="0.14"> 
+        <test title="Pre-Context." time-sum-sec="0.18"> 
             <application file-name="plot-pre-context.py" info-request-time="1404544422L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.14" crc="1468655571"/>
+               <choice name="" result="OK" time_sec="0.18" crc="1468655571"/>
             </choice-list>
         </test>
     </group>

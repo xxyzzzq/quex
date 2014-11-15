@@ -39,7 +39,7 @@ import os
 import sys 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                            import E_Cmd
+from   quex.blackboard                            import E_Op
 from   quex.engine.commands.core         import *
 from   quex.engine.commands.shared_tail  import r_can_be_moved_to_tail
 from   quex.engine.commands.TEST.helper  import *
@@ -50,7 +50,7 @@ from   itertools   import izip, permutations
 from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
-    print "Command.shared_tail: can_be_moved_to_tail;"
+    print "Op.shared_tail: can_be_moved_to_tail;"
     print "CHOICES: no-exceptions, with-exceptions;"
     sys.exit()
 

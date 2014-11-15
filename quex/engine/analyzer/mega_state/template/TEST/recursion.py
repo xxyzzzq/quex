@@ -30,7 +30,7 @@ import quex.engine.analyzer.mega_state.template.core               as templates
 from   quex.engine.analyzer.mega_state.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.state.entry_action                     import TransitionID, \
                                                                           TransitionAction
-from   quex.engine.commands.core                                   import Command
+from   quex.engine.commands.core                                   import Op
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
 from   quex.engine.misc.interval_handling import *
@@ -70,8 +70,8 @@ def basic_setup(Triggers):
            analyzer.state_db[state_index_list[0]], \
            analyzer.state_db[state_index_list[1]]
 
-def set_recursive_command_list(State, CmdList):
-    State.entry.enter_CommandList(State.index, State.index, CommandList.from_iterable(CmdList))
+def set_recursive_command_list(State, TheOpList):
+    State.entry.enter_OpList(State.index, State.index, OpList.from_iterable(TheOpList))
     State.entry.categorize(State.index)
 
 if "0" in sys.argv:
@@ -83,19 +83,19 @@ elif "0b" in sys.argv:
 elif "1" in sys.argv:
     analyzer, a, b = basic_setup([10, 10]) # Recursion on trigger = 10 in both states
     print "NOTE: Set SAME command list in recursion."
-    set_recursive_command_list(a, [ Command.InputPIncrement() ])
-    set_recursive_command_list(b, [ Command.InputPIncrement() ])
+    set_recursive_command_list(a, [ Op.InputPIncrement() ])
+    set_recursive_command_list(b, [ Op.InputPIncrement() ])
     
 elif "1b" in sys.argv:
     analyzer, a, b = basic_setup([10, 10]) # Recursion on trigger = 10 in both states
     print "NOTE: Set DIFFERENT command list in recursion."
-    set_recursive_command_list(a, [ Command.InputPIncrement() ])
-    set_recursive_command_list(b, [ Command.InputPDecrement() ])
+    set_recursive_command_list(a, [ Op.InputPIncrement() ])
+    set_recursive_command_list(b, [ Op.InputPDecrement() ])
     
 elif "1c" in sys.argv:
     analyzer, a, b = basic_setup([10, 11]) # Recursion on trigger = 10 in both states
     print "NOTE: Set SAME command list in recursion ON DIFFERENT triggers."
-    set_recursive_command_list(a, [ Command.InputPIncrement() ])
-    set_recursive_command_list(b, [ Command.InputPIncrement() ])
+    set_recursive_command_list(a, [ Op.InputPIncrement() ])
+    set_recursive_command_list(b, [ Op.InputPIncrement() ])
     
 test(analyzer, a, b)

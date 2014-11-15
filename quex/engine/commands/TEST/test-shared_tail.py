@@ -22,7 +22,7 @@ import os
 import sys 
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.blackboard                            import E_Cmd
+from   quex.blackboard                            import E_Op
 from   quex.engine.commands.core         import *
 import quex.engine.commands.shared_tail  as     shared_tail
 from   quex.engine.commands.TEST.helper  import *
@@ -33,23 +33,23 @@ from   itertools   import izip, permutations
 from   copy        import deepcopy
 
 if "--hwut-info" in sys.argv:
-    print "Command.shared_tail: find_last_common;"
+    print "Op.shared_tail: find_last_common;"
     print "CHOICES: one-or-none, two, two-bad, multiple;"
     sys.exit()
 
-A = Command.Assign(E_R.CharacterBeginP,  E_R.Input)
-B = Command.Assign(E_R.CharacterBeginP,  E_R.LexemeEnd)
-C = Command.Assign(E_R.CharacterBeginP,  E_R.Line)
-D = Command.Assign(E_R.TemplateStateKey, E_R.Line)
+A = Op.Assign(E_R.CharacterBeginP,  E_R.Input)
+B = Op.Assign(E_R.CharacterBeginP,  E_R.LexemeEnd)
+C = Op.Assign(E_R.CharacterBeginP,  E_R.Line)
+D = Op.Assign(E_R.TemplateStateKey, E_R.Line)
 
 x = [ remaining for i, remaining in generator() if remaining not in (A, B, C) ]
-x[2] = Command.ColumnCountAdd(1)
-x[3] = Command.ColumnCountGridAdd(1)
+x[2] = Op.ColumnCountAdd(1)
+x[3] = Op.ColumnCountGridAdd(1)
 
 
-def print_tail_vs_cmd_list(CutList, CmdList):
+def print_tail_vs_cmd_list(CutList, OpList):
     t = 0
-    for i, cmd in enumerate(CmdList):
+    for i, cmd in enumerate(OpList):
         if i in CutList: label = "<%i>" % t; t += 1
         else:            label = "   "
         print "   %s %s" % (label, str(cmd))
@@ -112,9 +112,9 @@ elif "two-bad" in sys.argv:
     test([ B, A ], [ x[0], A, x[1], B, x[2] ])
 
 elif "multiple" in sys.argv:
-    A = Command.Assign(E_R.Line,            E_R.Input)
-    B = Command.Assign(E_R.Column,          E_R.LexemeEnd)
-    C = Command.Assign(E_R.CharacterBeginP, E_R.CharacterBeginP)
+    A = Op.Assign(E_R.Line,            E_R.Input)
+    B = Op.Assign(E_R.Column,          E_R.LexemeEnd)
+    C = Op.Assign(E_R.CharacterBeginP, E_R.CharacterBeginP)
 
     test([ A, A, B ],    [ A ])
     test([ A, A, B ],    [ A, B ])

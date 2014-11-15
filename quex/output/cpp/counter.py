@@ -8,15 +8,15 @@ from   quex.output.core.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID
-from   quex.engine.commands.core               import Command
-from   quex.engine.counter                     import CountCmdFactory
+from   quex.engine.commands.core               import Op
+from   quex.engine.counter                     import CountOpFactory
 from   quex.engine.misc.tools                  import typed
 
 from   quex.blackboard import Lng, \
                               DefaultCounterFunctionDB, \
                               E_IncidenceIDs
 
-@typed(CCFactory=CountCmdFactory)
+@typed(CCFactory=CountOpFactory)
 def get(CCFactory, Name):
     """Implement the default counter for a given Counter Database. 
 
@@ -52,7 +52,7 @@ def get(CCFactory, Name):
     door_id_return = dial_db.new_door_id()
     code,          \
     door_id_beyond = loop.do(CCFactory, 
-                             AfterBeyond     = [ Command.GotoDoorId(door_id_return) ],
+                             AfterBeyond     = [ Op.GotoDoorId(door_id_return) ],
                              LexemeEndCheckF = True,
                              EngineType      = engine.CHARACTER_COUNTER)
 

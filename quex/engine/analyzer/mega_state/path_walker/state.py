@@ -1,12 +1,12 @@
 # (C) 2010-2014 Frank-Rene Schaefer
-from   quex.engine.commands.core                         import Command
+from   quex.engine.commands.core                         import Op
 from   quex.engine.analyzer.mega_state.core              import MegaState, \
                                                                 StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.path_walker.find  import DropOutConsideration_cmp, \
                                                                 DropOutConsideration_relate
 import quex.engine.state_machine.index                   as     index
 from   quex.engine.misc.tools                            import UniformObject
-from   quex.blackboard                                    import E_Compression, E_Cmd
+from   quex.blackboard                                    import E_Compression, E_Op
 
 from   itertools  import izip
 
@@ -52,8 +52,8 @@ class PathWalkerState(MegaState):
                                          IgnoredListIndex=len(FirstPath.step_list)-1)
         MegaState.__init__(self, my_index, FirstPath.transition_map, ski_db)
 
-        # Uniform CommandList along entries on the path (optional)
-        self.uniform_entry_CommandList = FirstPath.uniform_entry_CommandList.clone()
+        # Uniform OpList along entries on the path (optional)
+        self.uniform_entry_OpList = FirstPath.uniform_entry_OpList.clone()
 
         self.__path_list = [ FirstPath.step_list ]
 
@@ -68,7 +68,7 @@ class PathWalkerState(MegaState):
     def uniform_door_id(self):
         """At any step along the path commands may be executed upon entry
            into the target state. If those commands are uniform, then this
-           function returns a CommandList object of those uniform commands.
+           function returns a OpList object of those uniform commands.
 
            RETURNS: None, if the commands at entry of the states on the path
                           are not uniform.
@@ -114,7 +114,7 @@ class PathWalkerState(MegaState):
             return False
 
         if CompressionType == E_Compression.PATH_UNIFORM:
-            if not self.uniform_entry_CommandList.fit(Path.uniform_entry_CommandList):
+            if not self.uniform_entry_OpList.fit(Path.uniform_entry_OpList):
                 return False
 
         return True
@@ -138,11 +138,11 @@ class PathWalkerState(MegaState):
 
         # (2) Absorb Entry/DropOut Information
         #
-        self.uniform_entry_CommandList <<= Path.uniform_entry_CommandList
+        self.uniform_entry_OpList <<= Path.uniform_entry_OpList
 
         return True
 
-    def _finalize_entry_CommandLists(self):
+    def _finalize_entry_OpLists(self):
         """If a state is entered from outside the path walker, then the 'state_key',
         respectively, the 'path_iterator' needs to be set. During the walk along
         a path, the 'path_iterator' is simply incremented--and this happens in the
@@ -167,12 +167,12 @@ class PathWalkerState(MegaState):
                 # the transition to 'transition_reassignment_candidate_list'.
                 self.entry.action_db_update(From           = prev_state_index, 
                                             To             = step.state_index, 
-                                            FromOutsideCmd = Command.PathIteratorSet(self.index, path_id, state_key),
-                                            FromInsideCmd  = None)
+                                            FromOutsideOp = Op.PathIteratorSet(self.index, path_id, state_key),
+                                            FromInsideOp  = None)
 
                 prev_state_index = step.state_index
 
-        # Make sure, that the CommandList-s on the paths are organized and
+        # Make sure, that the OpList-s on the paths are organized and
         # assigned with new DoorID-s. 
         assert len(self.entry.transition_reassignment_candidate_list) > 0
 
@@ -220,15 +220,15 @@ class PathWalkerState(MegaState):
         return TargetScheme
 
     def _assert_consistency(self, CompressionType, RemainingStateIndexSet, TheAnalyzer):            
-        # If uniform_entry_CommandList is claimed, then the DoorID must be 
+        # If uniform_entry_OpList is claimed, then the DoorID must be 
         # the same along all paths--and vice versa.
         assert    (self.uniform_door_id is not None) \
-               == self.uniform_entry_CommandList.is_uniform()
+               == self.uniform_entry_OpList.is_uniform()
 
         # If uniformity was required, then it must have been maintained.
         if CompressionType == E_Compression.PATH_UNIFORM:
             assert self.uniform_door_id is not None
-            assert self.uniform_entry_CommandList.is_uniform()
+            assert self.uniform_entry_OpList.is_uniform()
 
         # The door_id_sequence_list corresponds to the path_list.
         assert len(self.door_id_sequence_list) == len(self.path_list)
@@ -236,11 +236,11 @@ class PathWalkerState(MegaState):
             # Path entry is not element of door_id_sequence => '-1'
             assert len(door_id_sequence) == len(step_list) - 1 
 
-        # A CommandList at a door can at maximum contain 1 path iterator command!
+        # A OpList at a door can at maximum contain 1 path iterator command!
         for action in self.entry.itervalues():
             path_iterator_cmd_n = 0
             for cmd in action.command_list:
-                if cmd.id != E_Cmd.PathIteratorSet: continue
+                if cmd.id != E_Op.PathIteratorSet: continue
                 path_iterator_cmd_n += 1
                 assert path_iterator_cmd_n < 2
 

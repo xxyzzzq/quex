@@ -38,9 +38,9 @@ def _implement(txt, structure):
     global Lng
 
     # Potentially Recursive
-    #txt.append(E_TextCmd.INDENT)
+    #txt.append(E_TextOp.INDENT)
     txt.extend(structure.implement())
-    #txt.append(E_TextCmd.DEDENT)
+    #txt.append(E_TextOp.DEDENT)
 
 def _assert_consistency(TM):
     """Check consistency of the given transition map.

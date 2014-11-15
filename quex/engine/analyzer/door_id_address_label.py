@@ -27,13 +27,13 @@ from   collections import namedtuple
 #
 # Identifies a transition from one source to target state.  There may be
 # multiple transitions for the same source-target pair. Each one identified by
-# an additional 'trigger_id'.  TransitionIDs are connected with CommandList-s
+# an additional 'trigger_id'.  TransitionIDs are connected with OpList-s
 # at entry into a state; But 
 #
 #                               n          1
-#               TransitionID  <--------------> CommandList
+#               TransitionID  <--------------> OpList
 #
-# That is, there may be multiple TransitionID-s with the same CommandList.
+# That is, there may be multiple TransitionID-s with the same OpList.
 # TransitionID-s are useful during the construction of entries.
 #______________________________________________________________________________
 
@@ -44,8 +44,8 @@ from   collections import namedtuple
 #
 # Marks an entrance into a 'Processor', an AnalyzerState for example.  A
 # Processor can have multiple entries, each entry has a different DoorID. A
-# DoorID identifies distinctly a CommandList to be executed upon entry.
-# No two CommandList-s
+# DoorID identifies distinctly a OpList to be executed upon entry.
+# No two OpList-s
 # are the same except that their DoorID is the same.
 #            
 #______________________________________________________________________________

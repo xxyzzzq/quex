@@ -10,7 +10,7 @@
 #    -- how much the involved computational cost is.
 #    -- Their C representation
 # 
-# If a command from E_Cmd is not in the example_db, then this test prints
+# If a command from E_Op is not in the example_db, then this test prints
 # an error message and quits.
 #
 # (C) Frank-Rene Schaefer
@@ -27,7 +27,7 @@ from   quex.engine.analyzer.door_id_address_label import DoorID
 import quex.engine.commands.shared_tail  as     command_list_shared_tail
 from   quex.output.core.dictionary       import db
 
-from   quex.blackboard import E_Cmd, \
+from   quex.blackboard import E_Op, \
                               setup as Setup, \
                               Lng
 
@@ -41,31 +41,31 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 
-missing_set = set(cmd_id for cmd_id in E_Cmd if cmd_id != E_Cmd._DEBUG_Commands)
-def test(Cmd):
+missing_set = set(cmd_id for cmd_id in E_Op if cmd_id != E_Op._DEBUG_Commands)
+def test(Op):
     global missing_set
     # safeguard against double occurence
-    if Cmd.id in missing_set: missing_set.remove(Cmd.id)
-    print "%s" % Cmd.id
-    print "   <%s>" % str(Cmd).replace("\n", "")
+    if Op.id in missing_set: missing_set.remove(Op.id)
+    print "%s" % Op.id
+    print "   <%s>" % str(Op).replace("\n", "")
     print "   Registers:   ", 
-    for register, right in sorted(Cmd.get_register_access_iterable()):
+    for register, right in sorted(Op.get_register_access_iterable()):
         txt = ""
         if right.write_f: txt += "w"
         if right.read_f:  txt += "r"
         print "%s(%s), " % (register, txt),
     print
-    if Cmd.id in _brancher_set: 
+    if Op.id in _brancher_set: 
         print "   IsBranching: True"
-    print "   Cost:        ", _cost_db[Cmd.id]
+    print "   Cost:        ", _cost_db[Op.id]
     print "   C-code: {"
-    for line in Lng.COMMAND(Cmd).split("\n"):
+    for line in Lng.COMMAND(Op).split("\n"):
         print "       %s" % line
     print "   }\n"
 
 
-for cmd_id in sorted(E_Cmd, key=lambda x: "%s" % x):
-    if cmd_id == E_Cmd._DEBUG_Commands: 
+for cmd_id in sorted(E_Op, key=lambda x: "%s" % x):
+    if cmd_id == E_Op._DEBUG_Commands: 
         continue
     elif cmd_id not in example_db:
         sys.exit()

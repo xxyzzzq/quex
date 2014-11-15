@@ -176,7 +176,7 @@ class CandidateList(list):
 
                 if     self.__uniformity_required_f                                               \
                    and (   i_state.uniform_DropOut           != k_state.uniform_DropOut           \
-                        or i_state.uniform_entry_CommandList != k_state.uniform_entry_CommandList): 
+                        or i_state.uniform_entry_OpList != k_state.uniform_entry_OpList): 
                     bad_company_announcement(i_state, k_state)
                     continue
 

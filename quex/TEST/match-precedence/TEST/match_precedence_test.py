@@ -18,7 +18,7 @@ blackboard.setup.language_db = languages.db["C++"]
 
 from   StringIO import StringIO
 
-def do(TxtList, Op):
+def do(TxtList, DELETED_Op):
     blackboard.mode_description_db.clear()
     for txt in TxtList:
         sh = StringIO(txt)

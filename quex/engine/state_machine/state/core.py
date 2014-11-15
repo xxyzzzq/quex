@@ -93,8 +93,8 @@ class State:
         accept_cmd.set_pre_context_id(Value)
 
     def set_acceptance(self, Value=True):
-        if Value: self.single_entry.add_Cmd(SeAccept)
-        else:     self.single_entry.remove_Cmd(SeAccept)
+        if Value: self.single_entry.add_Op(SeAccept)
+        else:     self.single_entry.remove_Op(SeAccept)
 
     def mark_acceptance_id(self, AcceptanceID):
         for cmd in self.single_entry:
@@ -107,8 +107,8 @@ class State:
         accept_cmd.set_restore_position_register_f()
 
     def set_input_position_store_f(self, Value=True):
-        if Value: self.single_entry.add_Cmd(SeStoreInputPosition)
-        else:     self.single_entry.remove_Cmd(SeStoreInputPosition)
+        if Value: self.single_entry.add_Op(SeStoreInputPosition)
+        else:     self.single_entry.remove_Op(SeStoreInputPosition)
 
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__target_map.add_transition(Trigger, TargetStateIdx)

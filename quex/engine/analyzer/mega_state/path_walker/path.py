@@ -121,7 +121,7 @@ class CharacterPath(object):
        state entered after the path walker has finished. Its role is further
        indicated by a trigger of 'None'.
    
-    .uniform_entry_CommandList:
+    .uniform_entry_OpList:
 
       This object  keeps track about the actions to  be executed upon entry
       into a state on the path and upon drop-out of a state on on the path. If 
@@ -135,7 +135,7 @@ class CharacterPath(object):
     """
     __slots__ = ("__step_list",       
                  "transition_map_data", 
-                 "uniform_entry_CommandList") 
+                 "uniform_entry_OpList") 
 
     def __init__(self, StartState, TheTransitionMap, TransitionCharacter):
         if StartState is None: return # Only for Clone
@@ -144,12 +144,12 @@ class CharacterPath(object):
         assert isinstance(TransitionCharacter, (int, long)), "Found '%s'" % TransitionCharacter
         assert isinstance(TheTransitionMap,    TransitionMap)
 
-        # uniform_entry_CommandList: 
+        # uniform_entry_OpList: 
         #    The entry into the StartState happens from outside.
         #    => A 'state_key' is assigned (the path_iterator)
         #       and it is not part of the iteration loop.
         #    => The StartState's entry IS NOT subject to uniformity considerations.
-        self.uniform_entry_CommandList = UniformObject()
+        self.uniform_entry_OpList = UniformObject()
 
         self.__step_list = [ CharacterPathStep(StartState.index, TransitionCharacter) ]
 
@@ -158,7 +158,7 @@ class CharacterPath(object):
     def clone(self):
         result = CharacterPath(None, None, None)
 
-        result.uniform_entry_CommandList       = self.uniform_entry_CommandList.clone()
+        result.uniform_entry_OpList       = self.uniform_entry_OpList.clone()
         result.__step_list                     = [ x for x in self.__step_list ] # CharacterPathStep are immutable
         result.transition_map_data             = self.transition_map_data.clone()
         return result
@@ -182,16 +182,16 @@ class CharacterPath(object):
 
         result = self.clone()
 
-        # CommandList upon Entry to State
+        # OpList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step         = self.__step_list[-1]
-        entry_CommandList = PreviousTerminal.entry.get_command_list(PreviousTerminal.index, 
+        entry_OpList = PreviousTerminal.entry.get_command_list(PreviousTerminal.index, 
                                                                               prev_step.state_index,
                                                                               TriggerId=0)
-        assert entry_CommandList is not None
+        assert entry_OpList is not None
 
-        result.uniform_entry_CommandList <<= entry_CommandList
+        result.uniform_entry_OpList <<= entry_OpList
 
         result.__step_list.append(CharacterPathStep(PreviousTerminal.index, TransitionCharacter))
 
@@ -201,15 +201,15 @@ class CharacterPath(object):
 
     def uniformity_with_predecessor(self, State):
         """Check whether the entry of the last state on the path executes the
-           same CommandList as the entry to 'State'. 
+           same OpList as the entry to 'State'. 
         """
         # This function is supposed to be called only when uniformity is required.
         # If so, then the path must be in a uniform state at any time. 
-        assert self.uniform_entry_CommandList.is_uniform()
+        assert self.uniform_entry_OpList.is_uniform()
 
         # Check on 'Entry' for what is done along the path.
         #
-        # CommandList upon Entry to State
+        # OpList upon Entry to State
         # (TriggerIndex == 0, because there can only be one transition from
         #                     one state to the next on the path).
         prev_step    = self.__step_list[-1]
@@ -217,7 +217,7 @@ class CharacterPath(object):
                                                               TriggerId=0)
         assert command_list is not None
 
-        if not self.uniform_entry_CommandList.fit(command_list): 
+        if not self.uniform_entry_OpList.fit(command_list): 
             return False
 
         return True
@@ -280,15 +280,15 @@ class CharacterPath(object):
 
         # If uniformity was required, it must have been maintained.
         if CompressionType == E_Compression.PATH_UNIFORM:
-            assert self.uniform_entry_CommandList.is_uniform()
+            assert self.uniform_entry_OpList.is_uniform()
 
         # If entry command list is claimed to be uniform
         # => then all states in path must have this particular drop-out (except for the first).
-        if self.uniform_entry_CommandList.is_uniform():
+        if self.uniform_entry_OpList.is_uniform():
             prev_state_index = self.__step_list[0].state_index
             for state in (TheAnalyzer.state_db[s.state_index] for s in self.__step_list[1:-1]):
                 command_list = state.entry.get_command_list(state.index, prev_state_index, TriggerId=0)
-                assert command_list == self.uniform_entry_CommandList.content
+                assert command_list == self.uniform_entry_OpList.content
                 prev_state_index = state.index
         return
 

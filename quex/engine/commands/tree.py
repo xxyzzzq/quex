@@ -91,18 +91,18 @@ from quex.engine.misc.tools import typed, TypedDict
 from operator         import attrgetter
 
 class CommandTree:
-    def __init__(self, StateIndex, DoorId_CommandList_Iterable):
+    def __init__(self, StateIndex, DoorId_OpList_Iterable):
         """StateIndex -- Index of state for which one operates.
                          (needed for new DoorID generation)
            
-           DoorId_CommandList_Iterable -- Iterable over pairs of 
+           DoorId_OpList_Iterable -- Iterable over pairs of 
 
                          (DoorID, command lists)
 
         NOTE: The command lists are MODIFIED during the process of finding
               a command tree!
         """
-        shared_tail_db = SharedTailDB(StateIndex, DoorId_CommandList_Iterable)
+        shared_tail_db = SharedTailDB(StateIndex, DoorId_OpList_Iterable)
 
         while shared_tail_db.pop_best():
             pass
@@ -160,9 +160,9 @@ class CommandTree:
 
 class Door(object):
     __slots__ = ("door_id", "command_list", "parent", "child_set")
-    def __init__(self, DoorId, CmdList, Parent, ChildSet):
+    def __init__(self, DoorId, OpList, Parent, ChildSet):
         self.door_id      = DoorId
-        self.command_list = CmdList
+        self.command_list = OpList
         self.parent       = Parent
         self.child_set    = ChildSet
 
@@ -261,10 +261,10 @@ class SharedTailDB:
     """
     __slots__ = ("state_index", "door_id_set", "db")
 
-    @typed(DoorId_CommandList=[tuple])
-    def __init__(self, StateIndex, DoorId_CommandList):
+    @typed(DoorId_OpList=[tuple])
+    def __init__(self, StateIndex, DoorId_OpList):
         self.state_index = StateIndex
-        root_child_set   = set(door_id for door_id, cl in DoorId_CommandList) 
+        root_child_set   = set(door_id for door_id, cl in DoorId_OpList) 
         self.root        = Door(dial_db.new_door_id(StateIndex), [], None,
                                 root_child_set)
         self.door_db     = TypedDict(DoorID, Door) # {}   # map: DoorID --> Door 
@@ -283,7 +283,7 @@ class SharedTailDB:
         # Else, look into _tail_db if it finally shared something. 
         good_set = set()
 
-        for door_id, command_list in DoorId_CommandList:
+        for door_id, command_list in DoorId_OpList:
             door = Door(door_id, command_list, self.root, set())
             if self._tail_db_enter(door_id, door): 
                 good_set.add(door_id)

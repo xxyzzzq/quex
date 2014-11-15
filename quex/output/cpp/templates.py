@@ -411,11 +411,11 @@ def __indentation_add(Info):
     if Info.homogeneous_spaces():
         return ""
 
-    def __do(txt, CharSet, Operation):
+    def __do(txt, CharSet, Content):
         txt.append(indent_txt + "if( ")
         __condition(txt, CharSet)
         txt.append(" ) { ")
-        txt.append(Operation)
+        txt.append(Content)
         txt.append(" }\\\n")
 
     txt       = []
