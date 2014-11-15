@@ -1,6 +1,6 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.engine.commands.core                  import Op, \
+from   quex.engine.operations.operation_list                  import Op, \
                                                          OpList
 import quex.engine.state_machine.index            as     index
 from   quex.engine.analyzer.door_id_address_label import DoorID

@@ -30,7 +30,7 @@ import quex.engine.analyzer.mega_state.template.core               as templates
 from   quex.engine.analyzer.mega_state.template.state              import TemplateState, combine_maps
 from   quex.engine.analyzer.state.entry_action                     import TransitionID, \
                                                                           TransitionAction
-from   quex.engine.commands.core                                   import Op
+from   quex.engine.operations.operation_list                                   import Op
 from   quex.engine.analyzer.mega_state.template.TEST.templates_aux import *
 
 from   quex.engine.misc.interval_handling import *

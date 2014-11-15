@@ -1,5 +1,5 @@
 # (C) 2010-2014 Frank-Rene Schaefer
-from   quex.engine.commands.core                         import Op
+from   quex.engine.operations.operation_list                         import Op
 from   quex.engine.analyzer.mega_state.core              import MegaState, \
                                                                 StateKeyIndexDB
 from   quex.engine.analyzer.mega_state.path_walker.find  import DropOutConsideration_cmp, \

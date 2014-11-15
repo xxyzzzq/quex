@@ -1,5 +1,5 @@
 from quex.engine.misc.tools                     import typed
-from quex.engine.commands.single_entry_commands import SeOp, \
+from quex.engine.operations.single_entry_commands import SeOp, \
                                                        SeAccept, \
                                                        SeStoreInputPosition
 from quex.blackboard import E_PreContextIDs

@@ -14,8 +14,8 @@ from   quex.engine.analyzer.mega_state.target               import TargetByState
 from   quex.engine.analyzer.mega_state.template.state       import TemplateState, \
                                                                    PseudoTemplateState
 from   quex.engine.analyzer.mega_state.template.candidate   import TemplateStateCandidate
-from   quex.engine.commands.core                            import OpList
-from   quex.engine.commands.tree                            import CommandTree
+from   quex.engine.operations.operation_list                            import OpList
+from   quex.engine.operations.tree                            import CommandTree
 from   quex.engine.state_machine.state.core                 import State
 from   quex.engine.misc.interval_handling                   import NumberSet, Interval
 from   quex.engine.misc.tools                               import typed

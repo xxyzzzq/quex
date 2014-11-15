@@ -4,7 +4,7 @@ from   quex.engine.state_machine.core                  import StateMachine
 import quex.engine.state_machine.construction.parallelize           as     parallelize
 import quex.engine.state_machine.transformation.core   as     transformation
 from   quex.engine.analyzer.door_id_address_label      import dial_db
-from   quex.engine.commands.core                       import Op
+from   quex.engine.operations.operation_list                       import Op
 import quex.engine.misc.error                          as     error
 from   quex.engine.misc.tools                          import all_isinstance, \
                                                               all_true, \

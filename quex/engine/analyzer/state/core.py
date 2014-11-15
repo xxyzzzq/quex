@@ -4,7 +4,7 @@ from   quex.engine.analyzer.transition_map         import TransitionMap
 from   quex.engine.analyzer.state.entry            import Entry
 from   quex.engine.analyzer.state.entry_action     import TransitionAction
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.commands.core                   import OpList, Op
+from   quex.engine.operations.operation_list                   import OpList, Op
 from   quex.engine.misc.tools import typed
 from   quex.blackboard  import setup as Setup, \
                                E_IncidenceIDs, \

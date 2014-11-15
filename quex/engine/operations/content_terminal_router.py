@@ -1,4 +1,4 @@
-from  quex.engine.commands.content_accepter import repr_acceptance_id
+from  quex.engine.operations.content_accepter import repr_acceptance_id
 from  quex.blackboard import E_TransitionN, \
                              E_IncidenceIDs, \
                              E_PostContextIDs

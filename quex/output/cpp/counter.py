@@ -8,7 +8,7 @@ from   quex.output.core.variable_db  import variable_db
 import quex.engine.analyzer.engine_supply_factory   as     engine
 from   quex.engine.analyzer.door_id_address_label   import dial_db, \
                                                            DoorID
-from   quex.engine.commands.core               import Op
+from   quex.engine.operations.operation_list               import Op
 from   quex.engine.counter                     import CountOpFactory
 from   quex.engine.misc.tools                  import typed
 

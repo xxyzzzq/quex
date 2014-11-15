@@ -46,7 +46,7 @@ from   quex.engine.analyzer.state.core            import Processor, \
                                                          ReloadState
 import quex.engine.analyzer.state.drop_out        as     drop_out
 from   quex.engine.analyzer.state.entry_action    import TransitionAction
-from   quex.engine.commands.core                  import Op, \
+from   quex.engine.operations.operation_list                  import Op, \
                                                          OpList
 import quex.engine.analyzer.mega_state.analyzer   as     mega_state_analyzer
 import quex.engine.analyzer.position_register_map as     position_register_map

@@ -1,4 +1,4 @@
-from   quex.engine.commands.core import OpList, \
+from   quex.engine.operations.operation_list import OpList, \
                                         Op
 
 def get_OpList(TheAccepter, TheTerminalRouter):

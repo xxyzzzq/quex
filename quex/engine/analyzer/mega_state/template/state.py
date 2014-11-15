@@ -3,7 +3,7 @@ from   quex.engine.analyzer.mega_state.core         import MegaState, \
 from   quex.engine.analyzer.mega_state.target       import TargetByStateKey
 from   quex.engine.analyzer.transition_map          import TransitionMap        
 from   quex.engine.analyzer.state.core              import Processor
-from   quex.engine.commands.core                    import Op
+from   quex.engine.operations.operation_list                    import Op
 import quex.engine.state_machine.index              as     index
 from   quex.engine.misc.interval_handling           import Interval
 from   quex.engine.misc.tools                       import typed, \

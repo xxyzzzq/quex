@@ -10,7 +10,8 @@ from quex.engine.misc.tools import typed
 
 from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
-                            E_PostContextIDs
+                            E_PostContextIDs, \
+                            E_R
 
 class SeOp:
     def __init__(self):
@@ -38,7 +39,7 @@ class SeOp:
 class SeAccept(SeOp):
     def __init__(self):
         SeOp.__init__(self)
-        self.__pre_context_id               = E_PreContextIDs.NONE
+        self.__pre_context_id              = E_PreContextIDs.NONE
         self.__restore_position_register_f = False
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
@@ -61,6 +62,12 @@ class SeAccept(SeOp):
 
     def restore_position_register_f(self):
         return self.__restore_position_register_f
+    
+    def get_concerned_registers(self):
+        if self.__pre_context_id != E_PostContextIDs.NONE:
+            return (E_R.Acceptance, E_R.InputPosition, E_R.PrecontexID)
+        else:
+            return (E_R.Acceptance, E_R.InputPosition)
 
     def __eq__(self, Other):
         if   not Other.__class__ == SeAccept:                       return False
@@ -98,6 +105,9 @@ class SeStoreInputPosition(SeOp):
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         result.__position_register_id = self.__position_register_id
         return result
+
+    def get_concerned_registers(self):
+        return E_R.InputPosition
 
     def __eq__(self, Other):
         if   Other.__class__ != SeStoreInputPosition: return False
