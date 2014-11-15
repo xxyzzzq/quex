@@ -49,7 +49,7 @@ def test(Cmd):
     print "%s" % Cmd.id
     print "   <%s>" % str(Cmd).replace("\n", "")
     print "   Registers:   ", 
-    for register, right in sorted(Cmd.get_register_access_db().items()):
+    for register, right in sorted(Cmd.get_register_access_iterable()):
         txt = ""
         if right.write_f: txt += "w"
         if right.read_f:  txt += "r"

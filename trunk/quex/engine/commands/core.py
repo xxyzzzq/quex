@@ -76,13 +76,14 @@ from   quex.engine.commands.content_accepter            import AccepterContent, 
                                                                repr_pre_context_id
 from   quex.engine.commands.content_terminal_router     import RouterContent, \
                                                                repr_position_register
+from   quex.engine.misc.tools import delete_if
 
 from   collections import namedtuple
 from   copy        import deepcopy
 import types
 import numbers
 
-class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
+class Command(namedtuple("Command_tuple", ("id", "content", "my_hash", "branch_f"))):
     """_________________________________________________________________________
     Information about an operation to be executed. It consists mainly of a 
     command identifier (from E_Cmd) and the content which specifies the command 
@@ -109,6 +110,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
 
     def __new__(self, Id, *ParameterList):
         global _content_db
+        global _access_db
         # Fly weight pattern: immutable objects instantiated only once.
         if Id in self.fly_weight_db: return self.fly_weight_db[Id]
         
@@ -129,7 +131,11 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
             elif L == 4: content = content_type(ParameterList[0], ParameterList[1], ParameterList[2], ParameterList[3])
 
         hash_value = hash(Id) ^ hash(content)
-        result = super(Command, self).__new__(self, Id, content, hash_value)
+        
+        # -- determine whether command is subject to 'goto/branching'
+        branch_f = Id in _brancher_set
+
+        result = super(Command, self).__new__(self, Id, content, hash_value, branch_f)
 
         # Store fly-weight-able objects in database.
         if Id in self.fly_weight_set: self.fly_weight_db[Id] = result
@@ -140,7 +146,7 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         if self.id in self.fly_weight_db:    return self
         elif hasattr(self.content, "clone"): content = self.content.clone()
         else:                                content = deepcopy(self.content)
-        return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash)
+        return super(Command, self).__new__(self.__class__, self.id, content, self.my_hash, self.branch_f)
 
     @staticmethod
     def StoreInputPosition(PreContextID, PositionRegister, Offset):
@@ -262,6 +268,9 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
         """For each command there are rights associated with registers. For example
         a command that writes into register 'X' associates 'write-access' with X.
     
+        This is MORE than what is found in '_access_db'. This function may derive 
+        information on accessed registers from actual 'content' of the Command.
+        
         RETURNS: An iterable over pairs (register_id, access right) meaning that the
                  command accesses the register with the given access type/right.
         """
@@ -277,13 +286,21 @@ class Command(namedtuple("Command_tuple", ("id", "content", "my_hash"))):
                 register_id = "%s:%s" % (main_id, sub_id)
             yield register_id, rights
     
-    def get_register_access_db(self):
-        """RETURNS: map: register_id --> access right(s)
+    def get_access_rights(self, RegisterId):
+        """Provides information about how the command modifies the register
+        identified by 'RegisterId'. The 'read/write' access information is 
+        provided in form of an RegisterAccessRight object.
+        
+        This function MUST rely on 'get_register_access_iterable', because 
+        register ids may be produced dynamically based on arguments to the 
+        command.
+        
+        RETURNS: RegisterAccessRight for the given RegisterId.
+                 None, if command does not modify the given register.
         """
-        return dict( 
-            (register_id, right)
-            for register_id, right in self.get_register_access_iterable()
-        )
+        for register_id, access in self.get_register_access_iterable():
+            if register_id == RegisterId: return access
+        return None
 
     def __hash__(self):      
         return self.my_hash
@@ -339,14 +356,10 @@ def is_switchable(A, B):
 
        -- One of the commands is goto-ing, i.e. branching.
     """
-    global _brancher_set
-    if A.id in _brancher_set or B.id in _brancher_set:
-        return False
+    if A.branch_f or B.branch_f: return False
 
-    a_access_iterable = A.get_register_access_iterable()
-    b_access_db       = B.get_register_access_db()
-    for register_id, access_a in a_access_iterable:
-        access_b = b_access_db.get(register_id)
+    for register_id, access_a in A.get_register_access_iterable():
+        access_b = B.get_access_rights(register_id)
         if access_b is None:
             # Register from command A is not found in command B
             # => no restriction from this register.
@@ -483,15 +496,6 @@ _content_db,   \
 _brancher_set, \
 _cost_db       = __configure()
 
-def DELETED_is_branching(CmdId):
-    """RETURNS: True  -- if the command given by CmdId is 'branching' i.e. 
-                         if it might cause jumps/gotos.
-                False -- if the command does never cause a jump.
-    """
-    global _brancher_set
-    assert CmdId in E_Cmd
-    return CmdId in _brancher_set
-
 class CommandList(list):
     """CommandList -- a list of commands -- Intend: 'tuple' => immutable.
     """
@@ -509,27 +513,22 @@ class CommandList(list):
         result.__enter_list(list(Iterable))
         return result
 
-    def concatinate(self, Second):
+    def concatinate(self, Other):
+        """Generate a mew CommandList with .cloned() elements out of self and
+        the Other CommandList.
+        """ 
         result = CommandList()
-        # As soon as CommandList and Commands are 100% is immutable, 
-        # 'clone' will not be necessary.
-        result.__enter_list([ x.clone() for x in self ] + [ x.clone() for x in Second ])
+        result.__enter_list([ x.clone() for x in self ] + [ x.clone() for x in Other ])
         return result
 
     def cut(self, NoneOfThis):
         """Delete all commands of SharedTail from this command list.
         """
-        cmd_list = list(self)
-        i        = len(cmd_list) - 1
-        while i >= 0:
-            if cmd_list[i] in NoneOfThis:
-                del cmd_list[i]
-            i -= 1
-
-        return CommandList.from_iterable(cmd_list)
+        return CommandList.from_iterable(
+                           cmd for cmd in self if cmd not in NoneOfThis)
 
     def clone(self):
-        return CommandList.from_iterable(self)
+        return CommandList.from_iterable(x.clone() for x in self)
 
     def is_empty(self):
         return super(CommandList, self).__len__() == 0
@@ -595,15 +594,11 @@ class CommandList(list):
                 if     cmd.id == E_Cmd.StoreInputPosition \
                    and cmd.content.pre_context_id == E_PreContextIDs.NONE
         )
-        i = len(self) - 1
-        while i >= 0:
-            cmd = self[i]
-            if cmd.id != E_Cmd.StoreInputPosition:
-                pass
-            elif    cmd.content.position_register in unconditional_position_register_set \
-                and cmd.content.pre_context_id != E_PreContextIDs.NONE:
-                del self[i]
-            i -= 1
+        delete_if(self,
+                  lambda cmd:
+                       cmd.id == E_Cmd.StoreInputPosition \
+                   and cmd.content.position_register in unconditional_position_register_set \
+                   and cmd.content.pre_context_id != E_PreContextIDs.NONE)
 
         # (2) Storage command does not appear twice. Keep first.
         #     (May occur due to optimizations!)

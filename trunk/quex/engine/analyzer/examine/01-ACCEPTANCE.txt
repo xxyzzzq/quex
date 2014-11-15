@@ -21,36 +21,28 @@ input position restauration. It follows the scheme described in '00-README.txt'.
 
 (1.1) Setting of Variables SOV.
 
-The variables of interest for acceptance are, i.e. the 'SOV' is:
+The set of variables of interest, i.e. the 'SOV' is:
 
-    -- last_acceptance, i.e. id of the last pattern that matched.
+    -- E_R.Acceptance:  The register that stores the last accepted pattern.
 
-    -- position_register[i] which contains the position to which the
-       input position needs to be reset.
+    -- (E_R.PositionRegister, i): The register(s) that store the position 
+             where the input pointer needs to be set upon match.
 
 (1.2) Actions
 
 There are three actions involved: 'Accept', 'AcceptWithPostContext' and 
 'StoreInputPosition' as explained below.
 
-  * Accept(AcceptanceID, PreContextId):
-        if PreContextId:
-            last_acceptance      = AcceptanceID
-            position_register[0] = input_position
-
-    The incoming characters constitute a lexeme that matches a pattern 
-    identified by 'AcceptanceID'. Optionally, the match may depend on a pre-
-    context indicated by 'PreContextId'. The state machine may continue to
-    eat characters to match a longer pattern. In case, it later falls back
-    to this match the input position must be restored. This can be done
-    using the value from 'position_register[0]'.
-
+  * SeAccept
     + writes: 'last_acceptance'
-    + writes: 'position_register[0]'
+    + reads:   pre-context-id       if pre-context-id:
+    + reads:   position_register[i] if restore position register
+    
+  
+  * SeStoreInputPosition
 
-  * AcceptWithPostContext(AcceptanceID, PreContextId):
-        if PreContextId:
-            last_acceptance = AcceptanceID   
+    + writes: 'position_register[i]'
+
          
     Same as 'Accept', only that the input position is not stored. In fact, the
     input position must have been stored at the end of the core pattern into
