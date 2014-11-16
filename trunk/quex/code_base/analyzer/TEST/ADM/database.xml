@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.13" date="Sat Nov 15 23:25:55 2014">
+<test-database execution-time-sec="0.14" date="Sun Nov 16 11:01:34 2014">
     <last-used-diff-display-program name=""/>
     <test title="Statistics Module" make-dependent="True" time-sum-sec="0.00"> 
         <application file-name="statistics.exe" info-request-time="1416054176L" vanished="False"/>
@@ -34,7 +34,7 @@
             <make-procedure success="True" time_sec="0.809654"/>
             <choice-list number="7" same_result="True">
                <choice name="0" result="OK" time_sec="0.00" crc="-978220029"/>
-               <choice name="1" result="OK" time_sec="0.01" crc="-978220029"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="3" result="OK" time_sec="0.00" crc="-978220029"/>
                <choice name="4" result="OK" time_sec="0.00" crc="-978220029"/>
@@ -48,7 +48,7 @@
             <make-procedure success="True" time_sec="0.841206"/>
             <choice-list number="7" same_result="True">
                <choice name="1" result="OK" time_sec="0.00" crc="312237205"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="312237205"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="312237205"/>
                <choice name="3" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="4" result="OK" time_sec="0.00" crc="312237205"/>
                <choice name="5" result="OK" time_sec="0.00" crc="312237205"/>
@@ -70,14 +70,14 @@
                <choice name="Bf" result="OK" time_sec="0.00" crc="1062816794"/>
             </choice-list>
         </test>
-        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.02"> 
+        <test title="Remove Non-Existent Node" make-dependent="True" time-sum-sec="0.03"> 
             <application file-name="post-categorizer-remove.exe" info-request-time="1416054177L" vanished="False"/>
             <analogy open="((" close="))"/>
             <make-procedure success="True" time_sec="0.824552"/>
             <choice-list number="8" same_result="True">
                <choice name="Aa" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ac" result="OK" time_sec="0.00" crc="1918139693"/>
-               <choice name="Ae" result="OK" time_sec="0.00" crc="1918139693"/>
+               <choice name="Ae" result="OK" time_sec="0.01" crc="1918139693"/>
                <choice name="Ag" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ai" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="Ba" result="OK" time_sec="0.00" crc="1918139693"/>
@@ -92,7 +92,7 @@
             <choice-list number="7" same_result="False">
                <choice name="1" result="OK" time_sec="0.00" crc="-998642932"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-271066271"/>
-               <choice name="3" result="OK" time_sec="0.00" crc="72151989"/>
+               <choice name="3" result="OK" time_sec="0.01" crc="72151989"/>
                <choice name="4" result="OK" time_sec="0.00" crc="1918139693"/>
                <choice name="0" result="OK" time_sec="0.00" crc="-530099081"/>
                <choice name="5" result="OK" time_sec="0.00" crc="-1772219006"/>

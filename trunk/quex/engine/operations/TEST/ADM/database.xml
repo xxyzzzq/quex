@@ -1,4 +1,4 @@
-<test-database execution-time-sec="4.58" date="Sat Nov 15 23:27:33 2014">
+<test-database execution-time-sec="4.59" date="Sun Nov 16 11:03:12 2014">
     <last-used-diff-display-program name=""/>
     <test title="Build Tree of Entry Door Commands" time-sum-sec="2.52"> 
         <application file-name="test-tree.py" info-request-time="1395041207L" vanished="True"/>
@@ -58,7 +58,7 @@
         </test>
     </group>
     <group name="Op.shared_tail">
-        <test title="find_last_common" time-sum-sec="0.32"> 
+        <test title="find_last_common" time-sum-sec="0.33"> 
             <application file-name="test-shared_tail.py" info-request-time="1416082779L" vanished="False"/>
             <analogy open="((" close="))"/>
             <choice-list number="4" same_result="False">
@@ -90,7 +90,7 @@
                <choice name="no-common" result="OK" time_sec="0.08" crc="1380064187"/>
                <choice name="1-common" result="OK" time_sec="0.08" crc="-1548344298"/>
                <choice name="2-common" result="OK" time_sec="0.08" crc="-697374857"/>
-               <choice name="3-common" result="OK" time_sec="0.09" crc="523673866"/>
+               <choice name="3-common" result="OK" time_sec="0.08" crc="523673866"/>
                <choice name="start-indices" result="OK" time_sec="0.09" crc="-1857179644"/>
             </choice-list>
         </test>

@@ -107,7 +107,7 @@ class Recipe:
         assert False
     
 class LinearStateInfo:
-    """.recipe        = Recipemulated action Recipe(i) that determines SCR(i) after 
+    """.recipe        = Accumulated action Recipe(i) that determines SCR(i) after 
                         state has been entered.
 
     The '.recipe' is determined from a spring state, or through accumulation of

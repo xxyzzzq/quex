@@ -70,7 +70,6 @@ DEFINITION: SCR -- Set of Concerned Registers
     The term 'set of concerned registers' SCR shall stand for the set of 
     all registers which are relevant to the investigated behavior. 
 
-
 The setting of registers of an SCR evolves along state transitions. Not all
 registers may be necessary in all states. For example, if the lexeme length is
 not required in a terminal, then no state on the path to the terminal is
@@ -82,7 +81,7 @@ DEFINITION: SCR(i) -- The state specific set of concerned registers.
     The set of registers SCR(i) in state 'i' allows to determine the operations
     which are relevant to successor states of state 'i'. 
     
-    Any operation in state(i) on a register of SCR(i) is subject to 
+    Any write operation in state(i) on a register of SCR(i) is subject to 
     consideration.
 
 As a direct consequence, the 'SCR(i)' for each state can be determined by
@@ -99,7 +98,7 @@ DEFINITION: op(i) -- Operation
 
     A modification to a one or more register of the SCR upon entry into a 
     state 'i' is called an operation 'op(i)'. With 'x' as the setting of 
-    the  before entry into a state 'i', the setting of the SCR in state 'i' 
+    the SCR before entry into a state 'i', the setting of the SCR in state 'i' 
     becomes
 
                          SCR(i) = op(i)(x)
@@ -190,7 +189,7 @@ DEFINITION: R(i) -- Recipe
    registers that store temporary data, and 'c' is a set of constants. 
 
 Along a sequence of linear states, there is an obvious relation between a
-recipe and the concatinated operations
+recipe and the concatenated operations
 
                    SCR(i) = OP(i,k)(SCR(k))
 
