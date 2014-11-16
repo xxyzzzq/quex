@@ -1,54 +1,71 @@
-This file describes the action reduction/action post-poning for acceptance and
-input position restauration. It follows the scheme described in '00-README.txt'.
-
-  (1) Specification of SOV, Actions, and 'consq(i, SOV)'.
-
-    (2) 'history(Actions, state)'.
-
-    (3) 'f(c_i, state)'.
-
-    (4) Condition for 'f(c_i, state) == history(Actions, state)'.
-
-    (5) Procedure description
-
-    (6) Doubt discussion
 
 (C) Frank-Rene Schaefer
 
 -------------------------------------------------------------------------------
 
-(1) Specification of SOV, Actions, and 'consq(i, SOV)'.
+(1) SCR
 
-(1.1) Setting of Variables SOV.
-
-The set of variables of interest, i.e. the 'SOV' is:
+Registers of concern:
 
     -- E_R.Acceptance:  The register that stores the last accepted pattern.
 
     -- (E_R.PositionRegister, i): The register(s) that store the position 
-             where the input pointer needs to be set upon match.
+                        where the input pointer needs to be set upon match.
+                        
+There is no exception with respect to SCR, so the SCR(i) is the same as the 
+global SCR.
 
-(1.2) Actions
-
-There are three actions involved: 'Accept', 'AcceptWithPostContext' and 
-'StoreInputPosition' as explained below.
+(2) Operations on SCR
 
   * SeAccept
-    + writes: 'last_acceptance'
-    + reads:   pre-context-id       if pre-context-id:
-    + reads:   position_register[i] if restore position register
+  
+     + writes: last_acceptance
+     + reads:  (E_R.PositionRegister, i) if restore position register
+     + writes: (E_R.PositionRegister, 0) 
+    (+ reads:  pre-context-id       if pre-context-id)
     
+    When a state is entered with an 'SeAccept' operation, then this expresses
+    acceptance of a pattern. The position of acceptance is stored in position
+    register 0. If there was a post context involved, then SeAccept reads the
+    input position at the end of the core pattern from a specific position
+    register.
   
   * SeStoreInputPosition
 
-    + writes: 'position_register[i]'
+    + writes: (E_R.PositionRegister, i)
+    
+(3) Concatenation of SCR Operations
 
-         
-    Same as 'Accept', only that the input position is not stored. In fact, the
-    input position must have been stored at the end of the core pattern into
-    a position_register given by the acceptance id.
+General Comment: Quex is built upon the 'longest match wins'-philosophy. That
+is, in case of doubt the decision which pattern wins follows:
 
-    + writes: 'last_acceptance'
+	(A) The longer match wins
+	
+If a lexeme of a given length matches two patterns, then 
+
+    (B) The pattern with the higher priority (lower pattern-id) wins.
+    
+If pre-contexts are involved acceptance in a state can only be determined at
+run-time. Thus, if multiple pre-contexted SeAccepts occur, then they must be
+collected. However, for a given state, the lexeme length is the same, so the
+pattern id provides the priority by which they can be sorted. 
+
+    (C) An unconditional acceptance of a higher priority make any lower 
+        priority acceptance impossible.
+        
+In practical, 'SeAccept' commands can be deleted if their priority is lower
+than the unconditional acceptance with the highest priority.      
+
+Concatenation Rules:
+
+
+
+	
+then it can only be determined at run-time which what pattern is accepted.
+Thus, pre-context dependent patterns must be collected. 
+
+As a general rule, it can be set that an unconditional pattern acceptance
+
 
 Multiple 'Accept' and 'AcceptWithPostContext' actions can be concatenated.
 The sorting order is given by the acceptance id (higher priority = lower
