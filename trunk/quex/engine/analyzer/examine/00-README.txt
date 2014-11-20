@@ -119,117 +119,129 @@ DEFINITION: Linear State
     A linear state is a state that is entered only through one predecessor 
     state, i.e. it has only one entry.
 
-                                    .---> ...
-                                   /
-                        ... --->( 0 )---> ...
+                                                   .---> ...
+                                                  /
+                        ... --[ operation ]--->( 0 )---> ...
 
                 Figure 1: The concept of a linear state.
 
-Since there is only one predecessor state to a linear state the SCR can be
-derived from the SCR at the predecessor and the operation at the entry of the
-linear state itself. Let 'p(i)' denote the predecessor state of 'i'. Then,
+Since there is only one predecessor state to a linear state, the SCR can be
+derived from the SCR at the predecessor and the single operation at the entry 
+of the linear state itself. Let 'j' denote the predecessor state of 'i'. 
+Then,
 
-                 SCR(i) = op(i)(SCR(p(i)))
+                     SCR(i) = op(i)(SCR(j))
 
-if 'p(i)' is also a linear state, then the right hand of the above equation can
-be expanded
+if 'j' is also a linear state with a single predecessor 'h', then the right 
+hand of the above equation can be expanded to
 
-                 SCR(i) = op(i)(SCR(op(p(i))(SCR(p(p(i))))))
-
-Let OP(i,k) denote the concatenated operations from state 'k' to state 'i'
-along a sequence of linear states, then SCR(i) can be determined by SCR(k)
-through
-
-                 SCR(i) = OP(i,k)(SCR(k))
-
-That is, if SCR(k) is determined, then SCR(i) can be determined without the
-operations along the path from 'k' to 'i'.  Figure 2 displays an example, that
-shows how this can be used to reduce computational effort. 
-
-                     x=x+1       x=x+1       x=x+1        
-           ... ( a )------>( b )------>( c )------>( d )------> ...
-
-
-             Figure 2: A string of linear states
-
-For an exit in state 'd' the operations can be described in general terms as
-
-                   SCR(b) = op(b)(SCR(a))
-                   SCR(c) = op(c)(SCR(b))
-                   SCR(d) = op(d)(SCR(c))
-                          = op(d)(op(c)(SCR(b)))
-                          = op(d)(op(c)(op(b)(SCR(a))))
-                          = OP(e,a)(SCR(a))
+                     SCR(i) = op(i)( op(j)(SCR(h)))
                  
-The SCR in figure 2 is 'x'. The operation 'op(i)' for all states in figure 2 is
-'x = x + 1'. Thus, with 'x(i)' as the 'x' in state 'i' the sequence in the
-becomes:
-    
-                          x(b) = x(a) + 1
-                          x(c) = x(b) + 1
-                          x(d) = x(c) + 1
-                         
-The 'x(d)' in state 'd' can be determined in one operation:
-                         
-                          x(d) = x(a) + 3
-       
-The formula for 'x(d)' together with 'x(a)' build the recipe to determine the
-SCR in state 'd' without knowing the previous operations along the path.  In
-the example above, a longer sequence of additions was transformed into a single
-addition.  Let the term recipe be define for the context of this discussion.
+Thus, the concatenation of operations op(i) and op(j) together with knowledge
+about the SCR in state 'h' makes it possible to determine the setting of SCR(i)
+upon exit without executing each operation along the state transitions. This
+function is called 'recipe' in the frame of these documents.
 
 DEFINITION: R(i) -- Recipe 
 
-   A recipe 'R(i)' for a state 'i' is a description of how to determine 
-   the SCR(i) when the state has been entered. It maps
+   A recipe 'R(i)' for a state 'i' is a describes the process to determine 
+   SCR(i) when the state has been entered. It maps
 
-                     (s, r, c) ---> SCR(i)
+                     ( s, SCR(h) ) ---> SCR(i)
 
-   where 's' is the current state including his registers. 'r' is a setting of
-   registers that store temporary data, and 'c' is a set of constants. 
+   where 's' is the current state including his registers. The 'SCR(h)'
+   expresses the recipe's dependency on the setting of the SCR in some 
+   reference state 'h'.
+   
+   The essential idea of a recipe is that it can determine settings 
+   of the SCR for a state without relying on operations along the path.
 
-Along a sequence of linear states, there is an obvious relation between a
-recipe and the concatenated operations
+The simplest form of a recipe consists of an operation 'op(i)' together with
+its predecessor state 'h' providing the reference 'SCR(h)'. This simplest
+form can be considered a 'seed' for further recipes. For that however, the 
+'SCR(h)' must be determined.
 
-                   SCR(i) = OP(i,k)(SCR(k))
+DEFINITION: Determined SCR(i)
 
-If 'i' is reached from 'k' by a sequence of linear states, then the 'SCR(k)' and
-the OP(i,x) build together the recipe R(i). 'SCR(k)' is an example of content
-stored in registers, i.e. the 'r' in the definition of a recipe. An example for
-constants 'c' can be observed in the example from figure 2, where 'x' was
-computed as the content of 'x' stored in state 'a' plus a constant number. 
-
-An example for a state register in a recipe would be, for example, the
-computation of the lexeme length 'length(i)' based on the distance to the
-position of first character 'ip0'. Let 'ip' be the pointer to the position where
-the current character is located. Then the lexeme length can be expressed as
-
-                        length(i) = (ip - ip0)
-
-and 'ip' is a state register, i.e. an element of 's' from the definition of a
-recipe. The iterative development of recipes can only start at a state where
-the recipe to compute the SCR is determined. Only then, any previous history
-can be dropped from consideration, because it is reflected in the state's
-recipe.
+   The SCR(i) in a state 'i' is *determined* if, either
+   
+   (i)  The complete setting of the SCR is known, or
+   
+   (ii) A procedure is found that allows to determine SCR at runtime.
 
 DEFINITION: Spring
 
-    A spring is a state where a walk along linear states can begin. For a state
-    'i' to act as a spring, the recipe 'R(i)' must be determined.
-
-If the spring is guides to a linear state, then this linear state can
-determine its recipe through concatenation, as discussed earlier. Let this
-process of iterative concatenation be called accumulation.
+    A state with a determined SCR is a spring.
+    
+To start developing recipes, one must first determine the 'springs' in the
+state machine. Any spring 'h' with a linear state successor 'i' can be used
+to develop the simplest form of a recipe 'op(i)( SCR(h) )'. Along linear
+states, there is always only one distinct entry action. Thus recipes can be
+developed through an iterative process. Using the previous recipe, the current
+operation may be used to develop the recipe for the current state.
 
 DEFINITION: Accumulation
 
-    The process of determining a recipe of a linear state base on the recipe
-    of a predecessor state is called 'accumulation'.
+    The process 'accumulation' determines a recipe 'R(i)' for a linear 
+    state 'i'. The recipe is derived from 
+    
+       (i)  the recipe 'R(k)' of a predecessor state 'k', and
+    
+       (ii) the entry operation 'op(i)' 
+    
 
-If a linear state that received a recipe through accumulation, then it can now
-itself act as a basis for accumulation for successor linear states. This
-process can be repeated until a mouth state is reached.  Mouth states are the
-counterpart to linear states. 
+EXAMPLE:
+
+Figure 2 displays an example. It demonstrates the aforementioned introduced 
+concepts and demonstrates how they can be used to reduce computational effort.
+
+ 
+                  op(b)=        op(c) =      op(d) =
+                    x=x+1         x=x+1         x=x+1        
+        ... ( a )-------->( b )-------->( c )-------->( d )--------> ...
+
+
+                  Figure 2: A sequence of linear states.
+
+
+The SCR in figure 2 is 'x'. The operation 'op(i)' for all states is the same, 
+i.e. 
+
+                      op(b)(x): x = x + 1
+                      op(c)(x): x = x + 1
+                      op(d)(x): x = x + 1
+
+The simplest form of a recipe could be specified assuming that 'x(a)' is 
+determined ('a' is a spring). Then, the recipe for state 'b' is
+
+                      R(b) = op(b)(x(a))
+                           = x(a) + 1
+  
+State 'b' has a linear successor state, so the subsequent recipe can be 
+determined by accumulation.
+
+                      R(c) = op(c)(R(b))
+                           = op(c)(x(a) + 1) = x(a) + 1 + 1
+                           
+A repeated application of accumulation results in a recipe for R(d) as
+
+                      R(d) = x(a) + 3
+
+The operations at each transition of the state sequence of figure 2 can now 
+be replaced. Instead of computing values at each transition, the recipes are
+applied upon exit from the state machine. This is shown in figure 3.
+ 
+ 
+      ... ( a )-------->( b )-------->( c )-------->( d )--------> ...
+                          :             :             :
+                        x = R(b)      x = R(c)      x = R(d)
+
+
+          Figure 3: Recipes upon exit replace transition operations.
+
+The repeated accumulation of operation along linear states comes to an end
+at states where there is more than one entry. Let the term 'mouth state' be
+defined as follows.
 
 DEFINITION: Mouth State
 
@@ -242,61 +254,79 @@ DEFINITION: Mouth State
                                    /
                         ... --->--'
 
-                Figure 3: The concept of a mouth state.
+                Figure 4: The concept of a mouth state.
+
+A mouth state is, somehow, the counterpart to a linear state. Along sequences
+of linear states, things are predictable. As soon as as mouth state is involved
+the *path* by which it is entered becomes important. The concrete path, or 
+entry can only be determined at run-time, not at the time of compilation.
 
 At each entry of the mouth state, there may be a different incoming recipe.  An
-example is shown in figure 4. The operation 'op(i)' for each state is 'x=x+1'.
+example is shown in figure 5. The operation 'op(i)' for each state is 'x=x+1'.
+State '2' is reached from state '1' and state '0'. The accumulated recipe for
+'x' differs depending on the entry from which '2' is entered.
 
-                                              x=x+1
-                       .-------------->---------------. [x=x(0)+1]
-                      /                                \
-                   ( 0 ) [x=x(0)]                     ( 3 )---> ...
-                      \                                /
-                       '--->( 1 )----->( 2 )----->----' [x=x(0)+3]
-                       x=x+1      x=x+1       x=x+1
+                              
+                   .------->-----------.  R(2 from 0) = x(0) + 1
+                  /   x=x+1             \
+                 /                       \
+              ( 0 )                     ( 2 )---> ...
+                 \                       /
+                  \                     /
+                   '--->( 1 )----->----'  R(2 from 1) = x(0) + 2
+                  x=x+1       x=x+1
 
-                   Figure 4: Recipes meet in mouth state 3.
 
-At the entry to state 3, there are two recipes for 'x'. First, there is recipe
-'R(0)' which is concatenated with 'op(3)'. It becomes "x=x(0)+1". Second, there
-is recipe 'R(2)' concatenated with 'op(3)' which becomes "x=x(0)+3".  Both are
-different, so there is only one way to determine 'x': it must be computed  upon
-entry into the state.  A recipe for state 3 which can be a basis for subsequent
-linear states must rely on the stored value for it.
+       Figure 5: Different recipes at different entries of a mouth state.
 
-               x(3)=x(0)+1 
-           ... ------. 
-                      \     [x=x(3)]      x=x+1       [x=x(3) + 1]
-                     ( 3 )---------------------->( 4 )------- ...
-                      /
-           ... ------' 
-               x(3)=x(0)+3 
 
-                   Figure 4: Recipes in a mouth state.
-
-Note, that the register 'x(3)' is not part of the SCR. Thus, the newly entered
-computations 'x(3)=x(0)+1' and 'x(3)=x(0)+3' are not operations 'op(i)' as
-defined earlier and are not subject to further considerations.  Now, let the
-process of 'interference' be defined as follows.
+So, there is only one way to determine 'x': it must be computed  upon entry
+into the state. Analogously, to accumulation the let 'interference' in mouth
+state be defined as follows
 
 DEFINITION: Interference
 
-    The process of 'interference' develops a recipe 'R(i)' for a mouth state.
+    The process of 'interference' develops a recipe 'R(i)' for a mouth 
+    state 'i'. The interference is based on the recipes for each entry
+    into the mouth state. There are two cases:
 
-    First, it concatenates the recipe of each incoming state with its operation
-    'op(i)'. The result is the set of entry recipes. Second, the set of entry
-    recipes is used as a basis to determine 'R(i)'. Along with the recipe
-    new non-SCR operations may be injected into the state machine. Those
-    operations store reference values which are required by 'R(i)'.
+       (i) For each register of SCR(i) that is treated the same in all 
+           recipes, the elements of the recipes CAN be taken in 'R(i)'.
 
+       (i) For any register of SCR(i) where the entry recipes in the 
+           entries contain different procedures, the register MUST be
+           stored as a reference. 
+
+    In both cases, the mouth state becomes determined and as a result it can
+    act as a 'spring'. The option of storing registers as a reference is open
+    in any case.
+
+Example: linear successor states of state 2 from figure 5 may develop recipes
+based on the stored values in SCR(2). This is shown in figure 6, where state 4
+A recipe for state 3 which can be a basis for subsequent linear states must
+rely on the stored value for it.
+
+                    x(3):=x(0)+1 
+                ... ------. 
+                           \        x=x+1       
+                          ( 3 )----------->( 4 )------- ...
+                           /                 :
+                ... ------'             R(4) = x(3) + 1
+                    x(3):=x(0)+1 
+
+                   Figure 4: Recipes in a mouth state.
+
+Note, that the register 'x(3)' is not part of the SCR ('x' is, however). Thus,
+the newly entered computations 'x(3):=x(0)+1' and 'x(3):=x(0)+3' are not
+operations 'op(i)' as defined earlier and are not subject to further
+considerations.  
+                 
 Interference cannot happen, if the set of entry recipes is incomplete. That is,
 if for one entry the recipe cannot be determined, then the interference of 
 the mouth state cannot be accomplished.
 
-Commonalities between recipes are translated into changed constants. When
-differences are detected, they require values to be stored in registers for
-later reference. Once, a mouth state has a determined recipe, it can act
-as a spring for the walk along linear states.
+Once, a mouth state has a determined recipe, it can act as a spring for the
+walk along linear states.
 
 -------------------------------------------------------------------------------
 
@@ -336,7 +366,7 @@ determination of recipes can be defined.
    '- no -(*) begin_list empty?
           (*) Stop.
 
-        Algorithm 1: Determination of recipies.
+        Algorithm 1: Determination of recipes.
 
 When this algorithm comes to an end, there might be still mouth states with
 undetermined entries. The only possible reason for that are circular dependencies

@@ -1,111 +1,10 @@
-from   quex.engine.misc.tree_walker        import TreeWalker
+from   quex.engine.misc.tree_walker             import TreeWalker
+from   quex.engine.analyzer.examier.recipe_base import Recipe
 
 import types
 from   collections import defaultdict
 from   itertools   import chain
 
-class Recipe:
-    """Base class for SCR recipes. The general recipe depends on:
-
-        -- The current state.
-        -- Constants which can be pre-determined.
-        -- Register contents which are developed at run-time.
-
-    See 00-README.txt the according DEFINITION.
-    """
-    @staticmethod
-    def get_terminal_SCR_db(SM):
-        """Determines terminals in the state machine which absolutely require
-        some information about a set of registers (SCR) for the investigated
-        behavior. The set is not concerned of determination happening during
-        analysis or at run-time. 
-
-        Only 'terminals' need to be specified, because the SCR(i) for each 
-        state 'i' is determined by BACK-PROPAGATION of needs.
-
-        RETURNS: defaultdict(set): state index --> set of registers
-
-        The 'registers' are best determined in form of 'Enum' values. The 
-        return type must be 'defaultdict(set)' so that it can be easily 
-        extended by further processing.
-        """
-        assert False
-
-    @staticmethod
-    def get_SCR_operation(TheState):
-        """Extracts from a given state machine state the operation on the SCR, 
-        i.e. the set of registers that describe the behavior (see 00-README.txt).
-
-        RETURNS: A description of the operations on the SCR upon entry into 
-                 'TheState'.
-        """
-        assert False
-
-    @staticmethod
-    def is_spring(TheState, SCR):
-        """RETURNS: True  -- if TheState complies with the requirements of a 
-                             spring state.
-                    False -- else.
-
-        In a spring the Recipe(i) must be determined. That is, as soon as this
-        state is entered any history becomes unimportant. The setting of the
-        SCR(i) can be determined from an Recipe(i). The SCR of the state which
-        may have been developed by 'back-propagation' of needs.
-        """
-        assert False
-
-    @staticmethod
-    def from_spring(SpringState):
-        """RETURNS: An accumulated action that determines the setting of the
-                    SCR(i) after the SpringState has been entered.
-        """
-        assert False
-
-    @staticmethod
-    def from_accumulation(Recipe, LinearState):
-        """RETURNS: An accumulated action that expresses the concatenation of
-                    the given Recipe, with the operation at entry of LinearState.
-
-        The resulting accumulated action determines the setting of SCR(i) after
-        the linear state has been entered.
-        """
-        assert False
-
-    @staticmethod
-    def from_interference(RecipeIterable, MouthState):
-        """RETURNS: An accumulated action that expresses the interference of 
-                    recipes actions at different entries into a MouthState.
-        """
-        assert False
-
-    @staticmethod
-    def from_interference_for_dead_lock_group(DeadLockGroup):
-        """RETURNS: An accumulated action that expresses the interference of 
-                    recipes of states of a dead_lock group.
-        """
-        assert False
-
-    def get_drop_out_OpList(self):
-        """With a given Recipe(i) for a state 'i', the action upon state machine
-        exit can be determined.
-
-        RETURNS: A OpList that corresponds self.
-        """
-        assert False
-    
-    def get_entry_OpList(self, NextRecipe):
-        """Consider the NextRecipe with respect to self. Some contents may 
-        have to be stored in registers upon entry into this state. 
-
-        RETURNS: A OpList that allows 'InterferedRecipe' to operate after 
-                 the state.
-
-        This is particularily important at mouth states, where 'self' is an 
-        entry into the mouth state and 'NextRecipe' is the accumulated action
-        after the state has been entered.
-        """
-        assert False
-    
 class LinearStateInfo:
     """.recipe        = Accumulated action Recipe(i) that determines SCR(i) after 
                         state has been entered.
@@ -132,6 +31,7 @@ class MouthStateInfo:
 
 class Examiner:
     def __init__(self, SM, RecipeType):
+        assert issubclass(RecipeType, Recipe)
         self.sm          = SM
         self.recipe_type = RecipeType
 
@@ -139,7 +39,7 @@ class Examiner:
         self.linear_db   = {}
 
     def do(self):
-        """Associate all states in the state machine with an 'R(i)' and 
+        """Associate all states in the state machine with an 'R(i)' and
         determine what actions have to be implemented at what place.
         """
         self.scr_db = self.determine_SCRs()
@@ -151,7 +51,7 @@ class Examiner:
         self.mouth_db   = self.categorize_states()
 
         # Determine states from where a walk along linear states can begin.
-        springs = self.determine_initial_springs()
+        springs = self.recipe_type.determine_initial_springs()
 
         # Resolve as many as possible states in the state machine, i.e. 
         # associate the states with an recipe 'R(i)'.
@@ -164,6 +64,18 @@ class Examiner:
         # At this point all states must have determined recipes, according to
         # the theory in 00-README.txt.
         assert self.determined_set == set(self.sm.states.iterkeys())
+
+    def determine_initial_springs():
+        """Finds the states in the state machine that comply to the condition
+        of a 'spring' as defined in 00-README.txt. It determines the recipe for
+        those springs and adds them to the databases.
+
+        RETURNS: list of state indices of initial spring states.
+        """
+        springs = self.recipe_type.determine_initial_springs()
+        for state_index in springs:
+            recipe = self.recipe_type.from_spring(self.sm[state_index])
+            self.add_recipe(state_index, recipe)
 
     def determine_SCRs(self):
         """Determines SCR(i), that is it determines the registers which are 
@@ -178,7 +90,7 @@ class Examiner:
         The method to resolve this is 'back-propagation' of needs.
         """
         # terminal_scr_db = defaultdict(set)
-        terminal_scr_db = self.recipe_type.get_terminal_SCR_db(self.sm)
+        terminal_scr_db = self.recipe_type.get_SCR_terminal_db(self.sm)
 
         # SCR(i) for all states determined => back-propagation not necessary.
         if len(terminal_scr_db) == len(self.sm.states):
@@ -229,22 +141,6 @@ class Examiner:
             add(state_index, 1)
 
         return linear_db, mouth_db
-
-    def determine_initial_springs(self):
-        """Iterates through all states of a given state machine and determines
-        the states from where a walk along linear states may begin, so called 
-        'springs' (see 00-README.txt). 
-
-        RETURNS: list of state indices from CandidateList where the according
-                 state can be the begin of a walk along a sequence of linear
-                 states.
-
-        
-        The initial springs get their recipes registers/determined upon a call 
-        to '_accumulate()'.
-        """
-        return set(si for si, state in self.sm.states.iteritems()
-                      if self.recipe_type.is_spring(state, self.scr_db[i]))
 
     def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
@@ -390,17 +286,14 @@ class Examiner:
         else:                self.mouth_db[StateIndex].recipe = TheRecipe
         self.determined_set.add(StateIndex)
 
-    def _interfere(self, DeterminedMouthSet):
-        """Perform interference of mouth states. Find for each state index the
-        MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
-        according to the investigated behavior.
+    def get_recipe(self, StateIndex):
+        """This function is only supposed to be called for determined states.
 
-        MouthInfo.recipe:     = recipe of resolved mouth state.
-        self.determined_set:  add determined mouth state index
+        RETURNS: Recipe for given state index.
         """
-        for si in DeterminedMouthSet:
-            recipe = self.recipe_type.from_interference(self.mouth_db[si])
-            self.add_recipe(si, recipe)
+        info = self.linear_db.get(StateIndex)
+        if info is not None: return info.recipe
+        else:                return self.mouth_db[StateIndex]
 
     def _accumulate(self, Springs):
         """Recursively walk along linear states. The termination criteria is 
@@ -422,12 +315,25 @@ class Examiner:
                                    self.mouth_db)
 
         for si in Springs:
-            recipe = self.recipe_type.from_spring(self.sm.states[i])
+            # spring == determined state => 'get_recipe()' MUST work.
+            recipe = self.get_recipe(si)
             walker.add_recipe(si, recipe)
             walker.do((si, recipe))
 
         # self.determined_set == walker.determined_set
         return walker.determined_mouths
+
+    def _interfere(self, DeterminedMouthSet):
+        """Perform interference of mouth states. Find for each state index the
+        MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
+        according to the investigated behavior.
+
+        MouthInfo.recipe:     = recipe of resolved mouth state.
+        self.determined_set:  add determined mouth state index
+        """
+        for si in DeterminedMouthSet:
+            recipe = self.recipe_type.from_interference(self.mouth_db[si])
+            self.add_recipe(si, recipe)
 
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
@@ -462,9 +368,9 @@ class LinearStateWalker(TreeWalker):
         #               of current state.
         # => recipe of current state.
         state  = self.state_db[StateIndex]
-        op     = self.recipe_type.get_SCR_operation(state)
-        recipe = self.recipe_type.from_accumulation(PrevRecipe, op)
-        walker.add_recipe(StateIndex, recipe)
+        recipe = self.recipe_type.from_accumulation(PrevRecipe, 
+                                                    state.single_entry)
+        examiner.add_recipe(StateIndex, recipe)
 
         # Termination Criteria:
         # (i)   Terminal: no transitions, do further recursion. 
@@ -477,8 +383,8 @@ class LinearStateWalker(TreeWalker):
             if mouth_info is not None:
                 # (ii) Consider mouth state --> not in 'todo'.
                 target   = self.state_db[target_index]
-                op       = self.recipe_type.get_SCR_operation(target)
-                e_recipe = self.recipe_type.from_accumulation(recipe, op)
+                e_recipe = self.recipe_type.from_accumulation(recipe, 
+                                                              target.single_entry)
                 mouth_info.entry_db.enter(transition_id, e_recipe)
                 if mouth_info.is_determined():
                     self.determined_mouths.append(target_index)
