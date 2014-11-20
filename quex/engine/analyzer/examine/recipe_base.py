@@ -1,5 +1,26 @@
+"""PURPOSE:
 
-class RecipeAcceptance(Recipe):
+This file defines the base class for all 'recipes' as defined in 00-README.txt.
+No object is supposed to be instantiated of class 'Recipe'. Instead, concrete 
+classes need to be derived from it. The derived concrete classes can then 
+instantiate objects. 
+
+The derived concrete class of 'Recipe' implements the specification of a 
+particular considered behavior. 
+
+The 'Recipe' class defines an 'interface' in the Java sense, and an 'abstract
+class' in the C++ sense. It consists of '@staticmethod'-s and member functions.
+The derived class must follow the same exact scheme. Only then, the derived
+recipe fits the algorithm of analysis.
+
+The appropriate way to add a new investigated behavior is to copy the class 
+'Recipe', rename it, derive the new-named class from 'Recipe' and fill its
+functions with meaningful content.
+
+(C) Frank-Rene Schaefer
+"""
+
+class Recipe:
     """Base class for SCR recipes. The general recipe depends on:
 
         -- The current state.
@@ -8,7 +29,21 @@ class RecipeAcceptance(Recipe):
 
     See 00-README.txt the according DEFINITION.
     """
-    SCR = (E_R.InputP, E_R.Acceptance, E_R.PositionRegister)
+    @classmethod
+    def get_SCR_operation(cls, TheState):
+        """For a given state, it extracts the operations upon entry which 
+        modify registers of the SCR. 
+
+        RETURNS: A list of operations on the SCR.
+        """
+        return [ op for op in TheState.single_entry if op.modifies(cls.SCR) ] 
+
+    @classmethod
+    def from_spring(cls, SpringState):
+        """RETURNS: A recipe that determines the setting of the SCR(i) after 
+        the SpringState has been entered.
+        """
+        return cls(self.get_SCR_operation(SpringState.single_entry))
 
     @staticmethod
     def get_SCR_terminal_db(SM):
@@ -26,7 +61,7 @@ class RecipeAcceptance(Recipe):
         return type must be 'defaultdict(set)' so that it can be easily 
         extended by further processing.
         """
-        return dict((state_index, RecipeAcceptance.SCR) for state_index in SM)
+        assert False
 
     @staticmethod
     def get_initial_springs(SM):
@@ -35,23 +70,19 @@ class RecipeAcceptance(Recipe):
         where the entry operations determine all registers of the SCR while making
         all previous history redundant.
 
-        Any action that has storing input positions is potentially influencing
-        history. So, even a conditionless acceptance does not 'cut off' history.
-        The only state that does is the initial state.
-
         RETURNS: State inidices of initial springs.
         """
-        return [ SM.init_state_index ]
+        assert False
 
     @staticmethod
-    def from_accumulation(Recipe, SingleEntry):
+    def from_accumulation(Recipe, LinearState):
         """RETURNS: An accumulated action that expresses the concatenation of
                     the given Recipe, with the operation at entry of LinearState.
 
         The resulting accumulated action determines the setting of SCR(i) after
         the linear state has been entered.
         """
-        return RecipeAcceptance(self.get_SCR_operation(SingleEntry))
+        assert False
 
     @staticmethod
     def from_interference(RecipeIterable, MouthState):
@@ -88,4 +119,3 @@ class RecipeAcceptance(Recipe):
         """
         assert False
     
-
