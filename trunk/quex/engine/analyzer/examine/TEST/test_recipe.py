@@ -1,64 +1,55 @@
-from quex.engine.analyzer.examiner.core import Recipe
-from quex.engine.misc.enum              import Enum
+from quex.engine.analyzer.examiner.recipe_base import Recipe
+from quex.engine.misc.enum                     import Enum
 
-E_SOV_Test = Enum("X", "Y", "Z")
+class Recipe4Test(Recipe):
+    """Base class for SCR recipes. The general recipe depends on:
 
-class TestRecipe(Recipe):
-    """Implementation of class 'Recipe' for testing purposes.
+        -- The current state.
+        -- Constants which can be pre-determined.
+        -- Register contents which are developed at run-time.
+
+    See 00-README.txt the according DEFINITION.
     """
+    SCR = (E_R.ColumnCount, E_R.LineCount) # Just as an example ...
+    #                                      # They might not be treated 
+    #                                      # according their meaning.
+
     @staticmethod
-    def get_terminal_SOV_db(SM):
+    def get_SCR_terminal_db(SM):
         """Determines terminals in the state machine which absolutely require
-        some information about a set of variables (SOV) for the investigated
+        some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during
         analysis or at run-time. 
 
-        Only 'terminals' need to be specified, because the SOV(i) for each 
+        Only 'terminals' need to be specified, because the SCR(i) for each 
         state 'i' is determined by BACK-PROPAGATION of needs.
 
-        RETURNS: defaultdict(set): state index --> set of variables
+        RETURNS: defaultdict(set): state index --> set of registers
 
-        The 'variables' are best determined in form of 'Enum' values. The 
+        The 'registers' are best determined in form of 'Enum' values. The 
         return type must be 'defaultdict(set)' so that it can be easily 
         extended by further processing.
         """
-        assert False
+        return dict((state_index, Recipe4Test.SCR)
+                    for state_index in SM.states.iterkeys())
 
     @staticmethod
-    def get_SOV_operation(TheState):
-        """Extracts from a given state machine state the operation on the SOV, 
-        i.e. the set of variables that describe the behavior (see 00-README.txt).
+    def get_initial_springs(SM):
+        """The term 'spring' has been defined in 00-README.txt as a state where
+        the walk along linear states may begin. An initial spring is a state 
+        where the entry operations determine all registers of the SCR while making
+        all previous history redundant.
 
-        RETURNS: A description of the operations on the SOV upon entry into 
-                 'TheState'.
+        RETURNS: State inidices of initial springs.
         """
-        assert False
-
-    @staticmethod
-    def is_spring(TheState, SOV):
-        """RETURNS: True  -- if TheState complies with the requirements of a 
-                             spring state.
-                    False -- else.
-
-        In a spring the Recipe(i) must be determined. That is, as soon as this
-        state is entered any history becomes unimportant. The setting of the
-        SOV(i) can be determined from an Recipe(i).
-        """
-        assert False
-
-    @staticmethod
-    def from_spring(SpringState):
-        """RETURNS: An accumulated action that determines the setting of the
-                    SOV(i) after the SpringState has been entered.
-        """
-        assert False
+        return SM.init_state_index
 
     @staticmethod
     def from_accumulation(Recipe, LinearState):
         """RETURNS: An accumulated action that expresses the concatenation of
                     the given Recipe, with the operation at entry of LinearState.
 
-        The resulting accumulated action determines the setting of SOV(i) after
+        The resulting accumulated action determines the setting of SCR(i) after
         the linear state has been entered.
         """
         assert False
@@ -71,8 +62,30 @@ class TestRecipe(Recipe):
         assert False
 
     @staticmethod
-    def from_interference_for_dead_lock_group(DeadLockGroup):
+    def from_interference_in_dead_lock_group(DeadLockGroup):
         """RETURNS: An accumulated action that expresses the interference of 
-                    recipes of states of a dead_lock group.
+                    recipes of states of a dead lock group.
         """
         assert False
+
+    def get_drop_out_OpList(self):
+        """With a given Recipe(i) for a state 'i', the action upon state machine
+        exit can be determined.
+
+        RETURNS: A OpList that corresponds self.
+        """
+        assert False
+    
+    def get_entry_OpList(self, NextRecipe):
+        """Consider the NextRecipe with respect to self. Some contents may 
+        have to be stored in registers upon entry into this state. 
+
+        RETURNS: A OpList that allows 'InterferedRecipe' to operate after 
+                 the state.
+
+        This is particularily important at mouth states, where 'self' is an 
+        entry into the mouth state and 'NextRecipe' is the accumulated action
+        after the state has been entered.
+        """
+        assert False
+    

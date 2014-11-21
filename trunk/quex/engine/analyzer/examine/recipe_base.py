@@ -75,7 +75,7 @@ class Recipe:
         assert False
 
     @staticmethod
-    def from_accumulation(Recipe, LinearState):
+    def from_accumulation(Recipe, Operation):
         """RETURNS: An accumulated action that expresses the concatenation of
                     the given Recipe, with the operation at entry of LinearState.
 
@@ -85,16 +85,22 @@ class Recipe:
         assert False
 
     @staticmethod
-    def from_interference(RecipeIterable, MouthState):
+    def from_interference(RecipeIterable):
         """RETURNS: An accumulated action that expresses the interference of 
                     recipes actions at different entries into a MouthState.
+
+        The resulting recipe is applied ONLY to the mouth state of concern--
+        in contrast to what happens in 'from_interference_in_dead_lock_group()'.
         """
         assert False
 
     @staticmethod
-    def from_interference_for_dead_lock_group(DeadLockGroup):
+    def from_interference_in_dead_lock_group(DeadLockGroup):
         """RETURNS: An accumulated action that expresses the interference of 
                     recipes of states of a dead_lock group.
+
+        The important difference to 'from_interference()' is that the resulting 
+        recipe is applied to MULTIPLE states.
         """
         assert False
 
