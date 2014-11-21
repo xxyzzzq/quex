@@ -61,7 +61,7 @@ class RecipeAcceptance(Recipe):
         assert False
 
     @staticmethod
-    def from_interference_for_dead_lock_group(DeadLockGroup):
+    def from_interference_in_dead_lock_group(DeadLockGroup):
         """RETURNS: An accumulated action that expresses the interference of 
                     recipes of states of a dead_lock group.
         """
