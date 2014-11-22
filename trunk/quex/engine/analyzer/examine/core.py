@@ -59,7 +59,8 @@ class Examiner:
         self.mouth_db   = self.categorize_states()
 
         # Once, the state infos are in place, determine SCRs per state.
-        self.determine_SCRs()
+        for si, scr in self.recipe_type.get_scr_by_state_index(self.sm):
+            self.get_state_info(si).scr.update(scr)
 
         # Determine states from where a walk along linear states can begin.
         springs = self.determine_initial_springs()
@@ -89,33 +90,6 @@ class Examiner:
         for state_index in springs:
             recipe = self.recipe_type.from_spring(self.sm[state_index])
             self.add_recipe(state_index, recipe)
-
-    def determine_SCRs(self):
-        """Determines SCR(i), that is it determines the registers which are 
-        important for each state. For that the 'terminals' are requested from 
-        the recipe type (representing the investigated behavior). 
-        
-        If a state 'i' requires a register 'x' for its drop-out procedure, then
-        the development of 'x' along the states on the path to 'i' must be 
-        implemented. In other words, 'x' is part of any SCR(k) where 'k' is a
-        predecessor state of 'i'.
-
-        The method to resolve this is 'back-propagation' of needs.
-        """
-        # map: state index --> SCR
-        terminal_scr_db = self.recipe_type.get_SCR_terminal_db(self.sm)
-
-        # If a state requires a register to be set
-        # => all of its predecessor states must track its development.
-
-        # Avoid accessing state over and over again.
-        scr_db = defaultdict(set)
-        for si, scr in terminal_scr_db:
-            scr_db[scr].extend(self.predecessor_db[si])
-
-        for scr, state_index_set in scr_db:
-            for si in state_index_set:
-                self.get_state_info(si).scr.update(scr)
 
     def categorize_states(self):
         """Seperates the states in state machine into two sets:

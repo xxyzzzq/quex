@@ -11,7 +11,7 @@ class RecipeAcceptance(Recipe):
     SCR = (E_R.InputP, E_R.Acceptance, E_R.PositionRegister)
 
     @staticmethod
-    def get_SCR_terminal_db(SM):
+    def get_scr_by_state_index(SM):
         """Determines terminals in the state machine which absolutely require
         some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during
@@ -26,7 +26,7 @@ class RecipeAcceptance(Recipe):
         return type must be 'defaultdict(set)' so that it can be easily 
         extended by further processing.
         """
-        return dict((state_index, RecipeAcceptance.SCR) for state_index in SM)
+        return ((state_index, RecipeAcceptance.SCR) for state_index in SM)
 
     @staticmethod
     def get_initial_springs(SM):
