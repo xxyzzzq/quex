@@ -46,7 +46,7 @@ class Recipe:
         return cls(self.get_SCR_operation(SpringState.single_entry))
 
     @staticmethod
-    def get_SCR_terminal_db(SM):
+    def get_scr_by_state_index(SM):
         """Determines terminals in the state machine which absolutely require
         some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during

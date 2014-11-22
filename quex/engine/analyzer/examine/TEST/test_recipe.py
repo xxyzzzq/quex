@@ -15,7 +15,7 @@ class Recipe4Test(Recipe):
     #                                      # according their meaning.
 
     @staticmethod
-    def get_SCR_terminal_db(SM):
+    def get_scr_by_state_index(SM):
         """Determines terminals in the state machine which absolutely require
         some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during
@@ -30,8 +30,8 @@ class Recipe4Test(Recipe):
         return type must be 'defaultdict(set)' so that it can be easily 
         extended by further processing.
         """
-        return dict((state_index, Recipe4Test.SCR)
-                    for state_index in SM.states.iterkeys())
+        return ((state_index, Recipe4Test.SCR)
+                for state_index in SM.states.iterkeys())
 
     @staticmethod
     def get_initial_springs(SM):
