@@ -5,12 +5,12 @@ import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
 from   quex.engine.state_machine.state.single_entry import SeAccept
 
-from   quex.engine.misc.tools  import flatten_list_of_lists
+from   quex.engine.misc.tools  import flatten_list_of_lists, typed
 from   quex.blackboard    import E_IncidenceIDs, \
                                  E_PreContextIDs, \
                                  E_Border
 
-from   copy      import deepcopy
+from   copy      import deepcopy, copy
 from   operator  import attrgetter, itemgetter
 from   itertools import ifilter, imap
 from   collections import defaultdict
@@ -398,6 +398,29 @@ class StateMachine(object):
             for to_index in state.target_map.get_map().iterkeys():
                 from_db[to_index].add(from_index)
         return from_db
+    
+    def get_predecessor_db(self):
+        """RETURNS:
+        
+            map:   state index ---> set of states that lie on the path to it.
+        """
+        def update(predecessor_db, StateIndex, PredecessorSet):
+            """Enter into the 'predecessor_db' that all states in 'PredecessorSet'
+            are predecessors of 'StateIndex'. Also, all states of which the 
+            StateIndex is a predecessor, inherit its predecessors.
+            """
+            predecessor_db[StateIndex].update(PredecessorSet)
+            for prev_predecessor_set in predecessor_db.itervalues():
+                if StateIndex not in prev_predecessor_set: continue
+                prev_predecessor_set.update(PredecessorSet)
+                    
+        predecessor_db = defaultdict(set)
+        for si, state in self.states.iteritems():
+            target_predecessor_set = copy(predecessor_db[si])
+            target_predecessor_set.add(si)
+            for target_si in state.target_map.get_map().iterkeys():
+                update(predecessor_db, target_si, target_predecessor_set)
+        return predecessor_db
 
     def get_number_sequence(self):
         """Returns a number sequence that represents the state machine.
@@ -695,6 +718,7 @@ class StateMachine(object):
         self.states[new_state_index] = State(AcceptanceF)
         return new_state_index
         
+    @typed(StartStateIdx=long, AcceptanceF=bool)
     def add_transition(self, StartStateIdx, TriggerSet, TargetStateIdx = None, AcceptanceF = False):
         """Adds a transition from Start to Target based on a given Trigger.
 
@@ -704,11 +728,9 @@ class StateMachine(object):
 
            RETURNS: The target state index.
         """
-        assert type(StartStateIdx) == long
         # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
         #       assert TriggerSet.__class__.__name__ == "NumberSet"
         assert type(TargetStateIdx) == long or TargetStateIdx is None
-        assert type(AcceptanceF) == bool
 
         # If target state is undefined (None) then a new one has to be created
         if TargetStateIdx is None:                       TargetStateIdx = state_machine_index.get()

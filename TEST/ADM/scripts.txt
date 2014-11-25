@@ -1,6 +1,0 @@
-*.sh
---not quex_pathify.sh
---not mktest.sh
---not bug-template.sh
---not test_that_it_does_not_take_too_long.sh
-
