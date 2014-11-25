@@ -1,12 +1,34 @@
-from   quex.engine.analyzer.examier.recipe_base import Recipe
-from   quex.engine.misc.tree_walker             import TreeWalker
-from   quex.engine.misc.tools                   import all_true
+from   quex.engine.analyzer.examiner.recipe_base import Recipe
+from   quex.engine.misc.tree_walker              import TreeWalker
+from   quex.engine.misc.tools                    import all_true, typed,\
+    flatten_list_of_lists
 
 import types
-from   collections import defaultdict
-from   itertools   import chain
 
-class LinearStateInfo(object):
+class StateInfo(object):
+    """Base class for state informations with respect to 'recipes' and the
+    set of concerned registers 'SCR'. This class is to be considered 'abstract'.
+
+                                 .------------.
+                                 |_StateInfo__|
+                                 |  .scr      |
+                                 |  .recipe   |
+                                 '------------'
+                                      |   |
+                            .---->----'   '----<----.
+                            |                       |
+                   .-----------------.      .----------------.
+                   |_LinearStateInfo_|      |_MouthStateInfo_|
+                   '-----------------'      | .entry_db      |
+                                            '----------------'       
+                
+    """
+    __slots__ = ("recipe", "scr")
+    def __init__(self):
+        self.scr    = None  # set():   relevant registers for state
+        self.recipe = None  # default: recipe/state is NOT determined.
+
+class LinearStateInfo(StateInfo):
     """.recipe        = Accumulated action Recipe(i) that determines SCR(i) after 
                         state has been entered.
 
@@ -14,14 +36,12 @@ class LinearStateInfo(object):
     linear states. The 'on_drop_out' handler can be determined as soon as 
     '.recipe' is determined.
     """
-    __slots__ = ("recipe", "scr")
     def __init__(self):
-        self.scr    = set() # relevant registers for state
-        self.recipe = None  # default: recipe/state is NOT determined.
+        StateInfo.__init__(self)
 
-class MouthStateInfo(object):
-    """.recipe   = Recipemulated action Recipe(i) that determines SCR(i) 
-                        after state has been entered.
+class MouthStateInfo(StateInfo):
+    """.recipe   = Recipe(i) that determines SCR(i) after state has been 
+                   entered.
        .entry_db = map: from 'TransitionID' to accumulated action at entry 
                         into mouth state.
 
@@ -31,36 +51,35 @@ class MouthStateInfo(object):
     may derive the '.recipe' which determines the SCR(i) as soon as the state has
     been entered.  
     """
-    __slots__ = ("recipe", "entry_db")
+    __slots__ = ("entry_db")
     def __init__(self, FromStateIndexSet):
-        self.scr    = set() # relevant registers for state
-        self.recipe = None  # default: recipe/state is NOT determined.
-        #                   # default: no entry from any state has recipe.
+        StateInfo.__init__(self)
         self.entry_db = dict((si, None) for si in FromStateIndexSet)
 
 class Examiner:
     def __init__(self, SM, RecipeType):
         assert issubclass(RecipeType, Recipe)
-        self.sm          = SM
-        self.recipe_type = RecipeType
+        self.sm             = SM
+        self.from_db        = self.sm.get_from_db()
+        self.recipe_type    = RecipeType
 
-        self.mouth_db    = {}
-        self.linear_db   = {}
+        self.linear_db = {}  # map: state index --> LinearStateInfo
+        self.mouth_db  = {}  # map: state index --> MouthStateInfo
 
     def do(self):
         """Associate all states in the state machine with an 'R(i)' and
         determine what actions have to be implemented at what place.
         """
 
-        # Determine what states are entered only by one state. Those are the 
-        # 'linear states'. States which are entered by more than one state are
-        # 'mouth states'.
-        self.linear_db, \
-        self.mouth_db   = self.categorize_states()
+        # Categorize states:
+        #    .linear_db: 'linear states' being entered only from one state.
+        #    .mouth_db: 'mouth states' being entered from multiple states.
+        for state_index in self.sm.states.iterkeys():
+            self.categorize(state_index)
 
         # Once, the state infos are in place, determine SCRs per state.
         for si, scr in self.recipe_type.get_scr_by_state_index(self.sm):
-            self.get_state_info(si).scr.update(scr)
+            self.get_state_info(si).scr = scr
 
         # Determine states from where a walk along linear states can begin.
         springs = self.determine_initial_springs()
@@ -72,12 +91,39 @@ class Examiner:
         # Resolve the states which have been identified to be dead-locks. After
         # each resolved dead-lock, resolve depending linear states.
         for group in self.dead_lock_resolution_sequence(unresolved_mouths):
-            self.resolve_dead_lock_group(unresolved_mouths)
+            self.resolve_dead_lock_group(group)
 
         # At this point all states must have determined recipes, according to
         # the theory in 00-README.txt.
-        assert all_true(self.linear_db.itervalues(), lambda x.recipe is not None) 
-        assert all_true(self.mouth_db.itervalues(), lambda x.recipe is not None) 
+        assert all_true(self.linear_db.itervalues(), lambda x: x.recipe is not None) 
+        assert all_true(self.mouth_db.itervalues(), lambda x: x.recipe is not None) 
+
+    def categorize(self, StateIndex):
+        """Separates the states of state machine into two categories 
+        represented by '.linear_db' and '.mouth_db':
+
+              linear states: only ONE entry from another state.
+              mouth states: entries from MORE THAN ONE state.
+
+        The init state is special, in a sense that it is entered from outside
+        without explicit mentioning. Therefore, it is only a linear state
+        if it has NO entry from another state.
+
+        All states in '.linear_db' and '.mouth_db' have a 'None' recipe. That
+        indicates that they are NOT determined, yet.
+        """
+
+        # The init state has an unmentioned entry from 'START'. Thus, if it 
+        # is entered by an explicit entry, then it already has two entries 
+        # and therefore must become a 'mouth' state.
+        if StateIndex == self.sm.init_state_index: limit = 0
+        else:                                      limit = 1
+            
+        from_state_set = self.from_db[StateIndex]
+        if len(from_state_set) <= limit: 
+            self.linear_db[StateIndex] = LinearStateInfo()
+        else:                                
+            self.mouth_db[StateIndex]  = MouthStateInfo(from_state_set)
 
     def determine_initial_springs(self):
         """Finds the states in the state machine that comply to the condition
@@ -89,43 +135,7 @@ class Examiner:
         springs = self.recipe_type.determine_initial_springs(self.sm)
         for state_index in springs:
             recipe = self.recipe_type.from_spring(self.sm[state_index])
-            self.add_recipe(state_index, recipe)
-
-    def categorize_states(self):
-        """Seperates the states in state machine into two sets:
-
-        RETURNS: [0] linear states (only ONE entry from another state)
-                 [1] mouth states (entries from MORE THAN ONE state)
-
-        The init state is special, in a sense that it is entered from outside
-        without explicit mentioning. Therefore, it is only a linear state
-        if it has NO entry from another state.
-
-        All states in '.linear_db' and '.mouth_db' have a 'None' recipe. That
-        indicates that they are NOT determined.
-        """
-        from_db = self.sm.get_from_db()
-
-        linear_db = {}
-        mouth_db  = {}
-        def add(StateIndex, Limit):
-            """Determine in what list the StateIndex needs to be put based on
-            the number of states from which it is entered.
-            """
-            from_state_set = from_db[StateIndex]
-            if len(from_state_set) <= Limit: 
-                return linear_db[StateIndex] = LinearStateInfo()
-            else:                                
-                return mouth_db[StateIndex]  = MouthStateInfo(from_state_set)
-
-        # The init state has an unmentioned entry from 'START'. Thus, if it 
-        # is entered by an explicit entry, then it already has two entries 
-        # and therefore must become a 'mouth' state.
-        add(self.sm.init_state_index, 0)
-        for state_index in self.sm.states.iterkeys():
-            if state_index != InitStateIndex: add(state_index, 1)
-
-        return linear_db, mouth_db
+            self.set_recipe(state_index, recipe)
 
     def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
@@ -146,8 +156,8 @@ class Examiner:
         RETURNS: Set of mouth states that could still not be resolved.
                  => They become subject to 'dead-lock treatment'.
         """
-        new_springs = Springs
-        while new_springs:
+        springs = Springs
+        while springs:
             # Derive recipes along linear states starting from springs.
             determined_mouths = self._accumulate(springs) 
 
@@ -155,7 +165,7 @@ class Examiner:
             self._interfere(determined_mouths)
 
             # The determined mouths become the new springs for the linear walk
-            new_springs = determined_mouths
+            springs = determined_mouths
 
         # Return the set of still undetermined mouth states.
         return set(si for si, info in self.mouth_db.iteritems()
@@ -167,31 +177,30 @@ class Examiner:
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent states.
         """
-        # The only entries into the group are those which are determined.
-        entry_recipe_list = []
-        for si in Group:
-            entry_recipe_list.extend(
-                recipe for from_state_index, recipe in self.mouth_db[si].iteritems()
-                       if recipe is not None
-            )
+        # Collect all recipes at entry into mouth states which are determined.
+        entry_recipe_list = flatten_list_of_lists(
+            [recipe for recipe in self.mouth_db[si].entry_db.itervalues()
+                    if recipe is not None]
+            for si in Group
+        )
         # Based on those entries an 'inherent recipe' can be determined.
         recipe = self.recipe_type.from_interference_in_dead_lock_group(entry_recipe_list)
 
         # All dead-lock mouth states propagate the same recipe.
         # (While some entries still may remain open. They become determined
         #  upon a call to '_accumulate()'.            
-        for si in group:
+        for si in Group:
             self.add_entry(si, recipe)
 
         # Determined mouths => Linear walk is possible
         # => More linear states are determined.
         # => More entry recipes in mouth states are found.
-        self._accumulate(Springs=group) 
+        self._accumulate(Springs=Group) 
 
         # Assume that all entries have become determined by now!
-        for si in group:
-            for from_state_index, recipe in self.mouth_db[si].entry_db.iteritems():
-                assert recipe is not None
+        for si in Group:
+            assert all_true(self.mouth_db[si].entry_db.itervalues(),
+                            lambda recipe: recipe is not None)
 
     def dead_lock_resolution_sequence(self, UnresolvedMouths):
         """As has been proven in 00-README.txt, there is always a non-circular
@@ -203,14 +212,6 @@ class Examiner:
 
         YIELDS: next group that can and must be resolved.
         """
-        def group_dependence(Ga, Gb):
-            """RETURNS: True  -- if a state in 'Ga' depends on a state in 'Gb'.
-                        False -- if not.
-            """
-            for si in Ga:
-                if not self.depend_db[si].isdisjoint(G): return True
-            return False
-
         def determined(GroupSet, PresentGroupSet, DependDb):
             """Determines which groups from the GroupSet can be determined
             according to the 'PresentGroupSet' and the 'DependDb'. 
@@ -223,55 +224,76 @@ class Examiner:
             assert result
             return result
 
-        group_set = self.dead_lock_groups_find(UnresolvedMouths)
+        # map: group --> groups on which group depends
+        group_depend_db  = self.dead_lock_groups_find(UnresolvedMouths)
         
-        depend_db         = {}
-        for ga in group_set:
-            deps = set(gb for gb in group_set
-                          if ga != gb and depends(ga, gb))
-            depend_db[ga] = deps
-        
-        step_n   = 0
-        L        = len(group_set)
-        while group_set:
-            no_dep_group_set = determined(group_set, sorted_list, depend_db)
+        determined_set = set()
+        while group_depend_db:
+            # Find those groups that only depends on groups which have been
+            # determined, so far.
+            no_dependency_set = determined(group_depend_db, determined_set)
+            # According to 00-README.txt, there must be always at least one
+            # group that does not depend on others.
+            assert no_dependency_set
 
-            group_set.difference_update(no_dep_group_set)
-            for group in no_dep_group_set:
+            for group in no_dependency_set:
                 yield group
-            
-            step_n += 1
-            assert step_n <= L  # Assert to detect loop forever.
+                del group_depend_db[group]
+            # The theory forbids an indefinite loop. An erroneous behavior is
+            # caught: (1) through the assert that requires that the 
+            #             'no_dependency_set' cannot be empty. 
+            #         (2) through the deletion of each group from 
+            #             'group_depend_db'. 
+            # Thus, the size of 'group_depend_db' decreases always, or an error
+            # is thrown that a non-existing group is tried to be deleted.
 
     def dead_lock_groups_find(self, UnresolvedMouths):
         """Find dead-lock groups. According to 00-README.txt, a dead-lock
-        group is a group where every state depends on the other. There, it 
-        has been proven, that a state can only belong to one group.
+        group is a group where every state depends on the other. It has been 
+        proven in 00-README.txt, that a state can only belong to one group.
 
-        RETURNS: Sets of states -- each set is a dead-lock group.
+        RETURNS: Dictionary
+        
+           map: group --> groups on which it depends
+           
         """
+        def has_dependence(state_depend_db, Ga, Gb):
+            """RETURNS: True  -- if a state in 'Ga' depends on a state in 'Gb'.
+                        False -- if not.
+            """
+            for si in Ga:
+                if not state_depend_db[si].isdisjoint(Gb): return True
+            return False
 
+        predecessor_db = self.sm.get_predecessor_db()
+        
         # map: state index --> indices of states on which it depends.
-        depend_db = dict( 
-            (umsi, set(si for si in self.predecessor_db[umsi]
+        state_depend_db = dict( 
+            (umsi, set(si for si in predecessor_db[umsi]
                           if si in UnresolvedMouths))
             for umsi in UnresolvedMouths
         )
-
+        
         # A state can only belong to one group, that is as soon as it treated
         # it does not have to be treated again.
         group_set = set()
         done_set  = set()
-        for si, depend_si in depend_db.iteritems():
-            if si in done_set: continue
+        for si_a, depend_si_a_list in state_depend_db.iteritems():
+            if si_a in done_set: continue
             group = set(
-                si_b for si_b in depend_si
-                     if si in depend_db[si_b]: group.add(si_b)
+                si_b for si_b in depend_si_a_list
+                     if si in state_depend_db[si_b]
             )
             group_set.add(group)
             done_set.update(group)
 
-        return group_set
+        depend_db = {} # map: group --> groups on which it depends
+        for ga in group_set:
+            deps = set(gb for gb in group_set
+                          if ga != gb and has_dependence(state_depend_db, ga, gb))
+            depend_db[ga] = deps
+
+        return depend_db
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -280,11 +302,12 @@ class Examiner:
         if info is not None: return info
         else:                return self.mouth_db[StateIndex]
 
-    def add_recipe(self, StateIndex, TheRecipe):
+    def set_recipe(self, StateIndex, TheRecipe):
         """Assign a recipe to a state. As soon as this happens, the state is
         considered 'determined'.
         """
-        self.get_state_info(StateInfo).recipe = TheRecipe
+        assert self.get_stateinfo(StateIndex).recipe is None
+        self.get_state_info(StateIndex).recipe = TheRecipe
         # Since the .recipe is no longer 'None', the state is 'determined'.
 
     def get_recipe(self, StateIndex):
@@ -296,7 +319,7 @@ class Examiner:
 
         RETURNS: Recipe for given state index.
         """
-        return self.get_state_info(StateInfo).recipe
+        return self.get_state_info(StateIndex).recipe
 
     def _accumulate(self, Springs):
         """Recursively walk along linear states. The termination criteria is 
@@ -319,7 +342,7 @@ class Examiner:
         for si in Springs:
             # spring == determined state => 'get_recipe()' MUST work.
             recipe = self.get_recipe(si)
-            walker.add_recipe(si, recipe)
+            walker.set_recipe(si, recipe)
             walker.do((si, recipe))
 
         return walker.determined_mouths
@@ -333,7 +356,7 @@ class Examiner:
         """
         for si in DeterminedMouthSet:
             recipe = self.recipe_type.from_interference(self.mouth_db[si])
-            self.add_recipe(si, recipe)
+            self.set_recipe(si, recipe)
 
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
@@ -365,7 +388,7 @@ class LinearStateWalker(TreeWalker):
         state  = self.state_db[StateIndex]
         recipe = self.recipe_type.from_accumulation(PrevRecipe, 
                                                     state.single_entry)
-        examiner.add_recipe(StateIndex, recipe)
+        examiner.set_recipe(StateIndex, recipe)
 
         # Termination Criteria:
         # (1) State  = Terminal: no transitions, do further recursion. 

@@ -1,3 +1,5 @@
+Output Core Generator
+------------------------------------------------------
 python *.py
 --not generator_test.py 
 --not test-priority.py 
@@ -7,3 +9,4 @@ python *.py
 --not error.py
 --not __init__.py
 --not debug.py
+------------------------------------------------------
