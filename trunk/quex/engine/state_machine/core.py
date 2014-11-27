@@ -403,6 +403,18 @@ class StateMachine(object):
         """RETURNS:
         
             map:   state index ---> set of states that lie on the path to it.
+
+        PROOF: 
+            
+        (1) Whenever a transition from B to A is entered, the predecessor set
+        of A receives all known predecessors of B and B itself as predecessor.
+
+        (2) Every predecessor set containing A is extended by the B and its 
+        predecessors. Thus, ALL states containing A in their known predecessors
+        receive the newly known predecessors of A.
+
+        (3) Since, at the end all predecessor relationships are treated, all 
+        known relationships are entered and all precessors are 'connected'.
         """
         def update(predecessor_db, StateIndex, PredecessorSet):
             """Enter into the 'predecessor_db' that all states in 'PredecessorSet'
@@ -420,6 +432,7 @@ class StateMachine(object):
             target_predecessor_set.add(si)
             for target_si in state.target_map.get_map().iterkeys():
                 update(predecessor_db, target_si, target_predecessor_set)
+
         return predecessor_db
 
     def get_number_sequence(self):

@@ -11,7 +11,7 @@ class Recipe4Test(Recipe):
     See 00-README.txt the according DEFINITION.
     """
     SCR = (E_R.ColumnCount, E_R.LineCount) # Just as an example ...
-    #                                      # They might not be treated 
+    #                                      # They ARE NOT treated here
     #                                      # according their meaning.
 
     @staticmethod
