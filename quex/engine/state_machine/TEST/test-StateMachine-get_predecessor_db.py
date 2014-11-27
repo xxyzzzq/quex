@@ -17,7 +17,7 @@ from itertools import permutations
 
 if "--hwut-info" in sys.argv:
     print "StateMachine: get_predecessor_db;"
-    print "CHOICES: linear, butterfly;"
+    print "CHOICES: linear, butterfly, long_loop, nested_loop, mini_loop, fork, fork2, fork3, fork4;"
     sys.exit(0)
 
 class MyStates(dict):
@@ -42,21 +42,24 @@ class MyStates(dict):
             self.iteritems_call_count_n += 1
             yield self.__list[i]
 
-def get_linear_state_machine(StateN):
+def line(sm, *StateIndexSequence):
+    prev_si = long(StateIndexSequence[0])
+    for si in StateIndexSequence[1:]:
+        si = long(si)
+        sm.add_transition(prev_si, 66, si)
+        prev_si = si
+    return sm, len(StateIndexSequence)
+
+def get_linear(sm):
     """Build a linear state machine, so that the predecessor states
     are simply all states with lower indices.
 
                   (0)--->(1)---> .... (StateN-1)
     """
-    sm = StateMachine(InitStateIndex=0L)
-    prev_si = 0L
-    for si in xrange(1, StateN):
-        si = long(si)
-        sm.add_transition(prev_si, 66, si)
-        prev_si = si
-    return sm, StateN
+    line(sm, 0, 1, 2, 3, 4, 5, 6)
+    return sm, 7
 
-def get_butterfly():
+def get_butterfly(sm):
     """           
                           .-<--(4)--<---.
                          /              |
@@ -64,19 +67,12 @@ def get_butterfly():
                          \              |
                           '-<--(5)--<---'
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(2L, 66, 3L)
-    sm.add_transition(3L, 66, 4L)
-    sm.add_transition(3L, 66, 5L)
-    sm.add_transition(3L, 66, 6L)
-    sm.add_transition(4L, 66, 1L)
-    sm.add_transition(5L, 66, 1L)
-    sm.add_transition(6L, 66, 7L)
+    line(sm, 0, 1, 2, 3, 6, 7)
+    line(sm, 3, 4, 1)
+    line(sm, 3, 5, 1)
     return sm, 8
 
-def get_fork():
+def get_fork(sm):
     """           
                           .->--(2)-->---.
                          /              |
@@ -84,7 +80,6 @@ def get_fork():
                          \              |
                           '->--(4)-->---'
     """
-    sm = StateMachine(InitStateIndex=0L)
     sm.add_transition(0L, 66, 1L)
     sm.add_transition(1L, 66, 2L)
     sm.add_transition(1L, 66, 3L)
@@ -95,7 +90,7 @@ def get_fork():
     sm.add_transition(5L, 66, 6L)
     return sm, 7
 
-def get_fork2():
+def get_fork2(sm):
     """           
                           .->--(1)-->---.
                          /              |
@@ -103,17 +98,12 @@ def get_fork2():
                          \                      |
                           '->--(3)-->-----------'
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(0L, 66, 2L)
-    sm.add_transition(0L, 66, 3L)
-    sm.add_transition(1L, 66, 4L)
-    sm.add_transition(2L, 66, 4L)
-    sm.add_transition(3L, 66, 4L)
-    sm.add_transition(4L, 66, 5L)
+    line(sm, 0, 2, 4, 5)
+    line(sm, 0, 3, 5)
+    line(sm, 0, 1, 4)
     return sm, 6
 
-def get_fork3():
+def get_fork3(sm):
     """           
                           .->--(2)-->--(5)
                          /              
@@ -121,17 +111,12 @@ def get_fork3():
                          \              
                           '->--(4)-->--(7)
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(1L, 66, 3L)
-    sm.add_transition(1L, 66, 4L)
-    sm.add_transition(2L, 66, 5L)
-    sm.add_transition(3L, 66, 6L)
-    sm.add_transition(4L, 66, 7L)
+    line(sm, 0, 1, 2, 5)
+    line(sm, 1, 3, 6)
+    line(sm, 1, 4, 7)
     return sm, 8
 
-def get_long_loop():
+def get_long_loop(sm):
     """Build a linear state machine, so that the predecessor states
     are simply all states with lower indices.
 
@@ -141,18 +126,12 @@ def get_long_loop():
                  |               |
                  '--<---(4)-----(3)
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(0L, 66, 5L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(2L, 66, 3L)
-    sm.add_transition(2L, 66, 6L)
-    sm.add_transition(3L, 66, 4L)
-    sm.add_transition(4L, 66, 0L)
-    sm.add_transition(5L, 66, 6L)
+    line(sm, 0, 1, 2, 6)
+    line(sm, 2, 3, 4, 0)
+    line(sm, 0, 5, 6)
     return sm, 7
 
-def get_nested_loop():
+def get_nested_loop(sm):
     """           
                 .--<-------(5)---<------.
                 |                       |
@@ -160,37 +139,45 @@ def get_nested_loop():
                         |       |   
                         '---<---'
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(2L, 66, 3L)
-    sm.add_transition(2L, 66, 1L)
-    sm.add_transition(3L, 66, 4L)
-    sm.add_transition(3L, 66, 5L)
-    sm.add_transition(5L, 66, 0L)
+    line(sm, 0, 1, 2, 3, 4)
+    line(sm, 3, 5, 1)
+    line(sm, 2, 1)
     return sm, 6
 
-def get_mini_loop():
+def get_mini_loop(sm):
     """           
                (0)---->(1)---->(2)---->(3)
                         |       |   
                         '---<---'
     """
-    sm = StateMachine(InitStateIndex=0L)
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(2L, 66, 1L)
-    sm.add_transition(2L, 66, 3L)
+    line(sm, 0, 1, 2, 3)
+    line(sm, 2, 1)
     return sm, 4
 
-if   "linear"      in sys.argv: sm, state_n = get_linear_state_machine(7)
-elif "butterfly"   in sys.argv: sm, state_n = get_butterfly()
-elif "fork"        in sys.argv: sm, state_n = get_fork()
-elif "fork2"       in sys.argv: sm, state_n = get_fork2()
-elif "long_loop"   in sys.argv: sm, state_n = get_long_loop()
-elif "nested_loop" in sys.argv: sm, state_n = get_nested_loop()
-elif "mini_loop"   in sys.argv: sm, state_n = get_mini_loop()
-else:                           sm, state_n = get_fork3()
+def get_fork4(sm):
+    """           
+                  .->--(1)-->--(2)-->--.
+                 /                      \
+               (0)---->(3)---->(4)-->---(7)
+                 \                      /
+                  '->--(5)-->--(6)-->--'
+    """
+    line(sm, 0, 1, 2, 7)
+    line(sm, 0, 3, 4, 7)
+    line(sm, 0, 5, 6, 7)
+    return sm, 8
+
+sm = StateMachine(InitStateIndex=0L)
+
+if   "linear"      in sys.argv: sm, state_n = get_linear(sm)
+elif "butterfly"   in sys.argv: sm, state_n = get_butterfly(sm)
+elif "long_loop"   in sys.argv: sm, state_n = get_long_loop(sm)
+elif "nested_loop" in sys.argv: sm, state_n = get_nested_loop(sm)
+elif "mini_loop"   in sys.argv: sm, state_n = get_mini_loop(sm)
+elif "fork"        in sys.argv: sm, state_n = get_fork(sm)
+elif "fork2"       in sys.argv: sm, state_n = get_fork2(sm)
+elif "fork3"       in sys.argv: sm, state_n = get_fork3(sm)
+else:                           sm, state_n = get_fork4(sm)
 
 base = range(state_n)
 

@@ -1,7 +1,7 @@
 from   quex.engine.analyzer.examiner.recipe_base import Recipe
 from   quex.engine.misc.tree_walker              import TreeWalker
 from   quex.engine.misc.tools                    import all_true, typed,\
-    flatten_list_of_lists
+                                                        flatten_list_of_lists
 
 import types
 
