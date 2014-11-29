@@ -28,8 +28,8 @@ OPTION_DB = {
 
 def run(cl, Argv):
 
-    if   Setup.query_version_f: print_version()
-    elif Setup.query_help_f:    print_help()
+    if   Setup.query_version_f: print_version(); return
+    elif Setup.query_help_f:    print_help(); return
 
     # Regular Expressions extract the BufferLimitCode and the PathTerminatorCode
     # from the sets. So let us define them outside the normal range.

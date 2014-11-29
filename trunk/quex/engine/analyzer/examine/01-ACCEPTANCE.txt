@@ -33,6 +33,18 @@ global SCR.
   * SeStoreInputPosition
 
     + writes: (E_R.PositionRegister, i)
+
+(3) The Recipe:
+
+The recipe tells what pattern matched the last and where to place the input
+pointer in case of acceptance. If acceptances depend on pre-contexts, then it
+is not possible to tell beforehand whether an acceptance is valid or not.  This
+results in a sequence of acceptances checks. If only one state is involved,
+then the sequence is sorted by the acceptance id, i.e. the pattern's
+priority. If more than one state is involved, later patterns always
+have higher priority, because they relate to longer matches.
+
+During interference, 
     
 (3) Concatenation of SCR Operations
 

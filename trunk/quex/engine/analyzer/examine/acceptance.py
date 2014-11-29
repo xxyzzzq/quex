@@ -1,3 +1,4 @@
+from quex.engine.analyzer.examine.recipe_base import Recipe
 
 class RecipeAcceptance(Recipe):
     """Base class for SCR recipes. The general recipe depends on:
@@ -9,56 +10,73 @@ class RecipeAcceptance(Recipe):
     See 00-README.txt the according DEFINITION.
     """
     SCR = (E_R.InputP, E_R.Acceptance, E_R.PositionRegister)
-
-    @staticmethod
-    def get_scr_by_state_index(SM):
-        """Determines terminals in the state machine which absolutely require
-        some information about a set of registers (SCR) for the investigated
-        behavior. The set is not concerned of determination happening during
-        analysis or at run-time. 
-
-        Only 'terminals' need to be specified, because the SCR(i) for each 
-        state 'i' is determined by BACK-PROPAGATION of needs.
-
-        RETURNS: defaultdict(set): state index --> set of registers
-
-        The 'registers' are best determined in form of 'Enum' values. The 
-        return type must be 'defaultdict(set)' so that it can be easily 
-        extended by further processing.
-        """
-        return ((state_index, RecipeAcceptance.SCR) for state_index in SM)
-
-    @staticmethod
-    def get_initial_springs(SM):
-        """The term 'spring' has been defined in 00-README.txt as a state where
-        the walk along linear states may begin. An initial spring is a state 
-        where the entry operations determine all registers of the SCR while making
-        all previous history redundant.
-
-        Any action that has storing input positions is potentially influencing
-        history. So, even a conditionless acceptance does not 'cut off' history.
-        The only state that does is the initial state.
-
-        RETURNS: State inidices of initial springs.
-        """
-        return [ SM.init_state_index ]
+    def __init__(self):
+        self.accept_sequence   = []
+        self.storage_offset_db = {}
 
     @staticmethod
     def from_accumulation(Recipe, SingleEntry):
-        """RETURNS: An accumulated action that expresses the concatenation of
-                    the given Recipe, with the operation at entry of LinearState.
-
-        The resulting accumulated action determines the setting of SCR(i) after
-        the linear state has been entered.
+        """RETURNS: Recipe = concatination of 'Recipe' + relevant operations of
+                             'SingleEntry'.
         """
-        return RecipeAcceptance(self.get_SCR_operation(SingleEntry))
+        accept_sequence = []
+        # Longest match --> later acceptances have precedence. The current 
+        # acceptances are the once which came last, at this point.
+        for cmd in sorted(SingleEntry.get_iterable(SeAccept), 
+                          key=lambda x: x.acceptance_id()):
+            accept_sequence.append
+            if not cmd.pre_context_f(): break
+        else:
+            # No unconditional acceptance occurred, the previous acceptances
+            # remain important.
+            accept_sequence.extend(Recipe.accept_sequence)
+
+        # Storage into a register overwrites previous storages
+        # Previous storages receive '.offset - 1'
+        storage_offset_db = dict( 
+            (register_id, position_offset - 1)
+            for register_id, position_offset in Recipe.storage_offset_db.iteritems()
+        )
+        for cmd in SingleEntry.get_iterable(SeStoreInputPosition): 
+            storage_offset_db[cmd.register_id()] = 0
+
+        return RecipeAcceptance(accept_sequence, storage_offset_db)
 
     @staticmethod
-    def from_interference(RecipeIterable, MouthState):
+    def from_interference(RecipeIterable):
         """RETURNS: An accumulated action that expresses the interference of 
                     recipes actions at different entries into a MouthState.
         """
-        assert False
+        # If a single acceptance differs, then the acceptance need to be stored
+        # upon entry.
+        prototype = None
+        for recipe in RecipeIterable:
+            if   prototype is None:                   prototype = recipe.accept_sequence
+            elif recipe.accept_sequence == prototype: continue
+            restore_acceptance_f = True
+            break
+
+        # If a single offset differs, then it needs to be stored away.
+        register_iterable = flatten_list_of_lists(
+            recipe.storage_offset_db.keys()
+            for recipe in RecipeIterable
+        )
+        for register_id in register_id_iterable:
+            prototype = None
+            for recipe in RecipeIterable:
+                offset = recipe.storage_offset_db.get(register_id)
+                if   prototype is None:   prototype = offset
+                elif offset == prototype: continue
+                restore_from_register_set.add(register_id)
+
+        entry_db = self.determine_interfered_entry_db(RecipeIterable, 
+                                                      restore_from_register_set,
+                                                      restore_acceptance_f)
+
+        return AcceptanceRecipe(restore_acceptance_f, restore_from_register_set)
+
+
+
 
     @staticmethod
     def from_interference_in_dead_lock_group(DeadLockGroup):
