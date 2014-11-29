@@ -27,10 +27,37 @@ class Recipe:
         -- Constants which can be pre-determined.
         -- Register contents which are developed at run-time.
 
+    A derived class MUST implement:
+
+       .__init__(): taking a list of SCR relevant operations.
+
+       .from_accumulation(): Concatinating a recipe with new SCR relevant
+              operations in a linear state.
+
+       .from_interference(): Building a recipe from the interference of 
+              recipes in a mouth state.
+
+       .from_interference_in_dead_lock_group(): Building a recipe for
+              a dead-lock state group.
+
+    A derived class CAN implement:
+
+       .get_SCR_operations(): extracts those operations out of a state
+              entry which are relevant to the SCR.
+
+       .from_spring(): Constructs a recipe from a spring states.
+
+       .get_SCR_by_state_index(): generator that provides an iterable
+              over pairs of (state index, SCR). That is usefull, if the
+              SCR differs from state to state.
+
+       .get_initial_springs(): determines the set of initial springs. By
+              default, the sole initial spring is simply the init state.
+
     See 00-README.txt the according DEFINITION.
     """
     @classmethod
-    def get_SCR_operation(cls, TheState):
+    def get_SCR_operations(cls, TheState):
         """For a given state, it extracts the operations upon entry which 
         modify registers of the SCR. 
 
@@ -43,25 +70,22 @@ class Recipe:
         """RETURNS: A recipe that determines the setting of the SCR(i) after 
         the SpringState has been entered.
         """
-        return cls(self.get_SCR_operation(SpringState.single_entry))
+        return cls(self.get_SCR_operations(SpringState.single_entry))
 
-    @staticmethod
-    def get_scr_by_state_index(SM):
+    @classmethod
+    def get_scr_by_state_index(cls, SM):
         """Determines terminals in the state machine which absolutely require
         some information about a set of registers (SCR) for the investigated
         behavior. The set is not concerned of determination happening during
         analysis or at run-time. 
 
-        Only 'terminals' need to be specified, because the SCR(i) for each 
-        state 'i' is determined by BACK-PROPAGATION of needs.
+        This is the default implementation, which simply returns the class'
+        SCR for all states.
 
-        RETURNS: defaultdict(set): state index --> set of registers
-
-        The 'registers' are best determined in form of 'Enum' values. The 
-        return type must be 'defaultdict(set)' so that it can be easily 
-        extended by further processing.
+        YIELDS: (state index, SCR)
         """
-        assert False
+        for si in SM.states:
+            yield si, cls.SCR
 
     @staticmethod
     def get_initial_springs(SM):
@@ -70,19 +94,22 @@ class Recipe:
         where the entry operations determine all registers of the SCR while making
         all previous history redundant.
 
+        This is the default implementation, which simply returns the init state
+        of the state machine--a safe solution.
+
         RETURNS: State inidices of initial springs.
         """
-        assert False
+        return SM.init_state_index
 
     @staticmethod
-    def from_accumulation(Recipe, Operation):
-        """RETURNS: An accumulated action that expresses the concatenation of
-                    the given Recipe, with the operation at entry of LinearState.
-
-        The resulting accumulated action determines the setting of SCR(i) after
-        the linear state has been entered.
+    def from_accumulation(Recipe, SingeEntry):
+        """RETURNS: Recipe 
+        
+        The Recipe expresses how to compute the SCR in a linear state where
+        the previous recipe is extended by the operations at state entry
+        (the 'single_entry' object).
         """
-        assert False
+        assert False # --> derived class
 
     @staticmethod
     def from_interference(RecipeIterable):
@@ -92,7 +119,7 @@ class Recipe:
         The resulting recipe is applied ONLY to the mouth state of concern--
         in contrast to what happens in 'from_interference_in_dead_lock_group()'.
         """
-        assert False
+        assert False # --> derived class
 
     @staticmethod
     def from_interference_in_dead_lock_group(DeadLockGroup):

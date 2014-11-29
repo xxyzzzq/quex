@@ -174,11 +174,15 @@ DEFINITION: Spring
     A state with a determined SCR is a spring.
     
 To start developing recipes, one must first determine the 'springs' in the
-state machine. Any spring 'h' with a linear state successor 'i' can be used
-to develop the simplest form of a recipe 'op(i)( SCR(h) )'. Along linear
-states, there is always only one distinct entry action. Thus recipes can be
-developed through an iterative process. Using the previous recipe, the current
-operation may be used to develop the recipe for the current state.
+state machine. In practical applications, it requires a very detailed and
+subtle investigation to determine spring states. A safe approach is to 
+consider only the initial state as an initial spring.
+
+Any spring 'h' with a linear state successor 'i' can be used to develop the
+simplest form of a recipe 'op(i)( SCR(h) )'. Along linear states, there is
+always only one distinct entry action. Thus recipes can be developed through an
+iterative process. Using the previous recipe, the current operation may be used
+to develop the recipe for the current state.
 
 DEFINITION: Accumulation
 
