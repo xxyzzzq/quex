@@ -54,7 +54,7 @@ class MouthStateInfo(StateInfo):
     __slots__ = ("entry_db")
     def __init__(self, FromStateIndexSet):
         StateInfo.__init__(self)
-        self.entry_db = dict((si, None) for si in FromStateIndexSet)
+        self.entry_db     = dict((si, None) for si in FromStateIndexSet)
 
 class Examiner:
     def __init__(self, SM, RecipeType):
@@ -354,6 +354,8 @@ class Examiner:
 
         MouthInfo.recipe:     = recipe of resolved mouth state.
         """
+        def core(EntryDb):
+            pass
         for si in DeterminedMouthSet:
             recipe = self.recipe_type.from_interference(self.mouth_db[si])
             self.set_recipe(si, recipe)
@@ -418,3 +420,22 @@ class LinearStateWalker(TreeWalker):
         if not todo: return None
         else:        return todo
 
+
+def interference(EntryDb):
+    """Performe an 'interference' for one given state as described in 
+    '00-README.txt'.
+
+    RETURNS: [0] OperationDb: 
+
+                    map:  from state index --> operations
+
+             [1] Recipe
+
+    This function determines what registers of the SCR must be computed and
+    stored in the state. For those, operations are performed depending on the 
+    'from-state'. Registers which are modified in a homogenous manner over all
+    incoming recipes do not require storage.
+
+    The resulting recipe describes the base recipe for further accumulation
+    along linear states.
+    """

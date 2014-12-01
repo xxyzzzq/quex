@@ -1,13 +1,11 @@
 from quex.engine.analyzer.examine.recipe_base import Recipe
 
 class RecipeAcceptance(Recipe):
-    """Base class for SCR recipes. The general recipe depends on:
+    """Recipe to describe operations on 'acceptance' and the according input
+    position specification. See details in '01-ACCEPTANCE.txt'.
 
-        -- The current state.
-        -- Constants which can be pre-determined.
-        -- Register contents which are developed at run-time.
+        
 
-    See 00-README.txt the according DEFINITION.
     """
     SCR = (E_R.InputP, E_R.Acceptance, E_R.PositionRegister)
     def __init__(self):
