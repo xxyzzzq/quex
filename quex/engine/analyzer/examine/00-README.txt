@@ -324,11 +324,31 @@ Note, that the register 'x(3)' is not part of the SCR ('x' is, however). Thus,
 the newly entered computations 'x(3):=x(0)+1' and 'x(3):=x(0)+3' are not
 operations 'op(i)' as defined earlier and are not subject to further
 considerations.  
-                 
+
 Interference cannot happen, if the set of entry recipes is incomplete. That is,
 if for one entry the recipe cannot be determined, then the interference of 
 the mouth state cannot be accomplished.
 
+
+     a)                           b)
+
+           r0                     
+          -----.                   ----[ op(r0) ]---.
+           r1   \                                    \     rA
+          -----( A )---- ?         ----[ op(r1) ]---( A )-----
+           r2   /                                    /
+          -----'                   ----[ op(r2) ]---'
+
+      Figure 5: Interference.
+     
+     
+Figure 5 shows the effect of interference. It starts the consideration on
+incoming recipes (Figure 5.a). If for a register of the SCR there are two
+recipes producing a different value, then any operation of incoming recipe
+with respect to this register must be executed. The computed value is stored
+as a reference. The recipe of the mouth state must refer to this stored
+reference.
+                 
 Once, a mouth state has a determined recipe, it can act as a spring for the
 walk along linear states.
 

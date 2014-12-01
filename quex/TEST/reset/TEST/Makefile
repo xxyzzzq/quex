@@ -40,8 +40,6 @@ lexer-x: lexer-x.cpp
 		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
 		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           
 
-hwut-begin: clean
-
 hwut-info:
 	@echo $(FILES)
 
