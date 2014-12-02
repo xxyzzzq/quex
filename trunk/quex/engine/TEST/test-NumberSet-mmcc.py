@@ -76,6 +76,8 @@ class NumberSetGenerator:
 
 generator = NumberSetGenerator()
 
+all = NumberSet.from_range(-sys.maxint, sys.maxint)
+
 # Generate 100 NumberSets
 number_set_list = []
 for i in range(100):
@@ -111,10 +113,10 @@ if "union" in sys.argv:
         return result
 
     def not_BO_not_A_intersection_not_B_BC(A, B):
-        x = A.inverse()
-        y = B.inverse()
+        x = A.get_complement(all)
+        y = B.get_complement(all)
         result = x.intersection(y)
-        return result.inverse()
+        return result.get_complement(all)
 
     test("union", A_union_B,           "unite_with", A_unite_with_B)
     test("unite_with", A_unite_with_B, "not ...", not_BO_not_A_intersection_not_B_BC)
@@ -129,10 +131,10 @@ elif "intersection" in sys.argv:
         return result
 
     def not_BO_not_A_union_not_B_BC(A, B):
-        x = A.inverse()
-        y = B.inverse()
+        x = A.get_complement(all)
+        y = B.get_complement(all)
         result = x.union(y)
-        return result.inverse()
+        return result.get_complement(all)
 
     test("intersection", A_intersection_B,     "intersect_with", A_intersect_with_B)
     test("intersect_with", A_intersect_with_B, "not ...",        not_BO_not_A_union_not_B_BC)
@@ -148,7 +150,7 @@ elif "difference" in sys.argv:
 
     def A_intersection_not_B(A, B):
         result = deepcopy(A)
-        result.intersect_with(B.inverse())
+        result.intersect_with(B.get_complement(all))
         return result
 
     test("difference", A_difference_B, "subtract",          A_subtract_B)

@@ -32,7 +32,7 @@ if "1" in sys.argv:
                     Interval(250,260), Interval(261,280)]))
 elif "2" in sys.argv:
     NSet = NumberSet(Interval(1, 0x10FFFE))
-    print NSet.inverse()
+    print NSet.get_complement(all)
 
 elif "serious" in sys.argv:
     def test(X):
