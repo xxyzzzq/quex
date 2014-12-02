@@ -30,6 +30,7 @@ token {
     CLASS;
     COLON;
     CONST;
+    COMMENT;
     CONTINUE;
     CORNER_BRACKET_C;
     CORNER_BRACKET_O;
@@ -37,6 +38,7 @@ token {
     CURLY_BRACKET_O;
     DIV;
     DO;
+    DOT;
     DOUBLE_COLON;
     ELSE;
     EQ;
