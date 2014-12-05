@@ -11,13 +11,13 @@ performance increase (due to avoided cache misses, for example). Operations are
 preferred to be postponed, because earlier states are passed more often than
 later states.
 
-The analysis works on a state machine composed of 'single-entry states'. That 
-is, in such a state machine is entered through one entry, independent from what
-state it is entered, or through which transition. The result of the analysis
-is a state machine composed of 'multi-entry states'. That is, the operations 
-applied upon entry into a state may be different dependent on from which state
-or through which transition the entry happens. Figure 1 shows a single-entry
-state and a multi-entry state.  
+The analysis requires as basis a state machine which is composed of
+'single-entry states'. That is, each state is entered through one entry,
+independent from where it is entered or through which transition. The analysis
+produces a state machine composed of 'multi-entry states'. That is, the
+operations applied upon entry into a state may be different dependent from
+which state or through which transition the entry happens. Figure 1 shows a
+single-entry state and a multi-entry state.
 
       a)
 
@@ -36,8 +36,13 @@ state and a multi-entry state.
           ...   ---[ operation 2 ]----'       
 
 
-      Figure 1: a) State of a simple state machine. b) State of a (non-simple) 
-                state machine.
+      Figure 1: Two approaches of state modelling: a) Single entry state. 
+                b) Multi-entry state. 
+                
+The goal is to derive a multi-entry state machine from a single entry state
+machine while minimizing the required number of operations along the state 
+transitions. To achieve this operations are combined which are predictibly
+executed in a concatenated manner.
 
 -------------------------------------------------------------------------------
 SITUATION:
@@ -572,7 +577,7 @@ independent groups, finally all dead-lock states end up being determined.
                          |                      |
                          '----------------------' 
 
-         Figure 5: Dead lock states and their entries.
+               Figure 5: Dead lock states and their entries.
 
 Figure 5 shows a dead-lock group where all entries into it are determined. The
 only influence from outside this group comes through 'R(1)', 'R(5)', and

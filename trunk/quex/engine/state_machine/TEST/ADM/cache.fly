@@ -141,19 +141,19 @@ hwut_info_time: 1415528368L;
 {
 file_name: test-StateMachine-get_predecessor_db.py;
 result_list: [
-  [ linear; OK; 0.336497; 831676962; ]
-  [ butterfly; OK; 3.175527; -1903424989; ]
-  [ long_loop; OK; 0.382121; -1132237465; ]
-  [ nested_loop; OK; 0.085265; 1510574886; ]
-  [ mini_loop; OK; 0.043181; -1072080967; ]
-  [ fork; OK; 0.357092; 375926482; ]
-  [ fork2; OK; 0.081122; 1247149166; ]
-  [ fork3; OK; 2.587045; 2069247824; ]
-  [ fork4; OK; 2.842334; 1103825239; ]
+  [ linear; OK; 0.335378; 831676962; ]
+  [ butterfly; OK; 3.171316; -1903424989; ]
+  [ long_loop; OK; 0.381798; -1132237465; ]
+  [ nested_loop; FAIL; 0.088394; -342497869; ]
+  [ mini_loop; OK; 0.043961; -1072080967; ]
+  [ fork; OK; 0.362113; 375926482; ]
+  [ fork2; OK; 0.081566; 1247149166; ]
+  [ fork3; OK; 2.585682; 2069247824; ]
+  [ fork4; OK; 2.815002; 1103825239; ]
 ]
 title: get_predecessor_db;
 title_group: StateMachine;
-hwut_info_time: 1417037290L;
+hwut_info_time: 1417776668L;
 }
 {
 file_name: test-setup_post_condition.py;
