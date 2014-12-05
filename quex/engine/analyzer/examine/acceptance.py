@@ -85,7 +85,7 @@ class RecipeAcceptance(Recipe):
     """
     __slots__ = ("accepter", "ip_offset_db")
 
-    SCR = (E_R.InputP, E_R.Acceptance, E_R.PositionRegister)
+    SCR = (E_R.AcceptanceRegister, E_R.PositionRegister)
 
     def __init__(self, Accepter=None, IpOffsetDb=None):
         self.accepter     = Accepter

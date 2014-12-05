@@ -1,61 +1,83 @@
+from   quex.engine.state_machine.core            import StateMachine
 from   quex.engine.analyzer.examine.recipe_base  import Recipe
 from   quex.engine.analyzer.examine.state_info   import LinearStateInfo, \
                                                         MouthStateInfo
 from   quex.engine.misc.tree_walker              import TreeWalker
 from   quex.engine.misc.tools                    import all_true, typed
 
-import types
 from   itertools import chain
 
+@typed(SM=StateMachine)
+def do(SM, RecipeType):
+    """Analyzes a given single-entry state machine and provides information
+    about its linear and its mouth states (definition see 00-README.txt).
+    The process is controlled by the 'RecipeType'. The type tells about the
+    concerned registers and how core elements of the algorithm are performed.
+    The RecipeType must be derived from 'recipe_base.Recipe' which ensures
+    that all requirement functions are implemented.
+    
+    By means of RecipeType different kinds of operations may be considered,
+    as they are, for example: acceptance behavior, line and column number 
+    counting, check-sum computation.
+    
+    RETURNS: [0] linear_db: state index --> LinearStateInfo
+             [1] mouth_db:  state index --> MouthStateInfo
+             
+    A LinearStateInfo and MouthInfoState provide both the '.recipe', which 
+    allows to construct the drop-out behavior of a state. Additionally, a 
+    MouthStateInfo the provides the member '.entry_db'. It tells what 
+    operations need to be performed upon entry dependent on the 'from-state'.
+    """
+    assert issubclass(RecipeType, Recipe)
+        
+    examiner = Examiner(SM, RecipeType)
+
+    # Categorize states:
+    #    .linear_db: 'linear states' being entered only from one state.
+    #    .mouth_db:  'mouth states' being entered from multiple states.
+    examiner.categorize()
+
+    # Categorize => StateInfo-s are in place.
+    examiner.determine_scr_by_state()
+    
+    # Determine states from where a walk along linear states can begin.
+    springs = examiner.determine_initial_springs()
+
+    # Resolve as many as possible states in the state machine, i.e. 
+    # associate the states with an recipe 'R(i)'.
+    unresolved_mouths = examiner.resolve(springs)
+
+    # Resolve the states which have been identified to be dead-locks. After
+    # each resolved dead-lock, resolve depending linear states.
+    for group in examiner.dead_lock_resolution_sequence(unresolved_mouths):
+        # group = set of state indices which belong to the group
+        examiner.resolve_dead_lock_group(group)
+
+    # At this point all states must have determined recipes, according to
+    # the theory in 00-README.txt.
+    assert all_true(chain(examiner.linear_db.itervalues(), 
+                          examiner.mouth_db.itervalues()), 
+                    lambda x: x.is_determined()) 
+    
+    return examiner.linear_db, examiner.mouth_db
+
 class Examiner:
+    """Maintainer of data and provider of operations for the linear state and
+    mouth state analysis. Its purpose is to support the sequential process 
+    implemented in the global '.do()' function.
+    """
     def __init__(self, SM, RecipeType):
-        assert issubclass(RecipeType, Recipe)
-        self.sm          = SM
-        self.from_db     = self.sm.get_from_db()
+        self._sm         = SM
         self.recipe_type = RecipeType
 
         self.linear_db   = {}  # map: state index --> LinearStateInfo
         self.mouth_db    = {}  # map: state index --> MouthStateInfo
 
-    def do(self):
-        """Associate all states in the state machine with an 'R(i)' and
-        determine what actions have to be implemented at what place.
-        """
-        # Categorize states:
-        #    .linear_db: 'linear states' being entered only from one state.
-        #    .mouth_db:  'mouth states' being entered from multiple states.
-        for state_index in self.sm.states.iterkeys():
-            self.categorize(state_index)
+    def categorize(self):
+        """Separates the states of state machine into two categories:
 
-        # Categorize => StateInfo-s are in place.
-        # Now, determine SCRs per state.
-        for si, scr in self.recipe_type.get_scr_by_state_index(self.sm):
-            self.get_state_info(si).scr = scr
-
-        # Determine states from where a walk along linear states can begin.
-        springs = self.determine_initial_springs()
-
-        # Resolve as many as possible states in the state machine, i.e. 
-        # associate the states with an recipe 'R(i)'.
-        unresolved_mouths = self.resolve(springs)
-
-        # Resolve the states which have been identified to be dead-locks. After
-        # each resolved dead-lock, resolve depending linear states.
-        for group in self.dead_lock_resolution_sequence(unresolved_mouths):
-            # group = set of state indices which belong to the group
-            self.resolve_dead_lock_group(group)
-
-        # At this point all states must have determined recipes, according to
-        # the theory in 00-README.txt.
-        assert all_true(chain(self.linear_db.itervalues(), self.mouth_db.itervalues()), 
-                        lambda x: x.is_determined()) 
-
-    def categorize(self, StateIndex):
-        """Separates the states of state machine into two categories 
-        represented by '.linear_db' and '.mouth_db':
-
-              linear states: only ONE entry from another state.
-              mouth states:  entries from MORE THAN ONE state.
+           linear states: only ONE entry from another state (-> .linear_db).
+           mouth states:  entries from MORE THAN ONE state (-> .mouth_db).
 
         The init state is special, in a sense that it is entered from outside
         without explicit mentioning. Therefore, it is only a linear state
@@ -63,19 +85,32 @@ class Examiner:
 
         All states in '.linear_db' and '.mouth_db' have a 'None' recipe. That
         indicates that they are NOT determined, yet.
+        
+        PREPARES: '.linear_db' and '.mouth_db'.
         """
+        from_db = self._sm.get_from_db()
 
-        # The init state has an unmentioned entry from 'START'. Thus, if it 
-        # is entered by an explicit entry, then it already has two entries 
-        # and therefore must become a 'mouth' state.
-        if StateIndex == self.sm.init_state_index: limit = 0
-        else:                                      limit = 1
-            
-        from_state_set = self.from_db[StateIndex]
-        if len(from_state_set) <= limit: 
-            self.linear_db[StateIndex] = LinearStateInfo()
-        else:                                
-            self.mouth_db[StateIndex]  = MouthStateInfo(from_state_set)
+        for si in self._sm.states.iterkeys():
+            # The init state has an unmentioned entry from 'START'. Thus, if it 
+            # is entered by an explicit entry, then it already has two entries 
+            # and therefore must become a 'mouth' state.
+            if si == self._sm.init_state_index: limit = 1
+            else:                               limit = 2
+                
+            from_state_set = from_db[si]
+            n              = len(from_state_set) 
+
+            if n < limit: self.linear_db[si] = LinearStateInfo()
+            else:         self.mouth_db[si]  = MouthStateInfo(from_state_set)
+
+    def determine_scr_by_state(self):
+        """Determine for each state the set of concerned registers (sCR) and
+        store it in the StateInfo object.
+        
+        REQUIRES: previous call to '.categorize()'
+        """
+        for si, scr in self.recipe_type.get_scr_by_state_index(self._sm):
+            self.get_state_info(si).scr = scr
 
     def determine_initial_springs(self):
         """Finds the states in the state machine that comply to the condition
@@ -84,9 +119,9 @@ class Examiner:
 
         RETURNS: list of state indices of initial spring states.
         """
-        springs = self.recipe_type.determine_initial_springs(self.sm)
+        springs = self.recipe_type.determine_initial_springs(self._sm)
         for state_index in springs:
-            recipe = self.recipe_type.from_spring(self.sm.states[state_index])
+            recipe = self.recipe_type.from_spring(self._sm.states[state_index])
             self.set_recipe(state_index, recipe)
 
     def resolve(self, Springs):
@@ -202,7 +237,7 @@ class Examiner:
                 if not state_depend_db[si].isdisjoint(Gb): return True
             return False
 
-        predecessor_db = self.sm.get_predecessor_db()
+        predecessor_db = self._sm.get_predecessor_db()
         
         # map: state index --> indices of states on which it depends.
         state_depend_db = dict( 
@@ -331,7 +366,7 @@ class LinearStateWalker(TreeWalker):
                 continue # (3) terminal 
             else:
                 # Linear state ahead => accumulate
-                target = self.examiner.sm.states[target_index]
+                target = self.examiner._sm.states[target_index]
                 self.examiner.recipe_type.accumulate(target_info, CurrRecipe, 
                                                      target.single_entry)
                 todo.append((target, target_info.recipe))

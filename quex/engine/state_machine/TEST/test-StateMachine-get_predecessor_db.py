@@ -12,8 +12,9 @@ import os
 from copy import copy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.engine.state_machine.core import *
-from itertools import permutations
+from quex.engine.state_machine.core                             import *
+from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
+from itertools                                                  import permutations
 
 if "--hwut-info" in sys.argv:
     print "StateMachine: get_predecessor_db;"
@@ -41,131 +42,6 @@ class MyStates(dict):
         for i in self.__sequence:
             self.iteritems_call_count_n += 1
             yield self.__list[i]
-
-def line(sm, *StateIndexSequence):
-    prev_si = long(StateIndexSequence[0])
-    for si in StateIndexSequence[1:]:
-        si = long(si)
-        sm.add_transition(prev_si, 66, si)
-        prev_si = si
-    return sm, len(StateIndexSequence)
-
-def get_linear(sm):
-    """Build a linear state machine, so that the predecessor states
-    are simply all states with lower indices.
-
-                  (0)--->(1)---> .... (StateN-1)
-    """
-    line(sm, 0, 1, 2, 3, 4, 5, 6)
-    return sm, 7
-
-def get_butterfly(sm):
-    """           
-                          .-<--(4)--<---.
-                         /              |
-               (0)---->(1)---->(2)---->(3)---->(6)---->(7)
-                         \              |
-                          '-<--(5)--<---'
-    """
-    line(sm, 0, 1, 2, 3, 6, 7)
-    line(sm, 3, 4, 1)
-    line(sm, 3, 5, 1)
-    return sm, 8
-
-def get_fork(sm):
-    """           
-                          .->--(2)-->---.
-                         /              |
-               (0)---->(1)---->(3)---->(5)---->(6)
-                         \              |
-                          '->--(4)-->---'
-    """
-    sm.add_transition(0L, 66, 1L)
-    sm.add_transition(1L, 66, 2L)
-    sm.add_transition(1L, 66, 3L)
-    sm.add_transition(1L, 66, 4L)
-    sm.add_transition(2L, 66, 5L)
-    sm.add_transition(3L, 66, 5L)
-    sm.add_transition(4L, 66, 5L)
-    sm.add_transition(5L, 66, 6L)
-    return sm, 7
-
-def get_fork2(sm):
-    """           
-                          .->--(1)-->---.
-                         /              |
-                       (0)---->(2)---->(4)---->(5)
-                         \                      |
-                          '->--(3)-->-----------'
-    """
-    line(sm, 0, 2, 4, 5)
-    line(sm, 0, 3, 5)
-    line(sm, 0, 1, 4)
-    return sm, 6
-
-def get_fork3(sm):
-    """           
-                          .->--(2)-->--(5)
-                         /              
-               (0)---->(1)---->(3)---->(6)
-                         \              
-                          '->--(4)-->--(7)
-    """
-    line(sm, 0, 1, 2, 5)
-    line(sm, 1, 3, 6)
-    line(sm, 1, 4, 7)
-    return sm, 8
-
-def get_long_loop(sm):
-    """Build a linear state machine, so that the predecessor states
-    are simply all states with lower indices.
-
-                 .--------->(5)---->-----.
-                 |                       |
-                (0)---->(1)---->(2)---->(6)
-                 |               |
-                 '--<---(4)-----(3)
-    """
-    line(sm, 0, 1, 2, 6)
-    line(sm, 2, 3, 4, 0)
-    line(sm, 0, 5, 6)
-    return sm, 7
-
-def get_nested_loop(sm):
-    """           
-                .--<-------(5)---<------.
-                |                       |
-               (0)---->(1)---->(2)---->(3)---->(4)
-                        |       |   
-                        '---<---'
-    """
-    line(sm, 0, 1, 2, 3, 4)
-    line(sm, 3, 5, 1)
-    line(sm, 2, 1)
-    return sm, 6
-
-def get_mini_loop(sm):
-    """           
-               (0)---->(1)---->(2)---->(3)
-                        |       |   
-                        '---<---'
-    """
-    line(sm, 0, 1, 2, 3)
-    line(sm, 2, 1)
-    return sm, 4
-
-def get_fork4(sm):
-    """           
-                  .->--(1)-->--(2)-->--.
-                 /                      \
-               (0)---->(3)---->(4)-->---(7)
-                 \                      /
-                  '->--(5)-->--(6)-->--'
-    """
-    line(sm, 0, 1, 2, 7)
-    line(sm, 0, 3, 4, 7)
-    line(sm, 0, 5, 6, 7)
-    return sm, 8
 
 sm = StateMachine(InitStateIndex=0L)
 

@@ -6,5 +6,6 @@ State Machine Tests
 --not __init__.py 
 --not test_state_machines.py 
 --not debug.py
+--not helper_state_machine_shapes.py
 -------------------------------------------
 

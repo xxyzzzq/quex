@@ -85,7 +85,7 @@ class SingleEntry(object):
 
     def delete_dominated(self):
         """Simplification to make Hopcroft Minimization more efficient. The first unconditional
-        acceptance makes any lower priorized acceptances meaningless. 
+        acceptance makes any lower prioritized acceptances meaningless. 
 
         This function is to be seen in analogy with the function 'get_acceptance_detector'. 
         Except for the fact that it requires the 'end of core pattern' markers of post
@@ -127,7 +127,6 @@ class SingleEntry(object):
         tuples is used during the hopcroft minimization to distinguish between
         combinable states and those that are not.
         """
-
         # Before the track analysis, the acceptance in a state is simple
         # given by its precedence, i.e. its acceptance id. Thus, the sorted
         # sequence of acceptance ids identifies the acceptance behavior.
