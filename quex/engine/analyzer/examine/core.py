@@ -1,83 +1,34 @@
-from   quex.engine.analyzer.examiner.recipe_base import Recipe
+from   quex.engine.analyzer.examine.recipe_base  import Recipe
+from   quex.engine.analyzer.examine.state_info   import LinearStateInfo, \
+                                                        MouthStateInfo
 from   quex.engine.misc.tree_walker              import TreeWalker
-from   quex.engine.misc.tools                    import all_true, typed,\
-                                                        flatten_list_of_lists
+from   quex.engine.misc.tools                    import all_true, typed
 
 import types
-
-class StateInfo(object):
-    """Base class for state informations with respect to 'recipes' and the
-    set of concerned registers 'SCR'. This class is to be considered 'abstract'.
-
-                                 .------------.
-                                 |_StateInfo__|
-                                 |  .scr      |
-                                 |  .recipe   |
-                                 '------------'
-                                      |   |
-                            .---->----'   '----<----.
-                            |                       |
-                   .-----------------.      .----------------.
-                   |_LinearStateInfo_|      |_MouthStateInfo_|
-                   '-----------------'      | .entry_db      |
-                                            '----------------'       
-                
-    """
-    __slots__ = ("recipe", "scr")
-    def __init__(self):
-        self.scr    = None  # set():   relevant registers for state
-        self.recipe = None  # default: recipe/state is NOT determined.
-
-class LinearStateInfo(StateInfo):
-    """.recipe        = Accumulated action Recipe(i) that determines SCR(i) after 
-                        state has been entered.
-
-    The '.recipe' is determined from a spring state, or through accumulation of
-    linear states. The 'on_drop_out' handler can be determined as soon as 
-    '.recipe' is determined.
-    """
-    def __init__(self):
-        StateInfo.__init__(self)
-
-class MouthStateInfo(StateInfo):
-    """.recipe   = Recipe(i) that determines SCR(i) after state has been 
-                   entered.
-       .entry_db = map: from 'TransitionID' to accumulated action at entry 
-                        into mouth state.
-
-    The '.entry_db' is filled each time a walk along a sequence of linear
-    states reaches a mouth state. It is complete, as soon as all entries into
-    the state are present in the keys of '.entry_db'. Then, an interference
-    may derive the '.recipe' which determines the SCR(i) as soon as the state has
-    been entered.  
-    """
-    __slots__ = ("entry_db")
-    def __init__(self, FromStateIndexSet):
-        StateInfo.__init__(self)
-        self.entry_db     = dict((si, None) for si in FromStateIndexSet)
+from   itertools import chain
 
 class Examiner:
     def __init__(self, SM, RecipeType):
         assert issubclass(RecipeType, Recipe)
-        self.sm             = SM
-        self.from_db        = self.sm.get_from_db()
-        self.recipe_type    = RecipeType
+        self.sm          = SM
+        self.from_db     = self.sm.get_from_db()
+        self.recipe_type = RecipeType
 
-        self.linear_db = {}  # map: state index --> LinearStateInfo
-        self.mouth_db  = {}  # map: state index --> MouthStateInfo
+        self.linear_db   = {}  # map: state index --> LinearStateInfo
+        self.mouth_db    = {}  # map: state index --> MouthStateInfo
 
     def do(self):
         """Associate all states in the state machine with an 'R(i)' and
         determine what actions have to be implemented at what place.
         """
-
         # Categorize states:
         #    .linear_db: 'linear states' being entered only from one state.
-        #    .mouth_db: 'mouth states' being entered from multiple states.
+        #    .mouth_db:  'mouth states' being entered from multiple states.
         for state_index in self.sm.states.iterkeys():
             self.categorize(state_index)
 
-        # Once, the state infos are in place, determine SCRs per state.
+        # Categorize => StateInfo-s are in place.
+        # Now, determine SCRs per state.
         for si, scr in self.recipe_type.get_scr_by_state_index(self.sm):
             self.get_state_info(si).scr = scr
 
@@ -91,19 +42,20 @@ class Examiner:
         # Resolve the states which have been identified to be dead-locks. After
         # each resolved dead-lock, resolve depending linear states.
         for group in self.dead_lock_resolution_sequence(unresolved_mouths):
+            # group = set of state indices which belong to the group
             self.resolve_dead_lock_group(group)
 
         # At this point all states must have determined recipes, according to
         # the theory in 00-README.txt.
-        assert all_true(self.linear_db.itervalues(), lambda x: x.recipe is not None) 
-        assert all_true(self.mouth_db.itervalues(), lambda x: x.recipe is not None) 
+        assert all_true(chain(self.linear_db.itervalues(), self.mouth_db.itervalues()), 
+                        lambda x: x.is_determined()) 
 
     def categorize(self, StateIndex):
         """Separates the states of state machine into two categories 
         represented by '.linear_db' and '.mouth_db':
 
               linear states: only ONE entry from another state.
-              mouth states: entries from MORE THAN ONE state.
+              mouth states:  entries from MORE THAN ONE state.
 
         The init state is special, in a sense that it is entered from outside
         without explicit mentioning. Therefore, it is only a linear state
@@ -134,7 +86,7 @@ class Examiner:
         """
         springs = self.recipe_type.determine_initial_springs(self.sm)
         for state_index in springs:
-            recipe = self.recipe_type.from_spring(self.sm[state_index])
+            recipe = self.recipe_type.from_spring(self.sm.states[state_index])
             self.set_recipe(state_index, recipe)
 
     def resolve(self, Springs):
@@ -159,17 +111,18 @@ class Examiner:
         springs = Springs
         while springs:
             # Derive recipes along linear states starting from springs.
-            determined_mouths = self._accumulate(springs) 
+            mouths_ready_set = self._accumulate(springs) 
 
-            # Resolved mouth states -> new springs for '_accumulate()'
-            self._interfere(determined_mouths)
+            # Mouth states where all entry recipes are set
+            # => Apply 'interference' to determine their recipe.
+            self._interfere(mouths_ready_set)
 
             # The determined mouths become the new springs for the linear walk
-            springs = determined_mouths
+            springs = mouths_ready_set
 
         # Return the set of still undetermined mouth states.
-        return set(si for si, info in self.mouth_db.iteritems()
-                      if info.recipe is None)
+        return set(si for si, mouth in self.mouth_db.iteritems()
+                      if not mouth.is_determined())
 
     def resolve_dead_lock_group(self, Group):
         """After the process of '.resolve()', there might be remaining mouth
@@ -177,30 +130,14 @@ class Examiner:
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent states.
         """
-        # Collect all recipes at entry into mouth states which are determined.
-        entry_recipe_list = flatten_list_of_lists(
-            [recipe for recipe in self.mouth_db[si].entry_db.itervalues()
-                    if recipe is not None]
-            for si in Group
-        )
+        mouth_list = [ self.mouth_db[si] for si in Group ]
+            
         # Based on those entries an 'inherent recipe' can be determined.
-        recipe = self.recipe_type.from_interference_in_dead_lock_group(entry_recipe_list)
+        self.recipe_type.interfere_in_dead_lock_group(mouth_list)
 
         # All dead-lock mouth states propagate the same recipe.
-        # (While some entries still may remain open. They become determined
-        #  upon a call to '_accumulate()'.            
-        for si in Group:
-            self.add_entry(si, recipe)
-
-        # Determined mouths => Linear walk is possible
-        # => More linear states are determined.
-        # => More entry recipes in mouth states are found.
-        self._accumulate(Springs=Group) 
-
-        # Assume that all entries have become determined by now!
-        for si in Group:
-            assert all_true(self.mouth_db[si].entry_db.itervalues(),
-                            lambda recipe: recipe is not None)
+        # (While some entry recipes still may remain open)
+        return self._accumulate(Group)
 
     def dead_lock_resolution_sequence(self, UnresolvedMouths):
         """As has been proven in 00-README.txt, there is always a non-circular
@@ -334,18 +271,14 @@ class Examiner:
                 recipe = self._accumulate(recipe, State)
 
         """
-        walker = LinearStateWalker(self.recipe_type, 
-                                   self.sm.states, 
-                                   self.linear_db, 
-                                   self.mouth_db)
+        walker = LinearStateWalker(self)
 
         for si in Springs:
             # spring == determined state => 'get_recipe()' MUST work.
-            recipe = self.get_recipe(si)
-            walker.set_recipe(si, recipe)
-            walker.do((si, recipe))
+            walker.do((si, self.get_recipe(si)))
 
-        return walker.determined_mouths
+        return set(si for si in walker.mouths_touched_set
+                      if self.mouth_db[si].is_ready_for_interferences())
 
     def _interfere(self, DeterminedMouthSet):
         """Perform interference of mouth states. Find for each state index the
@@ -354,11 +287,11 @@ class Examiner:
 
         MouthInfo.recipe:     = recipe of resolved mouth state.
         """
-        def core(EntryDb):
-            pass
         for si in DeterminedMouthSet:
-            recipe = self.recipe_type.from_interference(self.mouth_db[si])
-            self.set_recipe(si, recipe)
+            # Interference: 
+            # --> entry_db: operations that MUST be done upon entry from a state.
+            # --> recipe:   for 'drop_out' and further accumulation.
+            self.recipe_type.interfere(self.mouth_db[si])
 
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
@@ -366,76 +299,44 @@ class LinearStateWalker(TreeWalker):
 
         -- Performs the accumulation according to the given 'RecipeType'. 
 
-        -- Every mouth state for wich all entry recipies are defined, is added
+        -- Every mouth state for which all entry recipes are defined, is added
            to the 'determined_mouths' set.
 
     The 'determined_mouths' will later determine their .recipe through 'interference'.
     """
-    @typed(RecipeType=types.ClassType)
-    def __init__(self, RecipeType, StateDb, MouthDb):
-        self.recipe_type = RecipeType
-        self.state_db    = StateDb
-        self.mouth_db    = MouthDb
-
-        self.determined_mouths = set()
-
+    @typed(TheExaminer=Examiner)
+    def __init__(self, TheExaminer):
+        self.examiner           = TheExaminer
+        self.mouths_touched_set = set()
         TreeWalker.__init__(self)
 
     def on_enter(self, Args):
-        StateIndex = Args[0]
-        PrevRecipe = Args[1]
-        # Accumulation: Concatenate recipe of previous state with operation
-        #               of current state.
-        # => recipe of current state.
-        state  = self.state_db[StateIndex]
-        recipe = self.recipe_type.from_accumulation(PrevRecipe, 
-                                                    state.single_entry)
-        examiner.set_recipe(StateIndex, recipe)
+        """Consider transitions of current state with determined recipe.
+        """
+        CurrState, CurrRecipe = Args
 
         # Termination Criteria:
         # (1) State  = Terminal: no transitions, do further recursion. 
         #                        (Nothing needs to be done to guarantee that)
-        # (2) Target = Mouth State                    => Do not enter!
-        # (3) Target = Linear State and is determined => Do not enter!
+        # (2) Target is determined  => No entry!
+        # (3) Target is Mouth State => No entry!
         todo = []
-        for target_index, transition_id in state.target_map().iteritems():
-            mouth_info = self.mouth_db.get(target_index)
-            if mouth_info is not None:
-                # (2) Mouth State => not in 'todo'.
-                target   = self.state_db[target_index]
-                e_recipe = self.recipe_type.from_accumulation(recipe, 
-                                                              target.single_entry)
-                mouth_info.entry_db.enter(transition_id, e_recipe)
-                if mouth_info.is_determined():
-                    self.determined_mouths.append(target_index)
-                continue # Do not dive into mouth states!
-
-            elif self.linear_db[target.index].recipe is not None:
-                # (3) Determined Linear State => not in 'todo'.
-                continue
-
+        for target_index in CurrState.target_map().iterable_target_state_indices():
+            target_info = self.examiner.get_state_info(target_index)
+            if target_info.is_determined():    
+                continue # (2) terminal 
+            elif target_info.mouth_f():        
+                target_info.entry_recipe_db[target_index] = CurrRecipe
+                self.mouths_touched_set.add(target_index)
+                continue # (3) terminal 
             else:
-                todo.append((target_index, recipe))
+                # Linear state ahead => accumulate
+                target = self.examiner.sm.states[target_index]
+                self.examiner.recipe_type.accumulate(target_info, CurrRecipe, 
+                                                     target.single_entry)
+                todo.append((target, target_info.recipe))
 
         if not todo: return None
         else:        return todo
 
 
-def interference(EntryDb):
-    """Performe an 'interference' for one given state as described in 
-    '00-README.txt'.
-
-    RETURNS: [0] OperationDb: 
-
-                    map:  from state index --> operations
-
-             [1] Recipe
-
-    This function determines what registers of the SCR must be computed and
-    stored in the state. For those, operations are performed depending on the 
-    'from-state'. Registers which are modified in a homogenous manner over all
-    incoming recipes do not require storage.
-
-    The resulting recipe describes the base recipe for further accumulation
-    along linear states.
-    """
