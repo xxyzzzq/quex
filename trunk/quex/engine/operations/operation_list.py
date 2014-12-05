@@ -522,7 +522,7 @@ class OpList(list):
         return result
 
     def cut(self, NoneOfThis):
-        """Delete all commands of SharedTail from this command list.
+        """Delete all commands of NoneOfThis from this command list.
         """
         return OpList.from_iterable(
                            cmd for cmd in self if cmd not in NoneOfThis)

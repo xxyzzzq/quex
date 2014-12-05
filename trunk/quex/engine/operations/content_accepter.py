@@ -64,6 +64,15 @@ class AccepterContent:
     def __init__(self):
         self.__list = []
 
+    @staticmethod
+    def from_iterable(PreContext_AcceptanceId_Iterable):
+        result = AccepterContent()
+        result.__list = [
+            AccepterContentElement(PreContextID, AcceptanceID)
+            for pre_context_id, acceptance_id in PreContext_AcceptanceId_Iterable
+        ]
+        return result
+
     def clone(self):
         result = AccepterContent()
         result.__list = [ deepcopy(x) for x in self.__list ]

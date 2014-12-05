@@ -144,7 +144,7 @@ function is called 'recipe' in the frame of these documents.
 
 DEFINITION: R(i) -- Recipe 
 
-   A recipe 'R(i)' for a state 'i' is a describes the process to determine 
+   A recipe 'R(i)' for a state 'i' describes the process to determine 
    SCR(i) when the state has been entered. It maps
 
                      ( s, SCR(h) ) ---> SCR(i)
@@ -155,6 +155,8 @@ DEFINITION: R(i) -- Recipe
    
    The essential idea of a recipe is that it can determine settings 
    of the SCR for a state without relying on operations along the path.
+   It also contains enough information for successor states to determine
+   their recipes.
 
 The simplest form of a recipe consists of an operation 'op(i)' together with
 its predecessor state 'h' providing the reference 'SCR(h)'. This simplest

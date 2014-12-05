@@ -97,9 +97,27 @@ class Recipe:
         This is the default implementation, which simply returns the init state
         of the state machine--a safe solution.
 
-        RETURNS: State inidices of initial springs.
+        RETURNS: State indices of initial springs.
         """
-        return SM.init_state_index
+        return [ SM.init_state_index ]
+    
+    @staticmethod
+    def assign_recipe(TheStateInfo, TheRecipe):
+        """Assigning a recipe to StateInfo objects. This function exists, so
+        that the derived functions
+        
+                 .accumulate(...)
+                 .interfere(...)
+                 .interfere_in_dead_lock_group(...)
+                 
+        can terminate homogeneously with the assignment of a recipe to a 
+        StateInfo object.
+        """
+        if type(TheStateInfo) == list:
+            for info in TheStateInfo:
+                info.recipe = TheRecipe
+        else:
+            TheStateInfo.recipe = TheRecipe
 
     @staticmethod
     def from_accumulation(Recipe, SingeEntry):
