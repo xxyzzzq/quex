@@ -120,9 +120,10 @@ class Examiner:
         RETURNS: list of state indices of initial spring states.
         """
         springs = self.recipe_type.determine_initial_springs(self._sm)
-        for state_index in springs:
-            recipe = self.recipe_type.from_spring(self._sm.states[state_index])
-            self.set_recipe(state_index, recipe)
+        for si in springs:
+            state  = self._sm.states[si]
+            recipe = self.recipe_type.from_spring(state.single_entry)
+            self.set_recipe(si, recipe)
 
     def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
