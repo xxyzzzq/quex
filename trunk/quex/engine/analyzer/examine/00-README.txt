@@ -2,49 +2,49 @@ Operation Reduction/Operation Postponing
 
 (C) Frank-Rene Schaefer
 -------------------------------------------------------------------------------
+
 ABSTRACT:
 
 This file describes the theoretical background for the process applied by Quex
 used to reduce the number of operations or to postpone operations. Any write
 operation that can be avoided during state transitions may bring a strong
-performance increase (due to avoided cache misses, for example). Operations are
-preferred to be postponed, because earlier states are passed more often than
-later states.
+performance increase (due to avoided cache misses, for example). 
 
-The analysis requires as basis a state machine which is composed of
-'single-entry states'. That is, each state is entered through one entry,
-independent from where it is entered or through which transition. The analysis
-produces a state machine composed of 'multi-entry states'. That is, the
-operations applied upon entry into a state may be different dependent from
-which state or through which transition the entry happens. Figure 1 shows a
-single-entry state and a multi-entry state.
+The analysis requires a state machine which is composed of 'single-entry
+states'. That is, upon entry into a state the same operations are executed
+independently from where it is entered or through which transition.  The
+analysis tries to exploit predictable sequence of operations along state
+transitions. This is done by compensating them through a single operation or by
+postponing them to a state as late as possible.  Operations are preferably
+postponed, because earlier states are passed more often than later states.
 
-      a)
+The optimized state machine will be described in terms of 'multi-entry states'.
+That is, the operations applied upon entry into a state may be different
+dependent from which state or through which transition the entry happens.
+Figure 1 shows a single-entry state and a multi-entry state.
 
-          ...   ---------.
-                          \                      .-----.
-          ...   -----------+---[ operation ]----( state )----->   ...
-                          /                      '-----'
-          ...   ---------'       
-
-      b)
-
-          ...   ---[ operation 0 ]----.
-                                       \         .-----.
-          ...   ---[ operation 1 ]------+-------( state )----->   ...
-                                       /         '-----'
-          ...   ---[ operation 2 ]----'       
+           a)
+     
+                  ---------.
+                            \                       .-----.
+                  -----------+---[ operations ]----( state )----->   
+                            /                       '-----'
+                  ---------'       
+     
+           b)
+     
+                  ---[ operations 0 ]----.
+                                          \         .-----.
+                  ---[ operations 1 ]------+-------( state )----->  
+                                          /         '-----'
+                  ---[ operations 2 ]----'       
 
 
       Figure 1: Two approaches of state modelling: a) Single entry state. 
                 b) Multi-entry state. 
                 
-The goal is to derive a multi-entry state machine from a single entry state
-machine while minimizing the required number of operations along the state 
-transitions. To achieve this operations are combined which are predictibly
-executed in a concatenated manner.
-
 -------------------------------------------------------------------------------
+
 SITUATION:
 
 Incoming characters cause state transitions. Transitions are adorned with
@@ -52,65 +52,89 @@ operations, such as 'store last acceptance'. At some point, an incoming
 character does not fit a transition map of the current state and the state
 machine exits.  Upon such a 'drop-out', some consequences are derived  based on
 the passed operations and the current state. The steps in the run through a
-state machine are depicted in figure 1.
+state machine are depicted in figure 2.
 
 
                     .----------<---------------.
                     |                          |
-          Begin -------> Operations -----> Transitions -----> Drop-Out
+          Begin -------> Operations -----> Transition -----> Drop-Out
                                                   
 
-              Figure 1: The run through a state machine.
+              Figure 2: The run through a state machine.
 
+Along the transitions of a state machine many different operations may occur
+which do not necessarily share the same subject. Some operations determine the
+last accepted pattern, the input position to be restored upon acceptance, the
+line and column numbers, the checksum value of a lexeme, or the sum of grapheme
+widths of the lexeme's characters, and so on. 
 
-Each phenomenon can be associated with a set of registers by which it is
-determined. The line and column numbers are determined by the current line and
-column number and the previous line and current number, for example. The sets
-of registers which are associated with an investigated procedure, is called
-SCR.
+DEFINITION: Investigated Behavior 
 
+   Let the term 'investigated behavior' represent a set of operations and the
+   registers on which they operate together with their nominal behavior.
+
+For example, line number counting as an investigated behavior is concerned of
+the line number register and any operation that modifies its content. The
+nominal behavior is that the line number register should be increased upon
+newline and remain the same upon the occurrence of any other character.  Let
+the sets of registers which are associated with an investigated behavior be
+called SCR.
 
 DEFINITION: SCR -- Set of Concerned Registers
 
     The term 'set of concerned registers' SCR shall stand for the set of 
     all registers which are relevant to the investigated behavior. 
 
-The setting of registers of an SCR evolves along state transitions. Not all
-registers may be necessary in all states. For example, if the lexeme length is
-not required in a terminal, then no state on the path to the terminal is
-required to contribute to the development of that register. Let the state
-specific set of registers SCR(i) be defined.
+As a consequence of transitions, a state machine changes the content of
+registers. However, not all registers of an SCR are necessarily relevant for
+all states. Let the set of required registers be defined as
 
-DEFINITION: SCR(i) -- The state specific set of concerned registers.
+DEFINITION: RR(i) -- Set of Required Registers
 
-    The set of registers SCR(i) in state 'i' allows to determine the operations
-    which are relevant to successor states of state 'i'. 
+    'RR(i)' defines the registers which are required in state 'i'. The
+    registers must be sufficient
+
+      (i)  to implement the investigated behavior upon drop-out and
+      (ii) to develop the SCR settings of all successor states.
+
+For example, if the lexeme length is not required in a terminal, then no state
+on the path to the terminal is required to contribute to the development of
+that register--except that another successor state requires it.  
+
+Let setting of concerned registers be defined as follows.
+
+DEFINITION: SCR(i) -- Setting of SCR registers in state 'i'.
+
+    The term 'SCR(i)' represents the settings of all SCR registers after
+    a state 'i' is entered and before it transits further. 
+
+    Only those values of the SCR must be present in 'SCR(i)' which are
+    element of 'RR(i)'.
     
-    Any write operation in state(i) on a register of SCR(i) is subject to 
-    consideration.
-
-As a direct consequence, the 'SCR(i)' for each state can be determined by
-*back-propagation* of needs. A state or a terminal which requires a specific
-register tags all of its predecessor states with this requirement. That is, if
-a state 'k' requires a register 'x' than 'x is element of SCR(i)' for all 'i'
-in the set of states that lead to 'k'.
-
-As a consequence of transitions, a state machine changes the content of 
-registers of the SCR. An elementary unit that modifies the content of a 
-register is called an 'operation', as defined here:
+An elementary unit that modifies the content of a register is called an
+'operation', as defined here:
 
 DEFINITION: op(i) -- Operation 
 
-    A modification to a one or more register of the SCR upon entry into a 
-    state 'i' is called an operation 'op(i)'. With 'x' as the setting of 
-    the SCR before entry into a state 'i', the setting of the SCR in state 'i' 
-    becomes
+    A modification to a one or more register of the SCR upon entry into a state
+    'i' is called an operation 'op(i)'. 
+    
+With 'SCR(before)' as the setting of the SCR before entry into a state 'i' and
+'SCR(i)' as the setting of the SCR in state the operation 'op(i)' describes the
+change in SCR as in the following equation
 
-                         SCR(i) = op(i)(x)
+                         SCR(i) = op(i)(SCR(before))
 
-That is, 'op(i)' is a function or a procedure that is applied on the set of
-registers of concern. All investigated behavior along the state machine 
-concentrates on operations on the SCR.
+With the definition of the RR(i) the set of considered operations can be
+defined. Given a state 'i', then any operation which directly or indirectly
+influences the modification of a register in 'RR(i)' is subject to
+consideration of the investigated behavior.
+    
+The 'RR(i)' for each state can be determined by *back-propagation* of needs. A
+state or a terminal which requires a specific register tags all of its
+predecessor states with this requirement. That is, if a state 'k' requires a
+register 'x', then 'x is element of 'RR(i)' for every state 'i' that lies on
+the path to 'k'.
 
 -------------------------------------------------------------------------------
 
@@ -124,49 +148,100 @@ DEFINITION: Linear State
     A linear state is a state that is entered only through one predecessor 
     state, i.e. it has only one entry.
 
-                                                   .---> ...
-                                                  /
-                        ... --[ operation ]--->( 0 )---> ...
+                                           .---> 
+                                          /
+                      ----[ op(i) ]--->( i )---> 
 
-                Figure 1: The concept of a linear state.
+                Figure 3: The concept of a linear state.
 
 Since there is only one predecessor state to a linear state, the SCR can be
-derived from the SCR at the predecessor and the single operation at the entry 
-of the linear state itself. Let 'j' denote the predecessor state of 'i'. 
-Then,
+derived from the SCR at the predecessor and the single operation at the entry
+of the linear state itself. Let 'k' denote the predecessor state of 'i'.  Then,
+the characteristic equation for a linear state demonstrates the development
+of the SCR
 
-                     SCR(i) = op(i)(SCR(j))
+                     SCR(i) = op(i)(SCR(k))                                 (1)
 
-if 'j' is also a linear state with a single predecessor 'h', then the right 
+if 'k' is also a linear state with a single predecessor 'p', then the right 
 hand of the above equation can be expanded to
 
-                     SCR(i) = op(i)( op(j)(SCR(h)))
+                     SCR(i) = op(i)(op(k)(SCR(p)))                          (2)
                  
-Thus, the concatenation of operations op(i) and op(j) together with knowledge
-about the SCR in state 'h' makes it possible to determine the setting of SCR(i)
-upon exit without executing each operation along the state transitions. This
-function is called 'recipe' in the frame of these documents.
+Thus, the concatenation of operations op(i) and op(k) together with knowledge
+about the SCR in state 'k' makes it possible to determine the setting of SCR(i)
+without executing each operation along the state transitions. This
+concatenation can be continued along an arbitrary sequence of linear states.
 
-DEFINITION: R(i) -- Recipe 
+The process that allows to determine 'SCR(i)' upon exit without having to 
+consider previous operations is defined in this document as 'recipe'.
 
-   A recipe 'R(i)' for a state 'i' describes the process to determine 
-   SCR(i) when the state has been entered. It maps
+DEFINITION: R(i,k) -- Recipe 
 
-                     ( s, SCR(h) ) ---> SCR(i)
+   Given a state 'i' and its predecessor state 'k', a recipe 'R(i,k)' describes 
+   the process to determine 'SCR(i)' based on 
 
-   where 's' is the current state including his registers. The 'SCR(h)'
-   expresses the recipe's dependency on the setting of the SCR in some 
-   reference state 'h'.
-   
-   The essential idea of a recipe is that it can determine settings 
-   of the SCR for a state without relying on operations along the path.
-   It also contains enough information for successor states to determine
-   their recipes.
+          * 'h(i)', the hidden variables of the current state,
+          * 'Aux', the setting of auxiliary registers
 
-The simplest form of a recipe consists of an operation 'op(i)' together with
-its predecessor state 'h' providing the reference 'SCR(h)'. This simplest
-form can be considered a 'seed' for further recipes. For that however, the 
-'SCR(h)' must be determined.
+   Or, briefly it implements
+
+                  (h(i), Aux) ---> SCR(i)                                   (3)
+
+Hidden variables are, for example, the input position of the current stream, or the
+lexeme start position, or other members of the state machine. Auxiliary registers
+may contain data that has been stored in previous states. To express SCR(i,k) in
+equation (2) by means of a recipe, the setting of SCR(p) must have been stored
+in auxliary registers. 
+
+The mapping in (3) does not contain any direct reference to a predecessor state
+or its operations.  This expresses essential idea of a recipe which is that it
+can determine settings of the SCR for a state without relying on operations
+along the path--except for storage in 'Aux'.  It also contains enough
+information for successor states to determine their recipes.
+
+The counterpart to linear states are 'mouth states' as defined below.
+
+DEFINITION: Mouth State
+
+    A mouth state is a state that is entered from more than one state. An 
+    example is depicted in figure 4.
+
+                     --->--.  
+                            \ 
+                     --->----+---[ op(i) ]--( i )---> 
+                            /
+                     --->--'
+
+                Figure 4: The concept of a mouth state.
+
+The characteristic equation for a mouth state expressing the development of the
+SCR is
+
+                      .' op(i)(SCR(p))  if entry from state 'p'
+                      |  op(i)(SCR(q))  if entry from state 'q'
+            SCR(i) = <   ...                                                (4)
+                      |  
+                      '. op(i)(SCR(z))  if entry from state 'z'
+
+or, in terms of recipies
+
+                      .' R(i,p)  if entry from state 'p'
+                      |  R(i,q)  if entry from state 'q'
+            SCR(i) = <   ...                                                (5)
+                      |  
+                      '. R(i,z)  if entry from state 'z'
+
+The state from where the state is entered is only determined at run-time. Thus,
+the value of 'SCR(i)' in a mouth state cannot be determined from
+considering the state machine alone. Also, if the mouth state's behavior
+needs to be expressed through the incoming SCRs, then the single-entry
+approach is no longer possible. The characteristic equation (2) imposes a
+multi-entry approach for a state description. 
+
+If a recipe is to be defined for a mouth state, then it may be necessary to
+store content in auxiliary registers upon entry. 
+
+For that however, the 'SCR(h)' must be determined.
 
 DEFINITION: Determined SCR(i)
 
@@ -254,28 +329,11 @@ The repeated accumulation of operation along linear states comes to an end
 at states where there is more than one entry. Let the term 'mouth state' be
 defined as follows.
 
-DEFINITION: Mouth State
 
-    A mouth state is a state that is entered from more than one state. An 
-    example is depicted in figure 1.
-
-                        ... --->--.   .---> ...
-                                   \ /
-                        ... --->--( 4 )---> ...
-                                   /
-                        ... --->--'
-
-                Figure 4: The concept of a mouth state.
-
-A mouth state is, somehow, the counterpart to a linear state. Along sequences
-of linear states, things are predictable. As soon as as mouth state is involved
-the *path* by which it is entered becomes important. The concrete path, or 
-entry can only be determined at run-time, not at the time of compilation.
-
-At each entry of the mouth state, there may be a different incoming recipe.  An
-example is shown in figure 5. The operation 'op(i)' for each state is 'x=x+1'.
-State '2' is reached from state '1' and state '0'. The accumulated recipe for
-'x' differs depending on the entry from which '2' is entered.
+analysis.  As a result of (2) the incoming recipes at the entries may differ.
+An example is shown in figure 5. The operation 'op(i)' for each state is
+'x=x+1'.  State '2' is reached from state '1' and state '0'. The accumulated
+recipe for 'x' differs depending on the entry from which '2' is entered.
 
                               
                    .------->-----------.  R(2 from 0) = x(0) + 1
@@ -290,6 +348,9 @@ State '2' is reached from state '1' and state '0'. The accumulated recipe for
 
        Figure 5: Different recipes at different entries of a mouth state.
 
+Further, in order to cut off the previous history the operations now, must
+depend on the entry from where the state is entered. The resulting state
+machine must therefore be built upon multi-entry states.
 
 So, there is only one way to determine 'x': it must be computed  upon entry
 into the state. Analogously, to accumulation the let 'interference' in mouth
