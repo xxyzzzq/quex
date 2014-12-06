@@ -145,14 +145,85 @@ states' as they are defined in the paragraphs to follow.
 
 DEFINITION: Linear State
 
-    A linear state is a state that is entered only through one predecessor 
-    state, i.e. it has only one entry.
+    A linear state is a state that is entered only from one predecessor state.
 
-                                           .---> 
-                                          /
-                      ----[ op(i) ]--->( i )---> 
+The concept of a linear state is shown in figure 3. The operation 'op(i)' works
+on the 'SCR(k)' before entry and produces 'SCR(i)'. Note, that a linear state
+may have transitions to multiple successor states, but only on predecessor state.
 
-                Figure 3: The concept of a linear state.
+
+                                                      .---> 
+                                                     /
+                                                   .-.
+                      --------[ op(i) ]---------->( i )---> 
+                     SCR(k)              SCR(i)    '-'
+
+                    Figure 3: The concept of a linear state.
+
+
+DEFINITION: Mouth State
+
+    A mouth state is a state that is entered from more than one predecessor 
+    state. 
+    
+Figure 4 displays the concept of a mouth state and the development of the
+'SCR(i)' based on the SCRs of predecessor states.
+
+                  ------>--.  
+                 SCR(a)     \ 
+                             \                       .-.
+                  ------>-----+---[ op(i) ]---------( i )---> 
+                 SCR(b)      /               SCR(i)  '-'
+                            /
+                 ...       :
+                  ------>--'
+                 SCR(z)
+
+                    Figure 4: The concept of a mouth state.
+
+In a linear state the 'SCR(i)' can be determined based on the predecessor's
+SCR and the 'op(i)'
+
+            SCR(i) = op(i)(SCR(k))
+
+with 'k' as the one and only predecessor state. If 'SCR(k)' is known, then
+'SCR(i)' of a linear state is known off-line purely from the consideration of
+the state machine.  In a mouth state 'SCR(i)' can only be determined depending
+on the state from where the transition originates.
+
+
+                      .' op(i)(SCR(a))  if entry from state 'a'
+                      |  op(i)(SCR(b))  if entry from state 'b'             (4)
+            SCR(i) = <   ...
+                      |  
+                      '. op(i)(SCR(z))  if entry from state 'z'
+
+A 'recipe' shall be the procedure to determine the SCR in a state without
+considering any previous operation. That is, if for all states all recipes are
+known, then all operations along the state machine transitions can be removed.
+Let the term recipe be defined as follows.
+
+DEFINITION: R(i,k) -- Recipe 
+
+   Given a state 'i' and its predecessor state 'k', a recipe 'R(i,k)' describes 
+   the process to determine 'SCR(i)' based on 
+
+          * 'h(i)', the hidden variables of the current state,
+          * 'Aux', the setting of auxiliary registers
+
+   Or, briefly it implements
+
+                  (h(i), Aux) ---> SCR(i)                                   (3)
+
+Hidden variables are, for example, the input position of the current stream, or the
+lexeme start position, or other members of the state machine. Auxiliary registers
+may contain data that has been stored in previous states. To express SCR(i,k) in
+equation (2) by means of a recipe, the setting of SCR(p) must have been stored
+in auxliary registers. 
+
+The simplest form of a recipe is the setting of the SCR with constant values.
+For example, at a state entered by the newline character the recipe for 'column
+number' may be 'column number = 0', because a new line begins.
 
 Since there is only one predecessor state to a linear state, the SCR can be
 derived from the SCR at the predecessor and the single operation at the entry
@@ -175,101 +246,16 @@ concatenation can be continued along an arbitrary sequence of linear states.
 The process that allows to determine 'SCR(i)' upon exit without having to 
 consider previous operations is defined in this document as 'recipe'.
 
-DEFINITION: R(i,k) -- Recipe 
 
-   Given a state 'i' and its predecessor state 'k', a recipe 'R(i,k)' describes 
-   the process to determine 'SCR(i)' based on 
 
-          * 'h(i)', the hidden variables of the current state,
-          * 'Aux', the setting of auxiliary registers
-
-   Or, briefly it implements
-
-                  (h(i), Aux) ---> SCR(i)                                   (3)
-
-Hidden variables are, for example, the input position of the current stream, or the
-lexeme start position, or other members of the state machine. Auxiliary registers
-may contain data that has been stored in previous states. To express SCR(i,k) in
-equation (2) by means of a recipe, the setting of SCR(p) must have been stored
-in auxliary registers. 
-
-The mapping in (3) does not contain any direct reference to a predecessor state
-or its operations.  This expresses essential idea of a recipe which is that it
-can determine settings of the SCR for a state without relying on operations
-along the path--except for storage in 'Aux'.  It also contains enough
-information for successor states to determine their recipes.
-
-The counterpart to linear states are 'mouth states' as defined below.
-
-DEFINITION: Mouth State
-
-    A mouth state is a state that is entered from more than one state. An 
-    example is depicted in figure 4.
-
-                     --->--.  
-                            \ 
-                     --->----+---[ op(i) ]--( i )---> 
-                            /
-                     --->--'
-
-                Figure 4: The concept of a mouth state.
-
-The characteristic equation for a mouth state expressing the development of the
-SCR is
-
-                      .' op(i)(SCR(p))  if entry from state 'p'
-                      |  op(i)(SCR(q))  if entry from state 'q'
-            SCR(i) = <   ...                                                (4)
-                      |  
-                      '. op(i)(SCR(z))  if entry from state 'z'
-
-or, in terms of recipies
-
-                      .' R(i,p)  if entry from state 'p'
-                      |  R(i,q)  if entry from state 'q'
-            SCR(i) = <   ...                                                (5)
-                      |  
-                      '. R(i,z)  if entry from state 'z'
-
-The state from where the state is entered is only determined at run-time. Thus,
-the value of 'SCR(i)' in a mouth state cannot be determined from
-considering the state machine alone. Also, if the mouth state's behavior
-needs to be expressed through the incoming SCRs, then the single-entry
-approach is no longer possible. The characteristic equation (2) imposes a
-multi-entry approach for a state description. 
-
-If a recipe is to be defined for a mouth state, then it may be necessary to
-store content in auxiliary registers upon entry. 
-
-For that however, the 'SCR(h)' must be determined.
-
-DEFINITION: Determined SCR(i)
-
-   The SCR(i) in a state 'i' is *determined* if, either
-   
-   (i)  The complete setting of the SCR is known, or
-   
-   (ii) A procedure is found that allows to determine SCR at runtime.
-
-DEFINITION: Spring
-
-    A state with a determined SCR is a spring.
-    
-To start developing recipes, one must first determine the 'springs' in the
-state machine. In practical applications, it requires a very detailed and
-subtle investigation to determine spring states. A safe approach is to 
-consider only the initial state as an initial spring.
-
-Any spring 'h' with a linear state successor 'i' can be used to develop the
-simplest form of a recipe 'op(i)( SCR(h) )'. Along linear states, there is
-always only one distinct entry action. Thus recipes can be developed through an
-iterative process. Using the previous recipe, the current operation may be used
-to develop the recipe for the current state.
+It also contains enough
+information for successor states to determine their recipes. The derivation of
+a recipe based on a predecessor's recipe is defined here as 'accumulation'.
 
 DEFINITION: Accumulation
 
-    The process 'accumulation' determines a recipe 'R(i)' for a linear 
-    state 'i'. The recipe is derived from 
+    The process 'accumulation' determines a recipe 'R(i,k)' a state 'i' which is
+    entered from state 'k'. 
     
        (i)  the recipe 'R(k)' of a predecessor state 'k', and
     
@@ -328,6 +314,69 @@ applied upon exit from the state machine. This is shown in figure 3.
 The repeated accumulation of operation along linear states comes to an end
 at states where there is more than one entry. Let the term 'mouth state' be
 defined as follows.
+
+
+The counterpart to linear states are 'mouth states' as defined below.
+
+The characteristic equation for a mouth state expressing the development of the
+SCR is
+or, in terms of recipies
+
+                      .' R(i,p)  if entry from state 'p'
+                      |  R(i,q)  if entry from state 'q'
+            SCR(i) = <   ...                                                (5)
+                      |  
+                      '. R(i,z)  if entry from state 'z'
+
+The state where the transition originates depends on the path taken to state
+'i', i.e. it depends on the input stream which is only apparent at at run-time.
+Thus, the value of 'SCR(i)' in a mouth state cannot be determined from
+considering the state machine alone. 
+
+A recipe has the task to express the SCR whithout consideration of previous 
+operations or paths. To achieve this, the mouth state may evaluate registers
+upon entry dependent on the transitions origin and store the content in 
+auxiliary registers. The recipe then refers to those auxliary registers 
+in order to determine the SCR. Such a storage in auxiliary registers is not
+necessary for elements of the SCR which are homegeneously produces at all
+entries.
+
+
+cutting of any sequence of operations
+If a recipe is to be derived for
+a mouth state which may serve as a basis for further recipes. , Also, if the mouth state's behavior needs
+to be expressed through the incoming SCRs, then the single-entry approach is no
+longer possible. The characteristic equation (2) imposes a multi-entry approach
+for a state description. 
+
+If a recipe is to be defined for a mouth state, then it may be necessary to
+store content in auxiliary registers upon entry. 
+
+For that however, the 'SCR(h)' must be determined.
+
+DEFINITION: Determined SCR(i)
+
+   The SCR(i) in a state 'i' is *determined* if, either
+   
+   (i)  The complete setting of the SCR is known, or
+   
+   (ii) A procedure is found that allows to determine SCR at runtime.
+
+DEFINITION: Spring
+
+    A state with a determined SCR is a spring.
+    
+To start developing recipes, one must first determine the 'springs' in the
+state machine. In practical applications, it requires a very detailed and
+subtle investigation to determine spring states. A safe approach is to 
+consider only the initial state as an initial spring.
+
+Any spring 'h' with a linear state successor 'i' can be used to develop the
+simplest form of a recipe 'op(i)( SCR(h) )'. Along linear states, there is
+always only one distinct entry action. Thus recipes can be developed through an
+iterative process. Using the previous recipe, the current operation may be used
+to develop the recipe for the current state.
+
 
 
 analysis.  As a result of (2) the incoming recipes at the entries may differ.
