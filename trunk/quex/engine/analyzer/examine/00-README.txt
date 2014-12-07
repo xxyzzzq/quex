@@ -198,15 +198,19 @@ on the state from where the transition originates.
                       |  
                       '. op(i)(SCR(z))  if entry from state 'z'
 
-A 'recipe' shall be the procedure to determine the SCR in a state without
+Let 'recipe' be the procedure to determine the SCR in a state without
 considering any previous operation. That is, if for all states all recipes are
 known, then all operations along the state machine transitions can be removed.
 Let the term recipe be defined as follows.
 
 DEFINITION: R(i,k) -- Recipe 
 
-   Given a state 'i' and its predecessor state 'k', a recipe 'R(i,k)' describes 
-   the process to determine 'SCR(i)' based on 
+   Let 'i' indidate a state and 'k' its predecessor state. A recipe allows to
+   determine 'SCR(i)' without that operations along the transitions are
+   executed. It is derived from the operation 'op(i)' and 'SCR(k)'.
+
+   In order to be independent of previous operations, the recipe's procedure
+   uses solely the following inputs:
 
           * 'h(i)', the hidden variables of the current state,
           * 'Aux', the setting of auxiliary registers
@@ -223,7 +227,43 @@ in auxliary registers.
 
 The simplest form of a recipe is the setting of the SCR with constant values.
 For example, at a state entered by the newline character the recipe for 'column
-number' may be 'column number = 0', because a new line begins.
+number' may be 'column number = 0', because a new line begins. The advantage
+of recipes may is shown in the example of figure 5.
+
+    a)        op(1) =             op(2) =          
+                'la = 10'           'la = 12'        
+
+       ...  -------------->( 1 )-------------->( 2 )----> ...
+                             :                   :
+                     goto Terminal(la)   goto Terminal(la)
+
+
+    b)                    SCR(i) =            SCR(2) =              
+                     'acceptance = 10'   'acceptance = 12'                     
+
+       ...  -------------->( 1 )-------------->( 2 )----> ...
+                             :                   :
+                        goto T_10           goto T_12
+
+     Figure 5: Equivalent state sequences. a) Relying on operations along
+               transitions. b) With SCRs determined by recipes.
+
+In figure 5.a the operations setting the last acceptance 'la' are executed at
+every transition, even if states '1' and '2' are passed by and later states may
+detect another acceptance. Upon drop-out from state 1 or 2 a conditional goto
+to a terminal is applied based on the setting of 'la'. In figure 5.b the
+operations along transitions are completely removed. The recipes determined 
+the acceptance apriori, so that a direct goto to the correspondent terminal
+can be applied. Clearly, the second approach requires less computational
+effort during transitions and at drop-out.
+
+
+                   
+
+
+-------------------------------------------------------------------------------
+
+PROPAGATION OF RECIPES:
 
 Since there is only one predecessor state to a linear state, the SCR can be
 derived from the SCR at the predecessor and the single operation at the entry
