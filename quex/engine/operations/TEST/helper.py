@@ -78,9 +78,9 @@ accepter = Op.Accepter()
 accepter.content.add(55L, 66L)
 example_db[E_Op.Accepter] = [ accepter ]
 
-router = Op.Router()
+router = Op.RouterByLastAcceptance()
 router.content.add(66, 1)
-example_db[E_Op.Router] = [ router ]
+example_db[E_Op.RouterByLastAcceptance] = [ router ]
 
 def generator():
     """Iterable over all commands from the example_db.

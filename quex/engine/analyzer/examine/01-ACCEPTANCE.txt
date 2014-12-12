@@ -1,8 +1,211 @@
+Acceptance Behavior
 
 (C) Frank-Rene Schaefer
 
 -------------------------------------------------------------------------------
 
+ABSTRACT:
+
+An exit of the analysing state machine is the moment where it is determined
+what pattern is accepted, i.e. matches. At the same time, the input pointer
+must be set to the position where the next analysis step starts. So, there are
+two related operations
+
+       * acceptance
+       * input pointer placement
+
+An input pointer is placed to a reference position that has been stored
+earlier. Figure 2 shows the case, where acceptance 'A' happens in a state 2 and
+the input position is stored in 'reg[0]'. The analysis continues, but does not
+reach another acceptance state. When the state machine is exited in state 4,
+the input position is set to 'reg[0]' and the terminal is entered that
+corresponds to the event that pattern 'A' matched. 
+
+                  accept = A
+                  pos[0] = input_p
+
+     --->( 1 )------>( 2 )------>( 3 )------>( 4 )------>( 5 )---->
+                                               :
+                                               : exit
+                                               :
+                                         input_p = pos[0]
+                                         goto Terminal(accept)
+
+                     Figure 1: Acceptance behavior.
+
+For patterns with post context, the storing of the input position happens before
+the acceptance. When the core pattern matches, the input position is stored, but
+the match only happens when the post context is present, which is the moment
+when pattern's id is assigned to 'accept'.
+
+SCR - Set of Concerned Registers:
+
+The investigated behavior concentrates on the registers:
+
+         * E_R.Acceptance
+         * E_R.PositionRegister + key
+
+There is a position register for each pattern. The particular pattern is
+addressed by a 'key'. 
+
+Investigated Operations:
+
+The investigated operations of the single entry state machine are:
+    
+         * SeAccept --> acceptance, 
+                        + optionally a pre-context 
+                        + optionally restoring an input position.
+
+         * SeStoreInputPosition --> stroring current input position in 
+                                    a register.
+
+-------------------------------------------------------------------------------
+
+RECIPE:
+
+Figure 2 demonstrates acceptance behavior along a sequence of linear states.
+The shown state machine shall detect the following patterns, expressed as quex
+regular expressions:
+
+              (0)    x/a/b
+              (1)    ab
+              (2)    y/abc
+              (3)    abcdef   
+                     
+The pre-context 'x' is referred to as 'pre0' and 'y' as 'pre2'. Pre-contexts
+are not part of the figure. They are supposed to be have been checked before.
+The forth pattern 'abcdef' is only there, so that the state machine goes
+beyond the three patterns under investigation.
+
+                                                       
+                  reg[0]=ip      pre0=>acc0 
+                                 acc1           pre2=>acc2   
+                                 reg[1]=ip      reg[2]=ip
+
+   ( 0 )--------->( 1 )--------->( 2 )--------->( 3 )--------->( 4 )--- ...
+           'a'            'b'            'c'            'e'      :
+                                                                 :
+                                                              Recipe
+
+               Figure 2: Deterministic acceptance behavior.
+
+The core pattern of 'x/a/b' is reached once 'a' has been detected. Thus, the
+input position for pattern 0 is stored. When the state 2 is entered, the
+sequence "ab" must have occurred. Thus pattern 0 wins if 'pre0' is fulfilled.
+If not, then "ab" matches pattern 1. The input position for pattern 1 is the
+current input position, so it is stored in 'reg[1]'. State 3 is only entered of
+"abc" has occurred. Then, if 'pre2' is fulfilled, pattern 2 wins.
+
+Let now the recipe in state 4 be determined. If pre-context 2 is fulfilled,
+then pattern 2 wins, because it is the longest one. The input pointer in
+this case is set to 'input pointer - 1'. Else, if pre-context 0 is
+fulfilled, then pattern 0 wins and the input pointer needs to be set to
+'input pointer - 3', because 'reg[0]' was stored three positions before.
+Finally, if no previous acceptance was triggered, then pattern 1 wins and
+sets the input pointer to the position where 'reg[1]' accepted, i.e.  at
+'input pointer - 2'. Briefly:
+
+      if   pre2: input_p -= 1; goto Terminal2;
+      else pre1: input_p -= 3; goto Terminal1;
+      else:      input_p -= 2; goto Terminal2;
+
+A recipe allows to determine the investigated behavior upon exit, and it allows
+to determine recipes of successor states.
+
+-------------------------------------------------------------------------------
+
+TRACING ACCEPTANCE:
+
+The lexical analyzer rule 'longest match' translates into the latest acceptance
+on the path determines the winning pattern. A conditional acceptance must leave
+the opportunity open that another shorter pattern or a pattern of a lower
+priority wins--in case that its pre-context is not met.
+
+The 'accumulation' procedure that respects these rules is the following:
+
+(1.1) Filter all 'SeAccept' commands from current state.
+(1.2) Sort those by acceptance id. 
+(1.3) Cut at an unconditional acceptance, if there is one.
+(2)   If there is no unconditional acceptance, append the previous recipes 
+      accepter list.
+
+Upon interference, if it is detected that different entries have different
+accepters, then the incoming accepter list must be translated into an 'Accept'
+command, where that 'aux_acceptance' register receives the detected acceptance.
+The propagates recipe, must rely on that acceptance. 
+
+The member of 'RecipeAcceptance' maintaining the acceptance trace information is
+
+       .accepter:   None, if acceptance needs to be restored from 
+                          'aux_acceptance'.
+                    list, if the acceptance can be determined by the scheme
+                          described in the list.
+
+TRACING INPUT POSITION STORAGE:
+
+There are two types of acceptance:
+
+  * 'Normal' acceptance where a certain pattern is matched independent of what
+    follows it. In that case, the input position for the next analysis step
+    has to be set right after the end of the matching lexeme.
+
+  * 'Post Contexted' acceptance. In that case, a pattern must be matched but
+    it must be followed by another pattern. The 'acceptance' trigger comes at
+    the end of the post context pattern. However the input position for the 
+    next analysis step has to be set at the end of the lexeme where the core
+    pattern matched. 
+
+In the case of 'normal' acceptance, the setting of a reference input position
+happens at the time of acceptance, i.e. where the 'SeAccept' command is found.
+It is implied in the acceptance command.  In the 'post contexted' case, an
+'SeStoreInputPosition' command does signalizes the storing explicity. The
+according 'SeAccept' command signalizes that it does not store the position by
+its member '.restore_position_register_f()'. 
+
+For a given state, the sequence of storing the input positions into registers
+is unimportant. At each step forward, the referred input position lies one more
+backwards. Thus, the referred input position for a register 'r_id' may be
+referred to as
+
+              input position - offset
+
+In a 'RecipeAcceptance', the member '.ip_offset_db' contains information about
+offsets in order to compute the setting of the input position upon acceptance.
+It maps
+
+                     acceptance id ----> offset
+
+If the offset is 'None, then the input position must be taken from
+'aux_register[r_id]'.  During accumulation, the offsets need to be increased by
+one, at each step. Thus, the following 'accumulation' procedure is appropriate.
+
+(1)   Iterate over all entries of the last recipy and apply
+
+               .ip_offset_db[i] += 1
+      
+(2.1) Filter all 'SeAccept' commands from current state that do not rely on 
+      'restore_position_register_f'. Apply
+
+               .ip_offset_db[acceptance_id()] = 0
+
+(2.2) Filter all 'SeStoreInputPosition' commands from current state. Apply
+
+               .ip_offset_db[register_id()] = 0
+
+Interference happens register-wise. That is, if all entries into a mouth state
+deliver the same offset for a register, then this offset can be overtaken. If
+not, then 'None' must be stored as entry. Such an entry tells that the regarding
+input position must be restored from an auxiliary register '.aux_register[r_id]'.
+
+Of course, 'None' offset entries are never 'increment. This corresponds to the
+fact, that the formula to compute the input pointer position is simply
+
+             input pointer = aux_register[r_id]
+
+rather then the aforementioned offset equation.
+
+-------------------------------------------------------------------------------
+    
 (1) SCR
 
 Registers of concern:

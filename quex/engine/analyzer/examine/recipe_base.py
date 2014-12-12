@@ -66,13 +66,6 @@ class Recipe:
         return [ op for op in TheState.single_entry if op.modifies(cls.SCR) ] 
 
     @classmethod
-    def from_spring(cls, SpringState):
-        """RETURNS: A recipe that determines the setting of the SCR(i) after 
-        the SpringState has been entered.
-        """
-        return cls(self.get_SCR_operations(SpringState.single_entry))
-
-    @classmethod
     def get_scr_by_state_index(cls, SM):
         """Determines terminals in the state machine which absolutely require
         some information about a set of registers (SCR) for the investigated
@@ -87,8 +80,8 @@ class Recipe:
         for si in SM.states:
             yield si, cls.SCR
 
-    @staticmethod
-    def get_initial_springs(SM):
+    @classmethod
+    def initial_spring_recipe_pairs(cls, Sm):
         """The term 'spring' has been defined in 00-README.txt as a state where
         the walk along linear states may begin. An initial spring is a state 
         where the entry operations determine all registers of the SCR while making
@@ -97,27 +90,15 @@ class Recipe:
         This is the default implementation, which simply returns the init state
         of the state machine--a safe solution.
 
-        RETURNS: State indices of initial springs.
-        """
-        return [ SM.init_state_index ]
-    
-    @staticmethod
-    def assign_recipe(TheStateInfo, TheRecipe):
-        """Assigning a recipe to StateInfo objects. This function exists, so
-        that the derived functions
+        RETURNS: list of (si, recipe)
         
-                 .accumulate(...)
-                 .interfere(...)
-                 .interfere_in_dead_lock_group(...)
-                 
-        can terminate homogeneously with the assignment of a recipe to a 
-        StateInfo object.
+        where 'si' is the state index of a spring and 'recipe' its recipe. This
+        default implementation is a safe approach, in case that it is difficult
+        to make assumptions about states deeper insider the state machine.
         """
-        if type(TheStateInfo) == list:
-            for info in TheStateInfo:
-                info.recipe = TheRecipe
-        else:
-            TheStateInfo.recipe = TheRecipe
+        si     = Sm.init_state_index
+        recipe = cls.accumulate(None, Sm.get_init_state().single_entry)
+        return [(si, recipe)]
 
     @staticmethod
     def from_accumulation(Recipe, SingeEntry):

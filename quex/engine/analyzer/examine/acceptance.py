@@ -8,141 +8,92 @@ from quex.engine.misc.tools                   import flatten_it_list_of_lists
 from quex.blackboard import E_PreContextIDs, \
                             E_R
 
+InfoAccept   = namedtuple("InfoAccept",   ("pre_context_id", "acceptance_id"))
+InfoIpOffset = namedtuple("InfoIpOffset", ("offset", "aux_register_id"))
+
 class RecipeAcceptance(Recipe):
-    """A 'RecipeAcceptance' determines the pattern id of the winning pattern 
-    and the place where the input position pointer needs to point upon exit 
-    of the state machine in a particular state (Details in 
-    '01-ACCEPTANCE.txt'). It also contains enough data so late successor
-    states may determine their recipes. Two members describe the recipe:
+    """Recipe to describe the acceptance behavior upon exit from a state 
+    machine. Details are provided in 01-ACCEPTANCE.txt.
+    
+    There are two members to implement acceptance and input position 
+    placement.
 
-        .accepter = None, if acceptance MUST be restored.
-                  = list, if acceptance can be determine from scheme.
+      .accepter:  
+          
+            None => if acceptance is be restored from 'last_accept'.
+            else => list describing the acceptance scheme.
 
-        .ip_offset_db - Dictionary
-                .ip_offset_db[i] = const. offset to be added to input position.
-                .ip_offset_db[i] is None => input position MUST be restored
-                
-    (1) .accepter 
+         A list looks like 
 
-    If the acceptance can be determined beforehand for a given state, then the
-    .accepter is not None. If it can be determined then the accepter is a list.
-    It can be considered as a priorized sequence, where the upper rows are 
-    checked before lower rows and the first fulfilled pre-context triggers
-    acceptance.
+              [  (pre-context-id 6, acceptance-id 12),
+                 (pre-context-id 4, acceptance-id 11),
+                 ....
+                 (No pre-context,   acceptance-id 14),
+              ]
 
-        [  (pre-context-id 6, acceptance-id 12),
-           (pre-context-id 4, acceptance-id 11),
-           ....
-           (No pre-context,   acceptance-id 14),
-        ]
-
-    Note, that the first unconditional acceptance makes all later superfluous.
-    Such a condition always succeeds and the according acceptance must happen.
+        which tells in a prioritized way what to accept upon under the
+        condition that a pre-context is present. The first wins. Thus, 
+        any entry after the conditionless acceptance is meaningless.
 
 
-    (2) .ip_offset_db
+      .ip_offset_db:
+          
+              position register id   -->   (offset, aux_register_id)
 
-    The input position upon acceptance may have to be reset. This occurs,
-    either because the acceptance happened some states before, or because
-    it must be restored from a position register (post contexts). The entry
+        Input position must be determined by
+              
+              if aux_register_id == -1:
+                  input_p += offset
+              else:                       
+                  input_p  = aux_register[aux_register_id] + offset
 
-        .ip_offset_db[position_register_id]
-
-    provides the offset that has to be added to the input pointer in
-    order to emulate an assignment
-
-        input_p = position_register[position_register_id]                 (2.1)
-
-    That is, the above line is equivalent to
-       
-        input_p += .ip_offset_db[position_register_id]                    (2.2)
-
-    Note, that the offset must be negative to point to an earlier input
-    position This may not always be possible. If there is no entry
-    '.ip_offset_db[i]', then the input pointer cannot be set by subtraction and
-    it must be restored from registers.
-
-    SUMMARY:
-
-    With a given RecipeAcceptance 'r' for a state, acceptance and input
-    position can be determined as follows:
-
-        (1.1) .accepter is None --> read acceptance from 'LAST_ACCEPTANCE' 
-                                    register.
-        (1.2) .accepter is not None:
-                 for row in .accepter:
-                     if pre_context_fulfilled(row[0]): accept row[1]
-                 else:
-                     accept LAST_ACCEPTANCE
-
-        (2.1) .ip_offset_db is None or .ip_offset_db[pattern_id] is None
-
-                 input position = position_register[pattern_id]
-
-        (2.2) .ip_offset_db[i] is present
-
-                 input position -= .ip_offset_db[pattern_id]
+    The 'aux_register' values are set during interference in mouth states.
     """
     __slots__ = ("accepter", "ip_offset_db")
 
     SCR = (E_R.AcceptanceRegister, E_R.PositionRegister)
 
-    def __init__(self, Accepter=None, IpOffsetDb=None):
+    def __init__(self, Accepter, IpOffsetDb):
+        assert all_isinstance(Accepter,                  InfoAccept)
+        assert all_isinstance(InfoIpOffset.itervalues(), InfoIpOffset)
         self.accepter     = Accepter
-        self.ip_offset_db = IpOffsetDb if IpOffsetDb is not None else {}
+        self.ip_offset_db = IpOffsetDb
 
     @classmethod
-    def accumulate(cls, linear, PrevRecipe, CurrSingleEntry):
+    def accumulate(cls, PrevRecipe, CurrSingleEntry):
         """RETURNS: Recipe = concatenation of 'Recipe' + relevant operations of
                              'SingleEntry'.
         """
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        cls.assign_recipe(linear, RecipeAcceptance(accepter, ip_offset_db))
+        return RecipeAcceptance(accepter, ip_offset_db)
         
     @classmethod
-    def interfere(cls, mouth):
+    def interfere(cls, EntryRecipeDb):
         """Determines 'mouth' by 'interference'. That is, it considers all entry
         recipes and observes their homogeneity. 
         
         RETURNS: 
             
-            [0] Entry Db: 
+            [0] Recipe.
 
-                map: from state index --> operations REQUIRED upon state entry.
-            
-            
-            [1] RecipeAcceptance 
+            [1] Set of undetermined registers. 
 
-                A recipe that determines acceptance and input position offsets.
+        The undetermined registers are those, that need to be computed upon
+        entry, and are restored from inside the recipe.
         """
-        # entry_db: from state index --> list of operations
-        mouth.entry_db = dict((si, []) for si in mouth.entry_recipe_db.iterkeys())
-        accepter       = cls._interfere_acceptance(mouth)
-        ip_offset_db   = cls._interfere_input_position_storage(mouth)
+        accepter       = cls._interfere_acceptance(EntryRecipeDb)
+        ip_offset_db   = cls._interfere_input_position_storage(EntryRecipeDb)
         
-        cls.assign_recipe(mouth, RecipeAcceptance(accepter, ip_offset_db))
+        undetermined_register_set = ()
+        if accepter is None: undetermined_register_set.add(E_R.AcceptanceRegister)
+        for register_id, offset in ip_offset_db.iteritems():
+            if offset is not None: continue
+            undetermined_register_set.add((E_R.PositionRegister, register_id))
         
-    @classmethod
-    def interfere_in_dead_lock_group(cls, MouthList):
-        """
+        return RecipeAcceptance(accepter, ip_offset_db), undetermined_register_set
         
-        RETURNS: An accumulated action that expresses the interference of 
-                 recipes of states of a dead_lock group.
-        """
-        # entry_db: from state index --> list of operations
-        for mouth in MouthList:
-            mouth.entry_db = dict((si, []) 
-                                  for si in mouth.entry_recipe_db.iterkeys())
-            
-        accepter     = cls._interfere_acceptance_in_dead_lock_group(MouthList)
-        ip_offset_db = cls._interfere_store_input_position_in_dead_lock_group(MouthList)
-        
-        # All recipes in the dead-lock group are the same 
-        recipe = RecipeAcceptance(accepter, ip_offset_db)
-        cls.assign_recipe(mouth, recipe)
-
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, CurrSingleEntry):
         """Longest match --> later acceptances have precedence. The acceptance
@@ -153,8 +104,9 @@ class RecipeAcceptance(Recipe):
         for cmd in sorted(CurrSingleEntry.get_iterable(SeAccept), 
                           key=lambda x: x.acceptance_id()):
             accepter.append(cmd)
-            if not cmd.pre_context_f(): break
-        else:
+            if cmd.pre_context_id() == E_PreContextIDs.NONE: break
+
+        if PrevRecipe is not None:
             # No unconditional acceptance occurred, the previous acceptances
             # must be appended.
             accepter.extend(PrevRecipe.accepter)
@@ -172,122 +124,140 @@ class RecipeAcceptance(Recipe):
         to be restored from registers. They cannot be computed by offset 
         addition. 
         """
+        def new_offset(PrevOffset):
+            if PrevOffset is None: return None
+            else:                  return PrevOffset - 1
+
         # Storage into a register overwrites previous storages
         # Previous storages receive '.offset - 1'
-        ip_offset_db = dict( 
-            (register_id, position_offset - 1)
-            for register_id, position_offset in PrevRecipe.storage_offset_db.iteritems()
-        )
+        if PrevRecipe is not None:
+            ip_offset_db = dict( 
+                (register_id, new_offset(offset))
+                for register_id, offset in PrevRecipe.storage_offset_db.iteritems()
+            )
+        else:
+            ip_offset_db = {}
+
         for cmd in CurrSingleEntry.get_iterable(SeStoreInputPosition): 
             ip_offset_db[cmd.register_id()] = 0
+
+        # Any acceptance that does not restore from a position register
+        # defines the current position as the point where the input pointer
+        # needs to be reset upon acceptance.
+        for cmd in CurrSingleEntry.get_iterable(SeAccept): 
+            if not cmd.restore_position_register_f(): continue
+            ip_offset_db[cmd.acceptance_id()] = 0
 
         return ip_offset_db
 
     @classmethod
-    def _interfere_acceptance(cls, mouth):
+    def _interfere_acceptance(cls, EntryRecipeDb):
         """If the acceptance scheme differs for only two states, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
-        
-        ADAPTS: 'mouth.entry_db' to contain operations that store acceptance, 
-                                 if necessary.
         """ 
         prototype = None # Acceptance scheme
-        for r in mouth.entry_recipe_db.iteritems():
+        for r in EntryRecipeDb.iteritems():
             if   prototype is None:       prototype = r.accepter
             elif r.accepter == prototype: continue
-            cls._let_acceptance_be_stored(mouth)
+            # None => acceptance must be taken from 'aux_acceptance'
             return None
+
         # All acceptance schemes where the same => Overtake the prototype
         return prototype
     
     @classmethod
-    def _interfere_input_position_storage(cls, mouth):
+    def _interfere_input_position_storage(cls, EntryRecipeDb):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
         # Determine the set of involved input position registers
-        register_id_set = set(flatten_it_list_of_lists(
-            r.ip_offfset_db.keys() 
-            for r in mouth.entry_recipe_db.itervalues()))    
+        iterable = flatten_it_list_of_lists(
+                      recipe.ip_offfset_db.iterkeys() 
+                      for recipe in EntryRecipeDb.itervalues())    
 
-        # If for a given register, there are two different ways to compensate for
-        # storing, then storing cannot be implemented consistently. In that case,
-        # the resulting database entry is empty. In any other case the entry is
-        # the offset to be added.
         ip_offset_db = {}
         for register_id in register_id_set:
+            # If there are two entries with differing offsets, then input
+            # position must be reset by register restore. Then 'offset = None'.
+            # In the homogeneous case, the offset is the one that all entries
+            # share..
             prototype = None
-            for recipe in mouth.entry_recipe_db.iteritems():
+            for recipe in EntryRecipeDb.itervalues():
                 offset = recipe.ip_offset_db.get(register_id)
                 if   prototype is None:   prototype = offset
                 elif offset == prototype: continue
-                cls._let_input_position_be_stored(mouth, register_id)
-                # ip_offset_db[register_id] remains empty
-                # =>> determined from restore, not by offset subtraction.
-            else:
-                # All input position offsets where the same 
-                # => Overtake the prototype
-                ip_offset_db[register_id] = prototype
+                # Inhomogeneity detected -> let input position be stored.
+                prototype = None
+                break
+            ip_offset_db[register_id] = prototype
 
         return ip_offset_db
         
-    @classmethod
-    def _interfere_acceptance_in_dead_lock_group(cls, mouth_list):
-        """If the acceptance scheme differs for only two states, then the 
-        acceptance must be determined upon entry and stored in the LastAcceptance
-        register.
-        
-        ADAPTS: 'mouth.entry_db' to contain operations that store acceptance, 
-                                 if necessary.
-        """ 
-        def recipe_iterable(MouthList):
-            for mouth in MouthList:
-                for r in mouth.entry_recipe_db.itervalues():
-                    yield r
+    def get_Entry(self, mouth):
+        entry_db = dict(
+            (from_si, OpList())
+            for from_si in mouth.entry_register_db.iterkeys()
+        )
 
-        prototype = None # Acceptance scheme
-        for r in recipe_iterable(mouth_list):
-            if   prototype is None:       prototype = r.accepter
-            elif r.accepter == prototype: continue
-            for mouth in mouth_list:
-                cls._let_acceptance_be_stored(mouth)
-            return None
+        for register_id in mouth.undetermined_register_set:
+            if register_id == E_R.AcceptanceRegister:
+                self._let_acceptance_be_stored(entry_db, mouth)
+            else:
+                sub_register_id = register_id[1]
+                self._let_input_position_be_stored(entry_db, 
+                                                   mouth.entry_recipe_db, 
+                                                   sub_register_id)
+        return entry_db
 
-        # All acceptance schemes where the same => Overtake the prototype
-        return prototype
-    
-    @classmethod
-    def _interfere_store_input_position_in_dead_lock_group(cls, MouthList):
-        """"A dead-lock group contains loops, thus any referred input position
-        lies an undefined number of steps backwards. It follows that ALL 
-        stored input positions need to be determined by restoring from 
-        registers. All incoming recipes must store their input position.
-        """
-        for mouth in MouthList:
-            cls._let_input_position_be_stored(mouth)
+    @staticmethod 
+    def get_linear_Entry(self, linear):
         return {}
 
-    @staticmethod
-    def _let_acceptance_be_stored(mouth):
-        """Sets 'store acceptance' commands at every entry into the state.
-        """
-        for from_si, r in mouth.entry_recipe_db.iteritems():
-            if r.accepter is None: continue
-            mouth.entry_db[from_si].append(AccepterContent.from_iterable(r.accepter))
+    @staticmethod 
+    def get_DropOut(self, info):
+        if self.accepter is None:
+            return Op.RouterByLastAcceptance(self.ip_offset_db)
+        else:
+            return Op.AccepterAndRouter(self.accepter, self.ip_offset_db)
 
     @staticmethod
-    def let_input_position_be_stored(mouth, RegisterId):
-        for from_si, r in mouth.entry_recipe_db.iteritems():
-            if r.ip_offset_db is None: continue
+    def _let_acceptance_be_stored(entry_db, EntryRecipeDb):
+        """Sets 'store acceptance' commands at every entry into the state.
+        """
+        for from_si, r in EntryRecipeDb.iteritems():
+            # If acceptance is already stored in 'aux_acceptance', no second
+            # storage is required.
+            if r.accepter is None: continue
+            accepter         = Op.Accepter()
+            accepter.content = AccepterContent.from_iterable(r.accepter))
+            assert not entry_db[from_si].has_command_id(E_Op.Accepter) 
+            entry_db[from_si].append(accepter)
+
+    @staticmethod
+    def _let_input_position_be_stored(entry_db, EntryRecipeDb, RegisterId):
+        for from_si, r in EntryRecipeDb.iteritems():
             # [X] Rationale for unconditional store input position: 
             #     see bottom of file.
-            mouth.entry_db[from_si].extend(
-                Op.StoreInputPosition(E_PreContextIDs.NONE, register_id, offset)
-                for register_id, offset in r.ip_offset_db.iteritems()
-                if register_id == RegisterId
+            offset = r.ip_offset_db.get(RegisterId)
+            # If input position needs to be restored, it cannot be more
+            # restored than that.
+            if offset is None: continue 
+
+            entry_db[from_si].append(
+                Op.StoreInputPosition(E_PreContextIDs.NONE, RegisterId, offset)
             )
+
+    def __str__(self):
+        txt = [ "Accepter:\n" ]
+        # For acceptance the sequence matters
+        for x in self.accepter:
+            txt.append("   AccId: %s; RestoreReg: %s;\n" % (x.acceptance_id, x.position_register))
+        txt.append("InputOffsetDb:\n")
+        for register, offset in sorted(self.ip_offset_db.iteritems()):
+            txt.append("    [%s]: %s\n" % (register, offset))
+        return "".join(txt)
 
     
 # [X] Rationale for unconditional input position storage.

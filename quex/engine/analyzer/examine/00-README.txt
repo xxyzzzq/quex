@@ -18,7 +18,7 @@ transitions. This is done by compensating them through a single operation or by
 postponing them to a state as late as possible.  Operations are preferably
 postponed, because earlier states are passed more often than later states.
 
-The optimized state machine will be described in terms of 'multi-entry states'.
+The resulting state machine is described in terms of 'multi-entry states'.
 That is, the operations applied upon entry into a state may be different
 dependent from which state or through which transition the entry happens.
 Figure 1 shows a single-entry state and a multi-entry state.
@@ -184,51 +184,56 @@ Figure 4 displays the concept of a mouth state and the development of the
 In a linear state the 'SCR(i)' can be determined based on the predecessor's
 SCR and the 'op(i)'
 
-            SCR(i) = op(i)(SCR(k))
+            SCR(i) = op(i)(SCR(k))                                          (1)
 
 with 'k' as the one and only predecessor state. If 'SCR(k)' is known, then
 'SCR(i)' of a linear state is known off-line purely from the consideration of
-the state machine.  In a mouth state 'SCR(i)' can only be determined depending
-on the state from where the transition originates.
+the state machine.  In a mouth state 'SCR(i)' is be determined depending on the
+state from where the transition originates.
 
-
-                      .' op(i)(SCR(a))  if entry from state 'a'
-                      |  op(i)(SCR(b))  if entry from state 'b'             (4)
-            SCR(i) = <   ...
+                      /  op(i)(SCR(a))  if entry from state 'a'
+                      |  op(i)(SCR(b))  if entry from state 'b'             (2)
+            SCR(i) =  |   ...
                       |  
-                      '. op(i)(SCR(z))  if entry from state 'z'
+                      \  op(i)(SCR(z))  if entry from state 'z'
 
 Let 'recipe' be the procedure to determine the SCR in a state without
 considering any previous operation. That is, if for all states all recipes are
 known, then all operations along the state machine transitions can be removed.
 Let the term recipe be defined as follows.
 
-DEFINITION: R(i,k) -- Recipe 
+DEFINITION: R(i,k), R(i) -- Recipe 
 
-   Let 'i' indidate a state and 'k' its predecessor state. A recipe allows to
-   determine 'SCR(i)' without that operations along the transitions are
-   executed. It is derived from the operation 'op(i)' and 'SCR(k)'.
-
-   In order to be independent of previous operations, the recipe's procedure
-   uses solely the following inputs:
+   Let 'i' indidate a state and 'k' its predecessor state. A recipe R(i,k)
+   allows to determine 'SCR(i)' without execution of operations along the
+   transitions. It is derived from the operation 'op(i)' and 'SCR(k)'.  The
+   recipe's procedure uses solely the following inputs:
 
           * 'h(i)', the hidden variables of the current state,
           * 'Aux', the setting of auxiliary registers
 
-   Or, briefly it implements
+   It implements the mapping
 
                   (h(i), Aux) ---> SCR(i)                                   (3)
 
-Hidden variables are, for example, the input position of the current stream, or the
-lexeme start position, or other members of the state machine. Auxiliary registers
-may contain data that has been stored in previous states. To express SCR(i,k) in
-equation (2) by means of a recipe, the setting of SCR(p) must have been stored
-in auxliary registers. 
+   Let 'R(i)' indicate the recipe which appears to the successor states of
+   state 'i'.
+
+Hidden variables are, for example, the input position of the current stream or
+the lexeme start position. Auxiliary registers may contain data that has been
+stored in previous states. To express SCR(i,k) in equation (2) by means of a
+recipe 'SCR(k)' must have been stored in auxliary registers. The recipe 'R(i)'
+may be used to replace 'SCR(i)'. For linear states is is identical to 'R(i,k)';
+for mouth states it is not. This is discussed in the next section.
+
+The fundamental difference between 'R(i)' and 'SCR(i)' is that former is a 
+procedure and the latter represents the values which are produced.
 
 The simplest form of a recipe is the setting of the SCR with constant values.
 For example, at a state entered by the newline character the recipe for 'column
 number' may be 'column number = 0', because a new line begins. The advantage
-of recipes may is shown in the example of figure 5.
+of recipes is demonstrated figure 5.
+
 
     a)        op(1) =             op(2) =          
                 'la = 10'           'la = 12'        
@@ -243,277 +248,158 @@ of recipes may is shown in the example of figure 5.
 
        ...  -------------->( 1 )-------------->( 2 )----> ...
                              :                   :
-                        goto T_10           goto T_12
+                         goto T10            goto T12
 
      Figure 5: Equivalent state sequences. a) Relying on operations along
                transitions. b) With SCRs determined by recipes.
 
-In figure 5.a the operations setting the last acceptance 'la' are executed at
-every transition, even if states '1' and '2' are passed by and later states may
-detect another acceptance. Upon drop-out from state 1 or 2 a conditional goto
-to a terminal is applied based on the setting of 'la'. In figure 5.b the
-operations along transitions are completely removed. The recipes determined 
-the acceptance apriori, so that a direct goto to the correspondent terminal
-can be applied. Clearly, the second approach requires less computational
-effort during transitions and at drop-out.
+In figure 5.a operations are executed at each transition step. They assign
+identifiers to the 'last acceptance' register 'la'. This assignment happens
+even if states '1' and '2' are passed by and later states may detect another
+acceptance. Upon drop-out from state 1 or 2 a conditional goto to a terminal is
+applied based on the setting of 'la'. 
 
-
-                   
-
+In figure 5.b the operations along transitions are completely removed. The
+recipes determined the acceptance apriori, so that a direct goto to the
+correspondent terminal can be applied.  Clearly, the second approach requires
+less computational effort during transitions and at drop-out.
 
 -------------------------------------------------------------------------------
 
-PROPAGATION OF RECIPES:
+BASICS ON PROPAGATION OF RECIPES
 
-Since there is only one predecessor state to a linear state, the SCR can be
-derived from the SCR at the predecessor and the single operation at the entry
-of the linear state itself. Let 'k' denote the predecessor state of 'i'.  Then,
-the characteristic equation for a linear state demonstrates the development
-of the SCR
+A recipe for one state may be the basis for the development of the recipe of
+its successor state. For a linear state, equation (1) described how 'SCR(i)' is
+determined from the predecessor's 'SCR(k)' and the entry operation 'op(i)'. If
+'SCR(k)' can be determined by a recipe 'R(k)', then 'SCR(i)' becomes
 
-                     SCR(i) = op(i)(SCR(k))                                 (1)
+                     SCR(i) = op(i)(R(k))                                   (4)
 
-if 'k' is also a linear state with a single predecessor 'p', then the right 
-hand of the above equation can be expanded to
+Since, a recipe 'R(k)' is already independent of operations along transitions,
+the recipe for 'SCR(i)' becomes nothing else than the expression that
+determines it. That is,
 
-                     SCR(i) = op(i)(op(k)(SCR(p)))                          (2)
+                     R(i) := op(i)(R(k))                                    (5)
                  
-Thus, the concatenation of operations op(i) and op(k) together with knowledge
-about the SCR in state 'k' makes it possible to determine the setting of SCR(i)
-without executing each operation along the state transitions. This
-concatenation can be continued along an arbitrary sequence of linear states.
-
-The process that allows to determine 'SCR(i)' upon exit without having to 
-consider previous operations is defined in this document as 'recipe'.
-
-
-
-It also contains enough
-information for successor states to determine their recipes. The derivation of
-a recipe based on a predecessor's recipe is defined here as 'accumulation'.
+The derivation of a recipe based on a predecessor's recipe is defined here as
+'accumulation'.
 
 DEFINITION: Accumulation
 
-    The process 'accumulation' determines a recipe 'R(i,k)' a state 'i' which is
-    entered from state 'k'. 
-    
-       (i)  the recipe 'R(k)' of a predecessor state 'k', and
-    
-       (ii) the entry operation 'op(i)' 
-    
+    Given a state 'i', its predecessor state 'k', the entry operation 'op(i)'
+    the predecessor's recipe 'R(k)', the recipe to 'R(i,k)' is equivalent
+    to the concatenated operations of 'op(i)' and 'R(k)'.
+
+    A prerequisit for accumulation is that 'R(k)' of the predecessor is 
+    determined.
 
 EXAMPLE:
-
-Figure 2 displays an example. It demonstrates the aforementioned introduced 
-concepts and demonstrates how they can be used to reduce computational effort.
-
  
                   op(b)=        op(c) =      op(d) =
                     x=x+1         x=x+1         x=x+1        
-        ... ( a )-------->( b )-------->( c )-------->( d )--------> ...
+            ( a )-------->( b )-------->( c )-------->( d )--------> ...
 
 
-                  Figure 2: A sequence of linear states.
+                  Figure 6: A sequence of linear states.
 
 
-The SCR in figure 2 is 'x'. The operation 'op(i)' for all states is the same, 
-i.e. 
+Figure 6 displays an example of an SCR containing a single variabe 'x'. The
+operations 'op(i)' upon transition are for all transitions 'x = x + 1', i.e.
+increment 'x' by 1. Let the SCR in state 'a' be known as a register of 'Aux'
+and let it be called 'xa'. The simplest form of a recipe is here represented
+by 'R(a)':
 
-                      op(b)(x): x = x + 1
-                      op(c)(x): x = x + 1
-                      op(d)(x): x = x + 1
+               R(a) = { x := xa }                                           (6)
 
-The simplest form of a recipe could be specified assuming that 'x(a)' is 
-determined ('a' is a spring). Then, the recipe for state 'b' is
+The recipe 'R(b,a)' must be equivalent to the concatenated execution of 
+'op(b)' and 'R(a,*)', i.e.
 
-                      R(b) = op(b)(x(a))
-                           = x(a) + 1
-  
-State 'b' has a linear successor state, so the subsequent recipe can be 
-determined by accumulation.
+                   { x := xa }
+                   { x := x + 1 }
+So, 
+               R(b) = { x := xa + 1 }                                       (7)
 
-                      R(c) = op(c)(R(b))
-                           = op(c)(x(a) + 1) = x(a) + 1 + 1
-                           
-A repeated application of accumulation results in a recipe for R(d) as
+and through iteration
 
-                      R(d) = x(a) + 3
+               R(c) = { x := xa + 2 }
+               R(d) = { x := xa + 3 }                                       (8)
 
-The operations at each transition of the state sequence of figure 2 can now 
-be replaced. Instead of computing values at each transition, the recipes are
-applied upon exit from the state machine. This is shown in figure 3.
+If the state machine exits at 'a', 'b', 'c' or 'd' the content of 'x' can be
+determined without relying on the intermediate operations { x:=x+1 }. This
+is shown in figure 7.
  
- 
-      ... ( a )-------->( b )-------->( c )-------->( d )--------> ...
+          ( a )-------->( b )-------->( c )-------->( d )--------> ...
                           :             :             :
-                        x = R(b)      x = R(c)      x = R(d)
+                        x = xa+1      x = xa+2      x = xa+3
 
 
-          Figure 3: Recipes upon exit replace transition operations.
+          Figure 7: Recipes upon exit replace transition operations.
 
-The repeated accumulation of operation along linear states comes to an end
-at states where there is more than one entry. Let the term 'mouth state' be
-defined as follows.
+The repeated accumulation of recipes along linear states comes to an end at
+mouth states.  Equation (2) described the development of the SCR in mouth
+state. Using the concept of a recipe, the equation can be rewritten as
 
+                     /  R(i,p)  if entry from state 'p'
+                     |  R(i,q)  if entry from state 'q'
+            SCR(i) = |   ...                                                (9)
+                     |  
+                     \  R(i,z)  if entry from state 'z'
 
-The counterpart to linear states are 'mouth states' as defined below.
+The applied recipy depends on the origin state of the transition which is only
+determined at run-time. However, a recipe 'R(i)' for a mouth state can be
+determined as follows. For each register of the SCR there are two
+possibilities:
 
-The characteristic equation for a mouth state expressing the development of the
-SCR is
-or, in terms of recipies
+   Homogeneity:   All entry recipes apply the exact same process to
+                  determine the register's content.
 
-                      .' R(i,p)  if entry from state 'p'
-                      |  R(i,q)  if entry from state 'q'
-            SCR(i) = <   ...                                                (5)
-                      |  
-                      '. R(i,z)  if entry from state 'z'
+   Inhomogeneity: Two or more entry recipes apply a different process
+                  to determine the register's content.
 
-The state where the transition originates depends on the path taken to state
-'i', i.e. it depends on the input stream which is only apparent at at run-time.
-Thus, the value of 'SCR(i)' in a mouth state cannot be determined from
-considering the state machine alone. 
+If a register is determined homogeneously, then the part of the recipes that
+determines the register can be overtaken into 'R(i)'. Otherwise, the value
+must be computed upon entry and stored in an auxiliary register. The recipe
+'R(i)' must then rely on the stored value in the auxiliary register. Let this
+process be defined as 'interference'.
 
-A recipe has the task to express the SCR whithout consideration of previous 
-operations or paths. To achieve this, the mouth state may evaluate registers
-upon entry dependent on the transitions origin and store the content in 
-auxiliary registers. The recipe then refers to those auxliary registers 
-in order to determine the SCR. Such a storage in auxiliary registers is not
-necessary for elements of the SCR which are homegeneously produces at all
-entries.
+DEFINITION: Interference
 
+    The process of 'interference' develops a recipe 'R(i)' for a mouth state
+    'i' based on incoming recipes 
+    
+                  IR = { R(i,k): k = 1...N }. 
+                  
+    An incoming recipe 'R(i,k)' implements the concatination of 'op(i)(R(k))'.
 
-cutting of any sequence of operations
-If a recipe is to be derived for
-a mouth state which may serve as a basis for further recipes. , Also, if the mouth state's behavior needs
-to be expressed through the incoming SCRs, then the single-entry approach is no
-longer possible. The characteristic equation (2) imposes a multi-entry approach
-for a state description. 
+        * Procedure elements that are the same for all recipes in 'IR'
+          *can* be overtaken into 'R(i)'.
 
-If a recipe is to be defined for a mouth state, then it may be necessary to
-store content in auxiliary registers upon entry. 
+        * Procedure elements producing different register settings 
+          *must not* be overtaken. Their results need to be stored in 
+          auxiliary variables and 'R(i)' *must* refer to those.
 
-For that however, the 'SCR(h)' must be determined.
-
-DEFINITION: Determined SCR(i)
-
-   The SCR(i) in a state 'i' is *determined* if, either
-   
-   (i)  The complete setting of the SCR is known, or
-   
-   (ii) A procedure is found that allows to determine SCR at runtime.
+Interference requires that all incoming recipes are determined. As long as this
+is not the case, 'R(i)' cannot be determined. Further, no successor state's
+recipe can be determined through accumulation. In other words,  a mouth state 
+blocks any propagation of recipes as long as not all incoming recipes are
+determined. To the contrary, the propagation of recipes may only start at
+states with determined recipes. 
 
 DEFINITION: Spring
 
-    A state with a determined SCR is a spring.
+    A state with a determined recipe is a spring. A spring is the basis
+    for accumulation of recipes.
     
 To start developing recipes, one must first determine the 'springs' in the
 state machine. In practical applications, it requires a very detailed and
 subtle investigation to determine spring states. A safe approach is to 
 consider only the initial state as an initial spring.
 
-Any spring 'h' with a linear state successor 'i' can be used to develop the
-simplest form of a recipe 'op(i)( SCR(h) )'. Along linear states, there is
-always only one distinct entry action. Thus recipes can be developed through an
-iterative process. Using the previous recipe, the current operation may be used
-to develop the recipe for the current state.
-
-
-
-analysis.  As a result of (2) the incoming recipes at the entries may differ.
-An example is shown in figure 5. The operation 'op(i)' for each state is
-'x=x+1'.  State '2' is reached from state '1' and state '0'. The accumulated
-recipe for 'x' differs depending on the entry from which '2' is entered.
-
-                              
-                   .------->-----------.  R(2 from 0) = x(0) + 1
-                  /   x=x+1             \
-                 /                       \
-              ( 0 )                     ( 2 )---> ...
-                 \                       /
-                  \                     /
-                   '--->( 1 )----->----'  R(2 from 1) = x(0) + 2
-                  x=x+1       x=x+1
-
-
-       Figure 5: Different recipes at different entries of a mouth state.
-
-Further, in order to cut off the previous history the operations now, must
-depend on the entry from where the state is entered. The resulting state
-machine must therefore be built upon multi-entry states.
-
-So, there is only one way to determine 'x': it must be computed  upon entry
-into the state. Analogously, to accumulation the let 'interference' in mouth
-state be defined as follows
-
-DEFINITION: Interference
-
-    The process of 'interference' develops a recipe 'R(i)' for a mouth 
-    state 'i'. The interference is based on the recipes for each entry
-    into the mouth state. There are two cases:
-
-       (i) For each register of SCR(i) that is treated the same in all 
-           recipes, the elements of the recipes CAN be taken in 'R(i)'.
-
-       (i) For any register of SCR(i) where the entry recipes in the 
-           entries contain different procedures, the register MUST be
-           stored as a reference. 
-
-    In both cases, the mouth state becomes determined and as a result it can
-    act as a 'spring'. The option of storing registers as a reference is open
-    in any case.
-
-Example: linear successor states of state 2 from figure 5 may develop recipes
-based on the stored values in SCR(2). This is shown in figure 6, where state 4
-A recipe for state 3 which can be a basis for subsequent linear states must
-rely on the stored value for it.
-
-                    x(3):=x(0)+1 
-                ... ------. 
-                           \        x=x+1       
-                          ( 3 )----------->( 4 )------- ...
-                           /                 :
-                ... ------'             R(4) = x(3) + 1
-                    x(3):=x(0)+1 
-
-                   Figure 4: Recipes in a mouth state.
-
-Note, that the register 'x(3)' is not part of the SCR ('x' is, however). Thus,
-the newly entered computations 'x(3):=x(0)+1' and 'x(3):=x(0)+3' are not
-operations 'op(i)' as defined earlier and are not subject to further
-considerations.  
-
-Interference cannot happen, if the set of entry recipes is incomplete. That is,
-if for one entry the recipe cannot be determined, then the interference of 
-the mouth state cannot be accomplished.
-
-
-     a)                           b)
-
-           r0                     
-          -----.                   ----[ op(r0) ]---.
-           r1   \                                    \     rA
-          -----( A )---- ?         ----[ op(r1) ]---( A )-----
-           r2   /                                    /
-          -----'                   ----[ op(r2) ]---'
-
-      Figure 5: Interference.
-     
-     
-Figure 5 shows the effect of interference. It starts the consideration on
-incoming recipes (Figure 5.a). If for a register of the SCR there are two
-recipes producing a different value, then any operation of incoming recipe
-with respect to this register must be executed. The computed value is stored
-as a reference. The recipe of the mouth state must refer to this stored
-reference.
-                 
-Once, a mouth state has a determined recipe, it can act as a spring for the
-walk along linear states.
-
 -------------------------------------------------------------------------------
 
 THE WALK ALONG LINEAR STATES
 
-The recipes for states are determined by a walk along linear states. While
+The recipes for states are determined by a 'walk' along linear states. While
 linear states have only one entry, they may have transitions to more than one
 state. So, the walk along linear states is a recursive 'tree-walk'. The
 termination criteria for the walk along linear states is defined as follows.
@@ -530,165 +416,251 @@ DEFINITION: Termination criteria for walk along linear states.
 The first condition comes natural. The second condition exists, because recipes
 cannot be accumulated beyond mouth states. As a direct consequence, the walk
 can never go along loops, since a loop requires a state with more than one
-entry. A mouth state, however, is never part of the walk according to condition
-(ii). The third condition tells that the walk stops where another walk begins or
-began.  With these concepts, a first draft of an algorithm for the
+entry. The third condition tells that the walk stops where another walk begins
+or began.  With these concepts, a first draft of an algorithm for the
 determination of recipes can be defined.
 
           (*) Start.
-          (*) begin_list = springs extracted from state machine.
-   .----->(*) perform linear walks starting from each spring.
+          (1) springs = initial springs of state machine.
+   .----->(2) perform linear walks starting from each spring.
    |          --> determine R(i) along linear states until terminal,
    |              mouth, or springs.
    |          --> entries of mouth states receive entry recipes.
-   |      (*) interference in mouth states with complete sets of entry
+   |      (3) interference in mouth states with complete sets of entry
    |          recipes.
-   |          begin_list = determined mouth states
-   '- no -(*) begin_list empty?
+   |      (4) springs = determined mouth states
+   '- no -(5) springs empty?
           (*) Stop.
 
         Algorithm 1: Determination of recipes.
 
 When this algorithm comes to an end, there might be still mouth states with
-undetermined entries. The only possible reason for that are circular dependencies
-between mouth states. 
+undetermined entries. The only possible reason for that are circular
+dependencies between mouth states. 
 
-PROOF: 
-    
-begin_list in algorithm 1 empty <=> there are no new springs.
+PROOF: Unresolved mouth states inhibit circular dependency.
 
-=> Either: (i) All mouth states were resolved (-> would be springs), or 
-           (ii) There are unresolved mouth states, because not all entries
-                of those states could be determined.                        (1)
+Let 
 
-From case (i) no statement about unresolved mouth states can be derived. Case
-(ii) makes the first usable statement. Let
+        U := set of unresolved mouth states after algorithm 1 ended.       (10)
 
-        U := set of unresolved mouth states after algorithm 1 ended.        (2)
+An unresolved mouth state 'i' must have at least one unresolved incoming
+recipe. Thus one of its predecessor states, let it be named 'k', must be
+unresolved. If 'k' is a mouth state, then it must be unresolved.  If state 'k'
+is a linear state, then its predecessor must be unresolved, the same holds for
+k's predecessor, etc. until a mouth state is reached. Thus, the unresolvedness
+of a mouth state has its reason in the unresolvedness of at least one other
+mouth state. 
 
-An entry into a mouth state which is undetermined must be connected through a
-linear state sequence, or directly, with a mouth state which is undetermined.
-Let the fact that a state 'p' has an undetermined entry originating from 'q' be
-called a dependency of 'p' on 'q' and let it be written as 
+Let the fact that a mouth state 'i' is unresolved because of another unresolved
+mouth state 'k' be noted as "i depends on k". 
 
-                               p <-- q
+DEFINITION: D(i) -- Dependency Set 
 
-'q' must be undetermined, so it follows
+    If 'i' is a dead-lock state, then the dependency set 'D(i)' contains
+    all states that 'i' requires to be determined, before it can be determined.
 
-                      p <-- q and p in U => q in U                          (3)
+If any state 'k' in 'D(i)' depends on another state 'p' then 'i' also depends
+on it, i.e.
 
-If 'q' depends on 'u', then logically 'u' influences 'q' and 'p'. Thus, 
+                   k in D(i) <=> D(k) is subset of D(i)                    (11)
 
-               p <-- q  and q <-- u   <=>   p <-- { q, u }                  (4)
+The number of states in a state machine is finite, thus 'D(i)' is finite. Since
+every state in 'D(i)' is unresolved, every state in 'D(i)' must depend to
+another state that is unresolved. All of those states are equally in 'D(i)'.
+Let the number of elements in 'D(i)' be 'n'. If the states of 'D(i)' were
+displayed as dots in a plane, and the dependencies between states as arrows,
+then there would be 'n' arrows between 'n' dots. This is only
+possible, if there is at least one loop (proof is trivial). Thus, 
 
+         U is not empty <=> there is at least one circular dependency      (12)
 
-Let the set of dependencies for a state 'p' be defined as 
+what was to be proven.  
 
-                          D(p) = { q, u, ...}                               (5)
-
-which includes every state on which 'p' depends with its 'unresolvedness'. The
-number of states in a state machine is finite, thus the size of U is finite. 
-It follows 
-
-                         size of D(p) = finite                              (6)
-         
-From (3) follows that any state 'i in D(p)' must be unresolved, thus it must
-be dependent on an unresolved state 'k'. From (4), it follows that if 'p'
-depends on 'i', then it also depends on 'k', i.e. 'k in 'D(p)'. 
-
-               i in D(a) and i <-- k => k in D(a)
-
-If the states of 'D(a)' were displayed as dots in a plane, and the dependencies
-between elements of 'D(a)' as arrows, then there would be 'n+1' arrows on 'n'
-dots. This is only possible, if there is at least one loop. A loop is a circular
-dependency.
-
-    size of U is not empty <=> there is at least one circular dependency    (7)
-
-what was to be proven.  However, not every unresolved state is locked into a
-circular dependency. An example is shown in figure 6. There, state 2 is
-unresolved because it depends on state 1. However, state 2 is not circularly
-dependent on state 1. State 1, on the other hand, is unresolved, because it
-is mutually depends on state 0.
-
-                             .---->---.             
-                          ( 0 )      ( 1 )------>( 2 ) 
-                             '----<---'            
-                     
-     Figure 6: Unresolved state 2 depends on unresolved state 1, but is 
-               itself not part of a circular dependency.
+It is this circular dependency that cause algorithm 1 to finish without
+terminating the job. The following section considers the resolution of those
+circular dependencies.
 
 -------------------------------------------------------------------------------
 
 DEAD-LOCK STATES
 
 Dead-lock states are states with undetermined entries and circular
-dependencies.  An example is shown in Figure 4.
+dependencies.  
 
-                           .------------>( 2 )
-                   op(1)   |             /   \
-                ... ---->( 1 )          (     )
-                           |             \   /
-                           '------------>( 3 )
-         
-        Figure 4: A dead-lock of mouth states 2 and 3.
-
-In the example shown in figure 4, both states 2 and 3 only experience the
-effects of operation 'op(i)'. 
 
 DEFINITION: Dead-lock state.
 
     A dead-lock state is a mouth state 'i' which could not be resolved with 
-    algorithm 1. Additionally, it is part of a circular dependency with at least
-    one other unresolved mouth state. As a direct consequence, it follows
+    algorithm 1. It either directly or indirectly depends on a mouth state
+    that depends on a circular dependency. 
 
-       (i)   There is at least one entry to state 'i' with no associated 
-             recipe 'R(p(i))'.
-      
-       (ii)  'i in D(i)', state 'i' is element of the set of states on which
-             it depends.
 
-The first characteristic is a tautology to the fact that algorithm 1 was not
-able to resolve it. The second characteristic is a reformulation of the finding
-of the PROOF of the last section.  Dependencies correspond to paths of linear
-states between mouth states. If there are circular dependencies, then, this
-corresponds to loops in the graph model.
+An example is shown in Figure 4 where state '2' and '3' block each other from
+being determined. For a human observer, it is obvious that the group is
+effected by the same recipe 'R(1)' and therefore 'R(2)' and 'R(3)' are
+trivially defined. The following discussion, presents a formal and general
+solution for dead-lock states.
+
+                                   R(1)
+                           .------------>( 2 )
+                           |             /   \
+                ... ---->( 1 )          (     )
+                           |       R(1)  \   /
+                           '------------>( 3 )
+         
+        Figure 8: A dead-lock of mouth states 2 and 3.
+
+Dependencies correspond to paths of linear states between mouth states. If
+there are circular dependencies, then this corresponds to loops in the graph
+model.
 
 DEFINITION: Dead-Lock Group.
 
-    A set of mouth states where each state from the set depends on all other
-    states, is called a dead-lock group. As a direct consequence of circular
-    dependencies, each state in a dead-lock group is connected to at least one
-    loop.
+    A dead-lock group is a set of mouth states that were undetermined
+    after algorithm 1. It further holds that if and only if two states
+    'i' and 'k' depend mutually on each other, i.e.
 
-STATEMENT:
+              i \in D(k)    and     k \in D(i)                             (13)
 
-    A dead-lock group cannot be divided into two sub-groups. 
+    then both states are part of the same dead-lock group.
+
+
+If 'k' depends on 'p' and 'i' depends on 'k' then 'i' also depends on 'p'.
+Thus, if 'i' and 'k' are in a dead-lock group 'L' and for a state 'p' 
+  
+              p \in D(k)    and    k \in D(p)
+ 
+then 'p \in D(i)'. Vice versa, it can be proven that 'i in \D(p)'. It follows
+that for a dead-lock group 'L'
+
+                 i \in L  =>  i \in D(k) for all k \in L
+
+This proofs the following statement.
+
+STATEMENT 1:
+
+    Every state 'i' of a dead-lock group 'L' is element of all dependency sets
+    'D(k)' for 'k  \in L'. More concisely:
     
-Proof: If any two states 'i' and 'k' belong to a group of dead-locks states,
-then they depend on each other circularly. If either one belonged to a
-group without the other, then this group cannot be a dead-lock group. It
-would be missing a circular dependency. 
+                 D(i) is superset of L, for all i in L                      (14)
 
-STATEMENT:
-
-    A state can only belong to one dead-lock group.
-
-Proof: If a state 'i' belongs to a group of states on which it depends, then it
-cannot belong to a group that does not have all those other states. Otherwise,
-the other group would not be complete. Since there can be no groups which are
-sub groups of others, a state can therefore only belong to one group.
-
-However, there may be more than one dead-lock group where one group depends on
-the other. Consider a dead-lock group where states 'i' and 'k' are circularly
-dependent. State 'k' depends on a state 'p', but 'p' not on 'k'. However, 'p'
-is circularly dependent on 'q'. This is depicted in figure 6.
+An example may be observed in figure 9. 
 
                      .---->---.             .---->---.
                   ( i )      ( k )<------( p )      ( q )
                      '----<---'             '----<---'
 
-                  Figure 6: Dependent dead-lock groups.
+                  Figure 9: Example two dead-lock groups.
+
+The dependency groups for i, k, p, and q are as follows
+
+           D(q) = { p, q }
+           D(p) = { p, q }
+           D(k) = { i, k, p, q }
+           D(i) = { i, k, p, q }
+
+A first dead-lock group would be 'L0 = { p, q }'. It holds
+
+           L0 is subset of D(p) and D(q)
+
+The second dead-lock group is 'L1 = { i, k }', because and it holds
+
+           L1 is subset of D(i) and D(k)
+
+The group '{i, k, p}' cannot be a dead-lock group, because
+
+           D(p) is not a superset of {i, k, p}.
+
+STATEMENT 2:
+
+    From condition (13) it follows that any to states 'p' and 'q' in a dead-
+    lock group are related by 
+
+              p \in D(q)    and     p \in D(q)                            (15)
+    
+PROOF 2: 
+
+If any two states 'i' and 'k' belong to a dead-lock group L0 = {i, k, ...},
+then it must hold
+
+                       D(k) is superset of L0
+
+and by definition 
+
+                       i \in D(k)
+
+If 'k' was found in another group L1 = {k, ...} with 
+
+                       i not \in L1
+                       
+then it could never hold 'D(k) is superset of L1' which is a straight
+contradiction to the proofs first assumption. If any two states 'i' and 'k'
+which belong to the same dead-lock group cannot exist in separate 
+dead-lock groups, then groups cannot be devided--which was to be proven.
+
+From (15) it follows that dead-lock groups cannot be devided. In particular,
+there cannot be sub-groups of dead-lock groups.
+
+STATEMENT 3:
+
+    A state can only belong to one dead-lock group.
+
+If there was a state 'i' belonging to two dead-lock groups L0 and L1, then
+there must be a 'p \in L0' and a 'q \in L1' with
+
+            i \in D(p)     and      p \in D(i)
+and
+            i \in D(q)     and      q \in D(i)
+
+If 'p depends on i' and 'i depends on q', then 'p depends on q'. Analogously,
+it follows 'q depends on p'. That is,
+
+             p \in D(q)    and     q in D(p)
+
+which requires that 'p' and 'q' are in the same dead-lock group. This
+contradicts the initial assumption. Thus, a state can only belong to one
+dead-lock group--which was to be proven.
+
+PROOF 3: 
+
+As has been shown, if any two states 'i' and 'k' belong to a dead-lock group,
+then
+
+
+Let two states 'i' and 'k' belong to a dead-lock group DLG0 = {i, k, ...}.
+If two dead-lock groups DLG0 and DLG1 are different, then there must be a 'k'
+where
+
+              k is element DLG0    and    k is not element DLG1
+    
+Let 'k' be one of the k-s that makes DGL0 and DLG1 different.  Let 'i' be the
+candidate to belong to DLG0 and DLG1. From 'i element of DGL0', it follows
+
+              k is element D(i)
+
+For 'i element of DLG1' one must require
+
+              for all p in DLG1: i is element of D(p)
+
+But if 'i is element of D(p)' and 'i' depends on 'k', then 'k is element of
+D(p)'.
+
+
+
+If 'i' is in group DLG0, then 'k is element 'D(i)'. For 'i' to be in another
+group DLG1, one must require that 'D(i) is superset of DLG1'. This is impossible
+because 'DLG1' lacks 'k'.
+    
+    Assume 'i' belongs to a group of states on which it depends, then it
+? cannot belong to a group that does not have all those other states. Otherwise,
+? the other group would not be complete. Since there can be no groups which are
+? sub groups of others, a state can therefore only belong to one group.
+
+However, there may be more than one dead-lock group where one group depends on
+the other. Consider a dead-lock group where states 'i' and 'k' are circularly
+dependent. State 'k' depends on a state 'p', but 'p' not on 'k'. However, 'p'
+is circularly dependent on 'q'. This is depicted in figure 6.
 
 The 'p' an 'q' build a dead-lock group, and so does 'i' and 'k'. All four
 states do not build a dead lock group. 'i' and 'k' depend on 'p' and 'q'.

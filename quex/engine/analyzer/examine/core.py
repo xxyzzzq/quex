@@ -41,17 +41,14 @@ def do(SM, RecipeType):
     examiner.determine_scr_by_state()
     
     # Determine states from where a walk along linear states can begin.
-    springs = examiner.determine_initial_springs()
+    springs = examiner.setup_initial_springs()
 
     # Resolve as many as possible states in the state machine, i.e. 
-    # associate the states with an recipe 'R(i)'.
+    # associate the states with an recipe 'R(i)'. Possibly, there are mouth
+    # states with undetermined recipes: dead-lock states.
     unresolved_mouths = examiner.resolve(springs)
 
-    # Resolve the states which have been identified to be dead-locks. After
-    # each resolved dead-lock, resolve depending linear states.
-    for group in examiner.dead_lock_resolution_sequence(unresolved_mouths):
-        # group = set of state indices which belong to the group
-        examiner.resolve_dead_lock_group(group)
+    examiner.resolve_dead_locks(unresolved_mouths)
 
     # At this point all states must have determined recipes, according to
     # the theory in 00-README.txt.
@@ -112,18 +109,18 @@ class Examiner:
         for si, scr in self.recipe_type.get_scr_by_state_index(self._sm):
             self.get_state_info(si).scr = scr
 
-    def determine_initial_springs(self):
+    def setup_initial_springs(self):
         """Finds the states in the state machine that comply to the condition
         of a 'spring' as defined in 00-README.txt. It determines the recipe for
         those springs and adds them to the databases.
 
         RETURNS: list of state indices of initial spring states.
         """
-        springs = self.recipe_type.determine_initial_springs(self._sm)
-        for si in springs:
-            state  = self._sm.states[si]
-            recipe = self.recipe_type.from_spring(state.single_entry)
+        result = set()
+        for si, recipe in self.recipe_type.initial_spring_recipe_pairs(self._sm):
             self.set_recipe(si, recipe)
+            result.add(si)
+        return result
 
     def resolve(self, Springs):
         """.--->  (1) Walk along linear states from the states in the set of 
@@ -160,113 +157,49 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-    def resolve_dead_lock_group(self, Group):
+    def resolve_dead_locks(self, UnresolvedMouthStateSet):
         """After the process of '.resolve()', there might be remaining mouth
         states which cannot be resolve due to mutual dependencies. Those states
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent states.
         """
-        mouth_list = [ self.mouth_db[si] for si in Group ]
-            
-        # Based on those entries an 'inherent recipe' can be determined.
-        self.recipe_type.interfere_in_dead_lock_group(mouth_list)
+        def has_improved(CurrRecipe, PrevRegisterSet):
+            """PrevRegisterSet = registers that relied on restore before
+                                 accumulation.
+               CurrRecipe  = recipe that has been determined for the given
+                             mouth state through accumulation.
 
-        # All dead-lock mouth states propagate the same recipe.
-        # (While some entry recipes still may remain open)
-        return self._accumulate(Group)
-
-    def dead_lock_resolution_sequence(self, UnresolvedMouths):
-        """As has been proven in 00-README.txt, there is always a non-circular
-        dependency hierarchy in dead-lock groups. This is a generator that
-        provides an iterator through the groups of 'group_set' in a way so
-        that it can be resolved sequentially. That is, if a group is yielded 
-        than it can be resolved. Its resolution on the other hand, is required 
-        to solve later groups.
-
-        YIELDS: next group that can and must be resolved.
-        """
-        def determined(GroupSet, PresentGroupSet, DependDb):
-            """Determines which groups from the GroupSet can be determined
-            according to the 'PresentGroupSet' and the 'DependDb'. 
-
-            NOTE: At the first call 'PresentGroupSet' is empty. Thus, only
-            those groups are returned which do not depend on any other.
+            An improvement is testified, if the number of SCR registers
+            determined by restore has been reduced. This criteria is sufficient
+            as a terminal condition for the loop. The maximum number that the
+            loop can iterate is the number of registers in the SCR.
             """
-            result = set(group for group in GroupSet
-                               if DependDb[group].issubset(PresentGroupSet))
-            assert result
-            return result
+            return len(CurrRecipe.restore_register_set()) < len(PrevRegisterSet)
 
-        # map: group --> groups on which group depends
-        group_depend_db  = self.dead_lock_groups_find(UnresolvedMouths)
-        
-        determined_set = set()
-        while group_depend_db:
-            # Find those groups that only depends on groups which have been
-            # determined, so far.
-            no_dependency_set = determined(group_depend_db, determined_set)
-            # According to 00-README.txt, there must be always at least one
-            # group that does not depend on others.
-            assert no_dependency_set
+        for si in UnresolvedMouthStateSet:
+            assert self.get_recipe(si) is None
+            self.set_recipe(self.recipe_type.RestoreAll())
 
-            for group in no_dependency_set:
-                yield group
-                del group_depend_db[group]
-            # The theory forbids an indefinite loop. An erroneous behavior is
-            # caught: (1) through the assert that requires that the 
-            #             'no_dependency_set' cannot be empty. 
-            #         (2) through the deletion of each group from 
-            #             'group_depend_db'. 
-            # Thus, the size of 'group_depend_db' decreases always, or an error
-            # is thrown that a non-existing group is tried to be deleted.
-
-    def dead_lock_groups_find(self, UnresolvedMouths):
-        """Find dead-lock groups. According to 00-README.txt, a dead-lock
-        group is a group where every state depends on the other. It has been 
-        proven in 00-README.txt, that a state can only belong to one group.
-
-        RETURNS: Dictionary
-        
-           map: group --> groups on which it depends
-           
-        """
-        def has_dependence(state_depend_db, Ga, Gb):
-            """RETURNS: True  -- if a state in 'Ga' depends on a state in 'Gb'.
-                        False -- if not.
-            """
-            for si in Ga:
-                if not state_depend_db[si].isdisjoint(Gb): return True
-            return False
-
-        predecessor_db = self._sm.get_predecessor_db()
-        
-        # map: state index --> indices of states on which it depends.
-        state_depend_db = dict( 
-            (umsi, set(si for si in predecessor_db[umsi]
-                          if si in UnresolvedMouths))
-            for umsi in UnresolvedMouths
-        )
-        
-        # A state can only belong to one group, that is as soon as it treated
-        # it does not have to be treated again.
-        group_set = set()
-        done_set  = set()
-        for si_a, depend_si_a_list in state_depend_db.iteritems():
-            if si_a in done_set: continue
-            group = set(
-                si_b for si_b in depend_si_a_list
-                     if si in state_depend_db[si_b]
+        improveable_set = UnresolvedMouthStateSet
+        while improveable_set:
+            # backup_db:
+            #             state index   -->   set of registers that require restore
+            # 
+            backup_db = dict(
+                (si, self.get_recipe(si).restore_register_set())
+                for si in UnresolvedMouthStateSet
             )
-            group_set.add(group)
-            done_set.update(group)
+                
+            remainder = self._accumulate(UnresolvedMouthStateSet)
+            # All mouth states propagated a recipe. No input to a mouth state 
+            # can possible remain undetermined.
+            assert not remainder
 
-        depend_db = {} # map: group --> groups on which it depends
-        for ga in group_set:
-            deps = set(gb for gb in group_set
-                          if ga != gb and has_dependence(state_depend_db, ga, gb))
-            depend_db[ga] = deps
-
-        return depend_db
+            improvable_set = set(
+                si
+                for si in UnresolvedMouthStateSet
+                if  has_improved(self.mouth_db[si].recipe, backup_db[si])
+            )
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -279,7 +212,6 @@ class Examiner:
         """Assign a recipe to a state. As soon as this happens, the state is
         considered 'determined'.
         """
-        assert self.get_stateinfo(StateIndex).recipe is None
         self.get_state_info(StateIndex).recipe = TheRecipe
         # Since the .recipe is no longer 'None', the state is 'determined'.
 
@@ -327,7 +259,29 @@ class Examiner:
             # Interference: 
             # --> entry_db: operations that MUST be done upon entry from a state.
             # --> recipe:   for 'drop_out' and further accumulation.
-            self.recipe_type.interfere(self.mouth_db[si])
+            mouth_info   = self.mouth_db[si]
+            recipe,      \
+            register_set = self.recipe_type.interfere(mouth_info.entry_recipe_db)
+            mouth_info.recipe                    = recipe
+            mouth_info.undetermined_register_set = register_set
+
+    def get_Entry(self, StateIndex):
+        """Generates an 'state.Entry' object for the state of the given index.
+
+        RETURNS: Dictionary:
+
+                      'from_state_index' ---> OpList
+        """
+        info = self.get_state_info(StateIndex)
+        if info.mouth_f(): return self.recipe_type.get_mouth_Entry(info)
+        else:              return self.recipe_type.get_linear_Entry(info)
+
+    def get_DropOut(self, StateIndex):
+        """Generates a 'state.DropOut' object for the state of the given index.
+
+        RETURNS: OpList
+        """
+        self.recipe_type.get_DropOut(self.get_state_info(StateIndex))
 
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
@@ -368,8 +322,9 @@ class LinearStateWalker(TreeWalker):
             else:
                 # Linear state ahead => accumulate
                 target = self.examiner._sm.states[target_index]
-                self.examiner.recipe_type.accumulate(target_info, CurrRecipe, 
-                                                     target.single_entry)
+                recipe = self.examiner.recipe_type.accumulate(CurrRecipe, 
+                                                              target.single_entry)
+                target_info.recipe = recipe
                 todo.append((target, target_info.recipe))
 
         if not todo: return None
