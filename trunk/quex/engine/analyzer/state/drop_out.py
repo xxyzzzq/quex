@@ -36,7 +36,7 @@ def get_OpList(TheAccepter, TheTerminalRouter):
 
     return OpList.from_iterable(
         Op.IfPreContextSetPositionAndGoto(check.pre_context_id, 
-                                       router_element(router, check.acceptance_id))
+                                          router_element(router, check.acceptance_id))
         for check in TheAccepter.content
     )
 

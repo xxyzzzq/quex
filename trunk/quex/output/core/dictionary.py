@@ -15,8 +15,8 @@
 from   quex.input.code.base                              import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
-from   quex.engine.operations.content_terminal_router      import RouterContentElement
-from   quex.engine.operations.operation_list                         import E_R, \
+from   quex.engine.operations.content_terminal_router    import RouterContentElement
+from   quex.engine.operations.operation_list             import E_R, \
                                                                 Op
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
@@ -278,15 +278,24 @@ class Lng_Cpp(dict):
                 else_str = "else "
             return "".join(txt)
 
-        elif Op.id == E_Op.Router:
+        elif Op.id == E_Op.RouterByLastAcceptance:
             case_list = [
                 (self.ACCEPTANCE(element.acceptance_id), 
-                 self.position_and_goto(self.__analyzer.engine_type, element))
+                 self.position_and_goto(element))
                 for element in Op.content
             ]
             txt = self.BRANCH_TABLE_ON_STRING("last_acceptance", case_list)
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
+
+        elif Op.id == E_Op.AccepterAndRouter:
+
+            else_str = ""
+            txt      = []
+            for element in Op.content:
+                txt.append(self.if_pre_context(x.pre_context_id, else_str))
+                txt.extend(self.position_and_goto(x.router_element))
+            return "".join(txt)
 
         elif Op.id == E_Op.RouterOnStateKey:
             case_list = [
@@ -305,8 +314,7 @@ class Lng_Cpp(dict):
 
         elif Op.id == E_Op.IfPreContextSetPositionAndGoto:
             pre_context_id = Op.content.pre_context_id
-            block = self.position_and_goto(self.__analyzer.engine_type, 
-                                           Op.content.router_element)
+            block = self.position_and_goto(Op.content.router_element)
             txt = []
             self.IF_PRE_CONTEXT(txt, True, pre_context_id, block)
             return "".join(txt)
@@ -895,12 +903,20 @@ class Lng_Cpp(dict):
         write_safely_and_close(FileName, "".join(new_content))
 
     @typed(X=RouterContentElement)
-    def position_and_goto(self, EngineType, X):
+    def position_and_goto(self, X):
         # Position the input pointer and jump to terminal.
         return [
            self.POSITIONING(X),
            self.GOTO(DoorID.incidence(X.acceptance_id))
         ]
+
+    def if_pre_context(self, PreContextId, ElseStr):
+        if   PreContextId == E_PreContextIDs.BEGIN_OF_LINE:
+            return "    %sif( me->buffer._character_before_lexeme_start == '\\n' ) {" % ElseStr
+        elif PreContextId != E_PreContextIDs.NONE:
+            return "    %sif( pre_context_%i_fulfilled_f ) {" % (ElseStr, PreContextId)
+        else:
+            return "    %s {\n" % ElseStr
 
 cpp_include_Multi_i_str = """
 #include $$HEADER$$

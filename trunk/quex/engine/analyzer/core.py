@@ -422,7 +422,7 @@ class Analyzer:
             # implement the acceptance storage.
 
         # (*) Terminal Router
-        terminal_router = Op.Router()
+        terminal_router = Op.RouterByLastAcceptance()
         for x in TraceList.positioning_info():
             terminal_router.content.add(x.acceptance_id, x.transition_n_since_positioning)
 

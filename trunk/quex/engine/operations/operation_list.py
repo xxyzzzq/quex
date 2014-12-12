@@ -237,8 +237,8 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return Op(E_Op.Accepter)
     
     @staticmethod
-    def Router():
-        return Op(E_Op.Router)
+    def RouterByLastAcceptance():
+        return Op(E_Op.RouterByLastAcceptance)
     
     @staticmethod
     def RouterOnStateKey(CompressionType, MegaStateIndex, IterableStateKeyStateIndexPairs, DoorID_provider):
@@ -334,7 +334,7 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         elif self.id == E_Op.Accepter:
             return str(self.content)
 
-        elif self.id == E_Op.Router:
+        elif self.id == E_Op.RouterByLastAcceptance:
             return str(self.content)
 
         elif self.id == E_Op.RouterOnStateKey:
@@ -474,7 +474,7 @@ def __configure():
     #
     c(E_Op.PathIteratorSet,                  ("path_walker_id", "path_id", "offset"),
                                               (E_R.PathIterator,w))
-    c(E_Op.Router,                           RouterContent, 
+    c(E_Op.RouterByLastAcceptance,           RouterContent, 
                                               (E_R.AcceptanceRegister,r), (E_R.InputP,w), (E_R.ThreadOfControl,w))
     c(E_Op.RouterOnStateKey,                 RouterOnStateKeyContent, 
                                               (E_R.TemplateStateKey,r), (E_R.PathIterator,r), (E_R.ThreadOfControl,w))
@@ -574,7 +574,7 @@ class OpList(list):
                 self[i] = new_command
             elif cmd.id == E_Op.IfPreContextSetPositionAndGoto:
                 cmd.content.router_element.replace(PositionRegisterMap)
-            elif cmd.id == E_Op.Router:
+            elif cmd.id == E_Op.RouterByLastAcceptance:
                 cmd.content.replace(PositionRegisterMap)
 
     def delete_superfluous_commands(self):
