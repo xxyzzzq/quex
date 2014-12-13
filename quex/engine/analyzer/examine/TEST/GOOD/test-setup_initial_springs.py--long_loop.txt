@@ -1,0 +1,13 @@
+Spring: 0;
+Recipe: {
+None
+}
+Linear States:
+   01: determined: False
+   02: determined: False
+   03: determined: False
+   04: determined: False
+   05: determined: False
+Mouth States:
+   00: determined: False
+   06: determined: False
