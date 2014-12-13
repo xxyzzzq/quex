@@ -1,0 +1,68 @@
+{
+file_name: test-accumulate.py;
+result_list: [
+  [ linear; OK; 0.062457; None; ]
+  [ butterfly; OK; 0.062549; None; ]
+  [ long_loop; OK; 0.064963; None; ]
+  [ nested_loop; OK; 0.060242; None; ]
+  [ mini_loop; OK; 0.061357; None; ]
+  [ fork; OK; 0.062717; None; ]
+  [ fork2; OK; 0.060318; None; ]
+  [ fork3; OK; 0.060398; None; ]
+  [ fork4; OK; 0.061443; None; ]
+]
+interpreter_list: [ python; ]
+title: Accumulation;
+hwut_info_time: 1418501175L;
+}
+{
+file_name: test-categorize.py;
+result_list: [
+  [ linear; OK; 0.062775; -897030755; ]
+  [ butterfly; OK; 0.060901; -1385933797; ]
+  [ long_loop; OK; 0.065076; -1119790517; ]
+  [ nested_loop; OK; 0.062047; -1959253617; ]
+  [ mini_loop; OK; 0.061011; 124898604; ]
+  [ fork; OK; 0.062575; 1489302306; ]
+  [ fork2; OK; 0.061462; -1198840585; ]
+  [ fork3; OK; 0.060433; 1112925996; ]
+  [ fork4; OK; 0.061477; 2007143909; ]
+]
+interpreter_list: [ python; ]
+title: Categorize into Linear and Mouth States;
+hwut_info_time: 1418469441L;
+}
+{
+file_name: test-setup_initial_springs.py;
+result_list: [
+  [ linear; OK; 0.060607; 880461060; ]
+  [ long_loop; OK; 0.060698; -839965611; ]
+]
+interpreter_list: [ python; ]
+title: Setup Initial Spring States;
+hwut_info_time: 1418469450L;
+}
+{
+file_name: test-interference.py;
+result_list: [
+  [ 2-entries; OK; 0.061753; 102567888; ]
+  [ 3-entries; OK; 0.062558; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Homogeneous Acceptance;
+title_group: Interference;
+hwut_info_time: 1418501087L;
+}
+{
+file_name: test-interference2.py;
+result_list: [
+  [ 2-entries; OK; 0.061778; -85825407; ]
+  [ 3-entries; OK; 0.061705; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Homogeneous IpOffset;
+title_group: Interference;
+hwut_info_time: 1418501563L;
+}

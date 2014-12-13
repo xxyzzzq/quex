@@ -1,6 +1,8 @@
 Test the State Machine Examination
 ------------------------------------------------
 python *.py
+--not __init__.py
+--not helper.py
 ------------------------------------------------
 
 Tests in this directory test the state machine examination.  The procedure and
