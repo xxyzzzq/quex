@@ -1,0 +1,34 @@
+           
+                          .->--(1)-->---.
+                         /              |
+                       (0)---->(2)---->(4)---->(5)
+                         \                      |
+                          '->--(3)-->-----------'
+    
+Mouths ready for interference:
+   []
+
+Linear States:
+  00     Accepter:
+           pre33 => 4711
+         InputOffsetDb:
+           [4711] offset: 0
+     
+  01     Accepter:
+           pre33 => 4711
+         InputOffsetDb:
+           [4711] offset: -1
+     
+  02     Accepter:
+           pre33 => 4711
+         InputOffsetDb:
+           [4711] offset: -1
+     
+  03     Accepter:
+           pre33 => 4711
+         InputOffsetDb:
+           [4711] offset: -1
+     
+Mouth States:
+  04 <void>
+  05 <void>

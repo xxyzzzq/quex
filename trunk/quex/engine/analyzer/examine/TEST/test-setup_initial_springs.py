@@ -13,10 +13,7 @@ if "--hwut-info" in sys.argv:
     print "CHOICES: linear, long_loop;"
     sys.exit()
 
-sm = StateMachine(InitStateIndex=0L)
-
-if   "linear"    in sys.argv: sm, state_n = get_linear(sm)
-elif "long_loop" in sys.argv: sm, state_n = get_long_loop(sm)
+sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
 
 examiner = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
