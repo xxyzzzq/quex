@@ -27,8 +27,8 @@ for si in examiner.setup_initial_springs():
 
 print "Linear States:"
 for si, info in examiner.linear_db.iteritems():
-    print "%02i: determined: %s" % (si, info.recipe is not None)
+    print "   %02i: determined: %s" % (si, info.recipe is not None)
 
 print "Mouth States:"
 for si, info in examiner.mouth_db.iteritems():
-    print "%02i: determined: %s" % (si, info.recipe is not None)
+    print "   %02i: determined: %s" % (si, info.recipe is not None)

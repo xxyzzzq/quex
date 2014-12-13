@@ -1,0 +1,15 @@
+Spring: 0;
+Recipe: {
+Accepter:
+InputOffsetDb:
+
+}
+Linear States:
+00: determined: True
+01: determined: False
+02: determined: False
+03: determined: False
+04: determined: False
+05: determined: False
+06: determined: False
+Mouth States:
