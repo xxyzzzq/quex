@@ -1,0 +1,18 @@
+           
+                .--<-------(5)---<------.
+                |                       |
+               (0)---->(1)---->(2)---->(3)---->(4)
+                        |       |   
+                        '---<---'
+    
+Mouths ready for interference:
+   []
+
+Linear States:
+  02 <void>
+  03 <void>
+  04 <void>
+  05 <void>
+Mouth States:
+  00 <void>
+  01 <void>
