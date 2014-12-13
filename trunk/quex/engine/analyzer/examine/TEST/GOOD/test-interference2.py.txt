@@ -1,0 +1,23 @@
+Mouth States:
+  01     Accepter:     restore!
+         InputOffsetDb:
+         Undetermined: [AcceptanceRegister]
+
+  02     Accepter:     restore!
+         InputOffsetDb:
+           [0] offset: -1
+         Undetermined: [AcceptanceRegister]
+
+  03     Accepter:     restore!
+         InputOffsetDb:
+           [0] offset: -1
+           [1] offset: -2
+         Undetermined: [AcceptanceRegister]
+
+  04     Accepter:     restore!
+         InputOffsetDb:
+           [0] offset: -1
+           [1] offset: -2
+           [2] offset: -3
+         Undetermined: [AcceptanceRegister]
+
