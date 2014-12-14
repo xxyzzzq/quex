@@ -77,7 +77,6 @@ examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
 
 examiner._interfere(set([1L, 2L, 3L, 4L]))
 
-
 print "Mouth States:"
 for si, info in examiner.mouth_db.iteritems():
     print_recipe(si, info.recipe, info.undetermined_register_set)

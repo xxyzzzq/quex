@@ -6,7 +6,7 @@
                           '->--(4)-->---'
     
 Mouths ready for interference:
-   []
+   [5L]
 
 Linear States:
   00     Accepter:

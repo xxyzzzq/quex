@@ -12,7 +12,7 @@ from quex.engine.analyzer.examine.core                          import Examiner,
 
 if "--hwut-info" in sys.argv:
     print "Accumulation;"
-    print "CHOICES: linear, butterfly, long_loop, nested_loop, mini_loop, fork, fork2, fork3, fork4;"
+    print "CHOICES: %s;" % get_sm_shape_names()
     sys.exit()
 
 sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
