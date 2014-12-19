@@ -6,9 +6,34 @@ Operation Reduction/Operation Postponing
 ABSTRACT:
 
 This file describes the theoretical background for the process applied by Quex
-used to reduce the number of operations or to postpone operations. Any write
-operation that can be avoided during state transitions may bring a strong
-performance increase (due to avoided cache misses, for example). 
+used to reduce the number of operations or to postpone operations.  The
+optimization uses the fact that intermediate values which are developed during
+the state transitions are not visible to the outer observer. Instead, only the
+values are important that are present upon exit from the state machine.
+
+Figure 1 shows a very simple state machine consisting of four states.  The
+dotted lines indicate 'drop-out', i.e. a path that is taken to exit the state
+machine.  In the original state machine, as shown in 1.a, the content of 'x' is
+increment upon each transition. When the state machine is left in state 3, for
+example, three such increments must have taken place. In 1.b an optimized
+representation of the state machine is shown.  There, value of 'x' is only
+determined upon exit.  No increments happen during transitions. Only upon exit
+'x' is assigned the predetermined value. The balance on computational effort is
+obvious.
+     
+         a)          x=x+1        x=x+1        x=x+1
+              ( 0 )------->( 1 )------->( 2 )------->( 3 )
+                : exit       : exit       : exit       : exit
+                :            :            :            :
+    
+         b)
+              ( 0 )------->( 1 )------->( 2 )------->( 3 )
+                : exit       : exit       : exit       : exit
+                :            :            :            :
+               x=0          x=1          x=2          x=3
+    
+             Figure 1: Original and optimized state machine.
+                 
 
 The analysis requires a state machine which is composed of 'single-entry
 states'. That is, upon entry into a state the same operations are executed
@@ -40,41 +65,28 @@ Figure 1 shows a single-entry state and a multi-entry state.
                   ---[ operations 2 ]----'       
 
 
-      Figure 1: Two approaches of state modelling: a) Single entry state. 
+      Figure 2: Two approaches of state modelling: a) Single entry state. 
                 b) Multi-entry state. 
                 
 -------------------------------------------------------------------------------
 
-SITUATION:
-
-Incoming characters cause state transitions. Transitions are adorned with
-operations, such as 'store last acceptance'. At some point, an incoming
-character does not fit a transition map of the current state and the state
-machine exits.  Upon such a 'drop-out', some consequences are derived  based on
-the passed operations and the current state. The steps in the run through a
-state machine are depicted in figure 2.
-
-
-                    .----------<---------------.
-                    |                          |
-          Begin -------> Operations -----> Transition -----> Drop-Out
-                                                  
-
-              Figure 2: The run through a state machine.
+BASICS:
 
 Along the transitions of a state machine many different operations may occur
 which do not necessarily share the same subject. Some operations determine the
 last accepted pattern, the input position to be restored upon acceptance, the
 line and column numbers, the checksum value of a lexeme, or the sum of grapheme
-widths of the lexeme's characters, and so on. 
+widths of the lexeme's characters, and so on. The term 'investigated behavior'
+is defined to specify a focus of analysis.
 
 DEFINITION: Investigated Behavior 
 
-   Let the term 'investigated behavior' represent a set of operations and the
-   registers on which they operate together with their nominal behavior.
+   Let the term 'investigated behavior' represent a specified set of
+   *operations* and the *registers* on which they operate together with a
+   *nominal behavior*.
 
 For example, line number counting as an investigated behavior is concerned of
-the line number register and any operation that modifies its content. The
+the line number register and operations that increment the line number. The
 nominal behavior is that the line number register should be increased upon
 newline and remain the same upon the occurrence of any other character.  Let
 the sets of registers which are associated with an investigated behavior be
@@ -97,11 +109,11 @@ DEFINITION: RR(i) -- Set of Required Registers
       (i)  to implement the investigated behavior upon drop-out and
       (ii) to develop the SCR settings of all successor states.
 
-For example, if the lexeme length is not required in a terminal, then no state
-on the path to the terminal is required to contribute to the development of
-that register--except that another successor state requires it.  
-
-Let setting of concerned registers be defined as follows.
+For example, if the lexeme length is not required in a terminal, then any
+operation contributing to the computation of lexeme length is not redundant
+--except if there is another successor state requires it. For all the states on
+the path, the 'lexeme length register' is not required and is not element of
+'RR(i)'.  Let setting of concerned registers be defined as follows.
 
 DEFINITION: SCR(i) -- Setting of SCR registers in state 'i'.
 
@@ -131,17 +143,16 @@ influences the modification of a register in 'RR(i)' is subject to
 consideration of the investigated behavior.
     
 The 'RR(i)' for each state can be determined by *back-propagation* of needs. A
-state or a terminal which requires a specific register tags all of its
-predecessor states with this requirement. That is, if a state 'k' requires a
-register 'x', then 'x is element of 'RR(i)' for every state 'i' that lies on
-the path to 'k'.
+state which requires a specific register tags all of its predecessor states
+with this requirement. That is, if a state 'k' requires a register 'x', then 'x
+is element of 'RR(i)' for every state 'i' that lies on the path to 'k'.
 
 -------------------------------------------------------------------------------
 
 LINEAR STATES AND MOUTH STATES:
 
-Two central concept of the analysis algorithms are 'linear states' and 'mouth
-states' as they are defined in the paragraphs to follow. 
+Two central concept are required for the further discussion: 'linear states' and 'mouth
+states'.  They are defined in the paragraphs to follow. 
 
 DEFINITION: Linear State
 
@@ -209,22 +220,21 @@ DEFINITION: R(i,k), R(i) -- Recipe
    transitions. It is derived from the operation 'op(i)' and 'SCR(k)'.  The
    recipe's procedure uses solely the following inputs:
 
-          * 'h(i)', the hidden variables of the current state,
-          * 'Aux', the setting of auxiliary registers
+          * 'h(i)', the hidden variables of state machine.
+          * 'A', the setting of auxiliary registers.
 
    It implements the mapping
 
-                  (h(i), Aux) ---> SCR(i)                                   (3)
+                  (h(i), A) ---> SCR(i)                                   (3)
 
    Let 'R(i)' indicate the recipe which appears to the successor states of
    state 'i'.
 
-Hidden variables are, for example, the input position of the current stream or
-the lexeme start position. Auxiliary registers may contain data that has been
-stored in previous states. To express SCR(i,k) in equation (2) by means of a
-recipe 'SCR(k)' must have been stored in auxliary registers. The recipe 'R(i)'
-may be used to replace 'SCR(i)'. For linear states is is identical to 'R(i,k)';
-for mouth states it is not. This is discussed in the next section.
+Hidden variables are all variables of the state machine other the 'state'. A
+lexical analyzer state machine has, for example the lexeme start position, the
+buffer limits, the stream position, etc. as hidden variable.  Auxiliary
+registers contain values of SCR registers that have been stored in previous
+states. 
 
 The fundamental difference between 'R(i)' and 'SCR(i)' is that former is a 
 procedure and the latter represents the values which are produced.
@@ -235,34 +245,31 @@ number' may be 'column number = 0', because a new line begins. The advantage
 of recipes is demonstrated figure 5.
 
 
-    a)        op(1) =             op(2) =          
-                'la = 10'           'la = 12'        
+    a)        
+            'accept=10'        'accept=12'        
+       ... ------------>( 1 )-------------->( 2 )----> ...
+                          :                   :
+                    goto T(accept)      goto T(accept)
 
-       ...  -------------->( 1 )-------------->( 2 )----> ...
-                             :                   :
-                     goto Terminal(la)   goto Terminal(la)
-
-
-    b)                    SCR(i) =            SCR(2) =              
-                     'acceptance = 10'   'acceptance = 12'                     
-
-       ...  -------------->( 1 )-------------->( 2 )----> ...
-                             :                   :
-                         goto T10            goto T12
+    b) 
+       ... ------------>( 1 )-------------->( 2 )----> ...
+                          : 'accept=10'       : 'accept=12'              
+                          :                   :
+                      goto T10            goto T12
 
      Figure 5: Equivalent state sequences. a) Relying on operations along
-               transitions. b) With SCRs determined by recipes.
+               transitions. b) SCRs determined by recipes.
 
 In figure 5.a operations are executed at each transition step. They assign
-identifiers to the 'last acceptance' register 'la'. This assignment happens
+identifiers to the last acceptance register 'accept'. This assignment happens
 even if states '1' and '2' are passed by and later states may detect another
 acceptance. Upon drop-out from state 1 or 2 a conditional goto to a terminal is
-applied based on the setting of 'la'. 
+applied based on the setting of 'accept'. 
 
 In figure 5.b the operations along transitions are completely removed. The
-recipes determined the acceptance apriori, so that a direct goto to the
+recipes determined the acceptance a priori, so that a direct goto to the
 correspondent terminal can be applied.  Clearly, the second approach requires
-less computational effort during transitions and at drop-out.
+no computational effort during transitions and lesser effort upon drop-out.
 
 -------------------------------------------------------------------------------
 
@@ -294,7 +301,6 @@ DEFINITION: Accumulation
     determined.
 
 EXAMPLE:
- 
                   op(b)=        op(c) =      op(d) =
                     x=x+1         x=x+1         x=x+1        
             ( a )-------->( b )-------->( c )-------->( d )--------> ...
@@ -303,26 +309,25 @@ EXAMPLE:
                   Figure 6: A sequence of linear states.
 
 
-Figure 6 displays an example of an SCR containing a single variabe 'x'. The
-operations 'op(i)' upon transition are for all transitions 'x = x + 1', i.e.
-increment 'x' by 1. Let the SCR in state 'a' be known as a register of 'Aux'
-and let it be called 'xa'. The simplest form of a recipe is here represented
-by 'R(a)':
+Figure 6 displays an example of an SCR containing a single register 'x'. The
+operations 'op(i)' upon transition are 'x=x+1' for all states. That is 'x' is
+incremented by 1 at each step. Let the 'x' be stored in 'A(x,a)'.  The
+simplest form of a recipe is here represented by 'R(a)':
 
-               R(a) = { x := xa }                                           (6)
+               R(a) = { x := A(x,a) }                                     (6)
 
 The recipe 'R(b,a)' must be equivalent to the concatenated execution of 
-'op(b)' and 'R(a,*)', i.e.
+'op(b)' and 'R(a)', i.e.
 
-                   { x := xa }
+                   { x := A(x,a) }
                    { x := x + 1 }
 So, 
-               R(b) = { x := xa + 1 }                                       (7)
+               R(b) = { x := A(x,a) + 1 }                                 (7)
 
-and through iteration
+This rule applied repeatedly for the states 'c' and 'd' leads to
 
-               R(c) = { x := xa + 2 }
-               R(d) = { x := xa + 3 }                                       (8)
+               R(c) = { x := A(x,a) + 2 }
+               R(d) = { x := A(x,a) + 3 }                                 (8)
 
 If the state machine exits at 'a', 'b', 'c' or 'd' the content of 'x' can be
 determined without relying on the intermediate operations { x:=x+1 }. This
@@ -330,7 +335,7 @@ is shown in figure 7.
  
           ( a )-------->( b )-------->( c )-------->( d )--------> ...
                           :             :             :
-                        x = xa+1      x = xa+2      x = xa+3
+                        x=A(x,a)+1    x=A(x,a)+2    x=A(x,a)+3
 
 
           Figure 7: Recipes upon exit replace transition operations.
@@ -345,7 +350,7 @@ state. Using the concept of a recipe, the equation can be rewritten as
                      |  
                      \  R(i,z)  if entry from state 'z'
 
-The applied recipy depends on the origin state of the transition which is only
+The applied recipe depends on the origin state of the transition which is only
 determined at run-time. However, a recipe 'R(i)' for a mouth state can be
 determined as follows. For each register of the SCR there are two
 possibilities:
@@ -369,7 +374,7 @@ DEFINITION: Interference
     
                   IR = { R(i,k): k = 1...N }. 
                   
-    An incoming recipe 'R(i,k)' implements the concatination of 'op(i)(R(k))'.
+    An incoming recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'.
 
         * Procedure elements that are the same for all recipes in 'IR'
           *can* be overtaken into 'R(i)'.
@@ -390,10 +395,12 @@ DEFINITION: Spring
     A state with a determined recipe is a spring. A spring is the basis
     for accumulation of recipes.
     
-To start developing recipes, one must first determine the 'springs' in the
-state machine. In practical applications, it requires a very detailed and
-subtle investigation to determine spring states. A safe approach is to 
-consider only the initial state as an initial spring.
+In practical applications, it requires a very detailed and subtle investigation
+to determine spring states. The initial state is an example. As long as it is
+not a mouth state, then it may be a spring. If no such spring state exists, the
+procedure must overstep the deterministic propagation of recipes based on
+spring states, as shown in the subsequent section. The section after that,
+discusses solutions where the deterministic propagation fails.
 
 -------------------------------------------------------------------------------
 
@@ -457,8 +464,9 @@ mouth state 'k' be noted as "i depends on k".
 
 DEFINITION: D(i) -- Dependency Set 
 
-    If 'i' is a dead-lock state, then the dependency set 'D(i)' contains
-    all states that 'i' requires to be determined, before it can be determined.
+    For a given mouth state 'i' the dependency set 'D(i)' contains all states
+    that 'i' requires to be determined, before interference in state 'i' can be
+    performed.
 
 If any state 'k' in 'D(i)' depends on another state 'p' then 'i' also depends
 on it, i.e.
@@ -477,15 +485,13 @@ possible, if there is at least one loop (proof is trivial). Thus,
 
 what was to be proven.  
 
-It is this circular dependency that cause algorithm 1 to finish without
-terminating the job. The following section considers the resolution of those
-circular dependencies.
+It is this circular dependency which prevents algorithm 1 from being a complete
+solution. The following section discusses a solution for these cases where 
+the deterministic propagation of recipes failed.
 
 -------------------------------------------------------------------------------
 
 DEAD-LOCK STATES
-
-Algorithm 1 does not solve all possible scenarios.
 
 Interference can only be performed, if all entry recipes of a mouth state are
 present. Loops in the state machine graph, however, cause circular
@@ -496,11 +502,11 @@ before R(2) from state 2 can be determined, the entry recipe from
 state 1 must be present. Both states cannot perform an interference,
 because they are missing an entry recipe. 
 
-
-                                   .---->----.
+                                       R(1)
+                          R(0)     .---->----.
                     ( 0 )------>( 1 )       ( 2 )
                                    '----<----'
-                            
+                                       R(2)
            Figure 8: A dead-lock in mouth states 1 and 2.
 
 As shown, mutually obstructed interference is the reason behind dead-locks.  A
@@ -509,16 +515,21 @@ central concept for the solution is that of 'run-time interference'.
 DEFINITION: Run-Time Interference.
 
    Run time interference imposes a 'store-restore' procedure on a mouth state.
-   The value of every register of the SCR is computed upon entry and stored
-   in an auxiliary register. The output recipe is simple 'restore all', that
-   is, the value of a register is provided by restoring the restored value
-   from the auxiliary register. 
+   The value of every register 'x' of the SCR is computed upon entry and stored
+   in an auxiliary register. 
+
+        A(x,i) := x from 'R(i,k)' for all states 'k' entering state 'i'
+   
+   The output recipe is simple 'restore all', that is, the value of a register
+   is provided by restoring the restored value from the auxiliary register. 
+
+        R(i) := { x = A(x,i) }
 
 The run-time interference is correct if and only if the entry recipes are
 correct. If the output of a recipe of a mouth state is correct, then all
-recipes derived from accumulation are correct. This is so, since accumulation
-is deterministic, without any run-time dependency. To proof the correctness
-of run-time interference, the term 'horizon' is defined.
+recipes derived from its accumulation are correct. This is so, since
+accumulation is deterministic, without any run-time dependency. To proof the
+correctness of run-time interference, the term 'horizon' is defined.
 
 DEFINITION: Horizon
 
@@ -546,8 +557,8 @@ following statement can be made.
 
 STATEMENT: 
 
-   Any state of the dead-lock states is only reached by a path that guides
-   through a horizon state. 
+   A dead-lock states can only reached by a path that guides through a horizon
+   state. 
 
 In other words, the horizon states are the entry points to the realm of
 dead-lock states.  The entry into the horizon state happens through the
@@ -557,7 +568,7 @@ the entry recipe is derived by deterministic procedures. Thus, restoring the
 stored values is a correct procedure to determine the SCR.  'R(i)' is correct,
 at the time of entry into a horizon. Accumulation along linear states is
 deterministic. A propagated recipe 'R(i)' results in correct entries to
-other mouth states and run-time interference produces again a correct
+other mouth states, run-time interference produces again a correct
 output recipe and the discussion continues where it started.  It follows
 the following statement.
 
@@ -576,7 +587,7 @@ FINE TUNING OF DEAD-LOCK STATES
 
 While the previous discussion provides a complete solution, there is still
 space for improvement. Figure 10 shows a case where the SCR variable 'x' is
-assigned 5 upon entry into state 1 at any case. Storing the value upon entry
+assigned 5 upon entry into state 1 in any case. Storing the value upon entry
 and restoring it upon exit, is superfluous. Since the entry recipes are
 homogeneous, normal interference may be applied. For the entry from state 1
 into state 2, the recipe 'x=6' is sufficient. This section discusses how normal
@@ -592,11 +603,10 @@ maintaining correctness.
           Figure 10: Dead-lock group with space for improvement.
 
 
-By definition, partial interference can only happen in a state with at least
-one determined entry recipe. The state 'i' in figure 8 represents such a state.
-Algorithm 1 applied a procedure based on the deterministic accumulation and
-interference. Thus, any recipe that resulted from algorithm 1 is stable and
-correct.  
+By definition, run-time interference can only happen in a state with at least
+one determined entry recipe.  Algorithm 1 applied a procedure based on the
+deterministic accumulation and interference. Thus, any recipe that resulted
+from algorithm 1 is stable and correct.  
 
 In figure 9 a horizon state is shown. Without restricting generality, the entry
 recipe 'R(i,b)' represents all inputs into the state which are undetermined
@@ -607,7 +617,7 @@ determined entries. For interference to happen, it must hold
 
 Such is the requirement of homogeneity. The recipe 'R(i,a)' can only depend on
 states before the horizon. If it is equal to a recipe 'R(i,b)', then this
-recipe also can only depend on states before the horizon. Thus, while it 
+recipe also can only depend on states before the horizon. Thus, while 'R(i,b)'
 results from interferences and accumulation inside the realm of dead-lock
 states, it does not depend on its 'dynamics'. According to the previous
 discussion 'R(i,b)' is correct in the general sense. Thus, the derivation
@@ -617,7 +627,7 @@ STATEMENT:
 
     If entries into a horizon state are homogeneous, then the recipe resulting
     from interference is correct in a general sense. No feedback into the mouth
-    state must be further considered.
+    state must be further considered. The resulting recipe remains stable.
 
 The output recipe 'R(i)' of the horizon state is determined and correct. After
 interference, such a mouth state is no longer part of the horizon. However,
