@@ -233,8 +233,14 @@ class Op(namedtuple("Op_tuple", ("id", "content", "my_hash", "branch_f"))):
         return Op(E_Op.AssignConstant, Register, Value)
     
     @staticmethod
-    def Accepter():
-        return Op(E_Op.Accepter)
+    def Accepter(AcceptanceScheme=None):
+        # When new analysis approach is used, then AcceptanceScheme can never
+        # be 'None'.
+        result = Op(E_Op.Accepter)
+        if AcceptanceScheme is not None:
+            result.content = AccepterContent.from_iterable(AcceptanceScheme)
+        return result
+
     
     @staticmethod
     def RouterByLastAcceptance():

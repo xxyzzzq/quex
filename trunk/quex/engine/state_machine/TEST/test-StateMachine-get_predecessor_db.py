@@ -18,7 +18,7 @@ from itertools                                                  import permutati
 
 if "--hwut-info" in sys.argv:
     print "StateMachine: get_predecessor_db;"
-    print "CHOICES: linear, butterfly, long_loop, nested_loop, mini_loop, fork, fork2, fork3, fork4;"
+    print "CHOICES: %s;" % get_sm_shape_names()
     sys.exit(0)
 
 class MyStates(dict):
@@ -43,17 +43,7 @@ class MyStates(dict):
             self.iteritems_call_count_n += 1
             yield self.__list[i]
 
-sm = StateMachine(InitStateIndex=0L)
-
-if   "linear"      in sys.argv: sm, state_n = get_linear(sm)
-elif "butterfly"   in sys.argv: sm, state_n = get_butterfly(sm)
-elif "long_loop"   in sys.argv: sm, state_n = get_long_loop(sm)
-elif "nested_loop" in sys.argv: sm, state_n = get_nested_loop(sm)
-elif "mini_loop"   in sys.argv: sm, state_n = get_mini_loop(sm)
-elif "fork"        in sys.argv: sm, state_n = get_fork(sm)
-elif "fork2"       in sys.argv: sm, state_n = get_fork2(sm)
-elif "fork3"       in sys.argv: sm, state_n = get_fork3(sm)
-else:                           sm, state_n = get_fork4(sm)
+sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
 
 base = range(state_n)
 

@@ -43,15 +43,20 @@ def do(SM, RecipeType):
     # Determine states from where a walk along linear states can begin.
     springs = examiner.setup_initial_springs()
 
-    # Resolve as many as possible states in the state machine, i.e. 
-    # associate the states with an recipe 'R(i)'. Possibly, there are mouth
-    # states with undetermined recipes: dead-lock states.
-    unresolved_mouths = examiner.resolve(springs)
+    if springs:
+        # Resolve as many as possible states in the state machine, i.e. 
+        # associate the states with an recipe 'R(i)'. Possibly, there are mouth
+        # states with undetermined recipes: dead-lock states.
+        unresolved_mouths = examiner.resolve(springs)
+    else:
+        unresolved_mouths = set(self.mouth_db.itervalues())
 
-    examiner.resolve_dead_locks(unresolved_mouths)
+    # Solve dead-locks caused by mutual dependencies.
+    examiner.resolve_by_propagating_restore_recipes(unresolved_mouths)
+    examiner.resolve_dead_locks_fine_tuning(unresolved_mouths)
 
     # At this point all states must have determined recipes, according to
-    # the theory in 00-README.txt.
+    # the theory in "00-README.txt".
     assert all_true(chain(examiner.linear_db.itervalues(), 
                           examiner.mouth_db.itervalues()), 
                     lambda x: x.is_determined()) 
@@ -117,7 +122,9 @@ class Examiner:
         RETURNS: list of state indices of initial spring states.
         """
         result = set()
-        for si, recipe in self.recipe_type.initial_spring_recipe_pairs(self._sm):
+        for si, recipe in self.recipe_type.initial_spring_recipe_pairs(self._sm, self.mouth_db):
+            # A 'mouth' can never be an initial spring
+            assert si not in self.mouth_db
             self.set_recipe(si, recipe)
             result.add(si)
         return result
@@ -157,49 +164,84 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-    def resolve_dead_locks(self, UnresolvedMouthStateSet):
         """After the process of '.resolve()', there might be remaining mouth
         states which cannot be resolve due to mutual dependencies. Those states
         are called 'dead-lock states'. This function resolves these dead-lock
         states and its dependent states.
         """
-        def has_improved(CurrRecipe, PrevRegisterSet):
-            """PrevRegisterSet = registers that relied on restore before
-                                 accumulation.
-               CurrRecipe  = recipe that has been determined for the given
-                             mouth state through accumulation.
+    def resolve_dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
+        """Assume that 'resolve_by_propagating_restore_recipes()' has been 
+        used to specify a complete state machine by recipes. Some of those
+        recipes may still be improved, because now mouth states have 
+        determined entry recipes and may therefore perform interference.
 
-            An improvement is testified, if the number of SCR registers
-            determined by restore has been reduced. This criteria is sufficient
-            as a terminal condition for the loop. The maximum number that the
-            loop can iterate is the number of registers in the SCR.
+        If this interference results in a more specific recipe, then this
+        recipe may be propagated through accumulation. All subsequent states
+        (until the next mouth state) receive a new more specific recipe.
+
+        IMPORTANT: At any point in time, the state machine description remains
+                   CORRECT. The algorithm only develops more specific, more 
+                   simple recipes for some states.
+        """
+        def scr_db_get(Frontier, MouthDb):
+            return {
+                (si, MouthDb[si].undetermined_register_set)
+                for si in Frontier
+            }
+
+        def scr_db_get_springs(scr_db, Frontier, MouthDb):
+            """RETURNS: Set of states where further accumulation starts.
+
+            Those are the states for which a more specific recipe could be 
+            determined through interference.
             """
-            return len(CurrRecipe.restore_register_set()) < len(PrevRegisterSet)
+            return [
+                si 
+                for si in Frontier
+                if len(MouthDB[si].recipe.restore_register_set()) < len(scr_db[si])
+            ]
 
+        frontier = self.get_horizon(UnresolvedMouthStateSet)
+        done_set = set()
+        while frontier:
+            # TERMINATION: If there are no new states reached by simplified
+            #              recipes. 
+            # Infinite iteration is obstructed. Relying on the 'done_set' a 
+            # state can at max be treated once. The number of states is finite.
+            # Thus the number of iterations is finite.
+            scr_db = scr_db_get(frontier, self.mouth_db)
+            self._interfere(frontier)
+
+            # The elements of the horizon, that produce a more specific output
+            # are used to promote a simplified recipe.
+            stable_recipe_state_set = scr_db_get_springs(scr_db, frontier, 
+                                                         self.mouth_db)
+            reached_set = self._accumulate(stable_recipe_state_set)
+            done_set.update(stable_recipe_state_set)
+
+            # New frontier: Those states which 
+            #   -- have been reached by simplified recipes,
+            #   -- are not yet treated, and 
+            #   -- are part of the UnresolvedMouthStateSet (all of them should).
+            frontier = [
+                si for si in reached_set 
+                   if si not in done_set and si in UnresolvedMouthStateSet
+            ]
+            
+    def resolve_by_propagating_restore_recipes(self, UnresolvedMouthStateSet):
+        """For the given set of unresolved mouth states, implement the 'restore
+        all' recipe. That means, that the value of registers is determined at
+        run-time upon entry into the state, stored in an auxiliary register
+        and restored upon need in recipes.
+
+        Using this approach to resolve unresolved mouth states is safe to
+        deliver a complete solution.
+        """
         for si in UnresolvedMouthStateSet:
             assert self.get_recipe(si) is None
             self.set_recipe(self.recipe_type.RestoreAll())
 
-        improveable_set = UnresolvedMouthStateSet
-        while improveable_set:
-            # backup_db:
-            #             state index   -->   set of registers that require restore
-            # 
-            backup_db = dict(
-                (si, self.get_recipe(si).restore_register_set())
-                for si in UnresolvedMouthStateSet
-            )
-                
-            remainder = self._accumulate(UnresolvedMouthStateSet)
-            # All mouth states propagated a recipe. No input to a mouth state 
-            # can possible remain undetermined.
-            assert not remainder
-
-            improvable_set = set(
-                si
-                for si in UnresolvedMouthStateSet
-                if  has_improved(self.mouth_db[si].recipe, backup_db[si])
-            )
+        self._accumulate(UnresolvedMouthStateSet)
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -226,6 +268,15 @@ class Examiner:
         """
         return self.get_state_info(StateIndex).recipe
 
+   def get_horizon(self, UnresolvedMouthStateSet):
+        """Horizon: Unresolved mouth states that have at least one determined
+                    entry. Definition see "00-README.txt".
+        """
+        return [
+            si for si in UnresolvedMouthStateSet
+               if self.mouth_db[si].entry_recipes_one_determined()
+        ]
+
     def _accumulate(self, Springs):
         """Recursively walk along linear states. The termination criteria is 
         that one of three things hold:
@@ -246,24 +297,22 @@ class Examiner:
             walker.do((si, self.get_recipe(si)))
 
         return set(si for si in walker.mouths_touched_set
-                      if self.mouth_db[si].is_ready_for_interferences())
+                      if self.mouth_db[si].entry_reicpes_all_determined())
 
     def _interfere(self, DeterminedMouthSet):
         """Perform interference of mouth states. Find for each state index the
         MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
         according to the investigated behavior.
 
-        MouthInfo.recipe:     = recipe of resolved mouth state.
+        MouthInfo.recipe:   Recipe of resolved mouth state.
         """
-        for si in DeterminedMouthSet:
+        for info in (self.mouth_db[si] for si in DeterminedMouthSet):
             # Interference: 
-            # --> entry_db: operations that MUST be done upon entry from a state.
             # --> recipe:   for 'drop_out' and further accumulation.
-            mouth_info   = self.mouth_db[si]
             recipe,      \
-            register_set = self.recipe_type.interfere(mouth_info.entry_recipe_db)
-            mouth_info.recipe                    = recipe
-            mouth_info.undetermined_register_set = register_set
+            register_set = self.recipe_type.interfere(info.entry_recipe_db)
+            info.recipe                    = recipe
+            info.undetermined_register_set = register_set
 
     def get_Entry(self, StateIndex):
         """Generates an 'state.Entry' object for the state of the given index.
@@ -303,7 +352,8 @@ class LinearStateWalker(TreeWalker):
     def on_enter(self, Args):
         """Consider transitions of current state with determined recipe.
         """
-        CurrState, CurrRecipe = Args
+        CurrStateIndex, CurrRecipe = Args
+        curr_state = self.examiner._sm.states[CurrStateIndex]
 
         # Termination Criteria:
         # (1) State  = Terminal: no transitions, do further recursion. 
@@ -311,12 +361,13 @@ class LinearStateWalker(TreeWalker):
         # (2) Target is determined  => No entry!
         # (3) Target is Mouth State => No entry!
         todo = []
-        for target_index in CurrState.target_map().iterable_target_state_indices():
+        for target_index in curr_state.target_map.iterable_target_state_indices():
+            if target_index is None: continue
             target_info = self.examiner.get_state_info(target_index)
             if target_info.is_determined():    
                 continue # (2) terminal 
             elif target_info.mouth_f():        
-                target_info.entry_recipe_db[target_index] = CurrRecipe
+                target_info.entry_recipe_db[CurrStateIndex] = CurrRecipe
                 self.mouths_touched_set.add(target_index)
                 continue # (3) terminal 
             else:
@@ -325,9 +376,12 @@ class LinearStateWalker(TreeWalker):
                 recipe = self.examiner.recipe_type.accumulate(CurrRecipe, 
                                                               target.single_entry)
                 target_info.recipe = recipe
-                todo.append((target, target_info.recipe))
+                todo.append((target_index, target_info.recipe))
 
         if not todo: return None
         else:        return todo
+
+    def on_finished(self, node):
+        pass
 
 
