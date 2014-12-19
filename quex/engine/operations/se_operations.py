@@ -70,8 +70,8 @@ class SeAccept(SeOp):
             return (E_R.Acceptance, E_R.InputPosition)
 
     def __eq__(self, Other):
-        if   not Other.__class__ == SeAccept:                       return False
-        elif not SeOp.__eq__(self, Other):                       return False
+        if   not Other.__class__ == SeAccept:                     return False
+        elif not SeOp.__eq__(self, Other):                        return False
         elif not self.__pre_context_id == Other.__pre_context_id: return False
         return self.__restore_position_register_f == Other.__restore_position_register_f
 
@@ -97,13 +97,12 @@ class SeStoreInputPosition(SeOp):
     @typed(RegisterId=long)
     def __init__(self, RegisterId=E_PostContextIDs.NONE):
         SeOp.__init__(self)
-        self.__position_register_id = RegisterId
+        self.set_acceptance_id(RegisterId)
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
         result = SeStoreInputPosition()
         if ReplDbAcceptance is None: result.set_acceptance_id(self.acceptance_id())
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
-        result.__position_register_id = self.__position_register_id
         return result
 
     def get_concerned_registers(self):
@@ -111,8 +110,7 @@ class SeStoreInputPosition(SeOp):
 
     def __eq__(self, Other):
         if   Other.__class__ != SeStoreInputPosition: return False
-        elif not SeOp.__eq__(self, Other):         return False
-        return self.__position_register_id == Other.__position_register_id
+        return SeOp.__eq__(self, Other)
 
     def __str__(self):
         return self._string_annotate("S")

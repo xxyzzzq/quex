@@ -3,13 +3,11 @@ from quex.engine.operations.content_accepter  import AccepterContent
 from quex.engine.operations.operation_list    import Op
 from quex.engine.operations.se_operations     import SeAccept, \
                                                      SeStoreInputPosition
-from quex.engine.misc.tools                   import flatten_it_list_of_lists
+from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
+                                                     UniformObject
 
 from quex.blackboard import E_PreContextIDs, \
                             E_R
-
-InfoAccept   = namedtuple("InfoAccept",   ("pre_context_id", "acceptance_id"))
-InfoIpOffset = namedtuple("InfoIpOffset", ("offset", "aux_register_id"))
 
 class RecipeAcceptance(Recipe):
     """Recipe to describe the acceptance behavior upon exit from a state 
@@ -54,8 +52,7 @@ class RecipeAcceptance(Recipe):
     SCR = (E_R.AcceptanceRegister, E_R.PositionRegister)
 
     def __init__(self, Accepter, IpOffsetDb):
-        assert all_isinstance(Accepter,                  InfoAccept)
-        assert all_isinstance(InfoIpOffset.itervalues(), InfoIpOffset)
+        assert IpOffsetDb is not None
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
@@ -77,17 +74,17 @@ class RecipeAcceptance(Recipe):
         RETURNS: 
             
             [0] Recipe.
-
             [1] Set of undetermined registers. 
 
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        accepter       = cls._interfere_acceptance(EntryRecipeDb)
-        ip_offset_db   = cls._interfere_input_position_storage(EntryRecipeDb)
+        accepter     = cls._interfere_acceptance(EntryRecipeDb)
+        ip_offset_db = cls._interfere_input_position_storage(EntryRecipeDb)
         
-        undetermined_register_set = ()
+        undetermined_register_set = set()
         if accepter is None: undetermined_register_set.add(E_R.AcceptanceRegister)
+
         for register_id, offset in ip_offset_db.iteritems():
             if offset is not None: continue
             undetermined_register_set.add((E_R.PositionRegister, register_id))
@@ -95,23 +92,27 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db), undetermined_register_set
         
     @staticmethod
-    def _accumulate_acceptance(PrevRecipe, CurrSingleEntry):
+    def _accumulate_acceptance(PrevRecipe, CurrEntry):
         """Longest match --> later acceptances have precedence. The acceptance
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
-        accepter = []
-        for cmd in sorted(CurrSingleEntry.get_iterable(SeAccept), 
+        accepter        = []
+        unconditional_f = False
+        for cmd in sorted(CurrEntry.get_iterable(SeAccept), 
                           key=lambda x: x.acceptance_id()):
             accepter.append(cmd)
-            if cmd.pre_context_id() == E_PreContextIDs.NONE: break
-
-        if PrevRecipe is not None:
+            if cmd.pre_context_id() == E_PreContextIDs.NONE: 
+                # Unconditional acceptance overrules all later acceptances.
+                break
+        else:
             # No unconditional acceptance occurred, the previous acceptances
-            # must be appended.
-            accepter.extend(PrevRecipe.accepter)
+            # must be appended--if there is something.
+            if PrevRecipe is not None and PrevRecipe.accepter is not None:
+                accepter.extend(PrevRecipe.accepter)
 
-        return accepter
+        if not accepter: return None
+        else:            return accepter
 
     @staticmethod
     def _accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry):
@@ -133,38 +134,33 @@ class RecipeAcceptance(Recipe):
         if PrevRecipe is not None:
             ip_offset_db = dict( 
                 (register_id, new_offset(offset))
-                for register_id, offset in PrevRecipe.storage_offset_db.iteritems()
+                for register_id, offset in PrevRecipe.ip_offset_db.iteritems()
             )
         else:
             ip_offset_db = {}
 
         for cmd in CurrSingleEntry.get_iterable(SeStoreInputPosition): 
-            ip_offset_db[cmd.register_id()] = 0
+            ip_offset_db[cmd.acceptance_id()] = 0
 
         # Any acceptance that does not restore from a position register
         # defines the current position as the point where the input pointer
         # needs to be reset upon acceptance.
         for cmd in CurrSingleEntry.get_iterable(SeAccept): 
-            if not cmd.restore_position_register_f(): continue
+            if cmd.restore_position_register_f(): continue
             ip_offset_db[cmd.acceptance_id()] = 0
 
         return ip_offset_db
 
     @classmethod
     def _interfere_acceptance(cls, EntryRecipeDb):
-        """If the acceptance scheme differs for only two states, then the 
+        """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
         """ 
-        prototype = None # Acceptance scheme
-        for r in EntryRecipeDb.iteritems():
-            if   prototype is None:       prototype = r.accepter
-            elif r.accepter == prototype: continue
-            # None => acceptance must be taken from 'aux_acceptance'
-            return None
+        return UniformObject.from_iterable(
+                 recipe.accepter
+                 for recipe in EntryRecipeDb.itervalues()).content
 
-        # All acceptance schemes where the same => Overtake the prototype
-        return prototype
     
     @classmethod
     def _interfere_input_position_storage(cls, EntryRecipeDb):
@@ -174,28 +170,23 @@ class RecipeAcceptance(Recipe):
         """
         # Determine the set of involved input position registers
         iterable = flatten_it_list_of_lists(
-                      recipe.ip_offfset_db.iterkeys() 
+                      recipe.ip_offset_db.iterkeys() 
                       for recipe in EntryRecipeDb.itervalues())    
 
         ip_offset_db = {}
-        for register_id in register_id_set:
+        for register_id in iterable:
             # If there are two entries with differing offsets, then input
             # position must be reset by register restore. Then 'offset = None'.
             # In the homogeneous case, the offset is the one that all entries
             # share..
-            prototype = None
-            for recipe in EntryRecipeDb.itervalues():
-                offset = recipe.ip_offset_db.get(register_id)
-                if   prototype is None:   prototype = offset
-                elif offset == prototype: continue
-                # Inhomogeneity detected -> let input position be stored.
-                prototype = None
-                break
-            ip_offset_db[register_id] = prototype
+            ip_offset_db[register_id] = UniformObject.from_iterable(
+                recipe.ip_offset_db.get(register_id)
+                for recipe in EntryRecipeDb.itervalues()
+            ).content
 
         return ip_offset_db
         
-    def get_Entry(self, mouth):
+    def get_mouth_Entry(self, mouth):
         entry_db = dict(
             (from_si, OpList())
             for from_si in mouth.entry_register_db.iterkeys()
@@ -211,11 +202,9 @@ class RecipeAcceptance(Recipe):
                                                    sub_register_id)
         return entry_db
 
-    @staticmethod 
     def get_linear_Entry(self, linear):
         return {}
 
-    @staticmethod 
     def get_DropOut(self, info):
         if self.accepter is None:
             return Op.RouterByLastAcceptance(self.ip_offset_db)
@@ -230,10 +219,9 @@ class RecipeAcceptance(Recipe):
             # If acceptance is already stored in 'aux_acceptance', no second
             # storage is required.
             if r.accepter is None: continue
-            accepter         = Op.Accepter()
-            accepter.content = AccepterContent.from_iterable(r.accepter))
             assert not entry_db[from_si].has_command_id(E_Op.Accepter) 
-            entry_db[from_si].append(accepter)
+
+            entry_db[from_si].append(Op.Accepter(r.accepter))
 
     @staticmethod
     def _let_input_position_be_stored(entry_db, EntryRecipeDb, RegisterId):
@@ -250,13 +238,23 @@ class RecipeAcceptance(Recipe):
             )
 
     def __str__(self):
-        txt = [ "Accepter:\n" ]
-        # For acceptance the sequence matters
-        for x in self.accepter:
-            txt.append("   AccId: %s; RestoreReg: %s;\n" % (x.acceptance_id, x.position_register))
-        txt.append("InputOffsetDb:\n")
+        txt = [ "    Accepter:" ]
+        if self.accepter is None:
+            txt.append("     restore!\n")
+        else:
+            txt.append("\n")
+            for x in self.accepter:
+                if x.pre_context_id() != E_PreContextIDs.NONE:
+                    txt.append("      pre%s => %s\n" % (x.pre_context_id(), x.acceptance_id())) 
+                else:
+                    txt.append("      %s\n" % x.acceptance_id())
+
+        txt.append("    InputOffsetDb:\n")
         for register, offset in sorted(self.ip_offset_db.iteritems()):
-            txt.append("    [%s]: %s\n" % (register, offset))
+            if offset is not None:
+                txt.append("      [%s] offset: %s\n" % (register, offset))
+            else:
+                txt.append("      [%s] restore!\n" % register)
         return "".join(txt)
 
     

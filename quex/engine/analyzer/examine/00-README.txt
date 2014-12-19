@@ -485,249 +485,146 @@ circular dependencies.
 
 DEAD-LOCK STATES
 
-Dead-lock states are states with undetermined entries and circular
-dependencies.  
+Algorithm 1 does not solve all possible scenarios.
+
+Interference can only be performed, if all entry recipes of a mouth state are
+present. Loops in the state machine graph, however, cause circular
+dependencies.  Figure 8 shows an example, where the two states 1 and 2 mutually
+block each other. The recipe R(1) for state 1 cannot be determined because it
+requires R(2) as entry recipe from state 2 which is undetermined. However,
+before R(2) from state 2 can be determined, the entry recipe from
+state 1 must be present. Both states cannot perform an interference,
+because they are missing an entry recipe. 
 
 
-DEFINITION: Dead-lock state.
+                                   .---->----.
+                    ( 0 )------>( 1 )       ( 2 )
+                                   '----<----'
+                            
+           Figure 8: A dead-lock in mouth states 1 and 2.
 
-    A dead-lock state is a mouth state 'i' which could not be resolved with 
-    algorithm 1. It either directly or indirectly depends on a mouth state
-    that depends on a circular dependency. 
+As shown, mutually obstructed interference is the reason behind dead-locks.  A
+central concept for the solution is that of 'run-time interference'.
 
+DEFINITION: Run-Time Interference.
 
-An example is shown in Figure 4 where state '2' and '3' block each other from
-being determined. For a human observer, it is obvious that the group is
-effected by the same recipe 'R(1)' and therefore 'R(2)' and 'R(3)' are
-trivially defined. The following discussion, presents a formal and general
-solution for dead-lock states.
+   Run time interference imposes a 'store-restore' procedure on a mouth state.
+   The value of every register of the SCR is computed upon entry and stored
+   in an auxiliary register. The output recipe is simple 'restore all', that
+   is, the value of a register is provided by restoring the restored value
+   from the auxiliary register. 
 
-                                   R(1)
-                           .------------>( 2 )
-                           |             /   \
-                ... ---->( 1 )          (     )
-                           |       R(1)  \   /
-                           '------------>( 3 )
-         
-        Figure 8: A dead-lock of mouth states 2 and 3.
+The run-time interference is correct if and only if the entry recipes are
+correct. If the output of a recipe of a mouth state is correct, then all
+recipes derived from accumulation are correct. This is so, since accumulation
+is deterministic, without any run-time dependency. To proof the correctness
+of run-time interference, the term 'horizon' is defined.
 
-Dependencies correspond to paths of linear states between mouth states. If
-there are circular dependencies, then this corresponds to loops in the graph
-model.
+DEFINITION: Horizon
 
-DEFINITION: Dead-Lock Group.
+   Let the term 'horizon' H indicate the set of dead-lock mouth states that
+   have at least one determined entry.
 
-    A dead-lock group is a set of mouth states that were undetermined
-    after algorithm 1. It further holds that if and only if two states
-    'i' and 'k' depend mutually on each other, i.e.
+The name 'horizon' is chosen because it defines the border of determination.
+Beyond that begins the realm of dead-locks. Figure 9 shows a horizon state
+which contains one determined entry and another undetermined entry.
 
-              i \in D(k)    and     k \in D(i)                             (13)
+                       R(i,a) -->--.
+                                    \
+                                   ( i )----> R(i)
+                                    /
+                   R(i,b) = ? -->--'
 
-    then both states are part of the same dead-lock group.
+          Figure 9: A mouth state with a fix entry recipe R(x,a).
 
+Every undetermined entry has its origin in a mouth state that is unable to
+perform interference. Every determined entry has its origin either in the
+initial state, or a mouth state that performed interference. Interference
+happens only if all entries are determined. Thus, any mouth state that performs
+interference finally has its roots in the initial state. As a consequence, the
+following statement can be made.
 
-If 'k' depends on 'p' and 'i' depends on 'k' then 'i' also depends on 'p'.
-Thus, if 'i' and 'k' are in a dead-lock group 'L' and for a state 'p' 
-  
-              p \in D(k)    and    k \in D(p)
- 
-then 'p \in D(i)'. Vice versa, it can be proven that 'i in \D(p)'. It follows
-that for a dead-lock group 'L'
+STATEMENT: 
 
-                 i \in L  =>  i \in D(k) for all k \in L
+   Any state of the dead-lock states is only reached by a path that guides
+   through a horizon state. 
 
-This proofs the following statement.
-
-STATEMENT 1:
-
-    Every state 'i' of a dead-lock group 'L' is element of all dependency sets
-    'D(k)' for 'k  \in L'. More concisely:
-    
-                 D(i) is superset of L, for all i in L                      (14)
-
-An example may be observed in figure 9. 
-
-                     .---->---.             .---->---.
-                  ( i )      ( k )<------( p )      ( q )
-                     '----<---'             '----<---'
-
-                  Figure 9: Example two dead-lock groups.
-
-The dependency groups for i, k, p, and q are as follows
-
-           D(q) = { p, q }
-           D(p) = { p, q }
-           D(k) = { i, k, p, q }
-           D(i) = { i, k, p, q }
-
-A first dead-lock group would be 'L0 = { p, q }'. It holds
-
-           L0 is subset of D(p) and D(q)
-
-The second dead-lock group is 'L1 = { i, k }', because and it holds
-
-           L1 is subset of D(i) and D(k)
-
-The group '{i, k, p}' cannot be a dead-lock group, because
-
-           D(p) is not a superset of {i, k, p}.
-
-STATEMENT 2:
-
-    From condition (13) it follows that any to states 'p' and 'q' in a dead-
-    lock group are related by 
-
-              p \in D(q)    and     p \in D(q)                            (15)
-    
-PROOF 2: 
-
-If any two states 'i' and 'k' belong to a dead-lock group L0 = {i, k, ...},
-then it must hold
-
-                       D(k) is superset of L0
-
-and by definition 
-
-                       i \in D(k)
-
-If 'k' was found in another group L1 = {k, ...} with 
-
-                       i not \in L1
-                       
-then it could never hold 'D(k) is superset of L1' which is a straight
-contradiction to the proofs first assumption. If any two states 'i' and 'k'
-which belong to the same dead-lock group cannot exist in separate 
-dead-lock groups, then groups cannot be devided--which was to be proven.
-
-From (15) it follows that dead-lock groups cannot be devided. In particular,
-there cannot be sub-groups of dead-lock groups.
-
-STATEMENT 3:
-
-    A state can only belong to one dead-lock group.
-
-If there was a state 'i' belonging to two dead-lock groups L0 and L1, then
-there must be a 'p \in L0' and a 'q \in L1' with
-
-            i \in D(p)     and      p \in D(i)
-and
-            i \in D(q)     and      q \in D(i)
-
-If 'p depends on i' and 'i depends on q', then 'p depends on q'. Analogously,
-it follows 'q depends on p'. That is,
-
-             p \in D(q)    and     q in D(p)
-
-which requires that 'p' and 'q' are in the same dead-lock group. This
-contradicts the initial assumption. Thus, a state can only belong to one
-dead-lock group--which was to be proven.
-
-PROOF 3: 
-
-As has been shown, if any two states 'i' and 'k' belong to a dead-lock group,
-then
-
-
-Let two states 'i' and 'k' belong to a dead-lock group DLG0 = {i, k, ...}.
-If two dead-lock groups DLG0 and DLG1 are different, then there must be a 'k'
-where
-
-              k is element DLG0    and    k is not element DLG1
-    
-Let 'k' be one of the k-s that makes DGL0 and DLG1 different.  Let 'i' be the
-candidate to belong to DLG0 and DLG1. From 'i element of DGL0', it follows
-
-              k is element D(i)
-
-For 'i element of DLG1' one must require
-
-              for all p in DLG1: i is element of D(p)
-
-But if 'i is element of D(p)' and 'i' depends on 'k', then 'k is element of
-D(p)'.
-
-
-
-If 'i' is in group DLG0, then 'k is element 'D(i)'. For 'i' to be in another
-group DLG1, one must require that 'D(i) is superset of DLG1'. This is impossible
-because 'DLG1' lacks 'k'.
-    
-    Assume 'i' belongs to a group of states on which it depends, then it
-? cannot belong to a group that does not have all those other states. Otherwise,
-? the other group would not be complete. Since there can be no groups which are
-? sub groups of others, a state can therefore only belong to one group.
-
-However, there may be more than one dead-lock group where one group depends on
-the other. Consider a dead-lock group where states 'i' and 'k' are circularly
-dependent. State 'k' depends on a state 'p', but 'p' not on 'k'. However, 'p'
-is circularly dependent on 'q'. This is depicted in figure 6.
-
-The 'p' an 'q' build a dead-lock group, and so does 'i' and 'k'. All four
-states do not build a dead lock group. 'i' and 'k' depend on 'p' and 'q'.
-However, 'p' and 'q' do not depend neither on 'i' nor on 'k'.  In the case that
-the entry depends on the output of a dead-lock state of another group, then
-that other group must be determined first.  
-
-A circular dependency, such as "group A depends on group B, depends on group C,
-which depends on group A", is impossible, because this would make all states
-of A, B, and C circularly dependent. Therefore, the states of those groups
-were, actually, a dead-lock group on their own. Since dead-lock groups are
-not divisible, 'A', 'B', and 'C' cannot exist as independent groups.
+In other words, the horizon states are the entry points to the realm of
+dead-lock states.  The entry into the horizon state happens through the
+determined entry--in the example of figure 9 it is 'R(i,a)'. Computing and
+storing the value for each register is correct, at this point in time, since
+the entry recipe is derived by deterministic procedures. Thus, restoring the
+stored values is a correct procedure to determine the SCR.  'R(i)' is correct,
+at the time of entry into a horizon. Accumulation along linear states is
+deterministic. A propagated recipe 'R(i)' results in correct entries to
+other mouth states and run-time interference produces again a correct
+output recipe and the discussion continues where it started.  It follows
+the following statement.
 
 STATEMENT:
 
-    Groups of dead-lock states can be organized hierarchically.  Groups on
-    which others depend can be determined before groups which depend on them.
-    
-    As a direct consequence, for any set of groups of dead-lock states there
-    is a sequence of resolution so that all groups become determined.
+   Repeated run-time interference and accumulation of resulting recipes results
+   in a correct description of the state machine in terms of recipes.
 
-From the existence of a non-cyclic hierarchy of dependencies between dead-lock
-state groups, it can be concluded that there is always at least one dead-lock
-group with no dependency to another. Once this dead-lock group is resolved,
-another group becomes resolvable. Thus, by iterative resolution of
-independent groups, finally all dead-lock states end up being determined.
+The problem of dead-locks is, hereby, solved. All states are associated with
+recipes and the original operations along the transitions are no longer
+required.
 
-                          dead-lock group
-                         .----------------------.
-                R(1)op(2)|      .---->----.     | R(6)op(4)
-            .-------------->( 2 )        ( 4 )<---------------( 6 )<---- 
-            |            |   / \'----<----'     |
-      --->( 1 )          |  (   )               |
-            |   R(1)op(3)|   \ /                | R(5)op(3)
-            '-------------->( 3 )<----------------------------( 5 )<--- 
-                         |                      |
-                         '----------------------' 
+-------------------------------------------------------------------------------
 
-               Figure 5: Dead lock states and their entries.
+FINE TUNING OF DEAD-LOCK STATES
 
-Figure 5 shows a dead-lock group where all entries into it are determined. The
-only influence from outside this group comes through 'R(1)', 'R(5)', and
-'R(6)'.  Due to the loops in the graph, one cannot preview for any of the
-states '2', '3', or '4' in what order or combination the recipes are applied.
-Further, no assumptions can be made about the number of transitions which are
-made from the entry into the group until a specific state is reached. These
-constraints are stronger than the constraints for interference at mouth states.
+While the previous discussion provides a complete solution, there is still
+space for improvement. Figure 10 shows a case where the SCR variable 'x' is
+assigned 5 upon entry into state 1 at any case. Storing the value upon entry
+and restoring it upon exit, is superfluous. Since the entry recipes are
+homogeneous, normal interference may be applied. For the entry from state 1
+into state 2, the recipe 'x=6' is sufficient. This section discusses how normal
+interference may be applied to further simplify the description while
+maintaining correctness.
 
-DEFINITION: Dead-Lock Group Interference
+                                       x=x+1
+                          x=5      .---->----.
+                    ( 0 )------>( 1 )       ( 2 )
+                                   '----<----'
+                                       x=5
 
-    The process of 'dead-lock group interference' develops a recipe 'R(i)' for
-    all unresolved mouth states that are part of a dead-lock group. 
-   
-    All determined entries are collected into the 'mega-set' of entry recipes.
-    Those values of the SCR which are not uniform must be stored in register.
-    The resulting recipe 'R(group)' rely on those stored values.
-   
+          Figure 10: Dead-lock group with space for improvement.
 
-An issue remains: What if on the linear paths between the dead-lock mouth
-states there is a state with an operation? Clearly, this state cannot be a
-spring, otherwise, the mouth state's entry on the other end would be determined
-which it is not. Operations of linear states which are not springs accumulate.
-Further, dead-lock groups incorporate loops. So, The position where the
-operation occurs in the sequence and in what sequence with other operations
-cannot be determined. There is only one way to deal with that: The resulting
-recipe must be included into the dead-lock state interference. In the state
-itself, non-uniform values of the SCR must be stored in registers.
+
+By definition, partial interference can only happen in a state with at least
+one determined entry recipe. The state 'i' in figure 8 represents such a state.
+Algorithm 1 applied a procedure based on the deterministic accumulation and
+interference. Thus, any recipe that resulted from algorithm 1 is stable and
+correct.  
+
+In figure 9 a horizon state is shown. Without restricting generality, the entry
+recipe 'R(i,b)' represents all inputs into the state which are undetermined
+before dead-lock resolution. In the same sense 'R(i,a)' represents all
+determined entries. For interference to happen, it must hold
+
+      R(i,a) = R(i,b) with a, b in the set of entry states to state i.
+
+Such is the requirement of homogeneity. The recipe 'R(i,a)' can only depend on
+states before the horizon. If it is equal to a recipe 'R(i,b)', then this
+recipe also can only depend on states before the horizon. Thus, while it 
+results from interferences and accumulation inside the realm of dead-lock
+states, it does not depend on its 'dynamics'. According to the previous
+discussion 'R(i,b)' is correct in the general sense. Thus, the derivation
+of a resulting recipe is correct and stable in a general sense. 
+
+STATEMENT:
+
+    If entries into a horizon state are homogeneous, then the recipe resulting
+    from interference is correct in a general sense. No feedback into the mouth
+    state must be further considered.
+
+The output recipe 'R(i)' of the horizon state is determined and correct. After
+interference, such a mouth state is no longer part of the horizon. However,
+through accumulation of 'R(i)' some other dead-lock mouth states may be
+reached. They now have a determined recipe at their entry and become new
+horizon states. The procedure of interference and accumulation may be repeated
+until no new horizon states with homogeneous entries are found.
 
 -------------------------------------------------------------------------------
 
