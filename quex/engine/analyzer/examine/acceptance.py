@@ -4,7 +4,8 @@ from quex.engine.operations.operation_list    import Op
 from quex.engine.operations.se_operations     import SeAccept, \
                                                      SeStoreInputPosition
 from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
-                                                     UniformObject
+                                                     UniformObject, \
+                                                     none_is_None
 
 from quex.blackboard import E_PreContextIDs, \
                             E_R
@@ -36,14 +37,14 @@ class RecipeAcceptance(Recipe):
 
       .ip_offset_db:
           
-              position register id   -->   (offset, aux_register_id)
+              position register id   -->   offset
 
         Input position must be determined by
               
-              if aux_register_id == -1:
+              if offset is not None:
                   input_p += offset
               else:                       
-                  input_p  = aux_register[aux_register_id] + offset
+                  input_p  = aux_register[position register id] + offset
 
     The 'aux_register' values are set during interference in mouth states.
     """
@@ -55,6 +56,10 @@ class RecipeAcceptance(Recipe):
         assert IpOffsetDb is not None
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
+
+    @staticmethod
+    def RestoreAll():
+        return RecipeAcceptance(None, {})
 
     @classmethod
     def accumulate(cls, PrevRecipe, CurrSingleEntry):
@@ -79,17 +84,23 @@ class RecipeAcceptance(Recipe):
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        accepter     = cls._interfere_acceptance(EntryRecipeDb)
-        ip_offset_db = cls._interfere_input_position_storage(EntryRecipeDb)
-        
         undetermined_register_set = set()
-        if accepter is None: undetermined_register_set.add(E_R.AcceptanceRegister)
 
-        for register_id, offset in ip_offset_db.iteritems():
-            if offset is not None: continue
-            undetermined_register_set.add((E_R.PositionRegister, register_id))
+        # Acceptance
+        accepter     = cls._interfere_acceptance(EntryRecipeDb)
+        if accepter is None: 
+            undetermined_register_set.add(E_R.AcceptanceRegister)
+
+        # Input position storage
+        ip_offset_db = cls._interfere_input_position_storage(EntryRecipeDb)
+        undetermined_register_set.update(
+            (E_R.PositionRegister, register_id)
+            for register_id, offset in ip_offset_db.iteritems()
+            if offset is None
+        )
         
-        return RecipeAcceptance(accepter, ip_offset_db), undetermined_register_set
+        return RecipeAcceptance(accepter, ip_offset_db), \
+               undetermined_register_set
         
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, CurrEntry):
@@ -157,6 +168,9 @@ class RecipeAcceptance(Recipe):
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
         """ 
+        # Interference requires determined entry recipes.
+        assert none_is_None(EntryRecipeDb.itervalues())
+
         return UniformObject.from_iterable(
                  recipe.accepter
                  for recipe in EntryRecipeDb.itervalues()).content
@@ -179,10 +193,13 @@ class RecipeAcceptance(Recipe):
             # position must be reset by register restore. Then 'offset = None'.
             # In the homogeneous case, the offset is the one that all entries
             # share..
-            ip_offset_db[register_id] = UniformObject.from_iterable(
+            entry_offset = UniformObject.from_iterable(
                 recipe.ip_offset_db.get(register_id)
                 for recipe in EntryRecipeDb.itervalues()
             ).content
+            # Operation at state entry: 'offset -= 1'
+            if entry_offset is not None: ip_offset_db[register_id] = entry_offset - 1
+            else:                        ip_offset_db[register_id] = None
 
         return ip_offset_db
         

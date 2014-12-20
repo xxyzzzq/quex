@@ -49,11 +49,15 @@ def do(SM, RecipeType):
         # states with undetermined recipes: dead-lock states.
         unresolved_mouths = examiner.resolve(springs)
     else:
-        unresolved_mouths = set(self.mouth_db.itervalues())
+        unresolved_mouths = set(examiner.mouth_db.iterkeys())
 
-    # Solve dead-locks caused by mutual dependencies.
-    examiner.resolve_by_propagating_restore_recipes(unresolved_mouths)
-    examiner.resolve_dead_locks_fine_tuning(unresolved_mouths)
+    # Solve dead-locks caused by mutual dependencies: 'run-time' interference.
+    print "#unresolved:", unresolved_mouths
+    examiner.dead_locks_propagate_RestoreAll(unresolved_mouths)
+    for si in unresolved_mouths:
+        print "%i: {\n%s\n}\n" % (si, examiner.mouth_db[si])
+        
+    examiner.dead_locks_fine_tuning(unresolved_mouths)
 
     # At this point all states must have determined recipes, according to
     # the theory in "00-README.txt".
@@ -164,13 +168,8 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-        """After the process of '.resolve()', there might be remaining mouth
-        states which cannot be resolve due to mutual dependencies. Those states
-        are called 'dead-lock states'. This function resolves these dead-lock
-        states and its dependent states.
-        """
-    def resolve_dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
-        """Assume that 'resolve_by_propagating_restore_recipes()' has been 
+    def dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
+        """Assume that 'dead_locks_propagate_RestoreAll()' has been 
         used to specify a complete state machine by recipes. Some of those
         recipes may still be improved, because now mouth states have 
         determined entry recipes and may therefore perform interference.
@@ -184,10 +183,10 @@ class Examiner:
                    simple recipes for some states.
         """
         def scr_db_get(Frontier, MouthDb):
-            return {
+            return dict(
                 (si, MouthDb[si].undetermined_register_set)
                 for si in Frontier
-            }
+            )
 
         def scr_db_get_springs(scr_db, Frontier, MouthDb):
             """RETURNS: Set of states where further accumulation starts.
@@ -195,10 +194,11 @@ class Examiner:
             Those are the states for which a more specific recipe could be 
             determined through interference.
             """
+            print "#classes:", scr_db.__class__, Frontier.__class__, MouthDb.__class__
             return [
                 si 
                 for si in Frontier
-                if len(MouthDB[si].recipe.restore_register_set()) < len(scr_db[si])
+                if len(MouthDb[si].undetermined_register_set) < len(scr_db[si])
             ]
 
         frontier = self.get_horizon(UnresolvedMouthStateSet)
@@ -228,7 +228,7 @@ class Examiner:
                    if si not in done_set and si in UnresolvedMouthStateSet
             ]
             
-    def resolve_by_propagating_restore_recipes(self, UnresolvedMouthStateSet):
+    def dead_locks_propagate_RestoreAll(self, UnresolvedMouthStateSet):
         """For the given set of unresolved mouth states, implement the 'restore
         all' recipe. That means, that the value of registers is determined at
         run-time upon entry into the state, stored in an auxiliary register
@@ -237,11 +237,22 @@ class Examiner:
         Using this approach to resolve unresolved mouth states is safe to
         deliver a complete solution.
         """
+
+        # Run-time interference assumes that all entries need to be stored upon
+        # entry. The resulting recipes relies on the restoring of the stored 
+        # values.
         for si in UnresolvedMouthStateSet:
             assert self.get_recipe(si) is None
-            self.set_recipe(self.recipe_type.RestoreAll())
+            self.set_recipe(si, self.recipe_type.RestoreAll())
+            self.mouth_db[si].undetermined_register_set = self.mouth_db[si].scr 
 
-        self._accumulate(UnresolvedMouthStateSet)
+        reached_set = self._accumulate(UnresolvedMouthStateSet)
+
+        # The result of an undetermined mouth state cannot reach a resolved
+        # mouth state. A mouth state could only be resolved if all entries
+        # were determined. At least the entry originating in an unresolved
+        # mouth state must have been undetermined.
+        assert reached_set.issubset(UnresolvedMouthStateSet)
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -268,7 +279,7 @@ class Examiner:
         """
         return self.get_state_info(StateIndex).recipe
 
-   def get_horizon(self, UnresolvedMouthStateSet):
+    def get_horizon(self, UnresolvedMouthStateSet):
         """Horizon: Unresolved mouth states that have at least one determined
                     entry. Definition see "00-README.txt".
         """
@@ -311,6 +322,8 @@ class Examiner:
             # --> recipe:   for 'drop_out' and further accumulation.
             recipe,      \
             register_set = self.recipe_type.interfere(info.entry_recipe_db)
+            assert register_set is not None
+            
             info.recipe                    = recipe
             info.undetermined_register_set = register_set
 
@@ -358,15 +371,15 @@ class LinearStateWalker(TreeWalker):
         # Termination Criteria:
         # (1) State  = Terminal: no transitions, do further recursion. 
         #                        (Nothing needs to be done to guarantee that)
-        # (2) Target is determined  => No entry!
+        # NOT: (2) Target is determined  => No entry!
         # (3) Target is Mouth State => No entry!
         todo = []
         for target_index in curr_state.target_map.iterable_target_state_indices():
             if target_index is None: continue
             target_info = self.examiner.get_state_info(target_index)
-            if target_info.is_determined():    
-                continue # (2) terminal 
-            elif target_info.mouth_f():        
+            ## if target_info.is_determined():    
+            ##    continue # (2) terminal 
+            if target_info.mouth_f():        
                 target_info.entry_recipe_db[CurrStateIndex] = CurrRecipe
                 self.mouths_touched_set.add(target_index)
                 continue # (3) terminal 
