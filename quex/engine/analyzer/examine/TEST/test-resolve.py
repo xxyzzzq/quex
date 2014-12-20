@@ -46,9 +46,9 @@ def print_entry_recipe_db(si, EntryRecipeDb):
     print "  %02i\n" % si
     for from_si, recipe in sorted(EntryRecipeDb.iteritems()):
         if recipe is None: 
-            print "  from %02i <void>" % from_si
+            print "  from %02s <void>" % from_si
         else:
-            print "  from %02i \n     %s" % (from_si, str(recipe).replace("\n", "\n     "))
+            print "  from %02s \n     %s" % (from_si, str(recipe).replace("\n", "\n     "))
 
 print "Unresolved Mouth States:"
 print "   %s" % sorted(list(remainder))

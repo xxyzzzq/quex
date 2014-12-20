@@ -1,0 +1,44 @@
+           
+                          .->--(1)-->---.
+                         /              |
+                       (0)---->(2)---->(4)---->(5)
+                         \                      |
+                          '->--(3)-->-----------'
+    
+(0) Accept MATCH_FAILURE
+Unresolved Mouth States:
+   []
+
+Linear States:
+  00     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] offset: 0
+     
+  01     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] offset: -1
+     
+  02     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] offset: -1
+     
+  03     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] offset: -1
+     
+Mouth States (Resolved):
+  04     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] offset: -2
+     
+  05     Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [MATCH_FAILURE] restore!
+     
+Mouth States (Unresolved):

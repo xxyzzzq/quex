@@ -5,19 +5,19 @@ Mouth States:
 
   02     Accepter:     restore!
          InputOffsetDb:
-           [0] offset: -1
+           [0] offset: -2
          Undetermined: [AcceptanceRegister]
 
   03     Accepter:     restore!
          InputOffsetDb:
-           [0] offset: -1
-           [1] offset: -2
+           [0] offset: -2
+           [1] offset: -3
          Undetermined: [AcceptanceRegister]
 
   04     Accepter:     restore!
          InputOffsetDb:
-           [0] offset: -1
-           [1] offset: -2
-           [2] offset: -3
+           [0] offset: -2
+           [1] offset: -3
+           [2] offset: -4
          Undetermined: [AcceptanceRegister]
 
