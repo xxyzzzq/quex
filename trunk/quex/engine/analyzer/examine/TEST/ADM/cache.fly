@@ -1,16 +1,16 @@
 {
 file_name: test-accumulate.py;
 result_list: [
-  [ linear; OK; 0.061228; None; ]
-  [ butterfly; OK; 0.062749; None; ]
-  [ long_loop; OK; 0.063260; -485008623; ]
-  [ nested_loop; OK; 0.063575; None; ]
-  [ mini_loop; OK; 0.064153; None; ]
-  [ fork; OK; 0.061193; 1722906330; ]
-  [ fork2; OK; 0.065096; -1093156551; ]
-  [ fork3; OK; 0.066045; None; ]
-  [ fork4; OK; 0.061469; -576738901; ]
-  [ tree; OK; 0.060670; -1054559432; ]
+  [ linear; OK; 0.068465; None; ]
+  [ butterfly; OK; 0.064546; None; ]
+  [ long_loop; OK; 0.073606; -485008623; ]
+  [ nested_loop; OK; 0.061344; None; ]
+  [ mini_loop; OK; 0.063961; None; ]
+  [ fork; OK; 0.063401; 1722906330; ]
+  [ fork2; OK; 0.065415; -1093156551; ]
+  [ fork3; OK; 0.063057; None; ]
+  [ fork4; OK; 0.062040; -576738901; ]
+  [ tree; OK; 0.064316; -1054559432; ]
 ]
 interpreter_list: [ python; ]
 title: Accumulation;
@@ -19,16 +19,16 @@ hwut_info_time: 1418544121L;
 {
 file_name: test-categorize.py;
 result_list: [
-  [ linear; OK; 0.061403; None; ]
-  [ butterfly; OK; 0.063395; None; ]
-  [ long_loop; OK; 0.063898; None; ]
-  [ nested_loop; OK; 0.061415; None; ]
-  [ mini_loop; OK; 0.060748; None; ]
-  [ fork; OK; 0.062809; None; ]
-  [ fork2; OK; 0.062533; None; ]
-  [ fork3; OK; 0.073661; None; ]
-  [ fork4; OK; 0.062500; None; ]
-  [ tree; OK; 0.060463; 1112925996; ]
+  [ linear; OK; 0.060464; None; ]
+  [ butterfly; OK; 0.062066; None; ]
+  [ long_loop; OK; 0.060684; None; ]
+  [ nested_loop; OK; 0.062112; None; ]
+  [ mini_loop; OK; 0.061347; None; ]
+  [ fork; OK; 0.061853; None; ]
+  [ fork2; OK; 0.062145; None; ]
+  [ fork3; OK; 0.064564; None; ]
+  [ fork4; OK; 0.061805; None; ]
+  [ tree; OK; 0.061511; 1112925996; ]
 ]
 interpreter_list: [ python; ]
 title: Categorize into Linear and Mouth States;
@@ -37,26 +37,26 @@ hwut_info_time: 1418544128L;
 {
 file_name: test-resolve.py;
 result_list: [
-  [ linear; NO GOOD FILE; 0.061445; None; ]
-  [ butterfly; OK; 0.061649; -968658672; ]
-  [ long_loop; NO GOOD FILE; 0.061544; None; ]
-  [ nested_loop; NO GOOD FILE; 0.063611; None; ]
-  [ mini_loop; NO GOOD FILE; 0.061662; None; ]
-  [ fork; NO GOOD FILE; 0.066664; None; ]
-  [ fork2; NO GOOD FILE; 0.062575; None; ]
-  [ fork3; OK; 0.000000; 1601351712; ]
-  [ fork4; OK; 0.064073; 926712585; ]
-  [ tree; OK; 0.000000; -1968682607; ]
+  [ linear; OK; 0.071878; 2011771137; ]
+  [ butterfly; OK; 0.063554; -968658672; ]
+  [ long_loop; OK; 0.070144; 1419172857; ]
+  [ nested_loop; OK; 0.085793; -400776403; ]
+  [ mini_loop; OK; 0.077429; 693911666; ]
+  [ fork; OK; 0.079285; 690908787; ]
+  [ fork2; OK; 0.064669; -1390367972; ]
+  [ fork3; OK; 0.063703; 1601351712; ]
+  [ fork4; OK; 0.063411; -1022221137; ]
+  [ tree; OK; 0.072335; -1968682607; ]
 ]
 interpreter_list: [ python; ]
 title: Resolve Without Dead-Lock Resolution;
-hwut_info_time: 1418548678L;
+hwut_info_time: 1419073955L;
 }
 {
 file_name: test-setup_initial_springs.py;
 result_list: [
-  [ linear; OK; 0.059631; None; ]
-  [ long_loop; OK; 0.060391; -1784420566; ]
+  [ linear; OK; 0.062289; None; ]
+  [ long_loop; OK; 0.063298; -1784420566; ]
 ]
 interpreter_list: [ python; ]
 title: Setup Initial Spring States;
@@ -65,8 +65,8 @@ hwut_info_time: 1418544138L;
 {
 file_name: test-interference3.py;
 result_list: [
-  [ 2-entries; OK; 0.192867; None; ]
-  [ 3-entries; OK; 0.194261; None; ]
+  [ 2-entries; OK; 0.201435; None; ]
+  [ 3-entries; OK; 0.199848; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -77,8 +77,8 @@ hwut_info_time: 1418505939L;
 {
 file_name: test-interference.py;
 result_list: [
-  [ 2-entries; OK; 0.194630; None; ]
-  [ 3-entries; OK; 0.197041; None; ]
+  [ 2-entries; OK; 0.194663; None; ]
+  [ 3-entries; OK; 0.206346; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -89,8 +89,8 @@ hwut_info_time: 1418501087L;
 {
 file_name: test-interference2.py;
 result_list: [
-  [ 2-entries; OK; 0.197145; None; ]
-  [ 3-entries; OK; 0.194065; None; ]
+  [ 2-entries; OK; 0.199116; -1313830898; ]
+  [ 3-entries; OK; 0.194872; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -101,8 +101,8 @@ hwut_info_time: 1418502250L;
 {
 file_name: test-interference4.py;
 result_list: [
-  [ 2-entries; OK; 0.193039; None; ]
-  [ 3-entries; OK; 0.193838; None; ]
+  [ 2-entries; OK; 0.205256; 1055801143; ]
+  [ 3-entries; OK; 0.195260; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;

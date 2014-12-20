@@ -62,7 +62,7 @@ Linear States:
 Mouth States (Resolved):
   07     Accepter:     restore!
          InputOffsetDb:
-           [MATCH_FAILURE] offset: -2
+           [MATCH_FAILURE] offset: -3
            [33] restore!
            [44] restore!
            [66] restore!
