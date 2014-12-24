@@ -20,6 +20,7 @@ representation of the state machine is shown.  There, value of 'x' is only
 determined upon exit.  No increments happen during transitions. Only upon exit
 'x' is assigned the predetermined value. The balance on computational effort is
 obvious.
+
      
          a)          x=x+1        x=x+1        x=x+1
               ( 0 )------->( 1 )------->( 2 )------->( 3 )
@@ -374,7 +375,8 @@ DEFINITION: Interference
     
                   IR = { R(i,k): k = 1...N }. 
                   
-    An incoming recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'.
+    An incoming recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
+    as it must have been computed before by accumulation.
 
         * Procedure elements that are the same for all recipes in 'IR'
           *can* be overtaken into 'R(i)'.
@@ -512,18 +514,45 @@ because they are missing an entry recipe.
 As shown, mutually obstructed interference is the reason behind dead-locks.  A
 central concept for the solution is that of 'run-time interference'.
 
-DEFINITION: Run-Time Interference.
+DEFINITION: RA(i) -- Restore-All Recipe
 
-   Run time interference imposes a 'store-restore' procedure on a mouth state.
-   The value of every register 'x' of the SCR is computed upon entry and stored
-   in an auxiliary register. 
+   The Restore-All Recipe 'RA(i)' at a given state 'i' restores all registers
+   'x' of SCR from the auxiliary registers. That is,
 
-        A(x,i) := x from 'R(i,k)' for all states 'k' entering state 'i'
-   
-   The output recipe is simple 'restore all', that is, the value of a register
-   is provided by restoring the restored value from the auxiliary register. 
+        RA(i) := { for x in SCR(i): x = A(x) }
 
-        R(i) := { x = A(x,i) }
+If the values of SCR registers where computed upon entry into a mouth state and
+restored after, then there is no source of error inside the mouth state's
+procedure. However, the operation 'op(i)' of a mouth state may potentially
+overwrite the modifications of incoming entry recipes. As a result, some
+registers may very well be determined. Thus, the output recipe might be
+configured more specific than 'RA(i)'.
+
+Propagating a 'RA(i)' as output of a mouth state corresponds to entry recipes
+'RA(i,k)' for all 'k'. However, 
+
+        R(i,k) = op(i)(RA(i)) for k where 'R(k)' is not determined
+
+profits from any overwriting effect of 'op(i)'. Further, the result of
+interference may actually be some real homogeneity.
+
+DEFINITION: Run-Time Interference
+
+    The process of 'run-time interference' develops a recipe 'R(i)' for a mouth
+    state 'i' based on an *incomplete* set of incoming recipes 
+    
+       IR = { R(i,k): k = 1...N } where R(k) is undetermined for some 'k'. 
+                  
+    The entry recipes are determined by 
+
+                       .-
+                       |  op(i)(R(k))  if R(k) is determined
+             R(i,k) = <
+                       |  op(i)(RA(i)) if R(k) is undetermined
+                       '-
+
+    With all entries 'R(i,k)' specified, the output recipe 'R(i)' is determined
+    as with normal interference.
 
 The run-time interference is correct if and only if the entry recipes are
 correct. If the output of a recipe of a mouth state is correct, then all

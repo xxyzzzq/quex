@@ -1,16 +1,16 @@
 {
 file_name: test-accumulate.py;
 result_list: [
-  [ linear; OK; 0.064296; None; ]
-  [ butterfly; OK; 0.072983; None; ]
-  [ long_loop; OK; 0.062167; -485008623; ]
-  [ nested_loop; OK; 0.063939; None; ]
-  [ mini_loop; OK; 0.063909; None; ]
-  [ fork; OK; 0.066589; 1722906330; ]
-  [ fork2; OK; 0.061458; -1093156551; ]
-  [ fork3; OK; 0.064934; None; ]
-  [ fork4; OK; 0.064767; -576738901; ]
-  [ tree; OK; 0.063951; -1054559432; ]
+  [ linear; OK; 0.065614; None; ]
+  [ butterfly; OK; 0.067029; None; ]
+  [ long_loop; OK; 0.066622; -485008623; ]
+  [ nested_loop; OK; 0.065700; None; ]
+  [ mini_loop; OK; 0.066547; None; ]
+  [ fork; OK; 0.063193; 1722906330; ]
+  [ fork2; OK; 0.065482; -1093156551; ]
+  [ fork3; OK; 0.066101; None; ]
+  [ fork4; OK; 0.063323; -576738901; ]
+  [ tree; OK; 0.065224; -1054559432; ]
 ]
 interpreter_list: [ python; ]
 title: Accumulation;
@@ -19,16 +19,16 @@ hwut_info_time: 1418544121L;
 {
 file_name: test-categorize.py;
 result_list: [
-  [ linear; OK; 0.061441; None; ]
-  [ butterfly; OK; 0.063300; None; ]
-  [ long_loop; OK; 0.066673; None; ]
-  [ nested_loop; OK; 0.063460; None; ]
-  [ mini_loop; OK; 0.060904; None; ]
-  [ fork; OK; 0.061387; None; ]
-  [ fork2; OK; 0.062043; None; ]
-  [ fork3; OK; 0.063494; None; ]
-  [ fork4; OK; 0.069863; None; ]
-  [ tree; OK; 0.060753; 1112925996; ]
+  [ linear; OK; 0.062478; None; ]
+  [ butterfly; OK; 0.062789; None; ]
+  [ long_loop; OK; 0.062851; None; ]
+  [ nested_loop; OK; 0.063381; None; ]
+  [ mini_loop; OK; 0.066266; None; ]
+  [ fork; OK; 0.065220; None; ]
+  [ fork2; OK; 0.065241; None; ]
+  [ fork3; OK; 0.066246; None; ]
+  [ fork4; OK; 0.063382; None; ]
+  [ tree; OK; 0.065557; 1112925996; ]
 ]
 interpreter_list: [ python; ]
 title: Categorize into Linear and Mouth States;
@@ -37,16 +37,16 @@ hwut_info_time: 1418544128L;
 {
 file_name: test-resolve.py;
 result_list: [
-  [ linear; OK; 0.062006; 2011771137; ]
-  [ butterfly; OK; 0.065945; -968658672; ]
-  [ long_loop; OK; 0.063885; 1419172857; ]
-  [ nested_loop; OK; 0.061766; -400776403; ]
-  [ mini_loop; OK; 0.062657; 693911666; ]
-  [ fork; OK; 0.063051; 690908787; ]
-  [ fork2; OK; 0.068399; -1390367972; ]
-  [ fork3; OK; 0.063124; 1601351712; ]
-  [ fork4; OK; 0.066604; -1022221137; ]
-  [ tree; OK; 0.067579; -1968682607; ]
+  [ linear; OK; 0.066730; 2011771137; ]
+  [ butterfly; OK; 0.065340; -968658672; ]
+  [ long_loop; OK; 0.063527; 1419172857; ]
+  [ nested_loop; OK; 0.064597; -400776403; ]
+  [ mini_loop; OK; 0.065903; 693911666; ]
+  [ fork; OK; 0.067220; 690908787; ]
+  [ fork2; OK; 0.087545; -1390367972; ]
+  [ fork3; OK; 0.065514; 1601351712; ]
+  [ fork4; OK; 0.064073; -1022221137; ]
+  [ tree; OK; 0.066029; -1968682607; ]
 ]
 interpreter_list: [ python; ]
 title: Resolve Without Dead-Lock Resolution;
@@ -55,8 +55,8 @@ hwut_info_time: 1419073955L;
 {
 file_name: test-setup_initial_springs.py;
 result_list: [
-  [ linear; OK; 0.065346; None; ]
-  [ long_loop; OK; 0.061296; -1784420566; ]
+  [ linear; OK; 0.060925; None; ]
+  [ long_loop; OK; 0.062013; -1784420566; ]
 ]
 interpreter_list: [ python; ]
 title: Setup Initial Spring States;
@@ -65,13 +65,13 @@ hwut_info_time: 1418544138L;
 {
 file_name: test-dead_locks_fine_tuning.py;
 result_list: [
-  [ butterfly; NO GOOD FILE; 0.064691; None; ]
-  [ long_loop; NO GOOD FILE; 0.067510; None; ]
-  [ nested_loop; NO GOOD FILE; 0.066167; None; ]
-  [ mini_loop; NO GOOD FILE; 0.062960; None; ]
-  [ fork; NO GOOD FILE; 0.068309; None; ]
-  [ fork2; NO GOOD FILE; 0.063585; None; ]
-  [ fork4; NO GOOD FILE; 0.066982; None; ]
+  [ butterfly; NO GOOD FILE; 0.065115; None; ]
+  [ long_loop; NO GOOD FILE; 0.064288; None; ]
+  [ nested_loop; NO GOOD FILE; 0.067557; None; ]
+  [ mini_loop; NO GOOD FILE; 0.063237; None; ]
+  [ fork; NO GOOD FILE; 0.071038; None; ]
+  [ fork2; NO GOOD FILE; 0.064420; None; ]
+  [ fork4; NO GOOD FILE; 0.070502; None; ]
 ]
 interpreter_list: [ python; ]
 title: Fine Tuning;
@@ -81,21 +81,21 @@ hwut_info_time: 1419112338L;
 {
 file_name: test-propagate_recipe_RestoreAll.py;
 result_list: [
-  [ fork; FAIL; 0.064594; -1999907423; ]
-  [ fork2; FAIL; 0.066614; 458544496; ]
-  [ butterfly; FAIL; 0.064903; -1547198198; ]
-  [ long_loop; OK; 0.062995; -80100025; ]
+  [ fork; FAIL; 0.065119; -1999907423; ]
+  [ fork2; FAIL; 0.064574; 458544496; ]
+  [ butterfly; FAIL; 0.068126; -1547198198; ]
+  [ long_loop; FAIL; 0.065763; -80100025; ]
 ]
 interpreter_list: [ python; ]
 title: Propagate the 'RestoreAll' recipe;
 title_group: Dead Locks;
-hwut_info_time: 1419114272L;
+hwut_info_time: 1419114682L;
 }
 {
 file_name: test-interference3.py;
 result_list: [
-  [ 2-entries; OK; 0.365678; None; ]
-  [ 3-entries; OK; 0.199088; None; ]
+  [ 2-entries; OK; 0.199365; None; ]
+  [ 3-entries; OK; 0.201018; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -106,8 +106,8 @@ hwut_info_time: 1418505939L;
 {
 file_name: test-interference.py;
 result_list: [
-  [ 2-entries; OK; 0.215632; None; ]
-  [ 3-entries; OK; 0.195765; None; ]
+  [ 2-entries; OK; 0.208978; None; ]
+  [ 3-entries; OK; 0.198387; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -118,8 +118,8 @@ hwut_info_time: 1418501087L;
 {
 file_name: test-interference2.py;
 result_list: [
-  [ 2-entries; OK; 0.203767; -1313830898; ]
-  [ 3-entries; OK; 0.194513; None; ]
+  [ 2-entries; OK; 0.202097; -1313830898; ]
+  [ 3-entries; OK; 0.201028; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
@@ -130,8 +130,8 @@ hwut_info_time: 1418502250L;
 {
 file_name: test-interference4.py;
 result_list: [
-  [ 2-entries; OK; 0.206333; 1055801143; ]
-  [ 3-entries; OK; 0.199741; None; ]
+  [ 2-entries; OK; 0.195867; 1055801143; ]
+  [ 3-entries; OK; 0.199374; None; ]
 ]
 interpreter_list: [ python-coverage; run; -a; ]
 same_f: True;
