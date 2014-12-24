@@ -19,10 +19,7 @@ class RecipeAcceptance(Recipe):
 
       .accepter:  
           
-            None => if acceptance is be restored from 'last_accept'.
-            else => list describing the acceptance scheme.
-
-         A list looks like 
+         A list that looks like 
 
               [  (pre-context-id 6, acceptance-id 12),
                  (pre-context-id 4, acceptance-id 11),
@@ -33,6 +30,9 @@ class RecipeAcceptance(Recipe):
         which tells in a prioritized way what to accept upon under the
         condition that a pre-context is present. The first wins. Thus, 
         any entry after the conditionless acceptance is meaningless.
+        
+        acceptance-id is None => acceptance is restored from the acceptance
+                                 register ('pre-context' must be None, too).
 
 
       .ip_offset_db:
@@ -48,18 +48,24 @@ class RecipeAcceptance(Recipe):
 
     The 'aux_register' values are set during interference in mouth states.
     """
-    __slots__ = ("accepter", "ip_offset_db")
-
-    SCR = (E_R.AcceptanceRegister, E_R.PositionRegister)
+    __slots__            = ("accepter", "ip_offset_db")
+    SCR                  = (E_R.AcceptanceRegister, E_R.PositionRegister)
+    RestoreAcceptance    = (None, None)
+    __restore_all_recipe = None
 
     def __init__(self, Accepter, IpOffsetDb):
         assert IpOffsetDb is not None
+        assert all_isinstance(Accepter, tuple)
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
     @staticmethod
     def RestoreAll():
-        return RecipeAcceptance(None, {})
+        if self.__restore_all_recipe is None:
+            ip_offset_db = {} # .get(RegisterId) is None for all => restore all 
+            self.__restore_all_recipe = RecipeAcceptance(RecipeAcceptance.RestoreAcceptance, 
+                                                         ip_offset_db)
+        return self.__restore_all_recipe
 
     @classmethod
     def accumulate(cls, PrevRecipe, CurrSingleEntry):
@@ -88,7 +94,7 @@ class RecipeAcceptance(Recipe):
 
         # Acceptance
         accepter     = cls._interfere_acceptance(EntryRecipeDb)
-        if accepter is None: 
+        if cls.RestoreAcceptance in accepter:
             undetermined_register_set.add(E_R.AcceptanceRegister)
 
         # Input position storage
@@ -122,7 +128,7 @@ class RecipeAcceptance(Recipe):
             if PrevRecipe is not None and PrevRecipe.accepter is not None:
                 accepter.extend(PrevRecipe.accepter)
 
-        if not accepter: return None
+        if not accepter: return [ RecipeAcceptance.RestoreAcceptance ]
         else:            return accepter
 
     @staticmethod
@@ -182,26 +188,24 @@ class RecipeAcceptance(Recipe):
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
+        def get_uniform_recipe(RegisterId, EntryRecipeDb):
+            """If there are two entries with differing offsets, then input
+            position must be reset by register restore. Then 'offset = None'.
+            In the homogeneous case, the offset is the one that all entries
+            share."""
+            return UniformObject.from_iterable(
+                     recipe.ip_offset_db.get(register_id)
+                     for recipe in EntryRecipeDb.itervalues()).content
+
         # Determine the set of involved input position registers
-        iterable = flatten_it_list_of_lists(
-                      recipe.ip_offset_db.iterkeys() 
-                      for recipe in EntryRecipeDb.itervalues())    
+        iterable = set(flatten_it_list_of_lists(
+                       recipe.ip_offset_db.iterkeys() 
+                       for recipe in EntryRecipeDb.itervalues()))    
 
-        ip_offset_db = {}
-        for register_id in iterable:
-            # If there are two entries with differing offsets, then input
-            # position must be reset by register restore. Then 'offset = None'.
-            # In the homogeneous case, the offset is the one that all entries
-            # share..
-            entry_offset = UniformObject.from_iterable(
-                recipe.ip_offset_db.get(register_id)
-                for recipe in EntryRecipeDb.itervalues()
-            ).content
-            # Operation at state entry: 'offset -= 1'
-            if entry_offset is not None: ip_offset_db[register_id] = entry_offset - 1
-            else:                        ip_offset_db[register_id] = None
-
-        return ip_offset_db
+        return dict(
+            (register_id, get_uniform_recipe(register_id, EntryRecipeDb))
+            for register_id in iterable
+        )
         
     def get_mouth_Entry(self, mouth):
         entry_db = dict(

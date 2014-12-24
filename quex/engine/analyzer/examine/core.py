@@ -53,12 +53,10 @@ def do(SM, RecipeType):
 
     # Solve dead-locks caused by mutual dependencies: 'run-time' interference.
     print "#unresolved:", unresolved_mouths
-    examiner.dead_locks_propagate_RestoreAll(unresolved_mouths)
+    examiner.dead_locks_resolve(unresolved_mouths)
     for si in unresolved_mouths:
         print "%i: {\n%s\n}\n" % (si, examiner.mouth_db[si])
         
-    examiner.dead_locks_fine_tuning(unresolved_mouths)
-
     # At this point all states must have determined recipes, according to
     # the theory in "00-README.txt".
     assert all_true(chain(examiner.linear_db.itervalues(), 
@@ -168,13 +166,28 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-    def dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
-        """Assume that 'dead_locks_propagate_RestoreAll()' has been 
-        used to specify a complete state machine by recipes. Some of those
-        recipes may still be improved, because now mouth states have 
-        determined entry recipes and may therefore perform interference.
+    def dead_locks_resolve(self, UnresolvedMouthStateSet):
+        """For the given set of unresolved mouth states, implement the 'restore
+        all' recipe. That means, that the value of registers is determined at
+        run-time upon entry into the state, stored in an auxiliary register
+        and restored upon need in recipes.
 
-        If this interference results in a more specific recipe, then this
+        Using this approach to resolve unresolved mouth states is safe to
+        deliver a complete solution.
+        """
+        self._interfere_virtually(UnresolvedMouthStateSet)
+        resolved_set = self.resolve(UnresolvedMouthStateSet)
+        assert resolved_set == UnresolvedMouthStateSet
+
+        self._dead_locks_fine_tuning(resolved_set)
+
+    def _dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
+        """Assume that 'dead_locks_resolve()' has been applied to specify a
+        complete state machine by recipes. Some of those recipes may still be
+        improved, because now mouth states have determined entry recipes and
+        may therefore perform interference.
+
+        If this interference results in a more specific recipe, then it
         recipe may be propagated through accumulation. All subsequent states
         (until the next mouth state) receive a new more specific recipe.
 
@@ -228,32 +241,6 @@ class Examiner:
                    if si not in done_set and si in UnresolvedMouthStateSet
             ]
             
-    def dead_locks_propagate_RestoreAll(self, UnresolvedMouthStateSet):
-        """For the given set of unresolved mouth states, implement the 'restore
-        all' recipe. That means, that the value of registers is determined at
-        run-time upon entry into the state, stored in an auxiliary register
-        and restored upon need in recipes.
-
-        Using this approach to resolve unresolved mouth states is safe to
-        deliver a complete solution.
-        """
-
-        # Run-time interference assumes that all entries need to be stored upon
-        # entry. The resulting recipes relies on the restoring of the stored 
-        # values.
-        for si in UnresolvedMouthStateSet:
-            assert self.get_recipe(si) is None
-            self.set_recipe(si, self.recipe_type.RestoreAll())
-            self.mouth_db[si].undetermined_register_set = self.mouth_db[si].scr 
-
-        reached_set = self._accumulate(UnresolvedMouthStateSet)
-
-        # The result of an undetermined mouth state cannot reach a resolved
-        # mouth state. A mouth state could only be resolved if all entries
-        # were determined. At least the entry originating in an unresolved
-        # mouth state must have been undetermined.
-        assert reached_set.issubset(UnresolvedMouthStateSet)
-
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
         """
@@ -310,22 +297,46 @@ class Examiner:
         return set(si for si in walker.mouths_touched_set
                       if self.mouth_db[si].entry_reicpes_all_determined())
 
-    def _interfere(self, DeterminedMouthSet):
+    def _interfere(self, CandidateSet, 
+                   GetEntryRecipeDb=lambda si, mouth: mouth.entry_recipe_db):
         """Perform interference of mouth states. Find for each state index the
         MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
         according to the investigated behavior.
 
         MouthInfo.recipe:   Recipe of resolved mouth state.
         """
-        for info in (self.mouth_db[si] for si in DeterminedMouthSet):
-            # Interference: 
-            # --> recipe:   for 'drop_out' and further accumulation.
-            recipe,      \
-            register_set = self.recipe_type.interfere(info.entry_recipe_db)
-            assert register_set is not None
-            
-            info.recipe                    = recipe
-            info.undetermined_register_set = register_set
+        for si, info in ((si, self.mouth_db[si]) for si in CandidateSet):
+            entry_recipe_db                = GetEntryRecipeDb(si, info)
+
+            info.recipe,                   \
+            info.undetermined_register_set = self.recipe_type.interference(entry_recipe_db)
+            assert info.undetermined_register_set is not None
+
+    def _interfere_virtually(self, UnresolvedMouthStateSet):
+        """Performs a 'virtual' interference where undetermined entry recipes
+        are derived from 'op(i)(RestoreAll)'. That is, the concatination of the
+        restore all recipe with the operations of the current mouth state.
+        """
+        def prepare(PrevRecipe, SingleEntry):
+            """All entry recipes, which are undetermined are assumed to be 
+            'op(i)(RA(i))'.
+            """
+            if PrevRecipe is not None: 
+                return PrevRecipe
+            else:
+                restore_all = self.recipe_type.RestoreAll()
+                return self.recipe_type.accumulation(restore_all, SingleEntry)
+
+        def get_virtual_entry_recipe_db(si, mouth):
+            assert mouth.mouth_f()
+            single_entry = self._sm.states[si].single_entry
+            return dict(
+                (from_si, prepare(recipe, single_entry))
+                for from_si, recipe in mouth.entry_recipe_db.iteritems()
+            )
+
+        self._interfere(UnresolvedMouthStateSet, 
+                        GetEntryRecipeDb = get_virtual_entry_recipe_db)
 
     def get_Entry(self, StateIndex):
         """Generates an 'state.Entry' object for the state of the given index.
@@ -377,18 +388,17 @@ class LinearStateWalker(TreeWalker):
         for target_index in curr_state.target_map.iterable_target_state_indices():
             if target_index is None: continue
             target_info = self.examiner.get_state_info(target_index)
-            ## if target_info.is_determined():    
-            ##    continue # (2) terminal 
+            target      = self.examiner._sm.states[target_index]
+            accumulated = self.examiner.recipe_type.accumulate(CurrRecipe, 
+                                                               target.single_entry)
             if target_info.mouth_f():        
-                target_info.entry_recipe_db[CurrStateIndex] = CurrRecipe
+                # Mouth state ahead => accumulate, but do NOT enter!
+                target_info.entry_recipe_db[CurrStateIndex] = accumulated
                 self.mouths_touched_set.add(target_index)
                 continue # (3) terminal 
             else:
-                # Linear state ahead => accumulate
-                target = self.examiner._sm.states[target_index]
-                recipe = self.examiner.recipe_type.accumulate(CurrRecipe, 
-                                                              target.single_entry)
-                target_info.recipe = recipe
+                # Linear state ahead => accumulate and go further
+                target_info.recipe = accumulated
                 todo.append((target_index, target_info.recipe))
 
         if not todo: return None
