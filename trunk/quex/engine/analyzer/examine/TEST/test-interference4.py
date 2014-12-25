@@ -46,7 +46,7 @@ def get_array(EntryN, IpOffsetDb):
         return result
 
     return [ 
-        RecipeAcceptance(None, get_entry(i, IpOffsetDb)) 
+        RecipeAcceptance([RecipeAcceptance.RestoreAcceptance], get_entry(i, IpOffsetDb)) 
         for i in xrange(EntryN) 
     ]
 

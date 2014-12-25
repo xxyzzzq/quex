@@ -1,22 +1,24 @@
 Mouth States:
-  01     Accepter:     restore!
+  01     Accepter:
+           RESTORE_ACCEPTANCE
          InputOffsetDb:
          Undetermined: [AcceptanceRegister]
-
   02     Accepter:
+
            1111
          InputOffsetDb:
          Undetermined: []
-
   03     Accepter:
+
            pre22 => 2222
          InputOffsetDb:
          Undetermined: []
-
   04     Accepter:
+
            pre33 => 3333
            pre44 => 4444
            5555
          InputOffsetDb:
          Undetermined: []
+
 

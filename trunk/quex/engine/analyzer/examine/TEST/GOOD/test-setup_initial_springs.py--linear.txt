@@ -1,9 +1,10 @@
 Spring: 0;
 Recipe: {
-    Accepter:     restore!
+    Accepter:
+      RESTORE_ACCEPTANCE
 InputOffsetDb:
-
 }
+
 Linear States:
 00: determined: True
 01: determined: False
@@ -13,3 +14,4 @@ Linear States:
 05: determined: False
 06: determined: False
 Mouth States:
+
