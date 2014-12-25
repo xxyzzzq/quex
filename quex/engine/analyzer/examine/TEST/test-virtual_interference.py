@@ -13,7 +13,7 @@ from quex.engine.misc.tools import none_is_None
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
-    print "Dead Locks: Propagate the 'RestoreAll' recipe;"
+    print "Dead Locks: Virtual Interference;"
     print "CHOICES: fork, fork2, butterfly, long_loop;"
     sys.exit()
 
@@ -36,7 +36,7 @@ examiner        = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
 springs         = examiner.setup_initial_springs()
 unresolved_set  = examiner.resolve(springs)
-examiner.dead_locks_propagate_RestoreAll(unresolved_set)
+examiner._interfere_virtually(unresolved_set)
 
 def print_recipe(si, R):
     if R is None: 

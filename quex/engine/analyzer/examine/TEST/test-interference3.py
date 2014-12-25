@@ -58,7 +58,7 @@ def get_MouthStateInfo(EntryN, AcceptanceScheme):
         info.entry_recipe_db[i] = recipe
     return info
 
-scheme_restore  = None
+scheme_restore  = [ RecipeAcceptance.RestoreAll(0L) ]
 scheme_simple   = [ get_SeAccept(1111L, E_PreContextIDs.NONE, False) ]
 scheme_simple2  = [ get_SeAccept(2222L, 22L,                  True) ]
 scheme_list     = [ 

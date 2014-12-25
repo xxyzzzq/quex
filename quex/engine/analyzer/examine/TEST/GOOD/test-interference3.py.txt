@@ -1,17 +1,25 @@
 Mouth States:
-  01     Accepter:     restore!
+  01     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+         Undetermined: [AcceptanceRegister]
+  02     Accepter:
+           RESTORE_ACCEPTANCE
+
+         InputOffsetDb:
+         Undetermined: [AcceptanceRegister]
+  03     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+
+         Undetermined: [AcceptanceRegister]
+  04     Accepter:
+           RESTORE_ACCEPTANCE
          InputOffsetDb:
          Undetermined: [AcceptanceRegister]
 
-  02     Accepter:     restore!
-         InputOffsetDb:
-         Undetermined: [AcceptanceRegister]
 
-  03     Accepter:     restore!
-         InputOffsetDb:
-         Undetermined: [AcceptanceRegister]
 
-  04     Accepter:     restore!
-         InputOffsetDb:
-         Undetermined: [AcceptanceRegister]
+
+
 

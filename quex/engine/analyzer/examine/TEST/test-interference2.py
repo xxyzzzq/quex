@@ -37,7 +37,7 @@ def print_recipe(si, R, UndeterminedSet):
 
 def get_array(EntryN, IpOffsetDb):
     return [ 
-        RecipeAcceptance(None, deepcopy(IpOffsetDb)) 
+        RecipeAcceptance([RecipeAcceptance.RestoreAcceptance], deepcopy(IpOffsetDb)) 
         for i in xrange(EntryN) 
     ]
 
