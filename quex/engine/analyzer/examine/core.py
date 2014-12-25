@@ -187,9 +187,9 @@ class Examiner:
         improved, because now mouth states have determined entry recipes and
         may therefore perform interference.
 
-        If this interference results in a more specific recipe, then it
-        recipe may be propagated through accumulation. All subsequent states
-        (until the next mouth state) receive a new more specific recipe.
+        If this interference results in a more specific recipe, then it may be
+        propagated through accumulation. All subsequent states (until the next
+        mouth state) receive a new more specific recipe.
 
         IMPORTANT: At any point in time, the state machine description remains
                    CORRECT. The algorithm only develops more specific, more 
@@ -309,7 +309,7 @@ class Examiner:
             entry_recipe_db                = GetEntryRecipeDb(si, info)
 
             info.recipe,                   \
-            info.undetermined_register_set = self.recipe_type.interference(entry_recipe_db)
+            info.undetermined_register_set = self.recipe_type.interfere(entry_recipe_db)
             assert info.undetermined_register_set is not None
 
     def _interfere_virtually(self, UnresolvedMouthStateSet):
@@ -317,17 +317,27 @@ class Examiner:
         are derived from 'op(i)(RestoreAll)'. That is, the concatination of the
         restore all recipe with the operations of the current mouth state.
         """
-        def prepare(PrevRecipe, SingleEntry):
-            """All entry recipes, which are undetermined are assumed to be 
-            'op(i)(RA(i))'.
+        def prepare(PresentRecipe, SingleEntry):
+            """Provide recipe for virtual entry recipe database. 
+            
+            RETURN: PresentRecipe  -- if PresentRecipe is determined 
+                    op(i)(RA(i))   -- else.
             """
-            if PrevRecipe is not None: 
-                return PrevRecipe
+            if PresentRecipe is not None: 
+                return PresentRecipe
             else:
-                restore_all = self.recipe_type.RestoreAll()
-                return self.recipe_type.accumulation(restore_all, SingleEntry)
+                RA = self.recipe_type.RestoreAll()
+                return self.recipe_type.accumulation(RA, SingleEntry)
 
         def get_virtual_entry_recipe_db(si, mouth):
+            """Generate a virtual entry recipe database from '.entry_recipe_db'
+            where each *undetermined* entry recipe is set to 
+            
+                                   op(i)(RA(i))
+                              
+            That is, the state's operation 'op(i)' is applied to the 'restore 
+            all' recipe. This database is NOT set in 'mouth'!
+            """
             assert mouth.mouth_f()
             single_entry = self._sm.states[si].single_entry
             return dict(
