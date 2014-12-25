@@ -5,7 +5,8 @@ from quex.engine.operations.se_operations     import SeAccept, \
                                                      SeStoreInputPosition
 from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
                                                      UniformObject, \
-                                                     none_is_None
+                                                     none_is_None, \
+                                                     all_isinstance
 
 from quex.blackboard import E_PreContextIDs, \
                             E_R
@@ -55,7 +56,7 @@ class RecipeAcceptance(Recipe):
 
     def __init__(self, Accepter, IpOffsetDb):
         assert IpOffsetDb is not None
-        assert all_isinstance(Accepter, tuple)
+        assert Accepter is not None
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
@@ -188,23 +189,25 @@ class RecipeAcceptance(Recipe):
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
-        def get_uniform_recipe(RegisterId, EntryRecipeDb):
-            """If there are two entries with differing offsets, then input
-            position must be reset by register restore. Then 'offset = None'.
-            In the homogeneous case, the offset is the one that all entries
-            share."""
+        def get_uniform_recipe(RegisterId, RecipeList):
+            """If there are two recipes with differing offsets for a given
+            register, then input position must be reset by register restore.
+            Then 'offset = None'.  Else, in the homogeneous case, the offset is
+            the one that all entries share."""
             return UniformObject.from_iterable(
-                     recipe.ip_offset_db.get(register_id)
-                     for recipe in EntryRecipeDb.itervalues()).content
+                     recipe.ip_offset_db.get(RegisterId)
+                     for recipe in RecipeList).content
 
-        # Determine the set of involved input position registers
-        iterable = set(flatten_it_list_of_lists(
-                       recipe.ip_offset_db.iterkeys() 
-                       for recipe in EntryRecipeDb.itervalues()))    
+        # All registers from all recipes --> register_id_set.
+        register_id_set = set(flatten_it_list_of_lists(
+                              recipe.ip_offset_db.iterkeys() 
+                              for recipe in EntryRecipeDb.itervalues()))    
+        # List of all recipes.
+        recipe_list     = list(EntryRecipeDb.itervalues())
 
         return dict(
-            (register_id, get_uniform_recipe(register_id, EntryRecipeDb))
-            for register_id in iterable
+            (register_id, get_uniform_recipe(register_id, recipe_list))
+            for register_id in register_id_set
         )
         
     def get_mouth_Entry(self, mouth):

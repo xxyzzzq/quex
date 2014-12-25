@@ -35,7 +35,9 @@ Mouth States (Unresolved):
          Accepter:
            MATCH_FAILURE
          InputOffsetDb:
-           [MATCH_FAILURE] offset: 0
-     
+           [MATCH_FAILURE] offset: -1
+           [77] offset: 0
   from  4 <void>
+     
   from  5 <void>
+
