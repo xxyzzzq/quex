@@ -1,0 +1,29 @@
+State 1: Empty op(i)
+State 2: Overwriting op(i)
+State 3: Concatenating op(i)
+State 4: Concatenating longer op(i)
+Mouth States After:
+  01     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+         Undetermined: [AcceptanceRegister]
+
+  02     Accepter:
+           4444
+         InputOffsetDb:
+           [4444] offset: 0
+         Undetermined: []
+
+  03     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+           [5555] offset: 0
+         Undetermined: [AcceptanceRegister]
+
+  04     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+           [1111] offset: 0
+           [2222] offset: 0
+         Undetermined: [AcceptanceRegister]
+

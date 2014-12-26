@@ -23,18 +23,30 @@ file_name: test-interference4.py;
 file_name: test-setup_initial_springs.py;
 }
 {
+file_name: test-resolve_dead_locks.py;
+}
+{
 file_name: test-accumulate.py;
 }
 {
 file_name: test-virtual_interference.py;
 result_list: [
-  [ fork; FAIL; 0.063043; None; ]
-  [ fork2; FAIL; 0.066413; None; ]
-  [ butterfly; FAIL; 0.065483; None; ]
-  [ long_loop; FAIL; 0.063011; None; ]
+  [ restore-all; OK; 0.000000; 735142272; ]
+  [ sequence; OK; 0.000000; 343459110; ]
 ]
 interpreter_list: [ python; ]
-title: Virtual Interference;
-title_group: Dead Locks;
-hwut_info_time: 1419540791L;
+title: Acceptance;
+title_group: Virtual Interference;
+hwut_info_time: 1419629908L;
+}
+{
+file_name: test-virtual_interference2.py;
+result_list: [
+  [ restore-all; OK; 0.000000; 1286858007; ]
+  [ sequence; OK; 0.000000; 166313660; ]
+]
+interpreter_list: [ python; ]
+title: Input Position Storage;
+title_group: Virtual Interference;
+hwut_info_time: 1419630604L;
 }
