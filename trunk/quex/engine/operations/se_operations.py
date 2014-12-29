@@ -14,8 +14,8 @@ from quex.blackboard import E_PreContextIDs, \
                             E_R
 
 class SeOp:
-    def __init__(self):
-        self.__acceptance_id = E_IncidenceIDs.MATCH_FAILURE
+    def __init__(self, AcceptanceId=E_IncidenceIDs.MATCH_FAILURE):
+        self.__acceptance_id = AcceptanceId
 
     def set_acceptance_id(self, PatternId):
         self.__acceptance_id = PatternId
@@ -37,9 +37,12 @@ class SeOp:
         return not self.__eq__(self, Other)
 
 class SeAccept(SeOp):
-    def __init__(self):
-        SeOp.__init__(self)
-        self.__pre_context_id              = E_PreContextIDs.NONE
+    def __init__(self, 
+                 AcceptanceId             = E_IncidenceIDs.MATCH_FAILURE, 
+                 PreContextId             = E_PreContextIDs.NONE, 
+                 RestorePositionRegisterF = False):
+        SeOp.__init__(self, AcceptanceId)
+        self.__pre_context_id              = PreContextId
         self.__restore_position_register_f = False
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):

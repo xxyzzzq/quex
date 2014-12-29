@@ -1,49 +1,160 @@
 {
-file_name: test-interference3.py;
+file_name: test-accumulate.py;
+result_list: [
+  [ linear; OK; 0.067904; None; ]
+  [ butterfly; OK; 0.069711; None; ]
+  [ long_loop; OK; 0.063622; None; ]
+  [ nested_loop; OK; 0.073083; None; ]
+  [ mini_loop; OK; 0.062886; None; ]
+  [ fork; OK; 0.062961; None; ]
+  [ fork2; OK; 0.068003; None; ]
+  [ fork3; OK; 0.063598; None; ]
+  [ fork4; OK; 0.061662; None; ]
+  [ tree; OK; 0.066306; None; ]
+]
+interpreter_list: [ python; ]
+title: Accumulation;
+hwut_info_time: 1418544121L;
 }
 {
 file_name: test-categorize.py;
-}
-{
-file_name: test-dead_locks_fine_tuning.py;
-}
-{
-file_name: test-interference.py;
-}
-{
-file_name: test-interference2.py;
+result_list: [
+  [ linear; OK; 0.065966; None; ]
+  [ butterfly; OK; 0.061163; None; ]
+  [ long_loop; OK; 0.062623; None; ]
+  [ nested_loop; OK; 0.066305; None; ]
+  [ mini_loop; OK; 0.066436; None; ]
+  [ fork; OK; 0.067408; None; ]
+  [ fork2; OK; 0.065180; None; ]
+  [ fork3; OK; 0.061176; None; ]
+  [ fork4; OK; 0.064205; None; ]
+  [ tree; OK; 0.065222; None; ]
+]
+interpreter_list: [ python; ]
+title: Categorize into Linear and Mouth States;
+hwut_info_time: 1418544128L;
 }
 {
 file_name: test-resolve.py;
-}
-{
-file_name: test-interference4.py;
+result_list: [
+  [ linear; OK; 0.062884; None; ]
+  [ butterfly; OK; 0.063853; None; ]
+  [ long_loop; OK; 0.063546; None; ]
+  [ nested_loop; OK; 0.064136; None; ]
+  [ mini_loop; OK; 0.068762; None; ]
+  [ fork; OK; 0.062976; None; ]
+  [ fork2; OK; 0.070112; None; ]
+  [ fork3; OK; 0.071502; None; ]
+  [ fork4; OK; 0.066287; None; ]
+  [ tree; OK; 0.063163; None; ]
+]
+interpreter_list: [ python; ]
+title: Resolve Without Dead-Lock Resolution;
+hwut_info_time: 1419073955L;
 }
 {
 file_name: test-setup_initial_springs.py;
+result_list: [
+  [ linear; OK; 0.070384; None; ]
+  [ long_loop; OK; 0.068592; None; ]
+]
+interpreter_list: [ python; ]
+title: Setup Initial Spring States;
+hwut_info_time: 1418544138L;
+}
+{
+file_name: test-dead_locks_fine_tuning.py;
+result_list: [
+  [ butterfly; KEYBOARD_INTERRUPT; 0.067409; None; ]
+  [ long_loop; KEYBOARD_INTERRUPT; 0.064643; None; ]
+  [ nested_loop; KEYBOARD_INTERRUPT; 0.067687; None; ]
+  [ mini_loop; NO GOOD FILE; 0.069001; None; ]
+  [ fork; NO GOOD FILE; 0.066764; None; ]
+  [ fork2; NO GOOD FILE; 0.064801; None; ]
+  [ fork4; NO GOOD FILE; 0.067430; None; ]
+]
+interpreter_list: [ python; ]
+title: Fine Tuning;
+title_group: Dead Locks;
+hwut_info_time: 1419112338L;
 }
 {
 file_name: test-resolve_dead_locks.py;
+result_list: [
+  [ fork; FAIL; 0.064397; None; ]
+  [ fork2; FAIL; 0.068546; None; ]
+  [ butterfly; FAIL; 0.068686; None; ]
+  [ long_loop; FAIL; 0.065284; None; ]
+]
+interpreter_list: [ python; ]
+title: Virtual Interference;
+title_group: Dead Locks;
+hwut_info_time: 1419540791L;
 }
 {
-file_name: test-accumulate.py;
+file_name: test-interference3.py;
+result_list: [
+  [ 2-entries; OK; 0.069638; None; ]
+  [ 3-entries; OK; 0.063978; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Homogeneous Acceptance;
+title_group: Interference;
+hwut_info_time: 1419582809L;
+}
+{
+file_name: test-interference.py;
+result_list: [
+  [ 2-entries; OK; 0.066824; None; ]
+  [ 3-entries; OK; 0.069179; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Homogeneous Acceptance;
+title_group: Interference;
+hwut_info_time: 1419539286L;
+}
+{
+file_name: test-interference2.py;
+result_list: [
+  [ 2-entries; OK; 0.064497; -2003365951; ]
+  [ 3-entries; OK; 0.075931; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Homogeneous IpOffset;
+title_group: Interference;
+hwut_info_time: 1419540132L;
+}
+{
+file_name: test-interference4.py;
+result_list: [
+  [ 2-entries; FAIL; 0.073282; 516764244; ]
+  [ 3-entries; FAIL; 0.064467; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Inhomogeneous IpOffset;
+title_group: Interference;
+hwut_info_time: 1419540175L;
 }
 {
 file_name: test-virtual_interference.py;
 result_list: [
-  [ restore-all; OK; 0.000000; 735142272; ]
-  [ sequence; OK; 0.000000; 343459110; ]
+  [ restore-all; OK; 0.069290; 735142272; ]
+  [ sequence; OK; 0.073454; 343459110; ]
 ]
 interpreter_list: [ python; ]
 title: Acceptance;
 title_group: Virtual Interference;
-hwut_info_time: 1419629908L;
+hwut_info_time: 1419630393L;
 }
 {
 file_name: test-virtual_interference2.py;
 result_list: [
-  [ restore-all; OK; 0.000000; 1286858007; ]
-  [ sequence; OK; 0.000000; 166313660; ]
+  [ restore-all; OK; 0.062912; 1286858007; ]
+  [ sequence; FAIL; 0.066759; 166313660; ]
 ]
 interpreter_list: [ python; ]
 title: Input Position Storage;

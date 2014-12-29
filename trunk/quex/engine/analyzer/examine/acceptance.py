@@ -9,6 +9,7 @@ from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
                                                      all_isinstance
 
 from quex.blackboard import E_PreContextIDs, \
+                            E_IncidenceIDs, \
                             E_R
 
 class RecipeAcceptance(Recipe):
@@ -51,22 +52,58 @@ class RecipeAcceptance(Recipe):
     """
     __slots__            = ("accepter", "ip_offset_db")
     SCR                  = (E_R.AcceptanceRegister, E_R.PositionRegister)
-    RestoreAcceptance    = (None, None)
+    RestoreAcceptance    = SeAccept(E_IncidenceIDs.RESTORE_ACCEPTANCE, E_PreContextIDs.NONE)
     __restore_all_recipe = None
 
     def __init__(self, Accepter, IpOffsetDb):
-        assert IpOffsetDb is not None
-        assert Accepter is not None
+        assert type(IpOffsetDb) == dict
+        assert type(Accepter)   == list
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
     @staticmethod
-    def RestoreAll():
-        if self.__restore_all_recipe is None:
+    def get_RR_superset(sm, StateIndex, PredecessorDb):
+        """RETURNS: The required registers for a given state. 
+        
+        It is admissible to return a SUPERSET of what is required, which is 
+        what happens! 
+
+                              AcceptA                 AcceptB
+                   rA=ip                               rB=ip
+           ... --->( 0 )------>( 1 )------>( 2 )------>( 3 )------>( 4 ) 
+
+           SCR:    {rA}        {rA}        {rA}        {rA,rB}     {rA,rB}
+
+        The 'rA' needs to be maintained from 0 to 2. If the state machine exits
+        in 2, then the input position must be set to 'rA' and 'A' is accepted.
+        However, AcceptB overwrites AcceptA! 'rA' does no longer have to be 
+        in the SCR
+
+        NOTE: It is slightly advantageous, if the function returns the exact 
+              set 'RR(i)'.
+        """
+        predecessors = PredecessorDb[StateIndex]
+
+        required_register_set = set([ E_R.AcceptanceRegister ])
+
+        # Any storage of an input position written before and restored later
+        # makes the register part of the SCR for this state.
+        required_register_set.update(flatten_it_list_of_lists(
+            [ (E_R.PositionRegister, cmd.acceptance_id())
+              for cmd in single_entry.get_iterable(SeStoreInputPosition) ]
+            for single_entry in (sm.states[si].single_entry for si in predecessors)
+        ))
+
+        return required_register_set
+
+    @classmethod
+    def RestoreAll(cls, StateIndex):
+        """Same for all states."""
+        if cls.__restore_all_recipe is None:
             ip_offset_db = {} # .get(RegisterId) is None for all => restore all 
-            self.__restore_all_recipe = RecipeAcceptance(RecipeAcceptance.RestoreAcceptance, 
+            cls.__restore_all_recipe = RecipeAcceptance([RecipeAcceptance.RestoreAcceptance], 
                                                          ip_offset_db)
-        return self.__restore_all_recipe
+        return cls.__restore_all_recipe
 
     @classmethod
     def accumulate(cls, PrevRecipe, CurrSingleEntry):
@@ -86,28 +123,27 @@ class RecipeAcceptance(Recipe):
         RETURNS: 
             
             [0] Recipe.
-            [1] Set of undetermined registers. 
+            [1] Set of determined registers
 
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        undetermined_register_set = set()
+        determined_set = set()
 
         # Acceptance
-        accepter     = cls._interfere_acceptance(EntryRecipeDb)
-        if cls.RestoreAcceptance in accepter:
-            undetermined_register_set.add(E_R.AcceptanceRegister)
+        accepter = cls._interfere_acceptance(EntryRecipeDb)
+        if cls.RestoreAcceptance not in accepter:
+            determined_set.add(E_R.AcceptanceRegister)
 
         # Input position storage
         ip_offset_db = cls._interfere_input_position_storage(EntryRecipeDb)
-        undetermined_register_set.update(
+        determined_set.update(
             (E_R.PositionRegister, register_id)
             for register_id, offset in ip_offset_db.iteritems()
-            if offset is None
+            if offset is not None
         )
         
-        return RecipeAcceptance(accepter, ip_offset_db), \
-               undetermined_register_set
+        return RecipeAcceptance(accepter, ip_offset_db), determined_set
         
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, CurrEntry):
@@ -178,9 +214,11 @@ class RecipeAcceptance(Recipe):
         # Interference requires determined entry recipes.
         assert none_is_None(EntryRecipeDb.itervalues())
 
-        return UniformObject.from_iterable(
-                 recipe.accepter
-                 for recipe in EntryRecipeDb.itervalues()).content
+        result = UniformObject.from_iterable(
+                               recipe.accepter
+                               for recipe in EntryRecipeDb.itervalues()).content
+        if result is None: return [ cls.RestoreAcceptance ]
+        else:              return result
 
     
     @classmethod
@@ -262,16 +300,12 @@ class RecipeAcceptance(Recipe):
             )
 
     def __str__(self):
-        txt = [ "    Accepter:" ]
-        if self.accepter is None:
-            txt.append("     restore!\n")
-        else:
-            txt.append("\n")
-            for x in self.accepter:
-                if x.pre_context_id() != E_PreContextIDs.NONE:
-                    txt.append("      pre%s => %s\n" % (x.pre_context_id(), x.acceptance_id())) 
-                else:
-                    txt.append("      %s\n" % x.acceptance_id())
+        txt = [ "    Accepter:\n" ]
+        for x in self.accepter:
+            if x.pre_context_id() != E_PreContextIDs.NONE:
+                txt.append("      pre%s => %s\n" % (x.pre_context_id(), x.acceptance_id())) 
+            else:
+                txt.append("      %s\n" % x.acceptance_id())
 
         txt.append("    InputOffsetDb:\n")
         for register, offset in sorted(self.ip_offset_db.iteritems()):

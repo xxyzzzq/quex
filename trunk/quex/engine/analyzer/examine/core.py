@@ -52,10 +52,7 @@ def do(SM, RecipeType):
         unresolved_mouths = set(examiner.mouth_db.iterkeys())
 
     # Solve dead-locks caused by mutual dependencies: 'run-time' interference.
-    print "#unresolved:", unresolved_mouths
-    examiner.dead_locks_resolve(unresolved_mouths)
-    for si in unresolved_mouths:
-        print "%i: {\n%s\n}\n" % (si, examiner.mouth_db[si])
+    examiner.resolve_dead_locks(unresolved_mouths)
         
     # At this point all states must have determined recipes, according to
     # the theory in "00-README.txt".
@@ -71,8 +68,9 @@ class Examiner:
     implemented in the global '.do()' function.
     """
     def __init__(self, SM, RecipeType):
-        self._sm         = SM
-        self.recipe_type = RecipeType
+        self._sm            = SM
+        self.recipe_type    = RecipeType
+        self.predecessor_db = SM.get_predecessor_db()
 
         self.linear_db   = {}  # map: state index --> LinearStateInfo
         self.mouth_db    = {}  # map: state index --> MouthStateInfo
@@ -166,7 +164,7 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-    def dead_locks_resolve(self, UnresolvedMouthStateSet):
+    def resolve_dead_locks(self, UnresolvedMouthStateSet):
         """For the given set of unresolved mouth states, implement the 'restore
         all' recipe. That means, that the value of registers is determined at
         run-time upon entry into the state, stored in an auxiliary register
@@ -181,66 +179,6 @@ class Examiner:
 
         self._dead_locks_fine_tuning(resolved_set)
 
-    def _dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
-        """Assume that 'dead_locks_resolve()' has been applied to specify a
-        complete state machine by recipes. Some of those recipes may still be
-        improved, because now mouth states have determined entry recipes and
-        may therefore perform interference.
-
-        If this interference results in a more specific recipe, then it may be
-        propagated through accumulation. All subsequent states (until the next
-        mouth state) receive a new more specific recipe.
-
-        IMPORTANT: At any point in time, the state machine description remains
-                   CORRECT. The algorithm only develops more specific, more 
-                   simple recipes for some states.
-        """
-        def scr_db_get(Frontier, MouthDb):
-            return dict(
-                (si, MouthDb[si].undetermined_register_set)
-                for si in Frontier
-            )
-
-        def scr_db_get_springs(scr_db, Frontier, MouthDb):
-            """RETURNS: Set of states where further accumulation starts.
-
-            Those are the states for which a more specific recipe could be 
-            determined through interference.
-            """
-            print "#classes:", scr_db.__class__, Frontier.__class__, MouthDb.__class__
-            return [
-                si 
-                for si in Frontier
-                if len(MouthDb[si].undetermined_register_set) < len(scr_db[si])
-            ]
-
-        frontier = self.get_horizon(UnresolvedMouthStateSet)
-        done_set = set()
-        while frontier:
-            # TERMINATION: If there are no new states reached by simplified
-            #              recipes. 
-            # Infinite iteration is obstructed. Relying on the 'done_set' a 
-            # state can at max be treated once. The number of states is finite.
-            # Thus the number of iterations is finite.
-            scr_db = scr_db_get(frontier, self.mouth_db)
-            self._interfere(frontier)
-
-            # The elements of the horizon, that produce a more specific output
-            # are used to promote a simplified recipe.
-            stable_recipe_state_set = scr_db_get_springs(scr_db, frontier, 
-                                                         self.mouth_db)
-            reached_set = self._accumulate(stable_recipe_state_set)
-            done_set.update(stable_recipe_state_set)
-
-            # New frontier: Those states which 
-            #   -- have been reached by simplified recipes,
-            #   -- are not yet treated, and 
-            #   -- are part of the UnresolvedMouthStateSet (all of them should).
-            frontier = [
-                si for si in reached_set 
-                   if si not in done_set and si in UnresolvedMouthStateSet
-            ]
-            
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
         """
@@ -267,8 +205,12 @@ class Examiner:
         return self.get_state_info(StateIndex).recipe
 
     def get_horizon(self, UnresolvedMouthStateSet):
-        """Horizon: Unresolved mouth states that have at least one determined
-                    entry. Definition see "00-README.txt".
+        """Horizon: Definition see "00-README.txt".
+        Brief: The horizon is a subset of dead-lock states that have at
+        least one determined entry.  In "00-README.txt" it is proven that
+        such states always exist.
+
+        RETURNS: List of indeces of horizon states.
         """
         return [
             si for si in UnresolvedMouthStateSet
@@ -306,28 +248,35 @@ class Examiner:
         MouthInfo.recipe:   Recipe of resolved mouth state.
         """
         for si, info in ((si, self.mouth_db[si]) for si in CandidateSet):
-            entry_recipe_db                = GetEntryRecipeDb(si, info)
+            entry_recipe_db       = GetEntryRecipeDb(si, info)
+            required_register_set = self.recipe_type.get_RR_superset(self._sm, si, 
+                                                                     self.predecessor_db)
+            assert type(required_register_set) == set
 
-            info.recipe,                   \
-            info.undetermined_register_set = self.recipe_type.interfere(entry_recipe_db)
-            assert info.undetermined_register_set is not None
+            info.recipe,            \
+            determined_register_set = self.recipe_type.interfere(entry_recipe_db)
+            assert determined_register_set is not None
+
+            info.undetermined_register_set = required_register_set.difference(determined_register_set)
 
     def _interfere_virtually(self, UnresolvedMouthStateSet):
         """Performs a 'virtual' interference where undetermined entry recipes
         are derived from 'op(i)(RestoreAll)'. That is, the concatination of the
         restore all recipe with the operations of the current mouth state.
         """
-        def prepare(PresentRecipe, SingleEntry):
+        def prepare(StateIndex, PresentRecipe, SingleEntry):
             """Provide recipe for virtual entry recipe database. 
             
             RETURN: PresentRecipe  -- if PresentRecipe is determined 
                     op(i)(RA(i))   -- else.
             """
             if PresentRecipe is not None: 
-                return PresentRecipe
+                recipe = PresentRecipe
             else:
-                RA = self.recipe_type.RestoreAll()
-                return self.recipe_type.accumulation(RA, SingleEntry)
+                RA = self.recipe_type.RestoreAll(StateIndex)
+                recipe = self.recipe_type.accumulate(RA, SingleEntry)
+
+            return recipe
 
         def get_virtual_entry_recipe_db(si, mouth):
             """Generate a virtual entry recipe database from '.entry_recipe_db'
@@ -340,14 +289,77 @@ class Examiner:
             """
             assert mouth.mouth_f()
             single_entry = self._sm.states[si].single_entry
-            return dict(
-                (from_si, prepare(recipe, single_entry))
+            result = dict(
+                (from_si, prepare(si, recipe, single_entry))
                 for from_si, recipe in mouth.entry_recipe_db.iteritems()
             )
+            return result
 
         self._interfere(UnresolvedMouthStateSet, 
                         GetEntryRecipeDb = get_virtual_entry_recipe_db)
 
+    def _dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
+        """
+        Assume that 'resolve_dead_locks()' specified a complete state machine
+        by recipes. Some of those recipes may still be improved, because now
+        mouth states have determined entry recipes and may therefore perform
+        interference.
+
+        If this interference results in a more specific recipe, then it may be
+        propagated through accumulation. All subsequent states (until the next
+        mouth state) receive a new more specific recipe.
+
+        IMPORTANT: At any point in time, the state machine description remains
+                   CORRECT. The algorithm only develops more specific, more 
+                   simple recipes for some states.
+        """
+        def scr_db_get(Frontier, MouthDb):
+            """RETURNS: A map from state index to set of undetermined registers.
+            """
+            return dict(
+                (si, MouthDb[si].undetermined_register_set)
+                for si in Frontier
+            )
+
+        def scr_db_get_springs(scr_db, Frontier, MouthDb):
+            """RETURNS: Set of states where further accumulation starts.
+
+            Those are the states for which a more specific recipe could be 
+            determined through interference.
+            """
+            return [
+                si 
+                for si in Frontier
+                if len(MouthDb[si].undetermined_register_set) < len(scr_db[si])
+            ]
+
+        frontier = self.get_horizon(UnresolvedMouthStateSet)
+        done_set = set()
+        while frontier:
+            # TERMINATION: If there are no new states reached by simplified
+            #              recipes. 
+            # Infinite iteration is obstructed. Relying on the 'done_set' a 
+            # state can at max. be treated once. The number of states is finite.
+            # Thus the number of iterations is finite.
+            scr_db = scr_db_get(frontier, self.mouth_db)
+            self._interfere(frontier)
+
+            # The elements of the horizon, that produce a more specific output
+            # are used to promote a simplified recipe.
+            stable_recipe_state_set = scr_db_get_springs(scr_db, frontier, 
+                                                         self.mouth_db)
+            reached_set = self._accumulate(stable_recipe_state_set)
+            done_set.update(stable_recipe_state_set)
+
+            # New frontier: Those states which 
+            #   -- have been reached by simplified recipes,
+            #   -- are not yet treated, and 
+            #   -- are part of the UnresolvedMouthStateSet (all of them should).
+            frontier = [
+                si for si in reached_set 
+                   if si not in done_set and si in UnresolvedMouthStateSet
+            ]
+            
     def get_Entry(self, StateIndex):
         """Generates an 'state.Entry' object for the state of the given index.
 
