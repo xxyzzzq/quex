@@ -143,6 +143,7 @@ E_IncidenceIDs = Enum(
     "SKIP_NESTED_RANGE", 
     "SKIP_RANGE", 
     "SKIP_RANGE_OPEN",
+    "RESTORE_ACCEPTANCE",
     "VOID",
     "_DEBUG_IncidenceIDs")
 
