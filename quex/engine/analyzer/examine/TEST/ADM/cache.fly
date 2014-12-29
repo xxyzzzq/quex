@@ -19,16 +19,16 @@ hwut_info_time: 1418544121L;
 {
 file_name: test-categorize.py;
 result_list: [
-  [ linear; OK; 0.065966; None; ]
-  [ butterfly; OK; 0.061163; None; ]
-  [ long_loop; OK; 0.062623; None; ]
-  [ nested_loop; OK; 0.066305; None; ]
-  [ mini_loop; OK; 0.066436; None; ]
-  [ fork; OK; 0.067408; None; ]
-  [ fork2; OK; 0.065180; None; ]
-  [ fork3; OK; 0.061176; None; ]
-  [ fork4; OK; 0.064205; None; ]
-  [ tree; OK; 0.065222; None; ]
+  [ linear; OK; 0.060735; None; ]
+  [ butterfly; OK; 0.061884; None; ]
+  [ long_loop; OK; 0.061633; None; ]
+  [ nested_loop; OK; 0.061954; None; ]
+  [ mini_loop; OK; 0.061273; None; ]
+  [ fork; OK; 0.063987; None; ]
+  [ fork2; OK; 0.062326; None; ]
+  [ fork3; OK; 0.063212; None; ]
+  [ fork4; OK; 0.061887; None; ]
+  [ tree; OK; 0.063450; None; ]
 ]
 interpreter_list: [ python; ]
 title: Categorize into Linear and Mouth States;
@@ -37,16 +37,16 @@ hwut_info_time: 1418544128L;
 {
 file_name: test-resolve.py;
 result_list: [
-  [ linear; OK; 0.062884; None; ]
-  [ butterfly; OK; 0.063853; None; ]
-  [ long_loop; OK; 0.063546; None; ]
-  [ nested_loop; OK; 0.064136; None; ]
-  [ mini_loop; OK; 0.068762; None; ]
-  [ fork; OK; 0.062976; None; ]
-  [ fork2; OK; 0.070112; None; ]
-  [ fork3; OK; 0.071502; None; ]
-  [ fork4; OK; 0.066287; None; ]
-  [ tree; OK; 0.063163; None; ]
+  [ linear; OK; 0.066669; None; ]
+  [ butterfly; OK; 0.062802; None; ]
+  [ long_loop; OK; 0.065295; None; ]
+  [ nested_loop; OK; 0.062370; None; ]
+  [ mini_loop; OK; 0.066104; None; ]
+  [ fork; FAIL; 0.062948; None; ]
+  [ fork2; OK; 0.062156; None; ]
+  [ fork3; OK; 0.064226; None; ]
+  [ fork4; OK; 0.064500; None; ]
+  [ tree; OK; 0.062082; None; ]
 ]
 interpreter_list: [ python; ]
 title: Resolve Without Dead-Lock Resolution;

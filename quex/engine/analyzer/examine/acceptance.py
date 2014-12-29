@@ -93,6 +93,9 @@ class RecipeAcceptance(Recipe):
               for cmd in single_entry.get_iterable(SeStoreInputPosition) ]
             for single_entry in (sm.states[si].single_entry for si in predecessors)
         ))
+        required_register_set.add(
+            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
+        )
 
         return required_register_set
 

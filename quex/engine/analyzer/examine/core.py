@@ -256,6 +256,7 @@ class Examiner:
             info.recipe,            \
             determined_register_set = self.recipe_type.interfere(entry_recipe_db)
             assert determined_register_set is not None
+            assert determined_register_set.issubset(required_register_set)
 
             info.undetermined_register_set = required_register_set.difference(determined_register_set)
 
