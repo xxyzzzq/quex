@@ -4,6 +4,7 @@ python    test-*.py
 python -O no-assert-test-*.py
 --not __init__.py
 --not helper.py
+--not *fine*.py
 ------------------------------------------------
 
 Tests in this directory test the state machine examination.  The procedure and

@@ -4,7 +4,7 @@ from quex.blackboard                         import E_PreContextIDs, E_R, E_Inci
 
 
 class DerivedRecipe(RecipeAcceptance):
-    rr_by_state_db = {}
+    position_register_by_state_db = {}
 
     @staticmethod
     def get_RR_superset(sm, StateIndex, PredecessorDb):
