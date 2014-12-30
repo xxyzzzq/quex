@@ -1,5 +1,20 @@
-from quex.engine.operations.se_operations import SeAccept, SeStoreInputPosition
-from quex.blackboard                      import E_PreContextIDs
+from quex.engine.operations.se_operations    import SeAccept, SeStoreInputPosition
+from quex.engine.analyzer.examine.acceptance import RecipeAcceptance
+from quex.blackboard                         import E_PreContextIDs, E_R, E_IncidenceIDs
+
+
+class DerivedRecipe(RecipeAcceptance):
+    rr_by_state_db = {}
+
+    @staticmethod
+    def get_RR_superset(sm, StateIndex, PredecessorDb):
+        result = set(
+            (E_R.PositionRegister, register_id)
+            for register_id in DerivedRecipe.position_register_by_state_db[StateIndex]
+        )
+        result.add((E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
+        result.add(E_R.AcceptanceRegister)
+        return result
 
 def get_SeAccept(AcceptanceId, PreContextId, RestorePositionF=False):
     cmd = SeAccept()
