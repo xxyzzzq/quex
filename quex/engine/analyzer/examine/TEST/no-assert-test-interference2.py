@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python -O
 import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])

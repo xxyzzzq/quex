@@ -68,12 +68,18 @@ class Examiner:
     implemented in the global '.do()' function.
     """
     def __init__(self, SM, RecipeType):
-        self._sm            = SM
-        self.recipe_type    = RecipeType
-        self.predecessor_db = SM.get_predecessor_db()
+        self._sm              = SM
+        self.recipe_type      = RecipeType
+        self.__predecessor_db = None
 
         self.linear_db   = {}  # map: state index --> LinearStateInfo
         self.mouth_db    = {}  # map: state index --> MouthStateInfo
+
+    @property
+    def predecessor_db(self):
+        if self.__predecessor_db is None:
+            self.__predecessor_db = self._sm.get_predecessor_db()
+        return self.__predecessor_db
 
     def categorize(self):
         """Separates the states of state machine into two categories:
@@ -255,6 +261,8 @@ class Examiner:
 
             info.recipe,            \
             determined_register_set = self.recipe_type.interfere(entry_recipe_db)
+            ## print "#required_register_set:", required_register_set
+            ## print "#determined_register_set:", determined_register_set
             assert determined_register_set is not None
             assert determined_register_set.issubset(required_register_set)
 
