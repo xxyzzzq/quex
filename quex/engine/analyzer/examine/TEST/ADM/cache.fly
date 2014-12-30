@@ -94,14 +94,14 @@ hwut_info_time: 1419540791L;
 {
 file_name: no-assert-test-interference4.py;
 result_list: [
-  [ 2-entries; FAIL; 0.160399; -1533393330; ]
-  [ 3-entries; FAIL; 0.157454; None; ]
+  [ 2-entries; OK; 0.161015; None; ]
+  [ 3-entries; None; None; None; ]
 ]
 interpreter_list: [ python; -O; ]
 same_f: True;
 title: Inhomogeneous IpOffset;
 title_group: Interference;
-hwut_info_time: 1419926463L;
+hwut_info_time: 1419970421L;
 }
 {
 file_name: test-interference3.py;

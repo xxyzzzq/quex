@@ -63,18 +63,6 @@ scheme_1 = { 0: -1 }
 scheme_2 = { 0: -1, 1: -2 }
 scheme_3 = { 0: -1, 1: -2, 2: -3 }
 
-class DerivedRecipe(RecipeAcceptance):
-    @staticmethod
-    def get_RR_superset(sm, StateIndex, PredecessorDb):
-        result = {
-            1L: set([(E_R.PositionRegister, 0)]),
-            2L: set([(E_R.PositionRegister, 0)]),
-            3L: set([(E_R.PositionRegister, 0),(E_R.PositionRegister, 1)]),
-            4L: set([(E_R.PositionRegister, 0),(E_R.PositionRegister, 1),(E_R.PositionRegister, 2)]),
-        }[StateIndex]
-        result.add((E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
-        result.add(E_R.AcceptanceRegister)
-        return result
 
 examiner = Examiner(StateMachine(), DerivedRecipe)
 
@@ -85,6 +73,12 @@ examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_1)
 examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_2)
 examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_3)
 
+DerivedRecipe.position_register_by_state_db = {
+    1L: [0],
+    2L: [0],
+    3L: [0, 1],
+    4L: [0, 1, 2]
+}
 examiner._interfere(set([1L, 2L, 3L, 4L]))
 
 
