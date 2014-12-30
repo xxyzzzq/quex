@@ -2,8 +2,8 @@ Mouth States:
   01     Accepter:
            RESTORE_ACCEPTANCE
          InputOffsetDb:
-           [1] restore!
-         Undetermined: [AcceptanceRegister, (PositionRegister, 1)]
+           [0] restore!
+         Undetermined: [AcceptanceRegister, (PositionRegister, 0)]
 
   02     Accepter:
            RESTORE_ACCEPTANCE

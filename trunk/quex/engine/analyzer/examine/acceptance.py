@@ -93,6 +93,8 @@ class RecipeAcceptance(Recipe):
               for cmd in single_entry.get_iterable(SeStoreInputPosition) ]
             for single_entry in (sm.states[si].single_entry for si in predecessors)
         ))
+
+        # Is this necessary? Does 'lexeme_begin_p' not suffice?
         required_register_set.add(
             (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
         )
@@ -144,6 +146,12 @@ class RecipeAcceptance(Recipe):
             (E_R.PositionRegister, register_id)
             for register_id, offset in ip_offset_db.iteritems()
             if offset is not None
+        )
+
+        # The position register 'MATCH_FAILURE' is always determined because
+        # it is available in '_lexeme_start_p'.
+        determined_set.add(
+            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
         )
         
         return RecipeAcceptance(accepter, ip_offset_db), determined_set

@@ -11,7 +11,7 @@ from quex.engine.analyzer.examine.state_info                    import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
 from quex.engine.analyzer.examine.core                          import Examiner, \
                                                                        LinearStateWalker
-from quex.blackboard import E_PreContextIDs
+from quex.blackboard import E_PreContextIDs, E_R, E_IncidenceIDs
 from copy import deepcopy
 
 if "--hwut-info" in sys.argv:
@@ -36,12 +36,13 @@ def print_recipe(si, R, UndeterminedSet):
                                                undetermined_str)
 
 def get_array(EntryN, IpOffsetDb):
+
     def get_entry(i, IpOffsetDb):
         """Let one entry be different."""
         result = deepcopy(IpOffsetDb)
         if i == 1:  # i = 1, always happens
             # always only take the last as different
-            if len(result) == 0: result = { 1: -1 }
+            if len(result) == 0: result = { 0L: -1 }
             else:                result[len(result)-1] += 1000
         return result
 
@@ -62,7 +63,21 @@ scheme_1 = { 0: -1 }
 scheme_2 = { 0: -1, 1: -2 }
 scheme_3 = { 0: -1, 1: -2, 2: -3 }
 
-examiner = Examiner(StateMachine(), RecipeAcceptance)
+class DerivedRecipe(RecipeAcceptance):
+    @staticmethod
+    def get_RR_superset(sm, StateIndex, PredecessorDb):
+        result = {
+            1L: set([(E_R.PositionRegister, 0)]),
+            2L: set([(E_R.PositionRegister, 0)]),
+            3L: set([(E_R.PositionRegister, 0),(E_R.PositionRegister, 1)]),
+            4L: set([(E_R.PositionRegister, 0),(E_R.PositionRegister, 1),(E_R.PositionRegister, 2)]),
+        }[StateIndex]
+        result.add((E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
+        result.add(E_R.AcceptanceRegister)
+        return result
+
+examiner = Examiner(StateMachine(), DerivedRecipe)
+
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
 examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_0)
