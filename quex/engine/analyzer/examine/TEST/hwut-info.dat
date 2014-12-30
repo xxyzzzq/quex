@@ -1,6 +1,7 @@
 Test the State Machine Examination
 ------------------------------------------------
-python *.py
+python    test-*.py
+python -O no-assert-test-*.py
 --not __init__.py
 --not helper.py
 ------------------------------------------------
