@@ -79,7 +79,7 @@ set_SingleEntry(sm, 3L, single_entry_3)
 print "State 4: Concatenating longer op(i)"
 set_SingleEntry(sm, 4L, single_entry_4)
 
-examiner = Examiner(sm, RecipeAcceptance)
+examiner = Examiner(sm, DerivedRecipe)
 
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
@@ -89,6 +89,12 @@ examiner.mouth_db[2L] = get_MouthStateInfo(scheme, single_entry_2)
 examiner.mouth_db[3L] = get_MouthStateInfo(scheme, single_entry_3)
 examiner.mouth_db[4L] = get_MouthStateInfo(scheme, single_entry_4)
 
+DerivedRecipe.position_register_by_state_db = {
+    1L: [ 1111L, 2222L, 3333L, 4444L, 5555L ],
+    2L: [ 1111L, 2222L, 3333L, 4444L, 5555L ],
+    3L: [ 1111L, 2222L, 3333L, 4444L, 5555L ],
+    4L: [ 1111L, 2222L, 3333L, 4444L, 5555L ],
+}
 
 examiner._interfere_virtually(set([1L, 2L, 3L, 4L]))
 
