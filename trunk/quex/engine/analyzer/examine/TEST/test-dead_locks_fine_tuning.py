@@ -31,7 +31,12 @@ if state_n > 7:    add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
 
 print
 
-linear_db, mouth_db = examination.do(sm, RecipeAcceptance)
+examiner        = Examiner(sm, RecipeAcceptance)
+examiner.categorize()
+springs         = examiner.setup_initial_springs()
+unresolved_set  = examiner.resolve(springs)
+resolved_set    = examiner._interfere_virtually(unresolved_set)
+examiner._dead_lock_fine_tuning(resolved_set)
 
 def print_recipe(si, R):
     if R is None: 

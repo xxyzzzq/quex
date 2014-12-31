@@ -13,7 +13,7 @@ from quex.engine.misc.tools import none_is_None
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
-    print "Dead Locks: Virtual Interference;"
+    print "Complete Process;"
     print "CHOICES: fork, fork2, butterfly, long_loop;"
     sys.exit()
 
@@ -32,11 +32,7 @@ if state_n > 6:    add_SeAccept(sm, 6L, 66L, 666L)
 if state_n > 7:    add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
 print
 
-examiner        = Examiner(sm, RecipeAcceptance)
-examiner.categorize()
-springs         = examiner.setup_initial_springs()
-unresolved_set  = examiner.resolve(springs)
-examiner._interfere_virtually(unresolved_set)
+linear_db, mouth_db = examination.do(sm, RecipeAcceptance)
 
 def print_recipe(si, R):
     if R is None: 
