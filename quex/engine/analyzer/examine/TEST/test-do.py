@@ -14,7 +14,7 @@ from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
     print "Complete Process;"
-    print "CHOICES: fork, fork2, butterfly, long_loop;"
+    print "CHOICES: %s;" % get_sm_shape_names()
     sys.exit()
 
 name             = sys.argv[1]
@@ -24,10 +24,14 @@ print pic
 
 add_SeAccept(sm, sm.init_state_index, E_IncidenceIDs.MATCH_FAILURE)
 add_SeStoreInputPosition(sm, 1L, 77L)
-if state_n > 3:    add_SeAccept(sm, 3L, 33L, 333L)
-if state_n > 3:    add_SeAccept(sm, 4L, 44L)
-if state_n > 3:    add_SeAccept(sm, 3L, 33L, 333L)
-if state_n > 6:    add_SeAccept(sm, 6L, 66L, 666L)
+add_SeStoreInputPosition(sm, 0L, 66L)
+if state_n > 1:    add_SeAccept(sm, 1L, 11L, 111L)
+if state_n > 2:    add_SeAccept(sm, 2L, 22L, 222L)
+if state_n > 3:    add_SeAccept(sm, 3L, 33L)
+if state_n > 4:    add_SeAccept(sm, 4L, 44L)
+if state_n > 5:    add_SeAccept(sm, 5L, 55L)
+# Post-Context: Store in '0', restore in '6'
+if state_n > 6:    add_SeAccept(sm, 6L, 66L, 666L, True)
 # Post-Context: Store in '1', restore in '7'
 if state_n > 7:    add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
 print

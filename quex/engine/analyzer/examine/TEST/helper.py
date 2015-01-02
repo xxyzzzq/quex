@@ -16,7 +16,7 @@ class DerivedRecipe(RecipeAcceptance):
         result.add(E_R.AcceptanceRegister)
         return result
 
-def get_SeAccept(AcceptanceId, PreContextId, RestorePositionF=False):
+def get_SeAccept(AcceptanceId, PreContextId=E_PreContextIDs.NONE, RestorePositionF=False):
     cmd = SeAccept()
     cmd.set_acceptance_id(AcceptanceId)
     cmd.set_pre_context_id(PreContextId)

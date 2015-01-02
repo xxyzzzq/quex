@@ -80,73 +80,75 @@ line and column numbers, the checksum value of a lexeme, or the sum of grapheme
 widths of the lexeme's characters, and so on. The term 'investigated behavior'
 is defined to specify a focus of analysis.
 
-DEFINITION: Investigated Behavior 
+Let the sets of variables which are associated with an investigated behavior be
+called DCV.
 
-   Let the term 'investigated behavior' represent a specified set of
-   *operations* and the *registers* on which they operate together with a
-   *nominal behavior*.
+DEFINITION: DCV -- Description of Concerned Variables
 
-For example, line number counting as an investigated behavior is concerned of
-the line number register and operations that increment the line number. The
-nominal behavior is that the line number register should be increased upon
-newline and remain the same upon the occurrence of any other character.  Let
-the sets of registers which are associated with an investigated behavior be
-called SCR.
+    The 'DCV' of an investigated behavior describes the set of variables which
+    are of concern. 
 
-DEFINITION: SCR -- Set of Concerned Registers
+A 'DCV' may be a simple list of variable names or a abstract description such
+as 'all variables related to input position storage' where the number of
+variables is open.  As a consequence of transitions, a state machine changes
+the content of variables. However, not all variables of an DCV are necessarily
+relevant for all states. Let the set of required variables be defined as
 
-    The term 'set of concerned registers' SCR shall stand for the set of 
-    all registers which are relevant to the investigated behavior. 
+DEFINITION: RV(i) -- Set of Required Variables
 
-As a consequence of transitions, a state machine changes the content of
-registers. However, not all registers of an SCR are necessarily relevant for
-all states. Let the set of required registers be defined as
-
-DEFINITION: RR(i) -- Set of Required Registers
-
-    'RR(i)' defines the registers which are required in state 'i'. The
-    registers must be sufficient
+    'RV(i)' defines the variables which are required in state 'i'. The
+    variables must be sufficient
 
       (i)  to implement the investigated behavior upon drop-out and
-      (ii) to develop the SCR settings of all successor states.
+      (ii) to develop the DCV settings of all successor states.
+
+In constrast to 'DCV', the set of variables in 'RV(i)' must be concrete.
+Instead of the loose statement 'all variables related to input position
+storage', the specific variables must be specified. 
+
+'RV(i)' can be determined by *back-propagation* of needs. A state which
+requires a specific variable tags all of its predecessor states with this
+requirement. That is, if a state 'k' requires a variable 'x', then 'x is
+element of 'RV(i)' for every state 'i' that lies on the path to 'k'.
 
 For example, if the lexeme length is not required in a terminal, then any
 operation contributing to the computation of lexeme length is not redundant
---except if there is another successor state requires it. For all the states on
-the path, the 'lexeme length register' is not required and is not element of
-'RR(i)'.  Let setting of concerned registers be defined as follows.
+--except if there is another successor state requires it.  Let setting of
+required variables be defined as follows.
 
-DEFINITION: SCR(i) -- Setting of SCR registers in state 'i'.
+DEFINITION: V(i) -- Setting of RV(i)
 
-    The term 'SCR(i)' represents the settings of all SCR registers after
-    a state 'i' is entered and before it transits further. 
-
-    Only those values of the SCR must be present in 'SCR(i)' which are
-    element of 'RR(i)'.
+    The term 'V(i)' represents the settings of all required variables 'RV(i)'
+    after a state 'i' is entered and before it transits further. 
     
-An elementary unit that modifies the content of a register is called an
+An elementary unit that modifies the content of a variable is called an
 'operation', as defined here:
 
 DEFINITION: op(i) -- Operation 
 
-    A modification to a one or more register of the SCR upon entry into a state
+    A modification to a one or more variable of 'RV(i)' upon entry into a state
     'i' is called an operation 'op(i)'. 
     
-With 'SCR(before)' as the setting of the SCR before entry into a state 'i' and
-'SCR(i)' as the setting of the SCR in state the operation 'op(i)' describes the
-change in SCR as in the following equation
+With 'V(h)' as the setting of the DCV before entry into a state 'i' and
+'V(i)' as the setting of the DCV in state the operation 'op(i)' describes the
+change in DCV as in the following equation
 
-                         SCR(i) = op(i)(SCR(before))
+                         V(i) = op(i)(V(h))
 
-With the definition of the RR(i) the set of considered operations can be
-defined. Given a state 'i', then any operation which directly or indirectly
-influences the modification of a register in 'RR(i)' is subject to
-consideration of the investigated behavior.
+With the aforementioned definitions, the investigated behavior can be defined
+precisely.
+
+DEFINITION: Investigated Behavior 
+
+   The 'investigated behavior' determines the scope of analysis. It is
+   specified by a description of concerned variables 'DCV', the required
+   variables 'RV(i)' for each state 'i', the related operations 'op(i)' and
+   their *nominal behavior*.
     
-The 'RR(i)' for each state can be determined by *back-propagation* of needs. A
-state which requires a specific register tags all of its predecessor states
-with this requirement. That is, if a state 'k' requires a register 'x', then 'x
-is element of 'RR(i)' for every state 'i' that lies on the path to 'k'.
+A 'nominal behavior' defines what needs to happen during the state machine
+transitions.  For example, the nominal behavior for line number counting is
+that the line number variable should be increased upon newline and remain the
+same upon the occurrence of any other character. 
 
 -------------------------------------------------------------------------------
 
@@ -160,7 +162,7 @@ DEFINITION: Linear State
     A linear state is a state that is entered only from one predecessor state.
 
 The concept of a linear state is shown in figure 3. The operation 'op(i)' works
-on the 'SCR(k)' before entry and produces 'SCR(i)'. Note, that a linear state
+on the 'V(k)' before entry and produces 'V(i)'. Note, that a linear state
 may have transitions to multiple successor states, but only on predecessor state.
 
 
@@ -168,7 +170,7 @@ may have transitions to multiple successor states, but only on predecessor state
                                                      /
                                                    .-.
                       --------[ op(i) ]---------->( i )---> 
-                     SCR(k)              SCR(i)    '-'
+                     V(k)              V(i)    '-'
 
                     Figure 3: The concept of a linear state.
 
@@ -179,37 +181,37 @@ DEFINITION: Mouth State
     state. 
     
 Figure 4 displays the concept of a mouth state and the development of the
-'SCR(i)' based on the SCRs of predecessor states.
+'V(i)' based on the DCVs of predecessor states.
 
                   ------>--.  
-                 SCR(a)     \ 
+                 V(a)     \ 
                              \                       .-.
                   ------>-----+---[ op(i) ]---------( i )---> 
-                 SCR(b)      /               SCR(i)  '-'
+                 V(b)      /               V(i)  '-'
                             /
                  ...       :
                   ------>--'
-                 SCR(z)
+                 V(z)
 
                     Figure 4: The concept of a mouth state.
 
-In a linear state the 'SCR(i)' can be determined based on the predecessor's
-SCR and the 'op(i)'
+In a linear state the 'V(i)' can be determined based on the predecessor's
+DCV and the 'op(i)'
 
-            SCR(i) = op(i)(SCR(k))                                          (1)
+            V(i) = op(i)(V(k))                                          (1)
 
-with 'k' as the one and only predecessor state. If 'SCR(k)' is known, then
-'SCR(i)' of a linear state is known off-line purely from the consideration of
-the state machine.  In a mouth state 'SCR(i)' is be determined depending on the
+with 'k' as the one and only predecessor state. If 'V(k)' is known, then
+'V(i)' of a linear state is known off-line purely from the consideration of
+the state machine.  In a mouth state 'V(i)' is be determined depending on the
 state from where the transition originates.
 
-                      /  op(i)(SCR(a))  if entry from state 'a'
-                      |  op(i)(SCR(b))  if entry from state 'b'             (2)
-            SCR(i) =  |   ...
-                      |  
-                      \  op(i)(SCR(z))  if entry from state 'z'
+                    /  op(i)(V(a))  if entry from state 'a'
+                    |  op(i)(V(b))  if entry from state 'b'             (2)
+            V(i) =  |   ...
+                    |  
+                    \  op(i)(V(z))  if entry from state 'z'
 
-Let 'recipe' be the procedure to determine the SCR in a state without
+Let 'recipe' be the procedure to determine the DCV in a state without
 considering any previous operation. That is, if for all states all recipes are
 known, then all operations along the state machine transitions can be removed.
 Let the term recipe be defined as follows.
@@ -217,16 +219,16 @@ Let the term recipe be defined as follows.
 DEFINITION: R(i,k), R(i) -- Recipe 
 
    Let 'i' indidate a state and 'k' its predecessor state. A recipe R(i,k)
-   allows to determine 'SCR(i)' without execution of operations along the
-   transitions. It is derived from the operation 'op(i)' and 'SCR(k)'.  The
+   allows to determine 'V(i)' without execution of operations along the
+   transitions. It is derived from the operation 'op(i)' and 'V(k)'.  The
    recipe's procedure uses solely the following inputs:
 
           * 'h(i)', the hidden variables of state machine.
-          * 'A', the setting of auxiliary registers.
+          * 'A', the setting of auxiliary variables.
 
    It implements the mapping
 
-                  (h(i), A) ---> SCR(i)                                   (3)
+                  (h(i), A) ---> V(i)                                   (3)
 
    Let 'R(i)' indicate the recipe which appears to the successor states of
    state 'i'.
@@ -234,16 +236,16 @@ DEFINITION: R(i,k), R(i) -- Recipe
 Hidden variables are all variables of the state machine other the 'state'. A
 lexical analyzer state machine has, for example the lexeme start position, the
 buffer limits, the stream position, etc. as hidden variable.  Auxiliary
-registers contain values of SCR registers that have been stored in previous
+variables contain values of DCV variables that have been stored in previous
 states. 
 
-The fundamental difference between 'R(i)' and 'SCR(i)' is that former is a 
+The fundamental difference between 'R(i)' and 'V(i)' is that former is a 
 procedure and the latter represents the values which are produced.
 
-The simplest form of a recipe is the setting of the SCR with constant values.
-For example, at a state entered by the newline character the recipe for 'column
-number' may be 'column number = 0', because a new line begins. The advantage
-of recipes is demonstrated figure 5.
+The simplest form of a recipe is the setting with constant values.  For
+example, at a state entered by the newline character the recipe for 'column
+number' may be 'column number = 0', because a new line begins. The advantage of
+recipes is demonstrated figure 5.
 
 
     a)        
@@ -259,10 +261,10 @@ of recipes is demonstrated figure 5.
                       goto T10            goto T12
 
      Figure 5: Equivalent state sequences. a) Relying on operations along
-               transitions. b) SCRs determined by recipes.
+               transitions. b) DCVs determined by recipes.
 
 In figure 5.a operations are executed at each transition step. They assign
-identifiers to the last acceptance register 'accept'. This assignment happens
+identifiers to the last acceptance variable 'accept'. This assignment happens
 even if states '1' and '2' are passed by and later states may detect another
 acceptance. Upon drop-out from state 1 or 2 a conditional goto to a terminal is
 applied based on the setting of 'accept'. 
@@ -272,23 +274,81 @@ recipes determined the acceptance a priori, so that a direct goto to the
 correspondent terminal can be applied.  Clearly, the second approach requires
 no computational effort during transitions and lesser effort upon drop-out.
 
+With the concepts of this section, the overall goal can be formulated. The
+analysis transforms the given single-entry state machine based on operations
+into a multi-entry state machine based on recipes. Observing only the entry and
+exit, the changes to the DCV must comply to the nominal behavior. 
+
 -------------------------------------------------------------------------------
 
 BASICS ON PROPAGATION OF RECIPES
 
 A recipe for one state may be the basis for the development of the recipe of
-its successor state. For a linear state, equation (1) described how 'SCR(i)' is
-determined from the predecessor's 'SCR(k)' and the entry operation 'op(i)'. If
-'SCR(k)' can be determined by a recipe 'R(k)', then 'SCR(i)' becomes
+its successor state. For a linear state, equation (1) described how 'V(i)' is
+determined from the predecessor's 'V(k)' and the entry operation 'op(i)'. If
+'V(k)' can be determined by a recipe 'R(k)', then 'V(i)' becomes
 
-                     SCR(i) = op(i)(R(k))                                   (4)
+                     V(i) = op(i)(R(k))                                   (4)
 
 Since, a recipe 'R(k)' is already independent of operations along transitions,
-the recipe for 'SCR(i)' becomes nothing else than the expression that
+the recipe for 'V(i)' becomes nothing else than the expression that
 determines it. That is,
 
-                     R(i) := op(i)(R(k))                                    (5)
+                     R(i) := { op(i)(R(k)) }                              (5)
                  
+The above definition tells that recipes can only come from recipes. An
+important step towards the answer where the first recipe comes from is the
+concept of a 'historyless recipe'. It is based on the concept of 
+'historyless variables'.
+
+DEFINITION: HLV(i) -- Historyless Variables
+
+   The set of historyless variables in a state 'i' is given by 
+ 
+                        HLV(i) \subset RV(i)
+
+   For all 'v in HLV(i)' determined by 'v from op(i)' it holds that 
+
+                   v not a function of V(k) forall 'k' in P(i)
+
+   where 'P(i)' is the set of predecessor states of 'i'.
+
+When history becomes important, then the development of a variable setting must
+be accomplished at 'run-time' using system memory. This is accomplished by
+'auxiliary variables'.
+
+DEFINITION: A, A(v) -- Auxiliary Variables
+
+   The term auxiliary variable 'A(v)' specifies a variable that may store the
+   content of the variable 'v' at run-time. 'A' names the set of all auxiliary
+   variables.
+
+DEFINITION: HLR(i) -- Historyless Recipe
+
+   For a given state 'i' the 'HLR(i)' expresses the effect of 'op(i)' on 
+   the 'RV(i)' if it can be considered in isolation of previous history.
+   That is, for each variable 'v in RV(i)' it holds
+
+                    /   v from op(i)    for v in HLV(i)                
+                v = |
+                    \   A(v)            else.
+
+The historyless recipe is only correct, if 'A(v)' has been stored in the
+predecessor state for all 'v not in HLV(i)'.  A historyless recipe can be
+considered as start for analysis if there are no related undetermined
+variables. Accordingly, a spring can be defined.
+
+DEFINITION: Spring
+
+    A state 'i' where all required variables 'RV(i)' can be determined by 
+    the historyless recipe 'HLR(i)' is called a spring. It holds
+
+                          RV(i) = HLV(i)
+
+    The recipe 'R(i)' for a spring state is determined by
+    
+                                 R(i) := HLR(i)
+
 The derivation of a recipe based on a predecessor's recipe is defined here as
 'accumulation'.
 
@@ -298,7 +358,7 @@ DEFINITION: Accumulation
     the predecessor's recipe 'R(k)', the recipe to 'R(i,k)' is equivalent
     to the concatenated operations of 'op(i)' and 'R(k)'.
 
-    A prerequisit for accumulation is that 'R(k)' of the predecessor is 
+    A prerequisite for accumulation is that 'R(k)' of the predecessor is 
     determined.
 
 EXAMPLE:
@@ -310,7 +370,7 @@ EXAMPLE:
                   Figure 6: A sequence of linear states.
 
 
-Figure 6 displays an example of an SCR containing a single register 'x'. The
+Figure 6 displays an example of an DCV containing a single variable 'x'. The
 operations 'op(i)' upon transition are 'x=x+1' for all states. That is 'x' is
 incremented by 1 at each step. Let the 'x' be stored in 'A(x,a)'.  The
 simplest form of a recipe is here represented by 'R(a)':
@@ -342,30 +402,30 @@ is shown in figure 7.
           Figure 7: Recipes upon exit replace transition operations.
 
 The repeated accumulation of recipes along linear states comes to an end at
-mouth states.  Equation (2) described the development of the SCR in mouth
+mouth states.  Equation (2) described the development of the DCV in mouth
 state. Using the concept of a recipe, the equation can be rewritten as
 
                      /  R(i,p)  if entry from state 'p'
                      |  R(i,q)  if entry from state 'q'
-            SCR(i) = |   ...                                                (9)
+            V(i) = |   ...                                                (9)
                      |  
                      \  R(i,z)  if entry from state 'z'
 
 The applied recipe depends on the origin state of the transition which is only
 determined at run-time. However, a recipe 'R(i)' for a mouth state can be
-determined as follows. For each register of the SCR there are two
+determined as follows. For each variable of the DCV there are two
 possibilities:
 
    Homogeneity:   All entry recipes apply the exact same process to
-                  determine the register's content.
+                  determine the variable's content.
 
    Inhomogeneity: Two or more entry recipes apply a different process
-                  to determine the register's content.
+                  to determine the variable's content.
 
-If a register is determined homogeneously, then the part of the recipes that
-determines the register can be overtaken into 'R(i)'. Otherwise, the value
-must be computed upon entry and stored in an auxiliary register. The recipe
-'R(i)' must then rely on the stored value in the auxiliary register. Let this
+If a variable is determined homogeneously, then the part of the recipes that
+determines the variable can be overtaken into 'R(i)'. Otherwise, the value
+must be computed upon entry and stored in an auxiliary variable. The recipe
+'R(i)' must then rely on the stored value in the auxiliary variable. Let this
 process be defined as 'interference'.
 
 DEFINITION: Interference
@@ -381,7 +441,7 @@ DEFINITION: Interference
         * Procedure elements that are the same for all recipes in 'IR'
           *can* be overtaken into 'R(i)'.
 
-        * Procedure elements producing different register settings 
+        * Procedure elements producing different variable settings 
           *must not* be overtaken. Their results need to be stored in 
           auxiliary variables and 'R(i)' *must* refer to those.
 
@@ -389,13 +449,8 @@ Interference requires that all incoming recipes are determined. As long as this
 is not the case, 'R(i)' cannot be determined. Further, no successor state's
 recipe can be determined through accumulation. In other words,  a mouth state 
 blocks any propagation of recipes as long as not all incoming recipes are
-determined. To the contrary, the propagation of recipes may only start at
-states with determined recipes. 
+determined. 
 
-DEFINITION: Spring
-
-    A state with a determined recipe is a spring. A spring is the basis
-    for accumulation of recipes.
     
 In practical applications, it requires a very detailed and subtle investigation
 to determine spring states. The initial state is an example. As long as it is
@@ -509,6 +564,7 @@ because they are missing an entry recipe.
                     ( 0 )------>( 1 )       ( 2 )
                                    '----<----'
                                        R(2)
+
            Figure 8: A dead-lock in mouth states 1 and 2.
 
 As shown, mutually obstructed interference is the reason behind dead-locks.  A
@@ -516,16 +572,16 @@ central concept for the solution is that of 'run-time interference'.
 
 DEFINITION: RA(i) -- Restore-All Recipe
 
-   The Restore-All Recipe 'RA(i)' at a given state 'i' restores all registers
-   'x' of SCR from the auxiliary registers. That is,
+   The Restore-All Recipe 'RA(i)' at a given state 'i' restores all variables
+   'x' of DCV from the auxiliary variables. That is,
 
-        RA(i) := { for x in SCR(i): x = A(x) }
+        RA(i) := { for x in V(i): x = A(x) }
 
-If the values of SCR registers where computed upon entry into a mouth state and
+If the values of DCV variables where computed upon entry into a mouth state and
 restored after, then there is no source of error inside the mouth state's
 procedure. However, the operation 'op(i)' of a mouth state may potentially
 overwrite the modifications of incoming entry recipes. As a result, some
-registers may very well be determined. Thus, the output recipe might be
+variables may very well be determined. Thus, the output recipe might be
 configured more specific than 'RA(i)'.
 
 Propagating a 'RA(i)' as output of a mouth state corresponds to entry recipes
@@ -592,9 +648,9 @@ STATEMENT:
 In other words, the horizon states are the entry points to the realm of
 dead-lock states.  The entry into the horizon state happens through the
 determined entry--in the example of figure 9 it is 'R(i,a)'. Computing and
-storing the value for each register is correct, at this point in time, since
+storing the value for each variable is correct, at this point in time, since
 the entry recipe is derived by deterministic procedures. Thus, restoring the
-stored values is a correct procedure to determine the SCR.  'R(i)' is correct,
+stored values is a correct procedure to determine the DCV.  'R(i)' is correct,
 at the time of entry into a horizon. Accumulation along linear states is
 deterministic. A propagated recipe 'R(i)' results in correct entries to
 other mouth states, run-time interference produces again a correct
@@ -615,7 +671,7 @@ required.
 FINE TUNING OF DEAD-LOCK STATES
 
 While the previous discussion provides a complete solution, there is still
-space for improvement. Figure 10 shows a case where the SCR variable 'x' is
+space for improvement. Figure 10 shows a case where the DCV variable 'x' is
 assigned 5 upon entry into state 1 in any case. Storing the value upon entry
 and restoring it upon exit, is superfluous. Since the entry recipes are
 homogeneous, normal interference may be applied. For the entry from state 1

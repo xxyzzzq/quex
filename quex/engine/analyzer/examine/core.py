@@ -282,7 +282,7 @@ class Examiner:
             if PresentRecipe is not None: 
                 recipe = PresentRecipe
             else:
-                RA = self.recipe_type.RestoreAll(StateIndex)
+                RA     = self.recipe_type.RestoreAll(StateIndex)
                 recipe = self.recipe_type.accumulate(RA, SingleEntry)
 
             return recipe
@@ -342,31 +342,32 @@ class Examiner:
                 if len(MouthDb[si].undetermined_register_set) < len(scr_db[si])
             ]
 
-        frontier = self.get_horizon(UnresolvedMouthStateSet)
+        horizon = self.get_horizon(CandidateSet)
         done_set = set()
-        while frontier:
+        while horizon:
             # TERMINATION: If there are no new states reached by simplified
             #              recipes. 
             # Infinite iteration is obstructed. Relying on the 'done_set' a 
             # state can at max. be treated once. The number of states is finite.
             # Thus the number of iterations is finite.
-            scr_db = scr_db_get(frontier, self.mouth_db)
-            self._interfere(frontier)
+            scr_db = scr_db_get(horizon, self.mouth_db)
+            self._interfere(horizon)
 
-            # The elements of the horizon, that produce a more specific output
-            # are used to promote a simplified recipe.
-            stable_recipe_state_set = scr_db_get_springs(scr_db, frontier, 
+            # Some elements of the horizon, produce a more specific output
+            # then before. Those are used to promote a simplified recipe.
+            stable_recipe_state_set = scr_db_get_springs(scr_db, horizon, 
                                                          self.mouth_db)
             reached_set = self._accumulate(stable_recipe_state_set)
             done_set.update(stable_recipe_state_set)
 
-            # New frontier: Those states which 
+            # New horizon: Those states which 
             #   -- have been reached by simplified recipes,
+            #      => They have at least one determined entry!
             #   -- are not yet treated, and 
-            #   -- are part of the UnresolvedMouthStateSet (all of them should).
-            frontier = [
+            #   -- are part of the CandidateSet (all of them should).
+            horizon = [
                 si for si in reached_set 
-                   if si not in done_set and si in UnresolvedMouthStateSet
+                   if si not in done_set and si in CandidateSet
             ]
             
     def get_Entry(self, StateIndex):
