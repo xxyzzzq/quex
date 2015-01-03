@@ -412,10 +412,10 @@ class LinearStateWalker(TreeWalker):
         curr_state = self.examiner._sm.states[CurrStateIndex]
 
         # Termination Criteria:
-        # (1) State  = Terminal: no transitions, do further recursion. 
-        #                        (Nothing needs to be done to guarantee that)
-        # NOT: (2) Target is determined  => No entry!
-        # (3) Target is Mouth State => No entry!
+        # * State  = Terminal: no transitions, no further recursion. 
+        #                      (Nothing needs to be done to guarantee that)
+        # * Target is Mouth State => No entry!
+        # * Target is Spring      => No entry!
         todo = []
         for target_index in curr_state.target_map.iterable_target_state_indices():
             if target_index is None: continue
@@ -427,7 +427,9 @@ class LinearStateWalker(TreeWalker):
                 # Mouth state ahead => accumulate, but do NOT enter!
                 target_info.entry_recipe_db[CurrStateIndex] = accumulated
                 self.mouths_touched_set.add(target_index)
-                continue # (3) terminal 
+                continue # terminal condition
+            elif target.spring_f():
+                continue # terminal condition
             else:
                 # Linear state ahead => accumulate and go further
                 target_info.recipe = accumulated

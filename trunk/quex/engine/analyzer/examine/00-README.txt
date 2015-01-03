@@ -13,13 +13,13 @@ values are important that are present upon exit from the state machine.
 
 Figure 1 shows a very simple state machine consisting of four states.  The
 dotted lines indicate 'drop-out', i.e. a path that is taken to exit the state
-machine.  In the original state machine, as shown in 1.a, the content of 'x' is
-increment upon each transition. When the state machine is left in state 3, for
-example, three such increments must have taken place. In 1.b an optimized
-representation of the state machine is shown.  There, value of 'x' is only
-determined upon exit.  No increments happen during transitions. Only upon exit
-'x' is assigned the predetermined value. The balance on computational effort is
-obvious.
+machine.  In the original state machine, as shown in figure 1.a, the content of
+'x' is increment upon each transition. When the state machine is left in state
+3, for example, three such increments must have taken place. In figure 1.b an
+optimized representation of the state machine is shown.  There, value of 'x' is
+only determined upon exit.  No increments happen during transitions. Only upon
+exit 'x' is assigned the predetermined value. The balance on computational
+effort is obvious.
 
      
          a)          x=x+1        x=x+1        x=x+1
@@ -38,16 +38,12 @@ obvious.
 
 The analysis requires a state machine which is composed of 'single-entry
 states'. That is, upon entry into a state the same operations are executed
-independently from where it is entered or through which transition.  The
-analysis tries to exploit predictable sequence of operations along state
-transitions. This is done by compensating them through a single operation or by
-postponing them to a state as late as possible.  Operations are preferably
-postponed, because earlier states are passed more often than later states.
-
-The resulting state machine is described in terms of 'multi-entry states'.
-That is, the operations applied upon entry into a state may be different
-dependent from which state or through which transition the entry happens.
-Figure 1 shows a single-entry state and a multi-entry state.
+independently from which the state is entered or through which transition.  A
+single-entry state is shown in figure 2.a. The optimization transforms the
+single-entry state machine into a 'multi-entry state machine'.  That is, the
+operations applied upon entry into a state may be different dependent from
+which state or through which transition the entry happens.  A multi-entry state
+in shown in figure 2.b.
 
            a)
      
@@ -69,6 +65,12 @@ Figure 1 shows a single-entry state and a multi-entry state.
       Figure 2: Two approaches of state modelling: a) Single entry state. 
                 b) Multi-entry state. 
                 
+The analysis tries to exploit predictable sequence of operations along state
+transitions. This is done by compensating them through a single operation or by
+postponing them to a state as late as possible.  Operations are preferably
+postponed, because earlier states are passed more often than later states.
+
+
 -------------------------------------------------------------------------------
 
 BASICS:
@@ -111,10 +113,11 @@ requires a specific variable tags all of its predecessor states with this
 requirement. That is, if a state 'k' requires a variable 'x', then 'x is
 element of 'RV(i)' for every state 'i' that lies on the path to 'k'.
 
-For example, if the lexeme length is not required in a terminal, then any
-operation contributing to the computation of lexeme length is not redundant
---except if there is another successor state requires it.  Let setting of
-required variables be defined as follows.
+Assume for example, that the lexeme length is not required in a terminal. Then
+any operation contributing to the computation of the lexeme length is
+redundant.  No state on a path to this terminal is required to perform lexeme
+length related operations, except that another successor state requires it.
+Let setting of required variables be defined as follows.
 
 DEFINITION: V(i) -- Setting of RV(i)
 
@@ -129,9 +132,8 @@ DEFINITION: op(i) -- Operation
     A modification to a one or more variable of 'RV(i)' upon entry into a state
     'i' is called an operation 'op(i)'. 
     
-With 'V(h)' as the setting of the DCV before entry into a state 'i' and
-'V(i)' as the setting of the DCV in state the operation 'op(i)' describes the
-change in DCV as in the following equation
+With 'V(h)' as the setting before entry into a state 'i' and 'V(i)' as the
+setting in state 'i' the operation 'op(i)' describes the modification by 
 
                          V(i) = op(i)(V(h))
 
@@ -154,7 +156,7 @@ same upon the occurrence of any other character.
 
 LINEAR STATES AND MOUTH STATES:
 
-Two central concept are required for the further discussion: 'linear states' and 'mouth
+Two central concepts are required for the further discussion: 'linear states' and 'mouth
 states'.  They are defined in the paragraphs to follow. 
 
 DEFINITION: Linear State
@@ -184,10 +186,10 @@ Figure 4 displays the concept of a mouth state and the development of the
 'V(i)' based on the DCVs of predecessor states.
 
                   ------>--.  
-                 V(a)     \ 
+                 V(a)       \ 
                              \                       .-.
                   ------>-----+---[ op(i) ]---------( i )---> 
-                 V(b)      /               V(i)  '-'
+                 V(b)        /                 V(i)  '-'
                             /
                  ...       :
                   ------>--'
@@ -218,10 +220,10 @@ Let the term recipe be defined as follows.
 
 DEFINITION: R(i,k), R(i) -- Recipe 
 
-   Let 'i' indidate a state and 'k' its predecessor state. A recipe R(i,k)
-   allows to determine 'V(i)' without execution of operations along the
-   transitions. It is derived from the operation 'op(i)' and 'V(k)'.  The
-   recipe's procedure uses solely the following inputs:
+   Let 'R(i,k)' indicates the 'recipe' to determine 'V(i)' upon entry into a
+   state 'i' from a predecessor state 'k'.  It is derived from the operation
+   'op(i)' and 'R(k)'.  The recipe's procedure uses solely the following
+   inputs:
 
           * 'h(i)', the hidden variables of state machine.
           * 'A', the setting of auxiliary variables.
@@ -233,13 +235,11 @@ DEFINITION: R(i,k), R(i) -- Recipe
    Let 'R(i)' indicate the recipe which appears to the successor states of
    state 'i'.
 
-Hidden variables are all variables of the state machine other the 'state'. A
-lexical analyzer state machine has, for example the lexeme start position, the
-buffer limits, the stream position, etc. as hidden variable.  Auxiliary
-variables contain values of DCV variables that have been stored in previous
-states. 
+Hidden variables are all variables of the state machine other than the 'state'.
+A lexical analyzer state machine has, for example the lexeme start position,
+  the buffer limits, the stream position, etc. as hidden variable.  
 
-The fundamental difference between 'R(i)' and 'V(i)' is that former is a 
+The fundamental difference between 'R(i)' and 'V(i)' is that the former is a 
 procedure and the latter represents the values which are produced.
 
 The simplest form of a recipe is the setting with constant values.  For
@@ -283,18 +283,18 @@ exit, the changes to the DCV must comply to the nominal behavior.
 
 BASICS ON PROPAGATION OF RECIPES
 
-A recipe for one state may be the basis for the development of the recipe of
-its successor state. For a linear state, equation (1) described how 'V(i)' is
+A recipe for one state is the basis for the development of the recipe of its
+successor state. For a linear state, equation (1) described how 'V(i)' is
 determined from the predecessor's 'V(k)' and the entry operation 'op(i)'. If
 'V(k)' can be determined by a recipe 'R(k)', then 'V(i)' becomes
 
-                     V(i) = op(i)(R(k))                                   (4)
+                     V(i) = op(i)(R(k))                                     (4)
 
 Since, a recipe 'R(k)' is already independent of operations along transitions,
 the recipe for 'V(i)' becomes nothing else than the expression that
 determines it. That is,
 
-                     R(i) := { op(i)(R(k)) }                              (5)
+                     R(i) = { op(i)(R(k)) }                                 (5)
                  
 The above definition tells that recipes can only come from recipes. An
 important step towards the answer where the first recipe comes from is the
@@ -305,17 +305,19 @@ DEFINITION: HLV(i) -- Historyless Variables
 
    The set of historyless variables in a state 'i' is given by 
  
-                        HLV(i) \subset RV(i)
+                        HLV(i) \subset RV(i)                                (6)
 
    For all 'v in HLV(i)' determined by 'v from op(i)' it holds that 
 
-                   v not a function of V(k) forall 'k' in P(i)
+                   v not a function of V(k) forall 'k' in P(i)              (7)
 
    where 'P(i)' is the set of predecessor states of 'i'.
 
-When history becomes important, then the development of a variable setting must
-be accomplished at 'run-time' using system memory. This is accomplished by
-'auxiliary variables'.
+A variable can only be history less, if 'op(i)' assigns a constant to it which
+is independent of previous states or paths.  When history becomes important,
+then the development of a variable setting must be accomplished at
+'run-time' using system memory. This is accomplished by 'auxiliary
+variables'.
 
 DEFINITION: A, A(v) -- Auxiliary Variables
 
@@ -325,18 +327,19 @@ DEFINITION: A, A(v) -- Auxiliary Variables
 
 DEFINITION: HLR(i) -- Historyless Recipe
 
-   For a given state 'i' the 'HLR(i)' expresses the effect of 'op(i)' on 
-   the 'RV(i)' if it can be considered in isolation of previous history.
-   That is, for each variable 'v in RV(i)' it holds
+   For a given state 'i' the 'HLR(i)' expresses the effect of 'op(i)' on the
+   set of required variables 'RV(i)' in isolation of previous history.  That
+   is, for each variable 'v in RV(i)' it holds
 
                     /   v from op(i)    for v in HLV(i)                
-                v = |
+                v = |                                                       (8)
                     \   A(v)            else.
 
-The historyless recipe is only correct, if 'A(v)' has been stored in the
-predecessor state for all 'v not in HLV(i)'.  A historyless recipe can be
-considered as start for analysis if there are no related undetermined
-variables. Accordingly, a spring can be defined.
+The historyless recipe is only correct, if 'A(v) = v' has been stored upon
+entry into state 'i' after 'op(i)' has been applied for all 'v not in HLV(i)'.
+A historyless recipe can be considered as start for analysis if the set of
+required variables is equal to the set of historyless variables. Accordingly, a
+spring can be defined.
 
 DEFINITION: Spring
 
@@ -347,10 +350,12 @@ DEFINITION: Spring
 
     The recipe 'R(i)' for a spring state is determined by
     
-                                 R(i) := HLR(i)
+                          R(i) := HLR(i)
 
-The derivation of a recipe based on a predecessor's recipe is defined here as
-'accumulation'.
+In other words, for a spring there is no 'v' determined by 'A(v)' as shown in
+equation 8.  In equation 5 it is demonstrated how a recipe 'R(i)' is derived
+from a predecessor's recipe 'R(k)' and a state 'i'-s operation 'op(i)'. This
+procedure is defined here as 'accumulation'.
 
 DEFINITION: Accumulation
 
@@ -372,13 +377,14 @@ EXAMPLE:
 
 Figure 6 displays an example of an DCV containing a single variable 'x'. The
 operations 'op(i)' upon transition are 'x=x+1' for all states. That is 'x' is
-incremented by 1 at each step. Let the 'x' be stored in 'A(x,a)'.  The
-simplest form of a recipe is here represented by 'R(a)':
+incremented by 1 at each step. Let the 'A(x,a)' signify 'A(x)' as it was
+assigned upon entry into state 'a'. The recipe in state 'a' solely restores
+what has been stored.
 
                R(a) = { x := A(x,a) }                                     (6)
 
-The recipe 'R(b,a)' must be equivalent to the concatenated execution of 
-'op(b)' and 'R(a)', i.e.
+The recipe 'R(b,a)' must be equivalent to the concatenated execution of 'op(b)'
+and 'R(a)', i.e.
 
                    { x := A(x,a) }
                    { x := x + 1 }
@@ -422,46 +428,53 @@ possibilities:
    Inhomogeneity: Two or more entry recipes apply a different process
                   to determine the variable's content.
 
-If a variable is determined homogeneously, then the part of the recipes that
-determines the variable can be overtaken into 'R(i)'. Otherwise, the value
-must be computed upon entry and stored in an auxiliary variable. The recipe
-'R(i)' must then rely on the stored value in the auxiliary variable. Let this
-process be defined as 'interference'.
+If a variable 'v' is determined homogeneously, then the part of the recipes
+that determines it can be overtaken into 'R(i)'. Otherwise, the value must be
+computed upon entry and stored in an 'A(v)'. The recipe 'R(i)' must then rely
+on 'A(v)'. Let this process be defined as 'interference'.
 
 DEFINITION: Interference
 
     The process of 'interference' develops a recipe 'R(i)' for a mouth state
-    'i' based on incoming recipes 
+    'i' based on entry recipes 
     
-                  IR = { R(i,k): k = 1...N }. 
+                  ER = { R(i,k): k = 1...N }. 
                   
-    An incoming recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
-    as it must have been computed before by accumulation.
+    An entry recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
+    as it must have been computed before by accumulation. For each variable 'v'
+    in 'RV(i)' it must hold:
 
-        * Procedure elements that are the same for all recipes in 'IR'
-          *can* be overtaken into 'R(i)'.
+    (i)  If all recipes in ER produce 'v' by the same procedure 'v by R(i,k)',
+         then this procedure *can* be overtaken into 'R(i)'. That is,
 
-        * Procedure elements producing different variable settings 
-          *must not* be overtaken. Their results need to be stored in 
-          auxiliary variables and 'R(i)' *must* refer to those.
+               v in R(i) = v from R(i,k) for an arbitrary k
 
-Interference requires that all incoming recipes are determined. As long as this
-is not the case, 'R(i)' cannot be determined. Further, no successor state's
-recipe can be determined through accumulation. In other words,  a mouth state 
-blocks any propagation of recipes as long as not all incoming recipes are
-determined. 
+    (ii) Else, the value of 'v' *must* be computed upon each entry and stored
+         in an auxiliary variable. The recipe 'R(i)' for 'v' becomes
 
-    
-In practical applications, it requires a very detailed and subtle investigation
-to determine spring states. The initial state is an example. As long as it is
-not a mouth state, then it may be a spring. If no such spring state exists, the
-procedure must overstep the deterministic propagation of recipes based on
-spring states, as shown in the subsequent section. The section after that,
-discusses solutions where the deterministic propagation fails.
+               v in R(i) = A(v)
+
+         where 'A(v)' is assigned upon each individual entry from any state 'k'
+         by
+
+              A(v) = v from R(i,k) for each k 
+
+It is the else case in this interference procedure that induces the necessity
+of multi-entry states.  Before interference can be performed, all entry
+recipes must be determined.  As long as this is not the case, 'R(i)' cannot be
+determined. In consequence, no successor state's recipe can be determined
+through accumulation. In other words,  a mouth state blocks any propagation of
+recipes as long as not all entry recipes are determined. 
+
+The next section treats the recursive propagation of recipes by accumulation.
+It is conceivable, however, that at the begin of analysis all mouth states are
+undetermined. Even the initial state may be an undetermined mouth state.  In
+that case, there are no springs. In that case, a so called 'dead-lock analysis'
+needs to be performed. This is the subject of the next section but one.
 
 -------------------------------------------------------------------------------
 
-THE WALK ALONG LINEAR STATES
+RECIPE PROPAGATION BY ACCUMULATION
 
 The recipes for states are determined by a 'walk' along linear states. While
 linear states have only one entry, they may have transitions to more than one
@@ -475,7 +488,7 @@ DEFINITION: Termination criteria for walk along linear states.
 
        (i)   there is no state. The current state is a terminal.
        (ii)  the state ahead is a mouth state.
-       (iii) the state ahead complies to the conditions of a spring.
+       (iii) the state ahead is a spring.
 
 The first condition comes natural. The second condition exists, because recipes
 cannot be accumulated beyond mouth states. As a direct consequence, the walk
@@ -506,17 +519,17 @@ PROOF: Unresolved mouth states inhibit circular dependency.
 
 Let 
 
-        U := set of unresolved mouth states after algorithm 1 ended.       (10)
+        U := set of undetermined mouth states after algorithm 1 ended.       (10)
 
-An unresolved mouth state 'i' must have at least one unresolved incoming
+An undetermined mouth state 'i' must have at least one undetermined entry
 recipe. Thus one of its predecessor states, let it be named 'k', must be
-unresolved. If 'k' is a mouth state, then it must be unresolved.  If state 'k'
-is a linear state, then its predecessor must be unresolved, the same holds for
-k's predecessor, etc. until a mouth state is reached. Thus, the unresolvedness
-of a mouth state has its reason in the unresolvedness of at least one other
-mouth state. 
+undetermined. If 'k' is a mouth state, then it must be undetermined.  If state
+'k' is a linear state, then its predecessor must be undetermined, the same
+holds for k's predecessor, etc. until a mouth state is reached. Thus, the
+indeterminacy of a mouth state has its reason in the indeterminacy of at least
+one other mouth state--q.e.d. 
 
-Let the fact that a mouth state 'i' is unresolved because of another unresolved
+Let the fact that a mouth state 'i' is undetermined because of another undetermined
 mouth state 'k' be noted as "i depends on k". 
 
 DEFINITION: D(i) -- Dependency Set 
@@ -531,8 +544,8 @@ on it, i.e.
                    k in D(i) <=> D(k) is subset of D(i)                    (11)
 
 The number of states in a state machine is finite, thus 'D(i)' is finite. Since
-every state in 'D(i)' is unresolved, every state in 'D(i)' must depend to
-another state that is unresolved. All of those states are equally in 'D(i)'.
+every state in 'D(i)' is undetermined, every state in 'D(i)' must depend to
+another state that is undetermined. All of those states are equally in 'D(i)'.
 Let the number of elements in 'D(i)' be 'n'. If the states of 'D(i)' were
 displayed as dots in a plane, and the dependencies between states as arrows,
 then there would be 'n' arrows between 'n' dots. This is only
@@ -540,7 +553,7 @@ possible, if there is at least one loop (proof is trivial). Thus,
 
          U is not empty <=> there is at least one circular dependency      (12)
 
-what was to be proven.  
+q.e.d.
 
 It is this circular dependency which prevents algorithm 1 from being a complete
 solution. The following section discusses a solution for these cases where 
@@ -551,12 +564,12 @@ the deterministic propagation of recipes failed.
 DEAD-LOCK STATES
 
 Interference can only be performed, if all entry recipes of a mouth state are
-present. Loops in the state machine graph, however, cause circular
+determined. Loops in the state machine graph, however, cause circular
 dependencies.  Figure 8 shows an example, where the two states 1 and 2 mutually
 block each other. The recipe R(1) for state 1 cannot be determined because it
 requires R(2) as entry recipe from state 2 which is undetermined. However,
 before R(2) from state 2 can be determined, the entry recipe from
-state 1 must be present. Both states cannot perform an interference,
+1 must be present. Both states cannot perform an interference,
 because they are missing an entry recipe. 
 
                                        R(1)
@@ -568,43 +581,36 @@ because they are missing an entry recipe.
            Figure 8: A dead-lock in mouth states 1 and 2.
 
 As shown, mutually obstructed interference is the reason behind dead-locks.  A
-central concept for the solution is that of 'run-time interference'.
+central concept for the solution is that of 'run-time interference'. It uses
+the historyless recipe 'HLR(i)' for an interference in the absence of concrete
+entry recipes. Using 'HLR(i)' for each undetermined entry recipe fits the
+following consideration.
 
-DEFINITION: RA(i) -- Restore-All Recipe
+If a mouth state's 'op(i)' assigns a constant to a variable 'v', then the
+history becomes unimportant. In that case 'v in HLV(i)'. The interference of
+all entries would be a 'store/restore' if the procedure for 'v' is
+inhomogeneous and it would be 'v from op(i)' if not. For each 'v not in HLV(i)'
+a store/restore must be implemented at every state entry. In both cases, the
+homogeneous and the inhomogeneous, the output recipe is 'A(v)' and reflects
+that the value must be restored. Thus, for run-time interference an undetermined
+entry from a state 'k' is assumed (not assigned) to be 
 
-   The Restore-All Recipe 'RA(i)' at a given state 'i' restores all variables
-   'x' of DCV from the auxiliary variables. That is,
+                           R(i,k) = HLR(i)
 
-        RA(i) := { for x in V(i): x = A(x) }
-
-If the values of DCV variables where computed upon entry into a mouth state and
-restored after, then there is no source of error inside the mouth state's
-procedure. However, the operation 'op(i)' of a mouth state may potentially
-overwrite the modifications of incoming entry recipes. As a result, some
-variables may very well be determined. Thus, the output recipe might be
-configured more specific than 'RA(i)'.
-
-Propagating a 'RA(i)' as output of a mouth state corresponds to entry recipes
-'RA(i,k)' for all 'k'. However, 
-
-        R(i,k) = op(i)(RA(i)) for k where 'R(k)' is not determined
-
-profits from any overwriting effect of 'op(i)'. Further, the result of
-interference may actually be some real homogeneity.
 
 DEFINITION: Run-Time Interference
 
     The process of 'run-time interference' develops a recipe 'R(i)' for a mouth
-    state 'i' based on an *incomplete* set of incoming recipes 
+    state 'i' based on an *incomplete* set of entry recipes 
     
-       IR = { R(i,k): k = 1...N } where R(k) is undetermined for some 'k'. 
+       ER = { op(i)(R(k)): k = 1...N } where R(k) is undetermined for some 'k'. 
                   
     The entry recipes are determined by 
 
                        .-
-                       |  op(i)(R(k))  if R(k) is determined
-             R(i,k) = <
-                       |  op(i)(RA(i)) if R(k) is undetermined
+                       |  v from op(i)(R(k))  if R(k) is determined
+                 v  = <
+                       |  A(v)                if R(k) is undetermined
                        '-
 
     With all entries 'R(i,k)' specified, the output recipe 'R(i)' is determined
