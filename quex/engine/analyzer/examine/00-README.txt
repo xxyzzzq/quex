@@ -35,15 +35,19 @@ effort is obvious.
     
              Figure 1: Original and optimized state machine.
                  
+The goal of the described procedure is to remove all operations along state
+transitions. However, as is described in a later section, in the case of a 
+so called 'mouth state' entry operations may actually be injected in order
+to cope with run-time dependencies.
 
-The analysis requires a state machine which is composed of 'single-entry
-states'. That is, upon entry into a state the same operations are executed
-independently from which the state is entered or through which transition.  A
-single-entry state is shown in figure 2.a. The optimization transforms the
-single-entry state machine into a 'multi-entry state machine'.  That is, the
-operations applied upon entry into a state may be different dependent from
-which state or through which transition the entry happens.  A multi-entry state
-in shown in figure 2.b.
+The present analysis requires a state machine which is composed of
+'single-entry states'. That is, upon entry into a state the same operations are
+executed independently from which the state it is entered or through which
+transition.  A single-entry state is shown in figure 2.a. The optimization
+transforms the single-entry state machine into a 'multi-entry state machine'.
+That is, the operations applied upon entry into a state may be different
+dependent from which state or through which transition the entry happens.  A
+multi-entry state in shown in figure 2.b.
 
            a)
      
@@ -80,10 +84,8 @@ which do not necessarily share the same subject. Some operations determine the
 last accepted pattern, the input position to be restored upon acceptance, the
 line and column numbers, the checksum value of a lexeme, or the sum of grapheme
 widths of the lexeme's characters, and so on. The term 'investigated behavior'
-is defined to specify a focus of analysis.
-
-Let the sets of variables which are associated with an investigated behavior be
-called DCV.
+is defined to specify a focus of analysis.  Let the sets of variables which are
+associated with an investigated behavior be called DCV.
 
 DEFINITION: DCV -- Description of Concerned Variables
 
@@ -104,7 +106,7 @@ DEFINITION: RV(i) -- Set of Required Variables
       (i)  to implement the investigated behavior upon drop-out and
       (ii) to develop the DCV settings of all successor states.
 
-In constrast to 'DCV', the set of variables in 'RV(i)' must be concrete.
+In contrast to 'DCV', the set of variables in 'RV(i)' must be concrete.
 Instead of the loose statement 'all variables related to input position
 storage', the specific variables must be specified. 
 
@@ -307,7 +309,7 @@ DEFINITION: HLV(i) -- Historyless Variables
  
                         HLV(i) \subset RV(i)                                (6)
 
-   For all 'v in HLV(i)' determined by 'v from op(i)' it holds that 
+   For all 'v in HLV(i)' determined by 'v by op(i)' it holds that 
 
                    v not a function of V(k) forall 'k' in P(i)              (7)
 
@@ -331,15 +333,15 @@ DEFINITION: HLR(i) -- Historyless Recipe
    set of required variables 'RV(i)' in isolation of previous history.  That
    is, for each variable 'v in RV(i)' it holds
 
-                    /   v from op(i)    for v in HLV(i)                
+                    /   v by op(i)    for v in HLV(i)                
                 v = |                                                       (8)
-                    \   A(v)            else.
+                    \   v by op(I)(A) else.
 
-The historyless recipe is only correct, if 'A(v) = v' has been stored upon
-entry into state 'i' after 'op(i)' has been applied for all 'v not in HLV(i)'.
-A historyless recipe can be considered as start for analysis if the set of
-required variables is equal to the set of historyless variables. Accordingly, a
-spring can be defined.
+The historyless recipe is only correct, if 'A(v)' contains the correct value of
+'v' upon entry into state 'i' after 'op(i)' has been applied for all 'v not in
+HLV(i)'.  A historyless recipe can be considered as start for analysis if the
+set of required variables is equal to the set of historyless variables.
+Accordingly, a spring can be defined.
 
 DEFINITION: Spring
 
@@ -438,39 +440,40 @@ DEFINITION: Interference
     The process of 'interference' develops a recipe 'R(i)' for a mouth state
     'i' based on entry recipes 
     
-                  ER = { R(i,k): k = 1...N }. 
+                  ER = { op(i)(R(k)): k = 1...N }. 
                   
-    An entry recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
-    as it must have been computed before by accumulation. For each variable 'v'
-    in 'RV(i)' it must hold:
+    Let the entry recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
+    (as developed by accmulation). The output recipe 'R(i)' depends on the
+    determinacy of 'v', i.e. 
 
-    (i)  If all recipes in ER produce 'v' by the same procedure 'v by R(i,k)',
-         then this procedure *can* be overtaken into 'R(i)'. That is,
+                     /
+                     |  v by R(i,p)   if R(i,p) = R(i,q) for all p,q in P(i)
+         v in R(i) = |
+                     |  A(v)          else
+                     \
+    
+    where 'P(i)' is the set of predecessor states of 'i'. Foreach 'v' where
+    'A(v)' is required an entry operations 'EO(i,k)' is required that stores
+    the current value of 'v' in 'A(v)', i.e.
 
-               v in R(i) = v from R(i,k) for an arbitrary k
+         EO(i,k) = { for each inhomogeneous 'v': A(v) = v by R(i,k) }
 
-    (ii) Else, the value of 'v' *must* be computed upon each entry and stored
-         in an auxiliary variable. The recipe 'R(i)' for 'v' becomes
+In the case of inhomogeneous entry recipes 'A(v)' requires that entry
+operations are performed.  That is upon entry from each 'k' into 'i' the
+computed value of 'v' is stored in 'A(v)'.  It is the existence of the entry
+operations 'EO(i,k)' that induces the necessity of multi-entry states.  
 
-               v in R(i) = A(v)
-
-         where 'A(v)' is assigned upon each individual entry from any state 'k'
-         by
-
-              A(v) = v from R(i,k) for each k 
-
-It is the else case in this interference procedure that induces the necessity
-of multi-entry states.  Before interference can be performed, all entry
-recipes must be determined.  As long as this is not the case, 'R(i)' cannot be
-determined. In consequence, no successor state's recipe can be determined
-through accumulation. In other words,  a mouth state blocks any propagation of
-recipes as long as not all entry recipes are determined. 
+Before interference can be performed, all entry recipes must be determined.  As
+long as this is not the case, 'R(i)' cannot be determined. In consequence, no
+successor state's recipe can be determined through accumulation. In other
+words,  a mouth state blocks any propagation of recipes as long as not all
+entry recipes are determined. 
 
 The next section treats the recursive propagation of recipes by accumulation.
 It is conceivable, however, that at the begin of analysis all mouth states are
-undetermined. Even the initial state may be an undetermined mouth state.  In
-that case, there are no springs. In that case, a so called 'dead-lock analysis'
-needs to be performed. This is the subject of the next section but one.
+undetermined. Even the initial state may be an undetermined mouth state--so
+there are no springs. In that case, the analysis directly starts with a so
+called 'dead-lock analysis'. This is the subject of the next section but one.
 
 -------------------------------------------------------------------------------
 
@@ -580,51 +583,9 @@ because they are missing an entry recipe.
 
            Figure 8: A dead-lock in mouth states 1 and 2.
 
-As shown, mutually obstructed interference is the reason behind dead-locks.  A
-central concept for the solution is that of 'run-time interference'. It uses
-the historyless recipe 'HLR(i)' for an interference in the absence of concrete
-entry recipes. Using 'HLR(i)' for each undetermined entry recipe fits the
-following consideration.
-
-If a mouth state's 'op(i)' assigns a constant to a variable 'v', then the
-history becomes unimportant. In that case 'v in HLV(i)'. The interference of
-all entries would be a 'store/restore' if the procedure for 'v' is
-inhomogeneous and it would be 'v from op(i)' if not. For each 'v not in HLV(i)'
-a store/restore must be implemented at every state entry. In both cases, the
-homogeneous and the inhomogeneous, the output recipe is 'A(v)' and reflects
-that the value must be restored. Thus, for run-time interference an undetermined
-entry from a state 'k' is assumed (not assigned) to be 
-
-                           R(i,k) = HLR(i)
-
-
-DEFINITION: Run-Time Interference
-
-    The process of 'run-time interference' develops a recipe 'R(i)' for a mouth
-    state 'i' based on an *incomplete* set of entry recipes 
-    
-       ER = { op(i)(R(k)): k = 1...N } where R(k) is undetermined for some 'k'. 
-                  
-    The entry recipes are determined by 
-
-                       .-
-                       |  v from op(i)(R(k))  if R(k) is determined
-                 v  = <
-                       |  A(v)                if R(k) is undetermined
-                       '-
-
-    With all entries 'R(i,k)' specified, the output recipe 'R(i)' is determined
-    as with normal interference.
-
-The run-time interference is correct if and only if the entry recipes are
-correct. If the output of a recipe of a mouth state is correct, then all
-recipes derived from its accumulation are correct. This is so, since
-accumulation is deterministic, without any run-time dependency. To proof the
-correctness of run-time interference, the term 'horizon' is defined.
-
 DEFINITION: Horizon
 
-   Let the term 'horizon' H indicate the set of dead-lock mouth states that
+   Let the term 'horizon' H indicate the subset of dead-lock mouth states that
    have at least one determined entry.
 
 The name 'horizon' is chosen because it defines the border of determination.
@@ -640,15 +601,15 @@ which contains one determined entry and another undetermined entry.
           Figure 9: A mouth state with a fix entry recipe R(x,a).
 
 Every undetermined entry has its origin in a mouth state that is unable to
-perform interference. Every determined entry has its origin either in the
-initial state, or a mouth state that performed interference. Interference
-happens only if all entries are determined. Thus, any mouth state that performs
-interference finally has its roots in the initial state. As a consequence, the
-following statement can be made.
+perform interference. Every determined entry has its origin in a spring or a
+mouth state that performed interference. Interference happens only if all
+entries are determined. Thus, any mouth state that performs interference
+finally has its roots in a spring. As a consequence, the following statement
+can be made. i<review the logic! initial state = spring? no>
 
 STATEMENT: 
 
-   A dead-lock states can only reached by a path that guides through a horizon
+   A dead-lock state can only reached by a path that guides through a horizon
    state. 
 
 In other words, the horizon states are the entry points to the realm of
@@ -662,6 +623,53 @@ deterministic. A propagated recipe 'R(i)' results in correct entries to
 other mouth states, run-time interference produces again a correct
 output recipe and the discussion continues where it started.  It follows
 the following statement.
+
+As shown, mutually obstructed interference is the reason behind dead-locks.  A
+central concept for the solution is that of 'run-time interference'. It uses
+the historyless recipe 'HLR(i)' for an interference in the absence of concrete
+entry recipes. Using 'HLR(i)' for each undetermined entry recipe fits the
+following consideration.
+
+If a mouth state's 'op(i)' assigns a constant to a variable 'v', then the
+history becomes unimportant. In that case 'v in HLV(i)'. The interference of
+all entries would be a 'store/restore' if the procedure for 'v' is
+inhomogeneous and it would be 'v by op(i)' if not. For each 'v not in HLV(i)'
+a store/restore must be implemented at every state entry. In both cases, the
+homogeneous and the inhomogeneous, the output recipe is 'A(v)' and reflects
+that the value must be restored. Thus, for run-time interference an undetermined
+entry from a state 'k' is assumed (not assigned) to be 
+
+                           R(i,k) = HLR(i)
+
+
+DEFINITION: Run-Time Interference
+
+    The process of 'run-time interference' develops a recipe 'R(i)' for a mouth
+    state 'i' in the presence of undetermined entry recipes. The set of entry
+    recipes becomes
+
+            /
+            |   op(i)(R(k))  for all k where R(k) is determined
+       ER = | 
+            |   HLR(i)       for all k where R(k) is undetermined
+            \             
+
+    Based on this specification of the entry recipes 'ER' the interference
+    procedure as defined before is performed. 
+
+The run-time interference is correct if and only if the entry recipes are
+correct. This is given for the case that 'R(k)' is determined. For the case
+that 'R(k)' is not determined 'HLR(i)' needs to be considered. For 'v in
+HLV(i)' 'v' is constant and therefore correct. For 'v not in HLV(I)' 'v' is
+determined by 'v by op(i)(A)', i.e. it depends on auxiliary variables with
+values assigned some time earlier.
+
+If the output of a recipe of a mouth state is correct, then all recipes derived
+from its accumulation are correct. This is so, since accumulation is
+deterministic, without any run-time dependency. 
+
+To proof the correctness of
+run-time interference, the term 'horizon' is defined.
 
 STATEMENT:
 
