@@ -215,6 +215,16 @@ state from where the transition originates.
                     |  
                     \  op(i)(V(z))  if entry from state 'z'
 
+Later procedures rely on stored reference copies of variables. Those values
+are stored in so called 'auxiliary variables' as defined below.
+
+DEFINITION: A, A(v) -- Auxiliary Variables
+
+   The term auxiliary variable 'A(v)' specifies a variable that may store the
+   a 'snapshot' of a variable 'v'-s content upon entry into a mouth state. 
+   
+   'A' names the set of all auxiliary variables.
+
 Let 'recipe' be the procedure to determine the DCV in a state without
 considering any previous operation. That is, if for all states all recipes are
 known, then all operations along the state machine transitions can be removed.
@@ -223,26 +233,40 @@ Let the term recipe be defined as follows.
 DEFINITION: R(i,k), R(i) -- Recipe 
 
    Let 'R(i,k)' indicates the 'recipe' to determine 'V(i)' upon entry into a
-   state 'i' from a predecessor state 'k'.  It is derived from the operation
-   'op(i)' and 'R(k)'.  The recipe's procedure uses solely the following
-   inputs:
-
-          * 'h(i)', the hidden variables of state machine.
-          * 'A', the setting of auxiliary variables.
-
-   It implements the mapping
+   state 'i' from a predecessor state 'k'.  
+   
+   A recipe consists of two components: A procedure to determine 'V(i)' and a
+   'snapshot map'. 
+   
+   The procedure tells how to compute the variables of 'RV(i)' which is derived
+   from the operation 'op(i)' and 'R(k)'.  It maps
 
                   (h(i), A) ---> V(i)                                   (3)
+
+   with 'h(i)' signifying the hidden variables of state machine and 'A' the
+   set of auxiliary variables. 
+   
+   The snapshot map tells what auxiliary variable has been assigned in what
+   state. It is a list of pairs '(v, i)' with 'v' as the variable name and 'i'
+   the state index where it has been stored. 
 
    Let 'R(i)' indicate the recipe which appears to the successor states of
    state 'i'.
 
 Hidden variables are all variables of the state machine other than the 'state'.
 A lexical analyzer state machine has, for example the lexeme start position,
-  the buffer limits, the stream position, etc. as hidden variable.  
+the buffer limits, the stream position, etc. as hidden variable. The state
+in which an auxiliary variable takes a 'snapshot' is crucial when comparing
+two recipes. Even if they provide the same procedure, if they rely on stored
+values at different places, then they cannot be equal.
 
-The fundamental difference between 'R(i)' and 'V(i)' is that the former is a 
-procedure and the latter represents the values which are produced.
+STATEMENT:
+
+   If the snapshot maps of two recipes are unequal, then the two recipes
+   are unequal.
+
+The fundamental difference between 'R(i)' and 'V(i)' is that the former describes
+a procedure and the latter represents the values which are produced.
 
 The simplest form of a recipe is the setting with constant values.  For
 example, at a state entered by the newline character the recipe for 'column
@@ -318,14 +342,7 @@ DEFINITION: HLV(i) -- Historyless Variables
 A variable can only be history less, if 'op(i)' assigns a constant to it which
 is independent of previous states or paths.  When history becomes important,
 then the development of a variable setting must be accomplished at
-'run-time' using system memory. This is accomplished by 'auxiliary
-variables'.
-
-DEFINITION: A, A(v) -- Auxiliary Variables
-
-   The term auxiliary variable 'A(v)' specifies a variable that may store the
-   content of the variable 'v' at run-time. 'A' names the set of all auxiliary
-   variables.
+'run-time' using system memory, that is auxiliary variables.
 
 DEFINITION: HLR(i) -- Historyless Recipe
 
@@ -335,7 +352,7 @@ DEFINITION: HLR(i) -- Historyless Recipe
 
                     /   v by op(i)    for v in HLV(i)                
                 v = |                                                       (8)
-                    \   v by op(I)(A) else.
+                    \   A(v)          else.
 
 The historyless recipe is only correct, if 'A(v)' contains the correct value of
 'v' upon entry into state 'i' after 'op(i)' has been applied for all 'v not in
@@ -350,9 +367,12 @@ DEFINITION: Spring
 
                           RV(i) = HLV(i)
 
-    The recipe 'R(i)' for a spring state is determined by
+    The procedure of recipe 'R(i)' for a spring state is determined by
     
                           R(i) := HLR(i)
+
+    The relates snapshot map is empty, since it does not rely on any value
+    stored at run-time.
 
 In other words, for a spring there is no 'v' determined by 'A(v)' as shown in
 equation 8.  In equation 5 it is demonstrated how a recipe 'R(i)' is derived
@@ -364,6 +384,8 @@ DEFINITION: Accumulation
     Given a state 'i', its predecessor state 'k', the entry operation 'op(i)'
     the predecessor's recipe 'R(k)', the recipe to 'R(i,k)' is equivalent
     to the concatenated operations of 'op(i)' and 'R(k)'.
+
+    The snapshot map of 'R(i)' is equal to the snapshot map of 'R(k)'.
 
     A prerequisite for accumulation is that 'R(k)' of the predecessor is 
     determined.
@@ -380,8 +402,9 @@ EXAMPLE:
 Figure 6 displays an example of an DCV containing a single variable 'x'. The
 operations 'op(i)' upon transition are 'x=x+1' for all states. That is 'x' is
 incremented by 1 at each step. Let the 'A(x,a)' signify 'A(x)' as it was
-assigned upon entry into state 'a'. The recipe in state 'a' solely restores
-what has been stored.
+assigned upon entry into state 'a'. This notation combines the recipe's
+procedure with its snapshot map. In the above example, the recipe in state 'a'
+solely restores what has been stored.
 
                R(a) = { x := A(x,a) }                                     (6)
 
@@ -420,15 +443,23 @@ state. Using the concept of a recipe, the equation can be rewritten as
                      \  R(i,z)  if entry from state 'z'
 
 The applied recipe depends on the origin state of the transition which is only
-determined at run-time. However, a recipe 'R(i)' for a mouth state can be
-determined as follows. For each variable of the DCV there are two
+determined at run-time.  For each variable 'v' in 'RV(i)' there are two
 possibilities:
 
    Homogeneity:   All entry recipes apply the exact same process to
-                  determine the variable's content.
+                  determine the variable's content. That is
+
+                  for all q,e in P(i): v by R(i,p) = v by R(i,q) 
 
    Inhomogeneity: Two or more entry recipes apply a different process
-                  to determine the variable's content.
+                  to determine the variable's content. That is
+
+                  It exists a p,q where: v by R(i,p) <> v by R(i,q) 
+
+Not that 'R(i,p) <> R(i,q)' is true if the snapshot maps differ. In other
+words, two recipe procedures may rely in the same way on a stored value 'A(v)',
+but if it has been stored stored in different states, they are still not
+the same.
 
 If a variable 'v' is determined homogeneously, then the part of the recipes
 that determines it can be overtaken into 'R(i)'. Otherwise, the value must be
@@ -442,18 +473,18 @@ DEFINITION: Interference
     
                   ER = { op(i)(R(k)): k = 1...N }. 
                   
-    Let the entry recipe 'R(i,k)' implements the concatenation of 'op(i)(R(k))'
-    (as developed by accmulation). The output recipe 'R(i)' depends on the
-    determinacy of 'v', i.e. 
+    Let the entry recipe 'R(i,k)' signify the concatenation of 'op(i)(R(k))'
+    where 'R(k)' is the output recipe of predecessor state 'k'. The output
+    recipe 'R(i)' depends on the determinacy of 'v', i.e. 
 
                      /
-                     |  v by R(i,p)   if R(i,p) = R(i,q) for all p,q in P(i)
+                     |  v by R(i,p)   if v by R(i,p) = v by R(i,q) for all p,q in P(i)
          v in R(i) = |
                      |  A(v)          else
                      \
     
     where 'P(i)' is the set of predecessor states of 'i'. Foreach 'v' where
-    'A(v)' is required an entry operations 'EO(i,k)' is required that stores
+    'A(v)' is used an entry operation 'EO(i,k)' is required that stores
     the current value of 'v' in 'A(v)', i.e.
 
          EO(i,k) = { for each inhomogeneous 'v': A(v) = v by R(i,k) }
@@ -592,20 +623,29 @@ The name 'horizon' is chosen because it defines the border of determination.
 Beyond that begins the realm of dead-locks. Figure 9 shows a horizon state
 which contains one determined entry and another undetermined entry.
 
-                       R(i,a) -->--.
+                         R(a) -->--.
                                     \
-                                   ( i )----> R(i)
+                                     +---[ op(i) ]---( i )----> R(i)
                                     /
-                   R(i,b) = ? -->--'
+                     R(b) = ? -->--'
 
-          Figure 9: A mouth state with a fix entry recipe R(x,a).
+          Figure 9: A mouth state with a determined entry 'R(a)' and 
+                    an undetermined entry 'R(b)'.
 
-Every undetermined entry has its origin in a mouth state that is unable to
-perform interference. Every determined entry has its origin in a spring or a
-mouth state that performed interference. Interference happens only if all
-entries are determined. Thus, any mouth state that performs interference
-finally has its roots in a spring. As a consequence, the following statement
-can be made. i<review the logic! initial state = spring? no>
+The init state is the first state that is entered. It has at least one
+recipe 'R(outside)', i.e. the recipe to be applied when coming from 'outside'
+the state machine. If it has another entry that is undetermined, then the
+init state becomes a horizon state.
+
+Every determined entry can be traced back to a spring or a mouth state that
+performed interference.  Every undetermined entry can be traced back to a mouth
+state that is unable to perform interference. Any transition sequence starts at
+the initial state which is either a spring or a horizon state. If it is a
+spring it propagates a determined recipe to the next mouth state. Any mouth
+state propagates determined recipes as long as all entries are determined.
+This continues until the recipe propagation hits a mouth state that is unable
+to determine all of its entries. However, at least the entry by which it is
+reached is determined.
 
 STATEMENT: 
 
@@ -613,34 +653,27 @@ STATEMENT:
    state. 
 
 In other words, the horizon states are the entry points to the realm of
-dead-lock states.  The entry into the horizon state happens through the
-determined entry--in the example of figure 9 it is 'R(i,a)'. Computing and
-storing the value for each variable is correct, at this point in time, since
-the entry recipe is derived by deterministic procedures. Thus, restoring the
-stored values is a correct procedure to determine the DCV.  'R(i)' is correct,
-at the time of entry into a horizon. Accumulation along linear states is
-deterministic. A propagated recipe 'R(i)' results in correct entries to
-other mouth states, run-time interference produces again a correct
-output recipe and the discussion continues where it started.  It follows
-the following statement.
+dead-lock states.  The entry happens through the determined entry of a horizon
+state--in the example of figure 9 it is 'R(a)'. Interference offers entry
+operations being performed at run-time. If an entry such as 'R(b)' cannot
+be determined at analysis time, then at least one can assume the entry
+recipe 'R(i,b)' to compute on real values at run-time and store those.
 
-As shown, mutually obstructed interference is the reason behind dead-locks.  A
-central concept for the solution is that of 'run-time interference'. It uses
-the historyless recipe 'HLR(i)' for an interference in the absence of concrete
-entry recipes. Using 'HLR(i)' for each undetermined entry recipe fits the
-following consideration.
+          EO(i,b) = { for each v: A(v) = v by op(i)(V(b)) }
 
-If a mouth state's 'op(i)' assigns a constant to a variable 'v', then the
-history becomes unimportant. In that case 'v in HLV(i)'. The interference of
-all entries would be a 'store/restore' if the procedure for 'v' is
-inhomogeneous and it would be 'v by op(i)' if not. For each 'v not in HLV(i)'
-a store/restore must be implemented at every state entry. In both cases, the
-homogeneous and the inhomogeneous, the output recipe is 'A(v)' and reflects
-that the value must be restored. Thus, for run-time interference an undetermined
-entry from a state 'k' is assumed (not assigned) to be 
+That is, assign to 'A(v)' the value computed for 'v' by applying 'op(i)' on the
+setting of variables in state 'b'. Since, every value is stored upon entry,
+the output recipe can be specified as a pure 'restore recipe':
 
-                           R(i,k) = HLR(i)
+         v by R(i) = { v = A(v) }
 
+If 'op(i)' stores a constant in a 'v', then that 'v' can still be treated on
+the level of recipes. It follows, that the output recipe is exactly the
+previously defined historyless recipe 'HLR(i)'. The presented solution of entry
+operations storing in auxiliary variables and recipes restoring the content is
+the most general solution--a solution that never fails to be correct. The above
+concepts allow to determine an output recipe for a mouth state with
+undetermined entries.
 
 DEFINITION: Run-Time Interference
 
@@ -657,34 +690,18 @@ DEFINITION: Run-Time Interference
     Based on this specification of the entry recipes 'ER' the interference
     procedure as defined before is performed. 
 
-The run-time interference is correct if and only if the entry recipes are
-correct. This is given for the case that 'R(k)' is determined. For the case
-that 'R(k)' is not determined 'HLR(i)' needs to be considered. For 'v in
-HLV(i)' 'v' is constant and therefore correct. For 'v not in HLV(I)' 'v' is
-determined by 'v by op(i)(A)', i.e. it depends on auxiliary variables with
-values assigned some time earlier.
-
-If the output of a recipe of a mouth state is correct, then all recipes derived
-from its accumulation are correct. This is so, since accumulation is
-deterministic, without any run-time dependency. 
-
-To proof the correctness of
-run-time interference, the term 'horizon' is defined.
-
-STATEMENT:
-
-   Repeated run-time interference and accumulation of resulting recipes results
-   in a correct description of the state machine in terms of recipes.
-
-The problem of dead-locks is, hereby, solved. All states are associated with
-recipes and the original operations along the transitions are no longer
-required.
+The resulting output recipe 'R(i)' can now be used for propagation. Previously
+undetermined mouth state entries become determined. The horizon moves forward
+until all mouth states are determined. An entry operation related to an entry
+from state 'b' the 'V(b)' term can be replaced by an accumulated recipe 'R(b)'.
+What remains is a possible fine-tuning that rids off some storing entry
+recipes.
 
 -------------------------------------------------------------------------------
 
 FINE TUNING OF DEAD-LOCK STATES
 
-While the previous discussion provides a complete solution, there is still
+While the previous discussion provides a general solution, there is still
 space for improvement. Figure 10 shows a case where the DCV variable 'x' is
 assigned 5 upon entry into state 1 in any case. Storing the value upon entry
 and restoring it upon exit, is superfluous. Since the entry recipes are
