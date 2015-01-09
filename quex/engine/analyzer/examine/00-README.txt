@@ -241,15 +241,16 @@ DEFINITION: R(i,k), R(i) -- Recipe
    The procedure tells how to compute the variables of 'RV(i)' which is derived
    from the operation 'op(i)' and 'R(k)'.  It maps
 
-                  (h(i), A) ---> V(i)                                   (3)
+        (h(i), A) ---> V(i)                                             (3)
 
    with 'h(i)' signifying the hidden variables of state machine and 'A' the
    set of auxiliary variables. 
    
-   The snapshot map tells what auxiliary variable has been assigned in what
-   state. It is a list of pairs '(v, i)' with 'v' as the variable name and 'i'
-   the state index where it has been stored. 
-
+   The snapshot map associates an auxiliary variable with the state index
+   where a snapshot of its value has been stored in 'A(v)', i.e.
+   
+        snapshot map:  v ---> state 'i' where 'A(v) = v' happend.
+   
    Let 'R(i)' indicate the recipe which appears to the successor states of
    state 'i'.
 
@@ -601,10 +602,9 @@ Interference can only be performed, if all entry recipes of a mouth state are
 determined. Loops in the state machine graph, however, cause circular
 dependencies.  Figure 8 shows an example, where the two states 1 and 2 mutually
 block each other. The recipe R(1) for state 1 cannot be determined because it
-requires R(2) as entry recipe from state 2 which is undetermined. However,
-before R(2) from state 2 can be determined, the entry recipe from
-1 must be present. Both states cannot perform an interference,
-because they are missing an entry recipe. 
+requires R(2) which is undetermined. However, before R(2) from state 2 can be
+determined, R(1) must be present. Both states, 1 and 2, cannot perform an
+interference, because they are missing an entry recipe. 
 
                                        R(1)
                           R(0)     .---->----.
@@ -614,10 +614,16 @@ because they are missing an entry recipe.
 
            Figure 8: A dead-lock in mouth states 1 and 2.
 
+DEFINITION: Dead-Lock State
+
+   A dead-lock state is a mouth state that contains at least one undetermined
+   entry. Due to the missing entry recipe interference may not be performed
+   for that state.
+
 DEFINITION: Horizon
 
-   Let the term 'horizon' H indicate the subset of dead-lock mouth states that
-   have at least one determined entry.
+   Let the term 'horizon' H indicate the subset of dead-lock states that have
+   at least one determined entry.
 
 The name 'horizon' is chosen because it defines the border of determination.
 Beyond that begins the realm of dead-locks. Figure 9 shows a horizon state
@@ -632,20 +638,21 @@ which contains one determined entry and another undetermined entry.
           Figure 9: A mouth state with a determined entry 'R(a)' and 
                     an undetermined entry 'R(b)'.
 
-The init state is the first state that is entered. It has at least one
-recipe 'R(outside)', i.e. the recipe to be applied when coming from 'outside'
-the state machine. If it has another entry that is undetermined, then the
-init state becomes a horizon state.
+The process of propagation of recipes ended with dead-lock states. In order
+to understand the nature of dead-lock states better, it makes sense to briefly
+review this process. 
 
-Every determined entry can be traced back to a spring or a mouth state that
-performed interference.  Every undetermined entry can be traced back to a mouth
-state that is unable to perform interference. Any transition sequence starts at
-the initial state which is either a spring or a horizon state. If it is a
-spring it propagates a determined recipe to the next mouth state. Any mouth
-state propagates determined recipes as long as all entries are determined.
-This continues until the recipe propagation hits a mouth state that is unable
-to determine all of its entries. However, at least the entry by which it is
-reached is determined.
+The init state is the first state that is entered. It has at least one recipe
+'R(outside)', i.e. the recipe to be applied when coming from 'outside' the
+state machine. If it has another entry that is undetermined, then the init
+state becomes a horizon state. If the init state has no other entry, then it is
+a spring and determined recipes are propagated through accumulation.
+Accumulation ends with the determination of an entry into a mouth state. If the
+reached mouth state has ends up with determined entries, then a determined
+recipe is propagated until a terminal or another mouth state is reached. If a
+mouth state is reached where not all entries are determined, then its output
+recipe is undetermined.  Consequently, all successor states of that state are
+undetermined. It follows the following statement.
 
 STATEMENT: 
 
@@ -654,10 +661,49 @@ STATEMENT:
 
 In other words, the horizon states are the entry points to the realm of
 dead-lock states.  The entry happens through the determined entry of a horizon
-state--in the example of figure 9 it is 'R(a)'. Interference offers entry
-operations being performed at run-time. If an entry such as 'R(b)' cannot
-be determined at analysis time, then at least one can assume the entry
-recipe 'R(i,b)' to compute on real values at run-time and store those.
+state--in the example of figure 9 it is 'R(a)'. On the other hand, the output
+of a dead-lock state is undetermined, so any mouth state it reaches is
+undetermined. Any state before a horizon state is determined. So, the output
+of a dead-lock state never influences a state before the horizon. 
+
+STATEMENT:
+
+    Non-dead-lock states are never reached by dead-lock states.
+
+This has an importance consequence: The snapshot maps of recipes before a
+horizon state never contain state indices of states in the horizon or beyond.
+This has an important consequence. A procedure at an entry into a mouth state
+is only overtaken into the output recipe, if it is homogeneous with the
+according procedure at all other entries. With one recipe being determined, the
+set of possible output recipes becomes restricted. 
+
+Let 'R(i,k)' be a determined entry into a horizon state. Then, for all 'v'
+where 'v by R(i,p) = R(i,k)' with 'p in P(i)' the output recipe 'v by R(i) = v
+by R(i,k)'. For all other 'v' an entry operation must store the value of 'A(v)
+= v by R(i,p)' and the output recipe is 'A(v)'. Briefly, there are two alternatives
+               /
+               | v by R(i,k) if R(i,k) = R(i,p) for all p in P(i)
+   v by R(i) = |
+               | A(v)
+               \ 
+
+The interesting point lies in the snapshot maps states. If 'v by R(i)' is determined
+by 'A(v)' then the snapshot map contains 'v -> i', that is the snapshot of 'v'
+has been stored in 'A(v)' at state 'i'. If 'v by R(i)' is determined by 'b by
+R(i,k)' then only snapshot map of 'R(i,k)' is transferred to 'R(i)'. State 'k'
+however, is a state before the horizon. An incoming recipe 'op(i)(R(p))' comes
+from a state after the horizon. If it relies on restored values of 'A(v)' then
+those are from after the horizon. Thus, snapshot maps between the determined
+entry and later incoming snapshot maps will never be equal. The EO remain
+necessary.
+
+Since any type of interference requires
+homogeneity for a procedure 'v by R(i,k)' for all 'k in P(i)'
+
+Interference offers entry operations which are performed at run-time. If an
+entry such as 'R(b)' cannot be determined at analysis time, then at least one
+can assume the entry recipe 'R(i,b)' to compute on real values at run-time and
+store those.
 
           EO(i,b) = { for each v: A(v) = v by op(i)(V(b)) }
 
@@ -670,10 +716,10 @@ the output recipe can be specified as a pure 'restore recipe':
 If 'op(i)' stores a constant in a 'v', then that 'v' can still be treated on
 the level of recipes. It follows, that the output recipe is exactly the
 previously defined historyless recipe 'HLR(i)'. The presented solution of entry
-operations storing in auxiliary variables and recipes restoring the content is
-the most general solution--a solution that never fails to be correct. The above
-concepts allow to determine an output recipe for a mouth state with
-undetermined entries.
+operations storing snapshots in auxiliary variables and recipes that rely on
+stored values is the most general solution--a solution that never fails to be
+correct. The above concepts allow to determine an output recipe for a mouth
+state with undetermined entries.
 
 DEFINITION: Run-Time Interference
 
