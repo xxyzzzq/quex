@@ -174,7 +174,7 @@ may have transitions to multiple successor states, but only on predecessor state
                                                      /
                                                    .-.
                       --------[ op(i) ]---------->( i )---> 
-                     V(k)              V(i)    '-'
+                         V(k)              V(i)    '-'
 
                     Figure 3: The concept of a linear state.
 
@@ -325,60 +325,34 @@ determines it. That is,
                  
 The above definition tells that recipes can only come from recipes. An
 important step towards the answer where the first recipe comes from is the
-concept of a 'historyless recipe'. It is based on the concept of 
-'historyless variables'.
+concept of a 'historyless recipe'. This is introduced as follows. 
 
-DEFINITION: HLV(i) -- Historyless Variables
+The components 'v by op(i)(R(k))' of an operation that compute a variable 'v'
+can be of two types. First, they may assign a *constant* to 'v'. Second, they may
+produce a value based on *auxiliary variables* 'A' that have been stored earlier.
+A dependency on stored values is expressed by an entry in the snapshot map.
 
-   The set of historyless variables in a state 'i' is given by 
- 
-                        HLV(i) \subset RV(i)                                (6)
+DEFINITION: S(i) -- Set of snapshot states.
 
-   For all 'v in HLV(i)' determined by 'v by op(i)' it holds that 
+   The set of snapshot states 'S(i)' related to a recipe 'R(i)' contains
+   all state indices present in the recipes snapshot map.
 
-                   v not a function of V(k) forall 'k' in P(i)              (7)
-
-   where 'P(i)' is the set of predecessor states of 'i'.
-
-A variable can only be history less, if 'op(i)' assigns a constant to it which
-is independent of previous states or paths.  When history becomes important,
-then the development of a variable setting must be accomplished at
-'run-time' using system memory, that is auxiliary variables.
-
-DEFINITION: HLR(i) -- Historyless Recipe
-
-   For a given state 'i' the 'HLR(i)' expresses the effect of 'op(i)' on the
-   set of required variables 'RV(i)' in isolation of previous history.  That
-   is, for each variable 'v in RV(i)' it holds
-
-                    /   v by op(i)    for v in HLV(i)                
-                v = |                                                       (8)
-                    \   A(v)          else.
-
-The historyless recipe is only correct, if 'A(v)' contains the correct value of
-'v' upon entry into state 'i' after 'op(i)' has been applied for all 'v not in
-HLV(i)'.  A historyless recipe can be considered as start for analysis if the
-set of required variables is equal to the set of historyless variables.
-Accordingly, a spring can be defined.
+If a recipe 'R(i)' does not depend on stored values then the set of snapshot
+states 'S(i)' is empty. In that case, the state that outputs the recipe can 
+be considered a starting point of analysis.
 
 DEFINITION: Spring
 
     A state 'i' where all required variables 'RV(i)' can be determined by 
-    the historyless recipe 'HLR(i)' is called a spring. It holds
+    'op(i)' alone and ignoring the incoming recipe. That is, 
 
-                          RV(i) = HLV(i)
+                          S(i) = \emptyset
 
-    The procedure of recipe 'R(i)' for a spring state is determined by
-    
-                          R(i) := HLR(i)
-
-    The relates snapshot map is empty, since it does not rely on any value
-    stored at run-time.
-
-In other words, for a spring there is no 'v' determined by 'A(v)' as shown in
-equation 8.  In equation 5 it is demonstrated how a recipe 'R(i)' is derived
-from a predecessor's recipe 'R(k)' and a state 'i'-s operation 'op(i)'. This
-procedure is defined here as 'accumulation'.
+The relates snapshot map is empty, since it does not rely on any value stored
+at run-time.  In other words, for a spring there is no 'v' determined by 'A(v)'
+as shown in equation 8.  In equation 5 it is demonstrated how a recipe 'R(i)'
+is derived from a predecessor's recipe 'R(k)' and a state 'i'-s operation
+'op(i)'. This procedure is defined here as 'accumulation'.
 
 DEFINITION: Accumulation
 
@@ -479,8 +453,9 @@ DEFINITION: Interference
     recipe 'R(i)' depends on the determinacy of 'v', i.e. 
 
                      /
-                     |  v by R(i,p)   if v by R(i,p) = v by R(i,q) for all p,q in P(i)
-         v in R(i) = |
+                     |  v by R(i,p)   if v by R(i,p) = v by R(i,q) 
+         v in R(i) = |                for all p,q in P(i)
+                     |
                      |  A(v)          else
                      \
     
@@ -648,155 +623,145 @@ state machine. If it has another entry that is undetermined, then the init
 state becomes a horizon state. If the init state has no other entry, then it is
 a spring and determined recipes are propagated through accumulation.
 Accumulation ends with the determination of an entry into a mouth state. If the
-reached mouth state has ends up with determined entries, then a determined
-recipe is propagated until a terminal or another mouth state is reached. If a
-mouth state is reached where not all entries are determined, then its output
-recipe is undetermined.  Consequently, all successor states of that state are
-undetermined. It follows the following statement.
+reached mouth state ends up with determined entries, then a determined recipe
+is propagated until a terminal or another mouth state is reached. If a mouth
+state is reached where not all entries are determined, then its output recipe
+is undetermined. Since by reaching it, at least, one entry is determined the
+state is a horizon state. The output recipe is undetermined and no successor
+state is further reached with determined recipes. Consequently, all successor
+states of that state are undetermined.  With the aforementioned discussion, an
+important conclusion can be drawn.
 
 STATEMENT: 
 
    A dead-lock state can only reached by a path that guides through a horizon
    state. 
+   
+   Non-dead-lock states are never reached by dead-lock states.
+   
+In other words, it contains the indices of those states where values have been
+stored in 'A' on which 'R(i)' depends. It has been mentioned, that two recipes
+are unequal if their snapshot map differs. Further, if their sets of snap shot
+states differ, then the snapshot maps can never be the same. It follows that
 
-In other words, the horizon states are the entry points to the realm of
-dead-lock states.  The entry happens through the determined entry of a horizon
-state--in the example of figure 9 it is 'R(a)'. On the other hand, the output
-of a dead-lock state is undetermined, so any mouth state it reaches is
-undetermined. Any state before a horizon state is determined. So, the output
-of a dead-lock state never influences a state before the horizon. 
+                   S(i) <> S(k) => R(i) <> R(k)
 
-STATEMENT:
+The last statement allows to conclude, that for a given determined entry into a
+horizon state no state from inside the dead-lock realm has been reached, i.e.
 
-    Non-dead-lock states are never reached by dead-lock states.
+              S(i) \intersection Successors(i) = \emptyset
 
-This has an importance consequence: The snapshot maps of recipes before a
-horizon state never contain state indices of states in the horizon or beyond.
-This has an important consequence. A procedure at an entry into a mouth state
-is only overtaken into the output recipe, if it is homogeneous with the
-according procedure at all other entries. With one recipe being determined, the
-set of possible output recipes becomes restricted. 
+If at another entry appears a recipe 'R(k)' with an 'S(k)' and 
 
-Let 'R(i,k)' be a determined entry into a horizon state. Then, for all 'v'
-where 'v by R(i,p) = R(i,k)' with 'p in P(i)' the output recipe 'v by R(i) = v
-by R(i,k)'. For all other 'v' an entry operation must store the value of 'A(v)
-= v by R(i,p)' and the output recipe is 'A(v)'. Briefly, there are two alternatives
-               /
-               | v by R(i,k) if R(i,k) = R(i,p) for all p in P(i)
-   v by R(i) = |
-               | A(v)
-               \ 
+              S(k) \intersection Successors(i) <> \emptyset
 
-The interesting point lies in the snapshot maps states. If 'v by R(i)' is determined
-by 'A(v)' then the snapshot map contains 'v -> i', that is the snapshot of 'v'
-has been stored in 'A(v)' at state 'i'. If 'v by R(i)' is determined by 'b by
-R(i,k)' then only snapshot map of 'R(i,k)' is transferred to 'R(i)'. State 'k'
-however, is a state before the horizon. An incoming recipe 'op(i)(R(p))' comes
-from a state after the horizon. If it relies on restored values of 'A(v)' then
-those are from after the horizon. Thus, snapshot maps between the determined
-entry and later incoming snapshot maps will never be equal. The EO remain
-necessary.
+then 'S(i) <> S(k)' and consequently 'R(i) <> R(k)'. Thus, if an the entry of
+the horizon state a recipe depends on entry operations in one of the successor
+states of 'i', it is inhomogeneous with the already determined entry recipe
+'R(i)' and therefore translates into a 'store/restore' procedure. The output
+recipe will rely on 'A(v)' with a snapshot map that associates 'v' with the
+state 'i' itself. That is, even if the input to state 'i' depends on later
+operations, the to compute 'v' upon entry, store it in 'A(v)' and restore it in
+the output recipe is always correct. Now, even for an undetermined mouth state
+'i', a recipe 'R(i)' can be propagated.  A feed-back influence on the entry
+states does not require an alteration of 'R(i)'.
 
-Since any type of interference requires
-homogeneity for a procedure 'v by R(i,k)' for all 'k in P(i)'
+A further simplification is possible. If the entry operation 'op(i)' dominates
+the setting of a variable 'v' by setting it to a constant.  It will also be the
+same whatever the other entries contribute, since it is executed after any
+entry recipe. Thus the entry recipes are then automatically homogeneous for
+that 'v'. In this particular case the 'v by R(i)' can be set to 'v by op(i)'.
+The universally correct output recipe of a horizon state becomes 
 
-Interference offers entry operations which are performed at run-time. If an
-entry such as 'R(b)' cannot be determined at analysis time, then at least one
-can assume the entry recipe 'R(i,b)' to compute on real values at run-time and
-store those.
+                  /
+                  |   v by op(i)    if 'op(i)(R(k))' independent of A
+          UR(i) = |                     for all k in P(i)                   (8)
+                  |
+                  \   A(v)          else.
 
-          EO(i,b) = { for each v: A(v) = v by op(i)(V(b)) }
+In the case, that 'A(v)' is used a storing entry operation is required, that is
+the snapshot map maps 'v' to the state 'i'. It follows the definition of
+'run-time interference.
 
-That is, assign to 'A(v)' the value computed for 'v' by applying 'op(i)' on the
-setting of variables in state 'b'. Since, every value is stored upon entry,
-the output recipe can be specified as a pure 'restore recipe':
+DEFINITION: Run-Time Dependent Interference
 
-         v by R(i) = { v = A(v) }
-
-If 'op(i)' stores a constant in a 'v', then that 'v' can still be treated on
-the level of recipes. It follows, that the output recipe is exactly the
-previously defined historyless recipe 'HLR(i)'. The presented solution of entry
-operations storing snapshots in auxiliary variables and recipes that rely on
-stored values is the most general solution--a solution that never fails to be
-correct. The above concepts allow to determine an output recipe for a mouth
-state with undetermined entries.
-
-DEFINITION: Run-Time Interference
-
-    The process of 'run-time interference' develops a recipe 'R(i)' for a mouth
-    state 'i' in the presence of undetermined entry recipes. The set of entry
-    recipes becomes
+    The process of 'run-time dependent interference' develops a recipe 'R(i)'
+    for a mouth state 'i' in the presence of undetermined entry recipes. The
+    set of entry recipes becomes
 
             /
             |   op(i)(R(k))  for all k where R(k) is determined
        ER = | 
-            |   HLR(i)       for all k where R(k) is undetermined
+            |   UR(i)        for all k where R(k) is undetermined
             \             
 
     Based on this specification of the entry recipes 'ER' the interference
-    procedure as defined before is performed. 
+    procedure as defined before is performed. For any snapshot map entry
+    containing 'i', the value 'v' must be stored in 'A(v)'.
 
-The resulting output recipe 'R(i)' can now be used for propagation. Previously
-undetermined mouth state entries become determined. The horizon moves forward
-until all mouth states are determined. An entry operation related to an entry
-from state 'b' the 'V(b)' term can be replaced by an accumulated recipe 'R(b)'.
-What remains is a possible fine-tuning that rids off some storing entry
-recipes.
+The resulting output recipe 'R(i)' can now be used for propagation. Through
+repeated accumulation, previously undetermined mouth state entries become
+determined. With a determined entry they become a new horizon state. Other
+mouth state may get all their entries determined--thus they are no longer
+horizon states. This way, the horizon moves forward until all mouth states are
+determined. 
 
 -------------------------------------------------------------------------------
 
 FINE TUNING OF DEAD-LOCK STATES
 
-While the previous discussion provides a general solution, there is still
-space for improvement. Figure 10 shows a case where the DCV variable 'x' is
-assigned 5 upon entry into state 1 in any case. Storing the value upon entry
-and restoring it upon exit, is superfluous. Since the entry recipes are
-homogeneous, normal interference may be applied. For the entry from state 1
-into state 2, the recipe 'x=6' is sufficient. This section discusses how normal
-interference may be applied to further simplify the description while
-maintaining correctness.
+Can there be a better recipe than the one developed by run-time dependent
+interference? If so, it should be possible that after propagation of the
+run-time dependent recipes, at the entries of the state new entry recipes
+appear which are homogeneous with the determined entry. It is clearly
+impossible for components 'v by R(p), p from P(i)' that rely on 'A(v)' since in
+that case the interfered recipe stores and restores, such that the snapshot map
+for 'v' contains the horizon state 'i'. The determined entry, though can only
+contain sets of snapshot states that come before 'i'. Thus, there snapshot maps
+differ and can never produce a homogeneous output. They always remain on
+storing and restoring from 'A(v)'.
 
-                                       x=x+1
-                          x=5      .---->----.
-                    ( 0 )------>( 1 )       ( 2 )
-                                   '----<----'
-                                       x=5
+If the components 'v by R(p), p from P(i)' are assignments of constants, then a
+new homogeneous interference is possible. During run-time interference the 
+operation 'op(i)' was requested to be constant in order to propagate into the
+output recipe. At this point, a more relaxed condition requires 'op(i)(R(p))'
+needs to result in a constant assignment. Consider the example of 
 
-          Figure 10: Dead-lock group with space for improvement.
+                       op(i) = { x = x + 1 }
 
+The operation is clearly not dependent on the previous value of 'x'--thus not
+constant. However, if the predecessors recipe 'R(p)' assigns a constant '5' to
+'x', then the concatenation becomes
 
-By definition, run-time interference can only happen in a state with at least
-one determined entry recipe.  Algorithm 1 applied a procedure based on the
-deterministic accumulation and interference. Thus, any recipe that resulted
-from algorithm 1 is stable and correct.  
+                       op(i)(R(p)) = { x = 6 }
 
-In figure 9 a horizon state is shown. Without restricting generality, the entry
-recipe 'R(i,b)' represents all inputs into the state which are undetermined
-before dead-lock resolution. In the same sense 'R(i,a)' represents all
-determined entries. For interference to happen, it must hold
+which does not depend on any auxiliary variable. If all entry recipes result in
+the same constant assignment the recipe can be used as output recipe. Again,
+propagation of this recipe by accumulation may improve other recipes. The process
+of fine-tuning is notably the same as the normal propagation of recipes, with 
+the exception of the termination criteria.
 
-      R(i,a) = R(i,b) with a, b in the set of entry states to state i.
+It has been shown, that from the correctness point of view, there is no need to
+modify the output recipe of a mouth state. Thus, the result of interference
+does not need to be assigned to the output recipe. The following condition 
+on interference ensures that the fine-tuning does not continue forever.
 
-Such is the requirement of homogeneity. The recipe 'R(i,a)' can only depend on
-states before the horizon. If it is equal to a recipe 'R(i,b)', then this
-recipe also can only depend on states before the horizon. Thus, while 'R(i,b)'
-results from interferences and accumulation inside the realm of dead-lock
-states, it does not depend on its 'dynamics'. According to the previous
-discussion 'R(i,b)' is correct in the general sense. Thus, the derivation
-of a resulting recipe is correct and stable in a general sense. 
+CONDITION: Condition for interference during dead-lock fine-tuning.
 
-STATEMENT:
+    The result of interference is only to be taken into account, if the
+    size of the new recipe's snapshot map is smaller than the size of 
+    the old recipe's snapshot map. 
 
-    If entries into a horizon state are homogeneous, then the recipe resulting
-    from interference is correct in a general sense. No feedback into the mouth
-    state must be further considered. The resulting recipe remains stable.
+A recipes component 'v by R(i)' that is constant cannot become dependent on
+'A(v)' because this happens only during inhomogeneous interference. Thus, the
+set of variables in the new recipe's snapshot map is a subset of the variables
+of the old recipe's snapshot map.
 
-The output recipe 'R(i)' of the horizon state is determined and correct. After
-interference, such a mouth state is no longer part of the horizon. However,
-through accumulation of 'R(i)' some other dead-lock mouth states may be
-reached. They now have a determined recipe at their entry and become new
-horizon states. The procedure of interference and accumulation may be repeated
-until no new horizon states with homogeneous entries are found.
+With the mentioned requirement a mouth state 'i' can be passed at maximum a
+restricted 'N' number of times, where 'N' is the number of variables in
+'RV(i)'. Since, number of states is restricted in general, the total number of
+propagations is restricted. At that point, no new constant entry recipes could
+be determined. Thus the fine-tuning has reached its optimum.
 
 -------------------------------------------------------------------------------
 
