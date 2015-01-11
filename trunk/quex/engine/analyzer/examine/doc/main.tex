@@ -55,22 +55,26 @@ only determined upon exit.  No increments happen during transitions. Only upon
 exit 'x' is assigned the predetermined value. The balance on computational
 effort is obvious.
 
+\begin{figure}[htbp] \leavevmode
+a)
 \begin{verbatim}
-    
-         a)          x=x+1        x=x+1        x=x+1
+                     x=x+1        x=x+1        x=x+1
               ( 0 )------->( 1 )------->( 2 )------->( 3 )
                 : exit       : exit       : exit       : exit
                 :            :            :            :
+\end{verbatim}
     
-         b)
+b)
+\begin{verbatim}
               ( 0 )------->( 1 )------->( 2 )------->( 3 )
                 : exit       : exit       : exit       : exit
                 :            :            :            :
                x=0          x=1          x=2          x=3
     
-             Figure 1: Original and optimized state machine.
-                 
 \end{verbatim}
+\caption{Original and optimized state machine.}
+\end{figure}
+                 
      
 The goal of the described procedure is to remove all operations along state
 transitions. However, as is described in a later section, in the case of a 
@@ -86,28 +90,31 @@ That is, the operations applied upon entry into a state may be different
 dependent from which state or through which transition the entry happens.  A
 multi-entry state in shown in figure 2.b.
 
+\begin{figure}[htbp] \leavevmode
+a)
+
 \begin{verbatim}
-           a)
      
                   ---------.
                             \                       .-----.
                   -----------+---[ operations ]----( state )----->   
                             /                       '-----'
                   ---------'       
+\end{verbatim}
      
-           b)
+b)
      
+\begin{verbatim}
                   ---[ operations 0 ]----.
                                           \         .-----.
                   ---[ operations 1 ]------+-------( state )----->  
                                           /         '-----'
                   ---[ operations 2 ]----'       
 
-
-      Figure 2: Two approaches of state modelling: a) Single entry state. 
-                b) Multi-entry state. 
-
 \end{verbatim}
+\caption{Two approaches of state modelling: a) Single entry state. 
+b) Multi-entry state.}
+\end{figure}
 
 The analysis tries to exploit predictable sequence of operations along state
 transitions. This is done by compensating them through a single operation or by
@@ -222,17 +229,17 @@ The concept of a linear state is shown in figure 3. The operation 'op(i)' works
 on the 'V(k)' before entry and produces 'V(i)'. Note, that a linear state
 may have transitions to multiple successor states, but only on predecessor state.
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
-    
                                                       .---> 
                                                      /
                                                    .-.
                       --------[ op(i) ]---------->( i )---> 
                          V(k)              V(i)    '-'
 
-                    Figure 3: The concept of a linear state.
-
 \end{verbatim}
+\caption{The concept of a linear state.}
+\end{figure}
 
 \begin{definition}
 Mouth State
@@ -244,6 +251,7 @@ state.
 Figure 4 displays the concept of a mouth state and the development of the
 'V(i)' based on the DCVs of predecessor states.
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
                   ------>--.  
                  V(a)       \ 
@@ -255,8 +263,9 @@ Figure 4 displays the concept of a mouth state and the development of the
                   ------>--'
                  V(z)
 
-                    Figure 4: The concept of a mouth state.
 \end{verbatim}
+\caption{The concept of a mouth state.}
+\end{figure}
 
 In a linear state the 'V(i)' can be determined based on the predecessor's
 DCV and the 'op(i)'
@@ -344,6 +353,7 @@ number' may be 'column number = 0', because a new line begins. The advantage of
 recipes is demonstrated figure 5.
 
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
     a)        
             'accept=10'        'accept=12'        
@@ -357,9 +367,10 @@ recipes is demonstrated figure 5.
                           :                   :
                       goto T10            goto T12
 
-     Figure 5: Equivalent state sequences. a) Relying on operations along
-               transitions. b) DCVs determined by recipes.
 \end{verbatim}
+\caption{Equivalent state sequences. a) Relying on operations along
+transitions. b) DCVs determined by recipes.}
+\end{figure}
 
 In figure 5.a operations are executed at each transition step. They assign
 identifiers to the last acceptance variable 'accept'. This assignment happens
@@ -448,14 +459,16 @@ A prerequisite for accumulation is that 'R(k)' of the predecessor is
 determined.
 \end{definition}
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
                   op(b)=        op(c) =      op(d) =
                     x=x+1         x=x+1         x=x+1        
             ( a )-------->( b )-------->( c )-------->( d )--------> ...
 
 
-                  Figure 6: A sequence of linear states.
 \end{verbatim}
+\caption{A sequence of linear states.}
+\end{figure}
 
 \subsection{Example}
 
@@ -485,14 +498,16 @@ If the state machine exits at 'a', 'b', 'c' or 'd' the content of 'x' can be
 determined without relying on the intermediate operations { x:=x+1 }. This
 is shown in figure 7.
  
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
           ( a )-------->( b )-------->( c )-------->( d )--------> ...
                           :             :             :
                         x=A(x,a)+1    x=A(x,a)+2    x=A(x,a)+3
 
 
-          Figure 7: Recipes upon exit replace transition operations.
 \end{verbatim}
+\caption{Recipes upon exit replace transition operations.}
+\end{figure}
 
 The repeated accumulation of recipes along linear states comes to an end at
 mouth states.  Equation (2) described the development of the DCV in mouth
@@ -679,6 +694,7 @@ requires R(2) which is undetermined. However, before R(2) from state 2 can be
 determined, R(1) must be present. Both states, 1 and 2, cannot perform an
 interference, because they are missing an entry recipe. 
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
                                        R(1)
                           R(0)     .---->----.
@@ -686,8 +702,9 @@ interference, because they are missing an entry recipe.
                                    '----<----'
                                        R(2)
 
-           Figure 8: A dead-lock in mouth states 1 and 2.
 \end{verbatim}
+\caption{A dead-lock in mouth states 1 and 2.}
+\end{figure}
 
 \begin{definition}
     
@@ -709,6 +726,7 @@ The name 'horizon' is chosen because it defines the border of determination.
 Beyond that begins the realm of dead-locks. Figure 9 shows a horizon state
 which contains one determined entry and another undetermined entry.
 
+\begin{figure}[htbp] \leavevmode
 \begin{verbatim}
                          R(a) -->--.
                                     \
@@ -716,9 +734,10 @@ which contains one determined entry and another undetermined entry.
                                     /
                      R(b) = ? -->--'
 
-          Figure 9: A mouth state with a determined entry 'R(a)' and 
-                    an undetermined entry 'R(b)'.
+\caption{A mouth state with a determined entry 'R(a)' and 
+an undetermined entry 'R(b)'.}
 \end{verbatim}
+\end{figure}
 
 The process of propagation of recipes ended with dead-lock states. In order
 to understand the nature of dead-lock states better, it makes sense to briefly
