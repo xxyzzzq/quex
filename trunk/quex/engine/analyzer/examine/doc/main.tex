@@ -20,7 +20,6 @@
 \setlength{\marginparpush}{1.0cm}
 \setlength{\textwidth}{150mm}
 
-\theoremstyle{break}
 \newtheorem{definition}{Definition}
 \newtheorem{statement}{Statement}
 \newtheorem{condition}{Condition}
@@ -323,7 +322,7 @@ $i$ from a predecessor state $k$.  A recipe consists of two components: A
 procedure to determine $V(i)$ and a snapshot map $S_m(i,k)$, respectively
 $S_m(i)$.
 
-The {\it procedure} tells how to compute the variables of $V_r(i)$ which is derived
+The \textit{procedure} tells how to compute the variables of $V_r(i)$ which is derived
 from the operation $op(i)$ and $R(k)$.  It maps
 
 \begin{equation} \label{eq:recipe-procedure}
@@ -331,7 +330,7 @@ from the operation $op(i)$ and $R(k)$.  It maps
 \end{equation}
 
 with $h(i)$ signifying the hidden variables of state machine and $A$ the set of
-auxiliary variables.  The {\it snapshot map} associates a variable with the state
+auxiliary variables.  The \textit{snapshot map} associates a variable with the state
 index where a snapshot of its value has been stored in $A(v)$, i.e.
 
 \begin{equation}
@@ -691,7 +690,7 @@ for the remaining states where the deterministic propagation of recipes failed.
 \section{Dead-Lock States}
 
 Interference can only be performed, if all entry recipes of a mouth state are
-determined. Loops in the state machine graph, however, may cause {\it circular
+determined. Loops in the state machine graph, however, may cause \textit{circular
 dependencies} and unresolved mouth states.  Figure 8 shows an example, where the
 two states 1 and 2 mutually block each other. The recipe $R(1)$ for state 1
 cannot be determined because it requires $R(2)$ which is undetermined. However,
@@ -722,65 +721,36 @@ interference. $U$ is the set of all dead-lock states.
 
 \end{definition}
 
+Linear states do not contribute to the discussion of determinacy. A linear state's
+output recipe is determined through accumulation if and only if its predecessor
+is determined. On the other hand, if the predecessor is undetermined, then the 
+state itself cannot be determined. Indeterminacy originates from interference 
+that cannot be performed in mouth states. Thus, the strings of linear states
+in between the mouth states can be omitted from consideration of determinacy.
+
 An undetermined mouth state $i \in U$ must have at least one undetermined entry
-recipe. Thus one of its predecessor states $k \in Pred(i)$, must be undetermined.
-If $k$ is a mouth state, then it must be undetermined.  If state $k$ is a
-linear state, then its predecessor must be undetermined, the same holds for k's
-predecessor, etc. until a mouth state is reached. Thus, the indeterminacy of a
-mouth state has its origin in the indeterminacy of at least one other mouth
-state.  Let the fact that a mouth state $i$ is undetermined because of another
-undetermined mouth state $k$ be noted as $i \vartriangleleft k$. 
-
-\begin{definition}
-D(i) -- Dependency Set 
-
-For a given mouth state $i$ the dependency set $D(i)$ contains all states
-that $i$ requires to be determined, before interference in state $i$ can be
-performed. That is,
+recipe. Either the state from which it is entered is an undetermined mouth state, 
+or the string of linear states backwards guides to an undetermined mouth state. 
+Let the fact that a mouth state $i_0$ is undetermined because of another
+undetermined mouth state $i_1$ be noted as $i_0 \vartriangleleft i_1$. Their might
+be more than one dependency, but considering one is enough for this proof. Each
+undetermined mouth state has at least one undetermined mouth state that feeds
+an undetermined entry. Thus, the sequence 
 
 \begin{equation}
-        D(i) = { k: k \vartriangleleft i }
+    i_0\,\vartriangleleft\,i_1\,\vartriangleleft\,i_2\,\vartriangleleft\,\ldots
 \end{equation}
 
-\end{definition}
-
-If any state $k \in D(i)$ depends on another state $p \in U$ then $i$ also depends
-on it, i.e.
-\begin{equation}
-         k \in D(i) \Leftrightarrow D(k) \subset D(i)     
-\end{equation}
-The number of states in a state machine is finite, thus $D(i)$ is finite. Since
-\begin{equation}
-         \forall k \in D(i) \Rightarrow k \in U
-\end{equation}
-Thus,
-\begin{equation}
-         \forall k \in D(i): \exists p \neq k \in U : k \vartriangleleft p
-\end{equation}
-But then,
-\begin{equation}
-         \forall k \in D(i): D(p) \subset D(k)
-\end{equation}
-
-Let $N_d$ denote the number of elements in $D(i)$. Then, there are $N_d$ subset
-relationships {\it inside} the set. On the other hand, the size of a dependency
-is at least 2, i.e. the dependency and on what it depends. Such a set
-configuration is only possible, if at least two sets intersect. If two
-dependency sets $D(p)$ and $D(q)$ intersect, then this means nothing else but
-
-\begin{equation}
-    \exists p \in D(p), q \in D(q): p \vartriangleleft q \wedge \vartriangleleft p
-\end{equation}
-It follows what was to be proven:
-\begin{equation}
-    U \neq \emptyset \Leftrightarrow \exists \mbox{Circular Dependencies} 
-\end{equation}
+has no end. But the set of undetermined states $U$ is finite. Thus, there must be
+states appearing repeatedly in the sequence. Since the dependency relate to transition
+paths, this proves that loops must be involved. Also, it proves that the reason
+for the existence of dead-lock states are circular dependencies of undetermined mouth states.
 
 \begin{definition}
 Horizon
 
-Let the term 'horizon' $H$ indicate the subset of dead-lock states that have
-at least one determined entry.
+Let the term 'horizon' $H$ indicate the subset of dead-lock states $\{ i\,\in\,U \}$
+that have at least one determined entry.
 \end{definition}
 
 The name 'horizon' is chosen because it defines the border of determination.
