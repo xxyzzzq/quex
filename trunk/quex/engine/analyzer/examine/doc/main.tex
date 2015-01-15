@@ -158,53 +158,43 @@ However, not all variables of the $V_c$ are necessarily relevant for all
 states. Let the set of required variables be defined as
 
 \begin{definition}
-$V_r(i)$ -- Set of Required Variables
+$V(i)$ -- Set of Required Variables
 
-$V_r(i)$ defines the variables which are required in state $i$. The
+$V(i)$ defines the variables which are required in state $i$. The
 variables must be sufficient
-
-\begin{enumerate}
+\begin{itemize}
 \item to implement the nominal behavior upon drop-out and
-\item to develop the required variables $V_r(k)\,\forall\,k\,\in\,Succ^*(i)$. 
-\end{enumerate}
+\item to develop the required variables $V(k)\,\forall\,k\,\in\,Succ^*(i)$. 
+\end{itemize}
 \end{definition}
 
-In contrast to $V_c$, the set of variables in $V_r(i)$ must be concrete.
+In contrast to $V_c$, the set of variables in $V(i)$ must be concrete.
 Instead of the loose statement 'all variables related to input position
 storage', the specific variables with name and/or index must be specified. 
 
-$V_r(i)$ can be determined by \textit{back-propagation} of needs. A state which
-requires a specific variable tags all of its predecessor states with this
-requirement. That is, for a variable named $x$, it holds
+The configuration of $V(i)$ can be determined by \textit{back-propagation} of
+needs. A state which requires a specific variable tags all of its predecessor
+states with this requirement. That is, for a variable named $x$, it holds
 
 \begin{equation}
-    x\,\in\,V_r(i)\,\Rightarrow\,\forall\,k\,\in\,\Pred^*(i):\,x\,\in\,V_r(k)
+    x\,\in\,V(i)\,\Rightarrow\,\forall\,k\,\in\,\Pred^*(i):\,x\,\in\,V(k)
 \end{equation}
 
 Assume for example, that the lexeme length is not required in a terminal. Then
 any operation contributing to the computation of the lexeme length is
 redundant.  No state on a path to this terminal is required to perform lexeme
-length related operations, except that another successor state requires it.
-Let setting of required variables be defined as follows.
-
-\begin{definition}
-$V(i)$ -- Setting of $V_r(i)$
-
-The term $V(i)$ represents the settings of all required variables $V_r(i)$
-after a state $i$ is entered and before it transits further. 
-\end{definition}
-    
-An elementary unit that modifies the content of a variables is called an
+length related operations, except that another successor state requires it.  An
+elementary unit that modifies the content of a variables is called an
 'operation', as defined here:
 
 \begin{definition}
 $op(i)$ -- Operation 
 
-An operation $op(i)$ signifies all modification to $V_r(i)$ upon entry into a
+An operation $op(i)$ signifies all modification to $V(i)$ upon entry into a
 state $i$ in the original single-entry state machine.
 
 An operation $op^v(i)$ signifies the component of $op(i)$ which produces 
-the variable $v\,\in\,V_r(i)$.
+the variable $v\,\in\,V(i)$.
 \end{definition}
     
 With $V(h)$ as the setting before entry into a state $i$ and $V(i)$ as the
@@ -223,7 +213,7 @@ Investigated Behavior
 
 The investigated behavior determines the scope of analysis. It is
 specified by a description of concerned variables $V_c$, the required
-variables $V_r(i)$ for each state $i$, the related operations $op(i)$ and
+variables $V(i)$ for each state $i$, the related operations $op(i)$ and
 their nominal behavior.
 \end{definition}
     
@@ -243,12 +233,29 @@ states'.  They are defined in the paragraphs to follow.
 \begin{definition}
 Linear State
 
-A linear state is a state that is entered only from one predecessor state.
+A state $i$ is a linear state, if the number of immediate predecessor states is
+1, i.e. 
+
+\begin{equation}
+                           size(Pred(i))\,=\,1
+\end{equation}
+
+The number of immediate successor states is arbitrary, i.e.
+$size(Succ(i))\,\ge\,0$.
+
 \end{definition}
 
-The concept of a linear state is shown in figure 3. The operation $op(i)$ works
-on the $V(k)$ before entry and produces $V(i)$. Note, that a linear state may
-have transitions to multiple successor states, but only on predecessor state.
+The concept of a linear state is shown in figure 3. The operation $op(i)$ takes
+the variable settings $V(k)$ of the previous state $k$ and derives $V(i)$, i.e.
+the setting of variables in the current state. This can be expressed as 
+
+\begin{equation} \label{eq:accumulation}
+            V(i) = op(i)(V(k))                                         
+\end{equation}
+
+with $k$ as the one and only predecessor state. If $V(k)$ is determined, then
+$V(i)$ is determined purely from the consideration of the state machine. Such a
+deterministic mapping is not possible for so called 'mouth states'.
 
 \begin{figure}[htbp] \leavevmode
 \begin{verbatim}
@@ -266,12 +273,14 @@ have transitions to multiple successor states, but only on predecessor state.
 Mouth State
 
 A mouth state is a state that is entered from more than one predecessor 
-state. 
+state, i.e.
+\begin{equation}
+                           size(Pred(i))\,>\,1
+\end{equation}
+The number of immediate successor states is arbitrary, i.e. $size(Succ(i))\,\ge\,0$.
+
 \end{definition}
     
-Figure 4 displays the concept of a mouth state and the development of the
-$V(i)$ based on the $V_c$s of predecessor states.
-
 \begin{figure}[htbp] \leavevmode
 \begin{verbatim}
                   ------>--.  
@@ -280,25 +289,17 @@ $V(i)$ based on the $V_c$s of predecessor states.
                   ------>-----+---[ op(i) ]---------( i )---> 
                  V(b)        /                 V(i)  '-'
                             /
-                 ...       :
                   ------>--'
-                 V(z)
+                 V(c)
 
 \end{verbatim}
 \caption{The concept of a mouth state.}
 \end{figure}
 
-In a linear state the $V(i)$ can be determined based on the predecessor's
-$V_c$ and the $op(i)$
-
-\begin{equation} \label{eq:accumulation}
-            V(i) = op(i)(V(k))                                         
-\end{equation}
-
-with $k$ as the one and only predecessor state. If $V(k)$ is known, then
-$V(i)$ of a linear state is known off-line purely from the consideration of
-the state machine.  In a mouth state $V(i)$ is be determined depending on the
-state from where the transition originates.
+Figure 4 displays the concept of a mouth state and the development of the
+$V(i)$ based on the $V(a),\,V(b)$ and $V(c)$, of the predecessor states. In
+a mouth state $V(i)$ depends on the path taken at run-time of the state machine.
+$V(i)$ is determined as follows.
 
 \begin{equation} \label{eq:interference}
     V(i) = \begin{dcases*}
@@ -309,8 +310,9 @@ state from where the transition originates.
             \end{dcases*}
 \end{equation}
 
-Later procedures rely on stored reference copies of variables. Those values
-are stored in so called 'auxiliary variables' as defined below.
+The only way to handle this is in general is to compute the value of each $v\,\in\,V(i)$,
+store it in an auxiliary variable, and let the output recipe restore what
+has been stored.
 
 \begin{definition}
 $A$, $A(v)$ -- Auxiliary Variables
@@ -318,44 +320,52 @@ $A$, $A(v)$ -- Auxiliary Variables
 The term auxiliary variable $A(v)$ specifies a variable that may store the
 a 'snapshot' of a variable $v$-s content upon entry into a mouth state. 
    
-$A$ names the set of all auxiliary variables.
+Let $A$ name the set of all auxiliary variables.
 \end{definition}
 
-Let 'recipe' be the procedure to determine the $V_c$ in a state without
-considering any previous operation. That is, if for all states all recipes are
-known, then all operations along the state machine transitions can be removed.
-Let the term recipe be defined as follows.
+Any operation that relies on auxliary variables has an implicit dependency
+on the state where the variable has been stored. Let this information be
+called a 'snapshot map'.
+
+\begin{definition} $S_m(X)$, $S(X)$ -- Snapshot Map, Snapshot States.
+
+    The snapshot map $S_m(X)$ related to an operation $X$ maps from all
+    variables that are restored from auxiliary variables to the state index
+    where the snapshot $A(v)=v$ has been taken.
+    
+    \begin{equation}
+        \label{eq:snapshot-map}
+        S_m(X):  v \rightarrow \mbox{state} i, \mbox{where} A(v) = v \mbox{was applied.}.
+    \end{equation}
+
+    The set of snapshot states $S(X)$ is the set of all states mentioned in
+    $S_m(X)$.
+
+\end{definition}
+
+With the concept of linear states, mouth states, and auxiliary variables the
+goal is now to find procedures that compute $V(i)$ while completely ridding
+of the transition operations $op(i)$. Such procedures are called 'recipes'
+and are defined as below.
 
 \begin{definition}
-    $R(i,k),\,R^v(i,k),\,R(i),\,R^v(i)$ -- Recipe 
+    $R(i,k),\,R(i),\,R^v(i,k),\,R^v(i)$ -- Recipe 
 
 Let $R(i,k)$ indicates the 'recipe' to determine $V(i)$ upon entry into a state
-$i$ from a predecessor state $k$.  A recipe consists of two components: A
-procedure to determine $V(i)$ and a snapshot map $S_m(i,k)$, respectively
-$S_m(i)$.
-
-The \textit{procedure} tells how to compute the variables of $V_r(i)$ which is derived
-from the operation $op(i)$ and $R(k)$.  It maps
+$i$ from a predecessor state $k$.  The \textit{procedure} tells how to compute
+$V(i)$ from the operation $op(i)$ and $R(k)$.  It maps
 
 \begin{equation} \label{eq:recipe-procedure}
-    (h(i), A) \Rightarrow V(i)                                             
+    (h, A) \rightarrow V(i)                                             
 \end{equation}
 
-with $h(i)$ signifying the hidden variables of state machine and $A$ the set of
-auxiliary variables.  The \textit{snapshot map} associates a variable with the state
-index where a snapshot of its value has been stored in $A(v)$, i.e.
-
-\begin{equation}
-    \label{eq:snapshot-map}
-    S_m(i,k):  v \rightarrow \mbox{state} i, \mbox{where} A(v) = v \mbox{was applied.}.
-\end{equation}
+with $h$ signifying the hidden variables of state machine and $A$ the set of
+auxiliary variables.  
 
 Let $R(i)$ indicate the recipe which appears to the successor states of
-state $i$. Let $S_m(i)$ name the according snapshot map.
-
-Let $R^v(i,k)$ signify the component of $R(i,k)$ which produces
-$v\,\in\,V_r(i)$.  Respectively, $R^v(i)$ is the component of $R(i)$ that
-produces $v\,\in\,V_r(i)$.
+state $i$.  Let $R^v(i,k)$ signify the component of $R(i,k)$ which produces
+$v\,\in\,V(i)$.  Respectively, $R^v(i)$ is the component of $R(i)$ that
+produces $v\,\in\,V(i)$.
 
 \end{definition}
 
@@ -364,13 +374,18 @@ A lexical analyzer state machine has, for example the lexeme start position,
 the buffer limits, the stream position, etc. as hidden variable. The state
 in which an auxiliary variable takes a 'snapshot' is crucial when comparing
 two recipes. Even if they provide the same procedure, if they rely on stored
-values at different places, then they cannot be equal.
+values from different places, then they cannot be equal in general.
 
 \begin{statement}
    If the snapshot maps of two recipes are unequal, then the two recipes
    are unequal, that is
    \begin{equation} \label{eq:snapshot-map-difference}
-       S_m(i) \neq S_m(k) \Rightarrow R(i) \neq R(k)
+       S_m(R(i)) \neq S_m(R(i)) \Rightarrow R(i) \neq R(k)
+   \end{equation}
+   Since, the set of related states cannot be different without differring 
+   snapshot maps, it follows without restricting generality
+   \begin{equation} \label{eq:snapshot-map-difference2}
+       S(R(i)) \neq S(R(i)) \Rightarrow R(i) \neq R(k)
    \end{equation}
 \end{statement}
 
@@ -465,7 +480,7 @@ be considered a starting point of analysis.
 \begin{definition}
 Spring
 
-A state $i$ where all required variables $V_r(i)$ can be determined by 
+A state $i$ where all required variables $V(i)$ can be determined by 
 $op(i)$ alone and ignoring the incoming recipe. That is, 
 \end{definition}
 
@@ -565,7 +580,7 @@ state. Using the concept of a recipe, the equation can be rewritten as
 \end{eqnarray}
 
 The applied recipe depends on the origin state of the transition which is only
-determined at run-time.  For each variable $v$ in $V_r(i)$ there are two
+determined at run-time.  For each variable $v$ in $V(i)$ there are two
 possibilities:
 
 \begin{description}
@@ -953,7 +968,7 @@ of the old recipe's snapshot map.
 
 With the mentioned requirement a mouth state $i$ can be passed at maximum a
 restricted $N$ number of times, where $N$ is the number of variables in
-$V_r(i)$. Since, number of states is restricted in general, the total number of
+$V(i)$. Since, number of states is restricted in general, the total number of
 propagations is restricted. At that point, no new constant entry recipes could
 be determined. Thus the fine-tuning has reached its optimum.
 
