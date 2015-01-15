@@ -156,7 +156,7 @@ def get_test_application(counter_db, ReferenceP, CT):
 
     # Make sure that the counter is implemented using reference pointer
     found_n = 0
-    for i, line in enumerate(counter_str.split("\n")):
+    for i, line in enumerate(counter_str.splitlines()):
         if line.find("reference_p") != -1:
             found_n += 1
             if found_n == 3: break

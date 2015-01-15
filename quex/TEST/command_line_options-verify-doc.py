@@ -53,7 +53,7 @@ for option in option_db:
 # Find things which are documented but do not exist
 print "(*) Options which are reported, but are not available in application  (no output is good output)"
 option_re = re.compile(" \-[_a-zA-Z\-0-9]+", re.UNICODE)
-for line_i, line in enumerate(command_line_doc.split("\n")):
+for line_i, line in enumerate(command_line_doc.splitlines()):
     if line.find(marker) == -1: continue
     for match in option_re.finditer(line):
         lexeme = match.group().strip()

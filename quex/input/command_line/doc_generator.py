@@ -108,7 +108,7 @@ class Visitor:
                 
         min_indentation = 1e37
         line_list       = []
-        for line in Text.split("\n"):
+        for line in Text.splitlines():
             line = line.replace("\t", "    ")
             # measure indentation
             indentation = get_indentation(line)
@@ -146,7 +146,7 @@ class Visitor:
 
         paragraph_list = []
         paragraph      = []
-        for line in Text.split("\n"):
+        for line in Text.splitlines():
             line = line.strip()
             if len(line) == 0: 
                 append(paragraph_list, paragraph)
