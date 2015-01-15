@@ -427,7 +427,7 @@ def clean_for_independence(txt):
 
     # Delete any line references
     result = []
-    for line in txt.split("\n"):
+    for line in txt.splitlines():
         x = line.strip()
         if len(x) != 0 and x[0] == "#":
             x = x[1:].strip()

@@ -59,7 +59,7 @@ def test(Op):
         print "   IsBranching: True"
     print "   Cost:        ", _cost_db[Op.id]
     print "   C-code: {"
-    for line in Lng.COMMAND(Op).split("\n"):
+    for line in Lng.COMMAND(Op).splitlines():
         print "       %s" % line
     print "   }\n"
 

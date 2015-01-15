@@ -209,7 +209,7 @@ def run_this(Str):
         txt = fh_err.read() + fh_out.read()
         # In the current version we forgive unused static functions
         postponed_list = []
-        for line in txt.split("\n"):
+        for line in txt.splitlines():
             if    line.find("DumpedTokenIdObject") != -1:
                 postponed_list.append("## IGNORED: " + line.replace(os.environ["QUEX_PATH"] + "/quex/", ""))
                 continue
@@ -693,7 +693,7 @@ test_program_db = {
 def __verify_code_generation(FullLanguage, SourceCode):
     def check_occurence(String, Code):
         count_n = 0
-        for line in Code.split("\n"):
+        for line in Code.splitlines():
             if line.find(String) != -1:
                count_n += 1
                if count_n == 2: return True

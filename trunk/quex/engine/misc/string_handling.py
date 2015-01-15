@@ -101,7 +101,7 @@ def pretty_code(Code, Base=4):
     no_real_line_yet_f  = True
     indentation_set     = set()
     for element in Code:
-        for line in element.split("\n"):
+        for line in element.splitlines():
             line = line.rstrip() # Remove trailing whitespace
             if len(line) == 0 and no_real_line_yet_f: continue
             else:                                     no_real_line_yet_f = False

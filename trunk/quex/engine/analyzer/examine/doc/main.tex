@@ -303,10 +303,10 @@ $V(i)$ is determined as follows.
 
 \begin{equation} \label{eq:interference}
     V(i) = \begin{dcases*}
-            op(i)(V(a)) & if entry from state a \\
-            op(i)(V(b)) & if entry from state b \\
+            op(i)(V(k_0)) & if entry from state $k_0$ \\
+            op(i)(V(k_1)) & if entry from state $k_1$ \\
             \ldots \\
-            op(i)(V(n)) & if entry from state n \\
+            op(i)(V(k_n)) & if entry from state $k_n$ \\
             \end{dcases*}
 \end{equation}
 
@@ -351,16 +351,19 @@ and are defined as below.
 \begin{definition}
     $R(i,k),\,R(i),\,R^v(i,k),\,R^v(i)$ -- Recipe 
 
-Let $R(i,k)$ indicates the 'recipe' to determine $V(i)$ upon entry into a state
-$i$ from a predecessor state $k$.  The \textit{procedure} tells how to compute
-$V(i)$ from the operation $op(i)$ and $R(k)$.  It maps
+Let $R(i,k)$ names the 'recipe' to determine $V(i)$ upon entry into a state
+$i$ from a predecessor state $k$. It corresponds to the concatenation of
+state $k$'s output recipe $R(k)$ and state $i$'s operation $op(i)$, that is
 
+\begin{equation}
+    R(i,k) \,=\, op(i)(R(k))
+\end{equation}
+A recipe, in general, performs the mapping
 \begin{equation} \label{eq:recipe-procedure}
     (h, A) \rightarrow V(i)                                             
 \end{equation}
-
-with $h$ signifying the hidden variables of state machine and $A$ the set of
-auxiliary variables.  
+That is, it solely depends on $h$, signifying the hidden variables of state machine,
+and $A$, i.e. the set of auxiliary variables.  
 
 Let $R(i)$ indicate the recipe which appears to the successor states of
 state $i$.  Let $R^v(i,k)$ signify the component of $R(i,k)$ which produces
@@ -389,119 +392,62 @@ values from different places, then they cannot be equal in general.
    \end{equation}
 \end{statement}
 
-The fundamental difference between $R(i)$ and $V(i)$ is that the former describes
-a procedure and the latter represents the values which are produced.
-
-The simplest form of a recipe is the setting with constant values.  For
-example, at a state entered by the newline character the recipe for 'column
-number' may be 'column number = 0', because a new line begins. The advantage of
-recipes is demonstrated figure 5.  In figure 5.a operations are executed at
-each transition step. They assign identifiers to the last acceptance variable
-'accept'. This assignment happens even if states '1' and '2' are passed by and
-later states may detect another acceptance. Upon drop-out from state 1 or 2 a
-conditional goto to a terminal is applied based on the setting of 'accept'. 
-
-\begin{figure}[htbp] \leavevmode
-\begin{verbatim}
-    a)        
-            'accept=10'        'accept=12'        
-       ... ------------>( 1 )-------------->( 2 )----> ...
-                          :                   :
-                    goto T(accept)      goto T(accept)
-
-    b) 
-       ... ------------>( 1 )-------------->( 2 )----> ...
-                          : 'accept=10'       : 'accept=12'              
-                          :                   :
-                      goto T10            goto T12
-
-\end{verbatim}
-\caption{Equivalent state sequences. a) Relying on operations along
-transitions. b) $V_c$s determined by recipes.}
-\end{figure}
-
-
-In figure 5.b the operations along transitions are completely removed. The
-recipes determined the acceptance a priori, so that a direct goto to the
-correspondent terminal can be applied.  Clearly, the second approach requires
-no computational effort during transitions and lesser effort upon drop-out.
-
-Let the set of predecessors $Pred(i)$ contain all states that lie on a path
-from the init state to state $i$. Let the set of successor states $Succ(i)$
-contain all states that can be reached from state $i$.
-
+The fundamental difference between $R(i)$ and $V(i)$ is that the former
+describes a procedure and the latter represents the values which are produced.
 With the concepts of this section, the overall goal can be formulated. The
 analysis transforms the given single-entry state machine based on operations
 into a multi-entry state machine based on recipes. Observing only the entry and
-exit, the changes to the $V_c$ must comply to the nominal behavior. 
+exit, the changes to $V_c$ must comply to the nominal behavior. 
 
 %==============================================================================
 %
 %==============================================================================
-\section{Basics on Propagation of Recipes}
+\section{Recipes}
 
 A recipe for one state is the basis for the development of the recipe of its
-successor state. For a linear state, equation (1) described how $V(i)$ is
-determined from the predecessor's $V(k)$ and the entry operation $op(i)$. If
-$V(k)$ can be determined by a recipe $R(k)$, then $V(i)$ becomes
+successor state. For a linear state, equation \eqref{eq:operation} described
+how $V(i)$ is determined from the predecessor's $V(k)$ and the entry operation
+$op(i)$. If $V(k)$ can be determined by a recipe $R(k)$, then $V(i)$ becomes
 
 \begin{equation} \label{eq:accumulation2}
                      V(i) = op(i)(R(k))                                     
 \end{equation}
 
-Since, a recipe $R(k)$ is already independent of operations along transitions,
-the recipe for $V(i)$ becomes nothing else than the expression that
-determines it. That is,
+The recipe for $V(i)$ becomes nothing else than the expression that determines
+it. That is,
 
 \begin{equation} \label{eq:accumulation3}
-                     R(i) = { op(i)(R(k)) }                                 
+                     R(i)\,=\,\{ op(i)(R(k)) \}                                 
 \end{equation}
                  
 The above definition tells that recipes can only come from recipes. An
 important step towards the answer where the first recipe comes from is the
-concept of a 'historyless recipe'. This is introduced as follows. 
+concept of a 'spring'. This is introduced as follows. 
 
-The components $op^v(i)(R(k))$ of an operation that compute a variable $v$
-can be of two types. First, they may assign a *constant* to $v$. Second, they may
-produce a value based on *auxiliary variables* $A$ that have been stored earlier.
-A dependency on stored values is expressed by an entry in the snapshot map.
-
-\begin{definition}
-S(i) -- Set of snapshot states.
-
-The set of snapshot states $S(i)$ related to a recipe $R(i)$ contains
-all state indices present in the recipes snapshot map.
-\end{definition}
-
-If a recipe $R(i)$ does not depend on stored values then the set of snapshot
-states $S(i)$ is empty. In that case, the state that outputs the recipe can 
-be considered a starting point of analysis.
+The components $op^v(i)(R(k))$ may perform a special type of operation: they
+may assign a \textit{constant} to $v$. If for all $v\in V(i)$ the operation
+$op^v(i)(R(k))$ results in a constant \textit{independently} of the recipe
+$R(k)$, then such a state may be considered the starting point of analysis. 
 
 \begin{definition}
 Spring
 
-A state $i$ where all required variables $V(i)$ can be determined by 
-$op(i)$ alone and ignoring the incoming recipe. That is, 
+A spring is a state $i$ where all required variables $v\in V(i)$ can be
+determined by $op^v(i)$ alone and ignoring the incoming recipe. That is,
 \end{definition}
 
-\begin{equation}
-                          S(i) = \emptyset
-\end{equation}
-
-The relates snapshot map is empty, since it does not rely on any value stored
-at run-time.  In other words, for a spring there is no $v$ determined by $A(v)$
-as shown in equation 8.  In equation 5 it is demonstrated how a recipe $R(i)$
-is derived from a predecessor's recipe $R(k)$ and a state $i$-s operation
-$op(i)$. This procedure is defined here as 'accumulation'.
+In equation \eqref{eq:accumulation3} it is demonstrated how a recipe $R(i)$ is
+derived from a predecessor's recipe $R(k)$ and a state $i$-s operation $op(i)$.
+This procedure is defined here as 'accumulation'.
 
 \begin{definition}
 Accumulation
 
 Given a state $i$, its predecessor state $k$, the entry operation $op(i)$
-the predecessor's recipe $R(k)$, the recipe to $R(i,k)$ is equivalent
+the predecessor's recipe $R(k)$, the recipe $R(i,k)$ is equivalent
 to the concatenated operations of $op(i)$ and $R(k)$.
 
-The snapshot map of $R(i)$ is equal to the snapshot map of $R(k)$.
+The snapshot map of $S_m(R(i))$ is equal to the snapshot map of $R(k)$.
 
 A prerequisite for accumulation is that $R(k)$ of the predecessor is 
 determined.
@@ -520,18 +466,17 @@ determined.
 
 \subsection{Example}
 
-Figure 6 displays an example of an $V_c$ containing a single variable $x$. The
-operations $op(i)$ upon transition are $x=x+1$ for all states. That is $x$ is
-incremented by 1 at each step. Let the $A(x,a)$ signify $A(x)$ as it was
-assigned upon entry into state $a$. This notation combines the recipe's
-procedure with its snapshot map. In the above example, the recipe in state $a$
-solely restores what has been stored.
+Figure 6 displays an example with a single variable $x$. The operations $op(i)$
+upon transition are $x=x+1$ for all states. That is $x$ is incremented by 1 at
+each step. Let the $A(x,a)$ signify $A(x)$ as it was assigned upon entry into
+state $a$. This notation combines the recipe's procedure with its snapshot map.
+In the above example, the recipe in state $a$ solely restores what has been
+stored.
 
 \begin{equation}
 \label{eq:}
-               R(a) = { x := A(x,a) }                                     (6)
+               R(a) = { x := A(x,a) }                                     
 \end{equation}
-
 
 The recipe 'R(b,a)' must be equivalent to the concatenated execution of 'op(b)'
 and 'R(a)', i.e.
@@ -542,14 +487,14 @@ and 'R(a)', i.e.
 \end{eqnarray}
 So, 
 \begin{eqnarray}
-    R(b)  =  \{ x := A(x,a) + 1 \}                                 (7)
+    R(b)  =  \{ x := A(x,a) + 1 \}                                 
 \end{eqnarray}
 
 This rule applied repeatedly for the states 'c' and 'd' leads to
 
 \begin{eqnarray}
     R(c)  =  \{ x := A(x,a) + 2 \} \\
-    R(d)  =  \{ x := A(x,a) + 3 \}                                 (8)
+    R(d)  =  \{ x := A(x,a) + 3 \}                                 
 \end{eqnarray}
 
 If the state machine exits at $a$, $b$, $c$, or $d$ the content of $x$ can be
@@ -568,14 +513,16 @@ is shown in figure 7.
 \end{figure}
 
 The repeated accumulation of recipes along linear states comes to an end at
-mouth states.  Equation (2) described the development of $V_c$ in mouth
-state. Using the concept of a recipe, the equation can be rewritten as
+mouth states.  Equation \eqref{eq:interference} described the development of
+$V(i)$ in mouth state. Using the concept of a recipe, the equation can be
+rewritten as
 
 \begin{eqnarray}
     V(i)  =  \begin{dcases*}
-               R(i,p) &  if entry from state $p$ \\
-               R(i,q) &  if entry from state $q$ \\
-               R(i,n) &  if entry from state $n$
+               R(i,k_0) &  if entry from state $k_0$ \\
+               R(i,k_1) &  if entry from state $k_1$ \\
+               \dots                                 \\
+               R(i,k_n) &  if entry from state $k_n$
             \end{dcases*}
 \end{eqnarray}
 
@@ -604,10 +551,10 @@ possibilities:
     \end{equation}
 \end{description}
 
-Note that $R(i,p) \neq R(i,q)$ is true if the snapshot maps differ. In other
-words, two recipe procedures may rely in the same way on a stored value $A(v)$,
-but if it has been stored stored in different states, they are still not
-the same.
+As mentioned in equation \label{eq:snapshot-map-difference}, two recipes are
+different if their snapshot maps differ. In other words, two recipe procedures
+may rely in the same way on a stored value $A(v)$, but if it has been stored
+stored in different states, they are still not the same.
 
 If a variable $v$ is determined homogeneously, then the part of the recipes
 that determines it can be overtaken into $R(i)$. Otherwise, the value must be
@@ -621,7 +568,7 @@ The process of 'interference' develops a recipe $R(i)$ for a mouth state
 $i$ based on entry recipes 
 
 \begin{equation}
-              ER = { op(i)(R(k)): k = 1...N }. 
+    R_E(i) = { op(i)(R(k)): k = 1...N }. 
 \end{equation}
               
 Let the entry recipe $R(i,k)$ signify the concatenation of $op(i)(R(k))$
@@ -636,11 +583,11 @@ recipe $R(i)$ depends on the determinacy of $v$, i.e.
 \end{equation}
 
 where $Pred(i)$ is the set of predecessor states of $i$. For each $v$ where
-$A(v)$ is used an entry operation $EO(i,k)$ is required that stores the current
+$A(v)$ is used an entry operation $eop(i,k)$ is required that stores the current
 value of $v$ in $A(v)$, i.e.
 
 \begin{equation}
-    EO(i,k) = { \forall\,k\,\mbox{with}\,R^v(i,k)\,\mbox{is inhomogeneous}: A(v)\,=\,R^v(i,k) }
+    eop(i,k) = { \forall\,k\,\mbox{with}\,R^v(i,k)\,\mbox{is inhomogeneous}: A(v)\,=\,R^v(i,k) }
 \end{equation}
 
 \end{definition}
@@ -648,7 +595,7 @@ value of $v$ in $A(v)$, i.e.
 In the case of inhomogeneous entry recipes $A(v)$ requires that entry
 operations are performed.  That is upon entry from each $k$ into $i$ the
 computed value of $v$ is stored in $A(v)$.  It is the existence of the entry
-operations $EO(i,k)$ that induces the necessity of multi-entry states.  
+operations $eop(i,k)$ that induces the necessity of multi-entry states.  
 
 Before interference can be performed, all entry recipes must be determined.  As
 long as this is not the case, $R(i)$ cannot be determined. In consequence, no
@@ -665,18 +612,21 @@ called 'dead-lock analysis'. This is the subject of the next section but one.
 %==============================================================================
 %
 %==============================================================================
-\section{Recipe Propagation By Accumulation}
+\section{Propagation By Recursive Accumulation}
 
 The recipes for states are determined by a 'walk' along linear states. While
 linear states have only one entry, they may have transitions to more than one
-state. So, the walk along linear states is a recursive 'tree-walk'. The
-termination criteria for the walk along linear states is defined as follows.
+state. So, the walk along linear states is a recursive 'tree-walk'. If the
+entry to a linear state $i$ is determined, then by accumulation, the output
+recipe $R(i)$ can be determined. This recipe may then be applied to all
+immediate successor states $Succ(i)$. Each of those produces its recipe by
+accumulation, and so on. The termination criteria for the walk along linear
+states is defined as follows.
 
 \begin{definition}
 Termination criteria for walk along linear states.
 
-A recursive walk along linear states does not enter the
-state ahead, if 
+A recursive walk along linear states does not enter the state ahead, if 
 
 \begin{itemize}
     \item there is no state ahead (i.e. the current state is a terminal).
@@ -689,14 +639,15 @@ The first condition comes natural. The second condition exists, because recipes
 cannot be accumulated beyond mouth states. As a direct consequence, the walk
 can never go along loops, since a loop requires a state with more than one
 entry. The third condition tells that the walk stops where another walk begins
-or began.  With these concepts, a first draft of an algorithm for the
-determination of recipes can be defined.
+or began.  With the ideas of a spring, linear states, accumulation and the
+given termination criteria, an algorithm for the determination of recipes can
+be defined.
 
 \begin{figure}[htbp] \leavevmode
 \begin{verbatim}
           (*) Start.
           (1) springs = initial springs of state machine.
-   .----->(2) perform linear walks starting from each spring.
+   .----->(2) recursive accumulation along linear states starting from springs.
    |          --> determine R(i) along linear states until terminal,
    |              mouth, or springs.
    |          --> entries of mouth states receive entry recipes.
@@ -711,9 +662,10 @@ determination of recipes can be defined.
 \end{figure}
 
 When this algorithm comes to an end, there might be still mouth states with
-undetermined entries.  To this point in time, all behavior of the state
-machine was investigated off-line. The following section discusses a solution 
-for the remaining states where the deterministic propagation of recipes failed.
+undetermined entries.  To this point in time, all behavior of the state machine
+was investigated off-line. The following section discusses a solution for the
+remaining states where the deterministic propagation of recipes could not
+provide a solution.
 
 %==============================================================================
 %
@@ -721,16 +673,16 @@ for the remaining states where the deterministic propagation of recipes failed.
 \section{Dead-Lock States}
 
 Interference can only be performed, if all entry recipes of a mouth state are
-determined. Loops in the state machine graph, however, may cause \textit{circular
-dependencies} and unresolved mouth states.  Figure 8 shows an example, where the
-two states 1 and 2 mutually block each other. The recipe $R(1)$ for state 1
-cannot be determined because it requires $R(2)$ which is undetermined. However,
-before $R(2)$ from state 2 can be determined, $R(1)$ must be present. Both
-states, 1 and 2, cannot perform an interference, because they are missing an
-entry recipe.  Circular dependencies as a condition for dead-lock states are
-intuitive. The precise proof is provided in the subsequent paragraphs. What
-follows describes a procedure to determine the behavior of those dead-lock
-states and their dependent states.
+determined. Loops in the state machine graph, however, may cause
+\textit{circular dependencies} and undetermined undetermined mouth states.
+Figure 8 shows an example, where the two states 1 and 2 mutually block each
+other. The recipe $R(1)$ for state 1 cannot be determined because it requires
+$R(2)$ which is undetermined. However, before $R(2)$ from state 2 can be
+determined, $R(1)$ must be present. None of the states 1 and 2 is suitable for
+interference, because they are missing an entry recipe.  Circular dependencies
+as an origin of dead-lock states are intuitive. The precise proof is provided
+in the subsequent paragraphs. What follows describes a procedure to determine
+the behavior of those dead-lock states and their dependent states.
 
 \begin{figure}[htbp] \leavevmode
 \begin{verbatim}
@@ -747,8 +699,9 @@ states and their dependent states.
 \begin{definition} $U$ -- The Set of Dead-Lock States
 
 A dead-lock state $i\,\in\,U$ is a mouth state that, after algorithm 1 has
-ended. It has at least one undetermined entry which prevents it from performing
-interference. $U$ is the set of all dead-lock states.
+ended, is still undetermined. It has at least one undetermined entry which
+prevents it from performing interference. $U$ is the set of all dead-lock
+states.
 
 \end{definition}
 
@@ -773,7 +726,7 @@ an undetermined entry. Thus, the sequence
 \end{equation}
 
 has no end. But the set of undetermined states $U$ is finite. Thus, there must
-be states appearing repeatedly in the sequence. Since the dependency relate to
+be states appearing repeatedly in the sequence. Since the dependencies relate to
 transition paths, this proves that loops must be involved. Also, it proves that
 the reason for the existence of dead-lock states are circular dependencies of
 undetermined mouth states.
@@ -787,7 +740,10 @@ that have at least one determined entry.
 
 The name 'horizon' is chosen because it defines the border of determination.
 Beyond that begins the realm of dead-locks. Figure 9 shows a horizon state
-which contains one determined entry and another undetermined entry.
+which contains one determined entry and another undetermined entry.  The
+process of propagation of recipes ended with dead-lock states. In order to
+understand the nature of dead-lock states better, it makes sense to briefly
+review this process. 
 
 \begin{figure}[htbp] \leavevmode
 \begin{verbatim}
@@ -801,10 +757,6 @@ which contains one determined entry and another undetermined entry.
 \caption{A mouth state with a determined entry recipe $R(a)$ and 
 an undetermined entry recipe $R(b)$.}
 \end{figure}
-
-The process of propagation of recipes ended with dead-lock states. In order
-to understand the nature of dead-lock states better, it makes sense to briefly
-review this process. 
 
 The init state is the first state that is entered. It has at least one recipe
 $R(outside)$, i.e. the recipe to be applied when coming from $outside$ the
@@ -823,30 +775,26 @@ discussion, an important conclusion can be drawn.  Determined mouth states
 performed interference, and therefore must have all their entries determined. 
 None of their entries can directly originate in a dead-lock mouth state.
 
-\begin{statement}
+\begin{statement} 
 A dead-lock state can only reached by a path that guides through a horizon
-state. 
-
-Paths from dead-lock states to non-dead-lock mouth states must contain a
-spring.
+state.  Paths from dead-lock states to non-dead-lock mouth states must contain
+a spring.  
 \end{statement}
    
-It has been mentioned, that two recipes are unequal if their snapshot map
-differs.  Further, if their sets of snap shot states differ, then the snapshot
-maps can never be the same. It follows that
-
-\begin{equation}
-    S(i) \neq S(k) \implies R(i) \neq R(k)
-\end{equation}
-
-The last statement allows to conclude, that for a given determined entry into a
-horizon state no state from inside the dead-lock realm has been reached, i.e.
+In equation \eqref{eq:snapshot-map-difference2} it has been stated, that two
+recipes are unequal if the set of variables in the snapshot maps differ.  This
+will now be used to proof, that an entry from inside the dead-lock states can
+never be homogeneous with determined entries.  The last statement allows to
+conclude, already, that for a given determined entry into a horizon state no
+state from behind the horizon has been reached, i.e.
 
 \begin{equation}
     S(i) \cap Succ(i) \neq \emptyset
 \end{equation}
 
-If at another entry appears a recipe $R(k)$ with an $S(k)$ and 
+If a state $k$ at the entry into a horizon state $i$ is undetermined, then
+$k$ originates in a dead-lock state. into a horizon states originates in a dead-lock state. 
+Thus, its If at another entry appears a recipe $R(k)$ with an $S(k)$ and 
 
 \begin{equation}
               S(k) \cap Succ(i) \neq \emptyset
@@ -889,13 +837,13 @@ for a mouth state $i$ in the presence of undetermined entry recipes. The
 set of entry recipes becomes
 
 \begin{equation}
-    ER = \begin{dcases*}
+    R_E(i) = \begin{dcases*}
             op(i)(R(k)) & $\forall\,k$ with $R(k)$ is determined \\
             R_{uni}(i)  & $\forall\,k$ with $R(k)$ is not determined
         \end{dcases*}
 \end{equation}
 
-Based on this specification of the entry recipes 'ER' the interference
+Based on this specification of the entry recipes $R_E(i)$ the interference
 procedure as defined before is performed. For any snapshot map entry
 containing $i$, the value $v$ must be stored in $A(v)$.
 \end{definition}
