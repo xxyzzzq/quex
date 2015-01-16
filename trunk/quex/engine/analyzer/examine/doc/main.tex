@@ -433,7 +433,16 @@ $R(k)$, then such a state may be considered the starting point of analysis.
 Spring
 
 A spring is a state $i$ where all required variables $v\in V(i)$ can be
-determined by $op^v(i)$ alone and ignoring the incoming recipe. That is,
+determined by $op^v(i)$ alone and ignoring the incoming recipe. In general,
+it holds for a spring
+\begin{equation}
+    R(i)\,=\,op(i)
+\end{equation}
+A particular
+property of a spring is that it does not rely on stored auxiliary variables, i.e.
+\begin{equation} \label{eq:spring-no-aux}
+    S_m(R(i))\,=\,\emptyset\,\Leftrightarrow\,S(R(i))\,=\,\emptyset
+\end{equation}
 \end{definition}
 
 In equation \eqref{eq:accumulation3} it is demonstrated how a recipe $R(i)$ is
@@ -568,7 +577,7 @@ The process of 'interference' develops a recipe $R(i)$ for a mouth state
 $i$ based on entry recipes 
 
 \begin{equation}
-    R_E(i) = { op(i)(R(k)): k = 1...N }. 
+    R_E(i,k) = { op(i)(R(k)): k = 1...N }. 
 \end{equation}
               
 Let the entry recipe $R(i,k)$ signify the concatenation of $op(i)(R(k))$
@@ -734,8 +743,8 @@ undetermined mouth states.
 \begin{definition}
 Horizon
 
-Let the term 'horizon' $H$ indicate the subset of dead-lock states $\{ i\,\in\,U \}$
-that have at least one determined entry.
+Let the term 'horizon' $H$ indicate the subset of dead-lock states $\{
+i\,\in\,U \}$ that have at least one determined entry.  
 \end{definition}
 
 The name 'horizon' is chosen because it defines the border of determination.
@@ -780,6 +789,15 @@ A dead-lock state can only reached by a path that guides through a horizon
 state.  Paths from dead-lock states to non-dead-lock mouth states must contain
 a spring.  
 \end{statement}
+
+Let the discussion be restricted to two incoming recipes: $R^d$ as the
+prototype of a recipe from the determined state and $R^u$ the prototype of a
+recipe of the undetermined state.  
+
+Equation \eqref{eq:spring-no-aux} shows that the $S(R(s))$ of a spring $s$ is
+empty and therefore all dependencies on stored values from before its path are
+removed--in particular any dependencies on non-dead-lock states. Thus, it is
+safe to assume that when a horizon state is reached through an entry
    
 In equation \eqref{eq:snapshot-map-difference2} it has been stated, that two
 recipes are unequal if the set of variables in the snapshot maps differ.  This
@@ -837,13 +855,14 @@ for a mouth state $i$ in the presence of undetermined entry recipes. The
 set of entry recipes becomes
 
 \begin{equation}
-    R_E(i) = \begin{dcases*}
-            op(i)(R(k)) & $\forall\,k$ with $R(k)$ is determined \\
-            R_{uni}(i)  & $\forall\,k$ with $R(k)$ is not determined
-        \end{dcases*}
+    R_E^v(i,k) = \begin{dcases*}
+                 op^v(i)         & independent of $R(k)$: if $op^v(i)$ is constant \\
+                 A(v)            & $R(k)$ is not determined  \\
+                 op^v(i)(R^v(k)) & $R(k)$ is determined 
+                 \end{dcases*}
 \end{equation}
 
-Based on this specification of the entry recipes $R_E(i)$ the interference
+Based on this specification of the entry recipes $R_E(i,k)$ the interference
 procedure as defined before is performed. For any snapshot map entry
 containing $i$, the value $v$ must be stored in $A(v)$.
 \end{definition}
