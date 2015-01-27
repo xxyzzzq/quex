@@ -875,18 +875,19 @@ their snapshot maps must be equal. However, equations
 This in turn, is only true if $R^v_u$ and $R^v_d$ do not rely on stored values
 at all, i.e. they are constant. This result is very important. When $R^v_u$
 becomes determined, through subsequent accumulation, it is not possible that it
-produces a new component $R^v(i)$ through interference. For both cases,
-$op^v(i)$ being constant and non-constant, the output recipe $R(i)$ by run-time
-interference remains correct $\blacksquare$.  
+produces a new component $R^v(i)$ through interference except that
+$S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being constant and
+non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) :=
+R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v:=A(v) \}$ remains a correct
+solution $\blacksquare$.  
 
-The output recipes can be used for propagation of recipes until other dead-lock
-states receive determined entries.  The horizon moves, the set of dead-lock
-states shrinks and a new cycle begins. This continues until no dead-lock state
-is left.  Eventually, all entry recipes are be determined. Then, it is possible
-that those entries which are flagged with $F_E^v(i,k)=true$ implement the entry
-operation $op_E^v(i)=R_E^v(i,k)$. But, wait! There might be some fine-tuning
-coming up.
-
+The output recipes can be used for propagation of recipes so that other
+dead-lock states receive determined entries and become part of the horizon.
+The horizon moves, the set of dead-lock states shrinks and a new cycle begins.
+This continues until no dead-lock state is left.  Eventually, all entry recipes
+are be determined. Then, it is possible that those entries which are flagged
+with $F_E^v(i,k)=true$ implement the entry operation $op_E^v(i)=R_E^v(i,k)$.
+Before, however, another opportunity to optimize is explored. 
 
 %==============================================================================
 %
@@ -895,22 +896,28 @@ coming up.
 
 As mentioned in the previous section, the condition of homogeneity in the entry
 recipes can be maintained, if they are constant--see equation
-\ref{eq:homogeneity-condition}.  For run-time interference, before, 
-$op^v(i)$ has been overtaken to the output recipe $R^v(i)$ if it was constant
-in itself.  Now, that all entry recipes are determined, homogeneity can be
-achieved if the concatenation of $op^v(i)\circ R(k)$ for all $k\,\in\,Pred(i)$
-are of the same constant.  Consider the example of 
+\ref{eq:homogeneity-condition}.  For run-time interference, $op^v(i)$ has been
+overtaken to the output recipe $R^v(i)$ if it was constant in itself.  With
+equation \ref{eq:homogeneity-condition} and determined entries $R_E(i,k)$ it is
+sufficient to require 
+
+\begin{equation} \label{eq:homogeneity-condition-2}
+    op^v(i)\,\circ\,R(k)\,=\,C\,\,\mbox{for a constant $C$ and } \forall\,k\in\,Pred(i)
+\end{equation}
+
+That means, that all entry recipes produce the same constant value. Consider
+the following example.
 
 \begin{equation}
-    op^v(i) = \{ v = v + 1 \}
+    op^v(i) = \{ v := v + 1 \}
 \end{equation}
 
 The operation is clearly dependent on the previous value of $v$--thus not
-constant. However, if the predecessors recipe $R(p)$ assigns a constant $5$ to
+constant. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
 $v$, then the concatenation becomes
 
 \begin{equation}
-    op(i)\,\circ\,R(p)) = \{ v = 6 \}
+    op(i)\,\circ\,R(k)) = \{ v := 6 \}
 \end{equation}
 
 which does not depend on any auxiliary variable. If all entry recipes of a
@@ -920,7 +927,7 @@ no storing and restoring is now required for $v$, the 'entry operation
 implementation flag' can be turned of, that is
 
 \begin{equation}
-    F_E^v(i,k)\,=\,false\,\mbox{if}\,op^v(i)\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
+    F_E^v(i,k)\,=\,false\,\,\mbox{if}\,op^v(i)\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
 \end{equation}
 
 A recipe $R(i)$ that replaces some components by constants can now again be
@@ -939,17 +946,22 @@ following termination criteria.
 Condition for interference during dead-lock fine-tuning.
 
 The result of interference is only to be taken into account, if the size of the
-new recipe's snapshot map is smaller than the size of the old recipe's snapshot
-map.  
+new recipe's set of snapshot states is smaller than the size of the old
+recipe's set of snapshot states, i.e.
+
+\begin{equation} 
+    size(S(R_{new}(i)))\,<\,size(S(R_{old}(i)))
+\end{equation}
+
 \end{condition}
 
 With the mentioned requirement a mouth state $i$ can be passed at maximum a
 restricted $N$ number of times, where $N$ is the number of variables in $V(i)$.
 Since, number of states is restricted, in general, the total number of
-propagations is restricted. At that point, no new constant entry recipes could
-be determined. Thus the fine-tuning has reached its optimum.  Once, fine tuning
-is done the remaining entry operations $op_E^v(i)$ for which $F_E^v(i,k)=true$
-must be implemented according to $R_E^v(i,k)$.
+propagations is restricted. When no new interference is accomplished, no new
+constant entry recipes can be determined and the process comes to an end.
+Eventually, remaining entry operations $op_E^v(i)$ for which $F_E^v(i,k)=true$
+must be implemented according to $A(v) := R_E^v(i,k)$.
 
 \end{document}
 
