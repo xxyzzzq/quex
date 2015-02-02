@@ -178,6 +178,10 @@ Assume, for example, that the lexeme length is not required in a terminal. Then
 any operation contributing to the computation of the lexeme length is
 redundant.  No state on a path to this terminal is required to perform lexeme
 length related operations, except that another successor state requires it.
+In practical applications, it might be difficult to determine the precise
+set of required variables $V(i)$. In such cases, a \textit{superset} of 
+the set of required variables might suffice. The impact of using a superset
+instead of the precise set is discussed at the very end of this document.
 The aforementioned concepts allow to specify the frame of an investigated
 behavior. 
 \begin{definition}
@@ -376,7 +380,7 @@ For the general case, this shows that recipes may not be developed across
 mouth states, except if auxiliary variables are computed. That is if there
 are entry operations in place which assign a value to an auxiliary variable $A(v)$
 \begin{equation}
-    A(v) :=  \begin{dcases*}
+    A(v) \coloneqq   \begin{dcases*}
              R^v_E(i,k_0) & if entry from state $k_0$ \\
              R^v_E(i,k_1) & if entry from state $k_1$ \\
              \ldots \\
@@ -386,7 +390,7 @@ are entry operations in place which assign a value to an auxiliary variable $A(v
 \end{equation}
 Then, the output recipe $R(i)$ is determined by
 \begin{equation}
-    R^v(i) \,=\, \{ v = A(v) \}\,\,\forall\,v\,\in\,V(i)
+    R^v(i) \,=\, \{ v \coloneqq A(v) \}\,\,\forall\,v\,\in\,V(i)
 \end{equation}
 and can be used for further development of recipes. If all recipes $R^v_E(i,k)$
 with $k\,\in\,Pred(i)$ are the same, then the recipe can be overtaken into
@@ -454,6 +458,21 @@ From the last two equations it follows the following statement.
    \end{equation}
 \end{statement}
 %%
+Another important concept is that of a \textit{constant operation}.
+%%
+\begin{definition} $op^v(i) = constant$ -- Constant operation
+    For a given state $i$, an operation $op^v(i)$ is constant it the
+    modification it does to variable $v$ does not depend on a previous setting
+    of any $v\in V(i)$. 
+\end{definition}
+%%
+In that sense, the '$v\coloneqq x+3$', with some variable $x\notin V(i)$, is constant.
+However, the operation '$v\coloneqq v+1$' because the assignment depends on the previous
+setting of '$v$. In that sense, the \textit{no operation} on variable $v$ is not 
+constant. Its implementation is $v\coloneqq v$ which clearly depends on $v$. In other words,
+if for a given $v\in V(i)$ there is no operation specified in state $i$, then 
+$op^v(i)$ needs to be considered as non-constant.
+
 It is now possible to specify a procedure that develops recipes across mouth
 states. 
 %%
@@ -521,58 +540,58 @@ determined.
 %%
 Accumulation and interference describe how recipes are developed from
 determined recipes.  But, where does the first determined recipe come from?
-Let an operation $op^v(i)$ that assigns a constant to $v$ be called a
-\textit{constant operation}. It is something special, because it is independent
-of $V(i)$ and the concatenation to determine a recipe $R(k)$ becomes
+The concatenation of a predecessor recipe $R(p)$ with constant operation
+$op(k)$ (see definition \ref{def:constant-operation}) is \textit{independent}
+of $R(p)$, i.e. the recipe $R(k)$ becomes
 %%
 \begin{equation}
     R(k)\,=\,op^v(k)\,\circ\,R(p)\,=\,op^v(k)\,\,\mbox{where $p\in Pred(k)$}
 \end{equation}
 %%
-A state where all operations are constant, a recipe can be determined
-\extit{independently} of other recipes. It is therefore suited as starting
+In a state where all operations $op^v(i)$ are constant, a recipe can be determined
+\textit{independently} of other recipes. It is therefore suited as starting
 point for the derivation of other recipes.
 %%
-\begin{definition} Initial Spring, Spring
+\begin{definition} Initial Spring, Spring \label{def:springs}
 
     An initial spring is a state $i$ where $\forall v \in V(i)$ $op^v(i)\,=\,constant$.
 
     A spring, in general, is a state $i$ where all components $R^v(i)$
     $\forall\,v\in\,V(i)$ are determined.
-
     
 \end{definition}
 %%
-Both, linear states and mouth states may be equally candidates for spring.
+Both, linear states and mouth states may be equally candidates for being a 
+spring.
 
 \subsection{Examples}
                  
 Figure \ref{fig:two-state-machines}.a displayed a state machine with a single
 variable, i.e. $V_c=\{'x'\}$. The operations $op(i)$ upon transition are
-$x:=x+1$ for all states. Let $A_a(x)$ hold the value of $x$ upon entry the
+$x\coloneqq x+1$ for all states. Let $A_a(x)$ hold the value of $x$ upon entry the
 state $a$.  This notation combines the recipe's procedure with its snapshot
 map.  In the above example, the recipe in state $a$ solely restores what has
 been stored.
 %%
 \begin{equation} 
-    R(a) = \{ x := A_a(x) \} 
+    R(a) = \{ x \coloneqq  A_a(x) \} 
 \end{equation}
 %%
 The recipe $R(b)=R_E(b,a)$ must be equivalent to the concatenated execution of $op(b)$
 and $R(a)$, i.e.
 
 \begin{eqnarray}
-    R(b)&=&\{\,x\,:=\,A_a(x);\,x\,:=\,x + 1;\} \\
-    R(b)&=&\{\,x\,:=\,A_a(x) + 1; \}                                 
+    R(b)&=&\{\,x\,\coloneqq \,A_a(x);\,x\,\coloneqq \,x + 1;\} \\
+    R(b)&=&\{\,x\,\coloneqq \,A_a(x) + 1; \}                                 
 \end{eqnarray}
 This rule applied repeatedly to the states 'c' and 'd' leads to
 \begin{eqnarray}
-    R(c) &=&\{ x := A_a(x) + 2 \} \\
-    R(d) &=&\{ x := A_a(x) + 3 \}                                 
+    R(c) &=&\{ x \coloneqq  A_a(x) + 2 \} \\
+    R(d) &=&\{ x \coloneqq  A_a(x) + 3 \}                                 
 \end{eqnarray}
 %%
 If the state machine exits at $a$, $b$, $c$, or $d$ the content of $x$ can be
-determined without relying on the intermediate operations $\{ x:=x+1 \}$. This
+determined without relying on the intermediate operations $\{ x\coloneqq x+1 \}$. This
 was shown in figure \ref{fig:two-state-machines}.b. 
 %%
 The repeated accumulation of recipes along linear states comes to an end at
@@ -797,14 +816,14 @@ At this point a type of interference is introduced that delivers a correct
 output recipe, even though not all entry recipes are determined. For all $v$ where 
 $op^v(i)$ is not constant, $R^v_E(i,k)$ depends on $R(k)$. Since not all 
 $R(k)$ are determined, it is assumed that upon entry the $A(v)$ receives the
-computed value of $v$ and $R^v(i) = \{ v := A(v) \}$ with $S^v(R(i))=i$.
+computed value of $v$ and $R^v(i) = \{ v \coloneqq  A(v) \}$ with $S^v(R(i))=i$.
 
 \begin{definition}
-Run-Time Dependent Interference
+Cautious Interference
 
-The process of 'run-time dependent interference' develops a recipe $R(i)$ for a
-horizon state $i\,\in\,H$.  From the homogeneity requirement it follows that
-the output recipe $R(i)$ is determined by 
+The process of 'cautious interference' develops a recipe $R(i)$ for a horizon state
+$i\,\in\,H$.  From the homogeneity requirement it follows that the output
+recipe $R(i)$ is determined by 
           
 \begin{equation}
     R^v(i) = \begin{dcases*}
@@ -823,7 +842,7 @@ stored in $A(v)$.
                  \end{dcases*}
 \end{equation}
 The snapshot map develops to
-\begin{equation} \label{eq:run-time-interference-snapshot}
+\begin{equation} \label{eq:cautious-interference-snapshot}
     S^v(i) = \begin{dcases*}
                 \varepsilon & if $op^v(i)$ is constant \\
                 i           & else
@@ -849,14 +868,14 @@ path to the mouth's entry. It holds in general
         S(R^v_d)\,\cap\,U\,=\,\emptyset
 \end{equation}
 %%
-From equation \eqref{eq:run-time-interference-snapshot} it follows that no
+From equation \eqref{eq:cautious-interference-snapshot} it follows that no
 snapshot before a horizon state remains in the output recipe.
 %%
 \begin{equation}
         S(R(i))\,\subseteq\,\{\,i\,\}
 \end{equation}
 %%
-Undetermined entry recipes develop from the outputs of run-time interference 
+Undetermined entry recipes develop from the outputs of cautious interference 
 recipes. Thus, their snapshots can only root back to horizons or their successor
 states, i.e.
 %%
@@ -877,8 +896,8 @@ at all, i.e. they are constant. This result is very important. When $R^v_u$
 becomes determined, through subsequent accumulation, it is not possible that it
 produces a new component $R^v(i)$ through interference except that
 $S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being constant and
-non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) :=
-R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v:=A(v) \}$ remains a correct
+non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) \coloneqq 
+R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$ remains a correct
 solution $\blacksquare$.  
 
 The output recipes can be used for propagation of recipes so that other
@@ -892,13 +911,13 @@ Before, however, another opportunity to optimize is explored.
 %==============================================================================
 %
 %==============================================================================
-\section{Fine Tuning of Dead-Lock States}
+\section{Fine Adjustment}
 
 As mentioned in the previous section, the condition of homogeneity in the entry
 recipes can be maintained, if they are constant--see equation
-\ref{eq:homogeneity-condition}.  For run-time interference, $op^v(i)$ has been
-overtaken to the output recipe $R^v(i)$ if it was constant in itself.  With
-equation \ref{eq:homogeneity-condition} and determined entries $R_E(i,k)$ it is
+\ref{eq:homogeneity-condition}.  During cautious interference, $op^v(i)$ is
+overtaken to the output recipe $R^v(i)$ if it is constant.  With equation
+\ref{eq:homogeneity-condition} and determined entries $R_E(i,k)$ it is
 sufficient to require 
 
 \begin{equation} \label{eq:homogeneity-condition-2}
@@ -909,7 +928,7 @@ That means, that all entry recipes produce the same constant value. Consider
 the following example.
 
 \begin{equation}
-    op^v(i) = \{ v := v + 1 \}
+    op^v(i) = \{ v \coloneqq  v + 1 \}
 \end{equation}
 
 The operation is clearly dependent on the previous value of $v$--thus not
@@ -917,7 +936,7 @@ constant. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
 $v$, then the concatenation becomes
 
 \begin{equation}
-    op(i)\,\circ\,R(k)) = \{ v := 6 \}
+    op(i)\,\circ\,R(k)) = \{ v \coloneqq  6 \}
 \end{equation}
 
 which does not depend on any auxiliary variable. If all entry recipes of a
@@ -961,7 +980,106 @@ Since, number of states is restricted, in general, the total number of
 propagations is restricted. When no new interference is accomplished, no new
 constant entry recipes can be determined and the process comes to an end.
 Eventually, remaining entry operations $op_E^v(i)$ for which $F_E^v(i,k)=true$
-must be implemented according to $A(v) := R_E^v(i,k)$.
+must be implemented according to $A(v) \coloneqq  R_E^v(i,k)$.
+
+\section{Superset of Required Variables}
+
+In some cases, the precise set of required variables $V(i)$ cannot be
+determined without an excessive path-analysis. Such path analysis is difficult
+to tame with respect to computational effort and its correctness may be
+difficult to proof.  A superset of $V(i)$ is often much easier to determine.
+This implies that there might be variables in $V(i)$ which are actually not
+necessary. This section investigates the impact of using a superset instead
+of using the precise set with respect to correctness and performance. 
+
+\begin{figure}[htbp] \leavevmode \label{fig:fork-states}
+\begin{verbatim}
+         
+        ,---( 1 )---. .---( 4 )---.       
+     ( 0 )         ( 3 )         ( 6 )  ...
+        '---( 2 )---' '---( 5 )---'
+
+\end{verbatim}
+\caption{Sequence of forking states.}
+\end{figure}
+
+Consider a simple sequence of forking states as shown in figure
+\ref{fig:fork-states}.  The first state where paths meet is state 3. For this
+state there are two paths to consider: $0 \rightarrow 1 \rightarrow 3$ and $0
+\rightarrow 2 \rightarrow 3$.  The second state where paths meet is state 6. To
+reach this state four paths need to be considered: $0 \rightarrow 1 \rightarrow
+3 \rightarrow 4 \rightarrow 6$, $0 \rightarrow 1 \rightarrow 3 \rightarrow 5
+\rightarrow 6$, $0 \rightarrow 2 \rightarrow 3 \rightarrow 4 \rightarrow 6$,
+and $0 \rightarrow 2 \rightarrow 3 \rightarrow 5 \rightarrow 6$. A sequence of
+N meeting states with M forking paths in between each, requires to analyze
+$M^N$ different paths.  It is therefore easy to find configurations that cannot
+be analyzed even by the fastest machines.  Further, the influence of loops on
+$V(i)$ may introduce complications which are difficult to overview.  Briefly
+said, due restrictions of practical implementations it is impossible to
+determine the precise set of $V(i)$ in the general case. 
+
+What consequences arise if $V(i)$ contains unnecessary variables?  An operation
+$op(i)$ that does not contain a component $op^v(i)$ must implement it by the
+no-operation $v\coloneqq v$. With respect to the development of $v$ such
+operations are indifferent. The set of required variables $V(i)$ influences the
+optimization at the following stages:
+
+\begin{description}
+\item [Accumulation]
+
+    The resulting recipe $R(i) = op(i)\circ R(k)$ may contain components
+    $R^v(i)$ which are unnecessary, because of unnecessarily added components
+    $op^v(i)$. $R^v(i)$ only plays a role in the theoretical investigations.
+
+\item [Interference]
+
+    If $op(i)$ or $R(k)$ contain a component for $v$, then the concatenation
+    produces possibly inhomogeneous entry recipes $R^v_E(i,k)$.  In this case,
+    redundant entry operations $op_E^v(i,k)$ are added to the resulting state
+    machine. Consequently, the resulting recipe $R(i)$ contains a redundant
+    operation $v\coloneqq A(v)$ and the set of snapshot states $S(R(i))$ uust
+    contain $i$.
+
+    If neither $op(i)$ nor $R(k)$ contain a component for $v$, the $op^v(i)$ is
+    assumed to be the no-operation. Thus $R_E^v(i,k)$ becomes the no-operation
+    for all predecessors, and $v$ is homogeneous. No additional entry
+    operations are added and the component $R^v(i)$ of the output recipe
+    becomes the no-operation.
+
+\item [Initial Springs]
+
+    Since the no-operation is not constant, if added redundantly as a component
+    to $op(i)$ a state may fail to be considered an initial spring--despite, of
+    the constancy of its real components (see definition \ref{def:springs}).
+    That means, that the propagation of recipes may start with fewer starting
+    points. It is even conceivable, that there is no initial spring at all.
+    Then, however, the optimization is done entirely in the frame of dead-lock
+    analysis.
+
+\item [Springs]
+
+    A state $i$ is a spring if $R(i)$ is determined. Undetermined recipes,
+    however, originate in missing entry recipes at mouth states. Redundant
+    components $op^v(i)$ do not influence this behavior.
+
+\item [Cautious Interference]
+
+    Redundant non-constant entry operations cause redundant entry operations
+    and no-operations in the output recipe. Some of them, might be removed
+    during fine adjustment after dead-lock analysis.
+
+\end{description}
+
+In conclusion, if the optimization is applied on a superset of $V(i)$ instead
+of $V(i)$ then redundant entry operations at mouth states may occur. It is
+assumed that from the composition of the recipe, the exit operations can filter
+out settings which are unnecessarily mentioned in $V(i)$. The consideration of
+a superset is appropriate. In order to judge the impact of this simplification,
+it is necessary to provide a \textit{overhead analysis} for the particular
+investigated behavior. That is, it must be clear under what circumstances what
+redundant operations are redundantly added to the resulting state machine.
+Based on that, decisions may be made about the effort to be put into a
+fine-tuning of the superset selection.
 
 \end{document}
 

@@ -874,8 +874,8 @@ class GetPot:
         known_x = []
         # convert lists
         for k in Knowns:
-            if type(k) == list: known_x.extend(k)
-            else:               known_x.append(k)
+            if type(k) == list or type(k) == set: known_x.extend(k)
+            else:                                 known_x.append(k)
 
         ufos = []
         for it in self.argv[1:]:
@@ -887,8 +887,8 @@ class GetPot:
         known_x = []
         # convert lists
         for k in Knowns:
-            if type(k) == list: known_x.extend(k)
-            else:               known_x.append(k)
+            if type(k) == list or type(k) == set: known_x.extend(k)
+            else:                                 known_x.append(k)
 
         ufos = []
         for it in self.argv[1:]:
