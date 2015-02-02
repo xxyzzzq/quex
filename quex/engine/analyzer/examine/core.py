@@ -1,3 +1,20 @@
+"""
+PURPOSE: Implementation of the 'Recipe-Based-Optimization' as described in the
+         file ./doc/main.tex.
+
+         [DOC] --> means the documentation located in ./doc
+________________________________________________________________________________
+
+NOTE: A significant amount of effort has been put into the development of the
+      documentation in order to derive process details and to proof the 
+      correctness of the approach. Reading the documents may take two hours. 
+      However, the provided knowledge is key to understand this code.
+
+(C) Frank-Rene Schaefer
+
+ABSOLUTELY NO WARRANTY
+________________________________________________________________________________
+"""
 from   quex.engine.state_machine.core            import StateMachine
 from   quex.engine.analyzer.examine.recipe_base  import Recipe
 from   quex.engine.analyzer.examine.state_info   import LinearStateInfo, \
@@ -9,24 +26,14 @@ from   itertools import chain
 
 @typed(SM=StateMachine)
 def do(SM, RecipeType):
-    """Analyzes a given single-entry state machine and provides information
-    about its linear and its mouth states (definition see 00-README.txt).
-    The process is controlled by the 'RecipeType'. The type tells about the
-    concerned registers and how core elements of the algorithm are performed.
-    The RecipeType must be derived from 'recipe_base.Recipe' which ensures
-    that all requirement functions are implemented.
+    """Takes a 'single-entry state machine' and derives an optimized 'multi-
+    entry state machine' that behaves identical from an outside view [DOC].
     
-    By means of RecipeType different kinds of operations may be considered,
-    as they are, for example: acceptance behavior, line and column number 
-    counting, check-sum computation.
-    
-    RETURNS: [0] linear_db: state index --> LinearStateInfo
-             [1] mouth_db:  state index --> MouthStateInfo
-             
-    A LinearStateInfo and MouthInfoState provide both the '.recipe', which 
-    allows to construct the drop-out behavior of a state. Additionally, a 
-    MouthStateInfo the provides the member '.entry_db'. It tells what 
-    operations need to be performed upon entry dependent on the 'from-state'.
+    RecipeType -- derived from recipe_base.Recipe
+
+    This type controls procedure elements related to an 'investigated behavior'
+    [DOC]. Examples of investigated behavior are: acceptance behavior, line and
+    column number counting, check-sum computation.
     """
     assert issubclass(RecipeType, Recipe)
         
@@ -38,7 +45,7 @@ def do(SM, RecipeType):
     examiner.categorize()
 
     # Categorize => StateInfo-s are in place.
-    examiner.determine_scr_by_state()
+    examiner.determine_required_sets_of_variables()
     
     # Determine states from where a walk along linear states can begin.
     springs = examiner.setup_initial_springs()
@@ -55,7 +62,7 @@ def do(SM, RecipeType):
     examiner.resolve_dead_locks(unresolved_mouths)
         
     # At this point all states must have determined recipes, according to
-    # the theory in "00-README.txt".
+    # the theory in "[DOC]".
     assert all_true(chain(examiner.linear_db.itervalues(), 
                           examiner.mouth_db.itervalues()), 
                     lambda x: x.is_determined()) 
@@ -111,28 +118,62 @@ class Examiner:
             if n < limit: self.linear_db[si] = LinearStateInfo()
             else:         self.mouth_db[si]  = MouthStateInfo(from_state_set)
 
-    def determine_scr_by_state(self):
+    def determine_required_sets_of_variables(self):
         """Determine for each state the set of concerned registers (sCR) and
         store it in the StateInfo object.
         
         REQUIRES: previous call to '.categorize()'
         """
-        for si, scr in self.recipe_type.get_scr_by_state_index(self._sm):
-            self.get_state_info(si).scr = scr
+        db = self.recipe_type.get_required_variable_superset_db(self._sm, self.predecessor_db, self.successor_db)
+
+        for si, required_set_of_variables in db.iteritems():
+            self.get_state_info(si).required_set_of_variables = required_set_of_variables
+
+    def is_operation_constant(self, TheSingleEntry, StateIndex):
+        """An operation upon entry into a state is 'constant', if it does not
+        depend on a setting of the required variables in that state.  The
+        'single_entry' member of a single-entry state represents the concept of an
+        operation 'op(i)' from [DOC]. Refer to [DOC] for the precise concept of
+        constant operations.
+
+        RETURNS: True  -- if the operation is constant
+                 False -- if not.
+        """
+        rsov = self.get_state_info(StateIndex).required_set_of_variables
+
+        # (1) An operation 'op(i)' that does not influence 'v' is not constant 
+        #     (see discussion in [DOC])
+        for variable_id in rsov:
+            for cmd in TheSingleEntry: 
+                if cmd.assigns(variable_id): break
+            else:
+                # There is a variable that is not assigned by 'op(i)'
+                # => 'op(i)' is not constant
+                return False
+
+        # (2) An operation that relies on a previous setting of 'v' is not constant
+        #
+        for cmd in TheSingleEntry: 
+            if cmd.requires(rsov): return False
+        return True
 
     def setup_initial_springs(self):
         """Finds the states in the state machine that comply to the condition
-        of a 'spring' as defined in 00-README.txt. It determines the recipe for
+        of a 'spring' as defined in [DOC]. It determines the recipe for
         those springs and adds them to the databases.
 
         RETURNS: list of state indices of initial spring states.
         """
-        result = set()
-        for si, recipe in self.recipe_type.initial_spring_recipe_pairs(self._sm, self.mouth_db):
-            # A 'mouth' can never be an initial spring
-            assert si not in self.mouth_db
+        result = set(
+            si for si, state in SM.states.itervalues()
+               if not self.is_operation_constant(state.single_entry, si)
+        )
+
+        # Determine the initial recipes in the springs.
+        for spring in result:
+            recipe = self.recipe_type.accumulate(None, spring.single_entry)
             self.set_recipe(si, recipe)
-            result.add(si)
+
         return result
 
     def resolve(self, Springs):
@@ -161,7 +202,7 @@ class Examiner:
 
             # Mouth states where all entry recipes are set
             # => Apply 'interference' to determine their recipe.
-            self._interfere(mouths_ready_set)
+            self._interference(mouths_ready_set)
 
             # The determined mouths become the new springs for the linear walk
             springs = mouths_ready_set
@@ -179,11 +220,14 @@ class Examiner:
         Using this approach to resolve unresolved mouth states is safe to
         deliver a complete solution.
         """
-        self._interfere_virtually(UnresolvedMouthStateSet)
-        resolved_set = self.resolve(UnresolvedMouthStateSet)
-        assert resolved_set == UnresolvedMouthStateSet
+        remainder = UnresolvedMouthStateSet
+        horizon   = self.get_horizon(remainder)
+        while horizon:
+            self._cautious_interference(horizon)
+            remainder = self.resolve(horizon)
+            horizon   = self.get_horizon(remainder)
 
-        self._dead_locks_fine_tuning(resolved_set)
+        self._dead_locks_fine_adjustment(UnresolvedMouthStateSet)
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -211,9 +255,9 @@ class Examiner:
         return self.get_state_info(StateIndex).recipe
 
     def get_horizon(self, UnresolvedMouthStateSet):
-        """Horizon: Definition see "00-README.txt".
+        """Horizon: Definition see "[DOC]".
         Brief: The horizon is a subset of dead-lock states that have at
-        least one determined entry.  In "00-README.txt" it is proven that
+        least one determined entry.  In "[DOC]" it is proven that
         such states always exist.
 
         RETURNS: List of indeces of horizon states.
@@ -245,8 +289,8 @@ class Examiner:
         return set(si for si in walker.mouths_touched_set
                       if self.mouth_db[si].entry_reicpes_all_determined())
 
-    def _interfere(self, CandidateSet, 
-                   GetEntryRecipeDb=lambda si, mouth: mouth.entry_recipe_db):
+    def _interference(self, CandidateSet, 
+                      GetEntryRecipeDb=lambda si, mouth: mouth.entry_recipe_db):
         """Perform interference of mouth states. Find for each state index the
         MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
         according to the investigated behavior.
@@ -268,8 +312,8 @@ class Examiner:
 
             info.undetermined_register_set = required_register_set.difference(determined_register_set)
 
-    def _interfere_virtually(self, UnresolvedMouthStateSet):
-        """Performs a 'virtual' interference where undetermined entry recipes
+    def _cautious_interference(self, HorizonStateSet):
+        """Performs a 'cautious interference where undetermined entry recipes
         are derived from 'op(i)(RestoreAll)'. That is, the concatination of the
         restore all recipe with the operations of the current mouth state.
         """
@@ -282,7 +326,7 @@ class Examiner:
             if PresentRecipe is not None: 
                 recipe = PresentRecipe
             else:
-                RA     = self.recipe_type.RestoreAll(StateIndex)
+                RA     = self.recipe_type.RestoreAll(self.required_register_set_db)
                 recipe = self.recipe_type.accumulate(RA, SingleEntry)
 
             return recipe
@@ -304,10 +348,10 @@ class Examiner:
             )
             return result
 
-        self._interfere(UnresolvedMouthStateSet, 
-                        GetEntryRecipeDb = get_virtual_entry_recipe_db)
+        self._interference(HorizonStateSet, 
+                           GetEntryRecipeDb = get_virtual_entry_recipe_db)
 
-    def _dead_locks_fine_tuning(self, UnresolvedMouthStateSet):
+    def _dead_locks_fine_adjustment(self, UnresolvedMouthStateSet):
         """
         Assume that 'resolve_dead_locks()' specified a complete state machine
         by recipes. Some of those recipes may still be improved, because now
@@ -351,7 +395,7 @@ class Examiner:
             # state can at max. be treated once. The number of states is finite.
             # Thus the number of iterations is finite.
             scr_db = scr_db_get(horizon, self.mouth_db)
-            self._interfere(horizon)
+            self._interference(horizon)
 
             # Some elements of the horizon, produce a more specific output
             # then before. Those are used to promote a simplified recipe.

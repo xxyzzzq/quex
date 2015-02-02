@@ -1,6 +1,6 @@
 """PURPOSE:
 
-This file defines the base class for all 'recipes' as defined in 00-README.txt.
+This file defines the base class for all 'recipes' as defined in [DOC].
 No object is supposed to be instantiated of class 'Recipe'. Instead, concrete 
 classes need to be derived from it. The derived concrete classes can then 
 instantiate objects. 
@@ -46,8 +46,43 @@ class Recipe:
        .get_initial_springs(): determines the set of initial springs. By
               default, the sole initial spring is simply the init state.
 
-    See 00-README.txt the according DEFINITION.
+    See [DOC] the according DEFINITION.
     """
+    @classmethod
+    def is_operation_constant(cls, SM, StateIndex, VariableId=None):
+        """RETURNS: True  -- if operations with respect to 'VariableId' are 
+                             constant assignments. 
+                    False -- else.
+                    
+        If VariableId is not specified, then all variables of the set of 
+        required variables are considered. 
+        """
+        if VariableId is None:
+            for variable_id in cls.required_variable_db[StateIndex]:
+                assert variable_id is not None
+                if not cls.is_operation_constant(SM, StateIndex, variable_id):
+                    return False
+            return True
+
+        found_f = False
+        for cmd in SM.states[StateIndex].single_entry.get_iterable(VariableId):
+            found_f = True
+            if not cmd.is_assignment(): return False
+        return not found_f
+
+    @classmethod
+    def get_initial_springs(cls, sm):
+        """RETURNS: Set of initial springs. 
+
+        A state can be an initial spring only, if all of the related operations
+        are constant. The set of initial springs may be empty!
+        """
+        return set(
+            state_index
+            for state_index, state in sm.iteritems()
+                if cls.is_operation_constant(state, state_index)
+        )
+
     @classmethod
     def get_SCR_operations(cls, TheState):
         """For a given state, it extracts the operations upon entry which 
@@ -74,7 +109,7 @@ class Recipe:
 
     @classmethod
     def initial_spring_recipe_pairs(cls, Sm, MouthDb):
-        """The term 'spring' has been defined in 00-README.txt as a state where
+        """The term 'spring' has been defined in [DOC] as a state where
         the walk along linear states may begin. An initial spring is a state 
         where the entry operations determine all registers of the SCR while making
         all previous history redundant.

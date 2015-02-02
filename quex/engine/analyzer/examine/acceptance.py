@@ -12,16 +12,15 @@ from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
                             E_R
 
+
 class RecipeAcceptance(Recipe):
-    """Recipe to describe the acceptance behavior upon exit from a state 
-    machine. Details are provided in 01-ACCEPTANCE.txt.
-    
-    There are two members to implement acceptance and input position 
-    placement.
+    """Recipe tells what pattern wins (i.e. what its pattern id is), under what
+    condition, and where the input pointer needs to be set. This information is
+    stored in two data structures.
 
       .accepter:  
-          
-         A list that looks like 
+
+         A list of pre-context pattern-id pairs. That is something like
 
               [  (pre-context-id 6, acceptance-id 12),
                  (pre-context-id 4, acceptance-id 11),
@@ -29,77 +28,105 @@ class RecipeAcceptance(Recipe):
                  (No pre-context,   acceptance-id 14),
               ]
 
-        which tells in a prioritized way what to accept upon under the
-        condition that a pre-context is present. The first wins. Thus, 
-        any entry after the conditionless acceptance is meaningless.
+        which tells in a prioritized way what to accept under what condition.
+        The first pre-context that is fulfilled determines the pattern id of
+        the winning pattern. Consequently, any entry after the conditionless
+        acceptance is meaningless.
         
-        acceptance-id is None => acceptance is restored from the acceptance
-                                 register ('pre-context' must be None, too).
-
-
+        acceptance-id is None => acceptance is restored from the auxiliary register
+                                 for acceptance. In that case, the pre-context must 
+                                 be 'None', too.
+                                 
       .ip_offset_db:
           
               position register id   -->   offset
 
         Input position must be determined by
               
-              if offset is not None:
-                  input_p += offset
-              else:                       
-                  input_p  = aux_register[position register id] + offset
+              if offset is not None: input_p += offset
+              else:                  input_p  = aux_register[position register id] 
 
     The 'aux_register' values are set during interference in mouth states.
     """
-    __slots__            = ("accepter", "ip_offset_db")
-    SCR                  = (E_R.AcceptanceRegister, E_R.PositionRegister)
-    RestoreAcceptance    = SeAccept(E_IncidenceIDs.RESTORE_ACCEPTANCE, E_PreContextIDs.NONE)
-    __restore_all_recipe = None
+    __slots__         = ("accepter", "ip_offset_db")
+    RestoreAcceptance = SeAccept(E_IncidenceIDs.RESTORE_ACCEPTANCE, E_PreContextIDs.NONE)
 
     def __init__(self, Accepter, IpOffsetDb):
         assert type(IpOffsetDb) == dict
         assert type(Accepter)   == list
+
+        # Parameters of the recipe.
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
+        # snapshot map: register id --> snapshot state
+        #               
+        # The snapshot map tells to what state the snapshot of the variable given
+        # by 'variable_id' has been made.
+        self.snapshot_map = {}
+
     @staticmethod
-    def get_RR_superset(sm, StateIndex, PredecessorDb):
-        """RETURNS: The required registers for a given state. 
+    def get_required_variable_superset_db(sm, StateIndex, PredecessorDb, SuccessorDb):
+        """RETURNS: A superset of the required registers for a given state. 
         
-        It is admissible to return a SUPERSET of what is required, which is 
-        what happens! 
+        According to [DOC], it is admissible to return a SUPERSET of what is
+        required, which is what happens! 
 
-                              AcceptA                 AcceptB
-                   rA=ip                               rB=ip
-           ... --->( 0 )------>( 1 )------>( 2 )------>( 3 )------>( 4 ) 
+        The acceptance register is required in any state, since one needs to know
+        what pattern wins. A position register can only be important after it has
+        received an assignment. Thus, the set of successor states of a state where
+        the input position is stored in a register 'X' is a superset of the states
+        that require 'X'.
 
-           SCR:    {rA}        {rA}        {rA}        {rA,rB}     {rA,rB}
+        OVERHEAD ANALYSIS: 
 
-        The 'rA' needs to be maintained from 0 to 2. If the state machine exits
-        in 2, then the input position must be set to 'rA' and 'A' is accepted.
-        However, AcceptB overwrites AcceptA! 'rA' does no longer have to be 
-        in the SCR
+        Overhead appears only with respect to position registers.  It is
+        conceivable, that after a position for pattern 'X' has been stored, a
+        branch is taken that does not have an acceptance of pattern 'X'. If it
+        hits a mouth state, an unused entry action may occur. Otherwise, it 
+        has not impact. 
+        
+        The fact that the branch exists, however, tells that there is another
+        pattern must exist that starts with the pattern 'X' (before its
+        post-context starts). To hit a mouth state, a third pattern must be involved
+        with the same requirement. For example something like
 
-        NOTE: It is slightly advantageous, if the function returns the exact 
-              set 'RR(i)'.
+                    1:  [a-z]+/":"
+                    2:  [a-z]+":"[a-z]
+                    3:  [a-z]+":otto"
+
+        would be such a case. So, ":" would be a delimiter for words, and then
+        in second pattern and third pattern, it would not. This seems strange,
+        to the author of this code. In any case, the impact would be most
+        likely unmeasurable. While the identification of the patterns take lots
+        of comparisons, the additional entry operation only appears when
+        pattern 3 terminates (after 'otto') and the transition branches into
+        the pattern 2 (to match an identifier consisting of letters).
         """
-        predecessors = PredecessorDb[StateIndex]
+        # Acceptance is always necessary. It must be clear what pattern matched.
+        always_necessary = set([
+            E_R.AcceptanceRegister,
+            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
+        ])
 
-        required_register_set = set([ E_R.AcceptanceRegister ])
-
-        # Any storage of an input position written before and restored later
-        # makes the register part of the SCR for this state.
-        required_register_set.update(flatten_it_list_of_lists(
-            [ (E_R.PositionRegister, cmd.acceptance_id())
-              for cmd in single_entry.get_iterable(SeStoreInputPosition) ]
-            for single_entry in (sm.states[si].single_entry for si in predecessors)
-        ))
-
-        # Is this necessary? Does 'lexeme_begin_p' not suffice?
-        required_register_set.add(
-            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
+        # Enter for each the absolute necessities
+        result_db = dict(
+            (si, copy(always_necessary)) for si in SM.states.iterkeys()
         )
 
-        return required_register_set
+        # Superset upon 'store-input position':
+        #
+        # If a state stores the input position in a register, then any state
+        # which it may reach is subject to its requirement. 
+        #
+        for si, state in SM.states.iteritems():
+            for cmd in single_entry.get_iterable(SeStoreInputPosition):
+                variable_id = (E_R.PositionRegister, cmd.acceptance_id())
+                result[si].add(variable_id)
+                for successor_si in SuccessorDb[si]:
+                    result[successor_si].add(variable_id)
+
+        return result_db
 
     @classmethod
     def RestoreAll(cls, StateIndex):
