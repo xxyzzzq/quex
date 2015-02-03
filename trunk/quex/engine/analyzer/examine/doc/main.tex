@@ -411,11 +411,14 @@ Let the expression '$v$ is homogeneous/inhomogeneous' be precisely defined.
     The expression '$v$ is inhomogeneous' means that there are at least two
     entry recipes that differ.
 \end{definition}
+
 As soon as a recipe relies on a value in an auxiliary variable, it depends on
 the state where the snapshot has been taken. The terms 'snapshot map' and 'set
 of snapshot states' need to be defined for further discussions. Let
-$\varepsilon$ denote the not existing element. That is, if $\varepsilon$ is added to a
-set, it does not change the sets content.
+$\varepsilon$ denote the not existing element. That is, if $\varepsilon$ is
+added to a set, it does not change the sets content. That is, for any set $B$
+it holds $B = B \cap \{ \varepsilon \}$.
+
 \begin{definition} $S^v(X)$, $S(X)$ -- Snapshots.
 
     A \textit{snapshot map} $S^v(X)$ tells at what state the value of $v$ has
@@ -825,7 +828,7 @@ The process of 'cautious interference' develops a recipe $R(i)$ for a horizon st
 $i\,\in\,H$.  From the homogeneity requirement it follows that the output
 recipe $R(i)$ is determined by 
           
-\begin{equation}
+\begin{equation} \label{eq:cautious-output-recipe}
     R^v(i) = \begin{dcases*}
               op^v(i) & if $op^v(i)$ is constant \\
               A(v)    & else
@@ -856,7 +859,7 @@ correct, it must be independent of the still undetermined entry recipes
 $R_E(i,k)$. 
 
 Let the following two predecessor recipes of a horizon state be defined:
-$R^v_d$ is the prototype of a determined predecessor recipe and $R^v_u$ is the
+$k_d$ is the prototype of a determined predecessor recipe and $k_u$ is the
 prototype of an undetermined predecessor recipe. For the \textit{determined}
 entry, it holds that the path to it \textit{does not include a dead-lock state}
 except via a spring. But, an accumulation over a spring state $s$ sets
@@ -865,7 +868,7 @@ pass the spring and from there $S(R(i)))=\emptyset$ for all states $i$ on the
 path to the mouth's entry. It holds in general
 %%
 \begin{equation} \label{eq:before-horizon}
-        S(R^v_d)\,\cap\,U\,=\,\emptyset
+        S(R^v(k_d))\,\cap\,U\,=\,\emptyset
 \end{equation}
 %%
 From equation \eqref{eq:cautious-interference-snapshot} it follows that no
@@ -880,7 +883,7 @@ recipes. Thus, their snapshots can only root back to horizons or their successor
 states, i.e.
 %%
 \begin{equation} \label{eq:after-horizon}
-        S(R^v_u)\,\subseteq\,\,U
+        S(R^v(k_u))\,\subseteq\,\,U
 \end{equation}
 %%
 For recipes to pass a mouth state, they need to be the equal for all entries. Also
@@ -888,17 +891,52 @@ their snapshot maps must be equal. However, equations
 \eqref{eq:before-horizon} and \eqref{eq:after-horizon} can only be true, if
 %%
 \begin{equation} \label{eq:homogeneity-condition}
-    S(R^v_u)\,=\,S(R^v_d)\,=\,\emptyset 
+    S(R^v(k_u))\,=\,S(R^v(k_d))\,=\,\emptyset 
 \end{equation}
 
-This in turn, is only true if $R^v_u$ and $R^v_d$ do not rely on stored values
-at all, i.e. they are constant. This result is very important. When $R^v_u$
+This in turn, is only true if $R^v(k_u)$ and $R^v(k_d)$ do not rely on stored values
+at all, i.e. they are constant. This result is very important. When $R^v(k_u)$
 becomes determined, through subsequent accumulation, it is not possible that it
 produces a new component $R^v(i)$ through interference except that
 $S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being constant and
 non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) \coloneqq 
 R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$ remains a correct
 solution $\blacksquare$.  
+
+The output recipe $R(i)$ an be aquired based on existing procedures of
+accumulation and interference. Using a special definition for the undetermined
+predecessor recipes ends up with the exact formular for cautious interference
+in equation \ref{eq:cautious-output-recipe}. Let the undetermined
+predecessor recipes be defined as
+
+\begin{equation} \label{eq:undetermined-recipe}
+    R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k)) = \sigma\,\,forall\,v\,\in V(i)
+\end{equation}
+
+where $\sigma$ the impossible element. In contrast to \varepsilon it changes
+the set to which it is added. That is, for a set $B$ with $\sigma \notin B$ it
+holds $B \noteq B \cap \{ \sigma \}$.  Then, the entry recipe of an undetermined
+state $R_E(i,k_u)$ is determined by
+
+\begin{equation}
+    R_E(i,k_u) = op(i) \circ R(k_u)
+    \,\,\mbox{with}\,\, 
+    S^v(R_E(i,k_u)) = S^v(op(i) \circ R(k_u)  
+                    = \begin{dcases*}
+                       \varepsilon           & if $op^v(i)$ is constant \\
+                        S^v(R(k_u)) = \sigma & else
+                      \end{dcases*}
+\end{equation}
+
+A determined predecessor recipe $R(k_d)$ of a horizon state either has no entry
+in the snapshot map, or the entry of an existing state. Thus, $R^v_E(i,k_u)$
+and $R^v_E(i,k_d)$ are equal if and only if $op^v(i)$ is constant. The cautious
+interference can therefore be implemented by accumulation of the undetermined
+recipe from equation \eqref{eq:undetermined-recipe} with $op(i)$ followed by 
+'normal' interference $\blacksquare$.
+
+\begin{equation}
+\end{equation}
 
 The output recipes can be used for propagation of recipes so that other
 dead-lock states receive determined entries and become part of the horizon.
