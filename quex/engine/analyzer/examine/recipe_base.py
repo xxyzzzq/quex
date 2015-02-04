@@ -48,6 +48,49 @@ class Recipe:
 
     See [DOC] the according DEFINITION.
     """
+    @staticmethod
+    def _interfere_snapshot_maps(EntryRecipeDb, RequiredVariableSet):
+        """This function supports the 'interference' procedure. When an entry recipe
+        with respect to a variable 'v' is not homogeneous, then the variable's value
+        must be computed upon entry and the snapshot map must contain the current 
+        state as the 'snapshot state', i.e. the state where the snapshot has been 
+        taken. 
+
+        HomogeneityDb: 
+            
+            variable_id --> True -- if entry expression for variable_id
+                                    is homogeneous
+                            False -- if it is not
+
+        implement_entry_operation_db:
+
+            variable_id --> flag indicating whether 'v' needs to be 
+                            computed and stored in auxiliary variable.
+
+        PrototypeSnapshotMap:
+
+            Snapshot map of any entry recipe. It is considered only for those 
+            'variable_id'-s which are homogeneous.
+
+        ADAPTS:  implement_entry_operation_db
+
+        RETURNS: snapshot map
+
+            variable_id --> state index where the snapshot has been taken.
+                            None, if the variable is not restored from 'A(v)'.
+        """
+        snapshot_map   = {}
+        homogeneity_db = {}
+        for variable_id in RequiredVariableSet:
+            uniform_object = UniformObject.from_iterable(
+                 recipe.snapshot_map[VariableId]
+                 for recipe in EntryRecipeDb.itervalues())
+            )
+            snapshot_map[VariableId]   = uniform_object.content
+            homogeneity_db[VariableId] = uniform_object.plain_content() != E_Value.VOID
+
+        return snapshot_map, homogeneity_db
+
     @classmethod
     def is_operation_constant(cls, SM, StateIndex, VariableId=None):
         """RETURNS: True  -- if operations with respect to 'VariableId' are 

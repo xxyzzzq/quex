@@ -289,54 +289,47 @@ class Examiner:
         return set(si for si in walker.mouths_touched_set
                       if self.mouth_db[si].entry_reicpes_all_determined())
 
-    def _interference(self, CandidateSet, 
-                      GetEntryRecipeDb=lambda si, mouth: mouth.entry_recipe_db):
+    def _interference(self, CandidateSet): 
         """Perform interference of mouth states. Find for each state index the
         MouthInfo and determine the interfered recipe by '.recipe_type', i.e.
         according to the investigated behavior.
 
         MouthInfo.recipe:   Recipe of resolved mouth state.
         """
-        for si, info in ((si, self.mouth_db[si]) for si in CandidateSet):
-            entry_recipe_db       = GetEntryRecipeDb(si, info)
-            required_register_set = self.recipe_type.get_RR_superset(self._sm, si, 
-                                                                     self.predecessor_db)
-            assert type(required_register_set) == set
+        for si in CandidateSet:
             info.recipe = self.recipe_type.interfere(si, self.get_state_info(si), 
-                                                     entry_recipe_db) 
+                                                     self.mouth_db[si].entry_recipe_db) 
 
     def _cautious_interference(self, HorizonStateSet):
-        horizon  = self.get_horizon(CandidateSet)
-        done_set = set()
-        while horizon:
-            for si in horizon:
-                required_variable_set = self.get_state_info(si).required_variable_set
-                undetermined_recipe   = self.recipe_type.undetermined_recipe(required_variable_set)
-                single_entry          = self.sm.states[si].single_entry
-                entry_recipe          = self.recipe_type.accumulate(undetermined_recipe,
-                                                                    single_entry)
 
-                for si, entry in mouth_state.entry_recipe_db.items():
-                    if entry is None: mouth_state.entry_recipe_db[si] = entry_recipe
+        def prepare(si):
+            required_variable_set = self.get_state_info(si).required_variable_set
+            undetermined_recipe   = self.recipe_type.undetermined(required_variable_set)
+            single_entry          = self.sm.states[si].single_entry
+            entry_recipe          = self.recipe_type.accumulate(undetermined_recipe,
+                                                                single_entry)
+
+            for predecessor_si, entry in mouth_state.entry_recipe_db.items():
+                if entry is None: 
+                    mouth_state.entry_recipe_db[predecessor_si] = entry_recipe
+
+        remainder = CandidateSet
+        while remainder:
+            horizon  = self.get_horizon(remainder)
+            assert horizon 
+            # A horizon can never be empty.
+            # => remainder -= horizon descreases remainder
+            # => at some point remainder will be empty 
+            # => loop terminates
+
+            for si in horizon:
+                prepare(si)
 
             self._interference(horizon)
+            self.resolve(horizon)
 
-            # Some elements of the horizon, produce a more specific output
-            # then before. Those are used to promote a simplified recipe.
-            stable_recipe_state_set = scr_db_get_springs(scr_db, horizon, 
-                                                         self.mouth_db)
-            reached_set = self._accumulate(stable_recipe_state_set)
-            done_set.update(stable_recipe_state_set)
+            remainder.difference_update(horizon)
 
-            # New horizon: Those states which 
-            #   -- have been reached by simplified recipes,
-            #      => They have at least one determined entry!
-            #   -- are not yet treated, and 
-            #   -- are part of the CandidateSet (all of them should).
-            horizon = [
-                si for si in reached_set 
-                   if si not in done_set and si in CandidateSet
-            ]
 
     def _dead_locks_fine_adjustment(self, UnresolvedMouthStateSet):
         """

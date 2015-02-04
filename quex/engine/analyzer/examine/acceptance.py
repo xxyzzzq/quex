@@ -154,46 +154,31 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db, PrevRecipe.snapshot_map)
         
     @classmethod
-    def interfere(cls, StateIndex, StateInfo, EntryRecipeDb):
+    def interfere(cls, EntryRecipeDb, RequiredVariableSet):
         """Determines 'mouth' by 'interference'. That is, it considers all entry
         recipes and observes their homogeneity. 
+
+        ADAPTS:  StateInfo.implement_entry_operation_db
         
-        RETURNS: 
-            
-            [0] Recipe.
-            [1] Set of determined registers
+        RETURNS: Recipe.
 
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        determined_set = set()
-
-        def adapt_snapshot_map(snapshot_map, Homogeneity, VariableId, StateInfo):
-            variable_id = E_R.AcceptanceRegister
-            if not homogeneity_f:
-                snapshot_map[variable_id] = StateIndex
-                implement_f = True
-            else:
-                prototype = EntryRecipeDb.values()[0]
-                snapshot_map[variable_id] = prototype.snapshot_map[variable_id]
-                implement_f = False
-            StateInfo.implement_entry_operation_db[variable_id] = implement_f
+        snapshot_map, \
+        homogeneity_db = cls._interfere_snapshot_maps(EntryRecipeDb,
+                                                      RequiredVariableSet)
 
         # Acceptance
-        accepter, homogeneity_f = cls._interfere_acceptance(EntryRecipeDb)
-        if cls.RestoreAcceptance not in accepter:
-            determined_set.add(E_R.AcceptanceRegister)
-        adapt_snapshot_map(homogeneity_f, E_R.AcceptanceRegister, StateInfo)
-
+        accepter = cls._interfere_acceptance(homogeneity_db, 
+                                             EntryRecipeDb)
 
         # Input position storage
-        ip_offset_db,  \
-        homogeneity_db = cls._interfere_input_position_storage(EntryRecipeDb, 
-                                                               StateInfo.required_variable_set)
-        for variable_id, homogeneity_f in homogeneity_db.iteritems():
-            adapt_snapshot_map(snapshot_map, homogeneity_f, variable_id, StateInfo)
+        ip_offset_db = cls._interfere_input_position_storage(homogeneity_db,
+                                                             EntryRecipeDb, 
+                                                             RequiredVariableSet)
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map), homogeneity_db
 
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, CurrEntry):
@@ -258,51 +243,59 @@ class RecipeAcceptance(Recipe):
         return ip_offset_db
 
     @classmethod
-    def _interfere_acceptance(cls, EntryRecipeDb):
+    def _interfere_acceptance(cls, homogeneity_db, EntryRecipeDb):
         """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
 
+        ADAPTS: homogeneity_db
+
         RETURN: [0] Accumulated 'accepter'
-                [1] True  -- if accepter is homogeneous
-                    False -- if not.
         """ 
         # Interference requires determined entry recipes.
         assert none_is_None(EntryRecipeDb.itervalues())
 
-        result = UniformObject.from_iterable(
+        if not homogeneity_db[E_R.AcceptanceRegister]:
+            return [ cls.RestoreAcceptance ]
+
+        accepter = UniformObject.from_iterable(
                                recipe.accepter
                                for recipe in EntryRecipeDb.itervalues()).content
 
-        if result is None: return [ cls.RestoreAcceptance ], True
-        else:              return result, False
+        if accepter is None: 
+            accepter = [ cls.RestoreAcceptance ]
+            homogeneity_db[E_R.AcceptanceRegister] = False
+
+        return accepter
+
 
     @classmethod
-    def _interfere_input_position_storage(cls, EntryRecipeDb):
+    def _interfere_input_position_storage(cls, homogeneity_db, EntryRecipeDb, RequiredVariableSet):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
-        def get_uniform_recipe(RegisterId, RecipeList):
-            """If there are two recipes with differing offsets for a given
-            register, then input position must be reset by register restore.
-            Then 'offset = None'.  Else, in the homogeneous case, the offset is
-            the one that all entries share."""
+        def get_uniform_offset(RegisterId, RecipeList):
+            """RETURNS: Offset -- if all offsets in recipes are homogeneous.
+                        None   -- if they are not.
+            """
             return UniformObject.from_iterable(
                      recipe.ip_offset_db.get(RegisterId)
-                     for recipe in RecipeList).content
+                     for recipe in RecipeList).plain_content()
 
-        # All registers from all recipes --> register_id_set.
-        register_id_set = set(flatten_it_list_of_lists(
-                              recipe.ip_offset_db.iterkeys() 
-                              for recipe in EntryRecipeDb.itervalues()))    
-        # List of all recipes.
-        recipe_list     = list(EntryRecipeDb.itervalues())
+        ip_offset_db = {}
+        for variable_id in RequiredVariableSet:
+            if type(variable_id) != tuple: continue
 
-        return dict(
-            (register_id, get_uniform_recipe(register_id, recipe_list))
-            for register_id in register_id_set
-        )
+            offset = get_uniform_offset(register_id, recipe_list))
+
+            if offset == E_Value.VOID: 
+                offset                      = None
+                homogeneity_db[variable_id] = False
+
+            ip_offset_db[register_id] = offset
+
+        return ip_offset_db
         
     def get_mouth_Entry(self, mouth):
         entry_db = dict(
