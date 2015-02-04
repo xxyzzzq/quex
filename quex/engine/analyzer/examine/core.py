@@ -302,54 +302,41 @@ class Examiner:
             required_register_set = self.recipe_type.get_RR_superset(self._sm, si, 
                                                                      self.predecessor_db)
             assert type(required_register_set) == set
-
-            info.recipe,            \
-            determined_register_set = self.recipe_type.interfere(entry_recipe_db)
-            ## print "#required_register_set:", required_register_set
-            ## print "#determined_register_set:", determined_register_set
-            assert determined_register_set is not None
-            assert determined_register_set.issubset(required_register_set)
-
-            info.undetermined_register_set = required_register_set.difference(determined_register_set)
+            info.recipe = self.recipe_type.interfere(si, self.get_state_info(si), 
+                                                     entry_recipe_db) 
 
     def _cautious_interference(self, HorizonStateSet):
-        """Performs a 'cautious interference where undetermined entry recipes
-        are derived from 'op(i)(RestoreAll)'. That is, the concatination of the
-        restore all recipe with the operations of the current mouth state.
-        """
-        def prepare(StateIndex, PresentRecipe, SingleEntry):
-            """Provide recipe for virtual entry recipe database. 
-            
-            RETURN: PresentRecipe  -- if PresentRecipe is determined 
-                    op(i)(RA(i))   -- else.
-            """
-            if PresentRecipe is not None: 
-                recipe = PresentRecipe
-            else:
-                RA     = self.recipe_type.RestoreAll(self.required_register_set_db)
-                recipe = self.recipe_type.accumulate(RA, SingleEntry)
+        horizon  = self.get_horizon(CandidateSet)
+        done_set = set()
+        while horizon:
+            for si in horizon:
+                required_variable_set = self.get_state_info(si).required_variable_set
+                undetermined_recipe   = self.recipe_type.undetermined_recipe(required_variable_set)
+                single_entry          = self.sm.states[si].single_entry
+                entry_recipe          = self.recipe_type.accumulate(undetermined_recipe,
+                                                                    single_entry)
 
-            return recipe
+                for si, entry in mouth_state.entry_recipe_db.items():
+                    if entry is None: mouth_state.entry_recipe_db[si] = entry_recipe
 
-        def get_virtual_entry_recipe_db(si, mouth):
-            """Generate a virtual entry recipe database from '.entry_recipe_db'
-            where each *undetermined* entry recipe is set to 
-            
-                                   op(i)(RA(i))
-                              
-            That is, the state's operation 'op(i)' is applied to the 'restore 
-            all' recipe. This database is NOT set in 'mouth'!
-            """
-            assert mouth.mouth_f()
-            single_entry = self._sm.states[si].single_entry
-            result = dict(
-                (from_si, prepare(si, recipe, single_entry))
-                for from_si, recipe in mouth.entry_recipe_db.iteritems()
-            )
-            return result
+            self._interference(horizon)
 
-        self._interference(HorizonStateSet, 
-                           GetEntryRecipeDb = get_virtual_entry_recipe_db)
+            # Some elements of the horizon, produce a more specific output
+            # then before. Those are used to promote a simplified recipe.
+            stable_recipe_state_set = scr_db_get_springs(scr_db, horizon, 
+                                                         self.mouth_db)
+            reached_set = self._accumulate(stable_recipe_state_set)
+            done_set.update(stable_recipe_state_set)
+
+            # New horizon: Those states which 
+            #   -- have been reached by simplified recipes,
+            #      => They have at least one determined entry!
+            #   -- are not yet treated, and 
+            #   -- are part of the CandidateSet (all of them should).
+            horizon = [
+                si for si in reached_set 
+                   if si not in done_set and si in CandidateSet
+            ]
 
     def _dead_locks_fine_adjustment(self, UnresolvedMouthStateSet):
         """

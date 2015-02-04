@@ -48,10 +48,10 @@ class RecipeAcceptance(Recipe):
 
     The 'aux_register' values are set during interference in mouth states.
     """
-    __slots__         = ("accepter", "ip_offset_db")
+    __slots__         = ("accepter", "ip_offset_db", "snapshot_map")
     RestoreAcceptance = SeAccept(E_IncidenceIDs.RESTORE_ACCEPTANCE, E_PreContextIDs.NONE)
 
-    def __init__(self, Accepter, IpOffsetDb):
+    def __init__(self, Accepter, IpOffsetDb, SnapshotMap):
         assert type(IpOffsetDb) == dict
         assert type(Accepter)   == list
 
@@ -63,7 +63,22 @@ class RecipeAcceptance(Recipe):
         #               
         # The snapshot map tells to what state the snapshot of the variable given
         # by 'variable_id' has been made.
-        self.snapshot_map = {}
+        self.snapshot_map = SnapshotMap
+
+    @classmethod
+    def undetermined(cls, RequiredVariableSet):
+        """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
+        """
+        accepter = [ cls.RestoreAcceptance ]
+
+        for variable_id in RequiredVariableSet:
+            if type(variable_id) != tuple: continue
+            ip_offset_db[variable_id] = None     # position[i] = Aux(position[i])
+
+        for variable_id in RequiredVariableSet:
+            snapshot_map[variable_id] = None     # That is: 'sigma' in [DOC]
+
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
 
     @staticmethod
     def get_required_variable_superset_db(sm, StateIndex, PredecessorDb, SuccessorDb):
@@ -129,26 +144,17 @@ class RecipeAcceptance(Recipe):
         return result_db
 
     @classmethod
-    def RestoreAll(cls, StateIndex):
-        """Same for all states."""
-        if cls.__restore_all_recipe is None:
-            ip_offset_db = {} # .get(RegisterId) is None for all => restore all 
-            cls.__restore_all_recipe = RecipeAcceptance([RecipeAcceptance.RestoreAcceptance], 
-                                                         ip_offset_db)
-        return cls.__restore_all_recipe
-
-    @classmethod
     def accumulate(cls, PrevRecipe, CurrSingleEntry):
-        """RETURNS: Recipe = concatenation of 'Recipe' + relevant operations of
-                             'SingleEntry'.
+        """RETURNS: Recipe =     concatenation of 'Recipe' 
+                             and relevant operations of 'SingleEntry'.
         """
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        return RecipeAcceptance(accepter, ip_offset_db)
+        return RecipeAcceptance(accepter, ip_offset_db, PrevRecipe.snapshot_map)
         
     @classmethod
-    def interfere(cls, EntryRecipeDb):
+    def interfere(cls, StateIndex, StateInfo, EntryRecipeDb):
         """Determines 'mouth' by 'interference'. That is, it considers all entry
         recipes and observes their homogeneity. 
         
@@ -162,33 +168,41 @@ class RecipeAcceptance(Recipe):
         """
         determined_set = set()
 
+        def adapt_snapshot_map(snapshot_map, Homogeneity, VariableId, StateInfo):
+            variable_id = E_R.AcceptanceRegister
+            if not homogeneity_f:
+                snapshot_map[variable_id] = StateIndex
+                implement_f = True
+            else:
+                prototype = EntryRecipeDb.values()[0]
+                snapshot_map[variable_id] = prototype.snapshot_map[variable_id]
+                implement_f = False
+            StateInfo.implement_entry_operation_db[variable_id] = implement_f
+
         # Acceptance
-        accepter = cls._interfere_acceptance(EntryRecipeDb)
+        accepter, homogeneity_f = cls._interfere_acceptance(EntryRecipeDb)
         if cls.RestoreAcceptance not in accepter:
             determined_set.add(E_R.AcceptanceRegister)
+        adapt_snapshot_map(homogeneity_f, E_R.AcceptanceRegister, StateInfo)
+
 
         # Input position storage
-        ip_offset_db = cls._interfere_input_position_storage(EntryRecipeDb)
-        determined_set.update(
-            (E_R.PositionRegister, register_id)
-            for register_id, offset in ip_offset_db.iteritems()
-            if offset is not None
-        )
+        ip_offset_db,  \
+        homogeneity_db = cls._interfere_input_position_storage(EntryRecipeDb, 
+                                                               StateInfo.required_variable_set)
+        for variable_id, homogeneity_f in homogeneity_db.iteritems():
+            adapt_snapshot_map(snapshot_map, homogeneity_f, variable_id, StateInfo)
 
-        # The position register 'MATCH_FAILURE' is always determined because
-        # it is available in '_lexeme_start_p'.
-        determined_set.add(
-            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
-        )
-        
-        return RecipeAcceptance(accepter, ip_offset_db), determined_set
-        
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, CurrEntry):
         """Longest match --> later acceptances have precedence. The acceptance
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
+        assert PrevRecipe.accepter
+
         accepter        = []
         unconditional_f = False
         for cmd in sorted(CurrEntry.get_iterable(SeAccept), 
@@ -200,11 +214,11 @@ class RecipeAcceptance(Recipe):
         else:
             # No unconditional acceptance occurred, the previous acceptances
             # must be appended--if there is something.
-            if PrevRecipe is not None and PrevRecipe.accepter is not None:
+            if PrevRecipe.accepter:
                 accepter.extend(PrevRecipe.accepter)
 
-        if not accepter: return [ RecipeAcceptance.RestoreAcceptance ]
-        else:            return accepter
+        assert accepter
+        return accepter
 
     @staticmethod
     def _accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry):
@@ -248,6 +262,10 @@ class RecipeAcceptance(Recipe):
         """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
+
+        RETURN: [0] Accumulated 'accepter'
+                [1] True  -- if accepter is homogeneous
+                    False -- if not.
         """ 
         # Interference requires determined entry recipes.
         assert none_is_None(EntryRecipeDb.itervalues())
@@ -255,10 +273,10 @@ class RecipeAcceptance(Recipe):
         result = UniformObject.from_iterable(
                                recipe.accepter
                                for recipe in EntryRecipeDb.itervalues()).content
-        if result is None: return [ cls.RestoreAcceptance ]
-        else:              return result
 
-    
+        if result is None: return [ cls.RestoreAcceptance ], True
+        else:              return result, False
+
     @classmethod
     def _interfere_input_position_storage(cls, EntryRecipeDb):
         """Each position register is considered separately. If for one register 
