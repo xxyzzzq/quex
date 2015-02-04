@@ -905,44 +905,45 @@ solution $\blacksquare$.
 
 The output recipe $R(i)$ an be aquired based on existing procedures of
 accumulation and interference. Using a special definition for the undetermined
-predecessor recipes ends up with the exact formular for cautious interference
-in equation \ref{eq:cautious-output-recipe}. Let the undetermined
-predecessor recipes be defined as
+predecessor recipes ends up with the exact same formula for cautious
+interference as in equation \ref{eq:cautious-output-recipe}. Let the
+undetermined predecessor recipes be defined as
 
 \begin{equation} \label{eq:undetermined-recipe}
-    R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k)) = \sigma\,\,forall\,v\,\in V(i)
+    R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k_u)) = \sigma\,\,\forall\,v\,\in V(i)
 \end{equation}
 
-where $\sigma$ the impossible element. In contrast to \varepsilon it changes
-the set to which it is added. That is, for a set $B$ with $\sigma \notin B$ it
-holds $B \noteq B \cap \{ \sigma \}$.  Then, the entry recipe of an undetermined
-state $R_E(i,k_u)$ is determined by
+where $\sigma$ is a state that is not in the state machine. In contrast to
+$\varepsilon$ it changes the set to which it is added. For a set of
+states $B$ with $\sigma \notin B$ it holds $B \cap \{ \sigma \} = \emptyset$.
+Then, the entry recipe of an undetermined state $R_E(i,k_u)$ is determined by
 
 \begin{equation}
     R_E(i,k_u) = op(i) \circ R(k_u)
-    \,\,\mbox{with}\,\, 
-    S^v(R_E(i,k_u)) = S^v(op(i) \circ R(k_u)  
-                    = \begin{dcases*}
-                       \varepsilon           & if $op^v(i)$ is constant \\
-                        S^v(R(k_u)) = \sigma & else
-                      \end{dcases*}
 \end{equation}
+with
+\begin{eqnarray}
+    S^v(R_E(i,k_u)) & = & S^v(op(i) \circ R(k_u)) \\ 
+                    & = & \begin{dcases*}
+                          \varepsilon           & if $op^v(i)$ is constant \\
+                          S^v(R(k_u)) = \sigma & else
+                          \end{dcases*}
+\end{eqnarray}
 
 A determined predecessor recipe $R(k_d)$ of a horizon state either has no entry
 in the snapshot map, or the entry of an existing state. Thus, $R^v_E(i,k_u)$
-and $R^v_E(i,k_d)$ are equal if and only if $op^v(i)$ is constant. The cautious
-interference can therefore be implemented by accumulation of the undetermined
-recipe from equation \eqref{eq:undetermined-recipe} with $op(i)$ followed by 
-'normal' interference $\blacksquare$.
+and $R^v_E(i,k_d)$ are equal if and only if $op^v(i)$ is constant. Otherwise,
+the entry operations store $v$ in $A(v)$ and $R^v(i)=\{ v \coloneqq A(v)\}$ with
+$S^v(R^v(i))=i$.  Cautious interference can, therefore, be implemented by
+accumulation of the undetermined recipe from equation
+\eqref{eq:undetermined-recipe} with $op(i)$ followed by 'normal'
+interference $\blacksquare$.
 
-\begin{equation}
-\end{equation}
-
-The output recipes can be used for propagation of recipes so that other
+The output recipes $R(i)$ can be used for propagation of recipes so that other
 dead-lock states receive determined entries and become part of the horizon.
 The horizon moves, the set of dead-lock states shrinks and a new cycle begins.
 This continues until no dead-lock state is left.  Eventually, all entry recipes
-are be determined. Then, it is possible that those entries which are flagged
+are determined. Then, it is possible that those entries which are flagged
 with $F_E^v(i,k)=true$ implement the entry operation $op_E^v(i)=R_E^v(i,k)$.
 Before, however, another opportunity to optimize is explored. 
 
