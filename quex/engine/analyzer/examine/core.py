@@ -129,7 +129,7 @@ class Examiner:
         for si, required_set_of_variables in db.iteritems():
             self.get_state_info(si).required_set_of_variables = required_set_of_variables
 
-    def is_operation_constant(self, TheSingleEntry, StateIndex):
+    def is_operation_constant(self, TheSingleEntry, VariableId=None, StateIndex=None):
         """An operation upon entry into a state is 'constant', if it does not
         depend on a setting of the required variables in that state.  The
         'single_entry' member of a single-entry state represents the concept of an
@@ -139,22 +139,25 @@ class Examiner:
         RETURNS: True  -- if the operation is constant
                  False -- if not.
         """
-        rsov = self.get_state_info(StateIndex).required_set_of_variables
+        if VariableId is None:
+            for variable_id in self.get_state_info(StateIndex).required_set_of_variables:
+                if not self.is_operation_constant(TheSingleEntry, variable_id):
+                    return False
+            return True
 
         # (1) An operation 'op(i)' that does not influence 'v' is not constant 
         #     (see discussion in [DOC])
-        for variable_id in rsov:
-            for cmd in TheSingleEntry: 
-                if cmd.assigns(variable_id): break
-            else:
-                # There is a variable that is not assigned by 'op(i)'
-                # => 'op(i)' is not constant
-                return False
+        for cmd in TheSingleEntry: 
+            if cmd.assigns(VariableId): break
+        else:
+            # There is a variable that is not assigned by 'op(i)'
+            # => 'op(i)' is not constant
+            return False
 
         # (2) An operation that relies on a previous setting of 'v' is not constant
         #
         for cmd in TheSingleEntry: 
-            if cmd.requires(rsov): return False
+            if cmd.requires(VariableId): return False
         return True
 
     def setup_initial_springs(self):
@@ -297,38 +300,40 @@ class Examiner:
         MouthInfo.recipe:   Recipe of resolved mouth state.
         """
         for si in CandidateSet:
-            info.recipe = self.recipe_type.interfere(si, self.get_state_info(si), 
-                                                     self.mouth_db[si].entry_recipe_db) 
+            info.recipe, \
+            info.homogeneity_db = self.recipe_type.interfere(si, self.get_state_info(si)) 
 
     def _cautious_interference(self, HorizonStateSet):
 
-        def prepare(si):
-            required_variable_set = self.get_state_info(si).required_variable_set
-            undetermined_recipe   = self.recipe_type.undetermined(required_variable_set)
-            single_entry          = self.sm.states[si].single_entry
-            entry_recipe          = self.recipe_type.accumulate(undetermined_recipe,
-                                                                single_entry)
+        def prepare(mouth, SingleEntry):
+            required_variable_set = mouth.required_variable_set
 
-            for predecessor_si, entry in mouth_state.entry_recipe_db.items():
+            # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
+            # before interference.
+            undetermined_recipe = self.recipe_type.undetermined(required_variable_set)
+            entry_recipe        = self.recipe_type.accumulate(undetermined_recipe,
+                                                              SingleEntry)
+
+            for predecessor_si, entry in mouth.entry_recipe_db.items():
                 if entry is None: 
-                    mouth_state.entry_recipe_db[predecessor_si] = entry_recipe
+                    mouth.entry_recipe_db[predecessor_si] = entry_recipe
+            
+            for variable_id in required_variable_set:
+                if cls.is_operation_constant(SingleEntry, variable_id):
+                    mouth.homogeneity_db[variable_id] = True
+                else:
+                    mouth.homogeneity_db[variable_id] = False
 
-        remainder = CandidateSet
-        while remainder:
-            horizon  = self.get_horizon(remainder)
-            assert horizon 
-            # A horizon can never be empty.
-            # => remainder -= horizon descreases remainder
-            # => at some point remainder will be empty 
-            # => loop terminates
+        while 1 + 1 == 2:
+            horizon = self.get_horizon(CandidateSet)
+            if not horizon: break
 
             for si in horizon:
-                prepare(si)
+                prepare(self.get_state_info(si), self.sm.states[si].single_entry)
 
             self._interference(horizon)
             self.resolve(horizon)
 
-            remainder.difference_update(horizon)
 
 
     def _dead_locks_fine_adjustment(self, UnresolvedMouthStateSet):

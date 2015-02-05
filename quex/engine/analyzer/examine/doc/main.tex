@@ -491,12 +491,20 @@ The output recipe $R(i)$ depends on the homogeneity of $v$, i.e.
              \end{dcases*}
 \end{equation}
 for an arbitrary $k\,\in\,Pred(k)$. If $v$ is inhomogeneous, an entry
-operation $op_E(i,k)$ is implemented in the resulting state machine that
-stores the computed value of $v$ in $A(v)$, i.e.
-\begin{equation}
-    op_E^v(i,k) \,=\, \{ A(v) \,=\, R^v_E(i,k) \} \,\mbox{if $v$ is homogeneous}.
+operation $op_E(i,k)$ must be implemented in the resulting state machine that
+stores the computed value of $v$ in $A(v)$. The need for an entry operation
+for the entry into state $i$ from state $k$ is maintained in a homogeneity
+database $H^v(i)$ with
+%%
+\begin{equation} \label{eq:homogeneity-database}
+    H^v(i) = \begin{dcases*}
+                  true  & if $v$ is homogeneous in state $i$\\
+                  false & else
+             \end{dcases*}
 \end{equation}
+%%
 for an arbitrary $k\,\in\,Pred(k)$. For the snapshot maps it holds
+%%
 \begin{equation} \label{eq:interference-snap-shot-maps}
     S^v(R(i)) = \begin{dcases*}
                   \varepsilon & if $op^v(i)$ is constant. \\
@@ -504,10 +512,22 @@ for an arbitrary $k\,\in\,Pred(k)$. For the snapshot maps it holds
                   i           & else
                 \end{dcases*}
 \end{equation}
+%%
 for an arbitrary $k\,\in\,Pred(k)$. A prerequisite for interference is that 
 all $R_E(i,k)$ with $k\,\in\,Pred(i)$ are determined.
 \end{definition}
-%%
+
+The implementation of entry operations can be post-poned to the point in time,
+when all recipes are determined. It is enough to maintain a 'homogeneity
+database', that tells for a given state whether a variable develops
+homogeneously or not. Eventually, when all recipe analysis is done, the entry
+operations in the resulting state machine may be implemented according the
+entry recipes, i.e.
+
+\begin{equation} \label{eq:entry-operation-implementation}
+    op_E^v(i,k) \,=\, \{ A(v) \,=\, R^v_E(i,k) \} \,\mbox{if $H^v(i) = true$}.
+\end{equation}
+
 Equation \eqref{eq:interference-snap-shot-maps} expresses the fact that
 homogeneous recipes pass mouth states unchanged, and so are the related
 snapshot maps unchanged. If the mouth state's operation $op^v(i)$ is 
@@ -834,12 +854,10 @@ recipe $R(i)$ is determined by
               A(v)    & else
              \end{dcases*}
 \end{equation}
-If $op^v(i)$ is not constant, then an entry operation $op_E(i,k)$ is required,
-but the entry recipes $R_E^v(i,k)$ are not yet determined. So the entries are
-'marked' by $F_E^v(i,k)$ to indicate that the value of $v$ needs to be
-stored in $A(v)$.
+For all variables $v$ an inhomogeneity is assumed, except for those where $op^v(i)$
+is constant. That is,
 \begin{equation}
-    F_E^v(i,k) = \begin{dcases*}
+    H^v(i,k) = \begin{dcases*}
                      false & if $op^v(i)$ is constant \\
                      true  & else
                  \end{dcases*}
@@ -853,10 +871,12 @@ The snapshot map develops to
 \end{equation}
 \end{definition}
 
-As soon as entry recipes are found, the entries for which $F_E^v(i,k)$ is true
-need to store $A(v)=R_E^v(i,k)$. For the resulting recipe to be generally
-correct, it must be independent of the still undetermined entry recipes
-$R_E(i,k)$. 
+As mentioned earlier, the homogeneity database expresses the need to compute
+the entry recipes for a variable $v$ and store it in an auxiliary variable
+$A(v)$. In the case of cautious interference, it is determined before the entry
+recipe $R_E(i,k)$ has actually been determined.  For the resulting recipe
+$R(v)$ to be generally correct, it must be independent of the still
+undetermined entry recipes $R_E(i,k)$. 
 
 Let the following two predecessor recipes of a horizon state be defined:
 $k_d$ is the prototype of a determined predecessor recipe and $k_u$ is the
@@ -903,11 +923,12 @@ non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) \colone
 R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$ remains a correct
 solution $\blacksquare$.  
 
-The output recipe $R(i)$ an be aquired based on existing procedures of
-accumulation and interference. Using a special definition for the undetermined
-predecessor recipes ends up with the exact same formula for cautious
-interference as in equation \ref{eq:cautious-output-recipe}. Let the
-undetermined predecessor recipes be defined as
+The output recipe $R(i)$, the homogeneity database $H^v(i)$, and the snapshot
+maps $S^v(i)$ can be aquired based on existing procedures of accumulation and
+interference. Using a special definition for the undetermined predecessor
+recipes ends up with the exact same formula for cautious interference as in
+equation \ref{eq:cautious-output-recipe}. Let the undetermined predecessor
+recipes be defined as
 
 \begin{equation} \label{eq:undetermined-recipe}
     R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k_u)) = \sigma\,\,\forall\,v\,\in V(i)
@@ -921,7 +942,7 @@ Then, the entry recipe of an undetermined state $R_E(i,k_u)$ is determined by
 \begin{equation}
     R_E(i,k_u) = op(i) \circ R(k_u)
 \end{equation}
-with
+For interference it follows, that
 \begin{eqnarray}
     S^v(R_E(i,k_u)) & = & S^v(op(i) \circ R(k_u)) \\ 
                     & = & \begin{dcases*}
@@ -929,22 +950,30 @@ with
                           S^v(R(k_u)) = \sigma & else
                           \end{dcases*}
 \end{eqnarray}
+and, thus
+\begin{eqnarray}
+    H^v(i) & = & \begin{dcases*}
+                   true  & if $op^v(i)$ is constant \\
+                   false & else
+                 \end{dcases*}
+\end{eqnarray}
 
 A determined predecessor recipe $R(k_d)$ of a horizon state either has no entry
 in the snapshot map, or the entry of an existing state. Thus, $R^v_E(i,k_u)$
 and $R^v_E(i,k_d)$ are equal if and only if $op^v(i)$ is constant. Otherwise,
-the entry operations store $v$ in $A(v)$ and $R^v(i)=\{ v \coloneqq A(v)\}$ with
-$S^v(R^v(i))=i$.  Cautious interference can, therefore, be implemented by
-accumulation of the undetermined recipe from equation
-\eqref{eq:undetermined-recipe} with $op(i)$ followed by 'normal'
-interference $\blacksquare$.
+the entry operations store $v$ in $A(v)$ and $R^v(i)=\{ v \coloneqq A(v)\}$
+with $S^v(R^v(i))=i$.  Cautious interference can, therefore, be implemented by
+the use of a special 'undetermined predecessor recipe' from equation
+\eqref{eq:undetermined-recipe}. When accumulated with the states $op(i)$
+and passed through interference, exact the same expressions result as
+they are required for cautious interference $\blacksquare$.
 
 The output recipes $R(i)$ can be used for propagation of recipes so that other
 dead-lock states receive determined entries and become part of the horizon.
 The horizon moves, the set of dead-lock states shrinks and a new cycle begins.
 This continues until no dead-lock state is left.  Eventually, all entry recipes
 are determined. Then, it is possible that those entries which are flagged
-with $F_E^v(i,k)=true$ implement the entry operation $op_E^v(i)=R_E^v(i,k)$.
+with $H^v(i,k)=true$ implement the entry operation $op_E^v(i)=R_E^v(i,k)$.
 Before, however, another opportunity to optimize is explored. 
 
 %==============================================================================
@@ -985,7 +1014,7 @@ no storing and restoring is now required for $v$, the 'entry operation
 implementation flag' can be turned of, that is
 
 \begin{equation}
-    F_E^v(i,k)\,=\,false\,\,\mbox{if}\,op^v(i)\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
+    H^v(i,k)\,=\,false\,\,\mbox{if}\,op^v(i)\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
 \end{equation}
 
 A recipe $R(i)$ that replaces some components by constants can now again be
@@ -1018,7 +1047,7 @@ restricted $N$ number of times, where $N$ is the number of variables in $V(i)$.
 Since, number of states is restricted, in general, the total number of
 propagations is restricted. When no new interference is accomplished, no new
 constant entry recipes can be determined and the process comes to an end.
-Eventually, remaining entry operations $op_E^v(i)$ for which $F_E^v(i,k)=true$
+Eventually, remaining entry operations $op_E^v(i)$ for which $H^v(i,k)=true$
 must be implemented according to $A(v) \coloneqq  R_E^v(i,k)$.
 
 \section{Superset of Required Variables}

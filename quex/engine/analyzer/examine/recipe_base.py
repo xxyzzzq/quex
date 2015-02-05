@@ -86,10 +86,25 @@ class Recipe:
                  recipe.snapshot_map[VariableId]
                  for recipe in EntryRecipeDb.itervalues())
             )
-            snapshot_map[VariableId]   = uniform_object.content
-            homogeneity_db[VariableId] = uniform_object.plain_content() != E_Value.VOID
+            if uniform_object.plain_content() != Value.VOID:
+                # Homogeneity
+                snapshot_map[VariableId]   = uniform_object.content
+                homogeneity_db[VariableId] = True
+            else:
+                # Inhomogeneity
+                snapshot_map[VariableId]   = StateIndex
+                homogeneity_db[VariableId] = False
 
         return snapshot_map, homogeneity_db
+
+    @classmethod
+    def apply_inhomogeneity(cls, snapshot_map, homogeneity_db, VariableId, StateIndex):
+        """When inhomogeneity for a variable 'VariableId' is detected, then the
+        'v' is stored in 'A(v)', i.e. the snapshot map for 'v' is the current state.
+        The homogeneity_db for the given variable must be set to 'False'.
+        """
+        snapshot_map[VariableId]   = StateIndex
+        homogeneity_db[VariableId] = False
 
     @classmethod
     def is_operation_constant(cls, SM, StateIndex, VariableId=None):
