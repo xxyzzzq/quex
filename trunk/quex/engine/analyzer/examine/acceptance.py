@@ -170,11 +170,13 @@ class RecipeAcceptance(Recipe):
                                                       RequiredVariableSet)
 
         # Acceptance
-        accepter = cls._interfere_acceptance(homogeneity_db, 
+        accepter = cls._interfere_acceptance(snapshot_map, 
+                                             homogeneity_db, 
                                              EntryRecipeDb)
 
         # Input position storage
-        ip_offset_db = cls._interfere_input_position_storage(homogeneity_db,
+        ip_offset_db = cls._interfere_input_position_storage(snapshot_map, 
+                                                             homogeneity_db,
                                                              EntryRecipeDb, 
                                                              RequiredVariableSet)
 
@@ -243,7 +245,7 @@ class RecipeAcceptance(Recipe):
         return ip_offset_db
 
     @classmethod
-    def _interfere_acceptance(cls, homogeneity_db, EntryRecipeDb):
+    def _interfere_acceptance(cls, snapshot_map, homogeneity_db, EntryRecipeDb):
         """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
@@ -260,11 +262,16 @@ class RecipeAcceptance(Recipe):
 
         accepter = UniformObject.from_iterable(
                                recipe.accepter
-                               for recipe in EntryRecipeDb.itervalues()).content
+                               for recipe in EntryRecipeDb.itervalues()).plain_content()
 
-        if accepter is None: 
+        if accepter != E_Value.VOID:
+            # Homogeneity
+            pass
+        else:
+            # Inhomogeneity
             accepter = [ cls.RestoreAcceptance ]
-            homogeneity_db[E_R.AcceptanceRegister] = False
+            cls.apply_inhomogeneity(snapshot_map, homogeneity_db, 
+                                    E_R.AcceptanceRegister)
 
         return accepter
 
@@ -275,25 +282,23 @@ class RecipeAcceptance(Recipe):
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
-        def get_uniform_offset(RegisterId, RecipeList):
-            """RETURNS: Offset -- if all offsets in recipes are homogeneous.
-                        None   -- if they are not.
-            """
-            return UniformObject.from_iterable(
-                     recipe.ip_offset_db.get(RegisterId)
-                     for recipe in RecipeList).plain_content()
-
         ip_offset_db = {}
         for variable_id in RequiredVariableSet:
             if type(variable_id) != tuple: continue
 
-            offset = get_uniform_offset(register_id, recipe_list))
+            offset = UniformObject.from_iterable(
+                         recipe.ip_offset_db.get(RegisterId)
+                         for recipe in RecipeList).plain_content()
 
-            if offset == E_Value.VOID: 
-                offset                      = None
-                homogeneity_db[variable_id] = False
+            if offset != E_Value.VOID: 
+                # Homogeneity
+                pass
+            else:
+                # Inhomogeneity
+                offset = None
+                cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id)
 
-            ip_offset_db[register_id] = offset
+            ip_offset_db[variable_id] = offset
 
         return ip_offset_db
         
