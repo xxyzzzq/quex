@@ -300,123 +300,33 @@ class Examiner:
         MouthInfo.recipe:   Recipe of resolved mouth state.
         """
         for si in CandidateSet:
-            info.recipe, \
-            info.homogeneity_db = self.recipe_type.interfere(si, self.get_state_info(si)) 
+            mouth = self.get_state_info(si)
+            mouth.recipe, \
+            mouth.homogeneity_db = self.recipe_type.interference(mouth)
 
     def _cautious_interference(self, HorizonStateSet):
+        """Cautious interferences, as described in [DOC] may be implemented by 
+        setting 'undetermined recipes' (also defined in [DOC]) at the place of 
+        entry recipes. Then, inter
+        """
+        for si in CandidateSet:
+            mouth = self.get_state_info(si)
+            mouth.recipe, \
+            mouth.homogeneity_db = self.recipe_type.cautious_interference(mouth)
 
-        def prepare(mouth, SingleEntry):
-            required_variable_set = mouth.required_variable_set
+    def _dead_locks_fine_adjustment(self, OriginalDeadLockSet):
+        """Fine adjustment, according to [DOC], means that components of
+        constant entry recipes are identified.
 
-            # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
-            # before interference.
-            undetermined_recipe = self.recipe_type.undetermined(required_variable_set)
-            entry_recipe        = self.recipe_type.accumulate(undetermined_recipe,
-                                                              SingleEntry)
-
-            for predecessor_si, entry in mouth.entry_recipe_db.items():
-                if entry is None: 
-                    mouth.entry_recipe_db[predecessor_si] = entry_recipe
-            
-            for variable_id in required_variable_set:
-                if cls.is_operation_constant(SingleEntry, variable_id):
-                    mouth.homogeneity_db[variable_id] = True
-                else:
-                    mouth.homogeneity_db[variable_id] = False
+        OriginalDeadLockSet -- set of states that were originally dead-locks.
+        """
 
         while 1 + 1 == 2:
-            horizon = self.get_horizon(CandidateSet)
-            if not horizon: break
+            improved_state_set = improve(OriginalDeadLockSet)
+            if not improved_state_set: break
+            self.resolve(improved_state_set)
 
-            for si in horizon:
-                prepare(self.get_state_info(si), self.sm.states[si].single_entry)
-
-            self._interference(horizon)
-            self.resolve(horizon)
-
-
-
-    def _dead_locks_fine_adjustment(self, UnresolvedMouthStateSet):
-        """
-        Assume that 'resolve_dead_locks()' specified a complete state machine
-        by recipes. Some of those recipes may still be improved, because now
-        mouth states have determined entry recipes and may therefore perform
-        interference.
-
-        If this interference results in a more specific recipe, then it may be
-        propagated through accumulation. All subsequent states (until the next
-        mouth state) receive a new more specific recipe.
-
-        IMPORTANT: At any point in time, the state machine description remains
-                   CORRECT. The algorithm only develops more specific, more 
-                   simple recipes for some states.
-        """
-        def scr_db_get(Frontier, MouthDb):
-            """RETURNS: A map from state index to set of undetermined registers.
-            """
-            return dict(
-                (si, MouthDb[si].undetermined_register_set)
-                for si in Frontier
-            )
-
-        def scr_db_get_springs(scr_db, Frontier, MouthDb):
-            """RETURNS: Set of states where further accumulation starts.
-
-            Those are the states for which a more specific recipe could be 
-            determined through interference.
-            """
-            return [
-                si 
-                for si in Frontier
-                if len(MouthDb[si].undetermined_register_set) < len(scr_db[si])
-            ]
-
-        horizon = self.get_horizon(CandidateSet)
-        done_set = set()
-        while horizon:
-            # TERMINATION: If there are no new states reached by simplified
-            #              recipes. 
-            # Infinite iteration is obstructed. Relying on the 'done_set' a 
-            # state can at max. be treated once. The number of states is finite.
-            # Thus the number of iterations is finite.
-            scr_db = scr_db_get(horizon, self.mouth_db)
-            self._interference(horizon)
-
-            # Some elements of the horizon, produce a more specific output
-            # then before. Those are used to promote a simplified recipe.
-            stable_recipe_state_set = scr_db_get_springs(scr_db, horizon, 
-                                                         self.mouth_db)
-            reached_set = self._accumulate(stable_recipe_state_set)
-            done_set.update(stable_recipe_state_set)
-
-            # New horizon: Those states which 
-            #   -- have been reached by simplified recipes,
-            #      => They have at least one determined entry!
-            #   -- are not yet treated, and 
-            #   -- are part of the CandidateSet (all of them should).
-            horizon = [
-                si for si in reached_set 
-                   if si not in done_set and si in CandidateSet
-            ]
             
-    def get_Entry(self, StateIndex):
-        """Generates an 'state.Entry' object for the state of the given index.
-
-        RETURNS: Dictionary:
-
-                      'from_state_index' ---> OpList
-        """
-        info = self.get_state_info(StateIndex)
-        if info.mouth_f(): return self.recipe_type.get_mouth_Entry(info)
-        else:              return self.recipe_type.get_linear_Entry(info)
-
-    def get_DropOut(self, StateIndex):
-        """Generates a 'state.DropOut' object for the state of the given index.
-
-        RETURNS: OpList
-        """
-        self.recipe_type.get_DropOut(self.get_state_info(StateIndex))
-
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
     state ahead is a mouth state, or a determined state.
