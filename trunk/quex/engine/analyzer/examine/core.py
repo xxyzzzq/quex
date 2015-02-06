@@ -167,15 +167,12 @@ class Examiner:
 
         RETURNS: list of state indices of initial spring states.
         """
-        result = set(
-            si for si, state in SM.states.itervalues()
-               if not self.is_operation_constant(state.single_entry, si)
-        )
-
-        # Determine the initial recipes in the springs.
-        for spring in result:
-            recipe = self.recipe_type.accumulate(None, spring.single_entry)
+        result = set()
+        for si, state in self._sm.states.iteritems():
+            if not self.is_operation_constant(state.single_entry, si): continue
+            recipe = self.recipe_type.accumulation(None, state.single_entry)
             self.set_recipe(si, recipe)
+            result.add(si)
 
         return result
 
@@ -227,8 +224,8 @@ class Examiner:
         horizon   = self.get_horizon(remainder)
         while horizon:
             self._cautious_interference(horizon)
-            remainder = self.resolve(horizon)
-            horizon   = self.get_horizon(remainder)
+            remainder    = self.resolve(horizon)
+            horizon      = self.get_horizon(remainder)
 
         self._dead_locks_fine_adjustment(UnresolvedMouthStateSet)
 
@@ -265,10 +262,10 @@ class Examiner:
 
         RETURNS: List of indeces of horizon states.
         """
-        return [
+        return set(
             si for si in UnresolvedMouthStateSet
                if self.mouth_db[si].entry_recipes_one_determined()
-        ]
+        )
 
     def _accumulate(self, Springs):
         """Recursively walk along linear states. The termination criteria is 
@@ -326,7 +323,6 @@ class Examiner:
             if not improved_state_set: break
             self.resolve(improved_state_set)
 
-            
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
     state ahead is a mouth state, or a determined state.

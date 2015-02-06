@@ -121,7 +121,7 @@ class RecipeAcceptance(Recipe):
         # Acceptance is always necessary. It must be clear what pattern matched.
         always_necessary = set([
             E_R.AcceptanceRegister,
-            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
+            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
         ])
 
         # Enter for each the absolute necessities
@@ -274,7 +274,6 @@ class RecipeAcceptance(Recipe):
 
         return accepter
 
-
     @classmethod
     def _interfere_input_position_storage(cls, homogeneity_db, EntryRecipeDb, RequiredVariableSet):
         """Each position register is considered separately. If for one register 
@@ -301,31 +300,6 @@ class RecipeAcceptance(Recipe):
 
         return ip_offset_db
         
-    def get_mouth_Entry(self, mouth):
-        entry_db = dict(
-            (from_si, OpList())
-            for from_si in mouth.entry_register_db.iterkeys()
-        )
-
-        for register_id in mouth.undetermined_register_set:
-            if register_id == E_R.AcceptanceRegister:
-                self._let_acceptance_be_stored(entry_db, mouth)
-            else:
-                sub_register_id = register_id[1]
-                self._let_input_position_be_stored(entry_db, 
-                                                   mouth.entry_recipe_db, 
-                                                   sub_register_id)
-        return entry_db
-
-    def get_linear_Entry(self, linear):
-        return {}
-
-    def get_DropOut(self, info):
-        if self.accepter is None:
-            return Op.RouterByLastAcceptance(self.ip_offset_db)
-        else:
-            return Op.AccepterAndRouter(self.accepter, self.ip_offset_db)
-
     @staticmethod
     def _let_acceptance_be_stored(entry_db, EntryRecipeDb):
         """Sets 'store acceptance' commands at every entry into the state.
