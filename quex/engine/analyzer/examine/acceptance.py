@@ -144,7 +144,7 @@ class RecipeAcceptance(Recipe):
         return result_db
 
     @classmethod
-    def accumulate(cls, PrevRecipe, CurrSingleEntry):
+    def accumulation(cls, PrevRecipe, CurrSingleEntry):
         """RETURNS: Recipe =     concatenation of 'Recipe' 
                              and relevant operations of 'SingleEntry'.
         """
@@ -154,7 +154,7 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db, PrevRecipe.snapshot_map)
         
     @classmethod
-    def interfere(cls, EntryRecipeDb, RequiredVariableSet):
+    def interference(cls, Mouth):
         """Determines 'mouth' by 'interference'. That is, it considers all entry
         recipes and observes their homogeneity. 
 
@@ -166,19 +166,18 @@ class RecipeAcceptance(Recipe):
         entry, and are restored from inside the recipe.
         """
         snapshot_map, \
-        homogeneity_db = cls._interfere_snapshot_maps(EntryRecipeDb,
-                                                      RequiredVariableSet)
+        homogeneity_db = cls._snap_shot_map_interference(Mouth)
 
         # Acceptance
         accepter = cls._interfere_acceptance(snapshot_map, 
                                              homogeneity_db, 
-                                             EntryRecipeDb)
+                                             Mouth.entry_recipe_db)
 
         # Input position storage
         ip_offset_db = cls._interfere_input_position_storage(snapshot_map, 
                                                              homogeneity_db,
-                                                             EntryRecipeDb, 
-                                                             RequiredVariableSet)
+                                                             Mouth.entry_recipe_db, 
+                                                             Mouth.required_variable_set)
 
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map), homogeneity_db
 

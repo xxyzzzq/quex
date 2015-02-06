@@ -49,7 +49,7 @@ class Recipe:
     See [DOC] the according DEFINITION.
     """
     @staticmethod
-    def _interfere_snapshot_maps(EntryRecipeDb, RequiredVariableSet):
+    def _snap_shot_map_interference(Mouth):
         """This function supports the 'interference' procedure. When an entry recipe
         with respect to a variable 'v' is not homogeneous, then the variable's value
         must be computed upon entry and the snapshot map must contain the current 
@@ -81,10 +81,10 @@ class Recipe:
         """
         snapshot_map   = {}
         homogeneity_db = {}
-        for variable_id in RequiredVariableSet:
+        for variable_id in Mouth.required_variable_set:
             uniform_object = UniformObject.from_iterable(
                  recipe.snapshot_map[VariableId]
-                 for recipe in EntryRecipeDb.itervalues())
+                 for recipe in Mouth.entry_recipe_db.itervalues())
             )
             if uniform_object.plain_content() != Value.VOID:
                 # Homogeneity
@@ -96,6 +96,30 @@ class Recipe:
                 homogeneity_db[VariableId] = False
 
         return snapshot_map, homogeneity_db
+
+    def cautious_interference(cls, Mouth):
+        """According to [DOC], cautious interference may be entirely 
+        implemented relying on 'undetermined recipes', 'accumulation', 
+        and normal 'interference'. Thus, cautious interference is implemented
+        in the base class of recipes.
+
+        NOTE: Nothing is done to the homogeneity_db, because its adaption
+              will be a natural consequence of the undetermined recipe.
+        """
+        assert Mouth.mouth_f()
+        required_variable_set = Mouth.required_variable_set
+
+        # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
+        # before interference.
+        undetermined_recipe = self.recipe_type.undetermined(required_variable_set)
+        entry_recipe        = self.recipe_type.accumulate(undetermined_recipe,
+                                                          SingleEntry)
+
+        for predecessor_si, entry in Mouth.entry_recipe_db.items():
+            if entry is None: 
+                Mouth.entry_recipe_db[predecessor_si] = entry_recipe
+
+        return cls.interfere(Mouth)
 
     @classmethod
     def apply_inhomogeneity(cls, snapshot_map, homogeneity_db, VariableId, StateIndex):
