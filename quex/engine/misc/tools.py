@@ -6,8 +6,6 @@ from   collections import deque
 import sys
 import os
 
-
-
 def r_enumerate(x):
     """Reverse enumeration."""
     return izip(reversed(xrange(len(x))), reversed(x))
@@ -101,6 +99,7 @@ class UniformObject(object):
         result = UniformObject(EqualCmp, Initial=initial)
         for x in Iterable:
             result <<= x
+            if result._content == E_Values.VOID: break
         return result
 
     @staticmethod
@@ -132,6 +131,9 @@ class UniformObject(object):
         elif E_Values.VOID       == self._content: return False
         
         return self._equal(self._content, NewContent)
+
+    def plain_content(self):
+        return self._content
 
     @property
     def content(self):

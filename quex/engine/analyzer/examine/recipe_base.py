@@ -84,7 +84,7 @@ class Recipe:
         for variable_id in Mouth.required_variable_set:
             uniform_object = UniformObject.from_iterable(
                  recipe.snapshot_map[VariableId]
-                 for recipe in Mouth.entry_recipe_db.itervalues())
+                 for recipe in Mouth.entry_recipe_db.itervalues()
             )
             if uniform_object.plain_content() != Value.VOID:
                 # Homogeneity
