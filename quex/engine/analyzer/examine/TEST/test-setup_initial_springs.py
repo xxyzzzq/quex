@@ -4,6 +4,7 @@ import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.engine.state_machine.core                             import StateMachine
+from quex.engine.operations.se_operations                       import SeAccept
 from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
 from quex.engine.analyzer.examine.core                          import Examiner
@@ -14,6 +15,8 @@ if "--hwut-info" in sys.argv:
     sys.exit()
 
 sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
+
+sm.get_init_state().single_entry.add(SeAccept()) # Accept Failure
 
 examiner = Examiner(sm, RecipeAcceptance)
 examiner.categorize()

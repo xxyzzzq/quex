@@ -44,9 +44,6 @@ def do(SM, RecipeType):
     #    .mouth_db:  'mouth states' being entered from multiple states.
     examiner.categorize()
 
-    # Categorize => StateInfo-s are in place.
-    examiner.determine_required_sets_of_variables()
-    
     # Determine states from where a walk along linear states can begin.
     springs = examiner.setup_initial_springs()
 
@@ -75,18 +72,13 @@ class Examiner:
     implemented in the global '.do()' function.
     """
     def __init__(self, SM, RecipeType):
-        self._sm              = SM
-        self.recipe_type      = RecipeType
-        self.__predecessor_db = None
+        self._sm            = SM
+        self.recipe_type    = RecipeType
+        self.predecessor_db = self._sm.get_predecessor_db()
+        self.successor_db   = self._sm.get_successor_db(self.predecessor_db)
 
         self.linear_db   = {}  # map: state index --> LinearStateInfo
         self.mouth_db    = {}  # map: state index --> MouthStateInfo
-
-    @property
-    def predecessor_db(self):
-        if self.__predecessor_db is None:
-            self.__predecessor_db = self._sm.get_predecessor_db()
-        return self.__predecessor_db
 
     def categorize(self):
         """Separates the states of state machine into two categories:
@@ -124,12 +116,14 @@ class Examiner:
         
         REQUIRES: previous call to '.categorize()'
         """
-        db = self.recipe_type.get_required_variable_superset_db(self._sm, self.predecessor_db, self.successor_db)
+        db = self.recipe_type.get_required_variable_superset_db(self._sm, 
+                                                                self.predecessor_db, 
+                                                                self.successor_db)
 
         for si, required_set_of_variables in db.iteritems():
             self.get_state_info(si).required_set_of_variables = required_set_of_variables
 
-    def is_operation_constant(self, TheSingleEntry, VariableId=None, StateIndex=None):
+    def is_operation_constant(self, TheSingleEntry, RequiredVariableSet):
         """An operation upon entry into a state is 'constant', if it does not
         depend on a setting of the required variables in that state.  The
         'single_entry' member of a single-entry state represents the concept of an
@@ -139,16 +133,16 @@ class Examiner:
         RETURNS: True  -- if the operation is constant
                  False -- if not.
         """
-        if VariableId is None:
-            for variable_id in self.get_state_info(StateIndex).required_set_of_variables:
-                if not self.is_operation_constant(TheSingleEntry, variable_id):
-                    return False
-            return True
+        for variable_id in RequiredVariableSet:
+            if not self.is_operation_component_constant(TheSingleEntry, variable_id):
+                return False
+        return True
 
+    def is_operation_component_constant(self, TheSingleEntry, VariableId):
         # (1) An operation 'op(i)' that does not influence 'v' is not constant 
         #     (see discussion in [DOC])
         for cmd in TheSingleEntry: 
-            if cmd.assigns(VariableId): break
+            if VariableId in cmd.assigned_variable_ids(): break
         else:
             # There is a variable that is not assigned by 'op(i)'
             # => 'op(i)' is not constant
@@ -157,7 +151,7 @@ class Examiner:
         # (2) An operation that relies on a previous setting of 'v' is not constant
         #
         for cmd in TheSingleEntry: 
-            if cmd.requires(VariableId): return False
+            if VariableId in cmd.required_variable_ids(): return False
         return True
 
     def setup_initial_springs(self):
@@ -167,9 +161,12 @@ class Examiner:
 
         RETURNS: list of state indices of initial spring states.
         """
+        self.determine_required_sets_of_variables()
+    
         result = set()
         for si, state in self._sm.states.iteritems():
-            if not self.is_operation_constant(state.single_entry, si): continue
+            rsov = self.get_state_info(si).required_set_of_variables
+            if not self.is_operation_constant(state.single_entry, rsov): continue
             recipe = self.recipe_type.accumulation(None, state.single_entry)
             self.set_recipe(si, recipe)
             result.add(si)
@@ -197,6 +194,9 @@ class Examiner:
         """
         springs = Springs
         while springs:
+            for si in springs:
+                self.get_state_info.spring_f = True
+
             # Derive recipes along linear states starting from springs.
             mouths_ready_set = self._accumulate(springs) 
 
@@ -356,14 +356,14 @@ class LinearStateWalker(TreeWalker):
             if target_index is None: continue
             target_info = self.examiner.get_state_info(target_index)
             target      = self.examiner._sm.states[target_index]
-            accumulated = self.examiner.recipe_type.accumulate(CurrRecipe, 
-                                                               target.single_entry)
+            accumulated = self.examiner.recipe_type.accumulation(CurrRecipe, 
+                                                                 target.single_entry)
             if target_info.mouth_f():        
                 # Mouth state ahead => accumulate, but do NOT enter!
                 target_info.entry_recipe_db[CurrStateIndex] = accumulated
                 self.mouths_touched_set.add(target_index)
                 continue # terminal condition
-            elif target.spring_f():
+            elif target_info.spring_f:
                 continue # terminal condition
             else:
                 # Linear state ahead => accumulate and go further

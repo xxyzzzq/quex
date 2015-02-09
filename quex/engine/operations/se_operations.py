@@ -14,7 +14,7 @@ from quex.blackboard import E_PreContextIDs, \
                             E_R
 
 class SeOp:
-    def __init__(self, AcceptanceId=E_IncidenceIDs.MATCH_FAILURE):
+    def __init__(self, AcceptanceId):
         self.__acceptance_id = AcceptanceId
 
     def set_acceptance_id(self, PatternId):
@@ -26,6 +26,12 @@ class SeOp:
     def _string_annotate(self, Str):
         if self.__acceptance_id == E_IncidenceIDs.MATCH_FAILURE: return Str
         return "%s%s" % (Str, self.__acceptance_id)
+
+    def assigned_variable_ids(self):
+        assert False, "Must be implemented by derived class!"
+
+    def required_variable_ids(self, VariableId):
+        assert False, "Must be implemented by derived class!"
 
     def __eq__(self, Other):
         return self.__acceptance_id == Other.__acceptance_id
@@ -41,7 +47,9 @@ class SeAccept(SeOp):
                  AcceptanceId             = E_IncidenceIDs.MATCH_FAILURE, 
                  PreContextId             = E_PreContextIDs.NONE, 
                  RestorePositionRegisterF = False):
+
         SeOp.__init__(self, AcceptanceId)
+
         self.__pre_context_id              = PreContextId
         self.__restore_position_register_f = False
 
@@ -66,11 +74,23 @@ class SeAccept(SeOp):
     def restore_position_register_f(self):
         return self.__restore_position_register_f
     
-    def get_concerned_registers(self):
-        if self.__pre_context_id != E_PostContextIDs.NONE:
-            return (E_R.Acceptance, E_R.InputPosition, E_R.PrecontexID)
+    def assigned_variable_ids(self):
+        if not self.restore_position_register_f():
+            return (
+                E_R.AcceptanceRegister, 
+                (E_R.PositionRegister, E_IncidenceIDs.NON_POST_CONTEXT_MATCH)
+            )
         else:
-            return (E_R.Acceptance, E_R.InputPosition)
+            return (
+                E_R.AcceptanceRegister,
+                (E_R.PositionRegister, self.acceptance_id())
+            )
+
+    def required_variable_ids(self):
+        if self.__pre_context_id == E_PreContextIDs.NONE: 
+            return ()
+        else:
+            return (E_R.PreContextVerdict, self.__pre_context_id)
 
     def __eq__(self, Other):
         if   not Other.__class__ == SeAccept:                     return False
@@ -108,8 +128,11 @@ class SeStoreInputPosition(SeOp):
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         return result
 
-    def get_concerned_registers(self):
-        return E_R.InputPosition
+    def assigned_variable_ids(self, VariableId):
+        return ((E_R.PositionRegister, self.acceptance_id()),)
+
+    def required_variable_ids(self, VariableId):
+        return ()
 
     def __eq__(self, Other):
         if   Other.__class__ != SeStoreInputPosition: return False

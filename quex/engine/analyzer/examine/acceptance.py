@@ -12,6 +12,8 @@ from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
                             E_R
 
+from copy import copy
+from collections import defaultdict
 
 class RecipeAcceptance(Recipe):
     """Recipe tells what pattern wins (i.e. what its pattern id is), under what
@@ -36,10 +38,9 @@ class RecipeAcceptance(Recipe):
         acceptance-id is None => acceptance is restored from the auxiliary register
                                  for acceptance. In that case, the pre-context must 
                                  be 'None', too.
-                                 
-      .ip_offset_db:
-          
-              position register id   -->   offset
+
+        But, there must be an acceptance associated to no pre-context. So, it 
+        follows, that the last acceptance in the list MUST be 'un-pre-contexted'.
 
         Input position must be determined by
               
@@ -81,7 +82,7 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
 
     @staticmethod
-    def get_required_variable_superset_db(sm, StateIndex, PredecessorDb, SuccessorDb):
+    def get_required_variable_superset_db(SM, PredecessorDb, SuccessorDb):
         """RETURNS: A superset of the required registers for a given state. 
         
         According to [DOC], it is admissible to return a SUPERSET of what is
@@ -118,30 +119,46 @@ class RecipeAcceptance(Recipe):
         pattern 3 terminates (after 'otto') and the transition branches into
         the pattern 2 (to match an identifier consisting of letters).
         """
-        # Acceptance is always necessary. It must be clear what pattern matched.
-        always_necessary = set([
-            E_R.AcceptanceRegister,
-            (E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE)
-        ])
+        def tag_successors(db, si, SuccessorDb, VariableId):
+            db[si].add(VariableId)
+            for successor_si in SuccessorDb[si]:
+                db[successor_si].add(VariableId)
 
-        # Enter for each the absolute necessities
-        result_db = dict(
-            (si, copy(always_necessary)) for si in SM.states.iterkeys()
-        )
+        result = defaultdict(set)
+
+        # Acceptance is always necessary. It must be clear what pattern matched.
+        tag_successors(result, SM.init_state_index, SuccessorDb,
+                       E_R.AcceptanceRegister)
+        tag_successors(result, SM.init_state_index, SuccessorDb,
+                       (E_R.PositionRegister, E_IncidenceIDs.NON_POST_CONTEXT_MATCH))
+
+        def cmd_iterable(SM, CmdType):
+            """Iterate over all states and commands which are concerned of the
+            given command type.
+            """
+            for si, state in SM.states.iteritems():
+                for cmd in state.single_entry.get_iterable(CmdType):
+                    yield si, cmd
 
         # Superset upon 'store-input position':
         #
         # If a state stores the input position in a register, then any state
         # which it may reach is subject to its requirement. 
         #
-        for si, state in SM.states.iteritems():
-            for cmd in single_entry.get_iterable(SeStoreInputPosition):
-                variable_id = (E_R.PositionRegister, cmd.acceptance_id())
-                result[si].add(variable_id)
-                for successor_si in SuccessorDb[si]:
-                    result[successor_si].add(variable_id)
+        # Acceptance:
+        for si, cmd in cmd_iterable(SM, SeAccept):
+            # All states are tagged with 'position register' NON_POST_CONTEXT_MATCH'
+            if not cmd.restore_position_register_f(): continue
+            tag_successors(result, si, SuccessorDb, 
+                           (E_R.PositionRegister, cmd.acceptance_id()))
 
-        return result_db
+        # Position Register:
+        for si, cmd in cmd_iterable(SM, SeStoreInputPosition):
+            if cmd.pre_context_id() == E_PreContextIDs.NONE: continue
+            tag_successors(result, si, SuccessorDb,
+                           (E_R.PreContextVerdict, cmd.pre_context_id())) 
+
+        return result
 
     @classmethod
     def accumulation(cls, PrevRecipe, CurrSingleEntry):
@@ -151,7 +168,14 @@ class RecipeAcceptance(Recipe):
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        return RecipeAcceptance(accepter, ip_offset_db, PrevRecipe.snapshot_map)
+        if PrevRecipe is None:
+            # Only possible of CurrSingleEntry is constant, then the snapshot map
+            # is empty.
+            snapshot_map = defaultdict(set)
+        else:
+            snapshot_map = copy(PrevRecipe.snapshot_map)
+
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
         
     @classmethod
     def interference(cls, Mouth):
@@ -187,12 +211,17 @@ class RecipeAcceptance(Recipe):
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
-        assert PrevRecipe.accepter
+        assert PrevRecipe is None or PrevRecipe.accepter
+
+        def acceptance_sort_key(Cmd):
+            """MATCH_FAILURE *must* always have the lowest precedence!"""
+            if Cmd.acceptance_id() == E_IncidenceIDs.MATCH_FAILURE: return 1e37
+            return Cmd.acceptance_id()
 
         accepter        = []
         unconditional_f = False
         for cmd in sorted(CurrEntry.get_iterable(SeAccept), 
-                          key=lambda x: x.acceptance_id()):
+                          key=acceptance_sort_key):
             accepter.append(cmd)
             if cmd.pre_context_id() == E_PreContextIDs.NONE: 
                 # Unconditional acceptance overrules all later acceptances.
@@ -200,10 +229,11 @@ class RecipeAcceptance(Recipe):
         else:
             # No unconditional acceptance occurred, the previous acceptances
             # must be appended--if there is something.
-            if PrevRecipe.accepter:
+            if PrevRecipe is not None and PrevRecipe.accepter:
                 accepter.extend(PrevRecipe.accepter)
 
-        assert accepter
+        # There *must* be something to do, even if no pre-context matched.
+        assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
         return accepter
 
     @staticmethod
@@ -238,8 +268,10 @@ class RecipeAcceptance(Recipe):
         # defines the current position as the point where the input pointer
         # needs to be reset upon acceptance.
         for cmd in CurrSingleEntry.get_iterable(SeAccept): 
-            if cmd.restore_position_register_f(): continue
-            ip_offset_db[cmd.acceptance_id()] = 0
+            if not cmd.restore_position_register_f(): 
+                ip_offset_db[E_IncidenceIDs.NON_POST_CONTEXT_MATCH] = False
+            else:
+                ip_offset_db[cmd.acceptance_id()] = 0
 
         return ip_offset_db
 
@@ -272,6 +304,7 @@ class RecipeAcceptance(Recipe):
             cls.apply_inhomogeneity(snapshot_map, homogeneity_db, 
                                     E_R.AcceptanceRegister)
 
+        assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
         return accepter
 
     @classmethod

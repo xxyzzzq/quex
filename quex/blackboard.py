@@ -119,6 +119,7 @@ E_TerminalType = Enum("MATCH_PATTERN",   # A pattern match
 E_IncidenceIDs = Enum(
 # Incidences encompass 'pattern acceptance events' and any other incidences
 # mentioned below. IncidenceID-s are keys to the standard_incidence_db.
+    "NON_POST_CONTEXT_MATCH",
     "AFTER_MATCH",
     "BIPD_TERMINATED",
     "CODEC_ERROR",
@@ -138,7 +139,7 @@ E_IncidenceIDs = Enum(
     "MATCH_FAILURE",
     "MODE_ENTRY",
     "MODE_EXIT",
-    "PRE_CONTEXT_FULFILLED",
+    "PRE_CONTEXT_VERDICT",
     "SKIP", 
     "SKIP_NESTED_RANGE", 
     "SKIP_RANGE", 
@@ -149,7 +150,7 @@ E_IncidenceIDs = Enum(
 
 E_IncidenceIDs_SubsetAcceptanceIDs = [
     E_IncidenceIDs.MATCH_FAILURE,
-    E_IncidenceIDs.PRE_CONTEXT_FULFILLED, 
+    E_IncidenceIDs.PRE_CONTEXT_VERDICT, 
     E_IncidenceIDs.BIPD_TERMINATED, 
     E_IncidenceIDs.VOID,
     E_IncidenceIDs.INDENTATION_HANDLER,
@@ -223,6 +224,7 @@ E_R = Enum("AcceptanceRegister",
            "Line",
            "PathIterator",
            "PreContextFlags",
+           "PreContextVerdict",
            "ReferenceP",
            "StandardOutput",
            "PositionRegister",

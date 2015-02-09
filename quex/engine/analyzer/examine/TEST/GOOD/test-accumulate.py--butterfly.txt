@@ -11,9 +11,11 @@ Mouths ready for interference:
 Linear States:
   00     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [MATCH_FAILURE] offset: 0
            [4711] offset: 0
-     
+
   02 <void>
   03 <void>
   04 <void>
@@ -22,3 +24,5 @@ Linear States:
   07 <void>
 Mouth States:
   01 <void>
+
+
