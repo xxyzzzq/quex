@@ -1,20 +1,25 @@
 {
 file_name: test-accumulate.py;
 result_list: [
-  [ linear; NO OUTPUT; 0.041999; None; ]
-  [ butterfly; NO OUTPUT; 0.078681; None; ]
-  [ long_loop; NO OUTPUT; 0.041799; None; ]
-  [ nested_loop; NO OUTPUT; 0.043167; None; ]
-  [ mini_loop; NO OUTPUT; 0.043913; None; ]
-  [ fork; NO OUTPUT; 0.047646; None; ]
-  [ fork2; NO OUTPUT; 0.042145; None; ]
-  [ fork3; NO OUTPUT; 0.042621; None; ]
-  [ fork4; NO OUTPUT; 0.043465; None; ]
-  [ tree; NO OUTPUT; 0.042686; None; ]
+  [ linear; FAIL; 0.062041; None; ]
+  [ butterfly; OK; 0.062043; 1137600730; ]
+  [ long_loop; FAIL; 0.062742; None; ]
+  [ nested_loop; FAIL; 0.065890; None; ]
+  [ mini_loop; FAIL; 0.061879; None; ]
+  [ fork; FAIL; 0.062447; None; ]
+  [ fork2; FAIL; 0.062585; None; ]
+  [ fork3; FAIL; 0.065461; None; ]
+  [ fork4; FAIL; 0.063694; None; ]
+  [ tree; FAIL; 0.065398; None; ]
+  [ mini_bubble; NO GOOD FILE; 0.062183; None; ]
+  [ bubble; NO GOOD FILE; 0.061292; None; ]
+  [ bubble2; NO GOOD FILE; 0.063430; None; ]
+  [ bubble3; NO GOOD FILE; 0.061970; None; ]
+  [ bubble4; NO GOOD FILE; 0.063445; None; ]
 ]
 interpreter_list: [ python; ]
 title: Accumulation;
-hwut_info_time: 1418544121L;
+hwut_info_time: 1423468047L;
 }
 {
 file_name: test-categorize.py;
@@ -78,12 +83,12 @@ hwut_info_time: 1419073955L;
 {
 file_name: test-setup_initial_springs.py;
 result_list: [
-  [ linear; FAIL; 0.065876; None; ]
-  [ long_loop; NO OUTPUT; 0.040634; None; ]
+  [ linear; FAIL; 0.064627; -2069798681; ]
+  [ long_loop; FAIL; 0.062045; 1134033881; ]
 ]
 interpreter_list: [ python; ]
 title: Setup Initial Spring States;
-hwut_info_time: 1418544138L;
+hwut_info_time: 1423465888L;
 }
 {
 file_name: test-interference3.py;

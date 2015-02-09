@@ -435,6 +435,22 @@ class StateMachine(object):
 
         return predecessor_db
 
+    def get_successor_db(self, HintPredecessorDb):
+        """RETURNS:
+
+            map:   state index ---> set of states on the path from init state to this state.
+
+        The algorithm takes the result from 'get_predecessor_db' and inverts it.
+        """
+        if not HintPredecessorDb:
+            HintPredecessorDb = self.get_predecessor_db()
+
+        successor_db = defaultdict(set)
+        for si, predecessor_set in HintPredecessorDb.iteritems():
+            for predecessor_si in predecessor_set:
+                successor_db[predecessor_si].add(si)
+        return successor_db
+
     def get_number_sequence(self):
         """Returns a number sequence that represents the state machine.
         If the state machine cannot be represented by a plain chain of 
