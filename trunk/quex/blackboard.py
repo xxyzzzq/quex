@@ -119,10 +119,10 @@ E_TerminalType = Enum("MATCH_PATTERN",   # A pattern match
 E_IncidenceIDs = Enum(
 # Incidences encompass 'pattern acceptance events' and any other incidences
 # mentioned below. IncidenceID-s are keys to the standard_incidence_db.
-    "NON_POST_CONTEXT_MATCH",
     "AFTER_MATCH",
     "BIPD_TERMINATED",
     "CODEC_ERROR",
+    "CONTEXT_FREE_MATCH",
     "DEDENT",
     "END_OF_STREAM",
     "EXIT_LOOP",

@@ -81,8 +81,8 @@ class RecipeAcceptance(Recipe):
 
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
 
-    @staticmethod
-    def get_required_variable_superset_db(SM, PredecessorDb, SuccessorDb):
+    @classmethod
+    def get_required_variable_superset_db(cls, SM, PredecessorDb, SuccessorDb):
         """RETURNS: A superset of the required registers for a given state. 
         
         According to [DOC], it is admissible to return a SUPERSET of what is
@@ -119,26 +119,13 @@ class RecipeAcceptance(Recipe):
         pattern 3 terminates (after 'otto') and the transition branches into
         the pattern 2 (to match an identifier consisting of letters).
         """
-        def tag_successors(db, si, SuccessorDb, VariableId):
-            db[si].add(VariableId)
-            for successor_si in SuccessorDb[si]:
-                db[successor_si].add(VariableId)
-
         result = defaultdict(set)
 
         # Acceptance is always necessary. It must be clear what pattern matched.
-        tag_successors(result, SM.init_state_index, SuccessorDb,
-                       E_R.AcceptanceRegister)
-        tag_successors(result, SM.init_state_index, SuccessorDb,
-                       (E_R.PositionRegister, E_IncidenceIDs.NON_POST_CONTEXT_MATCH))
-
-        def cmd_iterable(SM, CmdType):
-            """Iterate over all states and commands which are concerned of the
-            given command type.
-            """
-            for si, state in SM.states.iteritems():
-                for cmd in state.single_entry.get_iterable(CmdType):
-                    yield si, cmd
+        cls.tag_successors(result, SM.init_state_index, SuccessorDb,
+                           E_R.AcceptanceRegister)
+        cls.tag_successors(result, SM.init_state_index, SuccessorDb,
+                           (E_R.PositionRegister, E_IncidenceIDs.CONTEXT_FREE_MATCH))
 
         # Superset upon 'store-input position':
         #
@@ -146,17 +133,17 @@ class RecipeAcceptance(Recipe):
         # which it may reach is subject to its requirement. 
         #
         # Acceptance:
-        for si, cmd in cmd_iterable(SM, SeAccept):
-            # All states are tagged with 'position register' NON_POST_CONTEXT_MATCH'
-            if not cmd.restore_position_register_f(): continue
-            tag_successors(result, si, SuccessorDb, 
-                           (E_R.PositionRegister, cmd.acceptance_id()))
+        for si, cmd in cls.cmd_iterable(SM, SeAccept):
+            # All states are already tagged with 'position register' CONTEXT_FREE_MATCH'
+            if cmd.position_register_id() == E_IncidenceIDs.CONTEXT_FREE_MATCH:
+                continue
+            cls.tag_successors(result, si, SuccessorDb, 
+                               (E_R.PositionRegister, cmd.position_register_id()))
 
         # Position Register:
-        for si, cmd in cmd_iterable(SM, SeStoreInputPosition):
-            if cmd.pre_context_id() == E_PreContextIDs.NONE: continue
-            tag_successors(result, si, SuccessorDb,
-                           (E_R.PreContextVerdict, cmd.pre_context_id())) 
+        for si, cmd in cls.cmd_iterable(SM, SeStoreInputPosition):
+            cls.tag_successors(result, si, SuccessorDb,
+                               (E_R.PositionRegister, cmd.position_register_id())) 
 
         return result
 
@@ -261,17 +248,18 @@ class RecipeAcceptance(Recipe):
         else:
             ip_offset_db = {}
 
-        for cmd in CurrSingleEntry.get_iterable(SeStoreInputPosition): 
-            ip_offset_db[cmd.acceptance_id()] = 0
+        ip_offset_db.update(
+            (cmd.position_register_id(), 0)
+            for cmd in CurrSingleEntry.get_iterable(SeStoreInputPosition)
+        )
 
         # Any acceptance that does not restore from a position register
         # defines the current position as the point where the input pointer
         # needs to be reset upon acceptance.
-        for cmd in CurrSingleEntry.get_iterable(SeAccept): 
-            if not cmd.restore_position_register_f(): 
-                ip_offset_db[E_IncidenceIDs.NON_POST_CONTEXT_MATCH] = False
-            else:
-                ip_offset_db[cmd.acceptance_id()] = 0
+        ip_offset_db.update(
+            (cmd.position_register_id(), 0)
+            for cmd in CurrSingleEntry.get_iterable(SeAccept)
+        )
 
         return ip_offset_db
 

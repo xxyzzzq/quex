@@ -11,29 +11,63 @@ Mouths ready for interference:
 Linear States:
   00     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: 0
            [4711] offset: 0
      
   01     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: -1
            [4711] offset: -1
      
   02     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: -2
            [4711] offset: -2
      
   03     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: -2
            [4711] offset: -2
      
   04     Accepter:
            pre33 => 4711
+           MATCH_FAILURE
          InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: -2
            [4711] offset: -2
      
   06 <void>
 Mouth States:
   05 <void>
+  from 2:
+    Accepter:
+      pre33 => 4711
+      MATCH_FAILURE
+    InputOffsetDb:
+      [CONTEXT_FREE_MATCH] offset: -3
+      [4711] offset: -3
+
+  from 3:
+    Accepter:
+      pre33 => 4711
+      MATCH_FAILURE
+    InputOffsetDb:
+      [CONTEXT_FREE_MATCH] offset: -3
+      [4711] offset: -3
+
+  from 4:
+    Accepter:
+      pre33 => 4711
+      MATCH_FAILURE
+    InputOffsetDb:
+      [CONTEXT_FREE_MATCH] offset: -3
+      [4711] offset: -3
+

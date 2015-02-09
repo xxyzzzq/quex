@@ -3,7 +3,7 @@ Recipe: {
     Accepter:
       MATCH_FAILURE
     InputOffsetDb:
-      [MATCH_FAILURE] offset: 0
+      [CONTEXT_FREE_MATCH] offset: 0
 
 }
 Linear States:
@@ -15,10 +15,3 @@ Linear States:
 Mouth States:
    00: determined: True
    06: determined: False
-
-
-
-
-
-
-
