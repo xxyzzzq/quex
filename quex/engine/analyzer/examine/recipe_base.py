@@ -130,6 +130,21 @@ class Recipe:
         snapshot_map[VariableId]   = StateIndex
         homogeneity_db[VariableId] = False
 
+    @staticmethod
+    def tag_successors(db, si, SuccessorDb, VariableId):
+        db[si].add(VariableId)
+        for successor_si in SuccessorDb[si]:
+            db[successor_si].add(VariableId)
+
+    @staticmethod
+    def cmd_iterable(SM, CmdType):
+        """Iterate over all states and commands which are concerned of the
+        given command type.
+        """
+        for si, state in SM.states.iteritems():
+            for cmd in state.single_entry.get_iterable(CmdType):
+                yield si, cmd
+
     @classmethod
     def get_SCR_operations(cls, TheState):
         """For a given state, it extracts the operations upon entry which 

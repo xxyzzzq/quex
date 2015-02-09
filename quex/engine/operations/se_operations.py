@@ -74,17 +74,17 @@ class SeAccept(SeOp):
     def restore_position_register_f(self):
         return self.__restore_position_register_f
     
-    def assigned_variable_ids(self):
-        if not self.restore_position_register_f():
-            return (
-                E_R.AcceptanceRegister, 
-                (E_R.PositionRegister, E_IncidenceIDs.NON_POST_CONTEXT_MATCH)
-            )
+    def position_register_id(self):
+        if self.restore_position_register_f() or self.pre_context_id() != E_PreContextIDs.NONE: 
+            return self.acceptance_id()
         else:
-            return (
-                E_R.AcceptanceRegister,
-                (E_R.PositionRegister, self.acceptance_id())
-            )
+            return E_IncidenceIDs.CONTEXT_FREE_MATCH
+
+    def assigned_variable_ids(self):
+        return (
+            E_R.AcceptanceRegister, 
+            (E_R.PositionRegister, self.position_register_id())
+        )
 
     def required_variable_ids(self):
         if self.__pre_context_id == E_PreContextIDs.NONE: 
@@ -129,10 +129,13 @@ class SeStoreInputPosition(SeOp):
         return result
 
     def assigned_variable_ids(self, VariableId):
-        return ((E_R.PositionRegister, self.acceptance_id()),)
+        return ((E_R.PositionRegister, self.position_register_id()),)
 
     def required_variable_ids(self, VariableId):
         return ()
+
+    def position_register_id(self):
+        return self.acceptance_id()
 
     def __eq__(self, Other):
         if   Other.__class__ != SeStoreInputPosition: return False

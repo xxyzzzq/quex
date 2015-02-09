@@ -45,4 +45,7 @@ for si, info in sorted(examiner.linear_db.iteritems()):
 print "Mouth States:"
 for si, info in sorted(examiner.mouth_db.iteritems()):
     print_recipe(si, info.recipe)
+    for predecessor_si, entry_recipe in info.entry_recipe_db.iteritems():
+        print "  from %i:" % predecessor_si
+        print entry_recipe
 
