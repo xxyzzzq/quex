@@ -34,3 +34,24 @@ def add_SeAccept(sm, StateIndex, AcceptanceId, PreContextId=E_PreContextIDs.NONE
 def add_SeStoreInputPosition(sm, StateIndex, RegisterId):
     sm.states[StateIndex].single_entry.add(SeStoreInputPosition(RegisterId))
     print "(%i) Store InputP %s" % (StateIndex, RegisterId)
+
+def print_recipe(si, R):
+    if R is None: 
+        print "  %02i <void>" % si
+    else:
+        print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
+
+def print_mouth(si, Mouth):
+    print_recipe(si, Mouth.recipe)
+    print_snapshot_map(Mouth.recipe.snapshot_map)
+    print_entry_recipe_db(Mouth.entry_recipe_db)
+
+def print_snapshot_map(SnapshotMap):
+    print "  snapshot_map: [%s]" % "".join("%s@%s" % (x,y) for x,y in SnapshotMap.iteritems())
+
+def print_entry_recipe_db(EntryRecipeDb):
+    for predecessor_si, entry_recipe in EntryRecipeDb.iteritems():
+        print "  from %i:" % predecessor_si
+        print entry_recipe
+
+

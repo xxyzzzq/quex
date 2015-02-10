@@ -50,7 +50,6 @@ def get_array(EntryN, AcceptanceScheme):
         for i in xrange(EntryN) 
     ]
 
-
 def get_MouthStateInfo(EntryN, AcceptanceScheme):
     info  = MouthStateInfo(FromStateIndexSet=set(xrange(entry_n)))
     array = get_array(entry_n, AcceptanceScheme)

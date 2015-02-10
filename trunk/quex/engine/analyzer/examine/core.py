@@ -120,8 +120,8 @@ class Examiner:
                                                                 self.predecessor_db, 
                                                                 self.successor_db)
 
-        for si, required_set_of_variables in db.iteritems():
-            self.get_state_info(si).required_set_of_variables = required_set_of_variables
+        for si, required_variable_set in db.iteritems():
+            self.get_state_info(si).required_variable_set = required_variable_set
 
     def is_operation_constant(self, TheSingleEntry, RequiredVariableSet):
         """An operation upon entry into a state is 'constant', if it does not
@@ -165,7 +165,7 @@ class Examiner:
     
         result = set()
         for si, state in self._sm.states.iteritems():
-            rsov = self.get_state_info(si).required_set_of_variables
+            rsov = self.get_state_info(si).required_variable_set
             if not self.is_operation_constant(state.single_entry, rsov): continue
             recipe = self.recipe_type.accumulation(None, state.single_entry)
             self.set_recipe(si, recipe)
@@ -299,7 +299,7 @@ class Examiner:
         for si in CandidateSet:
             mouth = self.get_state_info(si)
             mouth.recipe, \
-            mouth.homogeneity_db = self.recipe_type.interference(mouth)
+            mouth.homogeneity_db = self.recipe_type.interference(mouth, si)
 
     def _cautious_interference(self, HorizonStateSet):
         """Cautious interferences, as described in [DOC] may be implemented by 

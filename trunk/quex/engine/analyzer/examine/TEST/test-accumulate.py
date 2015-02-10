@@ -29,12 +29,6 @@ examiner.categorize()
 springs         = examiner.setup_initial_springs()
 mouth_ready_set = examiner._accumulate(springs)
 
-def print_recipe(si, R):
-    if R is None: 
-        print "  %02i <void>" % si
-    else:
-        print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
-
 print "Mouths ready for interference:"
 print "   %s" % sorted(list(mouth_ready_set))
 print

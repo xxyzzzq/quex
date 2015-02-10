@@ -37,7 +37,7 @@ def print_recipe(si, R, UndeterminedSet):
 
 def get_array(EntryN, AcceptanceScheme):
     return [ 
-        RecipeAcceptance(deepcopy(AcceptanceScheme), {}) 
+        RecipeAcceptance(deepcopy(AcceptanceScheme), {}, {}) 
         for i in xrange(EntryN) 
     ]
 
@@ -46,18 +46,28 @@ def get_MouthStateInfo(EntryN, AcceptanceScheme):
     array = get_array(entry_n, AcceptanceScheme)
     for i, recipe in enumerate(array):
         info.entry_recipe_db[i] = recipe
+        info.required_variable_set = set([E_R.AcceptanceRegister])
     return info
 
-scheme_restore  = [ RecipeAcceptance.RestoreAll(0L) ]
-scheme_simple   = [ get_SeAccept(1111L, E_PreContextIDs.NONE, False) ]
-scheme_simple2  = [ get_SeAccept(2222L, 22L,                  True) ]
+scheme_restore  = [ 
+    RecipeAcceptance.RestoreAcceptance 
+]
+scheme_simple   = [ 
+    SeAccept(1111L, E_PreContextIDs.NONE, False) 
+]
+scheme_simple2  = [ 
+    SeAccept(2222L, 22L,                  True) 
+]
 scheme_list     = [ 
-    get_SeAccept(3333L, 33L, True), 
-    get_SeAccept(4444L, 44L, True), 
-    get_SeAccept(5555L, E_PreContextIDs.NONE, True) 
+    SeAccept(3333L, 33L, True), 
+    SeAccept(4444L, 44L, True), 
+    SeAccept(5555L, E_PreContextIDs.NONE, True) 
 ]
 
 examiner = Examiner(StateMachine(), RecipeAcceptance)
+examiner.categorize()
+examiner.setup_initial_springs()
+
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
 examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore)
@@ -65,11 +75,11 @@ examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple)
 examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2)
 examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
 
-examiner._interfere(set([1L, 2L, 3L, 4L]))
+examiner._interference(set([1L, 2L, 3L, 4L]))
 
 
 print "Mouth States:"
 for si, info in examiner.mouth_db.iteritems():
-    print_recipe(si, info.recipe, info.undetermined_register_set)
-    print
+    print_mouth(si, info)
+    print "--------------------------------------------------------------------"
 

@@ -70,15 +70,20 @@ class RecipeAcceptance(Recipe):
     def undetermined(cls, RequiredVariableSet):
         """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
         """
-        accepter = [ cls.RestoreAcceptance ]
+        accepter = [ 
+            cls.RestoreAcceptance 
+        ]
 
-        for variable_id in RequiredVariableSet:
-            if type(variable_id) != tuple: continue
-            ip_offset_db[variable_id] = None     # position[i] = Aux(position[i])
+        ip_offset_db = dict(
+            (variable_id, None)                  # position[i] = Aux(position[i])
+            for variable_id in RequiredVariableSet
+            if type(variable_id) == tuple
+        )
 
-        for variable_id in RequiredVariableSet:
-            snapshot_map[variable_id] = None     # That is: 'sigma' in [DOC]
-
+        snapshot_map = dict(        
+            (variable_id, None)                  # None = 'sigma' in [DOC]
+            for variable_id in RequiredVariableSet
+        )
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
 
     @classmethod
@@ -165,7 +170,7 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
         
     @classmethod
-    def interference(cls, Mouth):
+    def interference(cls, Mouth, StateIndex):
         """Determines 'mouth' by 'interference'. That is, it considers all entry
         recipes and observes their homogeneity. 
 
@@ -177,7 +182,9 @@ class RecipeAcceptance(Recipe):
         entry, and are restored from inside the recipe.
         """
         snapshot_map, \
-        homogeneity_db = cls._snap_shot_map_interference(Mouth)
+        homogeneity_db = cls._snap_shot_map_interference(Mouth, StateIndex)
+        print "#snapshot_map:", snapshot_map
+        print "#homogeneity_db:", homogeneity_db
 
         # Acceptance
         accepter = cls._interfere_acceptance(snapshot_map, 
@@ -296,7 +303,7 @@ class RecipeAcceptance(Recipe):
         return accepter
 
     @classmethod
-    def _interfere_input_position_storage(cls, homogeneity_db, EntryRecipeDb, RequiredVariableSet):
+    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, RequiredVariableSet):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
