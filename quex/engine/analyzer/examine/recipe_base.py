@@ -19,7 +19,8 @@ functions with meaningful content.
 
 (C) Frank-Rene Schaefer
 """
-from quex.blackboard import E_StateIndices
+from quex.engine.misc.tools  import UniformObject, E_Values
+from quex.blackboard         import E_StateIndices
 
 class Recipe:
     """Base class for SCR recipes. The general recipe depends on:
@@ -49,7 +50,7 @@ class Recipe:
     See [DOC] the according DEFINITION.
     """
     @staticmethod
-    def _snap_shot_map_interference(Mouth):
+    def _snap_shot_map_interference(Mouth, StateIndex):
         """This function supports the 'interference' procedure. When an entry recipe
         with respect to a variable 'v' is not homogeneous, then the variable's value
         must be computed upon entry and the snapshot map must contain the current 
@@ -82,18 +83,22 @@ class Recipe:
         snapshot_map   = {}
         homogeneity_db = {}
         for variable_id in Mouth.required_variable_set:
+
             uniform_object = UniformObject.from_iterable(
-                 recipe.snapshot_map[VariableId]
+                 recipe.snapshot_map[variable_id]
                  for recipe in Mouth.entry_recipe_db.itervalues()
             )
-            if uniform_object.plain_content() != Value.VOID:
+            for i, recipe in enumerate(Mouth.entry_recipe_db.itervalues()):
+                 print "#rsnmp", i, recipe.snapshot_map
+
+            if uniform_object.plain_content() != E_Values.VOID:
                 # Homogeneity
-                snapshot_map[VariableId]   = uniform_object.content
-                homogeneity_db[VariableId] = True
+                snapshot_map[variable_id]   = uniform_object.content
+                homogeneity_db[variable_id] = True
             else:
                 # Inhomogeneity
-                snapshot_map[VariableId]   = StateIndex
-                homogeneity_db[VariableId] = False
+                snapshot_map[variable_id]   = StateIndex
+                homogeneity_db[variable_id] = False
 
         return snapshot_map, homogeneity_db
 
