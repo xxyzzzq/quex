@@ -5,6 +5,7 @@ from quex.engine.operations.se_operations     import SeAccept, \
                                                      SeStoreInputPosition
 from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
                                                      UniformObject, \
+                                                     E_Values, \
                                                      none_is_None, \
                                                      all_isinstance
 
@@ -183,19 +184,19 @@ class RecipeAcceptance(Recipe):
         """
         snapshot_map, \
         homogeneity_db = cls._snap_shot_map_interference(Mouth, StateIndex)
-        print "#snapshot_map:", snapshot_map
-        print "#homogeneity_db:", homogeneity_db
 
         # Acceptance
         accepter = cls._interfere_acceptance(snapshot_map, 
                                              homogeneity_db, 
-                                             Mouth.entry_recipe_db)
+                                             Mouth.entry_recipe_db, 
+                                             StateIndex)
 
         # Input position storage
         ip_offset_db = cls._interfere_input_position_storage(snapshot_map, 
                                                              homogeneity_db,
                                                              Mouth.entry_recipe_db, 
-                                                             Mouth.required_variable_set)
+                                                             Mouth.required_variable_set, 
+                                                             StateIndex)
 
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map), homogeneity_db
 
@@ -271,7 +272,7 @@ class RecipeAcceptance(Recipe):
         return ip_offset_db
 
     @classmethod
-    def _interfere_acceptance(cls, snapshot_map, homogeneity_db, EntryRecipeDb):
+    def _interfere_acceptance(cls, snapshot_map, homogeneity_db, EntryRecipeDb, StateIndex):
         """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
@@ -290,20 +291,20 @@ class RecipeAcceptance(Recipe):
                                recipe.accepter
                                for recipe in EntryRecipeDb.itervalues()).plain_content()
 
-        if accepter != E_Value.VOID:
+        if accepter != E_Values.VOID:
             # Homogeneity
             pass
         else:
             # Inhomogeneity
             accepter = [ cls.RestoreAcceptance ]
             cls.apply_inhomogeneity(snapshot_map, homogeneity_db, 
-                                    E_R.AcceptanceRegister)
+                                    E_R.AcceptanceRegister, StateIndex)
 
         assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
         return accepter
 
     @classmethod
-    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, RequiredVariableSet):
+    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, RequiredVariableSet, StateIndex):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
@@ -322,7 +323,7 @@ class RecipeAcceptance(Recipe):
             else:
                 # Inhomogeneity
                 offset = None
-                cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id)
+                cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id, StateIndex)
 
             ip_offset_db[variable_id] = offset
 

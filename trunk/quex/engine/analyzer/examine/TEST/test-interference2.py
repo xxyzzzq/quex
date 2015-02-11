@@ -23,29 +23,6 @@ if "--hwut-info" in sys.argv:
 choice  = sys.argv[1].split("-")
 entry_n = int(choice[0])
 
-
-def get_array(EntryN, AcceptanceScheme):
-    def get_entry(i, AcceptanceScheme):
-        """Let one entry be different."""
-        result = deepcopy(AcceptanceScheme)
-        if i == 1:  # i = 1, always happens
-            # always only take the last as different
-            if result is None: result = [ 100000 ]
-            else:              result[len(result)-1] = 100000
-        return result
-
-    return [ 
-        RecipeAcceptance(get_entry(i, AcceptanceScheme), {}) 
-        for i in xrange(EntryN) 
-    ]
-
-def get_MouthStateInfo(EntryN, AcceptanceScheme):
-    info  = MouthStateInfo(FromStateIndexSet=set(xrange(entry_n)))
-    array = get_array(entry_n, AcceptanceScheme)
-    for i, recipe in enumerate(array):
-        info.entry_recipe_db[i] = recipe
-    return info
-
 scheme_restore  = [ 
     RecipeAcceptance.RestoreAcceptance 
 ]
@@ -64,11 +41,11 @@ scheme_list     = [
 examiner = Examiner(StateMachine(), RecipeAcceptance)
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
-examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore)
-examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple)
-examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2)
-examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
+examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore, False)
+examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple, False)
+examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2, False)
+examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list, False)
 
-examiner._interfere(set([1L, 2L, 3L, 4L]))
+examiner._interference(set([1L, 2L, 3L, 4L]))
 
 print_interference_result(examiner.mouth_db)

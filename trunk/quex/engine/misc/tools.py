@@ -94,7 +94,7 @@ class UniformObject(object):
     @staticmethod
     def from_iterable(Iterable, EqualCmp=lambda x,y: x==y):
         try:    initial = Iterable.next()
-        except: return UniformObject(EqualCmp, Initial=E_Values.VOID)
+        except: return UniformObject(EqualCmp, Initial=E_Values.UNASSIGNED)
 
         result = UniformObject(EqualCmp, Initial=initial)
         for x in Iterable:

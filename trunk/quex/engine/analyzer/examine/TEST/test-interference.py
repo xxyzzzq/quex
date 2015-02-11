@@ -23,18 +23,6 @@ if "--hwut-info" in sys.argv:
 choice  = sys.argv[1].split("-")
 entry_n = int(choice[0])
 
-def print_recipe(si, R, UndeterminedSet):
-    if R is None: 
-        print "  %02i <void> (ERROR!)" % si
-    else:
-        if UndeterminedSet is None:
-            undetermined_str = "ALL(ERROR!)"
-        else:
-            undetermined_str = str(sorted(list(UndeterminedSet)))
-
-        print "  %02i %s    Undetermined: %s" % (si, str(R).replace("\n", "\n     "), 
-                                               undetermined_str)
-
 def get_array(EntryN, AcceptanceScheme):
     return [ 
         RecipeAcceptance(deepcopy(AcceptanceScheme), {}, {}) 
@@ -56,7 +44,7 @@ scheme_simple   = [
     SeAccept(1111L, E_PreContextIDs.NONE, False) 
 ]
 scheme_simple2  = [ 
-    SeAccept(2222L, 22L,                  True) 
+    SeAccept(2222L, E_PreContextIDs.NONE, True) 
 ]
 scheme_list     = [ 
     SeAccept(3333L, 33L, True), 
@@ -77,9 +65,5 @@ examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
 
 examiner._interference(set([1L, 2L, 3L, 4L]))
 
-
-print "Mouth States:"
-for si, info in examiner.mouth_db.iteritems():
-    print_mouth(si, info)
-    print "--------------------------------------------------------------------"
+print_interference_result(examiner.mouth_db)
 
