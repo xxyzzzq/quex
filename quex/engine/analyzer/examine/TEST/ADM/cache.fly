@@ -1,4 +1,7 @@
 {
+file_name: test-interference2.py;
+}
+{
 file_name: test-accumulate.py;
 result_list: [
   [ linear; OK; 0.063337; 28545317; ]
@@ -105,14 +108,14 @@ hwut_info_time: 1419582809L;
 {
 file_name: test-interference.py;
 result_list: [
-  [ 2-entries; NO OUTPUT; 0.063209; None; ]
-  [ 3-entries; NO OUTPUT; 0.062718; None; ]
+  [ 2-entries; OK; 0.065254; 1252739483; ]
+  [ 3-entries; OK; 0.064266; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
 title: Homogeneous Acceptance;
 title_group: Interference;
-hwut_info_time: 1419539286L;
+hwut_info_time: 1423640039L;
 }
 {
 file_name: no-assert-test-interference2.py;

@@ -1,24 +1,43 @@
 Mouth States:
+Common Acceptance Scheme:
+  A(RESTORE_ACCEPTANCE)
+
+Output Recipe:
   01     Accepter:
            RESTORE_ACCEPTANCE
          InputOffsetDb:
-         Undetermined: [AcceptanceRegister]
-  02     Accepter:
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+  A(1111)
 
+Output Recipe:
+  02     Accepter:
            1111
          InputOffsetDb:
-         Undetermined: []
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+  A(2222)
+
+Output Recipe:
   03     Accepter:
-
-           pre22 => 2222
+           2222
          InputOffsetDb:
-         Undetermined: []
-  04     Accepter:
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+  A(3333,pre=33)
 
+  A(4444,pre=44)
+
+  A(5555)
+
+Output Recipe:
+  04     Accepter:
            pre33 => 3333
            pre44 => 4444
            5555
          InputOffsetDb:
-         Undetermined: []
-
-
+     
+--------------------------------------------------------------------

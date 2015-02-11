@@ -88,8 +88,6 @@ class Recipe:
                  recipe.snapshot_map[variable_id]
                  for recipe in Mouth.entry_recipe_db.itervalues()
             )
-            for i, recipe in enumerate(Mouth.entry_recipe_db.itervalues()):
-                 print "#rsnmp", i, recipe.snapshot_map
 
             if uniform_object.plain_content() != E_Values.VOID:
                 # Homogeneity
