@@ -93,32 +93,20 @@ hwut_info_time: 1423514530L;
 {
 file_name: test-interference.py;
 result_list: [
-  [ 2-entries; OK; 0.066633; -1959710185; ]
-  [ 3-entries; FAIL; 0.064559; None; ]
+  [ 2-entries; OK; 0.069975; -1959710185; ]
+  [ 3-entries; OK; 0.072493; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
 title: Homogeneous Acceptance;
 title_group: Interference;
-hwut_info_time: 1423726694L;
-}
-{
-file_name: no-assert-test-interference2.py;
-result_list: [
-  [ 2-entries; NO OUTPUT; 0.165183; None; ]
-  [ 3-entries; NO OUTPUT; 0.160031; None; ]
-]
-interpreter_list: [ python; -O; ]
-same_f: True;
-title: Homogeneous IpOffset;
-title_group: Interference;
-hwut_info_time: 1419925541L;
+hwut_info_time: 1423878272L;
 }
 {
 file_name: test-interference3.py;
 result_list: [
-  [ 2-entries; OK; 0.000000; 1602725752; ]
-  [ 3-entries; FAIL; 0.067092; None; ]
+  [ 2-entries; OK; 0.069187; 1602725752; ]
+  [ 3-entries; OK; 0.070836; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -129,26 +117,38 @@ hwut_info_time: 1423877613L;
 {
 file_name: test-interference2.py;
 result_list: [
-  [ 2-entries; OK; 0.069238; -1632150085; ]
-  [ 3-entries; FAIL; 0.066163; None; ]
+  [ 2-entries; OK; 0.071242; -1632150085; ]
+  [ 3-entries; OK; 0.077175; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
 title: Inhomogeneous Acceptance;
 title_group: Interference;
-hwut_info_time: 1423877605L;
+hwut_info_time: 1423878202L;
 }
 {
 file_name: test-interference4.py;
 result_list: [
-  [ 2-entries; OK; 0.000000; -1121672350; ]
-  [ 3-entries; OK; 0.066728; None; ]
+  [ 2-entries; OK; 0.073301; -1121672350; ]
+  [ 3-entries; OK; 0.069000; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
 title: Inhomogeneous IpOffset;
 title_group: Interference;
 hwut_info_time: 1423877631L;
+}
+{
+file_name: test-interference5.py;
+result_list: [
+  [ 2-entries; OK; 0.070158; -1888878331; ]
+  [ 3-entries; OK; 0.066791; None; ]
+]
+interpreter_list: [ python; ]
+same_f: True;
+title: Inhomogeneous SnapshotMap;
+title_group: Interference;
+hwut_info_time: 1423882147L;
 }
 {
 file_name: test-virtual_interference.py;
