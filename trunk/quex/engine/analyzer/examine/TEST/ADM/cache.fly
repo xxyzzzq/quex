@@ -1,21 +1,21 @@
 {
 file_name: test-accumulate.py;
 result_list: [
-  [ linear; OK; 0.063603; 28545317; ]
-  [ butterfly; OK; 0.063809; 1361420750; ]
-  [ long_loop; OK; 0.062875; 1511671099; ]
-  [ nested_loop; OK; 0.061906; 1310410956; ]
-  [ mini_loop; OK; 0.063849; 1960266326; ]
-  [ fork; OK; 0.063361; 1840807821; ]
-  [ fork2; OK; 0.063437; 1907237693; ]
-  [ fork3; OK; 0.063515; -66034102; ]
-  [ fork4; OK; 0.067562; -1328577768; ]
-  [ tree; OK; 0.066460; 1526303920; ]
-  [ mini_bubble; OK; 0.062836; -815076117; ]
-  [ bubble; OK; 0.061625; 708545611; ]
-  [ bubble2; OK; 0.063367; -219655354; ]
-  [ bubble3; OK; 0.066547; 1020705780; ]
-  [ bubble4; OK; 0.064362; -676530136; ]
+  [ linear; OK; 0.065597; None; ]
+  [ butterfly; OK; 0.070129; None; ]
+  [ long_loop; OK; 0.064971; None; ]
+  [ nested_loop; OK; 0.062792; None; ]
+  [ mini_loop; OK; 0.062607; None; ]
+  [ fork; OK; 0.066859; None; ]
+  [ fork2; OK; 0.063749; None; ]
+  [ fork3; OK; 0.063626; None; ]
+  [ fork4; OK; 0.065863; None; ]
+  [ tree; OK; 0.062485; None; ]
+  [ mini_bubble; OK; 0.062520; None; ]
+  [ bubble; OK; 0.065782; None; ]
+  [ bubble2; OK; 0.067588; None; ]
+  [ bubble3; OK; 0.065187; None; ]
+  [ bubble4; OK; 0.065634; None; ]
 ]
 interpreter_list: [ python; ]
 title: Accumulation;
@@ -24,16 +24,21 @@ hwut_info_time: 1423554117L;
 {
 file_name: test-categorize.py;
 result_list: [
-  [ linear; OK; 0.061776; None; ]
-  [ butterfly; OK; 0.061797; None; ]
-  [ long_loop; OK; 0.061873; None; ]
-  [ nested_loop; OK; 0.066331; None; ]
-  [ mini_loop; OK; 0.062935; None; ]
-  [ fork; OK; 0.061226; None; ]
-  [ fork2; OK; 0.064326; None; ]
-  [ fork3; OK; 0.061567; None; ]
-  [ fork4; OK; 0.061106; None; ]
-  [ tree; OK; 0.065583; None; ]
+  [ linear; OK; 0.064723; None; ]
+  [ butterfly; OK; 0.070824; None; ]
+  [ long_loop; OK; 0.062000; None; ]
+  [ nested_loop; OK; 0.064899; None; ]
+  [ mini_loop; OK; 0.060434; None; ]
+  [ fork; OK; 0.064013; None; ]
+  [ fork2; OK; 0.061092; None; ]
+  [ fork3; OK; 0.060850; None; ]
+  [ fork4; OK; 0.064186; None; ]
+  [ tree; OK; 0.066795; None; ]
+  [ mini_bubble; NO GOOD FILE; 0.062055; None; ]
+  [ bubble; NO GOOD FILE; 0.060254; None; ]
+  [ bubble2; NO GOOD FILE; 0.063627; None; ]
+  [ bubble3; NO GOOD FILE; 0.064387; None; ]
+  [ bubble4; NO GOOD FILE; 0.062397; None; ]
 ]
 interpreter_list: [ python; ]
 title: Categorize into Linear and Mouth States;
@@ -42,21 +47,21 @@ hwut_info_time: 1418544128L;
 {
 file_name: test-do.py;
 result_list: [
-  [ linear; NO GOOD FILE; 0.065159; None; ]
-  [ butterfly; FAIL; 0.063919; None; ]
-  [ long_loop; FAIL; 0.066609; None; ]
-  [ nested_loop; NO GOOD FILE; 0.063122; None; ]
-  [ mini_loop; NO GOOD FILE; 0.064850; None; ]
-  [ fork; FAIL; 0.063161; None; ]
-  [ fork2; FAIL; 0.065224; None; ]
-  [ fork3; NO GOOD FILE; 0.063990; None; ]
-  [ fork4; NO GOOD FILE; 0.063076; None; ]
-  [ tree; NO GOOD FILE; 0.062856; None; ]
-  [ mini_bubble; NO GOOD FILE; 0.062928; None; ]
-  [ bubble; NO GOOD FILE; 0.064942; None; ]
-  [ bubble2; NO GOOD FILE; 0.063357; None; ]
-  [ bubble3; NO GOOD FILE; 0.063282; None; ]
-  [ bubble4; NO GOOD FILE; 0.065015; None; ]
+  [ linear; NO GOOD FILE; 0.063904; None; ]
+  [ butterfly; FAIL; 0.069535; None; ]
+  [ long_loop; FAIL; 0.064741; None; ]
+  [ nested_loop; NO GOOD FILE; 0.064650; None; ]
+  [ mini_loop; NO GOOD FILE; 0.064404; None; ]
+  [ fork; FAIL; 0.067083; None; ]
+  [ fork2; FAIL; 0.063024; None; ]
+  [ fork3; NO GOOD FILE; 0.062787; None; ]
+  [ fork4; NO GOOD FILE; 0.063533; None; ]
+  [ tree; NO GOOD FILE; 0.062980; None; ]
+  [ mini_bubble; NO GOOD FILE; 0.062735; None; ]
+  [ bubble; NO GOOD FILE; 0.079099; None; ]
+  [ bubble2; NO GOOD FILE; 0.066719; None; ]
+  [ bubble3; NO GOOD FILE; 0.067319; None; ]
+  [ bubble4; NO GOOD FILE; 0.064187; None; ]
 ]
 interpreter_list: [ python; ]
 title: Complete Process;
@@ -65,16 +70,21 @@ hwut_info_time: 1420007175L;
 {
 file_name: test-resolve.py;
 result_list: [
-  [ linear; FAIL; 0.063421; None; ]
-  [ butterfly; FAIL; 0.064453; None; ]
-  [ long_loop; FAIL; 0.066793; None; ]
-  [ nested_loop; FAIL; 0.066826; None; ]
-  [ mini_loop; FAIL; 0.063853; None; ]
-  [ fork; FAIL; 0.062734; None; ]
-  [ fork2; FAIL; 0.062990; None; ]
-  [ fork3; FAIL; 0.063343; None; ]
-  [ fork4; FAIL; 0.063693; None; ]
-  [ tree; FAIL; 0.063213; None; ]
+  [ linear; FAIL; 0.064062; None; ]
+  [ butterfly; FAIL; 0.067253; None; ]
+  [ long_loop; FAIL; 0.063739; None; ]
+  [ nested_loop; FAIL; 0.062686; None; ]
+  [ mini_loop; FAIL; 0.063339; None; ]
+  [ fork; FAIL; 0.064165; None; ]
+  [ fork2; FAIL; 0.064938; None; ]
+  [ fork3; FAIL; 0.062704; None; ]
+  [ fork4; FAIL; 0.065982; None; ]
+  [ tree; FAIL; 0.063234; None; ]
+  [ mini_bubble; NO GOOD FILE; 0.067938; None; ]
+  [ bubble; NO GOOD FILE; 0.062785; None; ]
+  [ bubble2; NO GOOD FILE; 0.066761; None; ]
+  [ bubble3; NO GOOD FILE; 0.063804; None; ]
+  [ bubble4; NO GOOD FILE; 0.065525; None; ]
 ]
 interpreter_list: [ python; ]
 title: Resolve Without Dead-Lock Resolution;
@@ -83,18 +93,18 @@ hwut_info_time: 1419073955L;
 {
 file_name: test-setup_initial_springs.py;
 result_list: [
-  [ linear; OK; 0.060886; 1833794895; ]
-  [ long_loop; OK; 0.062972; 1690937144; ]
+  [ linear; OK; 0.065563; None; ]
+  [ long_loop; OK; 0.062721; None; ]
 ]
 interpreter_list: [ python; ]
 title: Setup Initial Spring States;
 hwut_info_time: 1423514530L;
 }
 {
-file_name: test-interference.py;
+file_name: test-interference1.py;
 result_list: [
-  [ 2-entries; OK; 0.069975; -1959710185; ]
-  [ 3-entries; OK; 0.072493; None; ]
+  [ 2-entries; OK; 0.066123; None; ]
+  [ 3-entries; OK; 0.065726; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -105,8 +115,8 @@ hwut_info_time: 1423878272L;
 {
 file_name: test-interference3.py;
 result_list: [
-  [ 2-entries; OK; 0.069187; 1602725752; ]
-  [ 3-entries; OK; 0.070836; None; ]
+  [ 2-entries; OK; 0.070467; None; ]
+  [ 3-entries; OK; 0.065579; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -117,8 +127,8 @@ hwut_info_time: 1423877613L;
 {
 file_name: test-interference2.py;
 result_list: [
-  [ 2-entries; OK; 0.071242; -1632150085; ]
-  [ 3-entries; OK; 0.077175; None; ]
+  [ 2-entries; OK; 0.064251; None; ]
+  [ 3-entries; OK; 0.067440; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -129,8 +139,8 @@ hwut_info_time: 1423878202L;
 {
 file_name: test-interference4.py;
 result_list: [
-  [ 2-entries; OK; 0.073301; -1121672350; ]
-  [ 3-entries; OK; 0.069000; None; ]
+  [ 2-entries; OK; 0.066223; None; ]
+  [ 3-entries; OK; 0.064711; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -141,8 +151,8 @@ hwut_info_time: 1423877631L;
 {
 file_name: test-interference5.py;
 result_list: [
-  [ 2-entries; OK; 0.070158; -1888878331; ]
-  [ 3-entries; OK; 0.066791; None; ]
+  [ 2-entries; OK; 0.066084; None; ]
+  [ 3-entries; OK; 0.064831; None; ]
 ]
 interpreter_list: [ python; ]
 same_f: True;
@@ -153,8 +163,8 @@ hwut_info_time: 1423882147L;
 {
 file_name: test-virtual_interference.py;
 result_list: [
-  [ restore-all; FAIL; 0.066336; -1246243480; ]
-  [ sequence; FAIL; 0.064140; -738449927; ]
+  [ restore-all; FAIL; 0.065089; None; ]
+  [ sequence; FAIL; 0.067045; None; ]
 ]
 interpreter_list: [ python; ]
 title: Acceptance;
@@ -164,8 +174,8 @@ hwut_info_time: 1419970956L;
 {
 file_name: test-virtual_interference2.py;
 result_list: [
-  [ restore-all; NO OUTPUT; 0.063164; 1403009594; ]
-  [ sequence; NO OUTPUT; 0.067029; 166313660; ]
+  [ restore-all; NO OUTPUT; 0.065898; None; ]
+  [ sequence; NO OUTPUT; 0.062570; None; ]
 ]
 interpreter_list: [ python; ]
 title: Input Position Storage;
