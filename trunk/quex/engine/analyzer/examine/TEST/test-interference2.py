@@ -41,10 +41,10 @@ scheme_list     = [
 examiner = Examiner(StateMachine(), RecipeAcceptance)
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
-examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore, False)
-examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple, False)
-examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2, False)
-examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list, False)
+examiner.mouth_db[1L] = get_MouthStateInfoAcceptance(entry_n, scheme_restore, False)
+examiner.mouth_db[2L] = get_MouthStateInfoAcceptance(entry_n, scheme_simple, False)
+examiner.mouth_db[3L] = get_MouthStateInfoAcceptance(entry_n, scheme_simple2, False)
+examiner.mouth_db[4L] = get_MouthStateInfoAcceptance(entry_n, scheme_list, False)
 
 examiner._interference(set([1L, 2L, 3L, 4L]))
 

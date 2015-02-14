@@ -23,20 +23,6 @@ if "--hwut-info" in sys.argv:
 choice  = sys.argv[1].split("-")
 entry_n = int(choice[0])
 
-def get_array(EntryN, AcceptanceScheme):
-    return [ 
-        RecipeAcceptance(deepcopy(AcceptanceScheme), {}, {}) 
-        for i in xrange(EntryN) 
-    ]
-
-def get_MouthStateInfo(EntryN, AcceptanceScheme):
-    info  = MouthStateInfo(FromStateIndexSet=set(xrange(entry_n)))
-    array = get_array(entry_n, AcceptanceScheme)
-    for i, recipe in enumerate(array):
-        info.entry_recipe_db[i] = recipe
-        info.required_variable_set = set([E_R.AcceptanceRegister])
-    return info
-
 scheme_restore  = [ 
     RecipeAcceptance.RestoreAcceptance 
 ]
@@ -58,10 +44,10 @@ examiner.setup_initial_springs()
 
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
-examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore)
-examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple)
-examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2)
-examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
+examiner.mouth_db[1L] = get_MouthStateInfoAcceptance(entry_n, scheme_restore)
+examiner.mouth_db[2L] = get_MouthStateInfoAcceptance(entry_n, scheme_simple)
+examiner.mouth_db[3L] = get_MouthStateInfoAcceptance(entry_n, scheme_simple2)
+examiner.mouth_db[4L] = get_MouthStateInfoAcceptance(entry_n, scheme_list)
 
 examiner._interference(set([1L, 2L, 3L, 4L]))
 
