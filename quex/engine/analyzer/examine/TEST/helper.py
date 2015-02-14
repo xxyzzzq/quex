@@ -5,19 +5,6 @@ from quex.blackboard                         import E_PreContextIDs, E_R, E_Inci
 
 from copy import deepcopy
 
-class DerivedRecipe(RecipeAcceptance):
-    position_register_by_state_db = {}
-
-    @staticmethod
-    def get_RR_superset(sm, StateIndex, PredecessorDb):
-        result = set(
-            (E_R.PositionRegister, register_id)
-            for register_id in DerivedRecipe.position_register_by_state_db[StateIndex]
-        )
-        result.add((E_R.PositionRegister, E_IncidenceIDs.MATCH_FAILURE))
-        result.add(E_R.AcceptanceRegister)
-        return result
-
 def get_SeAccept(AcceptanceId, PreContextId=E_PreContextIDs.NONE, RestorePositionF=False):
     cmd = SeAccept()
     cmd.set_acceptance_id(AcceptanceId)
@@ -43,14 +30,20 @@ def get_homogeneous_array(EntryN, AcceptanceScheme):
         for i in xrange(EntryN) 
     ]
 
+def get_homogeneous_array_ip_offset(EntryN, IpOffsetScheme):
+    return [ 
+        RecipeAcceptance([SeAccept(0)], IpOffsetScheme, {})
+        for i in xrange(EntryN) 
+    ]
+
 def get_inhomogeneous_array(EntryN, AcceptanceScheme):
     def get_entry(i, AcceptanceScheme):
         """Let one entry be different."""
         result = deepcopy(AcceptanceScheme)
         if i == 1:  # i = 1, always happens
             # always only take the last as different
-            if result is None: result = [ 100000 ]
-            else:              result[len(result)-1] = 100000
+            if result is None: result = [ SeAccept(8888) ]
+            else:              result[len(result)-1] = SeAccept(8888)
         return result
 
     return [ 
@@ -58,7 +51,23 @@ def get_inhomogeneous_array(EntryN, AcceptanceScheme):
         for i in xrange(EntryN) 
     ]
 
-def get_MouthStateInfo(EntryN, AcceptanceScheme, HomogeneousF=True):
+def get_inhomogeneous_array_ip_offset(EntryN, IpOffsetScheme):
+    def get_entry(i, IpOffsetDb):
+        """Let one entry be different."""
+        result = deepcopy(IpOffsetDb)
+        if i == 1:  # i = 1, always happens
+            # always only take the last as different
+            if len(result) == 0: result = { 0L: -1 }
+            else:                result[len(result)-1] += 1000
+        return result
+
+    return [ 
+        RecipeAcceptance([SeAccept(0)], get_entry(i, IpOffsetScheme), {})
+        for i in xrange(EntryN) 
+    ]
+
+
+def get_MouthStateInfoAcceptance(EntryN, AcceptanceScheme, HomogeneousF=True):
     info  = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
     if HomogeneousF:
         array = get_homogeneous_array(EntryN, AcceptanceScheme)
@@ -67,6 +76,25 @@ def get_MouthStateInfo(EntryN, AcceptanceScheme, HomogeneousF=True):
     for i, recipe in enumerate(array):
         info.entry_recipe_db[i] = recipe
         info.required_variable_set = set([E_R.AcceptanceRegister])
+    return info
+
+def get_MouthStateInfoIpOffset(EntryN, IpOffsetScheme, HomogeneousF=True):
+    info  = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
+    if HomogeneousF:
+        array = get_homogeneous_array_ip_offset(EntryN, IpOffsetScheme)
+    else:
+        array = get_inhomogeneous_array_ip_offset(EntryN, IpOffsetScheme)
+
+    required_variable_set = set()
+    for recipe in array:
+        for register_id in recipe.ip_offset_db:
+            required_variable_set.add((E_R.PositionRegister, register_id))
+   
+    required_variable_set.add(E_R.AcceptanceRegister)
+
+    for i, recipe in enumerate(array):
+        info.entry_recipe_db[i]    = recipe
+        info.required_variable_set = required_variable_set
     return info
 
 def print_recipe(si, R):
@@ -88,26 +116,61 @@ def print_entry_recipe_db(EntryRecipeDb):
         print "  from %i:" % predecessor_si
         print entry_recipe
 
+def unique_set(EntryRecipeDb, access):
+    result = []
+    for entry_recipe in EntryRecipeDb.itervalues():
+        x = access(entry_recipe)
+        if x not in result:
+            result.append(x)
+    return result
+
+def print_acceptance_scheme(info):
+    accepter_set = unique_set(info.entry_recipe_db, lambda x: x.accepter)
+
+    if len(accepter_set) == 0:
+        pass
+    elif len(accepter_set) == 1:
+        print "Common Acceptance Scheme:"
+        print RecipeAcceptance.get_string_accepter(accepter_set.pop())
+    else:
+        print "Acceptance Schemes:"
+        def key(accepter):
+            return (len(accepter), tuple(x.acceptance_id() for x in accepter))
+
+        for accepter in sorted(list(accepter_set), key=key):
+            print "  --"
+            print RecipeAcceptance.get_string_accepter(accepter)
+
+def print_ip_offset_scheme(info):
+    def print_it(ip_offset_db):
+        for register, offset in sorted(ip_offset_db.iteritems()):
+            print "    [%s]: %s\n" % (register[0], offset)
+            
+    ip_offset_db_set = unique_set(info.entry_recipe_db,
+                                  lambda x: x.ip_offset_db)
+
+    if len(ip_offset_db_set) == 0:
+        pass
+    elif len(ip_offset_db_set) == 1:
+        print "Common Input Pointer Offset Scheme:"
+        print RecipeAcceptance.get_string_input_offset_db(ip_offset_db_set.pop())
+    else:
+        print "Input Pointer Offset Schemes:"
+        def key(ip_offset_db):
+            return tuple(x for x in ip_offset_db)
+
+        for ip_offset_db in sorted(list(ip_offset_db_set), key=key):
+            print "  --"
+            print RecipeAcceptance.get_string_input_offset_db(ip_offset_db)
+
 def print_interference_result(MouthDb):
     print "Mouth States:"
     for si, info in MouthDb.iteritems():
-        accepter_set = []
-        for entry_recipe in info.entry_recipe_db.values():
-            if entry_recipe.accepter not in accepter_set:
-                accepter_set.append(entry_recipe.accepter)
-
-        if len(accepter_set) == 1:
-            print "Common Acceptance Scheme:"
-            for cmd in accepter_set.pop():
-                print "  %s\n" % cmd
-        else:
-            print "Acceptance Schemes:"
-            for accepter in sorted(list(accepter_set)):
-                print "  --"
-                for cmd in accepter:
-                    print "  %s\n" % cmd
+        print_acceptance_scheme(info)
+        print_ip_offset_scheme(info)
 
         print "Output Recipe:"
         print_recipe(si, info.recipe)
+
         print "--------------------------------------------------------------------"
 

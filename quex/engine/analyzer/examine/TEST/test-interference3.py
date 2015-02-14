@@ -11,11 +11,11 @@ from quex.engine.analyzer.examine.state_info                    import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
 from quex.engine.analyzer.examine.core                          import Examiner, \
                                                                        LinearStateWalker
-from quex.blackboard import E_PreContextIDs
+from quex.blackboard import E_PreContextIDs, E_R, E_IncidenceIDs
 from copy import deepcopy
 
 if "--hwut-info" in sys.argv:
-    print "Interference: Inhomogeneous Acceptance;"
+    print "Interference: Homogeneous IpOffset;"
     print "CHOICES: 2-entries, 3-entries;"
     print "SAME;"
     sys.exit()
@@ -23,52 +23,22 @@ if "--hwut-info" in sys.argv:
 choice  = sys.argv[1].split("-")
 entry_n = int(choice[0])
 
+scheme_0 = {}
+scheme_1 = { 0: -1 } 
+scheme_2 = { 0: -1, 1: -2 }
+scheme_3 = { 0: -1, 1: -2, 2: -3 }
 
-def get_array(EntryN, AcceptanceScheme):
-    def get_entry(i, AcceptanceScheme):
-        """Let one entry be different."""
-        result = deepcopy(AcceptanceScheme)
-        if i == 1:  # i = 1, always happens
-            # always only take the last as different
-            if result is None: result = [ 100000 ]
-            else:              result[len(result)-1] = 100000
-        return result
-
-    return [ 
-        RecipeAcceptance(get_entry(i, AcceptanceScheme), {}) 
-        for i in xrange(EntryN) 
-    ]
-
-def get_MouthStateInfo(EntryN, AcceptanceScheme):
-    info  = MouthStateInfo(FromStateIndexSet=set(xrange(entry_n)))
-    array = get_array(entry_n, AcceptanceScheme)
-    for i, recipe in enumerate(array):
-        info.entry_recipe_db[i] = recipe
-    return info
-
-scheme_restore  = [ 
-    RecipeAcceptance.RestoreAcceptance 
-]
-scheme_simple   = [ 
-    get_SeAccept(1111L, E_PreContextIDs.NONE, False) 
-]
-scheme_simple2  = [ 
-    get_SeAccept(2222L, 22L,                  True) 
-]
-scheme_list     = [ 
-    get_SeAccept(3333L, 33L, True), 
-    get_SeAccept(4444L, 44L, True), 
-    get_SeAccept(5555L, E_PreContextIDs.NONE, True) 
-]
 
 examiner = Examiner(StateMachine(), RecipeAcceptance)
+
 # For the test, only 'examiner.mouth_db' and 'examiner.recipe_type'
 # are important.
-examiner.mouth_db[1L] = get_MouthStateInfo(entry_n, scheme_restore)
-examiner.mouth_db[2L] = get_MouthStateInfo(entry_n, scheme_simple)
-examiner.mouth_db[3L] = get_MouthStateInfo(entry_n, scheme_simple2)
-examiner.mouth_db[4L] = get_MouthStateInfo(entry_n, scheme_list)
+examiner.mouth_db[1L] = get_MouthStateInfoIpOffset(entry_n, scheme_0)
+examiner.mouth_db[2L] = get_MouthStateInfoIpOffset(entry_n, scheme_1)
+examiner.mouth_db[3L] = get_MouthStateInfoIpOffset(entry_n, scheme_2)
+examiner.mouth_db[4L] = get_MouthStateInfoIpOffset(entry_n, scheme_3)
 
-examiner._interfere(set([1L, 2L, 3L, 4L]))
+examiner._interference(set([1L, 2L, 3L, 4L]))
 
 print_interference_result(examiner.mouth_db)
+
