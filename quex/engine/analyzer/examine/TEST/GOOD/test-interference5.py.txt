@@ -1,0 +1,113 @@
+Mouth States:
+Common Acceptance Scheme:
+      RESTORE_ACCEPTANCE
+
+Common Input Pointer Offset Scheme:
+
+SnapshotMap Schemes:
+  --
+      AcceptanceRegister@0
+
+  --
+      AcceptanceRegister@1
+
+Output Recipe:
+  01     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+         Snapshot Map:
+           AcceptanceRegister@1
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+      1111
+
+Common Input Pointer Offset Scheme:
+      [0] offset: -1
+
+SnapshotMap Schemes:
+  --
+      AcceptanceRegister   @0
+      (PositionRegister, 0)@1
+
+  --
+      AcceptanceRegister   @1
+      (PositionRegister, 0)@1
+
+Output Recipe:
+  02     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+           [0] offset: -1
+         Snapshot Map:
+           AcceptanceRegister   @2
+           (PositionRegister, 0)@1
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+      2222
+
+Common Input Pointer Offset Scheme:
+      [0] offset: -1
+      [1] offset: -2
+
+SnapshotMap Schemes:
+  --
+      AcceptanceRegister   @0
+      (PositionRegister, 0)@1
+      (PositionRegister, 1)@2
+
+  --
+      AcceptanceRegister   @1
+      (PositionRegister, 0)@1
+      (PositionRegister, 1)@3
+
+Output Recipe:
+  03     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+           [0] offset: -1
+           [1] offset: -2
+         Snapshot Map:
+           AcceptanceRegister   @3
+           (PositionRegister, 0)@1
+           (PositionRegister, 1)@3
+     
+--------------------------------------------------------------------
+Common Acceptance Scheme:
+      pre33 => 3333
+      pre44 => 4444
+      5555
+
+Common Input Pointer Offset Scheme:
+      [0] offset: -1
+      [1] offset: -2
+      [2] offset: -3
+
+SnapshotMap Schemes:
+  --
+      AcceptanceRegister   @0
+      (PositionRegister, 0)@1
+      (PositionRegister, 1)@2
+      (PositionRegister, 2)@3
+
+  --
+      AcceptanceRegister   @1
+      (PositionRegister, 0)@1
+      (PositionRegister, 1)@3
+      (PositionRegister, 2)@3
+
+Output Recipe:
+  04     Accepter:
+           RESTORE_ACCEPTANCE
+         InputOffsetDb:
+           [0] offset: -1
+           [1] offset: -2
+           [2] offset: -3
+         Snapshot Map:
+           AcceptanceRegister   @4
+           (PositionRegister, 0)@1
+           (PositionRegister, 1)@4
+           (PositionRegister, 2)@3
+     
+--------------------------------------------------------------------
