@@ -312,12 +312,13 @@ class RecipeAcceptance(Recipe):
         ip_offset_db = {}
         for variable_id in RequiredVariableSet:
             if type(variable_id) != tuple: continue
+            register_id = variable_id[1]
 
             offset = UniformObject.from_iterable(
-                         recipe.ip_offset_db.get(RegisterId)
-                         for recipe in RecipeList).plain_content()
+                         recipe.ip_offset_db.get(register_id)
+                         for recipe in EntryRecipeDb.itervalues()).plain_content()
 
-            if offset != E_Value.VOID: 
+            if offset != E_Values.VOID: 
                 # Homogeneity
                 pass
             else:
@@ -325,51 +326,56 @@ class RecipeAcceptance(Recipe):
                 offset = None
                 cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id, StateIndex)
 
-            ip_offset_db[variable_id] = offset
+            ip_offset_db[register_id] = offset
 
         return ip_offset_db
         
     @staticmethod
-    def _let_acceptance_be_stored(entry_db, EntryRecipeDb):
-        """Sets 'store acceptance' commands at every entry into the state.
-        """
-        for from_si, r in EntryRecipeDb.iteritems():
-            # If acceptance is already stored in 'aux_acceptance', no second
-            # storage is required.
-            if r.accepter is None: continue
-            assert not entry_db[from_si].has_command_id(E_Op.Accepter) 
-
-            entry_db[from_si].append(Op.Accepter(r.accepter))
-
-    @staticmethod
-    def _let_input_position_be_stored(entry_db, EntryRecipeDb, RegisterId):
-        for from_si, r in EntryRecipeDb.iteritems():
-            # [X] Rationale for unconditional store input position: 
-            #     see bottom of file.
-            offset = r.ip_offset_db.get(RegisterId)
-            # If input position needs to be restored, it cannot be more
-            # restored than that.
-            if offset is None: continue 
-
-            entry_db[from_si].append(
-                Op.StoreInputPosition(E_PreContextIDs.NONE, RegisterId, offset)
-            )
-
-    def __str__(self):
-        txt = [ "    Accepter:\n" ]
-        for x in self.accepter:
+    def get_string_accepter(Accepter):
+        txt = []
+        for x in Accepter:
             if x.pre_context_id() != E_PreContextIDs.NONE:
                 txt.append("      pre%s => %s\n" % (x.pre_context_id(), x.acceptance_id())) 
             else:
                 txt.append("      %s\n" % x.acceptance_id())
-
-        txt.append("    InputOffsetDb:\n")
-        for register, offset in sorted(self.ip_offset_db.iteritems()):
-            if offset is not None:
-                txt.append("      [%s] offset: %s\n" % (register, offset))
-            else:
-                txt.append("      [%s] restore!\n" % register)
         return "".join(txt)
+
+    @staticmethod
+    def get_string_input_offset_db(IpOffsetDb):
+        txt = []
+        for register_id, offset in sorted(IpOffsetDb.iteritems()):
+            if offset is not None:
+                txt.append("      [%s] offset: %s\n" % (register_id, offset))
+            else:
+                txt.append("      [%s] restore!\n" % repr(register_id))
+        return "".join(txt)
+
+    @staticmethod
+    def get_string_snapshot_map(SnapshotMap):
+        if not SnapshotMap:
+            return ""
+
+        txt = []
+        L = max(len("%s" % repr(register)) for register in SnapshotMap)
+        for register, state_index in sorted(SnapshotMap.iteritems()):
+            if state_index is None: continue
+            txt.append("      %s%s@%s\n" % (repr(register), " " * (L-len("%s" % repr(register))), state_index))
+        
+        return "".join(txt)
+
+    def __str__(self):
+        snapshot_map_empty_f = True
+        for state_index in self.snapshot_map.itervalues():
+            if state_index is not None: snapshot_map_empty_f = False
+
+        return "".join([
+            "    Accepter:\n",
+            self.get_string_accepter(self.accepter),
+            "    InputOffsetDb:\n",
+            self.get_string_input_offset_db(self.ip_offset_db),
+            "    Snapshot Map:\n" if not snapshot_map_empty_f else "",
+            self.get_string_snapshot_map(self.snapshot_map)
+        ])
 
     
 # [X] Rationale for unconditional input position storage.
