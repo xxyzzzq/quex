@@ -18,5 +18,8 @@ sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
 examiner = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
 
+if "pic" in sys.argv:
+    print pic
+
 print "Linear States:", examiner.linear_db.keys()
 print "Mouth  States:", examiner.mouth_db.keys()
