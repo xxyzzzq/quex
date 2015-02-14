@@ -3,7 +3,8 @@ from quex.engine.operations.se_operations    import SeAccept, SeStoreInputPositi
 from quex.engine.analyzer.examine.acceptance import RecipeAcceptance
 from quex.blackboard                         import E_PreContextIDs, E_R, E_IncidenceIDs
 
-from copy import deepcopy
+from copy import deepcopy, copy
+from itertools import izip
 
 def get_SeAccept(AcceptanceId, PreContextId=E_PreContextIDs.NONE, RestorePositionF=False):
     cmd = SeAccept()
@@ -66,6 +67,16 @@ def get_inhomogeneous_array_ip_offset(EntryN, IpOffsetScheme):
         for i in xrange(EntryN) 
     ]
 
+def get_inhomogeneous_array_snapshot_map(EntryN, IpOffsetScheme):
+    pass
+
+def get_required_variable_set(RecipeArray):
+    result = set()
+    for recipe in RecipeArray:
+        for register_id in recipe.ip_offset_db:
+            result.add((E_R.PositionRegister, register_id))
+    result.add(E_R.AcceptanceRegister)
+    return result
 
 def get_MouthStateInfoAcceptance(EntryN, AcceptanceScheme, HomogeneousF=True):
     info  = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
@@ -73,10 +84,8 @@ def get_MouthStateInfoAcceptance(EntryN, AcceptanceScheme, HomogeneousF=True):
         array = get_homogeneous_array(EntryN, AcceptanceScheme)
     else:
         array = get_inhomogeneous_array(EntryN, AcceptanceScheme)
-    for i, recipe in enumerate(array):
-        info.entry_recipe_db[i] = recipe
-        info.required_variable_set = set([E_R.AcceptanceRegister])
-    return info
+
+    return configure_MoutStateInfo(info, array)
 
 def get_MouthStateInfoIpOffset(EntryN, IpOffsetScheme, HomogeneousF=True):
     info  = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
@@ -85,16 +94,44 @@ def get_MouthStateInfoIpOffset(EntryN, IpOffsetScheme, HomogeneousF=True):
     else:
         array = get_inhomogeneous_array_ip_offset(EntryN, IpOffsetScheme)
 
-    required_variable_set = set()
-    for recipe in array:
-        for register_id in recipe.ip_offset_db:
-            required_variable_set.add((E_R.PositionRegister, register_id))
-   
-    required_variable_set.add(E_R.AcceptanceRegister)
+    return configure_MoutStateInfo(info, array)
+
+def get_MouthStateInfoSnapshotMap(EntryN, AcceptanceScheme, IpOffsetScheme):
+    info = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
+
+    acceptance_array = get_homogeneous_array(EntryN, AcceptanceScheme)
+    ip_offset_array  = get_homogeneous_array_ip_offset(EntryN, IpOffsetScheme)
+
+    array = [
+        RecipeAcceptance(r0.accepter, r1.ip_offset_db, {})
+        for r0, r1 in izip(acceptance_array, ip_offset_array)
+    ]
+
+    required_variable_set = get_required_variable_set(array)
+    snapshot_map = dict(
+        (variable_id, state_index)
+        for state_index, variable_id in enumerate(sorted(list(required_variable_set)))
+    )
+    snapshot_map_differing = copy(snapshot_map) 
+    for i, variable_id in enumerate(sorted(list(required_variable_set))):
+        if i % 2: continue
+        # DIFFER for 'variable_id'
+        snapshot_map_differing[variable_id] = snapshot_map[variable_id] + 1
 
     for i, recipe in enumerate(array):
+        if i == 1: recipe.snapshot_map = snapshot_map_differing
+        else:      recipe.snapshot_map = snapshot_map
         info.entry_recipe_db[i]    = recipe
         info.required_variable_set = required_variable_set
+
+    return configure_MoutStateInfo(info, array)
+
+def configure_MoutStateInfo(info, RecipeArray):
+    required_variable_set = get_required_variable_set(RecipeArray)
+    for i, recipe in enumerate(RecipeArray):
+        info.entry_recipe_db[i]    = recipe
+        info.required_variable_set = required_variable_set
+
     return info
 
 def print_recipe(si, R):
@@ -163,11 +200,28 @@ def print_ip_offset_scheme(info):
             print "  --"
             print RecipeAcceptance.get_string_input_offset_db(ip_offset_db)
 
+def print_snapshot_map_scheme(info):
+    snapshot_map_set = unique_set(info.entry_recipe_db, lambda x: x.snapshot_map)
+
+    if len(snapshot_map_set) == 0:
+        pass
+    elif len(snapshot_map_set) == 1:
+        pass
+    else:
+        print "SnapshotMap Schemes:"
+        def key(snapshot_map):
+            return tuple((x,y) for x, y in snapshot_map.iteritems())
+
+        for snapshot_map in sorted(list(snapshot_map_set), key=key):
+            print "  --"
+            print RecipeAcceptance.get_string_snapshot_map(snapshot_map)
+
 def print_interference_result(MouthDb):
     print "Mouth States:"
     for si, info in MouthDb.iteritems():
         print_acceptance_scheme(info)
         print_ip_offset_scheme(info)
+        print_snapshot_map_scheme(info)
 
         print "Output Recipe:"
         print_recipe(si, info.recipe)
