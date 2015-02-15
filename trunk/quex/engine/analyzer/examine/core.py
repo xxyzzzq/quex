@@ -192,10 +192,12 @@ class Examiner:
         RETURNS: Set of mouth states that could still not be resolved.
                  => They become subject to 'dead-lock treatment'.
         """
-        springs = Springs
+        springs  = Springs
+        done_set = set()
         while springs:
+            done_set.update(springs)
             for si in springs:
-                self.get_state_info.spring_f = True
+                self.get_state_info(si).spring_f = True
 
             # Derive recipes along linear states starting from springs.
             mouths_ready_set = self._accumulate(springs) 
@@ -204,8 +206,9 @@ class Examiner:
             # => Apply 'interference' to determine their recipe.
             self._interference(mouths_ready_set)
 
-            # The determined mouths become the new springs for the linear walk
-            springs = mouths_ready_set
+            # The determined mouths become the springs for the linear walk
+            # Only take NEW springs. 
+            springs = mouths_ready_set.difference(done_set)
 
         # Return the set of still undetermined mouth states.
         return set(si for si, mouth in self.mouth_db.iteritems()

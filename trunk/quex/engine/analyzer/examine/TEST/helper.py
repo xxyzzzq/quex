@@ -15,6 +15,7 @@ def get_SeAccept(AcceptanceId, PreContextId=E_PreContextIDs.NONE, RestorePositio
     return cmd
 
 def add_SeAccept(sm, StateIndex, AcceptanceId, PreContextId=E_PreContextIDs.NONE, RestorePositionF=False):
+    if StateIndex not in sm.states: return
     sm.states[StateIndex].single_entry.add(get_SeAccept(AcceptanceId, PreContextId, RestorePositionF))
     accept_str  = "%s" % AcceptanceId
     pre_str     = "%s/" % PreContextId if PreContextId != E_PreContextIDs.NONE else ""
@@ -22,6 +23,7 @@ def add_SeAccept(sm, StateIndex, AcceptanceId, PreContextId=E_PreContextIDs.NONE
     print "(%i) Accept %s%s%s" % (StateIndex, pre_str, accept_str, restore_str)
 
 def add_SeStoreInputPosition(sm, StateIndex, RegisterId):
+    if StateIndex not in sm.states: return
     sm.states[StateIndex].single_entry.add(SeStoreInputPosition(RegisterId))
     print "(%i) Store InputP %s" % (StateIndex, RegisterId)
 
