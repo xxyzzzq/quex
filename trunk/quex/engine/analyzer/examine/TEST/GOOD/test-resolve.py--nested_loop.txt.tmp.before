@@ -1,0 +1,32 @@
+           
+                .--<-------(5)---<------.
+                |                       |
+               (0)---->(1)---->(2)---->(3)---->(4)
+                        |       |   
+                        '---<---'
+    
+(0) Accept MATCH_FAILURE
+Unresolved Mouth States:
+   [0L, 1L]
+
+Linear States:
+  02 <void>
+  03 <void>
+  04 <void>
+  05 <void>
+Mouth States (Resolved):
+Mouth States (Unresolved):
+  00
+  from NONE 
+         Accepter:
+     
+           MATCH_FAILURE
+         InputOffsetDb:
+
+           [MATCH_FAILURE] offset: 0
+  from  5 <void>
+  01
+  from  0 <void>
+  from  2 <void>
+     
+
