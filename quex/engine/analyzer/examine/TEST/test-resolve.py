@@ -22,14 +22,14 @@ sm, state_n, pic = get_sm_shape_by_name(name)
 print pic
 
 add_SeAccept(sm, sm.init_state_index, E_IncidenceIDs.MATCH_FAILURE)
-if name in ("fork3", "fork4", "tree", "butterfly"):
-    add_SeStoreInputPosition(sm, 1L, 77L)
-    add_SeAccept(sm, 3L, 33L, 333L)
-    add_SeAccept(sm, 4L, 44L)
-    add_SeAccept(sm, 6L, 66L, 666L)
-    # Post-Context: Store in '1', restore in '7'
-    add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
-    print
+add_SeStoreInputPosition(sm, 1L, 77L)
+add_SeAccept(sm, 1L, 1L, 111L)
+add_SeAccept(sm, 3L, 33L, 333L)
+add_SeAccept(sm, 4L, 44L)
+add_SeAccept(sm, 6L, 66L, 666L)
+# Post-Context: Store in '1', restore in '7'
+add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
+print
 
 examiner        = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
@@ -43,7 +43,8 @@ def print_recipe(si, R):
         print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
 
 def print_entry_recipe_db(si, EntryRecipeDb):
-    print "  %02i\n" % si
+    print
+    print " * %02i\n" % si
     for from_si, recipe in sorted(EntryRecipeDb.iteritems()):
         if recipe is None: 
             print "  from %02s <void>" % from_si
@@ -66,4 +67,5 @@ print "Mouth States (Unresolved):"
 for si, info in examiner.mouth_db.iteritems():
     if si not in remainder: continue
     print_entry_recipe_db(si, info.entry_recipe_db)
+    
 

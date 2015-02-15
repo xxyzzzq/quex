@@ -119,8 +119,7 @@ class SeAccept(SeOp):
 class SeStoreInputPosition(SeOp):
     @typed(RegisterId=long)
     def __init__(self, RegisterId=E_PostContextIDs.NONE):
-        SeOp.__init__(self)
-        self.set_acceptance_id(RegisterId)
+        SeOp.__init__(self, RegisterId)
 
     def clone(self, ReplDbPreContext=None, ReplDbAcceptance=None):
         result = SeStoreInputPosition()
@@ -128,10 +127,10 @@ class SeStoreInputPosition(SeOp):
         else:                        result.set_acceptance_id(ReplDbAcceptance[self.acceptance_id()])
         return result
 
-    def assigned_variable_ids(self, VariableId):
+    def assigned_variable_ids(self):
         return ((E_R.PositionRegister, self.position_register_id()),)
 
-    def required_variable_ids(self, VariableId):
+    def required_variable_ids(self):
         return ()
 
     def position_register_id(self):

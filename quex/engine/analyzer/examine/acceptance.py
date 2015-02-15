@@ -164,7 +164,7 @@ class RecipeAcceptance(Recipe):
         if PrevRecipe is None:
             # Only possible of CurrSingleEntry is constant, then the snapshot map
             # is empty.
-            snapshot_map = defaultdict(set)
+            snapshot_map = {}
         else:
             snapshot_map = copy(PrevRecipe.snapshot_map)
 
@@ -267,6 +267,7 @@ class RecipeAcceptance(Recipe):
         ip_offset_db.update(
             (cmd.position_register_id(), 0)
             for cmd in CurrSingleEntry.get_iterable(SeAccept)
+            if not cmd.restore_position_register_f()
         )
 
         return ip_offset_db

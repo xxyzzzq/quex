@@ -89,12 +89,12 @@ class Recipe:
                  for recipe in Mouth.entry_recipe_db.itervalues()
             )
 
-            if uniform_object.plain_content() != E_Values.VOID:
-                # Homogeneity
+            if uniform_object.plain_content() != E_Values.VOID: # Homogeneity
+                assert    uniform_object.content is None \
+                       or isinstance(uniform_object.content, (int, long))
                 snapshot_map[variable_id]   = uniform_object.content
                 homogeneity_db[variable_id] = True
-            else:
-                # Inhomogeneity
+            else:                                               # Inhomogeneity
                 snapshot_map[variable_id]   = StateIndex
                 homogeneity_db[variable_id] = False
 
