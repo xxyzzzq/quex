@@ -71,42 +71,28 @@ title: Complete Process;
 hwut_info_time: 1420007175L;
 }
 {
-file_name: test-get_horizon.py;
-result_list: [
-  [ linear; OK; 0.065075; 660842623; ]
-  [ bubble; OK; 0.066975; 1779884287; ]
-  [ bubble2; OK; 0.061981; 2053320496; ]
-  [ bubble4; OK; 0.067354; -1996588071; ]
-  [ butterfly; OK; 0.065254; 1803481809; ]
-  [ mini_loop; OK; 0.062961; 1436286936; ]
-]
-interpreter_list: [ python; ]
-title: Get Horizon States;
-hwut_info_time: 1424190788L;
-}
-{
 file_name: test-resolve.py;
 result_list: [
-  [ linear; OK; 0.067677; 963300729; ]
-  [ butterfly; OK; 0.072316; -471876666; ]
-  [ long_loop; OK; 0.065287; 520472801; ]
-  [ nested_loop; OK; 0.061856; -1669198455; ]
-  [ mini_loop; OK; 0.063274; 167827220; ]
-  [ fork; OK; 0.067964; 876483264; ]
-  [ fork2; OK; 0.063702; -1886806785; ]
-  [ fork3; OK; 0.063909; 488837126; ]
-  [ fork4; OK; 0.064399; 1004565263; ]
-  [ tree; OK; 0.065367; -21337366; ]
-  [ mini_bubble; OK; 0.062920; -30455382; ]
-  [ bubble; OK; 0.066497; None; ]
-  [ bubble2; OK; 0.067972; None; ]
-  [ bubble2b; OK; 0.065530; 658378562; ]
-  [ bubble3; OK; 0.063243; None; ]
-  [ bubble4; OK; 0.068052; 1125856477; ]
+  [ linear; OK; 0.000000; -1577454877; ]
+  [ butterfly; OK; 0.000000; 1168916341; ]
+  [ long_loop; OK; 0.068402; 520472801; ]
+  [ nested_loop; OK; 0.064178; -1669198455; ]
+  [ mini_loop; OK; 0.000000; -793740733; ]
+  [ fork; OK; 0.000000; -1831944264; ]
+  [ fork2; OK; 0.000000; 999760018; ]
+  [ fork3; OK; 0.000000; 366865296; ]
+  [ fork4; OK; 0.000000; -1215535514; ]
+  [ tree; OK; 0.000000; -1993732082; ]
+  [ mini_bubble; OK; 0.000000; 1111293689; ]
+  [ bubble; OK; 0.000000; -1418767712; ]
+  [ bubble2; OK; 0.000000; 57093734; ]
+  [ bubble2b; OK; 0.000000; -73968579; ]
+  [ bubble3; OK; 0.000000; -1703115750; ]
+  [ bubble4; OK; 0.000000; -279252680; ]
 ]
 interpreter_list: [ python; ]
 title: Resolve Without Dead-Lock Resolution;
-hwut_info_time: 1423988938L;
+hwut_info_time: 1424240345L;
 }
 {
 file_name: test-setup_initial_springs.py;

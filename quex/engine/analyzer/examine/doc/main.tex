@@ -55,18 +55,18 @@ than the original one.
 Figure \ref{fig:two-state-machines} shows a state machine consisting of four
 states.  The dotted lines indicate the transition upon an event that causes the
 state machine to exit.  In the original state machine, as shown in figure
-\ref{fig:two-state-machines}.a, the content of $x$ is incremented at each
+\ref{fig:two-state-machines}.a, the content of $v$ is incremented at each
 transition. When the state machine is left in state 3, for example, three such
 increments must have taken place. In figure \ref{fig:two-state-machines}.b an
-optimized representation of the state machine is shown.  There, value of $x$ is
+optimized representation of the state machine is shown.  There, value of $v$ is
 only determined upon exit.  No increments happen during transitions. Only upon
-exit $x$ is assigned the predetermined value. The balance of computational
+exit $v$ is assigned the predetermined value. The balance of computational
 effort is obvious.
 
 \begin{figure}[htbp] \leavevmode \label{fig:two-state-machines}
 a)
 \begin{verbatim}
-                     x:=x+1        x:=x+1        x:=x+1
+                     v:=v+1        v:=v+1        v:=v+1
               ( a )------->( b )------->( c )------->( d )
                 : exit       : exit       : exit       : exit
                 :            :            :            :
@@ -77,7 +77,7 @@ b)
               ( a )------->( b )------->( c )------->( d )
                 : exit       : exit       : exit       : exit
                 :            :            :            :
-               x=0          x=1          x=2          x=3
+              v:=0         v:=1         v:=2         v:=3
     
 \end{verbatim}
 \caption{Original and optimized state machine.}
@@ -109,7 +109,7 @@ That is, upon entry into a state $i$ the same operations $op(i)$ are applied on
 $V_c$ independently from which state it is entered.  A single-entry state is
 shown in figure \ref{fig:se-vs-me}.a. The optimization transforms the
 single-entry state machine into a \textit{multi-entry state machine}.  That is,
-the operations $op_E(i,k)$ dependent on the transition from which the state is
+the operations $op_E(i,k)$ depends on the transition from which the state is
 entered. A multi-entry state in shown in figure \ref{fig:se-vs-me}.b.
 
 \begin{figure}[htbp] \leavevmode \label{fig:se-vs-me}
@@ -177,15 +177,13 @@ states with this requirement. That is, for a variable named $v$, it holds
 Assume, for example, that the lexeme length is not required in a terminal. Then
 any operation contributing to the computation of the lexeme length is
 redundant.  No state on a path to this terminal is required to perform lexeme
-length related operations, except that another successor state requires it.
-In practical applications, it might be difficult to determine the precise
-set of required variables $V(i)$. In such cases, a \textit{superset} of 
-the set of required variables might suffice. The impact of using a superset
-instead of the precise set is discussed at the very end of this document.
-The aforementioned concepts allow to specify the frame of an investigated
-behavior. 
-\begin{definition}
-Investigated Behavior 
+length related operations, except that another successor state requires it.  In
+practical applications, it might be difficult to determine the precise set of
+required variables $V(i)$. In such cases, a \textit{superset} of the set of
+required variables suffices for correctness. The impact on performance of using
+a superset instead of the precise set is discussed at the very end of this
+document.  The aforementioned concepts allow to specify the frame of an
+investigated behavior.  \begin{definition} Investigated Behavior 
 
 The investigated behavior determines the scope of analysis. It is
 specified by a description of concerned variables $V_c$, the required
@@ -325,9 +323,8 @@ variables $A$.  It performs the mapping
 \end{equation}
 
 Let $R_E(i,k)$ name the recipe upon entry into a state $i$ from a predecessor
-state $k$. It corresponds to the concatenation, or \textit{function
-composition} of state $k$'s output recipe $R(k)$ and state $i$'s operation
-$op(i)$, that is
+state $k$. It corresponds to the \textit{function composition} of state $k$'s
+output recipe $R(k)$ and state $i$'s operation $op(i)$, that is
 
 \begin{equation} \label{eq:entry-recipe-concatenated}
     R_E(i,k) \,=\, op(i)\, \circ \, R(k)
@@ -443,48 +440,48 @@ comparing two recipes. Two recipes may contain the same procedure, but if they r
 stored values from different state, then they cannot be equal in general. That is, 
 %%
 \begin{equation} \label{eq:snapshot-map-difference}
-   \exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(i)) \Rightarrow R(i) \neq R(k)
+   \exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(k)) \Rightarrow R(i) \neq R(k)
 \end{equation}
 %%
 Also, if the sets of snapshot states of two recipes differ, then there must be 
 at least one snapshot map that is different, i.e.
 %%
 \begin{equation} \label{eq:snapshot-map-difference-2b}
-   S(R(i)) \neq S(R(i)) \,\Rightarrow\,\exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(i)) 
+   S(R(i)) \neq S(R(k)) \,\Rightarrow\,\exists\,v\,\,\mbox{with}\,\,S^v(R(i)) \neq S^v(R(k)) 
 \end{equation}
 From the last two equations it follows the following statement.
 %%
 \begin{statement}
    If the snapshot maps of two recipes differ, then the recipes are unequal. 
    \begin{equation} \label{eq:snapshot-map-difference3}
-       S(R(i)) \neq S(R(i)) \Rightarrow R(i) \neq R(k)
+       S(R(i)) \neq S(R(k)) \Rightarrow R(i) \neq R(k)
    \end{equation}
 \end{statement}
 %%
 Another important concept is that of a \textit{constant operation}.
 %%
-\begin{definition} $op^v(i) = constant$ -- Constant operation
-    For a given state $i$, an operation $op^v(i)$ is constant it the
-    modification it does to variable $v$ does not depend on a previous setting
-    of any $v\in V(i)$. 
+\begin{definition} $op^v(i) = constant$ -- Constant operation \label{def:constant-operation}
+
+    For a given state $i$, an operation $op^v(i)$ is constant if its
+    modification to variable $v$ does not depend on a $V(i)$. 
+
 \end{definition}
 %%
-In that sense, the '$v\coloneqq x+3$', with some variable $x\notin V(i)$, is constant.
-However, the operation '$v\coloneqq v+1$' because the assignment depends on the previous
-setting of '$v$. In that sense, the \textit{no operation} on variable $v$ is not 
-constant. Its implementation is $v\coloneqq v$ which clearly depends on $v$. In other words,
-if for a given $v\in V(i)$ there is no operation specified in state $i$, then 
-$op^v(i)$ needs to be considered as non-constant.
-
-It is now possible to specify a procedure that develops recipes across mouth
-states. 
+The operation '$v\coloneqq x+3$', with some variable $x\notin V(i)$, is
+constant.  However, the operation '$v\coloneqq v+1$' is not constant because
+the assignment depends on the previous setting of '$v$. In that sense, the
+\textit{no operation} on variable $v$ is not constant. Its implementation is
+$v\coloneqq v$ which clearly depends on $v$. In other words, if for a given
+$v\in V(i)$ there is no operation specified in state $i$, then $op^v(i)$ needs
+to be considered as non-constant.  It is now possible to specify a procedure
+that develops recipes across mouth states. 
 %%
 \begin{definition} Interference
 
 The process of 'interference' develops a recipe $R(i)$ for a mouth state $i$
 based on entry recipes $R_E(i,k) = op(i)\,\circ\,R(k)\,\mbox{with}\,k \in Pred(i)$.
 The output recipe $R(i)$ depends on the homogeneity of $v$, i.e. 
-\begin{equation}
+\begin{equation} \label{eq:interference-output}
     R^v(i) = \begin{dcases*}
               R_E^v(i,k) & if $v$ is homogeneous.\\
               A(v)       & else
@@ -503,7 +500,7 @@ database $H^v(i)$ with
              \end{dcases*}
 \end{equation}
 %%
-for an arbitrary $k\,\in\,Pred(k)$. For the snapshot maps it holds
+For the snapshot maps it holds
 %%
 \begin{equation} \label{eq:interference-snap-shot-maps}
     S^v(R(i)) = \begin{dcases*}
@@ -590,31 +587,31 @@ spring.
 \subsection{Examples}
                  
 Figure \ref{fig:two-state-machines}.a displayed a state machine with a single
-variable, i.e. $V_c=\{'x'\}$. The operations $op(i)$ upon transition are
-$x\coloneqq x+1$ for all states. Let $A_a(x)$ hold the value of $x$ upon entry the
+variable, i.e. $V_c=\{'v'\}$. The operations $op(i)$ upon transition are
+$v\coloneqq v+1$ for all states. Let $A_a(v)$ hold the value of $v$ upon entry the
 state $a$.  This notation combines the recipe's procedure with its snapshot
 map.  In the above example, the recipe in state $a$ solely restores what has
 been stored.
 %%
 \begin{equation} 
-    R(a) = \{ x \coloneqq  A_a(x) \} 
+    R(a) = \{ v \coloneqq  A_a(v) \} 
 \end{equation}
 %%
 The recipe $R(b)=R_E(b,a)$ must be equivalent to the concatenated execution of $op(b)$
 and $R(a)$, i.e.
 
 \begin{eqnarray}
-    R(b)&=&\{\,x\,\coloneqq \,A_a(x);\,x\,\coloneqq \,x + 1;\} \\
-    R(b)&=&\{\,x\,\coloneqq \,A_a(x) + 1; \}                                 
+    R(b)&=&\{\,v\,\coloneqq \,A_a(v);\,v\,\coloneqq \,v + 1;\} \\
+    R(b)&=&\{\,v\,\coloneqq \,A_a(v) + 1; \}                                 
 \end{eqnarray}
 This rule applied repeatedly to the states 'c' and 'd' leads to
 \begin{eqnarray}
-    R(c) &=&\{ x \coloneqq  A_a(x) + 2 \} \\
-    R(d) &=&\{ x \coloneqq  A_a(x) + 3 \}                                 
+    R(c) &=&\{ v \coloneqq  A_a(v) + 2 \} \\
+    R(d) &=&\{ v \coloneqq  A_a(v) + 3 \}                                 
 \end{eqnarray}
 %%
-If the state machine exits at $a$, $b$, $c$, or $d$ the content of $x$ can be
-determined without relying on the intermediate operations $\{ x\coloneqq x+1 \}$. This
+If the state machine exits at $a$, $b$, $c$, or $d$ the content of $v$ can be
+determined without relying on the intermediate operations $\{ v\coloneqq v+1 \}$. This
 was shown in figure \ref{fig:two-state-machines}.b. 
 %%
 The repeated accumulation of recipes along linear states comes to an end at
@@ -627,6 +624,7 @@ the resulting state machine the computed values of $v$ must be stored in an
 auxiliary variable $A(v)$ as shown in figure \ref{fig:interference-example}.b.
 %%
 \begin{figure}[htbp] \leavevmode \label{fig:interference-example}
+a)
 \begin{verbatim}
 
   A(v) = v                       R_E(e,b) = A(v) + 2
@@ -638,6 +636,7 @@ auxiliary variable $A(v)$ as shown in figure \ref{fig:interference-example}.b.
    A(v) = v                      R_E(e,d) = A(v) + 2
 
 \end{verbatim}
+b)
 \begin{verbatim}
                                  
   - - - ->( b )---[ A_e(v) = A(v) + 2 ]-----.
@@ -807,8 +806,8 @@ better, it makes sense to briefly review the propagation by accumulation.
                      R(b) = ? -->--'
 
 \end{verbatim}
-\caption{A mouth state with a determined entry recipe $R(a)$ and 
-an undetermined entry recipe $R(b)$.}
+\caption{A horizon state state with an entry from a determined state $a$ and 
+    an undetermined state $b$.}
 \end{figure}
 
 The initial state $i_0$ is the first state that is entered. It has at least one
@@ -856,7 +855,7 @@ recipe $R(i)$ is determined by
 \end{equation}
 For all variables $v$ an inhomogeneity is assumed, except for those where $op^v(i)$
 is constant. That is,
-\begin{equation}
+\begin{equation} \label{eq:cautious-homogeneity}
     H^v(i,k) = \begin{dcases*}
                      false & if $op^v(i)$ is constant \\
                      true  & else
@@ -906,7 +905,7 @@ states, i.e.
         S(R^v(k_u))\,\subseteq\,\,U
 \end{equation}
 %%
-For recipes to pass a mouth state, they need to be the equal for all entries. Also
+For recipes to pass a mouth state they need to be the equal for all entries. Also
 their snapshot maps must be equal. However, equations
 \eqref{eq:before-horizon} and \eqref{eq:after-horizon} can only be true, if
 %%
@@ -925,48 +924,76 @@ solution $\blacksquare$.
 
 The output recipe $R(i)$, the homogeneity database $H^v(i)$, and the snapshot
 maps $S^v(i)$ can be aquired based on existing procedures of accumulation and
-interference. Using a special definition for the undetermined predecessor
-recipes ends up with the exact same formula for cautious interference as in
-equation \ref{eq:cautious-output-recipe}. Let the undetermined predecessor
-recipes be defined as
+interference. The key for that is a special definition for the undetermined
+predecessor recipes. With such a 'cautious recipe' in place of undetermined
+entry recipes ordinary interference may be applied to produce the exact same
+result as defined in equation \eqref{eq:cautious-output-recipe}.  Let the
+undetermined predecessor recipes be defined as
 
 \begin{equation} \label{eq:undetermined-recipe}
     R^v(k_u) = \{ v \coloneqq A(v) \} \,\,\mbox{and}\,\, S^v(R(k_u)) = \sigma\,\,\forall\,v\,\in V(i)
 \end{equation}
 
-where $\sigma$ is a state that is not in the state machine. In contrast to
-$\varepsilon$ it changes the set to which it is added. For a set of
-states $B$ with $\sigma \notin B$ it holds $B \cap \{ \sigma \} = \emptyset$.
-Then, the entry recipe of an undetermined state $R_E(i,k_u)$ is determined by
+where $\sigma$ is a 'singular element'. Each $\sigma$ exists solely once. For
+any two sets $B$ and $C$ it holds that if a $\sigma \in B$ it follows that
+$\sigma \notin C$.  If $S^v(R_x)$ holds $\sigma$ no other snapshot map can hold
+the same sigma.  With such a definition, the components of a \textit{cautious
+entry recipe} $R_E(i,k_u)$ are determined by
 
-\begin{equation}
-    R_E(i,k_u) = op(i) \circ R(k_u)
-\end{equation}
-For interference it follows, that
 \begin{eqnarray}
+    R^v_E(i,k_u) & = & op^v(i) \circ R(k_u)
+                 & = & \begin{dcases*}
+                       op^v(i)         & if $op^v(i)$ is constant \\
+                       x \coloneq A(v) & else
+                       \end{dcases*}
+\end{eqnarray}
+
+Wherever $op^v(i)$ is constant, $R_E(i,k_u)$ is independent of $R(k_u)$ and is
+therefore the same for all predecessors. It follows
+
+\begin{equation} \label{eq:cautious-recipe-homogeneity}
+    op^v(i) \,\mobx{is constant}\,\Rightarrow\,H^v(i, k_u) = true
+\end{equation}
+
+The snapshot maps develop to
+\begin{eqnarray} \label{eq:cautious-repl-1}
     S^v(R_E(i,k_u)) & = & S^v(op(i) \circ R(k_u)) \\ 
                     & = & \begin{dcases*}
-                          \varepsilon           & if $op^v(i)$ is constant \\
+                          \varepsilon          & if $op^v(i)$ is constant \\
                           S^v(R(k_u)) = \sigma & else
                           \end{dcases*}
 \end{eqnarray}
-and, thus
-\begin{eqnarray}
-    H^v(i) & = & \begin{dcases*}
-                   true  & if $op^v(i)$ is constant \\
-                   false & else
-                 \end{dcases*}
-\end{eqnarray}
 
-A determined predecessor recipe $R(k_d)$ of a horizon state either has no entry
-in the snapshot map, or the entry of an existing state. Thus, $R^v_E(i,k_u)$
-and $R^v_E(i,k_d)$ are equal if and only if $op^v(i)$ is constant. Otherwise,
-the entry operations store $v$ in $A(v)$ and $R^v(i)=\{ v \coloneqq A(v)\}$
-with $S^v(R^v(i))=i$.  Cautious interference can, therefore, be implemented by
-the use of a special 'undetermined predecessor recipe' from equation
-\eqref{eq:undetermined-recipe}. When accumulated with the states $op(i)$
-and passed through interference, exact the same expressions result as
-they are required for cautious interference $\blacksquare$.
+Since $\sigma$ appears in the expressions for non-constant components
+$op^v(i)$, $S^v(R_E(i,k_u))$ can never be the same for all predecessors. Ordinary
+interference, from definition \ref{def:interference}, imposes in that case
+inhomogeneity. Thus,
+
+\begin{equation} \label{eq:cautious-recipe-inhomogeneity}
+    op^v(i) \,\mobx{is not constant}\,\Rightarrow\,H^v(i, k_u) = false
+\end{equation}
+
+Thus, the entry recipes are homogeneous if, and only if $op^v(i)$ is constant. According
+to \eqref{eq:interference-output} applied interference delivers
+
+\begin{equation} \label{eq:interference-output-2}
+    R^v(i) = \begin{dcases*}
+              R_E^v(i,k) & if $op^v(i) is constant.\\
+              A(v)       & else
+             \end{dcases*}
+\end{equation}
+
+which directly corresponds first equation \eqref{eq:cautious-output-recipe}
+from the definition of cautious interference. The second equation
+\eqref{eq:cautious-homogeneity} on homogeneity is fulfilled by equations
+\eqref{eq:cautious-recipe-homogeneity} and
+\eqref{eq:cautious-recipe-inhomogeneity} . The last equation on snapshot maps
+\eqref{eq:cautious-interference-snapshot} is maintained by
+\eqref{eq:cautious-repl-1}.  Cautious interference can, therefore, be
+implemented by the use of a special 'undetermined predecessor recipe' from
+equation \eqref{eq:undetermined-recipe}.  When accumulated with the state's
+$op(i)$ and passed through ordinary interference, exact the same expressions
+result as they are required for cautious interference $\blacksquare$.
 
 The output recipes $R(i)$ can be used for propagation of recipes so that other
 dead-lock states receive determined entries and become part of the horizon.

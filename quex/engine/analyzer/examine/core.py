@@ -224,11 +224,16 @@ class Examiner:
         deliver a complete solution.
         """
         remainder = UnresolvedMouthStateSet
-        horizon   = self.get_horizon(remainder)
-        while horizon:
-            self._cautious_interference(horizon)
-            remainder    = self.resolve(horizon)
-            horizon      = self.get_horizon(remainder)
+        while remainder:
+            horizon = self.get_horizon(remainder)
+
+            # Cautious interference: apply interference with 'undetermined' 
+            # recipes in horizon states. 
+            self._prepare_cautious_recipes(horizon)
+            self._interference(horizon)
+
+            # Horizon states equipped with cautious recipes become new springs.
+            remainder = self.resolve(Springs=horizon)
 
         self._dead_locks_fine_adjustment(UnresolvedMouthStateSet)
 
@@ -259,15 +264,30 @@ class Examiner:
 
     def get_horizon(self, UnresolvedMouthStateSet):
         """Horizon: Definition see "[DOC]".
-        Brief: The horizon is a subset of dead-lock states that have at
-        least one determined entry.  In "[DOC]" it is proven that
-        such states always exist.
+
+        Brief: The horizon is a subset of dead-lock states that have at least
+        one determined entry.  In "[DOC]" it is proven that such states always
+        exist, if dead-lock states exist.
 
         RETURNS: List of indeces of horizon states.
         """
+        def condition(si):
+            """According to its definition in [DOC], a state is a horizon state
+            if it is undetermined (a dead-lock state) and has at least one 
+            determined entry. This is the case, if it has at least one undeter-
+            mined and at least one determined entry.
+            """
+            has_determined_f   = False
+            has_undetermined_f = False
+            for entry_recipe in self.get_state_info(si).entry_recipe_db.itervalues():
+                if entry_recipe is None: has_undetermined_f = True
+                else:                    has_determined_f   = True
+                if has_determined_f and has_undetermined_f:
+                    return True
+            return False
+
         return set(
-            si for si in UnresolvedMouthStateSet
-               if self.mouth_db[si].entry_recipes_one_determined()
+            si for si in UnresolvedMouthStateSet if condition(si)
         )
 
     def _accumulate(self, Springs):
@@ -301,18 +321,32 @@ class Examiner:
         """
         for si in CandidateSet:
             mouth = self.get_state_info(si)
-            mouth.recipe, \
+            mouth.recipe,        \
             mouth.homogeneity_db = self.recipe_type.interference(mouth, si)
 
-    def _cautious_interference(self, HorizonStateSet):
-        """Cautious interferences, as described in [DOC] may be implemented by 
-        setting 'undetermined recipes' (also defined in [DOC]) at the place of 
-        entry recipes. Then, inter
+    def _prepare_cautious_recipes(self, HorizonStateSet):
+        """[DOC] describes the process of 'cautious interference' as a type of 
+        interference, where it is assumed that all variables are stored upon
+        entry and restored in the output recipe. It has been shown in [DOC]
+        that a safe procedure to do so is to replace undetermined entries with 
+        'cautious entries' consisting of a concatination of the undetermined
+        recipe with the current states 'op(i)' (i.e. '.single_entry').
+
+        Once, all undetermined entries are occupied, ordinary interference is
+        performed. 
         """
-        for si in CandidateSet:
-            mouth = self.get_state_info(si)
-            mouth.recipe, \
-            mouth.homogeneity_db = self.recipe_type.cautious_interference(mouth)
+        for si in HorizonStateSet:
+            # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
+            # before interference.
+            undetermined_recipe = self.recipe_type.undetermined(Mouth.required_variable_set)
+            single_entry        = self._sm.states[si].single_entry
+            cautious_recipe     = self.recipe_type.accumulate(undetermined_recipe,
+                                                              single_entry)
+
+            # Replace any undetermined entry recipe with the 'cautious recipe'.
+            for predecessor_si, entry in Mouth.entry_recipe_db.items():
+                if entry is not None: continue
+                Mouth.entry_recipe_db[predecessor_si] = cautious_recipe
 
     def _dead_locks_fine_adjustment(self, OriginalDeadLockSet):
         """Fine adjustment, according to [DOC], means that components of
