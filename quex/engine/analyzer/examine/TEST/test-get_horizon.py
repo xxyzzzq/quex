@@ -12,8 +12,8 @@ from quex.engine.analyzer.examine.core                          import Examiner,
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
-    print "Resolve Without Dead-Lock Resolution;"
-    print "CHOICES: %s;" % get_sm_shape_names()
+    print "Get Horizon States;"
+    print "CHOICES: linear, bubble, bubble2, bubble4, butterfly, mini_loop;"
     sys.exit()
 
 name             = sys.argv[1]
@@ -51,22 +51,7 @@ def print_entry_recipe_db(si, EntryRecipeDb):
         else:
             print "  from %02s \n     %s" % (from_si, str(recipe).replace("\n", "\n     "))
 
-print "Unresolved Mouth States:"
-print "   %s" % sorted(list(remainder))
-print
-print "Linear States:"
-for si, info in examiner.linear_db.iteritems():
-    print_recipe(si, info.recipe)
+mouth_state_list = sorted(list(examiner.mouth_db.iterkeys()))
+print "Mouth States (Unresolved):", mouth_state_list
+print "Horizon:                  ", sorted(list(examiner.get_horizon(mouth_state_list)))
 
-print "Mouth States (Resolved):"
-for si, info in examiner.mouth_db.iteritems():
-    if si in remainder: continue
-    print_recipe(si, info.recipe)
-
-print "Mouth States (Unresolved):"
-for si, info in examiner.mouth_db.iteritems():
-    if si not in remainder: continue
-    print_entry_recipe_db(si, info.entry_recipe_db)
-
-print "Horizon:"
-print sorted(list(examiner.get_horizon(mouth_state_list)))
