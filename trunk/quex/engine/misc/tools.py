@@ -55,7 +55,9 @@ def pair_combinations(iterable):
         for y in islice(other, i+1, None):
             yield x, y
 
-E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "_DEBUG_E_Values")
+E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "SIGMA", "_DEBUG_E_Values")
+# 'SIGMA' is something that is always different. It will cause always the 
+# content to become 'VOID', i.e. not uniform in UniformObject.
 
 def concatinate(one_list, other_list):
     """RETURNS: The 'one_list' extended with 'other_list' in case that 
@@ -120,6 +122,7 @@ class UniformObject(object):
         if   E_Values.UNASSIGNED == self._content:       self._content = NewContent
         elif E_Values.VOID       == self._content:       pass
         elif E_Values.VOID       == NewContent:          self._content = E_Values.VOID
+        elif E_Values.SIGMA      == NewContent:          self._content = E_Values.VOID
         elif not self._equal(self._content, NewContent): self._content = E_Values.VOID
         return self
 

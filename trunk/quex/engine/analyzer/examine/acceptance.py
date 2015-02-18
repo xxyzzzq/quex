@@ -71,6 +71,11 @@ class RecipeAcceptance(Recipe):
     def undetermined(cls, RequiredVariableSet):
         """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
         """
+        snapshot_map = dict(        
+            (variable_id, E_Values.SIGMA)        # None = 'sigma' in [DOC]
+            for variable_id in RequiredVariableSet
+        )
+
         accepter = [ 
             cls.RestoreAcceptance 
         ]
@@ -81,10 +86,6 @@ class RecipeAcceptance(Recipe):
             if type(variable_id) == tuple
         )
 
-        snapshot_map = dict(        
-            (variable_id, None)                  # None = 'sigma' in [DOC]
-            for variable_id in RequiredVariableSet
-        )
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
 
     @classmethod

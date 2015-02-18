@@ -35,9 +35,6 @@ class Recipe:
 
     A derived class CAN implement:
 
-       .get_SCR_operations(): extracts those operations out of a state
-              entry which are relevant to the SCR.
-
        .from_spring(): Constructs a recipe from a spring states.
 
        .get_SCR_by_state_index(): generator that provides an iterable
@@ -100,30 +97,6 @@ class Recipe:
 
         return snapshot_map, homogeneity_db
 
-    def cautious_interference(cls, Mouth):
-        """According to [DOC], cautious interference may be entirely 
-        implemented relying on 'undetermined recipes', 'accumulation', 
-        and normal 'interference'. Thus, cautious interference is implemented
-        in the base class of recipes.
-
-        NOTE: Nothing is done to the homogeneity_db, because its adaption
-              will be a natural consequence of the undetermined recipe.
-        """
-        assert Mouth.mouth_f()
-        required_variable_set = Mouth.required_variable_set
-
-        # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
-        # before interference.
-        undetermined_recipe = self.recipe_type.undetermined(required_variable_set)
-        entry_recipe        = self.recipe_type.accumulate(undetermined_recipe,
-                                                          SingleEntry)
-
-        for predecessor_si, entry in Mouth.entry_recipe_db.items():
-            if entry is None: 
-                Mouth.entry_recipe_db[predecessor_si] = entry_recipe
-
-        return cls.interfere(Mouth)
-
     @classmethod
     def apply_inhomogeneity(cls, snapshot_map, homogeneity_db, VariableId, StateIndex):
         """When inhomogeneity for a variable 'VariableId' is detected, then the
@@ -147,56 +120,4 @@ class Recipe:
         for si, state in SM.states.iteritems():
             for cmd in state.single_entry.get_iterable(CmdType):
                 yield si, cmd
-
-    @classmethod
-    def get_SCR_operations(cls, TheState):
-        """For a given state, it extracts the operations upon entry which 
-        modify registers of the SCR. 
-
-        RETURNS: A list of operations on the SCR.
-        """
-        return [ op for op in TheState.single_entry if op.modifies(cls.SCR) ] 
-
-    @classmethod
-    def get_scr_by_state_index(cls, SM):
-        """Determines terminals in the state machine which absolutely require
-        some information about a set of registers (SCR) for the investigated
-        behavior. The set is not concerned of determination happening during
-        analysis or at run-time. 
-
-        This is the default implementation, which simply returns the class'
-        SCR for all states.
-
-        YIELDS: (state index, SCR)
-        """
-        for si in SM.states:
-            yield si, cls.SCR
-
-    @classmethod
-    def initial_spring_recipe_pairs(cls, Sm, MouthDb):
-        """The term 'spring' has been defined in [DOC] as a state where
-        the walk along linear states may begin. An initial spring is a state 
-        where the entry operations determine all registers of the SCR while making
-        all previous history redundant.
-
-        This is the default implementation, which simply returns the init state
-        of the state machine--a safe solution.
-
-        RETURNS: list of (si, recipe)
-        
-        where 'si' is the state index of a spring and 'recipe' its recipe. This
-        default implementation is a safe approach, in case that it is difficult
-        to make assumptions about states deeper insider the state machine.
-        """
-        si    = Sm.init_state_index
-        mouth = MouthDb.get(si)
-        if mouth is None:
-            recipe = cls.accumulate(None, Sm.get_init_state().single_entry)
-            return [(si, recipe)]
-        else:
-            entry_recipe = cls.accumulate(None, Sm.get_init_state().single_entry)
-            mouth.entry_recipe_db[E_StateIndices.NONE] = entry_recipe
-            # A mouth state can never be an initial spring
-            # => Analysis starts with dead-lock analysis
-            return []
 

@@ -68,5 +68,5 @@ for si, info in examiner.mouth_db.iteritems():
     if si not in remainder: continue
     print_entry_recipe_db(si, info.entry_recipe_db)
 
-print "Horizon:"
-print sorted(list(examiner.get_horizon(mouth_state_list)))
+print
+print "Horizon:", sorted(list(examiner.get_horizon(examiner.mouth_db.keys())))
