@@ -164,12 +164,12 @@ class RecipeAcceptance(Recipe):
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        if PrevRecipe is None:
-            # Only possible of CurrSingleEntry is constant, then the snapshot map
-            # is empty.
-            snapshot_map = {}
-        else:
-            snapshot_map = copy(PrevRecipe.snapshot_map)
+        if PrevRecipe is None: snapshot_map = {}
+        else:                  snapshot_map = copy(PrevRecipe.snapshot_map)
+
+        # Filter out those entries in the snapshot map, where the recipe does 
+        # no longer rely on stored entries.
+        cls.snapshot_map_filter_out(snapshot_map, accepter, ip_offset_db)
 
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
         
@@ -232,6 +232,7 @@ class RecipeAcceptance(Recipe):
 
         # There *must* be something to do, even if no pre-context matched.
         assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
+
         return accepter
 
     @staticmethod
@@ -334,6 +335,26 @@ class RecipeAcceptance(Recipe):
 
         return ip_offset_db
         
+    @staticmethod
+    def snapshot_map_filter_out(snapshot_map, Accepter, IpOffsetDb):
+        """Take those entries out of the snapshot map, where the recipe does
+        not rely on stored values.
+        """
+        # (*) Input position storage / offset
+        for variable_id, state_index in snapshot_map.items():
+            if type(variable_id) == tuple:
+                position_register = variable_id[1]
+                if    position_register not in IpOffsetDb \
+                   or IpOffsetDb[position_register] is not None:
+                    del snapshot_map[variable_id]
+        
+        # (*) The 'RESTORE_ACCEPTANCE' must always be the last in the accepter,
+        #     because it does not depend on a pre-context.
+        assert Accepter
+        if      Accepter[-1].acceptance_id() != E_IncidenceIDs.RESTORE_ACCEPTANCE \
+            and E_R.AcceptanceRegister in snapshot_map:
+            del snapshot_map[E_R.AcceptanceRegister]
+
     @staticmethod
     def get_string_accepter(Accepter):
         txt = []

@@ -2,8 +2,8 @@ from   quex.engine.state_machine.state.single_entry import SingleEntry, \
                                                            SeAccept, \
                                                            SeStoreInputPosition
 from   quex.engine.state_machine.state.target_map   import TargetMap
-
-from   quex.blackboard    import E_PreContextIDs
+from   quex.engine.misc.tools import typed 
+from   quex.blackboard        import E_PreContextIDs
 
 class State:
     """A state consisting of ONE entry and multiple transitions to other
@@ -32,6 +32,7 @@ class State:
     Whether or not a state complies to the requirements of a DFA can be checked
     by '.is_DFA_compliant()'.
     """
+    @typed(AcceptanceF=bool, CloneF=bool)
     def __init__(self, AcceptanceF=False, CloneF=False):
         """Contructor of a State, i.e. a aggregation of transitions.
         """
