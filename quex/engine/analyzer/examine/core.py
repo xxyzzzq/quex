@@ -46,24 +46,17 @@ def do(SM, RecipeType):
 
     # Determine states from where a walk along linear states can begin.
     springs = examiner.setup_initial_springs()
+    if not springs:
+        remainder = set(examiner.mouth_db.iterkeys())
+        springs   = examiner.prepare_springs_of_horizon(remainder)
 
-    if springs:
-        # Resolve as many as possible states in the state machine, i.e. 
-        # associate the states with an recipe 'R(i)'. Possibly, there are mouth
-        # states with undetermined recipes: dead-lock states.
-        unresolved_mouths = examiner.resolve(springs)
-    else:
-        unresolved_mouths = set(examiner.mouth_db.iterkeys())
-
-    # Solve dead-locks caused by mutual dependencies: 'run-time' interference.
-    examiner.resolve_dead_locks(unresolved_mouths)
+    while springs:
+        remainder = examiner.resolve(springs)
+        springs   = examiner.prepare_springs_of_horizon(remainder)
         
-    # At this point all states must have determined recipes, according to
-    # the theory in "[DOC]".
-    assert all_true(chain(examiner.linear_db.itervalues(), 
-                          examiner.mouth_db.itervalues()), 
-                    lambda x: x.is_determined()) 
-    
+    # Double check, that the result makes sense.
+    examiner.assert_consistency()
+
     return examiner.linear_db, examiner.mouth_db
 
 class Examiner:
@@ -161,6 +154,8 @@ class Examiner:
 
         RETURNS: list of state indices of initial spring states.
         """
+        assert set(self.mouth_db).isdisjoint(set(self.linear_db))
+
         self.determine_required_sets_of_variables()
     
         result = set()
@@ -195,12 +190,12 @@ class Examiner:
         springs  = Springs
         done_set = set()
         while springs:
-            done_set.update(springs)
             for si in springs:
                 self.get_state_info(si).spring_f = True
 
             # Derive recipes along linear states starting from springs.
             mouths_ready_set = self._accumulate(springs) 
+            done_set.update(springs)
 
             # Mouth states where all entry recipes are set
             # => Apply 'interference' to determine their recipe.
@@ -214,7 +209,7 @@ class Examiner:
         return set(si for si, mouth in self.mouth_db.iteritems()
                       if not mouth.is_determined())
 
-    def resolve_dead_locks(self, UnresolvedMouthStateSet):
+    def prepare_springs_of_horizon(self, UnresolvedMouthStateSet):
         """For the given set of unresolved mouth states, implement the 'restore
         all' recipe. That means, that the value of registers is determined at
         run-time upon entry into the state, stored in an auxiliary register
@@ -223,19 +218,14 @@ class Examiner:
         Using this approach to resolve unresolved mouth states is safe to
         deliver a complete solution.
         """
-        remainder = UnresolvedMouthStateSet
-        while remainder:
-            horizon = self.get_horizon(remainder)
+        horizon = self.get_horizon(UnresolvedMouthStateSet)
 
-            # Cautious interference: apply interference with 'undetermined' 
-            # recipes in horizon states. 
-            self._prepare_cautious_recipes(horizon)
-            self._interference(horizon)
-
-            # Horizon states equipped with cautious recipes become new springs.
-            remainder = self.resolve(Springs=horizon)
-
-        self._dead_locks_fine_adjustment(UnresolvedMouthStateSet)
+        # Cautious interference: apply interference with 'undetermined' 
+        # recipes in horizon states. 
+        for si in horizon:
+            self._prepare_cautious_recipe(si)
+        self._interference(horizon)
+        return horizon
 
     def get_state_info(self, StateIndex):
         """RETURNS: LinearStateInfo/MouthStateInfo for a given state index.
@@ -324,7 +314,7 @@ class Examiner:
             mouth.recipe,        \
             mouth.homogeneity_db = self.recipe_type.interference(mouth, si)
 
-    def _prepare_cautious_recipes(self, HorizonStateSet):
+    def _prepare_cautious_recipe(self, StateIndex):
         """[DOC] describes the process of 'cautious interference' as a type of 
         interference, where it is assumed that all variables are stored upon
         entry and restored in the output recipe. It has been shown in [DOC]
@@ -335,30 +325,28 @@ class Examiner:
         Once, all undetermined entries are occupied, ordinary interference is
         performed. 
         """
-        for si in HorizonStateSet:
-            # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
-            # before interference.
-            undetermined_recipe = self.recipe_type.undetermined(Mouth.required_variable_set)
-            single_entry        = self._sm.states[si].single_entry
-            cautious_recipe     = self.recipe_type.accumulate(undetermined_recipe,
-                                                              single_entry)
+        # A horizon state MUST be a mouth state!
+        mouth               = self.mouth_db[StateIndex]
 
-            # Replace any undetermined entry recipe with the 'cautious recipe'.
-            for predecessor_si, entry in Mouth.entry_recipe_db.items():
-                if entry is not None: continue
-                Mouth.entry_recipe_db[predecessor_si] = cautious_recipe
+        # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
+        # before interference.
+        undetermined_recipe = self.recipe_type.undetermined(mouth.required_variable_set)
+        single_entry        = self._sm.states[StateIndex].single_entry
+        cautious_recipe     = self.recipe_type.accumulation(undetermined_recipe,
+                                                            single_entry)
 
-    def _dead_locks_fine_adjustment(self, OriginalDeadLockSet):
-        """Fine adjustment, according to [DOC], means that components of
-        constant entry recipes are identified.
+        # Replace any undetermined entry recipe with the 'cautious recipe'.
+        for predecessor_si, entry in mouth.entry_recipe_db.items():
+            if entry is not None: continue
+            mouth.entry_recipe_db[predecessor_si] = cautious_recipe
 
-        OriginalDeadLockSet -- set of states that were originally dead-locks.
+    def assert_consistency(self):
+        """After termination, every state must have a recipe assigned to it.
         """
-
-        while 1 + 1 == 2:
-            improved_state_set = improve(OriginalDeadLockSet)
-            if not improved_state_set: break
-            self.resolve(improved_state_set)
+        assert all_true(chain(examiner.linear_db.itervalues(), 
+                              examiner.mouth_db.itervalues()), 
+                        lambda x: x.is_determined()) 
+    
 
 class LinearStateWalker(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the
