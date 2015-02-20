@@ -82,7 +82,7 @@ class Recipe:
         for variable_id in Mouth.required_variable_set:
 
             uniform_object = UniformObject.from_iterable(
-                 recipe.snapshot_map[variable_id]
+                 recipe.snapshot_map.get(variable_id)
                  for recipe in Mouth.entry_recipe_db.itervalues()
             )
 
@@ -107,10 +107,12 @@ class Recipe:
         homogeneity_db[VariableId] = False
 
     @staticmethod
-    def tag_successors(db, si, SuccessorDb, VariableId):
-        db[si].add(VariableId)
-        for successor_si in SuccessorDb[si]:
-            db[successor_si].add(VariableId)
+    def tag_iterable(db, StateIndexIterable, VariableId):
+        """Add VariableId to every dictionary entry 'db[si]' where 'si' is
+        provided by the 'StateIndexIterable'.
+        """
+        for si in StateIndexIterable:
+            db[si].add(VariableId)
 
     @staticmethod
     def cmd_iterable(SM, CmdType):

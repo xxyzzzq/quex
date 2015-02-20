@@ -1,4 +1,4 @@
-from quex.engine.analyzer.examine.state_info                    import *
+from quex.engine.analyzer.examine.state_info import *
 from quex.engine.operations.se_operations    import SeAccept, SeStoreInputPosition
 from quex.engine.analyzer.examine.acceptance import RecipeAcceptance
 from quex.blackboard                         import E_PreContextIDs, E_R, E_IncidenceIDs

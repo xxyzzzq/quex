@@ -81,7 +81,7 @@ class RecipeAcceptance(Recipe):
         ]
 
         ip_offset_db = dict(
-            (variable_id, None)                  # position[i] = Aux(position[i])
+            (variable_id[1], None)               # position[i] = Aux(position[i])
             for variable_id in RequiredVariableSet
             if type(variable_id) == tuple
         )
@@ -129,9 +129,9 @@ class RecipeAcceptance(Recipe):
         result = defaultdict(set)
 
         # Acceptance is always necessary. It must be clear what pattern matched.
-        cls.tag_successors(result, SM.init_state_index, SuccessorDb,
-                           E_R.AcceptanceRegister)
-        cls.tag_successors(result, SM.init_state_index, SuccessorDb,
+        # Add states are 
+        cls.tag_iterable(result, SM.states.iterkeys(), E_R.AcceptanceRegister)
+        cls.tag_iterable(result, SM.states.iterkeys(),
                            (E_R.PositionRegister, E_IncidenceIDs.CONTEXT_FREE_MATCH))
 
         # Superset upon 'store-input position':
@@ -144,13 +144,15 @@ class RecipeAcceptance(Recipe):
             # All states are already tagged with 'position register' CONTEXT_FREE_MATCH'
             if cmd.position_register_id() == E_IncidenceIDs.CONTEXT_FREE_MATCH:
                 continue
-            cls.tag_successors(result, si, SuccessorDb, 
-                               (E_R.PositionRegister, cmd.position_register_id()))
+            variable_id = (E_R.PositionRegister, cmd.position_register_id()) 
+            result[si].add(variable_id)
+            cls.tag_iterable(result, SuccessorDb[si], variable_id)
 
         # Position Register:
         for si, cmd in cls.cmd_iterable(SM, SeStoreInputPosition):
-            cls.tag_successors(result, si, SuccessorDb,
-                               (E_R.PositionRegister, cmd.position_register_id())) 
+            variable_id = (E_R.PositionRegister, cmd.position_register_id()) 
+            result[si].add(variable_id)
+            cls.tag_iterable(result, SuccessorDb[si], variable_id)
 
         return result
 
@@ -207,17 +209,17 @@ class RecipeAcceptance(Recipe):
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
-        assert PrevRecipe is None or PrevRecipe.accepter
+        assert Recipe is None or PrevRecipe.accepter
 
-        def acceptance_sort_key(Cmd):
+        def sort_key(Cmd):
             """MATCH_FAILURE *must* always have the lowest precedence!"""
-            if Cmd.acceptance_id() == E_IncidenceIDs.MATCH_FAILURE: return 1e37
+            if Cmd.acceptance_id() == E_IncidenceIDs.MATCH_FAILURE: return -1
             return Cmd.acceptance_id()
 
         accepter        = []
         unconditional_f = False
-        for cmd in sorted(CurrEntry.get_iterable(SeAccept), 
-                          key=acceptance_sort_key):
+        for cmd in sorted(CurrEntry.get_iterable(SeAccept), key=sort_key, 
+                          reverse=True):
             accepter.append(cmd)
             if cmd.pre_context_id() == E_PreContextIDs.NONE: 
                 # Unconditional acceptance overrules all later acceptances.
