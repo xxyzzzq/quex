@@ -3,10 +3,9 @@ Common Acceptance Scheme:
       0
 
 Input Pointer Offset Schemes:
-  --
+   0: <*>, -1, 
 
-  --
-      [0] offset: -1
+Snapshot Map Schemes:
 
 Output Recipe:
   01     Accepter:
@@ -21,11 +20,9 @@ Common Acceptance Scheme:
       0
 
 Input Pointer Offset Schemes:
-  --
-      [0] offset: -1
+   0: -1, 999, 
 
-  --
-      [0] offset: 999
+Snapshot Map Schemes:
 
 Output Recipe:
   02     Accepter:
@@ -40,13 +37,10 @@ Common Acceptance Scheme:
       0
 
 Input Pointer Offset Schemes:
-  --
-      [0] offset: -1
-      [1] offset: -2
+   0: -1, 
+   1: -2, 998, 
 
-  --
-      [0] offset: -1
-      [1] offset: 998
+Snapshot Map Schemes:
 
 Output Recipe:
   03     Accepter:
@@ -62,15 +56,11 @@ Common Acceptance Scheme:
       0
 
 Input Pointer Offset Schemes:
-  --
-      [0] offset: -1
-      [1] offset: -2
-      [2] offset: -3
+   0: -1, 
+   1: -2, 
+   2: -3, 997, 
 
-  --
-      [0] offset: -1
-      [1] offset: -2
-      [2] offset: 997
+Snapshot Map Schemes:
 
 Output Recipe:
   04     Accepter:

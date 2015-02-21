@@ -12,7 +12,7 @@
 # Components of the mouth state's 'op(i)' which are constant do not trigger a 
 # 'store/restore' behavior. The component can be overtaken to the output recipe.
 #
-# Core Test: 
+# CORE TEST: 
 #
 #    -- Setup mouth state with undetermined entries in '.entry_recipe_db'.
 #
@@ -24,6 +24,28 @@
 #
 #    -- ordinary interference
 #         => A correct output recipe.
+#
+# SCENARIOS: 'op(i)' = entry operation of the mouth state under test.
+#
+# (1) No 'op(i)' => Predecessor recipes become entry recipes.
+#                => Undetermined recipes enforce 'store/restore' for all.
+#
+# (2) op(i) = Accept => Acceptance dominates 
+#                       (op(i) = constant with respect to E_R.AcceptanceRegister)
+#                    => Acceptance register does NOT restore
+#                    => Position register restore
+#
+# (3) op(i) = StoreInput(x) => Position 'x' is not restored.
+#                           => All other things are restored.
+#
+# (4) op(i) = Accept with Pre-Context => Acceptance does not dominate
+#                                     => All registers restore
+#
+# CHOICES: n
+#
+# 'n' --> number of entries into state
+#
+# (C) Frank-Rene Schaefer
 #______________________________________________________________________________
 import os
 import sys
@@ -41,12 +63,12 @@ from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
     print "Prepare Cautious Recipes;"
+    print "CHOICES: 2, 3, 4, 5;"
     sys.exit()
 
 # choice = sys.argv[1]
 
 def setup_mouth_with_undetermined_entries(examiner, EntryN, SomeRecipe0, SomeRecipe1):
-    EntryN = 4
     mouth  = MouthStateInfo(FromStateIndexSet=set(xrange(EntryN)))
     if EntryN > 0: mouth.entry_recipe_db[0] = None
     if EntryN > 1: mouth.entry_recipe_db[1] = SomeRecipe0
@@ -73,25 +95,63 @@ def setup(EntryN, StateOperation):
 
     examiner.linear_db[sm.init_state_index] = LinearStateInfo()
 
-    predecessor0_recipe  = RecipeAcceptance([SeAccept(0)], {si: 0}, {})
+    predecessor0_recipe  = RecipeAcceptance([SeAccept(0)], 
+                                            {E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
+                                             10L: -1,      # same for both / no restore
+                                             11L: -2,      # unequal for both
+                                             12L: None,    # same for both / restore same
+                                             13L: None,    # same for both / restore differs
+                                             21L:  0,       # no present in other                 
+                                            }, 
+                                            {(E_R.PositionRegister, 12L): 0,
+                                             (E_R.PositionRegister, 13L): 0
+                                            }) 
     recipe0              = examiner.recipe_type.accumulation(predecessor0_recipe, operation)
-    predecessor1_recipe  = RecipeAcceptance([SeAccept(1)], {si: 0}, {})
+    predecessor1_recipe  = RecipeAcceptance([SeAccept(1)], 
+                                            {E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
+                                             10L: -1,      # same for both / no restore
+                                             11L: -3,      # unequal for both
+                                             12L: None,    # same for both / restore same
+                                             13L: None,    # same for both / restore differs
+                                             22L:  0,       # no present in other                 
+                                            }, 
+                                            {(E_R.PositionRegister, 12L): 0, 
+                                             (E_R.PositionRegister, 13L): 1, 
+                                            })
     recipe1              = examiner.recipe_type.accumulation(predecessor1_recipe, operation)
 
     mouth    = setup_mouth_with_undetermined_entries(examiner, EntryN, recipe0, recipe1)
     examiner.mouth_db[si] = mouth
 
-    examiner.determine_required_sets_of_variables()
+    mouth.required_variable_set = set([
+        E_R.AcceptanceRegister,
+        (E_R.PositionRegister, E_IncidenceIDs.CONTEXT_FREE_MATCH),
+        (E_R.PositionRegister, 10L),
+        (E_R.PositionRegister, 11L),
+        (E_R.PositionRegister, 12L),
+        (E_R.PositionRegister, 13L),
+        (E_R.PositionRegister, 21L),
+        (E_R.PositionRegister, 22L),
+        (E_R.PositionRegister, 4711L),
+    ])
     assert set(examiner.mouth_db).isdisjoint(examiner.linear_db), \
            "%s intersects with %s" % (set(examiner.mouth_db), set(examiner.linear_db))
     return examiner, si
 
-def test(StateOperation):
+def test(Name, EntryN, StateOperation):
+    print "_" * 80
+    print Name
+    print
     examiner, si = setup(5, StateOperation)
     examiner._prepare_cautious_recipe(si)
     examiner._interference([si])
     print_interference_result(examiner.mouth_db)
 
-# test([])
-# test([SeAccept(4711L)])
-test([SeStoreInputPosition(4711L)])
+# This module may be included by another test. So, check whether it is run
+# independently.
+if __name__ == "__main__":
+    entry_n = int(sys.argv[1])
+    test("(1) No op(i)",                           entry_n, [])
+    test("(2) op(i) = Accept without pre-context", entry_n, [SeAccept(4711L)])
+    test("(3) op(i) = StoreInputPosition",         entry_n, [SeStoreInputPosition(4711L)])
+    test("(4) Accept with pre-context",            entry_n, [SeAccept(4711L, 33L)])

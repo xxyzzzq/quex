@@ -2,7 +2,9 @@ Mouth States:
 Common Acceptance Scheme:
       0
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   01     Accepter:
@@ -13,8 +15,10 @@ Output Recipe:
 Common Acceptance Scheme:
       0
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
+Input Pointer Offset Schemes:
+   0: -1, 
+
+Snapshot Map Schemes:
 
 Output Recipe:
   02     Accepter:
@@ -26,9 +30,11 @@ Output Recipe:
 Common Acceptance Scheme:
       0
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
-      [1] offset: -2
+Input Pointer Offset Schemes:
+   0: -1, 
+   1: -2, 
+
+Snapshot Map Schemes:
 
 Output Recipe:
   03     Accepter:
@@ -41,10 +47,12 @@ Output Recipe:
 Common Acceptance Scheme:
       0
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
-      [1] offset: -2
-      [2] offset: -3
+Input Pointer Offset Schemes:
+   0: -1, 
+   1: -2, 
+   2: -3, 
+
+Snapshot Map Schemes:
 
 Output Recipe:
   04     Accepter:

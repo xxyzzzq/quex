@@ -61,8 +61,12 @@ Mouth States (Resolved):
          Snapshot Map:
            AcceptanceRegister                    @5
            (PositionRegister, CONTEXT_FREE_MATCH)@5
+           (PositionRegister, 1L)                @5
            (PositionRegister, 33L)               @5
-     
+           (PositionRegister, 77L)               @5
 Mouth States (Unresolved):
-
 Horizon: []
+     
+
+
+

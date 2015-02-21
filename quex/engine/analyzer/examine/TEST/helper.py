@@ -1,6 +1,7 @@
 from quex.engine.analyzer.examine.state_info import *
+from quex.engine.analyzer.examine.acceptance import *
 from quex.engine.operations.se_operations    import SeAccept, SeStoreInputPosition
-from quex.engine.analyzer.examine.acceptance import RecipeAcceptance
+from quex.engine.misc.tools                  import flatten_list_of_lists
 from quex.blackboard                         import E_PreContextIDs, E_R, E_IncidenceIDs
 
 from copy import deepcopy, copy
@@ -181,42 +182,90 @@ def print_acceptance_scheme(info):
             print RecipeAcceptance.get_string_accepter(accepter)
 
 def print_ip_offset_scheme(info):
-    def print_it(ip_offset_db):
-        for register, offset in sorted(ip_offset_db.iteritems()):
-            print "    [%s]: %s\n" % (register[0], offset)
-            
-    ip_offset_db_set = unique_set(info.entry_recipe_db,
-                                  lambda x: x.ip_offset_db)
+    print "Input Pointer Offset Schemes:"
 
-    if len(ip_offset_db_set) == 0:
-        pass
-    elif len(ip_offset_db_set) == 1:
-        print "Common Input Pointer Offset Scheme:"
-        print RecipeAcceptance.get_string_input_offset_db(ip_offset_db_set.pop())
-    else:
-        print "Input Pointer Offset Schemes:"
-        def key(ip_offset_db):
-            return tuple(x for x in ip_offset_db)
+    all_set = set(flatten_list_of_lists(
+        entry_recipe.ip_offset_db.keys()
+        for entry_recipe in info.entry_recipe_db.values()
+    ))
+    if not all_set:
+        print
+        return 
 
-        for ip_offset_db in sorted(list(ip_offset_db_set), key=key):
-            print "  --"
-            print RecipeAcceptance.get_string_input_offset_db(ip_offset_db)
+    L = max(len("%s" % x) for x in all_set)
+    for position_register in sorted(list(all_set)):
+        scheme = set(
+            entry_recipe.ip_offset_db.get(position_register)
+            for entry_recipe in info.entry_recipe_db.itervalues()
+        )
+        offset_list = sorted(list(scheme))
+        name        = "%s" % position_register
+        space       = " " * (L - len(name))
+        print "   %s:%s %s" % (name, space, "".join("%s, " % x if x is not None else "<*>, " for x in offset_list))
+    print
 
 def print_snapshot_map_scheme(info):
-    snapshot_map_set = unique_set(info.entry_recipe_db, lambda x: x.snapshot_map)
+    print "Snapshot Map Schemes:"
 
-    if len(snapshot_map_set) == 0:
-        pass
-    elif len(snapshot_map_set) == 1:
-        pass
-    else:
-        print "SnapshotMap Schemes:"
-        def key(snapshot_map):
-            return tuple((x,y) for x, y in snapshot_map.iteritems())
+    all_set = set(flatten_list_of_lists(
+        entry_recipe.snapshot_map.keys()
+        for entry_recipe in info.entry_recipe_db.values()
+    ))
+    if not all_set:
+        print
+        return 
 
-        for snapshot_map in sorted(list(snapshot_map_set), key=key):
-            print "  --"
-            print RecipeAcceptance.get_string_snapshot_map(snapshot_map)
+    L = max(len("%s" % repr(x)) for x in all_set)
+    for variable_id in sorted(list(all_set)):
+        scheme = set(
+            entry_recipe.snapshot_map.get(variable_id)
+            for entry_recipe in info.entry_recipe_db.itervalues()
+        )
+        state_index_list = sorted(list(scheme))
+        name        = "%s" % repr(variable_id)
+        space       = " " * (L - len(name))
+        print "   %s:%s %s" % (name, space, "".join("%s, " % x if x is not None else "<*>, " for x in state_index_list))
+    print
+
+if False:
+    # Old definitions
+    def print_ip_offset_scheme(info):
+        def print_it(ip_offset_db):
+            for register, offset in sorted(ip_offset_db.iteritems()):
+                print "    [%s]: %s\n" % (register[0], offset)
+                
+        ip_offset_db_set = unique_set(info.entry_recipe_db,
+                                      lambda x: x.ip_offset_db)
+
+        if len(ip_offset_db_set) == 0:
+            pass
+        elif len(ip_offset_db_set) == 1:
+            print "Common Input Pointer Offset Scheme:"
+            print RecipeAcceptance.get_string_input_offset_db(ip_offset_db_set.pop())
+        else:
+            print "Input Pointer Offset Schemes:"
+            def key(ip_offset_db):
+                return tuple(x for x in ip_offset_db)
+
+            for ip_offset_db in sorted(list(ip_offset_db_set), key=key):
+                print "  --"
+                print RecipeAcceptance.get_string_input_offset_db(ip_offset_db)
+
+    def print_snapshot_map_scheme(info):
+        snapshot_map_set = unique_set(info.entry_recipe_db, lambda x: x.snapshot_map)
+
+        if len(snapshot_map_set) == 0:
+            pass
+        elif len(snapshot_map_set) == 1:
+            pass
+        else:
+            print "SnapshotMap Schemes:"
+            def key(snapshot_map):
+                return tuple((x,y) for x, y in snapshot_map.iteritems())
+
+            for snapshot_map in sorted(list(snapshot_map_set), key=key):
+                print "  --"
+                print RecipeAcceptance.get_string_snapshot_map(snapshot_map)
 
 def print_interference_result(MouthDb):
     print "Mouth States:"

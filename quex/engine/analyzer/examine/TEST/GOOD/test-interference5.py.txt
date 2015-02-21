@@ -2,14 +2,10 @@ Mouth States:
 Common Acceptance Scheme:
       RESTORE_ACCEPTANCE
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
 
-SnapshotMap Schemes:
-  --
-      AcceptanceRegister@0
-
-  --
-      AcceptanceRegister@1
+Snapshot Map Schemes:
+   AcceptanceRegister: 0, 1, 
 
 Output Recipe:
   01     Accepter:
@@ -22,17 +18,12 @@ Output Recipe:
 Common Acceptance Scheme:
       1111
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
+Input Pointer Offset Schemes:
+   0: -1, 
 
-SnapshotMap Schemes:
-  --
-      AcceptanceRegister   @0
-      (PositionRegister, 0)@1
-
-  --
-      AcceptanceRegister   @1
-      (PositionRegister, 0)@1
+Snapshot Map Schemes:
+   AcceptanceRegister:    0, 1, 
+   (PositionRegister, 0): 1, 
 
 Output Recipe:
   02     Accepter:
@@ -47,20 +38,14 @@ Output Recipe:
 Common Acceptance Scheme:
       2222
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
-      [1] offset: -2
+Input Pointer Offset Schemes:
+   0: -1, 
+   1: -2, 
 
-SnapshotMap Schemes:
-  --
-      AcceptanceRegister   @0
-      (PositionRegister, 0)@1
-      (PositionRegister, 1)@2
-
-  --
-      AcceptanceRegister   @1
-      (PositionRegister, 0)@1
-      (PositionRegister, 1)@3
+Snapshot Map Schemes:
+   AcceptanceRegister:    0, 1, 
+   (PositionRegister, 0): 1, 
+   (PositionRegister, 1): 2, 3, 
 
 Output Recipe:
   03     Accepter:
@@ -79,23 +64,16 @@ Common Acceptance Scheme:
       pre44 => 4444
       5555
 
-Common Input Pointer Offset Scheme:
-      [0] offset: -1
-      [1] offset: -2
-      [2] offset: -3
+Input Pointer Offset Schemes:
+   0: -1, 
+   1: -2, 
+   2: -3, 
 
-SnapshotMap Schemes:
-  --
-      AcceptanceRegister   @0
-      (PositionRegister, 0)@1
-      (PositionRegister, 1)@2
-      (PositionRegister, 2)@3
-
-  --
-      AcceptanceRegister   @1
-      (PositionRegister, 0)@1
-      (PositionRegister, 1)@3
-      (PositionRegister, 2)@3
+Snapshot Map Schemes:
+   AcceptanceRegister:    0, 1, 
+   (PositionRegister, 0): 1, 
+   (PositionRegister, 1): 2, 3, 
+   (PositionRegister, 2): 3, 
 
 Output Recipe:
   04     Accepter:
