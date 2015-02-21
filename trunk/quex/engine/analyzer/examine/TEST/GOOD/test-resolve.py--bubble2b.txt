@@ -68,10 +68,8 @@ Mouth States (Unresolved):
            [1L] restore!
            [77L] restore!
          Snapshot Map:
-           AcceptanceRegister                    @2
-           (PositionRegister, CONTEXT_FREE_MATCH)@2
-           (PositionRegister, 1L)                @2
-           (PositionRegister, 77L)               @2
+           (PositionRegister, 1L) @2
+           (PositionRegister, 77L)@2
      
   from  3 <void>
 

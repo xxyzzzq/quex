@@ -6,7 +6,9 @@ Acceptance Schemes:
   --
       8888
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   01     Accepter:
@@ -23,7 +25,9 @@ Acceptance Schemes:
   --
       8888
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   02     Accepter:
@@ -40,7 +44,9 @@ Acceptance Schemes:
   --
       8888
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   03     Accepter:
@@ -61,7 +67,9 @@ Acceptance Schemes:
       pre44 => 4444
       8888
 
-Common Input Pointer Offset Scheme:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   04     Accepter:
