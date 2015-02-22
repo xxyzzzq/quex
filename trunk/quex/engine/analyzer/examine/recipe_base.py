@@ -81,11 +81,6 @@ class Recipe:
         homogeneity_db = {}
         for variable_id in Mouth.required_variable_set:
 
-            print "#variable_id:", variable_id
-            print "#values:     ", [
-                 recipe.snapshot_map.get(variable_id)
-                 for recipe in Mouth.entry_recipe_db.itervalues()
-            ]
             uniform_object = UniformObject.from_iterable(
                  recipe.snapshot_map.get(variable_id)
                  for recipe in Mouth.entry_recipe_db.itervalues()

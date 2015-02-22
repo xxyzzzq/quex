@@ -1,11 +1,12 @@
 Mouth States:
-Common Acceptance Scheme:
-      RESTORE_ACCEPTANCE
+##Common Acceptance Scheme:
+##      RESTORE_ACCEPTANCE
+##
+##Input Pointer Offset Schemes:
 
-Input Pointer Offset Schemes:
-
-Snapshot Map Schemes:
-   AcceptanceRegister: 0, 1, 
+##Snapshot Map Schemes:
+##                           0         1         
+##   AcceptanceRegister:        0,        1, 
 
 Output Recipe:
   01     Accepter:
@@ -15,15 +16,17 @@ Output Recipe:
            AcceptanceRegister@1
      
 --------------------------------------------------------------------
-Common Acceptance Scheme:
-      1111
+##Common Acceptance Scheme:
+##      1111
+##
+##Input Pointer Offset Schemes:
+##          0         1         
+##   0:       -1,       -1, 
 
-Input Pointer Offset Schemes:
-   0: -1, 
-
-Snapshot Map Schemes:
-   AcceptanceRegister:    0, 1, 
-   (PositionRegister, 0): 1, 
+##Snapshot Map Schemes:
+##                              0         1         
+##   AcceptanceRegister:           0,        1, 
+##   (PositionRegister, 0):        1,        1, 
 
 Output Recipe:
   02     Accepter:
@@ -35,17 +38,19 @@ Output Recipe:
            (PositionRegister, 0)@1
      
 --------------------------------------------------------------------
-Common Acceptance Scheme:
-      2222
+##Common Acceptance Scheme:
+##      2222
+##
+##Input Pointer Offset Schemes:
+##          0         1         
+##   0:       -1,       -1, 
+##   1:       -2,       -2, 
 
-Input Pointer Offset Schemes:
-   0: -1, 
-   1: -2, 
-
-Snapshot Map Schemes:
-   AcceptanceRegister:    0, 1, 
-   (PositionRegister, 0): 1, 
-   (PositionRegister, 1): 2, 3, 
+##Snapshot Map Schemes:
+##                              0         1         
+##   AcceptanceRegister:           0,        1, 
+##   (PositionRegister, 0):        1,        1, 
+##   (PositionRegister, 1):        2,        3, 
 
 Output Recipe:
   03     Accepter:
@@ -59,21 +64,23 @@ Output Recipe:
            (PositionRegister, 1)@3
      
 --------------------------------------------------------------------
-Common Acceptance Scheme:
-      pre33 => 3333
-      pre44 => 4444
-      5555
+##Common Acceptance Scheme:
+##      pre33 => 3333
+##      pre44 => 4444
+##      5555
+##
+##Input Pointer Offset Schemes:
+##          0         1         
+##   0:       -1,       -1, 
+##   1:       -2,       -2, 
+##   2:       -3,       -3, 
 
-Input Pointer Offset Schemes:
-   0: -1, 
-   1: -2, 
-   2: -3, 
-
-Snapshot Map Schemes:
-   AcceptanceRegister:    0, 1, 
-   (PositionRegister, 0): 1, 
-   (PositionRegister, 1): 2, 3, 
-   (PositionRegister, 2): 3, 
+##Snapshot Map Schemes:
+##                              0         1         
+##   AcceptanceRegister:           0,        1, 
+##   (PositionRegister, 0):        1,        1, 
+##   (PositionRegister, 1):        2,        3, 
+##   (PositionRegister, 2):        3,        3, 
 
 Output Recipe:
   04     Accepter:

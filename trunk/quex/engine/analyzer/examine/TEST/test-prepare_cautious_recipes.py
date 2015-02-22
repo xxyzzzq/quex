@@ -64,6 +64,7 @@ from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 if "--hwut-info" in sys.argv:
     print "Prepare Cautious Recipes;"
     print "CHOICES: 2, 3, 4, 5;"
+    print "SAME;"
     sys.exit()
 
 # choice = sys.argv[1]
@@ -78,19 +79,18 @@ def setup_mouth_with_undetermined_entries(examiner, EntryN, SomeRecipe0, SomeRec
 
     return mouth
 
-def setup_state_operation(sm, CmdList):
-    state_index = max(set(sm.states.iterkeys())) + 1
-    state       = State()
+def setup_state_operation(sm, CmdList, StateIndex):
+    state = State()
     for cmd in CmdList:
         state.single_entry.add(cmd)
-    sm.states[state_index] = state
-    return state_index
+    sm.states[StateIndex] = state
 
 def setup(EntryN, StateOperation):
     sm        = StateMachine()
     examiner  = Examiner(sm, RecipeAcceptance)
 
-    si        = setup_state_operation(sm, StateOperation) 
+    si = 1111L
+    setup_state_operation(sm, StateOperation, si) 
     operation = sm.states[si].single_entry
 
     examiner.linear_db[sm.init_state_index] = LinearStateInfo()
@@ -142,7 +142,7 @@ def test(Name, EntryN, StateOperation):
     print "_" * 80
     print Name
     print
-    examiner, si = setup(5, StateOperation)
+    examiner, si = setup(EntryN, StateOperation)
     examiner._prepare_cautious_recipe(si)
     examiner._interference([si])
     print_interference_result(examiner.mouth_db)

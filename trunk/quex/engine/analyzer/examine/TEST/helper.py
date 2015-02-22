@@ -164,25 +164,25 @@ def unique_set(EntryRecipeDb, access):
             result.append(x)
     return result
 
-def print_acceptance_scheme(info):
+def print_acceptance_scheme(info, Prefix=""):
     accepter_set = unique_set(info.entry_recipe_db, lambda x: x.accepter)
 
     if len(accepter_set) == 0:
         pass
     elif len(accepter_set) == 1:
-        print "Common Acceptance Scheme:"
-        print RecipeAcceptance.get_string_accepter(accepter_set.pop())
+        print Prefix + "Common Acceptance Scheme:"
+        print Prefix + RecipeAcceptance.get_string_accepter(accepter_set.pop()).replace("\n", "\n%s" % Prefix)
     else:
         print "Acceptance Schemes:"
         def key(accepter):
             return (len(accepter), tuple(x.acceptance_id() for x in accepter))
 
         for accepter in sorted(list(accepter_set), key=key):
-            print "  --"
-            print RecipeAcceptance.get_string_accepter(accepter)
+            print Prefix + "  --"
+            print Prefix + RecipeAcceptance.get_string_accepter(accepter).replace("\n", "\n%s" % Prefix)
 
-def print_ip_offset_scheme(info):
-    print "Input Pointer Offset Schemes:"
+def print_ip_offset_scheme(info, Prefix=""):
+    print Prefix + "Input Pointer Offset Schemes:"
 
     all_set = set(flatten_list_of_lists(
         entry_recipe.ip_offset_db.keys()
@@ -193,19 +193,21 @@ def print_ip_offset_scheme(info):
         return 
 
     L = max(len("%s" % x) for x in all_set)
+    predecessor_list = sorted(info.entry_recipe_db.iterkeys())
+    print Prefix + "   %s      %s" % (" "*L, "".join("%-10s" % si for si in predecessor_list))
+
     for position_register in sorted(list(all_set)):
-        scheme = set(
-            entry_recipe.ip_offset_db.get(position_register)
-            for entry_recipe in info.entry_recipe_db.itervalues()
-        )
-        offset_list = sorted(list(scheme))
+        scheme = [
+            info.entry_recipe_db[si].ip_offset_db.get(position_register)
+            for si in predecessor_list
+        ]
         name        = "%s" % position_register
         space       = " " * (L - len(name))
-        print "   %s:%s %s" % (name, space, "".join("%s, " % x if x is not None else "<*>, " for x in offset_list))
+        print Prefix + "   %s:%s %s" % (name, space, "".join("%8s, " % x if x is not None else "<reload>, " for x in scheme))
     print
 
-def print_snapshot_map_scheme(info):
-    print "Snapshot Map Schemes:"
+def print_snapshot_map_scheme(info, Prefix=""):
+    print Prefix + "Snapshot Map Schemes:"
 
     all_set = set(flatten_list_of_lists(
         entry_recipe.snapshot_map.keys()
@@ -216,15 +218,17 @@ def print_snapshot_map_scheme(info):
         return 
 
     L = max(len("%s" % repr(x)) for x in all_set)
+    predecessor_list = sorted(info.entry_recipe_db.iterkeys())
+    print Prefix + "   %s      %s" % (" "*L, "".join("%-10s" % si for si in predecessor_list))
+
     for variable_id in sorted(list(all_set)):
-        scheme = set(
-            entry_recipe.snapshot_map.get(variable_id)
-            for entry_recipe in info.entry_recipe_db.itervalues()
-        )
-        state_index_list = sorted(list(scheme))
-        name        = "%s" % repr(variable_id)
-        space       = " " * (L - len(name))
-        print "   %s:%s %s" % (name, space, "".join("%s, " % x if x is not None else "<*>, " for x in state_index_list))
+        scheme = [
+            info.entry_recipe_db[si].snapshot_map.get(variable_id)
+            for si in predecessor_list
+        ]
+        name  = "%s" % repr(variable_id)
+        space = " " * (L - len(name))
+        print Prefix + "   %s:%s %s" % (name, space, "".join("%8s, " % x if x is not None else "          " for x in scheme))
     print
 
 if False:
@@ -270,9 +274,9 @@ if False:
 def print_interference_result(MouthDb):
     print "Mouth States:"
     for si, info in MouthDb.iteritems():
-        print_acceptance_scheme(info)
-        print_ip_offset_scheme(info)
-        print_snapshot_map_scheme(info)
+        print_acceptance_scheme(info, Prefix="##")
+        print_ip_offset_scheme(info, Prefix="##")
+        print_snapshot_map_scheme(info, Prefix="##")
 
         print "Output Recipe:"
         print_recipe(si, info.recipe)
