@@ -114,7 +114,6 @@ class Examiner:
                                                                 self.successor_db)
 
         for si, required_variable_set in db.iteritems():
-            print "#si, rvs:", si, required_variable_set
             self.get_state_info(si).required_variable_set = required_variable_set
 
     def is_operation_constant(self, TheSingleEntry, RequiredVariableSet):
@@ -328,7 +327,6 @@ class Examiner:
         """
         # A horizon state MUST be a mouth state!
         mouth               = self.mouth_db[StateIndex]
-        print "#mouth_id:", StateIndex, id(mouth), id(self.get_state_info(StateIndex))
 
         # According to [DOC] use 'op(i) o UndeterminedRecipe' as entry recipe
         # before interference.
@@ -336,7 +334,6 @@ class Examiner:
         single_entry        = self._sm.states[StateIndex].single_entry
         cautious_recipe     = self.recipe_type.accumulation(undetermined_recipe,
                                                             single_entry)
-        print "#cautious:", cautious_recipe
 
         # Replace any undetermined entry recipe with the 'cautious recipe'.
         for predecessor_si, entry in mouth.entry_recipe_db.items():

@@ -209,7 +209,7 @@ class RecipeAcceptance(Recipe):
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
-        assert Recipe is None or PrevRecipe.accepter
+        assert PrevRecipe is None or PrevRecipe.accepter
 
         def sort_key(Cmd):
             """MATCH_FAILURE *must* always have the lowest precedence!"""

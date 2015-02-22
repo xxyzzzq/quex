@@ -1,10 +1,10 @@
 Mouth States:
-##Common Acceptance Scheme:
-##      RESTORE_ACCEPTANCE
-##
-##Input Pointer Offset Schemes:
+Common Acceptance Scheme:
+      RESTORE_ACCEPTANCE
 
-##Snapshot Map Schemes:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   01     Accepter:
@@ -12,12 +12,12 @@ Output Recipe:
          InputOffsetDb:
      
 --------------------------------------------------------------------
-##Common Acceptance Scheme:
-##      1111
-##
-##Input Pointer Offset Schemes:
+Common Acceptance Scheme:
+      1111
 
-##Snapshot Map Schemes:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   02     Accepter:
@@ -25,12 +25,12 @@ Output Recipe:
          InputOffsetDb:
      
 --------------------------------------------------------------------
-##Common Acceptance Scheme:
-##      2222
-##
-##Input Pointer Offset Schemes:
+Common Acceptance Scheme:
+      2222
 
-##Snapshot Map Schemes:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   03     Accepter:
@@ -38,14 +38,14 @@ Output Recipe:
          InputOffsetDb:
      
 --------------------------------------------------------------------
-##Common Acceptance Scheme:
-##      pre33 => 3333
-##      pre44 => 4444
-##      5555
-##
-##Input Pointer Offset Schemes:
+Common Acceptance Scheme:
+      pre33 => 3333
+      pre44 => 4444
+      5555
 
-##Snapshot Map Schemes:
+Input Pointer Offset Schemes:
+
+Snapshot Map Schemes:
 
 Output Recipe:
   04     Accepter:
