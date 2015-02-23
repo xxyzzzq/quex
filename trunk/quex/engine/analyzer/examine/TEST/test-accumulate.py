@@ -8,8 +8,7 @@ from quex.engine.operations.se_operations                       import SeAccept
 from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.TEST.helper                   import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
-from quex.engine.analyzer.examine.core                          import Examiner, \
-                                                                       LinearStateWalker
+from quex.engine.analyzer.examine.core                          import Examiner
 from quex.blackboard import E_IncidenceIDs
 
 if "--hwut-info" in sys.argv:

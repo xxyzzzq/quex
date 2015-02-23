@@ -57,8 +57,7 @@ from quex.engine.state_machine.state.single_entry               import SingleEnt
 from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.TEST.helper                   import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
-from quex.engine.analyzer.examine.core                          import Examiner, \
-                                                                       LinearStateWalker
+from quex.engine.analyzer.examine.core                          import Examiner
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:

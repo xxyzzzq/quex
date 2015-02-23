@@ -7,8 +7,7 @@ from quex.engine.state_machine.core                             import StateMach
 from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.TEST.helper                   import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
-from quex.engine.analyzer.examine.core                          import Examiner, \
-                                                                       LinearStateWalker
+from quex.engine.analyzer.examine.core                          import Examiner
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
@@ -35,21 +34,6 @@ examiner        = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
 springs         = examiner.setup_initial_springs()
 remainder       = examiner.resolve(springs)
-
-def print_recipe(si, R):
-    if R is None: 
-        print "  %02i <void>" % (si)
-    else:
-        print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
-
-def print_entry_recipe_db(si, EntryRecipeDb):
-    print
-    print " * %02i\n" % si
-    for from_si, recipe in sorted(EntryRecipeDb.iteritems()):
-        if recipe is None: 
-            print "  from %02s <void>" % from_si
-        else:
-            print "  from %02s \n     %s" % (from_si, str(recipe).replace("\n", "\n     "))
 
 print "Unresolved Mouth States:"
 print "   %s" % sorted(list(remainder))

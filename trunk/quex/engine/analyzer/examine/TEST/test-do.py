@@ -7,9 +7,7 @@ from quex.engine.state_machine.core                             import StateMach
 from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.TEST.helper                   import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
-from quex.engine.analyzer.examine.core                          import Examiner, \
-                                                                       LinearStateWalker
-from quex.engine.misc.tools import none_is_None
+import quex.engine.analyzer.examine.core                        as     examination
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
@@ -25,39 +23,46 @@ print pic
 add_SeAccept(sm, sm.init_state_index, E_IncidenceIDs.MATCH_FAILURE)
 add_SeStoreInputPosition(sm, 1L, 77L)
 add_SeStoreInputPosition(sm, 0L, 66L)
-if state_n > 1:    add_SeAccept(sm, 1L, 11L, 111L)
-if state_n > 2:    add_SeAccept(sm, 2L, 22L, 222L)
-if state_n > 3:    add_SeAccept(sm, 3L, 33L)
-if state_n > 4:    add_SeAccept(sm, 4L, 44L)
-if state_n > 5:    add_SeAccept(sm, 5L, 55L)
+add_SeAccept(sm, 1L, 11L, 111L)
+add_SeAccept(sm, 2L, 22L, 222L)
+add_SeAccept(sm, 3L, 33L)
+add_SeAccept(sm, 4L, 44L)
+add_SeAccept(sm, 5L, 55L)
 # Post-Context: Store in '0', restore in '6'
-if state_n > 6:    add_SeAccept(sm, 6L, 66L, 666L, True)
+add_SeAccept(sm, 6L, 66L, 666L, True)
 # Post-Context: Store in '1', restore in '7'
-if state_n > 7:    add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
+add_SeAccept(sm, 7L, 77L, E_PreContextIDs.NONE, True)
 print
 
 linear_db, mouth_db = examination.do(sm, RecipeAcceptance)
+all_set = set(linear_db.iterkeys())
+all_set.update(mouth_db.iterkeys())
 
-def print_recipe(si, R):
-    if R is None: 
-        print "  %02i <void>" % (si)
-    else:
-        print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
-
-def print_entry_recipe_db(si, EntryRecipeDb):
-    print "  %02i\n" % si
-    for from_si, recipe in sorted(EntryRecipeDb.iteritems()):
+print "All states present in 'sm' are either linear states or mouth states? ",
+print all_set == set(sm.states.iterkeys())
+print "There are no undetermined mouth states? ",
+print len([x for x in mouth_db.itervalues() if x.recipe is None]) == 0
+print "There are no undetermined entry recipes into mouth states? ",
+for mouth in mouth_db.itervalues():
+    for recipe in mouth.entry_recipe_db.itervalues():
         if recipe is None: 
-            print "  from %02s <void>" % from_si
-        else:
-            print "  from %02s \n     %s" % (from_si, str(recipe).replace("\n", "\n     "))
+            print False 
+            break
+else:
+    print True
 
+print "Linear States: ",
+print sorted(linear_db.keys())
+print "Mouth States: ",
+print sorted(mouth_db.keys())
+print
+print
 print "Linear States:"
-for si, info in examiner.linear_db.iteritems():
+for si, info in linear_db.iteritems():
     print_recipe(si, info.recipe)
 
-print "Mouth States (Resolved):"
-for si, info in examiner.mouth_db.iteritems():
+print "Mouth States:"
+for si, info in mouth_db.iteritems():
     print_recipe(si, info.recipe)
     # There should be no entry with undetermiend recipe
     for from_si, recipe in info.entry_recipe_db.iteritems():
