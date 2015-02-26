@@ -21,7 +21,7 @@ sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
 print pic
 
 sm.get_init_state().single_entry.add(SeAccept(4711L, 33L))
-sm.get_init_state().single_entry.add(SeAccept(E_IncidenceIDs.MATCH_FAILURE))
+# sm.get_init_state().single_entry.add(SeAccept(E_IncidenceIDs.MATCH_FAILURE))
 
 examiner        = Examiner(sm, RecipeAcceptance)
 examiner.categorize()
@@ -39,6 +39,6 @@ print "Mouth States:"
 for si, info in sorted(examiner.mouth_db.iteritems()):
     print_recipe(si, info.recipe)
     for predecessor_si, entry_recipe in info.entry_recipe_db.iteritems():
-        print "  from %i:" % predecessor_si
+        print "  from %s:" % predecessor_si
         print entry_recipe
 

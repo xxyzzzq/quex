@@ -138,7 +138,7 @@ class Entry(object):
     @typed(ta=TransitionAction)
     def enter_state_machine_entry(self, SM_id, ToStateIndex, ta):
         ta.door_id = DoorID.state_machine_entry(SM_id)
-        return self.enter(ToStateIndex, E_StateIndices.NONE, ta)
+        return self.enter(ToStateIndex, E_StateIndices.BEFORE_ENTRY, ta)
 
     def enter_before(self, ToStateIndex, FromStateIndex, TheOpList):
         transition_id = TransitionID(ToStateIndex, FromStateIndex, TriggerId=0)
@@ -150,10 +150,10 @@ class Entry(object):
     def __get_trigger_id(self, ToStateIndex, FromStateIndex):
         ft = (ToStateIndex, FromStateIndex)
         tmp = self.__trigger_id_db.get(ft)
-        # "FromStateIndex == E_StateIndices.NONE" indicates the entry into the 
+        # "FromStateIndex == E_StateIndices.BEFORE_ENTRY" indicates the entry into the 
         # state machine. There cannot be more than one entry into the state 
         # machine. Thus, it cannot appear twice.
-        assert FromStateIndex != E_StateIndices.NONE or tmp is None
+        assert FromStateIndex != E_StateIndices.BEFORE_ENTRY or tmp is None
         if tmp is None: self.__trigger_id_db[ft]  = 0; tmp = 0;
         else:           self.__trigger_id_db[ft] += 1
         return tmp
@@ -224,7 +224,7 @@ class Entry(object):
                     None, if not.
         """
         for transition_id, action in self.__db.iteritems():
-            if transition_id.source_state_index != E_StateIndices.NONE: 
+            if transition_id.source_state_index != E_StateIndices.BEFORE_ENTRY: 
                 continue
             assert action.door_id.door_index == E_DoorIdIndex.STATE_MACHINE_ENTRY
             return action.door_id

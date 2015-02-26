@@ -46,6 +46,14 @@ class Recipe:
 
     See [DOC] the according DEFINITION.
     """
+    @classmethod
+    def UNDETERMINED(cls, RequiredVariableSet):
+        assert False, "To be implemented in derived class"
+
+    @classmethod
+    def INITIAL(cls, RequiredVariableSet):
+        assert False, "To be implemented in derived class"
+
     @staticmethod
     def _snap_shot_map_interference(Mouth, StateIndex):
         """This function supports the 'interference' procedure. When an entry recipe
@@ -86,7 +94,8 @@ class Recipe:
                  for recipe in Mouth.entry_recipe_db.itervalues()
             )
 
-            if uniform_object.plain_content() != E_Values.VOID: # Homogeneity
+            if     uniform_object.plain_content() != E_Values.VOID \
+               and uniform_object.plain_content() != E_Values.SIGMA: # Homogeneity
                 assert    uniform_object.content is None \
                        or isinstance(uniform_object.content, (int, long))
                 snapshot_map[variable_id]   = uniform_object.content

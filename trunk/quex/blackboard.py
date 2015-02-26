@@ -59,7 +59,7 @@ E_StateIndices = Enum("DROP_OUT",
                       "RECURSIVE",
                       "ALL", 
                       "ANALYZER_REENTRY", 
-                      "NONE", 
+                      "BEFORE_ENTRY", 
                       "VOID") 
 
 E_PreContextIDs  = Enum("NONE",    
