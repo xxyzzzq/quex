@@ -279,7 +279,7 @@ class Analyzer:
 
         # NOTE: The 'from reload transition' is implemented by 'prepare_for_reload()'
         for source_state_index in self.__from_db[StateIndex]: 
-            assert source_state_index != E_StateIndices.NONE
+            assert source_state_index != E_StateIndices.BEFORE_ENTRY
             state.entry.enter(StateIndex, source_state_index, ta.clone())
 
         if StateIndex == self.init_state_index:
@@ -317,7 +317,7 @@ class Analyzer:
 
     def get_action_at_state_machine_entry(self):
         return self.init_state().entry.get_action(self.init_state_index, 
-                                                  E_StateIndices.NONE)
+                                                  E_StateIndices.BEFORE_ENTRY)
 
     def get_depth_db(self):
         """Determine a database which tells about the minimum distance to the initial state.

@@ -21,8 +21,8 @@ sm, state_n, pic = get_sm_shape_by_name(name)
 print pic
 
 add_SeAccept(sm, sm.init_state_index, E_IncidenceIDs.MATCH_FAILURE)
+add_SeStoreInputPosition(sm, sm.init_state_index, 66L)
 add_SeStoreInputPosition(sm, 1L, 77L)
-add_SeStoreInputPosition(sm, 0L, 66L)
 add_SeAccept(sm, 1L, 11L, 111L)
 add_SeAccept(sm, 2L, 22L, 222L)
 add_SeAccept(sm, 3L, 33L)

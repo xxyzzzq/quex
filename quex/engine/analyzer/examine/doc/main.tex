@@ -141,11 +141,13 @@ b) Multi-entry state.}
 \end{figure}
 
 Let \textit{initial state} denote the state where the state machine is entered.
-Let $Pred(i)$ and $Succ(i)$ indicate the set of immediate predecessor and
-successor states of state $i$. Let $Pred^*(i)$ indicate all states that lie on
-a path from the initial state to state $i$.  Let $Succ^*(i)$ indicate all
-states which are reachable from state $i$. Not all variables of $V_c$ may be
-required in all states. Let the set of required variables be defined as follows.
+Let the \textit{initial recipe} $R(init)$ be the recipe to be applied before
+the state machine starts.  Let $Pred(i)$ and $Succ(i)$ indicate the set of
+immediate predecessor and successor states of state $i$. Let $Pred^*(i)$
+indicate all states that lie on a path from the initial state to state $i$.
+Let $Succ^*(i)$ indicate all states which are reachable from state $i$. Not all
+variables of $V_c$ may be required in all states. Let the set of required
+variables be defined as follows.
 
 \begin{definition}
 $V(i)$ -- Set of Required Variables
@@ -183,7 +185,9 @@ required variables $V(i)$. In such cases, a \textit{superset} of the set of
 required variables suffices for correctness. The impact on performance of using
 a superset instead of the precise set is discussed at the very end of this
 document.  The aforementioned concepts allow to specify the frame of an
-investigated behavior.  \begin{definition} Investigated Behavior 
+investigated behavior.  
+
+\begin{definition} Investigated Behavior 
 
 The investigated behavior determines the scope of analysis. It is
 specified by a description of concerned variables $V_c$, the required
@@ -458,24 +462,40 @@ From the last two equations it follows the following statement.
    \end{equation}
 \end{statement}
 %%
-Another important concept is that of a \textit{constant operation}.
+Another important concept is that of a \textit{history-dependence}.
 %%
-\begin{definition} $op^v(i) = constant$ -- Constant operation \label{def:constant-operation}
+\begin{definition} Historyless/History-Dependent Procedure
 
-    For a given state $i$, an operation $op^v(i)$ is constant if its
-    modification to variable $v$ does not depend on a $V(i)$. 
+    A procedure is history-independent with respect to a variable $v\in V_c$,
+    if it computes $v$ independently of a previous setting of $V_c$. The
+    term 'history-independent' in general defines procedures which are 
+    history-independent for all variable that they produce.
+    
+    A procedure that is not history-independent is history-dependent.
 
 \end{definition}
 %%
 The operation '$v\coloneqq x+3$', with some variable $x\notin V(i)$, is
-constant.  However, the operation '$v\coloneqq v+1$' is not constant because
-the assignment depends on the previous setting of '$v$. In that sense, the
-\textit{no operation} on variable $v$ is not constant. Its implementation is
-$v\coloneqq v$ which clearly depends on $v$. In other words, if for a given
-$v\in V(i)$ there is no operation specified in state $i$, then $op^v(i)$ needs
-to be considered as non-constant.  It is now possible to specify a procedure
-that develops recipes across mouth states. 
-%%
+history-independent.  However, the operation '$v\coloneqq v+1$' is history-dependent
+because the assignment depends on the previous setting of '$v$. In that sense,
+the \textit{no operation} on variable $v$ is history-dependent. Its
+implementation is $v\coloneqq v$ which clearly depends on $v$. In other words,
+if for a given $v\in V(i)$ there is no operation specified in state $i$, then
+$op^v(i)$ needs to be considered as history-dependent. A specific history-independent
+procedure is the recipe from 'before entry' $R(init)$. It is history-independent with
+respect to all $v\in V_c$, it actually initialzes those. For example
+
+\begin{eqnarray}
+    R(init) & = & \{ line_n \coloneqq line_{n,before} \}
+\end{eqnarray}
+
+initializes the variable $line_n$ with a constant $line_{n,before}$. This
+emphasizes the understanding of 'history' as something that evolves inside the
+state machine during the current phase of state transitions. What happend
+before, such as the operations to develop initial values in an earlier phase,
+is not considered as part of history.  It is now possible to specify a
+procedure that develops recipes across mouth states. 
+
 \begin{definition} Interference
 
 The process of 'interference' develops a recipe $R(i)$ for a mouth state $i$
@@ -504,7 +524,7 @@ For the snapshot maps it holds
 %%
 \begin{equation} \label{eq:interference-snap-shot-maps}
     S^v(R(i)) = \begin{dcases*}
-                  \varepsilon & if $op^v(i)$ is constant. \\
+                  \varepsilon & if $op^v(i)$ is history-independent. \\
                   S^v(R(k))   & if $v$ is homogeneous.\\
                   i           & else
                 \end{dcases*}
@@ -528,7 +548,7 @@ entry recipes, i.e.
 Equation \eqref{eq:interference-snap-shot-maps} expresses the fact that
 homogeneous recipes pass mouth states unchanged, and so are the related
 snapshot maps unchanged. If the mouth state's operation $op^v(i)$ is 
-constant, then any dependency on $A$ is removed and $S^v(R(v))$ becomes
+history-independent, then any dependency on $A$ is removed and $S^v(R(v))$ becomes
 the not existing element $\varepsilon$. In the inhomogeneous case, when a snapshot of a
 variable $v$ is taken in state $i$, then the set of snapshot states $S(R(i))$
 must contain $i$. The existence of the entry operations $op_E(i,k)$ is the
@@ -547,10 +567,10 @@ the predecessor's recipe $R(k)$, the recipe $R(i)$ is given by
        R(i)\,=\,op(i)\,\circ\,R(k)
 \end{equation}
 If auxiliary variables $A$ are involved, then the snapshot maps do not change,
-except if $op^v(i)$ is constant
+except if $op^v(i)$ is history-independent
 \begin{equation} \label{eq:accumulation-aux}
     S^v(R(i))\,=\,\begin{dcases*}
-                  \varepsilon & if $op^v(i)$ is constant. \\
+                  \varepsilon & if $op^v(i)$ is history-independent. \\
                   S^v(R(k))   & if $v$ is homogeneous.\\
                 \end{dcases*}
 \end{equation}
@@ -560,29 +580,33 @@ determined.
 %%
 Accumulation and interference describe how recipes are developed from
 determined recipes.  But, where does the first determined recipe come from?
-The concatenation of a predecessor recipe $R(p)$ with constant operation
-$op(k)$ (see definition \ref{def:constant-operation}) is \textit{independent}
+The concatenation of a predecessor recipe $R(p)$ with history-independent operation
+$op(k)$ (see definition \ref{def:history-independent-operation}) is \textit{independent}
 of $R(p)$, i.e. the recipe $R(k)$ becomes
 %%
 \begin{equation}
     R(k)\,=\,op^v(k)\,\circ\,R(p)\,=\,op^v(k)\,\,\mbox{where $p\in Pred(k)$}
 \end{equation}
 %%
-In a state where all operations $op^v(i)$ are constant, a recipe can be determined
+In a state where all operations $op^v(i)$ are history-independent, a recipe can be determined
 \textit{independently} of other recipes. It is therefore suited as starting
 point for the derivation of other recipes.
 %%
-\begin{definition} Initial Spring, Spring \label{def:springs}
-
-    An initial spring is a state $i$ where $\forall v \in V(i)$ $op^v(i)\,=\,constant$.
+\begin{definition} Spring, Initial Spring \label{def:springs}
 
     A spring, in general, is a state $i$ where all components $R^v(i)$
     $\forall\,v\in\,V(i)$ are determined.
     
+    An initial spring is a spring $i$ where the recipe $R(i)$ can be determined
+    solely from $op(i)$ and, if it is the initial state, $R(init)$. 
+
 \end{definition}
-%%
-Both, linear states and mouth states may be equally candidates for being a 
-spring.
+
+A state $v$ where $op^v(i)$ is history-independent for all $v\in V(i)$ is an initial
+spring. For the initial state, it is sufficient that it has only one entry, the
+entry from 'before entry'. Then, $R(i) = op(i)\circ R(init)$ which is well
+determined.  Both, linear states and mouth states may be equally candidates for
+being a spring.
 
 \subsection{Examples}
                  
@@ -650,17 +674,17 @@ b)
 \caption{Recipes upon exit replace transition operations.}
 \end{figure}
 
-The next section treats the recursive propagation of recipes by accumulation
-starting from springs.  It is conceivable, however, that right from the
-beginning there is no spring.  Even the initial state, if it has an entry other
-than from 'outside' it may be an undetermined.  In that case, the analysis directly
-starts with a so called 'dead-lock analysis' which is the subject of the next
-section but one.
+The next section treats the recursive accumulation of recipes starting from
+springs.  It is conceivable, however, that right from the beginning there is no
+spring.  Even the initial state, if it has an entry other than from 'outside'
+it may be an undetermined.  In that case, the analysis directly starts with a
+so called 'dead-lock analysis' which is the subject of the next section but
+one.
 
 %==============================================================================
 %
 %==============================================================================
-\section{Propagation By Recursive Accumulation}
+\section{Recursive Accumulation of Recipes}
 
 If the recipe of a state $i$'s predecessor $k$ is determined, then the entry
 recipe $R_E(i,k)$ can be determined. The same is true if the predecessor is an initial
@@ -717,7 +741,7 @@ The algorithm in figure \ref{fig:algo-1} implements the procedure to determine
 recipes recursively through accumulation.  When this algorithm comes to an end,
 there might be still mouth states with undetermined entries.  The following
 section discusses a solution for the remaining states where the deterministic
-propagation of recipes could not provide a solution.
+recursive accumulation of recipes could not provide a solution.
 
 
 
@@ -788,14 +812,16 @@ dead-lock states $\blacksquare$.
 Horizon
 
 Let the term 'horizon' $H$ indicate the subset of dead-lock states $\{
-i\,\in\,U \}$ that have at least one determined entry.  
+i\,\in\,U \}$ that have at least one predecessor with a determined recipe.  
 \end{definition}
 
 The name 'horizon' is chosen because it defines the border of determination.
-Beyond that begins the realm of dead-locks. Figure \ref{fig:horizon-state}
-shows a horizon state which contains one determined entry and another
-undetermined entry.  In order to understand the nature of dead-lock states
-better, it makes sense to briefly review the propagation by accumulation.
+Beyond that begins the realm of dead-locks.  In particular, if the initial
+state is undetermined, it becomes the one and only horizon state. The 'before
+begin state' with its recipe $R(init)$ constitutes the predecessor with the
+determined recipe.  Figure \ref{fig:horizon-state} shows a horizon state which
+contains one determined entry and another undetermined entry. 
+
 
 \begin{figure}[htbp] \leavevmode \label{fig:horizon-state}
 \begin{verbatim}
@@ -810,23 +836,24 @@ better, it makes sense to briefly review the propagation by accumulation.
     an undetermined state $b$.}
 \end{figure}
 
-The initial state $i_0$ is the first state that is entered. It has at least one
-entry recipe $R_E(i_0,outside)$, i.e. the recipe to be executed when coming
-from $outside$ the state machine. If it has another entry that is undetermined
-and $op(i_0)$ is not constant, then the initial state becomes a horizon state.
-Otherwise, it is a spring and starting from $i_0$ determined recipes are
-propagated through accumulation.  Accumulation ends with the determination of
-an entry into a mouth state. If the reached mouth state ends up with determined
-entries, then a determined recipe is propagated until a terminal or another
-mouth state is reached. If a mouth state is reached where not all entries are
-determined, then its output recipe is undetermined. Since by reaching it at
-least one entry is determined and, thus,the state is a horizon state. The
-output recipe is undetermined and no successor state is further reached with
-determined recipes. Consequently, all successor states of that state are
-undetermined.  Determined mouth states performed interference, and therefore
-must have all their entries determined.  None of their entries can directly
-originate in a dead-lock mouth state. From this discussion, an important
-conclusion can be drawn.  
+In order to understand the nature of dead-lock states better, it makes sense to
+briefly review the recursive accumulation of recipes. The initial state $i_0$
+is the first state that is entered. It has at least one entry recipe
+$R_E(i_0,outside)$, i.e. the recipe to be executed when coming from $outside$
+the state machine. If it has another entry that is undetermined and $op(i_0)$
+is history-dependent, then the initial state becomes a horizon state.  Otherwise, it
+is a spring and starting from $i_0$ determined recipes are propagated through
+accumulation.  Accumulation ends with the determination of an entry into a
+mouth state. If the reached mouth state ends up with determined entries, then a
+determined recipe is propagated until a terminal or another mouth state is
+reached. If a mouth state is reached where not all entries are determined, then
+its output recipe is undetermined. Since by reaching it at least one entry is
+determined and, thus,the state is a horizon state. The output recipe is
+undetermined and no successor state is further reached with determined recipes.
+Consequently, all successor states of that state are undetermined.  Determined
+mouth states performed interference, and therefore must have all their entries
+determined.  None of their entries can directly originate in a dead-lock mouth
+state. From this discussion, an important conclusion can be drawn.  
 
 \begin{statement} \label{stm:dead-lock-horizon}
 A dead-lock state can only be reached by a path that guides through a horizon
@@ -836,7 +863,7 @@ an initial spring.
 
 At this point a type of interference is introduced that delivers a correct
 output recipe, even though not all entry recipes are determined. For all $v$ where 
-$op^v(i)$ is not constant, $R^v_E(i,k)$ depends on $R(k)$. Since not all 
+$op^v(i)$ is history-dependent, $R^v_E(i,k)$ depends on $R(k)$. Since not all 
 $R(k)$ are determined, it is assumed that upon entry the $A(v)$ receives the
 computed value of $v$ and $R^v(i) = \{ v \coloneqq  A(v) \}$ with $S^v(R(i))=i$.
 
@@ -849,22 +876,22 @@ recipe $R(i)$ is determined by
           
 \begin{equation} \label{eq:cautious-output-recipe}
     R^v(i) = \begin{dcases*}
-              op^v(i) & if $op^v(i)$ is constant \\
+              op^v(i) & if $op^v(i)$ is history-independent \\
               A(v)    & else
              \end{dcases*}
 \end{equation}
 For all variables $v$ an inhomogeneity is assumed, except for those where $op^v(i)$
-is constant. That is,
+is history-independent. That is,
 \begin{equation} \label{eq:cautious-homogeneity}
     H^v(i,k) = \begin{dcases*}
-                     false & if $op^v(i)$ is constant \\
+                     false & if $op^v(i)$ is history-independent \\
                      true  & else
                  \end{dcases*}
 \end{equation}
 The snapshot map develops to
 \begin{equation} \label{eq:cautious-interference-snapshot}
     S^v(i) = \begin{dcases*}
-                \varepsilon & if $op^v(i)$ is constant \\
+                \varepsilon & if $op^v(i)$ is history-independent \\
                 i           & else
              \end{dcases*}
 \end{equation}
@@ -913,14 +940,14 @@ their snapshot maps must be equal. However, equations
     S(R^v(k_u))\,=\,S(R^v(k_d))\,=\,\emptyset 
 \end{equation}
 
-This in turn, is only true if $R^v(k_u)$ and $R^v(k_d)$ do not rely on stored values
-at all, i.e. they are constant. This result is very important. When $R^v(k_u)$
-becomes determined, through subsequent accumulation, it is not possible that it
-produces a new component $R^v(i)$ through interference except that
-$S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being constant and
-non-constant, the combination of entry operations $op^v_E(i,k) = \{ A(v) \coloneqq 
-R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$ remains a correct
-solution $\blacksquare$.  
+This in turn, is only true if $R^v(k_u)$ and $R^v(k_d)$ do not rely on stored
+values at all, i.e. they are history-independent. This result is very important. When
+$R^v(k_u)$ becomes determined, through subsequent accumulation, it is not
+possible that it produces a new component $R^v(i)$ through interference except
+that $S^v(R(i))=\varepsilon$.  For both cases, $op^v(i)$ being history-independent and
+history-dependent, the combination of entry operations $op^v_E(i,k) = \{ A(v)
+\coloneqq R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq A(v) \}$
+remains a correct solution $\blacksquare$.  
 
 The output recipe $R(i)$, the homogeneity database $H^v(i)$, and the snapshot
 maps $S^v(i)$ can be aquired based on existing procedures of accumulation and
@@ -941,44 +968,44 @@ the same sigma.  With such a definition, the components of a \textit{cautious
 entry recipe} $R_E(i,k_u)$ are determined by
 
 \begin{eqnarray}
-    R^v_E(i,k_u) & = & op^v(i) \circ R(k_u)
+    R^v_E(i,k_u) & = & op^v(i) \circ R(k_u) \\
                  & = & \begin{dcases*}
-                       op^v(i)         & if $op^v(i)$ is constant \\
+                       op^v(i)         & if $op^v(i)$ is history-independent \\
                        x \coloneq A(v) & else
                        \end{dcases*}
 \end{eqnarray}
 
-Wherever $op^v(i)$ is constant, $R_E(i,k_u)$ is independent of $R(k_u)$ and is
+Wherever $op^v(i)$ is history-independent, $R_E(i,k_u)$ is independent of $R(k_u)$ and is
 therefore the same for all predecessors. It follows
 
 \begin{equation} \label{eq:cautious-recipe-homogeneity}
-    op^v(i) \,\mobx{is constant}\,\Rightarrow\,H^v(i, k_u) = true
+    op^v(i) \,\mbox{is history-independent}\,\Rightarrow\,H^v(i, k_u) = true
 \end{equation}
 
 The snapshot maps develop to
 \begin{eqnarray} \label{eq:cautious-repl-1}
     S^v(R_E(i,k_u)) & = & S^v(op(i) \circ R(k_u)) \\ 
                     & = & \begin{dcases*}
-                          \varepsilon          & if $op^v(i)$ is constant \\
+                          \varepsilon          & if $op^v(i)$ is history-independent \\
                           S^v(R(k_u)) = \sigma & else
                           \end{dcases*}
 \end{eqnarray}
 
-Since $\sigma$ appears in the expressions for non-constant components
-$op^v(i)$, $S^v(R_E(i,k_u))$ can never be the same for all predecessors. Ordinary
-interference, from definition \ref{def:interference}, imposes in that case
-inhomogeneity. Thus,
+Since $\sigma$ appears in the expressions for history-independent components
+$op^v(i)$, $S^v(R_E(i,k_u))$ can never be the same for all predecessors.
+Ordinary interference, from definition \ref{def:interference}, imposes in that
+case inhomogeneity. Thus,
 
 \begin{equation} \label{eq:cautious-recipe-inhomogeneity}
-    op^v(i) \,\mobx{is not constant}\,\Rightarrow\,H^v(i, k_u) = false
+    op^v(i) \,\mbox{is history-dependent}\,\Rightarrow\,H^v(i, k_u) = false
 \end{equation}
 
-Thus, the entry recipes are homogeneous if, and only if $op^v(i)$ is constant. According
-to \eqref{eq:interference-output} applied interference delivers
+Thus, the entry recipes are homogeneous if, and only if $op^v(i)$ is history-independent.
+According to \eqref{eq:interference-output} applied interference delivers
 
 \begin{equation} \label{eq:interference-output-2}
     R^v(i) = \begin{dcases*}
-              R_E^v(i,k) & if $op^v(i) is constant.\\
+              R_E^v(i,k) & if $op^v(i)$ is history-independent.\\
               A(v)       & else
              \end{dcases*}
 \end{equation}
@@ -995,13 +1022,14 @@ equation \eqref{eq:undetermined-recipe}.  When accumulated with the state's
 $op(i)$ and passed through ordinary interference, exact the same expressions
 result as they are required for cautious interference $\blacksquare$.
 
-The output recipes $R(i)$ can be used for propagation of recipes so that other
-dead-lock states receive determined entries and become part of the horizon.
-The horizon moves, the set of dead-lock states shrinks and a new cycle begins.
-This continues until no dead-lock state is left.  Eventually, all entry recipes
-are determined. Then, it is possible that those entries which are flagged
-with $H^v(i,k)=true$ implement the entry operation $op_E^v(i)=R_E^v(i,k)$.
-Before, however, another opportunity to optimize is explored. 
+The output recipes $R(i)$ can be used for recursive accumulation of recipes so
+that other dead-lock states receive determined entries and become part of the
+horizon.  The horizon moves, the set of dead-lock states shrinks and a new
+cycle begins.  This continues until no dead-lock state is left.  Eventually,
+all entry recipes are determined. Then, it is possible that those entries which
+are flagged with $H^v(i,k)=true$ implement the entry operation
+$op_E^v(i)=R_E^v(i,k)$.  Before, however, another opportunity to optimize is
+explored. 
 
 %==============================================================================
 %
@@ -1009,9 +1037,9 @@ Before, however, another opportunity to optimize is explored.
 \section{Fine Adjustment}
 
 As mentioned in the previous section, the condition of homogeneity in the entry
-recipes can be maintained, if they are constant--see equation
+recipes can be maintained, if they are history-independent--see equation
 \ref{eq:homogeneity-condition}.  During cautious interference, $op^v(i)$ is
-overtaken to the output recipe $R^v(i)$ if it is constant.  With equation
+overtaken to the output recipe $R^v(i)$ if it is history-independent.  With equation
 \ref{eq:homogeneity-condition} and determined entries $R_E(i,k)$ it is
 sufficient to require 
 
@@ -1026,8 +1054,8 @@ the following example.
     op^v(i) = \{ v \coloneqq  v + 1 \}
 \end{equation}
 
-The operation is clearly dependent on the previous value of $v$--thus not
-constant. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
+The operation is clearly dependent on the previous value of $v$--thus 
+history-dependent. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
 $v$, then the concatenation becomes
 
 \begin{equation}
@@ -1072,7 +1100,7 @@ recipe's set of snapshot states, i.e.
 With the mentioned requirement a mouth state $i$ can be passed at maximum a
 restricted $N$ number of times, where $N$ is the number of variables in $V(i)$.
 Since, number of states is restricted, in general, the total number of
-propagations is restricted. When no new interference is accomplished, no new
+iterations is restricted. When no new interference is accomplished, no new
 constant entry recipes can be determined and the process comes to an end.
 Eventually, remaining entry operations $op_E^v(i)$ for which $H^v(i,k)=true$
 must be implemented according to $A(v) \coloneqq  R_E^v(i,k)$.

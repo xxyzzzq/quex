@@ -68,7 +68,23 @@ class RecipeAcceptance(Recipe):
         self.snapshot_map = SnapshotMap
 
     @classmethod
-    def undetermined(cls, RequiredVariableSet):
+    def INITIAL(cls, RequiredVariableSet):
+        """The initial recipe matches 'failure'. As long as no other pattern 
+        matches, the result is that.
+        """
+        accepter = [
+            SeAccept(E_IncidenceIDs.MATCH_FAILURE)
+        ]
+        ip_offset_db = {
+            E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
+        }
+        snapshot_map = {
+            # The initial recipe cannot rely on stored values!
+        } 
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+
+    @classmethod
+    def UNDETERMINED(cls, RequiredVariableSet):
         """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
         """
         snapshot_map = dict(        
