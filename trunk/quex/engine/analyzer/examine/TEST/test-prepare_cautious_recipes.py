@@ -58,6 +58,7 @@ from quex.engine.state_machine.TEST.helper_state_machine_shapes import *
 from quex.engine.analyzer.examine.TEST.helper                   import *
 from quex.engine.analyzer.examine.acceptance                    import RecipeAcceptance
 from quex.engine.analyzer.examine.core                          import Examiner
+from quex.engine.misc.tools                                     import E_Values
 from quex.blackboard import E_IncidenceIDs, E_PreContextIDs
 
 if "--hwut-info" in sys.argv:
@@ -98,8 +99,8 @@ def setup(EntryN, StateOperation):
                                             {E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
                                              10L: -1,      # same for both / no restore
                                              11L: -2,      # unequal for both
-                                             12L: None,    # same for both / restore same
-                                             13L: None,    # same for both / restore differs
+                                             12L: E_Values.RESTORE,    # same for both / restore same
+                                             13L: E_Values.RESTORE,    # same for both / restore differs
                                              21L:  0,       # no present in other                 
                                             }, 
                                             {(E_R.PositionRegister, 12L): 0,
@@ -110,8 +111,8 @@ def setup(EntryN, StateOperation):
                                             {E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
                                              10L: -1,      # same for both / no restore
                                              11L: -3,      # unequal for both
-                                             12L: None,    # same for both / restore same
-                                             13L: None,    # same for both / restore differs
+                                             12L: E_Values.RESTORE,    # same for both / restore same
+                                             13L: E_Values.RESTORE,    # same for both / restore differs
                                              22L:  0,       # no present in other                 
                                             }, 
                                             {(E_R.PositionRegister, 12L): 0, 

@@ -20,7 +20,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
     if(LexemeBegin == LexemeEnd) return;
     me->buffer._input_p = LexemeBegin;
 
-    /* (78 from NONE)  */
+    /* (78 from BEFORE_ENTRY)  */
     input = *(me->buffer._input_p);
 
     __quex_debug("Init State\n");

@@ -68,6 +68,22 @@ class RecipeAcceptance(Recipe):
         self.snapshot_map = SnapshotMap
 
     @classmethod
+    def NULL(cls, RequiredVariableSet):
+        """A recipe that does absolutely nothing. It is used for the sole 
+        purpose to generate a recipe from a history-independent operation op(i)
+        by accumulation, i.e. R = op(i) o NULL.
+        """
+        ip_offset_db = dict(
+            #__________________________________________________________________
+            # 'offset = 1', so that accumulation develops 'offset = 0' as entry
+            # recipe.
+            #__________________________________________________________________
+            (variable_id[1], 1)
+            for variable_id in RequiredVariableSet if type(variable_id) == tuple
+        )
+        return RecipeAcceptance([], ip_offset_db, {})
+
+    @classmethod
     def INITIAL(cls, RequiredVariableSet):
         """The initial recipe matches 'failure'. As long as no other pattern 
         matches, the result is that.
@@ -76,7 +92,22 @@ class RecipeAcceptance(Recipe):
             SeAccept(E_IncidenceIDs.MATCH_FAILURE)
         ]
         ip_offset_db = {
-            E_IncidenceIDs.CONTEXT_FREE_MATCH: 0,
+            #__________________________________________________________________
+            #
+            # SPECIAL CASE: Entry from 'before entry': 
+            #   
+            #             The input pointer is not incremented! 
+            #            
+            # Thus, the standard accumulation of this class would illegally
+            # decrement 'ip_offset_db[CONTEXT_FREE_MATCH]' when the composition
+            #
+            #                        op(i) o R(init)
+            #
+            # is computed. Thus, 'ip_offset_db[CONTEXT_FREE_MATCH]' is set to 1
+            # so that decrementing produces the correct position '0' upon entry
+            # into the initial state.
+            #__________________________________________________________________
+            E_IncidenceIDs.CONTEXT_FREE_MATCH: 1,
         }
         snapshot_map = {
             # The initial recipe cannot rely on stored values!
@@ -88,7 +119,9 @@ class RecipeAcceptance(Recipe):
         """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
         """
         snapshot_map = dict(        
-            (variable_id, E_Values.SIGMA)        # None = 'sigma' in [DOC]
+            (variable_id, E_Values.SIGMA)        # SIGMA = something that is never
+            #                                    #         equal to anything else
+            #                                    #         -- not even another SIGMA.
             for variable_id in RequiredVariableSet
         )
 
@@ -97,7 +130,7 @@ class RecipeAcceptance(Recipe):
         ]
 
         ip_offset_db = dict(
-            (variable_id[1], None)               # position[i] = Aux(position[i])
+            (variable_id[1], E_Values.RESTORE)   # position[i] = Aux(position[i])
             for variable_id in RequiredVariableSet
             if type(variable_id) == tuple
         )
@@ -180,8 +213,7 @@ class RecipeAcceptance(Recipe):
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        if PrevRecipe is None: snapshot_map = {}
-        else:                  snapshot_map = copy(PrevRecipe.snapshot_map)
+        snapshot_map = copy(PrevRecipe.snapshot_map)
 
         # Filter out those entries in the snapshot map, where the recipe does 
         # no longer rely on stored entries.
@@ -220,21 +252,20 @@ class RecipeAcceptance(Recipe):
         return RecipeAcceptance(accepter, ip_offset_db, snapshot_map), homogeneity_db
 
     @staticmethod
-    def _accumulate_acceptance(PrevRecipe, CurrEntry):
+    def _accumulate_acceptance(PrevRecipe, SingleEntry):
         """Longest match --> later acceptances have precedence. The acceptance
         scheme of the previous recipe comes AFTER the current acceptance scheme.
         An unconditional acceptance makes any later acceptance check superfluous.
         """ 
-        assert PrevRecipe is None or PrevRecipe.accepter
-
         def sort_key(Cmd):
             """MATCH_FAILURE *must* always have the lowest precedence!"""
-            if Cmd.acceptance_id() == E_IncidenceIDs.MATCH_FAILURE: return -1
-            return Cmd.acceptance_id()
+            acceptance_id = Cmd.acceptance_id()
+            if acceptance_id == E_IncidenceIDs.MATCH_FAILURE: return -1
+            assert isinstance(acceptance_id, long)
+            return acceptance_id
 
-        accepter        = []
-        unconditional_f = False
-        for cmd in sorted(CurrEntry.get_iterable(SeAccept), key=sort_key, 
+        accepter = []
+        for cmd in sorted(SingleEntry.get_iterable(SeAccept), key=sort_key, 
                           reverse=True):
             accepter.append(cmd)
             if cmd.pre_context_id() == E_PreContextIDs.NONE: 
@@ -242,12 +273,19 @@ class RecipeAcceptance(Recipe):
                 break
         else:
             # No unconditional acceptance occurred, the previous acceptances
-            # must be appended--if there is something.
-            if PrevRecipe is not None and PrevRecipe.accepter:
-                accepter.extend(PrevRecipe.accepter)
+            # must be appended. 
+            # The NULL recipe cannot appear here, because it is only to be applied
+            # in composition with history-independent operations which MUST have
+            # an '.accepter' that accepts condition-less.
+            assert PrevRecipe.accepter
+            accepter.extend(PrevRecipe.accepter)
 
-        # There *must* be something to do, even if no pre-context matched.
-        assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
+        # There MUST be an accepter as a result; at least 'MATCH_FAILURE'.
+        assert accepter 
+        # No element before the last can be condition-less.
+        assert not any(x.pre_context_id() == E_PreContextIDs.NONE for x in accepter[:-1])
+        # The last element of the accepter MUST be condition-less.
+        assert accepter[-1].pre_context_id() == E_PreContextIDs.NONE
 
         return accepter
 
@@ -262,20 +300,23 @@ class RecipeAcceptance(Recipe):
         to be restored from registers. They cannot be computed by offset 
         addition. 
         """
+        assert none_is_None(PrevRecipe.ip_offset_db.itervalues())
+
         def new_offset(PrevOffset):
-            if PrevOffset is None: return None
-            else:                  return PrevOffset - 1
+            if PrevOffset is E_Values.RESTORE: return E_Values.RESTORE
+            assert isinstance(PrevOffset, (int, long)), \
+                   "Expected previous offset as number; found %s" % str(PrevOffset)
+            return PrevOffset - 1
 
         # Storage into a register overwrites previous storages
         # Previous storages receive '.offset - 1'
-        if PrevRecipe is not None:
-            ip_offset_db = dict( 
-                (register_id, new_offset(offset))
-                for register_id, offset in PrevRecipe.ip_offset_db.iteritems()
-            )
-        else:
-            ip_offset_db = {}
+        ip_offset_db = dict( 
+            (register_id, new_offset(offset))
+            for register_id, offset in PrevRecipe.ip_offset_db.iteritems()
+        )
 
+        # Storing the input position means, that the stored value differs
+        # from the current value by '0'.
         ip_offset_db.update(
             (cmd.position_register_id(), 0)
             for cmd in CurrSingleEntry.get_iterable(SeStoreInputPosition)
@@ -290,6 +331,7 @@ class RecipeAcceptance(Recipe):
             if not cmd.restore_position_register_f()
         )
 
+        assert none_is_None(ip_offset_db.itervalues())
         return ip_offset_db
 
     @classmethod
@@ -308,6 +350,8 @@ class RecipeAcceptance(Recipe):
         if not homogeneity_db[E_R.AcceptanceRegister]:
             return [ cls.RestoreAcceptance ]
 
+        # Irrelevant E_R.AcceptanceRegister? Impossible! Acceptance is relevant
+        # for all states! '.accepter is None' is not treated.
         accepter = UniformObject.from_iterable(
                                recipe.accepter
                                for recipe in EntryRecipeDb.itervalues()).plain_content()
@@ -325,30 +369,43 @@ class RecipeAcceptance(Recipe):
         return accepter
 
     @classmethod
-    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, RequiredVariableSet, StateIndex):
+    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, 
+                                          RequiredVariableSet, StateIndex):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
         this mouth state and restoring it later.
         """
+        assert none_is_None(
+                  flatten_it_list_of_lists(recipe.ip_offset_db.itervalues()
+                                           for recipe in EntryRecipeDb.itervalues()))
+
         ip_offset_db = {}
         for variable_id in RequiredVariableSet:
             if type(variable_id) != tuple: continue
             register_id = variable_id[1]
 
+            # Irrelevant position register? Possible! A recipe that considers 
+            # a position register irrelevant is 'equal' to any other. Thus, it
+            # can be filtered out. Irrelevant position register is not mentioned
+            # in 'ip_offset_db' => 'offset = None'.
+            offset_list = [
+                  recipe.ip_offset_db.get(register_id)
+                  for recipe in EntryRecipeDb.itervalues()
+            ]
             offset = UniformObject.from_iterable(
-                         recipe.ip_offset_db.get(register_id)
-                         for recipe in EntryRecipeDb.itervalues()).plain_content()
+                      x for x in offset_list if x is not None).plain_content()
 
             if offset != E_Values.VOID: 
                 # Homogeneity
                 pass
             else:
                 # Inhomogeneity
-                offset = None
+                offset = E_Values.RESTORE
                 cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id, StateIndex)
 
             ip_offset_db[register_id] = offset
 
+        assert none_is_None(ip_offset_db.itervalues())
         return ip_offset_db
         
     @staticmethod
@@ -358,11 +415,12 @@ class RecipeAcceptance(Recipe):
         """
         # (*) Input position storage / offset
         for variable_id, state_index in snapshot_map.items():
-            if type(variable_id) == tuple:
-                position_register = variable_id[1]
-                if    position_register not in IpOffsetDb \
-                   or IpOffsetDb[position_register] is not None:
-                    del snapshot_map[variable_id]
+            if type(variable_id) != tuple: continue
+
+            position_register = variable_id[1]
+            if IpOffsetDb.get(position_register) == E_Values.RESTORE: continue
+
+            del snapshot_map[variable_id]
         
         # (*) The 'RESTORE_ACCEPTANCE' must always be the last in the accepter,
         #     because it does not depend on a pre-context.

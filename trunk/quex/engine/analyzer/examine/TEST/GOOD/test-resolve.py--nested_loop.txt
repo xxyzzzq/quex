@@ -5,7 +5,6 @@
                         |       |   
                         '---<---'
     
-(0) Accept MATCH_FAILURE
 (1) Store InputP 77
 (1) Accept 111/1
 (3) Accept 333/33
@@ -24,6 +23,12 @@ Mouth States (Unresolved):
 
  * 00
 
+  from BEFORE_ENTRY 
+         Accepter:
+           MATCH_FAILURE
+         InputOffsetDb:
+           [CONTEXT_FREE_MATCH] offset: 0
+     
   from  5 <void>
 
  * 01
@@ -31,4 +36,4 @@ Mouth States (Unresolved):
   from  0 <void>
   from  2 <void>
 
-Horizon: []
+Horizon: [0L]

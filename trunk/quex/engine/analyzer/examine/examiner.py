@@ -144,23 +144,31 @@ class Examiner:
             if self.is_operation_history_dependent(state.single_entry, 
                                                    info.required_variable_set): 
                 return
-            recipe = self.recipe_type.accumulation(None, state.single_entry)
+
+            recipe_null = self.recipe_type.NULL(info.required_variable_set) 
+            recipe      = self.recipe_type.accumulation(recipe_null, 
+                                                        state.single_entry)
             self.set_recipe(si, recipe)
 
             if info.mouth_f():
                 info.entry_recipe_db.update(
                     (predecessor_si, recipe) 
-                    for predecessor_si in self.entry_recipe_db
+                    for predecessor_si in info.entry_recipe_db
                 ) 
             self.set_recipe(si, recipe)
 
+        # (1) Determine what variables are required in each state.
         self.determine_required_sets_of_variables()
     
+        # (2) Setup initial state with the special predecessor recipe R(init)
         setup_initial_state(self, self._sm.init_state_index, self._sm.get_init_state())
 
+        # (3) Setup states with history-independent operations.
         for si, state in self._sm.states.iteritems():
             apply_history_indepdent_operations(self, si, state)
 
+        # (4) Initial Springs = States where the recipe could be determined 
+        #                       beforehand (historically independent).
         return set(
             si for si in self._sm.states
                if self.get_state_info(si).is_determined()

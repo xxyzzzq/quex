@@ -4,7 +4,7 @@ Mouth States:
 ##
 ##Input Pointer Offset Schemes:
 ##          0         1         
-##   0: <reload>,       -1, 
+##   0: <irrelv>,       -1, 
 
 ##Snapshot Map Schemes:
 
@@ -12,9 +12,7 @@ Output Recipe:
   01     Accepter:
            0
          InputOffsetDb:
-           [0L] restore!
-         Snapshot Map:
-           (PositionRegister, 0L)@1
+           [0] offset: -1
      
 --------------------------------------------------------------------
 ##Common Acceptance Scheme:
@@ -30,7 +28,7 @@ Output Recipe:
   02     Accepter:
            0
          InputOffsetDb:
-           [0] restore!
+           [0] offset: RESTORE
          Snapshot Map:
            (PositionRegister, 0)@2
      
@@ -50,7 +48,7 @@ Output Recipe:
            0
          InputOffsetDb:
            [0] offset: -1
-           [1] restore!
+           [1] offset: RESTORE
          Snapshot Map:
            (PositionRegister, 1)@3
      
@@ -72,7 +70,7 @@ Output Recipe:
          InputOffsetDb:
            [0] offset: -1
            [1] offset: -2
-           [2] restore!
+           [2] offset: RESTORE
          Snapshot Map:
            (PositionRegister, 2)@4
      
