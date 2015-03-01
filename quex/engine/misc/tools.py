@@ -55,7 +55,7 @@ def pair_combinations(iterable):
         for y in islice(other, i+1, None):
             yield x, y
 
-E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "SIGMA", "_DEBUG_E_Values")
+E_Values = Enum("UNASSIGNED", "VOID", "DISABLED", "SIGMA", "RESTORE", "_DEBUG_E_Values")
 # 'SIGMA' is something that is always different. It will cause always the 
 # content to become 'VOID', i.e. not uniform in UniformObject.
 
@@ -238,8 +238,8 @@ def none_isinstance(List, Type):
     assert is_ok is not None
     return _check_all(List, lambda element: not is_ok(element))
 
-def none_is_None(List):
-    return _check_all(List, lambda element: element is not None)
+def none_is_None(Iterable):
+    return not any(x is None for x in Iterable)
 
 def typed(**_parameters_):
     """parameter=Type                   --> isinstance(parameter, Type)

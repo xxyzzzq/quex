@@ -3,7 +3,6 @@
                         |       |   
                         '---<---'
     
-(0) Accept MATCH_FAILURE
 (1) Store InputP 77
 (1) Accept 111/1
 (3) Accept 333/33

@@ -207,7 +207,7 @@ def print_ip_offset_scheme(info, Prefix=""):
         ]
         name        = "%s" % position_register
         space       = " " * (L - len(name))
-        print Prefix + "   %s:%s %s" % (name, space, "".join("%8s, " % x if x is not None else "<reload>, " for x in scheme))
+        print Prefix + "   %s:%s %s" % (name, space, "".join("%8s, " % x if x is not None else "<irrelv>, " for x in scheme))
     print
 
 def print_snapshot_map_scheme(info, Prefix=""):

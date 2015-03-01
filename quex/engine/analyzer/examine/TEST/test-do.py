@@ -20,7 +20,6 @@ sm, state_n, pic = get_sm_shape_by_name(name)
 
 print pic
 
-add_SeAccept(sm, sm.init_state_index, E_IncidenceIDs.MATCH_FAILURE)
 add_SeStoreInputPosition(sm, sm.init_state_index, 66L)
 add_SeStoreInputPosition(sm, 1L, 77L)
 add_SeAccept(sm, 1L, 11L, 111L)
@@ -61,11 +60,6 @@ print "Linear States:"
 for si, info in linear_db.iteritems():
     print_recipe(si, info.recipe)
 
-print "Mouth States:"
-for si, info in mouth_db.iteritems():
-    print_recipe(si, info.recipe)
-    # There should be no entry with undetermiend recipe
-    for from_si, recipe in info.entry_recipe_db.iteritems():
-        if recipe is not None: continue
-        print "ERROR: Entry recipe from state '%i' not determined." % from_si
+# print "Mouth States:"
+print_interference_result(mouth_db)
 

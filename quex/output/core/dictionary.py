@@ -288,14 +288,14 @@ class Lng_Cpp(dict):
             result = "".join(self.GET_PLAIN_STRINGS(txt))
             return result
 
-        elif Op.id == E_Op.AccepterAndRouter:
-
-            else_str = ""
-            txt      = []
-            for element in Op.content:
-                txt.append(self.if_pre_context(x.pre_context_id, else_str))
-                txt.extend(self.position_and_goto(x.router_element))
-            return "".join(txt)
+        #        elif Op.id == E_Op.AccepterAndRouter:
+        #
+        #            else_str = ""
+        #            txt      = []
+        #            for element in Op.content:
+        #                txt.append(self.if_pre_context(x.pre_context_id, else_str))
+        #                txt.extend(self.position_and_goto(x.router_element))
+        #            return "".join(txt)
 
         elif Op.id == E_Op.RouterOnStateKey:
             case_list = [

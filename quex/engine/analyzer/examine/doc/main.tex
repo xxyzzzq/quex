@@ -102,7 +102,9 @@ concepts according to the context of its usage: The description of concerned
 values and the set of concerned variables. Let $op(i)$ name the operations
 applied to $V_c$ upon entry into a state, independent from where the state is
 entered. Let $op_E(i,k)$ name operations applied upon entry, depending on the
-state from which it is  entered.
+state from which it is  entered. Let a raised letter following an operation
+denote the component which develops it. For example, $op^v(i)$ denotes the
+component of $op(i)$ which develops variable $v$. 
 
 The original state machine must be composed of \textit{single-entry states}.
 That is, upon entry into a state $i$ the same operations $op(i)$ are applied on
@@ -152,12 +154,12 @@ variables be defined as follows.
 \begin{definition}
 $V(i)$ -- Set of Required Variables
 
-$V(i)$ defines the variables which are required in state $i$.
-The variables in $V(i)$ must be sufficient
+$V(i)$ defines the variables which are potentially required in state $i$.  The
+variables in $V(i)$ must be sufficient
 
 \begin{itemize}
 \item to implement the nominal behavior upon exit and
-\item to develop the required variables $V(k)\,\forall\,k\,\in\,Succ^*(i)$. 
+\item to develop the sets of required variables $V(k)\,\forall\,k\,\in\,Succ^*(i)$. 
 \end{itemize}
 
 For brevity, let $V(i)$ denote two concepts depending on the context where it
@@ -167,8 +169,27 @@ is used: the set of required variables as well as their settings.
 
 In contrast to $V_c$, the set of variables in $V(i)$ must be concrete.  Instead
 of the loose statement such as 'all variables related to input position
-storage', the specific variables with name and/or index must be specified.  The
-configuration of $V(i)$ can be determined by a \textit{back-propagation} of
+storage', the specific variables with name and/or index must be specified.  As
+said in the definition, $V(i)$ consists of the set of potentially required
+variables. That is, it is sufficient for $V(i)$ be a superset of the actually
+used variables. That actually used variables may depend on external conditions,
+or even on the path taken along the state machine. This has an important
+implication. 
+
+\begin{statement}
+    The conditions for using a variable $v$ must be exactly the same as the
+    conditions for $v$ receiving a valid setting. 
+\end{statement}
+
+If this was not the case, the procedure relying on $v$ would produce
+indeterministic results. Consequently, a procedure may have a component for a
+required variable $v$, which according to some conditions is not used.
+
+\begin{statement}
+    A procedure's component with respect to a variable $v$ may be irrelevant.
+\end{statement}
+
+The configuration of $V(i)$ can be determined by a \textit{back-propagation} of
 needs. A state which requires a specific variable tags all of its predecessor
 states with this requirement. That is, for a variable named $v$, it holds
 

@@ -5,7 +5,6 @@
                  \                      /
                   '->--(5)-->--(6)-->--'
     
-(0) Accept MATCH_FAILURE
 (1) Store InputP 77
 (1) Accept 111/1
 (3) Accept 333/33
@@ -67,17 +66,13 @@ Mouth States (Resolved):
   07     Accepter:
            77
          InputOffsetDb:
-           [CONTEXT_FREE_MATCH] restore!
-           [1L] restore!
-           [33L] restore!
-           [66L] restore!
-           [77L] restore!
+           [CONTEXT_FREE_MATCH] offset: RESTORE
+           [1] offset: -2
+           [33] offset: -2
+           [66] offset: -1
+           [77] offset: -2
          Snapshot Map:
            (PositionRegister, CONTEXT_FREE_MATCH)@7
-           (PositionRegister, 1L)                @7
-           (PositionRegister, 33L)               @7
-           (PositionRegister, 66L)               @7
-           (PositionRegister, 77L)               @7
      
 Mouth States (Unresolved):
 

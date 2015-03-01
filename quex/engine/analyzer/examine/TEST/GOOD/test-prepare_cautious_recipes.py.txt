@@ -9,41 +9,36 @@ Acceptance Schemes:
 ##  --
 ##      0
 ##
+##  --
+##      1
+##
 ##Input Pointer Offset Schemes:
-##                           0         1         
-##   CONTEXT_FREE_MATCH: <reload>,       -1, 
-##   10:                 <reload>,       -2, 
-##   11:                 <reload>,       -3, 
-##   12:                 <reload>, <reload>, 
-##   13:                 <reload>, <reload>, 
-##   21:                 <reload>,       -1, 
-##   22:                 <reload>, <reload>, 
-##   4711:               <reload>, <reload>, 
+##                           0         1         2         3         
+##   CONTEXT_FREE_MATCH:  RESTORE,       -1,  RESTORE,       -1, 
+##   10:                  RESTORE,       -2,  RESTORE,       -2, 
+##   11:                  RESTORE,       -3,  RESTORE,       -4, 
+##   12:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   13:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   21:                  RESTORE,       -1,  RESTORE, <irrelv>, 
+##   22:                  RESTORE, <irrelv>,  RESTORE,       -1, 
+##   4711:                RESTORE, <irrelv>,  RESTORE, <irrelv>, 
 
 ##Snapshot Map Schemes:
-##                                               0         1         
-##   AcceptanceRegister:                        SIGMA,           
-##   (PositionRegister, CONTEXT_FREE_MATCH):    SIGMA,           
-##   (PositionRegister, 10L):                   SIGMA,           
-##   (PositionRegister, 11L):                   SIGMA,           
-##   (PositionRegister, 12L):                   SIGMA,        0, 
-##   (PositionRegister, 13L):                   SIGMA,        0, 
-##   (PositionRegister, 21L):                   SIGMA,           
-##   (PositionRegister, 22L):                   SIGMA,           
-##   (PositionRegister, 4711L):                 SIGMA,           
+##                           0         1         2         3         
+##   AcceptanceRegister:    SIGMA,              SIGMA,           
 
 Output Recipe:
   1111     Accepter:
            RESTORE_ACCEPTANCE
          InputOffsetDb:
-           [CONTEXT_FREE_MATCH] restore!
-           [10L] restore!
-           [11L] restore!
-           [12L] restore!
-           [13L] restore!
-           [21L] restore!
-           [22L] restore!
-           [4711L] restore!
+           [CONTEXT_FREE_MATCH] offset: RESTORE
+           [10] offset: RESTORE
+           [11] offset: RESTORE
+           [12] offset: RESTORE
+           [13] offset: RESTORE
+           [21] offset: RESTORE
+           [22] offset: RESTORE
+           [4711] offset: RESTORE
          Snapshot Map:
            AcceptanceRegister                    @1111
            (PositionRegister, CONTEXT_FREE_MATCH)@1111
@@ -51,122 +46,107 @@ Output Recipe:
            (PositionRegister, 11L)               @1111
            (PositionRegister, 12L)               @1111
            (PositionRegister, 13L)               @1111
+     
            (PositionRegister, 21L)               @1111
            (PositionRegister, 22L)               @1111
            (PositionRegister, 4711L)             @1111
-     
---------------------------------------------------------------------
-________________________________________________________________________________
-(2) op(i) = Accept without pre-context
 
-Mouth States:
+--------------------------------------------------------------------
 ##Common Acceptance Scheme:
 ##      4711
 ##
 ##Input Pointer Offset Schemes:
-##                           0         1         
-##   CONTEXT_FREE_MATCH:        0,        0, 
-##   10:                 <reload>,       -2, 
-##   11:                 <reload>,       -3, 
-##   12:                 <reload>, <reload>, 
-##   13:                 <reload>, <reload>, 
-##   21:                 <reload>,       -1, 
-##   22:                 <reload>, <reload>, 
-##   4711:               <reload>, <reload>, 
+##                           0         1         2         3         
+##   CONTEXT_FREE_MATCH:        0,        0,        0,        0, 
+##   10:                  RESTORE,       -2,  RESTORE,       -2, 
+##   11:                  RESTORE,       -3,  RESTORE,       -4, 
+##   12:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   13:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   21:                  RESTORE,       -1,  RESTORE, <irrelv>, 
+##   22:                  RESTORE, <irrelv>,  RESTORE,       -1, 
+##   4711:                RESTORE, <irrelv>,  RESTORE, <irrelv>, 
 
 ##Snapshot Map Schemes:
-##                                  0         1         
-##   (PositionRegister, 10L):      SIGMA,           
-##   (PositionRegister, 11L):      SIGMA,           
-##   (PositionRegister, 12L):      SIGMA,        0, 
-##   (PositionRegister, 13L):      SIGMA,        0, 
-##   (PositionRegister, 21L):      SIGMA,           
-##   (PositionRegister, 22L):      SIGMA,           
-##   (PositionRegister, 4711L):    SIGMA,           
+##                                               0         1         2         3         
+##   (PositionRegister, CONTEXT_FREE_MATCH):    SIGMA,              SIGMA,           
 
+________________________________________________________________________________
+(2) op(i) = Accept without pre-context
+Mouth States:
 Output Recipe:
   1111     Accepter:
            4711
          InputOffsetDb:
            [CONTEXT_FREE_MATCH] offset: 0
-           [10L] restore!
-           [11L] restore!
-           [12L] restore!
-           [13L] restore!
-           [21L] restore!
-           [22L] restore!
-           [4711L] restore!
+           [10] offset: RESTORE
+           [11] offset: RESTORE
+           [12] offset: RESTORE
+           [13] offset: RESTORE
+           [21] offset: RESTORE
+           [22] offset: RESTORE
+           [4711] offset: RESTORE
          Snapshot Map:
            (PositionRegister, 10L)               @1111
            (PositionRegister, 11L)               @1111
+     
            (PositionRegister, 12L)               @1111
            (PositionRegister, 13L)               @1111
            (PositionRegister, 21L)               @1111
+
            (PositionRegister, 22L)               @1111
            (PositionRegister, 4711L)             @1111
-     
---------------------------------------------------------------------
-________________________________________________________________________________
-(3) op(i) = StoreInputPosition
-
-Mouth States:
-Acceptance Schemes:
 ##  --
 ##      RESTORE_ACCEPTANCE
 ##
 ##  --
 ##      0
 ##
+##  --
+##      1
+##
 ##Input Pointer Offset Schemes:
-##                           0         1         
-##   CONTEXT_FREE_MATCH: <reload>,       -1, 
-##   10:                 <reload>,       -2, 
-##   11:                 <reload>,       -3, 
-##   12:                 <reload>, <reload>, 
-##   13:                 <reload>, <reload>, 
-##   21:                 <reload>,       -1, 
-##   22:                 <reload>, <reload>, 
-##   4711:                      0,        0, 
+##                           0         1         2         3         
+##   CONTEXT_FREE_MATCH:  RESTORE,       -1,  RESTORE,       -1, 
+##   10:                  RESTORE,       -2,  RESTORE,       -2, 
+##   11:                  RESTORE,       -3,  RESTORE,       -4, 
+##   12:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   13:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   21:                  RESTORE,       -1,  RESTORE, <irrelv>, 
+##   22:                  RESTORE, <irrelv>,  RESTORE,       -1, 
+##   4711:                      0,        0,        0,        0, 
 
 ##Snapshot Map Schemes:
-##                                               0         1         
-##   AcceptanceRegister:                        SIGMA,           
-##   (PositionRegister, CONTEXT_FREE_MATCH):    SIGMA,           
-##   (PositionRegister, 10L):                   SIGMA,           
-##   (PositionRegister, 11L):                   SIGMA,           
-##   (PositionRegister, 12L):                   SIGMA,        0, 
-##   (PositionRegister, 13L):                   SIGMA,        0, 
-##   (PositionRegister, 21L):                   SIGMA,           
-##   (PositionRegister, 22L):                   SIGMA,           
+##                                  0         1         2         3         
+##   AcceptanceRegister:           SIGMA,              SIGMA,           
+##   (PositionRegister, 4711L):    SIGMA,              SIGMA,           
 
+--------------------------------------------------------------------
+________________________________________________________________________________
+(3) op(i) = StoreInputPosition
+Mouth States:
+Acceptance Schemes:
 Output Recipe:
   1111     Accepter:
            RESTORE_ACCEPTANCE
          InputOffsetDb:
-           [CONTEXT_FREE_MATCH] restore!
-           [10L] restore!
-           [11L] restore!
-           [12L] restore!
-           [13L] restore!
-           [21L] restore!
-           [22L] restore!
+           [CONTEXT_FREE_MATCH] offset: RESTORE
+           [10] offset: RESTORE
+           [11] offset: RESTORE
+           [12] offset: RESTORE
+           [13] offset: RESTORE
+           [21] offset: RESTORE
+           [22] offset: RESTORE
            [4711] offset: 0
          Snapshot Map:
            AcceptanceRegister                    @1111
            (PositionRegister, CONTEXT_FREE_MATCH)@1111
+     
            (PositionRegister, 10L)               @1111
            (PositionRegister, 11L)               @1111
            (PositionRegister, 12L)               @1111
+
            (PositionRegister, 13L)               @1111
            (PositionRegister, 21L)               @1111
-           (PositionRegister, 22L)               @1111
-     
---------------------------------------------------------------------
-________________________________________________________________________________
-(4) Accept with pre-context
-
-Mouth States:
-Acceptance Schemes:
 ##  --
 ##      pre33 => 4711
 ##      RESTORE_ACCEPTANCE
@@ -175,42 +155,47 @@ Acceptance Schemes:
 ##      pre33 => 4711
 ##      0
 ##
+##  --
+##      pre33 => 4711
+##      1
+##
 ##Input Pointer Offset Schemes:
-##                           0         1         
-##   CONTEXT_FREE_MATCH: <reload>,       -1, 
-##   10:                 <reload>,       -2, 
-##   11:                 <reload>,       -3, 
-##   12:                 <reload>, <reload>, 
-##   13:                 <reload>, <reload>, 
-##   21:                 <reload>,       -1, 
-##   22:                 <reload>, <reload>, 
-##   4711:                      0,        0, 
+##                           0         1         2         3         
+##   CONTEXT_FREE_MATCH:  RESTORE,       -1,  RESTORE,       -1, 
+##   10:                  RESTORE,       -2,  RESTORE,       -2, 
+##   11:                  RESTORE,       -3,  RESTORE,       -4, 
+##   12:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   13:                  RESTORE,  RESTORE,  RESTORE,  RESTORE, 
+##   21:                  RESTORE,       -1,  RESTORE, <irrelv>, 
+##   22:                  RESTORE, <irrelv>,  RESTORE,       -1, 
+##   4711:                      0,        0,        0,        0, 
 
 ##Snapshot Map Schemes:
-##                                               0         1         
-##   AcceptanceRegister:                        SIGMA,           
-##   (PositionRegister, CONTEXT_FREE_MATCH):    SIGMA,           
-##   (PositionRegister, 10L):                   SIGMA,           
-##   (PositionRegister, 11L):                   SIGMA,           
-##   (PositionRegister, 12L):                   SIGMA,        0, 
-##   (PositionRegister, 13L):                   SIGMA,        0, 
-##   (PositionRegister, 21L):                   SIGMA,           
-##   (PositionRegister, 22L):                   SIGMA,           
+##                                  0         1         2         3         
+##   AcceptanceRegister:           SIGMA,              SIGMA,           
+##   (PositionRegister, 4711L):    SIGMA,              SIGMA,           
 
+           (PositionRegister, 22L)               @1111
+--------------------------------------------------------------------
+________________________________________________________________________________
+(4) Accept with pre-context
+Mouth States:
+Acceptance Schemes:
 Output Recipe:
   1111     Accepter:
            RESTORE_ACCEPTANCE
          InputOffsetDb:
-           [CONTEXT_FREE_MATCH] restore!
-           [10L] restore!
-           [11L] restore!
-           [12L] restore!
-           [13L] restore!
-           [21L] restore!
-           [22L] restore!
+           [CONTEXT_FREE_MATCH] offset: RESTORE
+           [10] offset: RESTORE
+           [11] offset: RESTORE
+           [12] offset: RESTORE
+           [13] offset: RESTORE
+           [21] offset: RESTORE
+           [22] offset: RESTORE
            [4711] offset: 0
          Snapshot Map:
            AcceptanceRegister                    @1111
+     
            (PositionRegister, CONTEXT_FREE_MATCH)@1111
            (PositionRegister, 10L)               @1111
            (PositionRegister, 11L)               @1111
