@@ -102,9 +102,9 @@ concepts according to the context of its usage: The description of concerned
 values and the set of concerned variables. Let $op(i)$ name the operations
 applied to $V_c$ upon entry into a state, independent from where the state is
 entered. Let $op_E(i,k)$ name operations applied upon entry, depending on the
-state from which it is  entered. Let a raised letter following an operation
-denote the component which develops it. For example, $op^v(i)$ denotes the
-component of $op(i)$ which develops variable $v$. 
+state from which it is  entered. Let a raised letter at operation, such as $v$
+in $X^v$ denote the component of $X$ which develops variable $v$. For example,
+$op^v(i)$ denotes the component of $op(i)$ which develops variable $v$. 
 
 The original state machine must be composed of \textit{single-entry states}.
 That is, upon entry into a state $i$ the same operations $op(i)$ are applied on
@@ -176,7 +176,7 @@ used variables. That actually used variables may depend on external conditions,
 or even on the path taken along the state machine. This has an important
 implication. 
 
-\begin{statement}
+\begin{statement} \label{stm:relevance-condition}
     The conditions for using a variable $v$ must be exactly the same as the
     conditions for $v$ receiving a valid setting. 
 \end{statement}
@@ -186,7 +186,12 @@ indeterministic results. Consequently, a procedure may have a component for a
 required variable $v$, which according to some conditions is not used.
 
 \begin{statement}
-    A procedure's component with respect to a variable $v$ may be irrelevant.
+    A procedure's component $X^v$ with respect to a variable $v$ may be irrelevant
+    depending on the previous path, or external conditions. Let the expression
+    \begin{equation}
+        X^v \,=\,\iota
+    \end{equation}
+    signify, that the component that computes $v$ in $X$ is irrelevant.
 \end{statement}
 
 The configuration of $V(i)$ can be determined by a \textit{back-propagation} of
@@ -421,11 +426,12 @@ $R^v(i)$. That is,
     R^v(i) \,=\, R^v_E(i,k)\,\,\mbox{if $v$ is homogeneous}.
 \end{equation}
 Let the expression '$v$ is homogeneous/inhomogeneous' be precisely defined.
+
 \begin{definition} Homogeneity/Inhomogeneity
 
     The expression '$v$ is homogeneous' at the entry into a mouth state $i$
     means, that all entry recipes are equal, i.e.
-    \begin{equation}
+    \begin{equation} \label{eq:definition-homogeneity}
         \begin{aligned}
         \forall\,p,\,q\,\in\,Pred(i):\,R_E^v(i,p)\,=\,R_E^v(i,q) 
         \end{aligned}
@@ -433,6 +439,67 @@ Let the expression '$v$ is homogeneous/inhomogeneous' be precisely defined.
     The expression '$v$ is inhomogeneous' means that there are at least two
     entry recipes that differ.
 \end{definition}
+
+At this point, a statement on irrelevant procedures must be made. A predecessor
+recipe $R^v(k)=\iota$ may not be able to produce a setting that can be assigned
+to $A(v)$. Until this point, $R(k)$ was actually \textit{indifferent} about
+$v$. In this sense, which is the sense of equation
+\eqref{eq:definition-homogeneity}, two things can be stated about irrelevant
+components in entry recipes.
+
+\begin{statement}
+
+    An irrelevant entry recipe $R^v_E(i, k_0)=\iota$ is 'equal' to any other 
+    entry recipe component $R^v_E(i, k)$ with $k \in Pred(i)$ in the sense
+    of the homogeneity condition \eqref{eq:definition-homogeneity}.
+    
+\end{statement}
+
+In case that the component is inhomogeneous at interference, an entry with an
+irrelevant recipe does not store anything in $A(v)$. In consequence, $A(v)$ may
+contain meaningless data. Therefore, the access of $A(v)$ must be protected. More
+general, any access to $v$ must be restricted to circumstance where it contains
+meaningful data. Thus, the following condition must hold.
+
+\begin{definition} Access-Lock Condition \label{cond:access-lock}
+
+   If there might be a recipe $R$ with an irrelevant component $R^v$, then the
+   access to variable $v$ must be protected by an access-lock. 
+   
+   No recipe shall access $v$ without the access-lock being open. The lock must
+   be initially locked. The place that assigns a first value to $v$ must unlock
+   it.
+    
+\end{definition}
+
+This seems, at the first glance as an unnatural constraint. However, if the
+nominal behavior does not automatically incorporate it, then the state machine
+itself is not able to behave deterministically.  Consider, for example, figure
+\ref{fig:access-lock}. In state 2, pattern 0 accepts the keyword 'if', but only
+if a pre-context 'pre0' is true. Then, the position register $r[0]$ stores the
+position where pattern 0 accepted, so that the next pattern match may continue
+right after the recognized keyword. $r[0]$ is irrelevant, if 'pre0' is not
+true. If in the states 2 and 3 a letter appears different from 'f' and 'y',
+then the state machine exits and the input position must be reset to the
+position where 'if' was accepted. But, $r[0]$ is only used, if pattern 0
+accepted, and pattern 0 only accepts, if 'pre0' is true.  In this case, the
+access lock to the potentially irrelevant $r[0]$ is provided by either 'pre0'
+or the condition 'a=0'. While the access-lock condition should not require any
+additional effort of implementation, it is necessary for the proof of
+correctness.
+
+\begin{figure}[htbp] \leavevmode \label{fig:access-lock}
+\begin{verbatim}
+
+          i               f            f            y         
+    ( 0 )------->( 1 )------->( 2 )------->( 3 )------->( 4 )
+                 ++i          ++i          ++i          ++i 
+                        pre0=>a=0                       a=1
+                           r[0]=i                    r[1]=i
+
+\end{verbatim}
+\caption{Access-lock to potentially irrelevant variable $r[0]$.}
+\end{figure}
 
 As soon as a recipe relies on a value in an auxiliary variable, it depends on
 the state where the snapshot has been taken. The terms 'snapshot map' and 'set

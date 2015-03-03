@@ -20,8 +20,8 @@ sm, state_n, pic = get_sm_shape_by_name(name)
 
 print pic
 
-add_SeStoreInputPosition(sm, sm.init_state_index, 66L)
-add_SeStoreInputPosition(sm, 1L, 77L)
+add_SeStoreInputPosition(sm, sm.init_state_index, 100L)
+add_SeStoreInputPosition(sm, 1L, 11111L)
 add_SeAccept(sm, 1L, 11L, 111L)
 add_SeAccept(sm, 2L, 22L, 222L)
 add_SeAccept(sm, 3L, 33L)
@@ -61,5 +61,5 @@ for si, info in linear_db.iteritems():
     print_recipe(si, info.recipe)
 
 # print "Mouth States:"
-print_interference_result(mouth_db)
+print_interference_result(mouth_db, Prefix="")
 

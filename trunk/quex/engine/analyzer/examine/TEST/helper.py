@@ -143,6 +143,12 @@ def print_recipe(si, R):
     else:
         print "  %02i %s" % (si, str(R).replace("\n", "\n     "))
 
+def print_output_recipe(R):
+    if R is None: 
+        print "  <void>"
+    else:
+        print "  %s" % str(R).replace("\n", "\n     ")
+
 def print_mouth(si, Mouth):
     print_recipe(si, Mouth.recipe)
     print_snapshot_map(Mouth.recipe.snapshot_map)
@@ -181,8 +187,14 @@ def print_acceptance_scheme(info, Prefix=""):
         def key(accepter):
             return (len(accepter), tuple(x.acceptance_id() for x in accepter))
 
+        def state_index_list(accepter):
+            result = []
+            for state_index, recipe in info.entry_recipe_db.iteritems():
+                if recipe.accepter == accepter: result.append(state_index)
+            return sorted(result)
+
         for accepter in sorted(list(accepter_set), key=key):
-            print Prefix + "  --"
+            print Prefix + "  -- from: " + "".join("%s" % x for x in state_index_list(accepter))
             print Prefix + RecipeAcceptance.get_string_accepter(accepter).replace("\n", "\n%s" % Prefix)
 
 def print_ip_offset_scheme(info, Prefix=""):
@@ -235,15 +247,17 @@ def print_snapshot_map_scheme(info, Prefix=""):
         print Prefix + "   %s:%s %s" % (name, space, "".join("%8s, " % x if x is not None else "          " for x in scheme))
     print
 
-def print_interference_result(MouthDb):
+def print_interference_result(MouthDb, Prefix="##"):
     print "Mouth States:"
     for si, info in MouthDb.iteritems():
-        print_acceptance_scheme(info, Prefix="##")
-        print_ip_offset_scheme(info, Prefix="##")
-        print_snapshot_map_scheme(info, Prefix="##")
+        print "[%s]" % si
+        print_acceptance_scheme(info, Prefix)
+        print_ip_offset_scheme(info, Prefix)
+        print_snapshot_map_scheme(info, Prefix)
 
         print "Output Recipe:"
-        print_recipe(si, info.recipe)
+        # print_recipe(si, info.recipe)
+        print_output_recipe(info.recipe)
 
         print "--------------------------------------------------------------------"
 
