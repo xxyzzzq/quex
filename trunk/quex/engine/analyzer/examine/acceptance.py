@@ -50,10 +50,10 @@ class RecipeAcceptance(Recipe):
 
     The 'aux_register' values are set during interference in mouth states.
     """
-    __slots__         = ("accepter", "ip_offset_db", "snapshot_map")
+    __slots__         = ("accepter", "ip_offset_db", "snapshot_set_db")
     RestoreAcceptance = SeAccept(E_IncidenceIDs.RESTORE_ACCEPTANCE, E_PreContextIDs.NONE)
 
-    def __init__(self, Accepter, IpOffsetDb, SnapshotMap):
+    def __init__(self, Accepter, IpOffsetDb, SnapshotSetDb):
         assert type(IpOffsetDb) == dict
         assert type(Accepter)   == list
 
@@ -61,11 +61,10 @@ class RecipeAcceptance(Recipe):
         self.accepter     = Accepter
         self.ip_offset_db = IpOffsetDb
 
-        # snapshot map: register id --> snapshot state
+        # snapshot set db: register id --> states that MUST store register id
+        #                                  in auxiliary variable
         #               
-        # The snapshot map tells to what state the snapshot of the variable given
-        # by 'variable_id' has been made.
-        self.snapshot_map = SnapshotMap
+        self.snapshot_set_db = SnapshotSetDb
 
     @classmethod
     def NULL(cls, RequiredVariableSet):
@@ -81,7 +80,7 @@ class RecipeAcceptance(Recipe):
             (variable_id[1], 1)
             for variable_id in RequiredVariableSet if type(variable_id) == tuple
         )
-        return RecipeAcceptance([], ip_offset_db, {})
+        return RecipeAcceptance([], ip_offset_db, defaultdict(set))
 
     @classmethod
     def INITIAL(cls, RequiredVariableSet):
@@ -109,16 +108,17 @@ class RecipeAcceptance(Recipe):
             #__________________________________________________________________
             E_IncidenceIDs.CONTEXT_FREE_MATCH: 1,
         }
-        snapshot_map = {
-            # The initial recipe cannot rely on stored values!
-        } 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+
+        # The initial recipe cannot rely on stored values!
+        snapshot_set_db = defaultdict(set)
+
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
 
     @classmethod
     def UNDETERMINED(cls, RequiredVariableSet):
         """The 'undetermined' recipe for dead-lock resolution (see [DOC]).
         """
-        snapshot_map = dict(        
+        snapshot_set_db = dict(        
             (variable_id, E_Values.SIGMA)        # SIGMA = something that is never
             #                                    #         equal to anything else
             #                                    #         -- not even another SIGMA.
@@ -135,7 +135,7 @@ class RecipeAcceptance(Recipe):
             if type(variable_id) == tuple
         )
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
 
     @classmethod
     def get_required_variable_superset_db(cls, SM, PredecessorDb, SuccessorDb):
@@ -213,13 +213,11 @@ class RecipeAcceptance(Recipe):
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
         ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        snapshot_map = copy(PrevRecipe.snapshot_map)
-
         # Filter out those entries in the snapshot map, where the recipe does 
         # no longer rely on stored entries.
-        cls.snapshot_map_filter_out(snapshot_map, accepter, ip_offset_db)
+        snapshot_set_db = cls.snapshot_set_db_filtered_clone(snapshot_set_db, accepter, ip_offset_db)
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map)
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
         
     @classmethod
     def interference(cls, Mouth, StateIndex):
@@ -233,23 +231,20 @@ class RecipeAcceptance(Recipe):
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        snapshot_map, \
-        homogeneity_db = cls._snap_shot_map_interference(Mouth, StateIndex)
+        snapshot_set_db = SnapshotSetDb.from_mouth(Mouth)
 
         # Acceptance
-        accepter = cls._interfere_acceptance(snapshot_map, 
-                                             homogeneity_db, 
+        accepter = cls._interfere_acceptance(snapshot_set_db, 
                                              Mouth.entry_recipe_db, 
                                              StateIndex)
 
         # Input position storage
-        ip_offset_db = cls._interfere_input_position_storage(snapshot_map, 
-                                                             homogeneity_db,
+        ip_offset_db = cls._interfere_input_position_storage(snapshot_set_db, 
                                                              Mouth.entry_recipe_db, 
                                                              Mouth.required_variable_set, 
                                                              StateIndex)
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_map), homogeneity_db
+        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
 
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, SingleEntry):
@@ -335,20 +330,16 @@ class RecipeAcceptance(Recipe):
         return ip_offset_db
 
     @classmethod
-    def _interfere_acceptance(cls, snapshot_map, homogeneity_db, EntryRecipeDb, StateIndex):
+    def _interfere_acceptance(cls, snapshot_set_db, EntryRecipeDb, StateIndex):
         """If the acceptance scheme differs for only two recipes, then the 
         acceptance must be determined upon entry and stored in the LastAcceptance
         register.
 
-        ADAPTS: homogeneity_db
 
         RETURN: [0] Accumulated 'accepter'
         """ 
         # Interference requires determined entry recipes.
         assert none_is_None(EntryRecipeDb.itervalues())
-
-        if not homogeneity_db[E_R.AcceptanceRegister]:
-            return [ cls.RestoreAcceptance ]
 
         # Irrelevant E_R.AcceptanceRegister? Impossible! Acceptance is relevant
         # for all states! '.accepter is None' is not treated.
@@ -362,14 +353,13 @@ class RecipeAcceptance(Recipe):
         else:
             # Inhomogeneity
             accepter = [ cls.RestoreAcceptance ]
-            cls.apply_inhomogeneity(snapshot_map, homogeneity_db, 
-                                    E_R.AcceptanceRegister, StateIndex)
+            snapshot_set_db[E_R.AcceptanceRegister] = set([StateIndex])
 
         assert accepter and accepter[-1].pre_context_id() == E_PreContextIDs.NONE
         return accepter
 
     @classmethod
-    def _interfere_input_position_storage(cls, snapshot_map, homogeneity_db, EntryRecipeDb, 
+    def _interfere_input_position_storage(cls, snapshot_set_db, EntryRecipeDb, 
                                           RequiredVariableSet, StateIndex):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 
@@ -401,7 +391,7 @@ class RecipeAcceptance(Recipe):
             else:
                 # Inhomogeneity
                 offset = E_Values.RESTORE
-                cls.apply_inhomogeneity(snapshot_map, homogeneity_db, variable_id, StateIndex)
+                snapshot_set_db[variable_id] = set([StateIndex])
 
             ip_offset_db[register_id] = offset
 
@@ -409,25 +399,28 @@ class RecipeAcceptance(Recipe):
         return ip_offset_db
         
     @staticmethod
-    def snapshot_map_filter_out(snapshot_map, Accepter, IpOffsetDb):
+    def snapshot_set_db_filtered_clone(snapshot_set_db, Accepter, IpOffsetDb):
         """Take those entries out of the snapshot map, where the recipe does
         not rely on stored values.
         """
+        db = defaultdict(set)
+
         # (*) Input position storage / offset
-        for variable_id, state_index in snapshot_map.items():
-            if type(variable_id) != tuple: continue
+        db.update(
+            (variable_id, copy(snapshot_set))
+            for variable_id, state_index in snapshot_set_db.items()
+            # 'variable_id[1]' = position register
+            if     type(variable_id) == tuple \
+               and IpOffsetDb.get(variable_id[1]) != E_Values.RESTORE
+        )
 
-            position_register = variable_id[1]
-            if IpOffsetDb.get(position_register) == E_Values.RESTORE: continue
-
-            del snapshot_map[variable_id]
-        
         # (*) The 'RESTORE_ACCEPTANCE' must always be the last in the accepter,
         #     because it does not depend on a pre-context.
         assert Accepter
-        if      Accepter[-1].acceptance_id() != E_IncidenceIDs.RESTORE_ACCEPTANCE \
-            and E_R.AcceptanceRegister in snapshot_map:
-            del snapshot_map[E_R.AcceptanceRegister]
+        if Accepter[-1].acceptance_id() == E_IncidenceIDs.RESTORE_ACCEPTANCE:
+            db[E_R.AcceptanceRegister] = copy(snapshot_set_db[E_R.AcceptanceRegister])
+        
+        return db
 
     @staticmethod
     def get_string_accepter(Accepter):
@@ -450,30 +443,33 @@ class RecipeAcceptance(Recipe):
         return "".join(txt)
 
     @staticmethod
-    def get_string_snapshot_map(SnapshotMap):
-        if not SnapshotMap:
+    def get_string_snapshot_set_db(SnapshotSetDb):
+        if not SnapshotSetDb:
             return ""
 
         txt = []
-        L = max(len("%s" % repr(register)) for register in SnapshotMap)
-        for register, state_index in sorted(SnapshotMap.iteritems()):
-            if state_index is None: continue
-            txt.append("      %s%s@%s\n" % (repr(register), " " * (L-len("%s" % repr(register))), state_index))
+        L = max(len("%s" % repr(register)) for register in SnapshotSetDb)
+        for register, state_index_set in sorted(SnapshotSetDb.iteritems()):
+            if not state_index_set: continue
+            txt.append("      %s%s@" % (repr(register), " " * (L-len("%s" % repr(register)))))
+            state_index_list = sorted(list(state_index_set))
+            txt.append("".join("%s, " % si for si in state_index_list[:-1]))
+            txt.append("%s\n" % state_index_list[-1])
         
         return "".join(txt)
 
     def __str__(self):
-        snapshot_map_empty_f = True
-        for state_index in self.snapshot_map.itervalues():
-            if state_index is not None: snapshot_map_empty_f = False
+        snapshot_set_db_empty_f = True
+        for state_index in self.snapshot_set_db.itervalues():
+            if state_index is not None: snapshot_set_db_empty_f = False
 
         return "".join([
             "    Accepter:\n",
             self.get_string_accepter(self.accepter),
             "    InputOffsetDb:\n",
             self.get_string_input_offset_db(self.ip_offset_db),
-            "    Snapshot Map:\n" if not snapshot_map_empty_f else "",
-            self.get_string_snapshot_map(self.snapshot_map)
+            "    Snapshot Map:\n" if not snapshot_set_db_empty_f else "",
+            self.get_string_snapshot_set_db(self.snapshot_set_db)
         ])
 
     

@@ -54,66 +54,6 @@ class Recipe:
     def INITIAL(cls, RequiredVariableSet):
         assert False, "To be implemented in derived class"
 
-    @staticmethod
-    def _snap_shot_map_interference(Mouth, StateIndex):
-        """This function supports the 'interference' procedure. When an entry recipe
-        with respect to a variable 'v' is not homogeneous, then the variable's value
-        must be computed upon entry and the snapshot map must contain the current 
-        state as the 'snapshot state', i.e. the state where the snapshot has been 
-        taken. 
-
-        HomogeneityDb: 
-            
-            variable_id --> True -- if entry expression for variable_id
-                                    is homogeneous
-                            False -- if it is not
-
-        implement_entry_operation_db:
-
-            variable_id --> flag indicating whether 'v' needs to be 
-                            computed and stored in auxiliary variable.
-
-        PrototypeSnapshotMap:
-
-            Snapshot map of any entry recipe. It is considered only for those 
-            'variable_id'-s which are homogeneous.
-
-        ADAPTS:  implement_entry_operation_db
-
-        RETURNS: snapshot map
-
-            variable_id --> state index where the snapshot has been taken.
-                            None, if the variable is not restored from 'A(v)'.
-        """
-        snapshot_map   = {}
-        homogeneity_db = {}
-        for variable_id in Mouth.required_variable_set:
-
-            uniform_object = UniformObject.from_iterable(
-                 recipe.snapshot_map.get(variable_id)
-                 for recipe in Mouth.entry_recipe_db.itervalues()
-            )
-
-            if     uniform_object.plain_content() != E_Values.VOID \
-               and uniform_object.plain_content() != E_Values.SIGMA: # Homogeneity
-                assert    uniform_object.content is None \
-                       or isinstance(uniform_object.content, (int, long))
-                snapshot_map[variable_id]   = uniform_object.content
-                homogeneity_db[variable_id] = True
-            else:                                               # Inhomogeneity
-                snapshot_map[variable_id]   = StateIndex
-                homogeneity_db[variable_id] = False
-
-        return snapshot_map, homogeneity_db
-
-    @classmethod
-    def apply_inhomogeneity(cls, snapshot_map, homogeneity_db, VariableId, StateIndex):
-        """When inhomogeneity for a variable 'VariableId' is detected, then the
-        'v' is stored in 'A(v)', i.e. the snapshot map for 'v' is the current state.
-        The homogeneity_db for the given variable must be set to 'False'.
-        """
-        snapshot_map[VariableId]   = StateIndex
-        homogeneity_db[VariableId] = False
 
     @staticmethod
     def tag_iterable(db, StateIndexIterable, VariableId):

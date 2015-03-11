@@ -49,7 +49,7 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-do.py;
 result_list: [
-  [ linear; FAIL; 0.063533; None; ]
+  [ linear; FAIL; 0.063566; 2012881565; ]
   [ butterfly; FAIL; 0.068408; None; ]
   [ long_loop; FAIL; 0.066092; None; ]
   [ nested_loop; FAIL; 0.065629; None; ]
