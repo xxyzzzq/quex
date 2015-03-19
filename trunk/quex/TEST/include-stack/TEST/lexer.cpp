@@ -23,20 +23,12 @@ void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const
 #    define RECEIVE(TokenP)   (void)qlex.receive()
 #endif
 
+static void
+self_test(const char* CharFilename);
+
 int 
 main(int argc, char** argv) 
 {        
-    string         Directory("example/");
-    string         Filename(argv[1]);
-    ifstream       istr((Directory + Filename + ".txt").c_str());
-    quex::ISLexer  qlex(&istr);
-
-#   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
-    quex::Token*  token_p = 0x0;
-#   else
-    quex::Token*  token_p = qlex.token_p();
-#   endif
-
     if( argc < 2 ) {
         printf("Need at least one argument.\n");
         return -1;
@@ -46,6 +38,24 @@ main(int argc, char** argv)
         printf("CHOICES: empty, 1, 2, 3, 4, 5, 20;");
         return 0;
     }
+
+    self_test(argv[1]);
+}
+
+static void
+self_test(const char* CharFilename)
+{
+    string         Directory("example/");
+    string         Filename(CharFilename);
+    ifstream       istr((Directory + Filename + ".txt").c_str());
+    quex::ISLexer  qlex(&istr);
+
+#   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
+    quex::Token*  token_p = 0x0;
+#   else
+    quex::Token*  token_p = qlex.token_p();
+#   endif
+
 
     qlex.file_name = Directory + Filename + ".txt";
     cout << "[START]\n";
@@ -58,8 +68,6 @@ main(int argc, char** argv)
     } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
     cout << "[END]\n";
-
-    return 0;
 }
 
 string  space(int N)

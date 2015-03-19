@@ -4,7 +4,6 @@ Accepter
    Cost:         1
    C-code: {
            if( pre_context_55_fulfilled_f ) { last_acceptance = 66; __quex_debug("last_acceptance = 66\n"); }
-       
    }
 
 Assign
@@ -13,7 +12,6 @@ Assign
    Cost:         1
    C-code: {
            (me->buffer._input_p) = (me->buffer._lexeme_start_p);
-       
    }
 
 AssignConstant
@@ -22,7 +20,6 @@ AssignConstant
    Cost:         1
    C-code: {
            (me->buffer._input_p) = 0;
-       
    }
 
 AssignConstant
@@ -31,7 +28,6 @@ AssignConstant
    Cost:         1
    C-code: {
            reference_p = 1;
-       
    }
 
 AssignConstant
@@ -40,7 +36,6 @@ AssignConstant
    Cost:         1
    C-code: {
            __QUEX_IF_COUNT_COLUMNS((me->counter._column_number_at_end) = (size_t)2);
-       
    }
 
 ColumnCountAdd
@@ -49,7 +44,6 @@ ColumnCountAdd
    Cost:         1
    C-code: {
        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-       
    }
 
 ColumnCountGridAdd
@@ -59,7 +53,6 @@ ColumnCountGridAdd
    C-code: {
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 1 + 1);
-       
    }
 
 ColumnCountGridAdd
@@ -70,7 +63,6 @@ ColumnCountGridAdd
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x1));
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 2 + 1);
-       
    }
 
 ColumnCountGridAdd
@@ -81,7 +73,6 @@ ColumnCountGridAdd
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (3)));
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 3 + 1);
-       
    }
 
 ColumnCountGridAdd
@@ -92,7 +83,6 @@ ColumnCountGridAdd
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end &= ~ ((size_t)0x3));
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4 + 1);
-       
    }
 
 ColumnCountGridAdd
@@ -103,7 +93,6 @@ ColumnCountGridAdd
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= 1);
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (5)));
        __QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 5 + 1);
-       
    }
 
 ColumnCountReferencePDeltaAdd
@@ -112,7 +101,6 @@ ColumnCountReferencePDeltaAdd
    Cost:         1
    C-code: {
        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)((character_begin_p - reference_p) * 5555));
-       
    }
 
 ColumnCountReferencePSet
@@ -121,7 +109,6 @@ ColumnCountReferencePSet
    Cost:         1
    C-code: {
        __QUEX_IF_COUNT_COLUMNS(reference_p = character_begin_p + 1000);
-       
    }
 
 GotoDoorId
@@ -140,7 +127,6 @@ GotoDoorIdIfInputPNotEqualPointer
    Cost:         1
    C-code: {
        if( me->buffer._input_p != character_begin_p ) goto _1;
-       
    }
 
 IfPreContextSetPositionAndGoto
@@ -150,10 +136,8 @@ IfPreContextSetPositionAndGoto
    Cost:         1
    C-code: {
        if( pre_context_24_fulfilled_f ) {
-           me->buffer._input_p -= 1; 
-       
+           me->buffer._input_p -= 1;
        goto _6;}
-       
    }
 
 IndentationHandlerCall
@@ -162,7 +146,6 @@ IndentationHandlerCall
    Cost:         1
    C-code: {
            QUEX_NAME(on_indentation)(me, me->counter._column_number_at_end, LexemeNull);
-       
    }
 
 IndentationHandlerCall
@@ -171,7 +154,6 @@ IndentationHandlerCall
    Cost:         1
    C-code: {
            QUEX_NAME(EXITED_on_indentation)(me, me->counter._column_number_at_end, LexemeNull);
-       
    }
 
 InputPDecrement
@@ -180,7 +162,6 @@ InputPDecrement
    Cost:         1
    C-code: {
            --(me->buffer._input_p);
-       
    }
 
 InputPDereference
@@ -189,7 +170,6 @@ InputPDereference
    Cost:         1
    C-code: {
            input = *(me->buffer._input_p);
-       
    }
 
 InputPIncrement
@@ -198,7 +178,6 @@ InputPIncrement
    Cost:         1
    C-code: {
            ++(me->buffer._input_p);
-       
    }
 
 LexemeResetTerminatingZero
@@ -207,7 +186,6 @@ LexemeResetTerminatingZero
    Cost:         1
    C-code: {
            QUEX_LEXEME_TERMINATING_ZERO_UNDO(&me->buffer);
-       
    }
 
 LineCountAdd
@@ -216,7 +194,6 @@ LineCountAdd
    Cost:         1
    C-code: {
        __QUEX_IF_COUNT_LINES_ADD((size_t)1);
-       
    }
 
 PathIteratorSet
@@ -226,7 +203,6 @@ PathIteratorSet
    C-code: {
            path_iterator  = path_walker_11_path_22 + 1000;
            __quex_debug("path_iterator = (Pathwalker: 11, Path: 22, Offset: 1000)\n");
-       
    }
 
 PreContextOK
@@ -236,7 +212,6 @@ PreContextOK
    C-code: {
            pre_context_4711_fulfilled_f = 1;
            __quex_debug("pre_context_4711_fulfilled_f = true\n");
-       
    }
 
 PrepareAfterReload
@@ -245,7 +220,6 @@ PrepareAfterReload
    Cost:         1
    C-code: {
            target_state_index = QUEX_LABEL(1); target_state_else_index = QUEX_LABEL(2);
-       
    }
 
 QuexAssertNoPassage
@@ -263,20 +237,17 @@ QuexDebug
    Cost:         1
    C-code: {
        __quex_debug("Hello Bug!");
-       
    }
 
-Router
+RouterByLastAcceptance
    <on last_acceptance:case 66: pos -= 1;  goto Pattern66;>
    Registers:    AcceptanceRegister(r),  InputP(w),  ThreadOfControl(w), 
    IsBranching: True
    Cost:         1
    C-code: {
        switch( last_acceptance ) {
-           case 66: me->buffer._input_p -= 1; 
-       
+           case 66:     me->buffer._input_p -= 1;
        goto _6;
-       
        }
    }
 
@@ -287,10 +258,9 @@ RouterOnStateKey
    Cost:         1
    C-code: {
        switch( path_iterator - path_walker_18193_path_base ) {
-           case 0x1: goto _3;
-           case 0x2: goto _4;
-           case 0x3: goto _5;
-       
+           case 0x1:  goto _3;
+           case 0x2:  goto _4;
+           case 0x3:  goto _5;
        }
    }
 
@@ -300,7 +270,6 @@ StoreInputPosition
    Cost:         1
    C-code: {
            position[7777] = me->buffer._input_p; __quex_debug("position[7777] = input_p;\n");
-       
    }
 
 StoreInputPosition
@@ -309,7 +278,6 @@ StoreInputPosition
    Cost:         1
    C-code: {
            position[7777] = me->buffer._input_p - 1000; __quex_debug("position[7777] = input_p - 1000;\n");
-       
    }
 
 TemplateStateKeySet
@@ -319,6 +287,5 @@ TemplateStateKeySet
    C-code: {
            state_key = 66;
            __quex_debug("state_key = 66\n");
-       
    }
 

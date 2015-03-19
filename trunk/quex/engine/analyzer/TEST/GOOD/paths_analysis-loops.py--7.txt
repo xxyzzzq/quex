@@ -27,7 +27,7 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE: last_acceptance = Failure
+    .from BEFORE_ENTRY: last_acceptance = Failure
 
 .drop_out:
 pos = lexeme_start_p + 1;  goto Failure;
@@ -59,9 +59,9 @@ State 3:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 1: pos = position[PostContext_1] ; goto Pattern1;
 case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 4:
@@ -70,9 +70,9 @@ State 4:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 1: pos = position[PostContext_1] ; goto Pattern1;
 case 2: pos = position[PostContext_2] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 5:
@@ -157,9 +157,9 @@ State 3:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 1: pos = position[PostContext_0] ; goto Pattern1;
 case 2: pos = position[PostContext_1] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 4:
@@ -168,9 +168,9 @@ State 4:
 
 .drop_out:
 on last_acceptance:
-case Failure: pos = lexeme_start_p + 1;  goto Failure;
 case 1: pos = position[PostContext_0] ; goto Pattern1;
 case 2: pos = position[PostContext_1] ; goto Pattern2;
+case Failure: pos = lexeme_start_p + 1;  goto Failure;
 
 
 State 7:

@@ -11,7 +11,7 @@ init-state = 0L
 
 State 0:
   .entry:
-    .from NONE: 
+    .from BEFORE_ENTRY: 
 
 .drop_out:
 GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
