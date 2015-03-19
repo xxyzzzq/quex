@@ -121,7 +121,7 @@ class Examiner:
             info        = self.get_state_info(si)
             recipe_init = self.recipe_type.INITIAL(info.required_variable_set) 
             # The initial recipe cannot rely on stored values!
-            assert not recipe_init.snapshot_map
+            # assert not recipe_init.snapshot_map
 
             recipe = self.recipe_type.accumulation(recipe_init, 
                                                    state.single_entry)

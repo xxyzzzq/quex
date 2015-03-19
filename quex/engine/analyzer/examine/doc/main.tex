@@ -758,7 +758,7 @@ one.
 %==============================================================================
 %
 %==============================================================================
-\section{Recursive Accumulation of Recipes}
+\section{Deterministic Propagation of Recipes}
 
 If the recipe of a state $i$'s predecessor $k$ is determined, then the entry
 recipe $R_E(i,k)$ can be determined. The same is true if the predecessor is an initial
@@ -806,6 +806,27 @@ or began.
 
 \caption{Deterministic propagation of recipes from springs.}
 \end{figure}
+
+The recipes resulting from deterministic propagation are shaped by the 
+operations $op(i)$ of the original state machine and the spring recipes. No
+new 'branch recipe' can influence any resulting recipe. This allows to 
+statements to be made about correctness and determinacy.
+
+\begin{statement} Correctness of Deterministic Propagation \label{stm:correctness-rule}
+    
+    Thus recipes derived from deterministic propagation are granted
+    to be correct under the same conditions that springs are granted to be
+    correct.
+
+\end{statement}
+
+\begin{statement} Determinacy of Deterministic Propagation \label{stm:determinacy-rule}
+
+    For any recipe developed by deterministic propagation, it holds that it 
+    will not change as long as the spring recipes do not change.
+
+\end{statement}
+
 
 The algorithm in figure \ref{fig:algo-1} implements the procedure to determine
 recipes recursively through accumulation.  When this algorithm comes to an end,
@@ -869,7 +890,6 @@ $R(init)$ constitutes the predecessor with the determined recipe.  Figure
 \ref{fig:horizon-state} shows a horizon state which contains one determined
 entry and another undetermined entry. 
 
-
 \begin{figure}[htbp] \leavevmode \label{fig:horizon-state}
 \begin{verbatim}
                          R(a) -->--.
@@ -883,27 +903,68 @@ entry and another undetermined entry.
     an undetermined state $b$.}
 \end{figure}
 
-There are two extreme assumptions that may be made with respect to $R(i)$ in
-the presence of uncertainty on $R(b)$. The most daring statement is to assume
-that the components of the determined entries which are coherent, will remain
-coherent with the remaining entries, once they are known. 
+For a horizon state, using the statements on correctness
+\ref{stm:correctness-rule} and determinacy \label{stm:determinacy} of
+deterministic propagation a key rule can be derived that will allow to resolve
+the dead-lock states.
 
-\begin{definition} Daring Interference
+Given is a horizon state $h$ with a set of determined predecessor recipes $R_d$
+and a set of undetermined predecessor recipes $R_u$. Let $R(i)=R^e(h)$ be an
+estimated recipe. If deterministic propagation is applied based on a virtual
+spring $h$ with a recipe $R(h)$ and all undetermined recipes $R_u$ are,
+as a result, determined, then the undetermined recipes solely depend on the 
+output recipe of $h$ (see determinacy \ref{stm:determinacy-rule}). As long
+as the output recipe does not change, the recipes $R_u$ will be the same. 
+If the interference in $h$ based on all recipes $R_d$ and $R_u$ result in the
+same recipe $R^e(h)$, then the output recipe will never change, regardless how
+many times the horizon state is repassed. 
 
-Daring interference develops an output recipe for an undetermined mouth
-state. The output recipe $R(i)$ is determined by its components for each $v$
+According to the correctness rule \ref{stm:correctness-rule}, the developped
+recipes are correct, if the springs are correct. Thus, $R^e(h)$ is chosen 
+so that it fits the interference of all determined entries, then $R^e(h)$
+is correct, as long as $h$ is entered by determined predecessors. Any path
+from the initial state to the horizon state, though, goes through deterministic
+recipes. Thus, it is primarily true for all transitions that pass through $h$
+once but not twice. It follows, that
+
+\begin{statement} Correctly Estimated Interference
+
+    Let  $R^e(h)$ be an estimated output recipe with an estimated snapshot set
+    $S^v(h)\forall v\in\,V(h)$. If deterministic propagation is applied with this
+    state as spring and 
+
+    \begin{enumerate}
+        \item as a result, all previously undetermined predecessor states are
+              determined, and
+        \item the interference of all entry recipes $R_E(h,k)$ produces the 
+              estimated recipe $R^e(h)$, 
+    \end{enumerate}
+
+    then $R^e(h)$ is the universally correct recipe for state $h$.
+    
+\end{statement}
+
+How can a good estimate recipe $R^e(h)$ be found?  There are two extreme
+assumptions that may be made with respect to $R(i)$ in the presence of
+uncertainty on $R(b)$. The most daring statement is to assume that the
+components of the determined entries which are coherent, will remain coherent
+with the remaining entries, once they are known. 
+
+\begin{definition} Daring Estimate
+
+    The daring estimate proposes an output recipe $R(i)$ for a horizon state
+    $h$ with $P_d(h)$ as the set of its determined predecessor states. The
+    recipes components for each $v$ are defined by
           
 \begin{equation} \label{eq:cautious-output-recipe}
     \begin{dcases*}
-        R_E^v(i,k_0) & if $v$ is coherent for any determined $k\in Pred(i)$\\
+        R_E^v(h,k_0) & if $v$ is coherent $\forall k\in P_d(h)$ \\
         A(v)         & else
     \end{dcases*}
 \end{equation}
 
-for an arbitrary $R_E^v(i,k_0)\neq\eta$. 
-
-The snapshot set for $R(i)$ is the union of snapshot sets of all determined
-states.
+for an arbitrary $k\in P_u(h)$ with $R_E^v(i,k_0)\neq\eta$.  The snapshot set
+for each variable $v$ is the union of snapshot sets of all determined states.
 
 \begin{equation} \label{eq:interference-snapshot-sets}
     S^v(R(i)) = \bigcap_{k\in Pred(i)} S^v(R_E(i,k))\,\mbox{with $k$ being determined.}
@@ -911,8 +972,15 @@ states.
 
 \end{definition}
 
-The recipe of daring interference is true for scenarios of transition sequences
-that end directly after the horizon state. Or, more precisely it is true for
+Without knowing the other entry recipes, it can be said that the recipe
+resulting daring interference is true for transition sequences that
+
+\begin{itemize}
+    \item Enter the mouth state through a determined entry, and
+    \item do not enter is through an, yet, undetermined entry.
+\end{itemize}
+
+do not enter the mouth state twice. directly after the horizon state. Or, more precisely it is true for
 transition sequences that do not reach another dead-lock state after the
 horizon.
 
@@ -1110,27 +1178,6 @@ all entry recipes are determined. Then, it is possible that those entries which
 are flagged with $H^v(i,k)=true$ implement the entry operation
 $op_E^v(i)=R_E^v(i,k)$.  Before, however, another opportunity to optimize is
 explored. 
-
-%==============================================================================
-%
-%==============================================================================
-\section{Proof}
-
-First, a statement about the 'deterministic propagation' algorithm 1 must be
-made. Accumulation of recipes is a deterministic process. All results are
-correct, if their base recipes are correct. Therefore, recursive accumulation
-is correct if the springs are correct. Interference is correct, if all entry
-recipes are correct. Entry recipes come from recursive accumulation. 
-
-\begin{statement} 
-    
-    Thus recipes derived from 'deterministic propagation(springs)' are granted
-    to be correct under the same conditions that springs are granted to be
-    correct.
-
-\end{statement}
-
-
 
 %==============================================================================
 %

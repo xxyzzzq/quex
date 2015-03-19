@@ -24,6 +24,8 @@ class SeOp:
         return self.__acceptance_id
 
     def _string_annotate(self, Str):
+        if self.__acceptance_id == E_PostContextIDs.NONE: return Str
+        # Is the following 'if' still necessary? (fschaef9 15y03m19d)
         if self.__acceptance_id == E_IncidenceIDs.MATCH_FAILURE: return Str
         return "%s%s" % (Str, self.__acceptance_id)
 

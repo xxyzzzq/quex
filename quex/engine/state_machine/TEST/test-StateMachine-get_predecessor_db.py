@@ -44,6 +44,8 @@ class MyStates(dict):
             yield self.__list[i]
 
 sm, state_n, pic = get_sm_shape_by_name(sys.argv[1])
+if "pic" in sys.argv:
+    print pic
 
 base = range(state_n)
 

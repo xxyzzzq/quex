@@ -20,7 +20,7 @@ main(int argc, char** argv)
 #       endif
         return 0;
     }
-    quex::Simple           qlex(argc == 1 ? "example.txt" : argv[1]);
+    quex::Simple           qlex("example.txt");
     ispringen::MeinToken*  token_p = qlex.token_p();
 
     // (*) Access the '__nonsense__' member to ensure it has been generated
