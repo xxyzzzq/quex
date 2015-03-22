@@ -2,7 +2,7 @@ Command Line Options
 ====================
 
 This chapter sums up all command line options which can be passed to quex
-(Version 0.65.2) together with their meaning.  Most of the options here are alread explained in
+(Version 0.65.3) together with their meaning.  Most of the options here are alread explained in
 separate sections. The present enumeration serves the purpose of a quick
 reference. There are command line options for code generations, but also for
 queries. Each family of options is described in a separate section.
@@ -365,7 +365,6 @@ in the ``token { ... `` } section, e.g.
                 UNINITIALIZED = 10002;
                 ...
             }
-        
 
 
 A file with token ids can be provided by the option  
@@ -860,7 +859,6 @@ can be used to extract what appears in between ``BEGIN:`` and ``END:`` the follo
 
         
            awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
-        
 
 
 When using multiple lexical analyzers it can be helpful to get precise information about all related 

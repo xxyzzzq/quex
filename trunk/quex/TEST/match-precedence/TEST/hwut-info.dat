@@ -2,4 +2,5 @@ Match Precedence
 --------------------------------------
 *.py
 *.sh
+--not match_precedence_test.py
 --------------------------------------

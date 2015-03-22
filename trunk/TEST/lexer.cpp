@@ -1,5 +1,8 @@
 #include<fstream>    
 #include<iostream> 
+extern "C" {
+#include<assert.h> 
+}
 
 // (*) include lexical analyser header
 #include "Simple"
@@ -12,6 +15,8 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
+    assert(argc > 1);
+
     // (*) create token
     quex::Token*   token_p;
     // (*) create the lexical analyser

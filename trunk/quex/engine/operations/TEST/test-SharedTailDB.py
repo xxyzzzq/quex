@@ -51,11 +51,12 @@ G = Op.Assign(E_R.ReferenceP, E_R.PositionRegister)
 
 alias_db = { A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", }
 
-def test_init(DidCl_Iterable):
+def test_init(Index, DidCl_Iterable):
     dial_db.clear()
     stdb = SharedTailDB(4711L, DidCl_Iterable)
 
     print "_" * 80
+    print "##", Index
     print
     print "Setup:"
     for door_id, command_list in DidCl_Iterable:
@@ -65,11 +66,12 @@ def test_init(DidCl_Iterable):
     print
     print "    " + stdb.get_string(alias_db).replace("\n", "\n    ")
 
-def test_pop(DidCl_Iterable):
+def test_pop(Index, DidCl_Iterable):
     dial_db.clear()
     stdb = SharedTailDB(4711L, DidCl_Iterable)
 
     print "_" * 80
+    print "##", Index
     print
     print "Setup:"
     for door_id, command_list in DidCl_Iterable:
@@ -143,12 +145,14 @@ setup_list = [
 
 if "init" in sys.argv:
     # test_init(setup_list[8])
-    for door_id_command_list in setup_list:
-        test_init(door_id_command_list)
+    for i, door_id_command_list in enumerate(setup_list):
+        test_init(i, door_id_command_list)
 
 elif "pop_best" in sys.argv:
-    for door_id_command_list in setup_list:
-         test_pop(door_id_command_list)
+    # test_pop(10, setup_list[10])
+    # sys.exit()
+    for i, door_id_command_list in enumerate(setup_list):
+         test_pop(i, door_id_command_list)
 
 elif "large_init" in sys.argv:
     door_id_command_list = []

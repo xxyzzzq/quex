@@ -40,7 +40,7 @@ function update_version_information()
         ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt
     mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py;
 
-    hwut i > unit_test_results.txt;
+    hwut i --no-color > unit_test_results.txt;
 }
 
 function create_man_page() {

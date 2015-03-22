@@ -23,13 +23,9 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
     /* (78 from BEFORE_ENTRY)  */
     input = *(me->buffer._input_p);
 
-    __quex_debug("Init State\n");
-    __quex_debug_state(78);
 _20:
     character_begin_p = (me->buffer._input_p);
 
-    __quex_debug("Init State\n");
-    __quex_debug_state(78);
 
     __quex_debug("Init State\n");
     __quex_debug_state(78);
@@ -66,18 +62,15 @@ default: goto _6;
     __quex_assert_no_passage();
 _18:
     /* (78 from 89)  */
-    __quex_debug_state(78);
     goto _20;
 
 
     __quex_assert_no_passage();
 _13:
     /* (DROP_OUT from 78) (DROP_OUT from 85) (DROP_OUT from 79) (DROP_OUT from 86) (DROP_OUT from 87) (DROP_OUT from 83) (DROP_OUT from 84)  */
-    __quex_debug("Drop-Out Catcher\n");
 
         me->buffer._input_p = me->buffer._lexeme_start_p + 1;
 goto _23;
-    __quex_debug("Drop-Out Catcher\n");
 
     __quex_debug("Drop-Out Catcher\n");
 
@@ -86,28 +79,24 @@ goto _23;
 _15:
     /* (DROP_OUT from 81)  */
     goto _24;
-    __quex_debug("Drop-Out Catcher\n");
 
 
     __quex_assert_no_passage();
 _17:
     /* (DROP_OUT from 88)  */
     goto _25;
-    __quex_debug("Drop-Out Catcher\n");
 
 
     __quex_assert_no_passage();
 _14:
     /* (DROP_OUT from 80)  */
     goto _26;
-    __quex_debug("Drop-Out Catcher\n");
 
 
     __quex_assert_no_passage();
 _16:
     /* (DROP_OUT from 82)  */
     goto _27;
-    __quex_debug("Drop-Out Catcher\n");
 
 
     __quex_assert_no_passage();
@@ -117,7 +106,6 @@ _3:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(79);
 
     __quex_debug_state(79);
 if     ( input >= 0x90 )  goto _13;
@@ -132,7 +120,6 @@ _4:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(80);
 
     __quex_debug_state(80);
 goto _14;
@@ -145,7 +132,6 @@ _5:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(81);
 
     __quex_debug_state(81);
 goto _15;
@@ -154,13 +140,11 @@ goto _15;
     __quex_assert_no_passage();
 _6:
     /* (82 from 84) (82 from 78)  */
-    __quex_debug_state(82);
 
     ++(me->buffer._input_p);
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(82);
 
     __quex_debug_state(82);
 goto _16;
@@ -173,7 +157,6 @@ _7:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(83);
 
     __quex_debug_state(83);
 if     ( input >= 0xC0 )  goto _13;
@@ -184,13 +167,11 @@ else                      goto _13;
     __quex_assert_no_passage();
 _8:
     /* (84 from 87) (84 from 78) (84 from 85)  */
-    __quex_debug_state(84);
 
     ++(me->buffer._input_p);
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(84);
 
     __quex_debug_state(84);
 if     ( input >= 0xC0 )  goto _13;
@@ -201,13 +182,11 @@ else                      goto _13;
     __quex_assert_no_passage();
 _9:
     /* (85 from 86) (85 from 79) (85 from 78) (85 from 83)  */
-    __quex_debug_state(85);
 
     ++(me->buffer._input_p);
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(85);
 
     __quex_debug_state(85);
 if     ( input >= 0xC0 )  goto _13;
@@ -222,7 +201,6 @@ _10:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(86);
 
     __quex_debug_state(86);
 if     ( input >= 0xC0 )  goto _13;
@@ -237,7 +215,6 @@ _11:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(87);
 
     __quex_debug_state(87);
 if     ( input >= 0xC0 )  goto _13;
@@ -252,7 +229,6 @@ _12:
 
     input = *(me->buffer._input_p);
 
-    __quex_debug_state(88);
 
     __quex_debug_state(88);
 goto _17;

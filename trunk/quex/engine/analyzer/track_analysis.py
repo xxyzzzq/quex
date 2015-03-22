@@ -511,8 +511,8 @@ class _Trace(object):
         """
         if self.__equivalence_hash != Other.__equivalence_hash:           return False
 
-        #if self.__equivalence_hint is not None:
-        #    if self.__equivalence_hint == Other.__equivalence_hint:       return True
+        if self.__equivalence_hint is not None:
+            if self.__equivalence_hint == Other.__equivalence_hint:       return True
 
         if   self.__acceptance_trace_len != Other.__acceptance_trace_len: return False
         elif self.__storage_db_len       != Other.__storage_db_len:       return False

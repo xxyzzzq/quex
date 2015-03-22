@@ -8,7 +8,7 @@ import quex.engine.state_machine.algebra.difference as difference
 
 if "--hwut-info" in sys.argv:
     print "Difference Operation"
-    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc, Pre-Post-Conditions;"
+    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc;" #, Pre-Post-Conditions;"
     sys.exit(0)
     
 def test(A, B):
@@ -48,27 +48,27 @@ elif "GoodCases" in sys.argv:
     test('X"123"*', 'X"123"')
 
 elif "FalseCasesII" in sys.argv:
-    test('abc("123"+)xyz',       'abcyz')
-    test('abc("123"|"ABC")xyz',  'abc1B3xyz')
-    test('abc("123"|"ABCD")xyz', 'abcABCxyc')
+    test('ab("123"+)yz',       'abz')
+    test('ab("123"|"ABC")yz',  'ab1B3yz')
+    test('ab("123"|"ABCD")yz', 'abABCyc')
 
 elif "GoodCasesII" in sys.argv:
-    test('abc("123"+)xyz', 'abc123123123123xyz')
-    test('abc("123"?)xyz', 'abcxyz')
-    test('abc("123"*)xyz', 'abcxyz')
-    test('abc("123"|"ABC")?xyz', 'abcxyz')
-    test('abc("123"|"ABC")?xyz', 'abcABCxyz')
-    test('abc("123"|"ABC")*xyz', 'abcxyz')
-    test('abc("123"|"ABC")*xyz', 'abcABC123xyz')
+    test('ab("12"+)yz',      'ab121212yz')
+    test('ab("12"?)yz',      'abyz')
+    test('ab("12"*)yz',      'abyz')
+    test('ab("12"|"AB")?yz', 'abyz')
+    test('ab("12"|"AB")?yz', 'abAByz')
+    test('ab("12"|"AB")*yz', 'abyz')
+    test('ab("12"|"AB")*yz', 'abAB12yz')
 
 elif "Misc" in sys.argv:
     test('X("a"|"x"?|"e"|"g")', 'X')
     test('X("a"|"x"?|"e"|"g")', 'Xx')
-    test('"a"|"x"+|"e"|"g"', 'x{20}')
+    test('"a"|"x"+|"e"|"g"', 'x{4}')
     test('X("a"|"x"*|"e"|"g")', 'X')
-    test('X("a"|"x"*|"e"|"g")', 'Xx{20}')
+    test('X("a"|"x"*|"e"|"g")', 'Xx{4}')
 
-    test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
+    test('ab("12"|("AB"|"XY")+)+"12"("AA"|"BB")?z', 'ab12AB12AAz')
 
 elif "Pre-Post-Conditions":
     # with pre and post-conditions

@@ -1,5 +1,5 @@
 .\" Manpage for quex.
-.TH QUEX 1 "Quex 0.65.2" "User Commands"
+.TH QUEX 1 "Quex 0.65.3" "User Commands"
 .SH NAME
 Quex \- A fast lexical analyzer generator
 .SH SYNOPSIS
@@ -604,7 +604,6 @@ The default values of those do not follow the token id offset, but are 0 and 1. 
                 UNINITIALIZED = 10002;
                 ...
             }
-        
 
 
 
@@ -1204,7 +1203,6 @@ the following way:
 
         
            awk 'BEGIN {w=0} /BEGIN:/ {w=1;} // {if(w) print;} /END:/ {w=0;}' MyLexer.c
-        
 
 
 
