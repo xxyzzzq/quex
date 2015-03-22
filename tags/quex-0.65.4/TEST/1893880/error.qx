@@ -1,0 +1,12 @@
+token {
+A;
+}
+start = MODE;
+mode MODE :
+<inheritable: only>
+{
+<<EOF>> => QUEX_TKN_TERMINATION;
+}
+mode ANOTHER_MODE {
+X => QUEX_TKN_TERMINATION;
+}

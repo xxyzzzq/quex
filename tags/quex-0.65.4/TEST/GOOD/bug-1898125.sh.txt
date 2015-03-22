@@ -1,0 +1,9 @@
+
+
+command line: Cannot convert 'foo' into an integer for ''--token-id-offset''.
+command line: Use prefix '0x' for hexadecimal numbers.
+command line:            '0o' for octal numbers.
+command line:            '0b' for binary numbers.
+command line:            '0r' for roman numbers.
+command line:            and no prefix for decimal numbers.
+

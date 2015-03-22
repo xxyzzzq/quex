@@ -1,0 +1,100 @@
+________________________________________________________________________________
+State 0: [0L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+State 1: [1L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [1]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+_ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
+State 0: [0L]
+State 1: [1L]
+Result:
+
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+  BorderN = 2
+
+
+________________________________________________________________________________
+State 2: [2L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [2]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+State 3: [3L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [3]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+_ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
+State 2: [2L]
+State 3: [3L]
+Result:
+
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [2, 3]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+  BorderN = 2
+
+
+________________________________________________________________________________
+State t(01): [0L, 1L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+State t(23): [2L, 3L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [2, 3]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+_ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
+State t(01): [0L, 1L]
+State t(23): [2L, 3L]
+Result:
+
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+  BorderN = 2
+
+
+________________________________________________________________________________
+State t(0123): [0L, 1L, 2L, 3L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1, 2, 3]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+State 4: [4L]
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [4]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+_ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ _
+State t(0123): [0L, 1L, 2L, 3L]
+State 4: [4L]
+Result:
+
+  [INTERVAL] [SCHEME_ID] [TARGET/STATE [0, 1, 2, 3, 4]]
+  [-oo, 9]   None        TargetByStateKey:DropOut
+  [10]       None        **(s=100, d=0)
+  [11, oo]   None        TargetByStateKey:DropOut
+
+  BorderN = 2
+
+
