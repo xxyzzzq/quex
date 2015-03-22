@@ -13,8 +13,9 @@ mkdir -p /tmp/quex-packages
 orig_directory=$PWD
 export QUEX_PATH=$PWD
 
-INSTALLBUILDER=/opt/installbuilder-7.2.0/bin/builder
-INSTALLBUILDER_OUT=/opt/installbuilder-7.2.0/output
+INSTALLBUILDER=$HOME/bin/installbuilder-9.5.5/bin/builder
+INSTALLBUILDER_OUT=$HOME/bin/installbuilder-9.5.5/output
+
 
 # Temporary file for building a distribution file list
 file_list0=/tmp/file-list-0.txt
