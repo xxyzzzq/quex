@@ -1,0 +1,155 @@
+(1)   One with 1 element _________________________________________
+
+[L1=1; L2=1; Common=1]
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 0)
+
+
+[L1=1; L2=2; Common=1]
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 1)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    last common at: (0, 0)
+
+
+[L1=1; L2=3; Common=1]
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+       [2] ColumnCountGridAdd: { grid_size=1,  }
+    last common at: (0, 0)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=1,  }
+    last common at: (0, 1)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountAdd: { value=1,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 2)
+
+(2)   One with 2 elements ________________________________________
+
+[L1=2; L2=2; Common=1]
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    last common at: (1, 1)
+
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+    last common at: (1, 0)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 1)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+    last common at: (0, 0)
+
+
+[L1=2; L2=3; Common=1]
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (1, 0)
+
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (1, 1)
+
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] ColumnCountGridAdd: { grid_size=2,  }
+       [2] AssignConstant: { register=Column, value=2,  }
+    last common at: (1, 2)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (0, 0)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (0, 1)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] ColumnCountGridAdd: { grid_size=2,  }
+       [2] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 2)
+
+(3)   One with 3 elements ________________________________________
+
+[L1=2; L2=3; Common=1]
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (1, 0)
+
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (1, 1)
+
+    A: [0] ColumnCountAdd: { value=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] ColumnCountGridAdd: { grid_size=2,  }
+       [2] AssignConstant: { register=Column, value=2,  }
+    last common at: (1, 2)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountGridAdd: { grid_size=1,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (0, 0)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] AssignConstant: { register=Column, value=2,  }
+       [2] ColumnCountGridAdd: { grid_size=2,  }
+    last common at: (0, 1)
+
+    A: [0] AssignConstant: { register=Column, value=2,  }
+       [1] ColumnCountAdd: { value=1,  }
+    B: [0] ColumnCountGridAdd: { grid_size=1,  }
+       [1] ColumnCountGridAdd: { grid_size=2,  }
+       [2] AssignConstant: { register=Column, value=2,  }
+    last common at: (0, 2)
+

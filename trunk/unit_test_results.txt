@@ -1,0 +1,2 @@
+error: Environment variable 'HWUT_PATH' is not defined'
+error: Let it point to the directory where hwut is installed.

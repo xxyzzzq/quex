@@ -1,0 +1,12 @@
+token {
+    TOK;
+}
+
+mode THE_INHERITABLE_ONLY_MODE_XYZ_4711 :
+<inheritable: only>
+{
+    z => QUEX_TKN_TOK;
+}
+mode Y : THE_INHERITABLE_ONLY_MODE_XYZ_4711 {
+    a => QUEX_TKN_TOK;
+}

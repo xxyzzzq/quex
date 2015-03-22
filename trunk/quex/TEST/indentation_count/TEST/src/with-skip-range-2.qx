@@ -1,0 +1,29 @@
+token { 
+    WORD;
+    INDENTATION_ERROR;
+}
+
+mode X :
+<indentation: \n|"NL\n" => newline;>
+<skip:        [ \t] >
+<skip_range:  "#" "NL\n">
+{
+    on_indent { 
+        printf("[[INDENT]] %i\n", (int)Indentation);
+        self_send(QUEX_TKN_INDENT);
+    }
+    on_indentation_error {
+        int i = 0;
+        printf("[[ERROR]] %i\n", (int)Indentation);
+        printf("-- IndentationStackSize = %i\n", (int)IndentationStackSize); 
+        for(i = 0; i < IndentationStackSize; ++i) {
+            printf("--     IndentationStack(%i) = %i\n", (int)i, (int)IndentationStack(i));  
+        }
+        printf("-- IndentationUpper = %i\n", (int)IndentationUpper    );     
+        printf("-- IndentationLower = %i\n", (int)IndentationLower    );     
+        printf("-- ClosedN = %i\n",          (int)ClosedN);
+        self_send(QUEX_TKN_INDENTATION_ERROR);
+    }
+    [a-z]+ => QUEX_TKN_WORD(Lexeme);
+
+}

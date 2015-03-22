@@ -1,0 +1,4 @@
+<string>:1:warning: DELETION mark does not have any effect.
+Mode: 'X'
+(0) [A-Za-z]+ {a}
+(1) 0 {b}

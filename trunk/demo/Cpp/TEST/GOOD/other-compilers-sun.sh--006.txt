@@ -1,0 +1,58 @@
+## 006
+makefile = Makefile
+cleaning ...
+make DSWITCH_ASSERTS=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
+simple.qx:24:warning: Post context requires philosophical cut--handle with care!
+simple.qx:24:warning: Proposal: Isolate pattern and ensure results are as expected!
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall -Werror passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wconversion passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -pedantic passed to ld, if ld is invoked, ignored otherwise
+executing ...
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+,-----------------------------------------------------------------
+| [START]
+(1, 1)  	HEY_P___HEY_ETC____ 'hey' 
+(1, 4)  	LETTER_____________ 'h' 
+(1, 5)  	LETTER_____________ 'e' 
+(1, 6)  	WHITESPACE '' 
+(2, 1)  	HEY_____HEY_HALLO_P 'hey' 
+(2, 4)  	HALLO______________ 'hallo' 
+(2, 9)  	HALLO______________ 'hallo' 
+(2, 14)  	WHITESPACE '' 
+(3, 1)  	HEY_P___HEY_ETC____ 'hey' 
+(3, 4)  	LETTER_____________ 'h' 
+(3, 5)  	LETTER_____________ 'e' 
+(3, 6)  	HALLO______________ 'hallo' 
+(3, 11)  	HALLO______________ 'hallo' 
+(3, 16)  	WHITESPACE '' 
+(4, 1)  	HEY_____HEY_HALLO_P 'hey' 
+(4, 4)  	HEY_____HEY_HALLO_P 'hey' 
+(4, 7)  	HALLO______________ 'hallo' 
+(4, 12)  	HALLO______________ 'hallo' 
+(4, 17)  	WHITESPACE '' 
+(5, 1)  	HEY_P___HEY________ 'heyheyhey' 
+(5, 10)  	HEY________________ 'hey' 
+(5, 13)  	WHITESPACE '' 
+(6, 1)  	LETTER_____________ 'x' 
+(6, 2)  	HEY________________ 'hey' 
+(6, 5)  	WHITESPACE '' 
+(7, 1)  	<TERMINATION> '' 
+| [END] number of token = 26
+`-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible
+cleaning ...
