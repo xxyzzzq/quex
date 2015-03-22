@@ -1,0 +1,140 @@
+_______________________________________________________________________________
+_______________________________________________________________________________
+
+State:
+    Entry:
+       ActionID --> TransitionAction:
+                        .door_id
+                        .command_list
+
+    TransitionMap:
+
+       NumberSet --> TransitionID:
+                        .target_state_index
+                        .action_id:
+                              .source_state_index
+                              .trigger_id
+
+    DropOut:
+
+       CommandList
+    _________________________________________________________
+    TransitionMap:
+
+        map: NumberSet <--> TransitionID
+
+
+    ActionID:
+          .source_state_index: long
+          .trigger_id:         long
+
+    TransitionID:
+          .target_state_index: long 
+          .entry_action_id:    ActionID
+
+          That is: the state machine transits into state 'state_index' and
+          what happens at the entry of the state is determined by 'action_id', 
+          i.e. the 'trigger_id' and the 'from_state_index'
+
+    TransitionAction:
+          .door_id:       None or long
+          .command_list:  CommandList
+
+    Entry:
+       
+        .action_db: ActionID --> TransitionAction
+
+    DropOut:
+
+        CommandList
+
+_______________________________________________________________________________
+_______________________________________________________________________________
+
+MegaState:
+    MegaState_Entry(Entry):
+
+        .action_db:                  ActionID --> TransitionAction
+        .reassigned_action_id_list:  [ ActionID .. ]           
+        .reassigned_door_id_list:    [ DoorID ... ] 
+
+    TargetByStateKeyMap:
+
+        map: NumberSet <--> TargetByStateKeyID = function(state_key)
+                                 '--- DROP_OUT
+                                 '--- (TransitionID, DoorID)
+                                 '--- Scheme(TransitionID, DoorID)
+
+    MegaState_DropOut:
+
+        map: state_index --> CommandList
+
+DoorID reassignment ___________________________________________________________
+
+      (0) Original 
+
+            [action_id0]----.
+            [action_id1]----+--->[door_id0]---> CommandList0
+
+      (1) Modification
+
+            [action_id0]-------->[door_id0]---> CommandList0
+            [action_id1]-------->[door_id1]---> CommandList1
+
+         'action_id0' and 'action_id1' now point to different CommandList-s.
+         Leave the DoorID of 'action_id0' but mention that 'action_id1' requires
+         a new DoorID to be assigned.
+
+            .reassigned_action_id_list = [ action_id1 ]
+
+         Also, mention that whenever the 'door_id1' appears it must be checked whether
+         it represents 'action_id1', i.e. a reassigned ActionID. Maintain a list of 
+         suspect DoorID-s:
+
+            .reassigned_door_id_list   = [ door_id1 ]
+
+
+     (2) Reassignment
+
+         Function '.action_db.reassign()' goes through all ActionID-s in 
+
+            .reassigned_door_id_list
+
+         assigns 'None' as a 'door_id'. Then an internal call to 'categorize()
+         ensures that same CommandList-s are considered under a same DoorID. Any
+         TransitionAction with a DoorID of 'None' has now a newly assigned DoorID.
+
+     (3) TransitionMap Adaption
+
+         A TransitionMap targetting DoorID-s (or DoorID-schemes) must check for
+         each given DoorID whether it is in 
+
+            .reassigned_door_id_list
+
+         if so the original TransitionID must be considered:
+
+            .target_state_index => state_db[.target_state_index].entry
+                                   delivers access to the Entry.
+
+            .action_id          => state_db[.target_state_index].entry.action_db[.action_id].door_id
+                                   provides the newly assigned DoorID.
+                                   
+
+
+   The two lists '.reassigned_door_id_list' and '.reassigned_action_id_list'
+   result from 'action_db.reassign()'
+
+
+Entry:  action_id --> (door_id, CommandList)
+        
+        .categorize()                     
+         --> assign DoorID-s to CommandList-s
+        
+        .add(StateIndex, FromStateIndex, CommandList) 
+         --> TriggerId
+             action_id(FromStateIndex, TriggerId) --> (door_id=None, CommandList)
+        return action_id
+
+Entry*: door_id       --> CommandList
+
+DB: transition_id --> door_id

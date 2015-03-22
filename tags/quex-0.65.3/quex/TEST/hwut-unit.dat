@@ -1,0 +1,7 @@
+Test Collection on Source Code
+---------------------------------------
+dash *.sh
+*.py
+--not compilation-independence.sh
+---------------------------------------
+

@@ -1,0 +1,60 @@
+Border:              9
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[10, 19], [30, 39]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              10
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[10, 19], [30, 39]]
+cut_greater_or_equal --> []
+______________________________________
+Border:              11
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[11, 19], [30, 39]]
+cut_greater_or_equal --> [[10]]
+______________________________________
+Border:              19
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[19], [30, 39]]
+cut_greater_or_equal --> [[10, 18]]
+______________________________________
+Border:              20
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[30, 39]]
+cut_greater_or_equal --> [[10, 19]]
+______________________________________
+Border:              21
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[30, 39]]
+cut_greater_or_equal --> [[10, 19]]
+______________________________________
+Border:              29
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[30, 39]]
+cut_greater_or_equal --> [[10, 19]]
+______________________________________
+Border:              30
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[30, 39]]
+cut_greater_or_equal --> [[10, 19]]
+______________________________________
+Border:              31
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[31, 39]]
+cut_greater_or_equal --> [[10, 19], [30]]
+______________________________________
+Border:              39
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> [[39]]
+cut_greater_or_equal --> [[10, 19], [30, 38]]
+______________________________________
+Border:              40
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10, 19], [30, 39]]
+______________________________________
+Border:              41
+NumberSet:           [[10, 19], [30, 39]]
+cut_lesser           --> []
+cut_greater_or_equal --> [[10, 19], [30, 39]]
+______________________________________

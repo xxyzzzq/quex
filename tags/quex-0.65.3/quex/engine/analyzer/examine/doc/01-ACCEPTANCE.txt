@@ -1,0 +1,864 @@
+Acceptance Behavior
+
+(C) Frank-Rene Schaefer
+
+-------------------------------------------------------------------------------
+
+ABSTRACT:
+
+An exit of the analysing state machine is the moment where it is determined
+what pattern is accepted, i.e. matches. At the same time, the input pointer
+must be set to the position where the next analysis step starts. So, there are
+two related operations
+
+       * acceptance
+       * input pointer placement
+
+An input pointer is placed to a reference position that has been stored
+earlier. Figure 2 shows the case, where acceptance 'A' happens in a state 2 and
+the input position is stored in 'reg[0]'. The analysis continues, but does not
+reach another acceptance state. When the state machine is exited in state 4,
+the input position is set to 'reg[0]' and the terminal is entered that
+corresponds to the event that pattern 'A' matched. 
+
+                  accept = A
+                  pos[0] = input_p
+
+     --->( 1 )------>( 2 )------>( 3 )------>( 4 )------>( 5 )---->
+                                               :
+                                               : exit
+                                               :
+                                         input_p = pos[0]
+                                         goto Terminal(accept)
+
+                     Figure 1: Acceptance behavior.
+
+For patterns with post context, the storing of the input position happens before
+the acceptance. When the core pattern matches, the input position is stored, but
+the match only happens when the post context is present, which is the moment
+when pattern's id is assigned to 'accept'.
+
+SCR - Set of Concerned Registers:
+
+The investigated behavior concentrates on the registers:
+
+         * E_R.Acceptance
+         * E_R.PositionRegister + key
+
+There is a position register for each pattern. The particular pattern is
+addressed by a 'key'. 
+
+Investigated Operations:
+
+The investigated operations of the single entry state machine are:
+    
+         * SeAccept --> acceptance, 
+                        + optionally a pre-context 
+                        + optionally restoring an input position.
+
+         * SeStoreInputPosition --> stroring current input position in 
+                                    a register.
+
+-------------------------------------------------------------------------------
+
+RECIPE:
+
+Figure 2 demonstrates acceptance behavior along a sequence of linear states.
+The shown state machine shall detect the following patterns, expressed as quex
+regular expressions:
+
+              (0)    x/a/b
+              (1)    ab
+              (2)    y/abc
+              (3)    abcdef   
+                     
+The pre-context 'x' is referred to as 'pre0' and 'y' as 'pre2'. Pre-contexts
+are not part of the figure. They are supposed to be have been checked before.
+The forth pattern 'abcdef' is only there, so that the state machine goes
+beyond the three patterns under investigation.
+
+                                                       
+                  reg[0]=ip      pre0=>acc0 
+                                 acc1           pre2=>acc2   
+                                 reg[1]=ip      reg[2]=ip
+
+   ( 0 )--------->( 1 )--------->( 2 )--------->( 3 )--------->( 4 )--- ...
+           'a'            'b'            'c'            'e'      :
+                                                                 :
+                                                              Recipe
+
+               Figure 2: Deterministic acceptance behavior.
+
+The core pattern of 'x/a/b' is reached once 'a' has been detected. Thus, the
+input position for pattern 0 is stored. When the state 2 is entered, the
+sequence "ab" must have occurred. Thus pattern 0 wins if 'pre0' is fulfilled.
+If not, then "ab" matches pattern 1. The input position for pattern 1 is the
+current input position, so it is stored in 'reg[1]'. State 3 is only entered of
+"abc" has occurred. Then, if 'pre2' is fulfilled, pattern 2 wins.
+
+Let now the recipe in state 4 be determined. If pre-context 2 is fulfilled,
+then pattern 2 wins, because it is the longest one. The input pointer in
+this case is set to 'input pointer - 1'. Else, if pre-context 0 is
+fulfilled, then pattern 0 wins and the input pointer needs to be set to
+'input pointer - 3', because 'reg[0]' was stored three positions before.
+Finally, if no previous acceptance was triggered, then pattern 1 wins and
+sets the input pointer to the position where 'reg[1]' accepted, i.e.  at
+'input pointer - 2'. Briefly:
+
+      if   pre2: input_p -= 1; goto Terminal2;
+      else pre1: input_p -= 3; goto Terminal1;
+      else:      input_p -= 2; goto Terminal2;
+
+A recipe allows to determine the investigated behavior upon exit, and it allows
+to determine recipes of successor states.
+
+-------------------------------------------------------------------------------
+
+TRACING ACCEPTANCE:
+
+The lexical analyzer rule 'longest match' translates into the latest acceptance
+on the path determines the winning pattern. A conditional acceptance must leave
+the opportunity open that another shorter pattern or a pattern of a lower
+priority wins--in case that its pre-context is not met.
+
+The 'accumulation' procedure that respects these rules is the following:
+
+(1.1) Filter all 'SeAccept' commands from current state.
+(1.2) Sort those by acceptance id. 
+(1.3) Cut at an unconditional acceptance, if there is one.
+(2)   If there is no unconditional acceptance, append the previous recipes 
+      accepter list.
+
+Upon interference, if it is detected that different entries have different
+accepters, then the incoming accepter list must be translated into an 'Accept'
+command, where that 'aux_acceptance' register receives the detected acceptance.
+The propagates recipe, must rely on that acceptance. 
+
+The member of 'RecipeAcceptance' maintaining the acceptance trace information is
+
+       .accepter:   None, if acceptance needs to be restored from 
+                          'aux_acceptance'.
+                    list, if the acceptance can be determined by the scheme
+                          described in the list.
+
+TRACING INPUT POSITION STORAGE:
+
+There are two types of acceptance:
+
+  * 'Normal' acceptance where a certain pattern is matched independent of what
+    follows it. In that case, the input position for the next analysis step
+    has to be set right after the end of the matching lexeme.
+
+  * 'Post Contexted' acceptance. In that case, a pattern must be matched but
+    it must be followed by another pattern. The 'acceptance' trigger comes at
+    the end of the post context pattern. However the input position for the 
+    next analysis step has to be set at the end of the lexeme where the core
+    pattern matched. 
+
+In the case of 'normal' acceptance, the setting of a reference input position
+happens at the time of acceptance, i.e. where the 'SeAccept' command is found.
+It is implied in the acceptance command.  In the 'post contexted' case, an
+'SeStoreInputPosition' command does signalizes the storing explicity. The
+according 'SeAccept' command signalizes that it does not store the position by
+its member '.restore_position_register_f()'. 
+
+For a given state, the sequence of storing the input positions into registers
+is unimportant. At each step forward, the referred input position lies one more
+backwards. Thus, the referred input position for a register 'r_id' may be
+referred to as
+
+              input position - offset
+
+In a 'RecipeAcceptance', the member '.ip_offset_db' contains information about
+offsets in order to compute the setting of the input position upon acceptance.
+It maps
+
+                     acceptance id ----> offset
+
+If the offset is 'None, then the input position must be taken from
+'aux_register[r_id]'.  During accumulation, the offsets need to be increased by
+one, at each step. Thus, the following 'accumulation' procedure is appropriate.
+
+(1)   Iterate over all entries of the last recipy and apply
+
+               .ip_offset_db[i] += 1
+      
+(2.1) Filter all 'SeAccept' commands from current state that do not rely on 
+      'restore_position_register_f'. Apply
+
+               .ip_offset_db[acceptance_id()] = 0
+
+(2.2) Filter all 'SeStoreInputPosition' commands from current state. Apply
+
+               .ip_offset_db[register_id()] = 0
+
+Interference happens register-wise. That is, if all entries into a mouth state
+deliver the same offset for a register, then this offset can be overtaken. If
+not, then 'None' must be stored as entry. Such an entry tells that the regarding
+input position must be restored from an auxiliary register '.aux_register[r_id]'.
+
+Of course, 'None' offset entries are never 'increment. This corresponds to the
+fact, that the formula to compute the input pointer position is simply
+
+             input pointer = aux_register[r_id]
+
+rather then the aforementioned offset equation.
+
+-------------------------------------------------------------------------------
+    
+(1) SCR
+
+Registers of concern:
+
+    -- E_R.Acceptance:  The register that stores the last accepted pattern.
+
+    -- (E_R.PositionRegister, i): The register(s) that store the position 
+                        where the input pointer needs to be set upon match.
+                        
+There is no exception with respect to SCR, so the SCR(i) is the same as the 
+global SCR.
+
+(2) Operations on SCR
+
+  * SeAccept
+  
+     + writes: last_acceptance
+     + reads:  (E_R.PositionRegister, i) if restore position register
+     + writes: (E_R.PositionRegister, 0) 
+    (+ reads:  pre-context-id       if pre-context-id)
+    
+    When a state is entered with an 'SeAccept' operation, then this expresses
+    acceptance of a pattern. The position of acceptance is stored in position
+    register 0. If there was a post context involved, then SeAccept reads the
+    input position at the end of the core pattern from a specific position
+    register.
+  
+  * SeStoreInputPosition
+
+    + writes: (E_R.PositionRegister, i)
+
+(3) The Recipe:
+
+The recipe tells what pattern matched the last and where to place the input
+pointer in case of acceptance. If acceptances depend on pre-contexts, then it
+is not possible to tell beforehand whether an acceptance is valid or not.  This
+results in a sequence of acceptances checks. If only one state is involved,
+then the sequence is sorted by the acceptance id, i.e. the pattern's
+priority. If more than one state is involved, later patterns always
+have higher priority, because they relate to longer matches.
+
+During interference, 
+    
+(3) Concatenation of SCR Operations
+
+General Comment: Quex is built upon the 'longest match wins'-philosophy. That
+is, in case of doubt the decision which pattern wins follows:
+
+	(A) The longer match wins
+	
+If a lexeme of a given length matches two patterns, then 
+
+    (B) The pattern with the higher priority (lower pattern-id) wins.
+    
+If pre-contexts are involved acceptance in a state can only be determined at
+run-time. Thus, if multiple pre-contexted SeAccepts occur, then they must be
+collected. However, for a given state, the lexeme length is the same, so the
+pattern id provides the priority by which they can be sorted. 
+
+    (C) An unconditional acceptance of a higher priority make any lower 
+        priority acceptance impossible.
+        
+In practical, 'SeAccept' commands can be deleted if their priority is lower
+than the unconditional acceptance with the highest priority.      
+
+Concatenation Rules:
+
+
+
+	
+then it can only be determined at run-time which what pattern is accepted.
+Thus, pre-context dependent patterns must be collected. 
+
+As a general rule, it can be set that an unconditional pattern acceptance
+
+
+Multiple 'Accept' and 'AcceptWithPostContext' actions can be concatenated.
+The sorting order is given by the acceptance id (higher priority = lower
+acceptance id). The first 'Accept' or 'AcceptWithPostContext' wins. After
+an unconditional accept action, no further may follow--of course.
+
+  * StoreInputPosition(AcceptanceID, PreContextId):
+
+    if PreContextId:
+        position_register[by(AcceptanceID)] = input position  
+
+    + writes: 'position_register[by(AcceptanceID)]'
+
+Store input position actions are not exclusive. Any storage command for which 
+the condition holds may store its value in its position register. The following
+discussion is uses the concept of an 'acceptance scheme' as defined below.
+
+DEFINITION: Acceptance Scheme
+
+An acceptance scheme specifies a sorted sequence of associations between
+pre-context conditions on the one side and pattern acceptance and input
+position restoration on the other side. In pseudo-code it has the following
+format
+
+    if      pre_context_0: input_position = pr(0); accept = Pattern0;
+    else if pre_context_1: input_position = pr(1); accept = Pattern1;
+    ...
+    else:                  input_position = pr(K); accept = PatternK;
+
+where 'pr(i)' specifies the procedure to restore the input position in case
+that pattern 'i' wins.  Only one pattern can win the match, so the acceptances
+are mutually exclusive.  Precedence is expressed in the sorting order. Patterns
+of higher precedence are checked before patterns of lower precedence.
+Conditions after the unconditional are meaningless.
+
+For a more concise description let an acceptance scheme as in the definition
+be written like
+
+                (pre_0, pr(0), pat_0)
+                (pre_1, pr(1), pat_1)
+                ...
+                (None,  pr(k), pat_k)
+
+That is, first one checks for pre-context 0. If it is fulfilled, then pattern 0
+is the winner. If pre-context 0 is not fulfilled, then one checks on
+pre-context 1. This continues until the 'None' pre-context is reached which
+always triggers a match of the related pattern; here pattern 'k'.
+
+(1.3) 'consq(i, SOV)'.
+
+The 'last_acceptance' tells what pattern has won. That is, the last Accept
+or AcceptWithPostContext that wrote to that variable is the longest and has
+therefore the highest priority (philosophy of longest match). This match
+may have happened some time before, so that the input position must be reset
+to the place where it matched. In case of AcceptWithPostContext, the input
+position must be set to the end of the core pattern (that is where the
+post context starts). Thus the history function is
+
+DEFINITION: history(Actions, state)
+
+    Acceptance requires two parameter upon exit from the analyzing state
+    machine as they are:
+
+        -- the position to which the input position has to be reset.
+        -- the acceptance of the winning pattern.
+
+    As a result, the general drop-out program of a state looks in pseudo code:
+
+        i              = by(last_acceptance)   /* 'i != 0' for post-context */
+        input_position = position_register[i]    
+        goto terminal(last_acceptance)           
+
+    + reads: last_acceptance
+    + reads: position_register[i]
+
+The two registers used in 'history()' are the 'last_acceptance' and
+'position_register[i]'. From the discussion on actions the following can be
+summarized:
+
+    Accept(PreContextId, Pattern):
+        + writes: last_acceptance
+        + writes: position_register[0]
+
+    AcceptWithPostContext(PreContextId, Pattern):
+        + writes: last_acceptance
+
+    StoreInputPosition(PositionRegisterId):
+        where PositionRegisterId > 0
+        + writes: position_register[PositionRegisterId]
+
+Let X and Y be two states in a sequence of linear states (see "00-README.txt,
+GENERAL DEFINITIONS") where X comes before Y. If there is an Accept in X and 
+no other Accept or AcceptWithPostContext on the way from X to Y, then the 
+'history()' in Y can be replaced by
+
+        input_position -= delta_y;
+        goto Terminal_y;
+
+where 'delta_y' is the number of state transitions from X to Y. Terminal_y is
+the terminal that belongs to the pattern that the Accept action accepted. In
+general, a state inhibits an acceptance scheme. 
+
+-------------------------------------------------------------------------------
+
+(2.1) Linear states: Accumulation of actions.
+
+Acceptance schemes (definition see in section 1) may accumulate actions in a
+manner so that they do not contradict with the state machines mechanics.
+
+(1) If two patterns match the same lexeme, the pattern with the higher
+    priority wins. 
+
+    For a given state, this is expressed by an acceptance scheme. 
+
+(2) If a 'lexeme' matches a pattern X and the 'lexeme + tail' matches pattern 
+    Y, then pattern Y matches if 'lexeme + tail' occurs. This is the philosophy
+    of longest match.
+
+    For the state machine this means that later acceptance schemes always
+    dominate previous acceptance schemes.
+
+If a state X is connected to a linear follower state Y, then there are only
+two acceptance schemes that influence the history() in Y:
+
+    -- the acceptance scheme from X, and
+    -- the acceptance scheme of Y.
+
+Since Y comes later, the acceptance scheme in Y matches a longer lexeme and
+therefore it has a higher precedence. 
+
+OPERATION 1: Stacking Acceptance Schemes
+
+  Acceptance schemes of states in a sequence of linear states can be stacked.
+  Let Y be an acceptance scheme that comes directly after a scheme X.  Y
+  consists of y_1, y_2, ... y_N and X consists of x_1, x_2, ... x_M.
+  The stacked acceptance scheme results from extending the later acceptance
+  scheme Y with the earlier X. The stacked acceptance scheme becomes
+
+             y_1, y_2, ... y_N, x_1, x_2, ... x_M.
+
+If the last acceptance 'y_N' was unconditional, than it is would *not* be
+extended by 'X'. The unconditional acceptance would dominate anything that
+follows. However, such cases cannot occur, as discussed in the next section.
+The stacking of acceptance schemes in explained in figure 2.
+
+  a)
+     (pre0, pr(0), pat_0)             
+     (pre1, pr(1), pat_1)             (pre3, pr(3), pat_3)
+     (None, pr(2), pat_2)             (pre4, pr(4), pat_4)
+   ----------------------->( 1 )-------------------------->( 2 )------------>
+                     input_p = pr(by(la))            input_p = pr(by(la))
+                     goto by(la)                     goto by(la)         
+
+
+   b)
+                                                                  (pre3, pr(3), pat_3)
+                                                                  (pre4, pr(4), pat_4)
+                                                                  (pre0, pr(0), pat_0)
+                                                                  (pre1, pr(1), pat_1)
+                                                                  (None, pr(2), pat_2)
+    ----------------------->( 1 )-------------------------->( 2 )------------>
+                     (pre0, pr(0), pat_0)             (pre3, pr(3), pat_3)                        
+                     (pre1, pr(1), pat_1)             (pre4, pr(4), pat_4)
+                     (None, pr(2), pat_2)             (pre0, pr(0), pat_0)
+                                                      (pre1, pr(1), pat_1)
+                                                      (None, pr(2), pat_2)
+
+      Figure 1: Acceptance schemes. a) original acceptance schemes in every
+                state. b) acceptance schemes which are post-poned.
+
+
+(2.2) Mouth states: Intereference of actions.
+
+Mouth states can be entered through more than one path. Therefore, the actually
+taken path becomes important. The actual path however can only be known at
+run-time. An exception is the case where all entering acceptance schemes show
+the same acceptance scheme.
+
+CONDITION: Combination of Acceptance Schemes in Mouth States
+
+   If more than one acceptance scheme occur at entries of a mouth state, than
+   they can be combined if and only if
+   
+      * the sequence of pattern ids in the schemes is the same. 
+
+   The distances to store positions may differ. If they differ, the positioning
+   must rely on restore of stored positions.
+
+The combination is shown in figure 2. Figure 2a) shows an example where the
+combination is possible, since the aforementioned condition is met. Figure 2b)
+shows a case, where it is not possible, since in one case the acceptance
+schemes differ.
+
+  a) 
+    (pre0, pr(0), pat_0) 
+    (pre0, pr(1), pat_1) ----------.
+    (None, pr(2), pat_2)            \            (pre0, pr(0), pat_0) 
+                                   ( 4711 )----- (pre0, pr(1), pat_1)  
+    (pre0, pr(0), pat_0)            /            (None, pr(2), pat_2) 
+    (pre0, pr(1), pat_1) ----------'
+    (None, pr(2), pat_2)    
+    
+  b) 
+    (pre0, pr(0), pat_0) 
+    (pre6, pr(6), pat_6) ----------.
+    (None, pr(2), pat_2)            \            
+                                   ( 4711 )----- void
+    (pre0, pr(0), pat_0)            /            
+    (pre0, pr(1), pat_1) ----------'
+    (None, pr(2), pat_2)    
+    
+       Figure 2: Two acceptance schemes interfere in a 'mouth' state.
+
+In the example 2b) pattern 6 may occur in one path, but not on the other.  So
+the accept scheme after the mouth state 4711 cannot be determined. All
+subsequent linear states must rely on the stored last acceptance and the stored
+input position. That is, either the acceptance schemes at the entries of the
+mouth states have to be implemented, or the storage actions must remain in
+place in their original positions.
+
+The combination may result in some positioning remaining fixed, others rely
+on position register storage. For example, the positioning 
+
+                 pr(i) = p - delta_i
+
+can be used, if the acceptance of pattern 'i' lies 'delta_i' steps before
+the current position 'p'. Then, 'delta_i' is a constant as element of 
+the set 'c_i'. That means, state 'i' does not require the position storage
+action. However, 
+    
+                 pr(i) = position_register[i]
+
+is required, if the interfering acceptance schemes differ with respect
+to the 'delta'. In that case, the input position storage in a register
+cannot be omitted. 
+
+Thus, a mouth state may either inhibit the acceptance scheme 'void' or 
+if it exists the uniform acceptance scheme resulting from its entries. 
+In both cases, the mouth state's acceptance is determined and a walk
+from there may start.
+
+STATEMENT:
+
+    A mouth state that has a determined acceptance scheme, can act as
+    the beginning of a sequence of linear states. Along this sequence
+    acceptance schemes can be accumulated as before.
+    
+States that are hit by a 'void' acceptance scheme must implement the
+'history()' function upon exit. States that received an acceptance scheme can
+directly implemented fixed coded resets of input positions and acceptances.
+
+-------------------------------------------------------------------------------
+
+(3) 'f(c_i, state)'.
+
+(3.1) The walk along sequences of linear states.
+
+Let the specific walk-end condition (00-README.txt; Definition 'Termination 
+criteria for walk along sequence of linear states') be as follows.
+
+DEFINITION: Specific walk-end condition.
+
+    Condition (iii) of 'Termination criteria for walk along sequence of
+    linear states' is that the state ahead does contain an unconditional
+    acceptance.
+
+With this definition a walk along a sequence of linear states ends at a
+terminal state, when the state ahead is a mouth state, or when the state
+ahead contains a unconditional acceptance. Along such a sequence of
+linear states, the acceptance and storage behavior is deterministic.
+
+However, a state that contains an unconditional acceptance is an 'walk-end'
+state. It is the begin of another sequence of linear states, but cannot occur
+along a path. So along a sequence of linear states, acceptance can be
+accumulated.
+
+
+DEFINITION: f(c_i, state) 
+
+The function f(c_i, state) delivers information about:
+   
+  -- the winning pattern (acceptance id) and 
+  -- the position where the input pointer needs to be set.
+
+The set of constants 'c_i' consists of 
+
+  -- the set of pre-context-ids 'pre_*' in the acceptance schemes.
+  -- the acceptance-ids 'pat_*'.
+  -- the 'delta_*' of the position restore operations of those which do
+     not depend on register values.
+
+-------------------------------------------------------------------------------
+
+(4) Condition for 'f(c_i, state) == history(Actions, state)'.
+
+(4.1) Acceptance
+
+Acceptance in a state 'i' can be determined from the state machine structure,
+if the sequence of acceptance checks can be derived from the path to state 'i'.
+This is NOT the case, if two acceptance schemes hit a 'transition mouth'. This
+is shown in figure 1.
+
+              
+    if   pre0: la = 0;      
+    ...                 ----------.
+    elif preN: la = N;             \.---------.
+                                    | state i |----- Sequence?
+                                    '---------'
+    if   preM: la = M;             /
+    ...                 ----------'
+    elif preP: la = P;     
+
+       Figure 1: Two acceptance sequences as actions enter a 'mouth' 
+                 state.
+
+The sequence at exit of 'state i' is not determined, because, a match that
+appeared on the 'upper' path may not happen on the lower path. Thus, it is not
+legal, to combine both sequences. Either the sequences are the same for ALL
+transitions into the 'mouth' state, or the states behind state 'i' cannot
+determine the acceptance sequence from the state machine structure.
+
+(4.2) Position Store/Restore
+
+Input positions can be restored without position registers, if and only if the
+state where the 'StoreInputPosition', or 'Accept' action happens has a finite
+number of state transitions to the state 'i'. This is not the case, if one of
+the states on the path is involved into a loop.  In any other case, this is
+possible.
+
+-------------------------------------------------------------------------------
+
+(5) Procedure Description
+
+There are two basic types of states which are mutually exclusive:
+
+   (i) 'Linear states' that have only one entry from another state.
+
+            --->( 0 )--->( 1 )--->( 2 )--->( 3 )--->( 4 )--->
+
+        Linear states can accumulate Accept actions as described in section (3).
+        The following states do not require 'last_acceptance' to be stored, 
+        because it is known from the sequence.
+
+   (ii) 'Mouth states' which are entered from more than one state.
+
+                        ... ( 0 )---->---.
+                        ... ( 1 )--->--. |
+                        ... ( 2 )--->-( 4 )--->
+                        ... ( 3 )--->--'
+
+         The configuration of acceptance cannot be determined after the 'mouth'
+         state. Any state following must rely on 'last_acceptance'.
+
+STEP 1: Find the set of 'linear' states.
+        Any state not in 'linear' is a 'mouth' state.
+
+A string of linear states where the acceptance sequence can be accumulated
+starts with an absolute acceptance (without pre-context), or a mouth state
+where all acceptance sequences are equal. This is so, since an absolute
+acceptance dominates any other acceptance which came before. This again is so,
+since a later acceptance happens only with a longer lexeme, which
+has a higher precedence.
+
+STEP 2.1: Determine AAS, the 'set of absolute acceptance states'. The init 
+          state is one of them. It accepts 'Failure' without any pre-context.
+
+STEP 2.2: Determine ELS, the 'set of ends of linear strings'. Those are:
+
+    (i)   terminal states where there are no further transitions.
+
+    (ii)  absolute acceptance states. 
+    
+          Any absolute acceptance state is the beginning of its own linear
+          string of state transitions. The init state is an absolute acceptance
+          state. It accepts 'FAIL'.
+
+    (iii) mouth states. 
+    
+          In those states acceptance sequences may interfere and what comes
+          beyond must rely on what has been stored before.
+         
+
+STEP 3: Walk from any state in AAS along 'linear' states until a ELS-state
+        is reached. 
+
+        Along the walk accumulate the acceptance sequence, where later
+        sequences are pasted on top, i.e. with a higher precedence (because
+        if 'longer match'). When the walk stops at a mouth state, the 
+        acceptance sequence can be stored along with the transition 
+        (from, to, acceptance_sequence). This way it can be known from 
+        what direction what sequence is applied.
+
+The walk along linear states can never contain a loop. Loops require either a
+mouth state, or the init state. In the mouth state the entry from inside the
+loop meets with the transition from outside the loop.  The init state has
+officially no entrance from 'start'. So the above consideration may fail.
+However, the init state is part of ELS and thus a string of linear state
+transitions will not reach at it.
+
+Thus, the input position is ALWAYS derivable as p = p0 + C_i, where C_i is a
+constant depending on the state, and p0 the position that would have been
+stored. Thus, the stored position is 'p0 = p - C_i'.
+
+Now, the mouth states can be considered. There are two types of mouth states:
+
+  (i)  The acceptance sequence is uniform. 
+  
+       The acceptance sequence can be propagated to all followers until the
+       next ELS-end.
+
+  (ii) The acceptance sequence is the same with respect to acceptance, but 
+       differs in position deltas.
+
+       The acceptance sequence must be adapted, so that position of differing
+       position deltas rely on store and restore. The adapted acceptance 
+       sequence may be propagated until next ELS-end.
+
+  (iii) The acceptance sequence differs. Thus the acceptance behavior IS NOT 
+        deterministic. It is a result of the path that has been taken to the 
+        mouth state.
+
+      The mouth state and all its followers until an ELS-end must rely on the
+      stored acceptance and positions.
+
+STEP 4: 
+
+      Walk from the mouth states of (i) and (ii) until an ELS-end is reached.
+      Propagate along the linear states the uniform accept sequence.
+
+      For mouth states of type three, propagate 'void', i.e. the restoring 
+      of last acceptance and positions from position registers.
+
+ITERATE:
+
+      Repeat STEP 3 and 4 until the set of unresolved mouth states is no
+      further reduced.
+
+It may occur, that there are still mouth states remaining. Those are dead-lock
+states. An example is shown in Figure 4.
+
+                           .------------>( 2 )
+                     A     |             /   \
+                ... ---->( 1 )          (     )
+                           |             \   /
+                           '------------>( 3 )
+         
+        Figure 4: A dead-lock of mouth states 2 and 3.
+
+The human can judge easily, that for both states only pattern A can occur. 
+This, however, must be formally described.
+
+    DEFINITION: Dead-lock state.
+
+    A dead-lock state is a mouth state with an unresolved output accept
+    sequence. In particular:
+
+      -- it has at least one unresolved entry accept sequence.
+
+      -- all of the other entries are uniform (if there are other entries).
+
+      -- it depends on other dead-lock states.
+
+A group of dead-lock states are states which are mutually dependent. They all
+have unresolved entries which depend on outputs of other dead lock states. About
+such a group, it can be said that:
+
+    (i) If all entries of this group have the same accept sequence, then 
+        they can only propagate this accept sequence between each other.
+        Thus, all of their outputs are determined to have this accept 
+        sequence. Figure 4 showed such an example.
+
+    (ii) If one entry of a state in that group has a different accept 
+        sequence, it will interfere with the other. Then, all mouth states
+        have their output to be determined as 'void'.
+
+                                           .---->----.      B
+                         .------------>( 2 )        ( 4 )<------
+                   A     |              / \'----<----'
+              ... ---->( 1 )           (   )
+                         |              \ /
+                         '------------>( 3 )
+         
+            Figure 5: Dead lock states with differing accept sequence.
+
+        In figure 5, for example, the 'B' may come through state 4 and
+        and interfere with the 'A' in state 2. Thus, the output from state 2
+        is void. Since state 2 has inputs into state 3 and 4, the outputs 
+        of 3 and 4 will also be void.
+
+        This effect does not change when linear states in between are 
+        involved.
+
+Through the determination of dead-lock states other mouth states may become
+determined. Those states may also be dead-lock states.
+
+ITERATE:
+
+   Go back to step three until no more open mouth state exists. 
+
+Now, all states are determined.
+
+-------------------------------------------------------------------------------
+
+(6) Doubt discussion
+
+DOUBT 1: Are all possible influences of 'history' considered?
+
+(i) In first step the strings of linear states are considered. Starting from
+    an absolute acceptance state, any previous history is nullified. When they
+    reach a mouth state, they stop and store the acceptance sequence.
+
+At this point the AAS and the strings of linear states are handled. What remains
+are the mouth states and their followers.
+
+(ii) A mouth state does not propagate an acceptance sequence until all entries
+     are determined. 
+
+
+DOUBT 2: What about loops?
+
+The problem of loop states is handled automatically. If an acceptance sequence
+is propagated through a loop-mouth state, then in that mouth state the position
+is compared. If it refers to the same storage state from inside the loop as
+from outside the loop, then the positioning from inside the loop must be
+greater (more state transitions).
+
+
+                                    R=p-5
+                                 .-----------<-----------------------.
+                                 |                                   |
+           R=p           R=p-1   |   R=p-2        R=p-3      R=p-4   |
+        ... --( 0 )----------->( 1 )------>( 2 )------>( 3 )------>( 4 )---> ...
+                                      
+                 Figure 3: Position handling in loops.
+
+Figure 3 shows an example. 
+
+Coming from state '0' the register that stored 'p' can be set at entry into
+state '1' to 'p-1', that is the position before.  In state '4', it can be set
+to 'p-4', without relying on storage. However, at the mouth state '1' the entry
+from state '4' meets with the entry from state '0'.  Both have a different
+distances to the original storage position.  Thus, storage will rely on stored
+values. The 'R=p' cannot be omitted.
+
+
+DOUBT 3: Precedence change due position to store and restore.
+
+For mouth states, where the positioning is different dependent on entries
+from different states, the positioning must rely on stored position from
+position registers. Thus two acceptance sequences
+
+          Entry A:                             Entry B:
+
+          if   pr0: pos=p-3; la=P0;            if   pr0: pos=p-1; la=P0;
+          elif pr1: pos=p-4; la=P1;            elif pr1: pos=p-2; la=P1;
+
+become
+                             Entry Both:
+                   
+                             if   pr0: pos=r[i0]; la=P0;
+                             elif pr1: pos=r[i1]; la=P1;
+
+The doubt here is that longer patterns should have precedence. However, if
+positions are restored from registers, then how can the precedence be
+maintained? The key to the answer lies in one central statement:
+
+
+   If a mouth state is entered uniformly with an acceptance sequence, 
+   then this acceptance sequence is fix, independent through which path
+   the state has been entered. The positions as they are stored cannot
+   escape that.
+
+Note, that if a mouth state propagates a void accept sequence, this void accept
+sequence will appear as such in any further mouth state. Any mouth state that
+has one entry being void, can only propagate void. 
+
+
+
+
+
+

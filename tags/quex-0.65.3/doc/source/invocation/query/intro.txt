@@ -1,0 +1,87 @@
+Character Set Queries
+=====================
+
+The specification of character sets based on properties and 
+character set operations requires in general some closer inspection
+in order to avoid the inclusion of unwanted characters or to span
+a character set that is wider than actually intended. Consider
+for example that one might want to provide a programming language that
+allows Latin and Greek letters in identifiers. The direct approach
+would be as follows:
+
+.. code-block:: cpp
+
+    define {
+        LATIN_ID_START   [: intersection(\P{ID_Start},    \P{Script=Latin}) :]
+        GREEK_ID_START   [: intersection(\P{ID_Start},    \P{Script=Greek}) :]
+        LATIN_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Latin}) :]
+        GREEK_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Greek}) :]
+
+        LATIN_ID   {LATIN_ID_START}({LATIN_ID_CONT})*
+        GREEK_ID   {GREEK_ID_START}({GREEK_ID_CONT})*
+    }
+
+This specification is totally rational. However, it might include more
+characters than one actually intended. If one mentions Greek and Latin 
+characters one usually thinks about lower and upper case letters from 
+a to z and α to ω. However, the set of characters that are included 
+in ``Script=Latin`` is much larger than that--and so is the set of characters
+in ``Script=Greek``. Figure :ref:`Greek identifier <fig-screenshot-character-set-query>` displays the set of characters 
+for the character set specified by ``GREEK_ID_CONT``.
+
+.. _fig-screenshot-character-set-query:
+
+.. figure:: ../../figures/screenshot-character-set-query.*
+
+   Example query for greek identifier characters.
+
+
+As can be seen in the screenshot, the character set that is actually
+spanned by the expression is rather huge and exceeds the set of characters
+that can be displayed by the console of the user. At this point in time, 
+one might have to use further ``intersection`` and ``difference`` operations
+in order to cut out the set that is actually desired. Also, consider not using
+the powerful tool of unicode properties, if things are expressed elegantly
+with traditions character set expressions. In the above case, a solution
+that likely fulfills the user's purpose might look like this:
+
+.. code-block:: cpp
+
+    define {
+        LATIN_ID   [_a-zA-Z]([_a-zA-Z0-9])*
+        GREEK_ID   [_α-ωΑ-Ω]([_α-ωΑ-Ω0-9])*
+    }
+
+Including other scripts, or enabling other features of a used language
+requires closer investigation of the unicode properties. Quex provides
+some powerful services to investigate the effect of a character set
+expression on the command line. Sophisticated programming language design
+on a non-latin language, though, requires some review of the literature
+of UCS based character sets and their characteristics. This chapter shows
+how quex can be used to query the unicode database and see the effect of 
+character set expressions immediately, without having to compile a whole
+lexical analyzer. 
+
+.. warning::
+
+   Be careful with whitespace in expressions. A query such as::
+
+      quex --set-by-expression 'intersection([a-m], [h-z])' 
+
+   may fail, because of the whitespace after the ','. The query::
+
+      quex --set-by-expression 'intersection([a-m],[h-z])' 
+
+   works properly in any case.
+
+
+
+.. toctree::
+
+   properties.txt  
+   character-set-expressions.txt  
+   property-wilcard-expansions.txt
+   codecs.txt
+
+
+

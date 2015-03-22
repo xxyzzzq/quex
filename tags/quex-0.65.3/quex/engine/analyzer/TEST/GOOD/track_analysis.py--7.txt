@@ -1,0 +1,55 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 A(1)
+     == 'a' ==> 00001
+     == 'd' ==> 00002
+    
+00002 
+     == 'e' ==> 00003
+    
+00003 A(3)
+    
+00004 
+     == 'b' ==> 00004
+     == 'c' ==> 00005
+    
+00005 A(2)
+     == 'd' ==> 00002
+    
+
+#State 0
+    p-id           pre-id   as-i     ps-i     tnsp
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 1
+    p-id           pre-id   as-i     ps-i     tnsp
+    1              NONE     1        1        0        
+
+
+#State 2
+    p-id           pre-id   as-i     ps-i     tnsp
+    1              NONE     1        1        1        
+
+    p-id           pre-id   as-i     ps-i     tnsp
+    2              NONE     5        5        1        
+
+
+#State 3
+    p-id           pre-id   as-i     ps-i     tnsp
+    3              NONE     3        3        0        
+
+
+#State 4
+    p-id           pre-id   as-i     ps-i     tnsp
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 5
+    p-id           pre-id   as-i     ps-i     tnsp
+    2              NONE     5        5        0        
+
+

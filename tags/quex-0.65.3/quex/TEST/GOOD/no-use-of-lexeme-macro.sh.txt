@@ -1,0 +1,9 @@
+The Lexeme macro does some safety checks when compiled with
+QUEX_OPTION_ASSERTS. These checks are sometimes nonsense in
+generated code. This test checks that no code is generated
+that referes to the Lexeme macros.
+
+Following lines are suppossed to be accepted:
+
+|||| potpourri begin
+|||| potpourri end

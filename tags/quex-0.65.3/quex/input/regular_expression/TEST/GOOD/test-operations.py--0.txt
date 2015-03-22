@@ -1,0 +1,30 @@
+-------------------------------------------------------------------
+expression    = "\A{}"
+command line:1:error: Exactly 1 pattern required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\C{}"
+command line:1:error: Exactly 1 pattern required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Diff{}"
+command line:1:error: Exactly 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Intersection{}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\NotBegin{}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\NotEnd{}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Not{}"
+command line:1:error: Exactly 1 pattern required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\R{}"
+command line:1:error: Exactly 1 pattern required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\SymDiff{}"
+command line:1:error: Exactly 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Union{}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'

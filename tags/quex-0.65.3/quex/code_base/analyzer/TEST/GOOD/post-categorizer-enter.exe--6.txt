@@ -1,0 +1,29 @@
+        [EMPTY]
+        /
+[B]f: 7
+        \
+                                                        [EMPTY]
+                                                        /
+                                                [B]d: 6
+                                                        \
+                                                        [EMPTY]
+                                                /
+                                        [B]b: 5
+                                                \
+                                                [EMPTY]
+                                        /
+                                [A]h: 4
+                                        \
+                                        [EMPTY]
+                                /
+                        [A]f: 3
+                                \
+                                [EMPTY]
+                        /
+                [A]d: 2
+                        \
+                        [EMPTY]
+                /
+        [A]b: 1
+                \
+                [EMPTY]
