@@ -112,8 +112,8 @@
                             <path>${installdir}</path>
                         </addDirectoryToPath>
                          <copyFile>
-                             <origin>${installdir}/${product_shortname}-${product_version}/quex.bat</origin>
                              <destination>${installdir}/quex.bat</destination>
+                             <origin>${installdir}/${product_shortname}-${product_version}/quex.bat</origin>
                          </copyFile>
                     </actionList>
                     <distributionFileList>
@@ -127,6 +127,7 @@
                 <startMenuShortcut>
                     <comment>Uninstall ${product_fullname}</comment>
                     <name>Uninstall ${product_fullname}</name>
+                    <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/uninstall.exe</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
@@ -136,6 +137,11 @@
             </startMenuShortcutList>
         </component>
     </componentList>
+    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
+    <enableRollback>1</enableRollback>
+    <enableTimestamp>1</enableTimestamp>
+    <registerWithPackageDatabase>1</registerWithPackageDatabase>
+    <saveRelativePaths>1</saveRelativePaths>
     <parameterList>
         <directoryParameter>
             <name>installdir</name>
