@@ -142,11 +142,10 @@ def __code(Node, TheState, done_set, GlobalEntryF):
         Lng.COMMAND_LIST(Node.command_list)
     )
 
-    # (*) AFTER: COMMAND_LIST -- The state debug info.
-    txt.append(Lng.STATE_DEBUG_INFO(TheState, GlobalEntryF))
-
     # (*) The 'goto parent'.
     if Node.parent is None:
+        # (*) AFTER: COMMAND_LIST -- The state debug info.
+        txt.append(Lng.STATE_DEBUG_INFO(TheState, GlobalEntryF))
         # This is the root. 
         return txt
 

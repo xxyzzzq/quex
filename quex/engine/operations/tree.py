@@ -166,15 +166,15 @@ class Door(object):
         self.parent       = Parent
         self.child_set    = ChildSet
 
-class SharedTailCandidateSet(object):
-    """A SharedTailCandidateSet is 1:1 associated with a shared tail command list.
+class SharedTailCandidateInfo(object):
+    """A SharedTailCandidateInfo is 1:1 associated with a shared tail command list.
     It contains the DoorID-s of doors that share the tail and what indices would
     have to be cut out of the door's command list if the shared tail was to be 
     extracted. All this information is stored in a map:
 
                            DoorId --> Cut Index List
 
-    The shared tail which is related to the SharedTailCandidateSet is NOT stored here.
+    The shared tail which is related to the SharedTailCandidateInfo is NOT stored here.
     It is stored inside the SharedTailDB as a key.
     """
     __slots__ = ("cut_db", "shared_tail", "tail_length")
@@ -210,9 +210,6 @@ class SharedTailCandidateSet(object):
         """
         if DoorId in self.cut_db: del self.cut_db[DoorId]
         return len(self.cut_db) > 1
-
-    def value(self):
-        return len(self.cut_db) * self.tail_length
 
     def __str__(self):
         txt = [ 
@@ -256,7 +253,7 @@ class SharedTailDB:
         ._tail_db          = Dictionary holding information about what shared
                        tail (as a tuple) is shared by what Door-s.
 
-                         map:    shared tail --> SharedTailCandidateSet
+                         map:    shared tail --> SharedTailCandidateInfo
     ____________________________________________________________________________                     
     """
     __slots__ = ("state_index", "door_id_set", "db")
@@ -270,7 +267,7 @@ class SharedTailDB:
         self.door_db     = TypedDict(DoorID, Door) # {}   # map: DoorID --> Door 
         #                       #  ... with ALL Door-s related to the 'problem'
 
-        # map: Shared Tail --> SharedTailCandidateSet
+        # map: Shared Tail --> SharedTailCandidateInfo
         self._tail_db      = {} # map: command list tail --> those who share it
         self._candidate_db = {} # map: DoorID --> Door 
         #                       #  ... but only with those DoorID-s that are 
@@ -324,7 +321,8 @@ class SharedTailDB:
         best_value     = -1
         best_candidate = None
         for tail, candidate in self._tail_db.iteritems():
-            value = candidate.value()
+            # Combine a maximum number of operations --> consider only tail length
+            value = candidate.tail_length
             if value <= best_value: continue
             best_value     = value
             best_candidate = candidate
@@ -430,7 +428,7 @@ class SharedTailDB:
             shared_f = True
 
             self._tail_db_register(tail, NewDoorId, door_id, 
-                                    x_cut_indices, y_cut_indices)
+                                   x_cut_indices, y_cut_indices)
 
         return shared_f
 
@@ -438,10 +436,11 @@ class SharedTailDB:
         """Registers the 'SharedTail' in _tail_db as being shared by DoorId_A, And DoorId_B.
         """
         entry = self._tail_db.get(SharedTail)
+        # entry = Dictionary that maps from 
         if entry is None:
-            entry = SharedTailCandidateSet(SharedTail, 
-                                           DoorId_A, CutIndicesA, 
-                                           DoorId_B, CutIndicesB)
+            entry = SharedTailCandidateInfo(SharedTail, 
+                                            DoorId_A, CutIndicesA, 
+                                            DoorId_B, CutIndicesB)
             self._tail_db[SharedTail] = entry
         else:
             entry.add(DoorId_A, CutIndicesA)

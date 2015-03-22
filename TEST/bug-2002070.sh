@@ -11,14 +11,14 @@ tmp=`pwd`
 cd $bug/ 
 
 if [[ $2 == "FIRST" ]]; then
-    make clean
+    make clean >& /dev/null
 fi
 
-make lexer-$1
+make lexer-$1 >& /dev/null
 ./lexer-$1 text.345
 
 # cleansening
 if [[ $3 == "LAST" ]]; then
-   make clean
+    make clean >& /dev/null
 fi
 cd $tmp
