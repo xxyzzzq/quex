@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created by diasvg.py -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="731.54523"
+   height="429.07373"
+   viewBox="4.975 2.95 37.85 22.5"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="mode-inheritance.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0">
+  <metadata
+     id="metadata119">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs117">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 346.35825 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1164.8622 : 346.35825 : 1"
+       inkscape:persp3d-origin="582.43109 : 230.9055 : 1"
+       id="perspective121" />
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-height="716"
+     inkscape:window-width="1013"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     showgrid="true"
+     inkscape:snap-bbox="true"
+     inkscape:object-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:object-paths="true"
+     inkscape:snap-guide="true"
+     inkscape:zoom="0.48417744"
+     inkscape:cx="162.7859"
+     inkscape:cy="237.05367"
+     inkscape:window-x="5"
+     inkscape:window-y="21"
+     inkscape:current-layer="svg2">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2494"
+       visible="true"
+       enabled="true" />
+  </sodipodi:namedview>
+  <rect
+     x="22.416361"
+     y="5.298388"
+     width="4.5569286"
+     height="0.99855673"
+     id="rect4"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="22.416361"
+     y="5.298388"
+     width="6.2942533"
+     height="0.95080096"
+     id="rect6"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="25.476912"
+     y="5.8271003"
+     font-size="1.00"
+     font-style="normal"
+     font-weight="700"
+     id="text8"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.69135958px;font-style:normal;font-weight:700;text-anchor:middle;fill:#000000;font-family:sans">Mode B*</text>
+  <rect
+     x="22.416361"
+     y="6.2969451"
+     width="4.5569286"
+     height="5.4563994"
+     id="rect10"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="22.416361"
+     y="6.2491889"
+     width="6.2942533"
+     height="5.3304501"
+     id="rect12"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="23.22999"
+     y="6.7258677"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text14"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_EOF</text>
+  <text
+     x="23.22999"
+     y="7.278955"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text16"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_COMMENT_OPEN</text>
+  <text
+     x="23.22999"
+     y="7.8320422"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text18"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_COMMENT_CLOSE</text>
+  <text
+     x="23.22999"
+     y="8.3851309"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text20"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_NUMBER</text>
+  <text
+     x="23.22999"
+     y="8.9382191"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text22"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_BRACKET_OPEN</text>
+  <text
+     x="23.22999"
+     y="9.4913063"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text24"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_BRACKET_CLOSE</text>
+  <text
+     x="23.22999"
+     y="10.044394"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text26"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_IDENTIFIER</text>
+  <text
+     x="23.22999"
+     y="10.597481"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text28"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_XYZ</text>
+  <line
+     x1="22.516882"
+     y1="10.990161"
+     x2="24.393267"
+     y2="10.990161"
+     id="line30"
+     style="stroke:#000000;stroke-width:0.03456798" />
+  <text
+     x="23.22999"
+     y="11.081434"
+     font-size="0.70"
+     font-style="normal"
+     font-weight="400"
+     id="text32"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.48395172px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:sans">Action 'a'</text>
+  <rect
+     x="22.416361"
+     y="11.753345"
+     width="4.5569286"
+     height="2.7816939"
+     id="rect34"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="22.416361"
+     y="11.579638"
+     width="6.2942533"
+     height="3.0128636"
+     id="rect36"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596"
+     rx="0"
+     ry="0" />
+  <text
+     x="23.22999"
+     y="11.83709"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text38"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_enter(From)</text>
+  <text
+     x="23.22999"
+     y="12.49872"
+     font-size="0.70"
+     font-style="normal"
+     font-weight="400"
+     id="text40"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.48395172px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:sans">calls A::on_enter(From)</text>
+  <text
+     x="23.22999"
+     y="13.116104"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text42"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_exit(To)</text>
+  <text
+     x="23.22999"
+     y="13.777737"
+     font-size="0.70"
+     font-style="normal"
+     font-weight="400"
+     id="text44"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.48395172px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:sans">calls A::on_exit(To)</text>
+  <polygon
+     points="16,11.725 21,11.725 21,10.725 26,12.725 21,14.725 21,13.725 16,13.725 16,11.725 "
+     id="polygon46"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:#ffffff;stroke:none;stroke-width:0.1" />
+  <polygon
+     points="16,11.725 21,11.725 21,10.725 26,12.725 21,14.725 21,13.725 16,13.725 16,11.725 "
+     id="polygon48"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:none;stroke:#000000;stroke-width:0.1" />
+  <polygon
+     points="16,11.725 21,11.725 21,10.725 26,12.725 21,14.725 21,13.725 16,13.725 16,11.725 "
+     id="polygon50"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:none;stroke:#000000;stroke-width:0.01" />
+  <rect
+     x="5.0095682"
+     y="2.98031"
+     width="4.5569286"
+     height="0.99855673"
+     id="rect52"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="2.98031"
+     width="6.1759496"
+     height="0.99855673"
+     id="rect54"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="7.5188417"
+     y="3.5801816"
+     font-size="1.00"
+     font-style="normal"
+     font-weight="700"
+     id="text56"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.69135958px;font-style:normal;font-weight:700;text-anchor:middle;fill:#000000;font-family:sans">Mode A</text>
+  <rect
+     x="5.0095682"
+     y="3.9788671"
+     width="4.5569286"
+     height="3.1739838"
+     id="rect58"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="3.9788671"
+     width="6.1759496"
+     height="3.1739838"
+     id="rect60"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="5.271924"
+     y="4.4789491"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text62"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_EOF</text>
+  <text
+     x="5.271924"
+     y="5.0320363"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text64"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_COMMENT_OPEN</text>
+  <text
+     x="5.271924"
+     y="5.5851245"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text66"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_COMMENT_CLOSE</text>
+  <text
+     x="5.271924"
+     y="6.1382117"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text68"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_XYZ</text>
+  <text
+     x="5.271924"
+     y="6.6221633"
+     font-size="0.70"
+     font-style="normal"
+     font-weight="400"
+     id="text70"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.48395172px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:sans">action 'a'</text>
+  <rect
+     x="5.0095682"
+     y="7.1528516"
+     width="4.5569286"
+     height="1.2838587"
+     id="rect72"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="7.1528516"
+     width="6.1759496"
+     height="1.2838587"
+     id="rect74"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="5.271924"
+     y="7.3778195"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text76"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_enter(From)</text>
+  <text
+     x="5.271924"
+     y="7.9309077"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text78"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_exit(To)</text>
+  <rect
+     x="5.0095682"
+     y="10.826112"
+     width="4.5569286"
+     height="0.99855673"
+     id="rect80"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="10.826112"
+     width="6.1309767"
+     height="0.99855673"
+     id="rect82"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="7.5188417"
+     y="11.185137"
+     font-size="1.00"
+     font-style="normal"
+     font-weight="700"
+     id="text84"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.69135958px;font-style:normal;font-weight:700;text-anchor:middle;fill:#000000;font-family:sans">Mode B</text>
+  <rect
+     x="5.0095682"
+     y="11.82467"
+     width="4.5569286"
+     height="3.7445879"
+     id="rect86"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="11.82467"
+     width="6.1309767"
+     height="3.7445879"
+     id="rect88"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="5.271924"
+     y="12.083904"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text90"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_NUMBER</text>
+  <text
+     x="5.271924"
+     y="12.636993"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text92"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_BRACKET_OPEN</text>
+  <text
+     x="5.271924"
+     y="13.190081"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text94"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_BRACKET_CLOSE</text>
+  <text
+     x="5.271924"
+     y="13.743168"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text96"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_IDENTIFIER</text>
+  <text
+     x="5.271924"
+     y="14.296255"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text98"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+PTN_XYZ</text>
+  <text
+     x="5.271924"
+     y="14.780209"
+     font-size="0.70"
+     font-style="normal"
+     font-weight="400"
+     id="text100"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.48395172px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:sans">action 'b'</text>
+  <rect
+     x="5.0095682"
+     y="15.569257"
+     width="4.5569286"
+     height="1.2838587"
+     id="rect102"
+     style="fill:#ffffff;stroke:none;stroke-width:0" />
+  <rect
+     x="5.0095682"
+     y="15.569257"
+     width="6.0860038"
+     height="1.2838587"
+     id="rect104"
+     style="fill:none;stroke:#000000;stroke-width:0.06913596" />
+  <text
+     x="5.271924"
+     y="15.535862"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text106"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_enter(From)</text>
+  <text
+     x="5.271924"
+     y="16.088951"
+     font-size="0.80"
+     font-style="normal"
+     font-weight="400"
+     id="text108"
+     transform="scale(0.9693024,1.0316698)"
+     style="font-size:0.55308771px;font-style:normal;font-weight:400;text-anchor:start;fill:#000000;font-family:monospace">+on_exit(To)</text>
+  <polyline
+     points="8.425,11.562 8.425,12.000 8.425,12.000 8.425,14.000 "
+     id="polyline110"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:none;stroke:#000000;stroke-width:0.1" />
+  <polygon
+     points="8.825,11.562 8.425,10.762 8.025,11.562 8.825,11.562 "
+     id="polygon112"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:#ffffff;stroke:none;stroke-width:0.1" />
+  <polygon
+     points="8.825,11.562 8.425,10.762 8.025,11.562 8.825,11.562 "
+     id="polygon114"
+     transform="matrix(0.6701365,0,0,0.7132548,1.6421314,0.8405456)"
+     style="fill:none;stroke:#000000;stroke-width:0.1" />
+</svg>

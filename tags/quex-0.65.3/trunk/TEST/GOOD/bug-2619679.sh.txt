@@ -1,0 +1,6 @@
+quex -i simple.qx -o Simple 
+##
+## The issue here was that there were warnings about double defined macros.
+##
+g++ -ggdb -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED -pedantic -I./ -I<<QUEX_PATH>> -DQUEX_OPTION_ASSERTS_DISABLED  -o lexer \
+		  ../lexer-simply.cpp Simple.cpp 

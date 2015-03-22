@@ -1,0 +1,9 @@
+HWUT Tests Require:
+
+-- gcc, g++, make, python
+-- valgrind
+-- efence / electric fence
+-- libicu /ICU - development kit
+-- libiconv
+-- bison parser generator
+

@@ -1,0 +1,22 @@
+token
+{
+    ID;
+    STRING;
+}
+
+start = MAIN;
+
+mode MAIN : <skip: [ \t\n] >
+{
+    [a-z]       => QUEX_TKN_ID (Lexeme);
+    "\""        => GOSUB (STRING);
+}
+
+mode STRING
+{
+    on_entry    { self_accumulator_clear (); }
+    on_exit     { self_accumulator_flush (QUEX_TKN_STRING); }
+
+    \"          => GOUP ();
+    .           { self_accumulator_add (Lexeme, LexemeEnd); }
+}

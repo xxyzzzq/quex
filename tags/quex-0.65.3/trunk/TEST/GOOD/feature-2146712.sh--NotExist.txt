@@ -1,0 +1,11 @@
+command line: The directory a/b/c/x was specified for output, but does not exists.
+.
+./a
+./a/b
+./a/b/c
+./a/b/c/d
+./a/b/d
+./simple.qx
+./x
+./x/y
+./x/y/z

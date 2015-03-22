@@ -1,0 +1,7 @@
+Gain Matrix (3 elements)
+State0  State1 Gain
+0      1      8
+0      2      8
+1      2      8
+
+Best matching pair:  (1, 2)

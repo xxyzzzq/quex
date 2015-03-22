@@ -1,0 +1,5 @@
+token { EMPTY; }
+mode X : 
+<indentation: [x] => newline; > 
+<skip: [xyz] > 
+{ "a" => QUEX_TKN_EMPTY; }
