@@ -58,7 +58,7 @@ for script in $scripts; do
 done
 
 #Copy the manpage into manpage.*
-cp $base_dir/doc/manpage/quex.1 $package_dir/DEBIAN/manpage.1
+cp $base_dir/manpage/quex.1 $package_dir/DEBIAN/manpage.1
 
 #Copy sources to the new destination on package
 mkdir -p $package_dir/opt/quex/quex-$VERSION

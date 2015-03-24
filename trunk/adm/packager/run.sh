@@ -183,10 +183,10 @@ function collect_packages()
           /tmp/quex_$1*.deb                                        \
           $INSTALLBUILDER_OUT/quex-$1*.rpm                         \
           $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe        \
-          $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin          \
           $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip        \
-          $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin        \
-          $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin  \
+          $INSTALLBUILDER_OUT/quex-$1*linux-installer.run          \
+          $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.run        \
+          $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.run  \
           $QUEX_PATH/tmp-file-list.txt                             \
           /tmp/quex-packages
 
