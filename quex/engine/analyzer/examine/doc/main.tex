@@ -579,52 +579,61 @@ each other. This is the reason for the first condition.
 
 \begin{definition} Interference
 
-The process of 'interference' develops a recipe $R(i)$ for a mouth state $i$
-based on entry recipes $R_E(i,k) = op(i)\,\circ\,R(k)\,\mbox{with}\,k \in Pred(i)$.
-The output recipe $R(i)$ depends on the coherence of $v$, i.e. 
+    The process of 'interference' develops a recipe $R(i)$ for a mouth state $i$
+    based on entry recipes $R_E(i,k) = op(i)\,\circ\,R(k)\,\mbox{with}\,k \in Pred(i)$.
+    The output recipe $R(i)$ depends on the coherence of $v$, i.e. 
 
-\begin{equation} \label{eq:interference-output}
-    R^v(i) = 
-    \begin{dcases*}
-        R_E^v(i,k_0) & if $v$ is coherent \\
-        A(v)         & else
-    \end{dcases*}
-\end{equation}
+    \begin{equation} \label{eq:interference-output}
+        R^v(i) = 
+        \begin{dcases*}
+            R_E^v(i,k_0) & if $v$ is coherent \\
+            A(v)         & else
+        \end{dcases*}
+    \end{equation}
 
-for an arbitrary $R_E^v(i,k_0)\neq\eta$. If $v$ is incoherent, an entry
-operation $op^v_E(i,k)$ must be implemented in the resulting state machine that
-stores the computed value of $v$ in $A(v)$.  For the snapshot sets of the
-result recipe $R(i)$ it holds
+    for an arbitrary $R_E^v(i,k_0)\neq\eta$.  For the snapshot sets of the result
+    recipe $R(i)$ it holds
 
-\begin{equation} \label{eq:interference-snapshot-sets}
-    S^v(R(i)) = \bigcap_{k\in Pred(i)} S^v(R_E(i,k))
-\end{equation}
+    \begin{equation} \label{eq:interference-snapshot-sets}
+        S^v(R(i)) = 
+        \begin{dcases*}
+            \bigcap_{k\in Pred(i)} S^v(R_E(i,k))            & if $v$ is coherent \\
+            \{\,i\,\}\,\bigcap_{k\in Pred(i)} S^v(R_E(i,k)) & else \\
+        \end{dcases*}
+    \end{equation}
 
-A prerequisite for interference is that all $R_E(i,k)$ with $k\,\in\,Pred(i)$
-are determined.
+    A prerequisite for interference is that all $R_E(i,k)$ with $k\,\in\,Pred(i)$
+    are determined.
 
 \end{definition}
 
-The implementation of entry operations $op^v_E(i,k)$ can be post-poned to the
-point in time, when all recipes are determined. It is enough to maintain a
-'coherence database', that tells for a given state whether a variable develops
-coherently or not. Eventually, when all recipe analysis is done, the entry
-operations in the resulting state machine may be implemented according the
-entry recipes, i.e.
+If $v$ is incoherent, an entry operation $op^v_E(i,k)$ must be implemented in
+the resulting state machine that stores the computed value of $v$ in $A(v)$.
+The existence of the entry operations $op_E(i,k)$ is the reason why the result
+is expressed as a multi-entry state machine is required. 
+
+The set of mouth states which must implement entry operations is simply the
+union of all snapshot sets, i.e.
+
+\begin{euqation}
+    EOS \,=\, \Cup_{\forall i} S^v(R(i)) \, \cup \, \Cup_{\forall i,k} S^v(R_E(i,k))
+    
+\end{euqation}
+
+Eventually, when all recipe analysis is done, the entry operations in the
+resulting state machine may be implemented according the entry recipes, i.e.
 
 \begin{equation} \label{eq:entry-operation-implementation}
-    op_E^v(i,k) \,=\, \{ A(v) \,=\, R^v_E(i,k) \} \,\mbox{if $H^v(i) \neq true$}.
+      op_E^v(i,k) \,=\, \{ A(v) \,=\, R^v_E(i,k) \} \,\mbox{if $i\,\in\,EOS$}.
 \end{equation}
 
 Equation \eqref{eq:interference-snap-shot-sets} expresses the fact that
 coherent recipes pass mouth states unchanged, and so are the related snapshot
 sets unchanged. If the mouth state's operation $op^v(i)$ is
-history-independent, then any dependency on $A$ is removed and $S^v(R(v))$
-becomes the not existing element $\varepsilon$. In the incoherent case, when a
-snapshot of a variable $v$ is taken in state $i$, then the set of snapshot
-states $S(R(i))$ must contain $i$. The existence of the entry operations
-$op_E(i,k)$ is the reason why the result is expressed as a multi-entry state
-machine is required. 
+history-independent, then any dependency on $A$ is removed and
+$S^v(R_E(i,k))=S^v(op^v(i)\circ R(k))=\emptyset$ for all $k \in Pred(i)$. 
+In the incoherent case, when a snapshot of a variable $v$ is taken in state
+$i$, then the set of snapshot states $S^v(R(i))$ must contain $i$.  
 
 Applying interference to linear states ends up again with equation
 \eqref{eq:linear-state-recipe}, because there is only one entry recipe.  One
@@ -837,7 +846,7 @@ recursive accumulation of recipes could not provide a solution.
 %==============================================================================
 %
 %==============================================================================
-\section{Dead-Lock States}
+\section{Dead-Lock Resolution}
 
 Interference can only be performed, if all entry recipes of a mouth state are
 determined. Loops in the state machine graph, however, may cause
@@ -884,7 +893,7 @@ states.
 Since horizon states are reached by deterministic propagation they have at least
 one predecessor with a determined recipe.  The name 'horizon' is chosen because
 it defines the border of determination.  Beyond that begins the realm of
-dead-locks.  In particular, if the initial state is undetermined, it becomes
+dead-locked indeterminacy.  In particular, if the initial state is undetermined, it becomes
 the one and only horizon state. The 'before begin state' with its recipe
 $R(init)$ constitutes the predecessor with the determined recipe.  Figure
 \ref{fig:horizon-state} shows a horizon state which contains one determined
@@ -902,6 +911,102 @@ entry and another undetermined entry.
 \caption{A horizon state state with an entry from a determined state $a$ and 
     an undetermined state $b$.}
 \end{figure}
+
+Horizon states cannot produce a definite output recipe, because, not all of
+their entry recipes are determined. However, a good guess can be made.  The
+guess being made as a starting point for a horizon point is 'optimistic' in a sense
+that it requires the least amount of store/restore operations. Let $P_d(h)$
+denote the set of determined predecessor states of horizon state $h$ and
+$P_u(h)$ the set of undetermined predecessor states. An optimistic guess is
+that the output recipe does not contain more incoherence than the incoherence
+inflicted by the already determined entry recipes.
+
+\begin{definition} Optimistic Interference
+
+    The process of 'optimistic interference' develops a recipe $R(i)$ for a
+    horizon state $h$ based on determined entry recipes $R_E(h,k) =
+    op(h)\,\circ\,R(k)\,\mbox{with}\,k \in P_d(h)$.  The output recipe $R(h)$
+    depends on the coherence of $v$, i.e. 
+
+    \begin{equation} \label{eq:opt-interference-output}
+        R^v(h) = 
+        \begin{dcases*}
+            R_E^v(h,k_0) & if $v$ is coherent $\forall\,k\,\in\,P_d(h)$ \\
+            A(v)         & else
+        \end{dcases*}
+    \end{equation}
+
+    for an arbitrary $R_E^v(h,k_0)\neq\eta$. For the snapshot sets of the
+    result recipe $R(h)$ it holds
+
+    \begin{equation} \label{eq:interference-snapshot-sets}
+        S^v(R(i)) = 
+        \begin{dcases*}
+            \bigcap_{k\in Pred(i)} S^v(R_E(i,k))            & if $v$ is coherent \\
+            \{\,i\,\}\,\bigcap_{k\in Pred(i)} S^v(R_E(i,k)) & else \\
+        \end{dcases*}
+    \end{equation}
+
+    A prerequisite for optimistic interference is that 
+    $size(P_d(h)) \neq \emptset$.
+
+\end{definition}
+
+The path from the init state to a horizon state must pass initially through a
+determined entry of the horizon state (TODO: proof). Thus, the optimistic
+interference, actually, produces a correct recipe for transition sequences
+where the horizon state is entered once (through a sequence from init state to
+$P_d(h)$. A deterministic propagation of the optimistic recipes explores tails
+of transition sequences that follow the horizon-reaching sequences. There are
+three possible consequences as a result of deterministic propagation:
+
+\begin{enumerate}
+  \item A terminal is reached, i.e. the end of a transition string.
+
+        In this case, no further action is required. 
+
+  \item A mouth state is reached which has not yet determined its output
+        recipe by optimistic inteference.
+
+        A new stretch lies ahead which has not yet been explored. Using the
+        results of optimistic interference allows to explore such stretches.
+        Since any stretch in a state machine is adjacent to some other stretch,
+        it is safe to assume that every such stretch in the state machine is
+        eventually reached by analysis. 
+
+        With the entry recipes that are now determined in the mouth state, 
+        optimistic interference may be applied and subsequent states 
+        may be explored.
+
+  \item A mouth state is reached which has previously determined its
+        output recipe by optimistic interference.
+\end{enumerate}
+
+The influence on $V_c$ is developped by accumulation, respectively, deterministic
+propagation. It ends either in a terminal or at a mouth state where its 
+setting influences interference. If the output recipe in such a mouth
+state remains the same, then it can be stated, that it is general enough
+to capture all incoming recipes. The influence of the stretch does not have
+to be considered twice. If it changes, though, then the output recipe was
+not general enough. The new recipe must be propagated along its paths ahead.
+From this consideration, it is safe to assume that any influence along any
+stretch is included into consideration for any of its successor states 
+that may be influenced.
+
+If a previous horizon state is reached through its undetermined predecessors
+$R_u(h)$, then new entry recipes become available, and the guess can be
+specified more precisely. First of all, it must be stated, that a component $v$
+which is incoherent in $op^v(h)\circ\,R(k)$ for $k\in P_d(h)$ cannot become
+coherent, because the cause of incoherence lies already in $P_d(h)$. An
+inhomogeneous set cannot become more homogeneous by adding new elements. But,
+it can become more inhomogeneous, if the new entries differ. 
+
+If a new undetermined mouth state is reached, then it can be said, at least
+that the transition sequence which reached it has been considered. If the mouth
+state is reached the first time, then the stretch ahead gets on the 'todo-list'
+for deterministic propagation. This implies, that upon termination every
+stretche's impact on its mouth state ahead is considered.
+
 
 For a horizon state, using the statements on correctness
 \ref{stm:correctness-rule} and determinacy \label{stm:determinacy} of
@@ -949,36 +1054,6 @@ assumptions that may be made with respect to $R(i)$ in the presence of
 uncertainty on $R(b)$. The most daring statement is to assume that the
 components of the determined entries which are coherent, will remain coherent
 with the remaining entries, once they are known. 
-
-\begin{definition} Daring Estimate
-
-    The daring estimate proposes an output recipe $R(i)$ for a horizon state
-    $h$ with $P_d(h)$ as the set of its determined predecessor states. The
-    recipes components for each $v$ are defined by
-          
-\begin{equation} \label{eq:cautious-output-recipe}
-    \begin{dcases*}
-        R_E^v(h,k_0) & if $v$ is coherent $\forall k\in P_d(h)$ \\
-        A(v)         & else
-    \end{dcases*}
-\end{equation}
-
-for an arbitrary $k\in P_u(h)$ with $R_E^v(i,k_0)\neq\eta$.  The snapshot set
-for each variable $v$ is the union of snapshot sets of all determined states.
-
-\begin{equation} \label{eq:interference-snapshot-sets}
-    S^v(R(i)) = \bigcap_{k\in Pred(i)} S^v(R_E(i,k))\,\mbox{with $k$ being determined.}
-\end{equation}
-
-\end{definition}
-
-Without knowing the other entry recipes, it can be said that the recipe
-resulting daring interference is true for transition sequences that
-
-\begin{itemize}
-    \item Enter the mouth state through a determined entry, and
-    \item do not enter is through an, yet, undetermined entry.
-\end{itemize}
 
 do not enter the mouth state twice. directly after the horizon state. Or, more precisely it is true for
 transition sequences that do not reach another dead-lock state after the
