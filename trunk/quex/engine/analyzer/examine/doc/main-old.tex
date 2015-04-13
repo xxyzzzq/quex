@@ -442,19 +442,164 @@ Pred(i)$.  A mouth state may be setup in two ways.
 \end{description}
 
 The coherent setup requires less storing and restoring at run-time and is
-therefore superior to the incoherent setup.  However the propagation of the recipe
-$R_{new}(i)$ might result in an incorrect configuration.
+therefore superior to the incoherent setup.  However the propagation of the
+recipe $R_{new}(i)$ might result in an incorrect configuration.  Before the
+conditions for correctness are stated the term 'propagation' needs to be
+specified. At first, a cautious version is proposed.
+
+\begin{definition} Cautious Propagation of a recipe.
+    
+    If $R(i)$ is the exit recipe of start state $i$, then 'cautious propagation'
+    of $R(i)$ means that the effect of this recipe on all successor states of
+    $i$ is successively determined. It is tried to apply a minimum of changes
+    to the state machine.
+
+    The recipe $R(i)$ is the basis for successive functional composition along
+    all linear transition chains branching from state $i$. When a mouth state
+    $k$ is reached its exit recipe is left as is, except if a coherent
+    setup must be changed to an incoherent setup.
+    
+    If the exit recipe of a  mouth state $k$ changes, then the propagation of
+    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
+    
+\end{definition}
+
+Let the term 'nesting propagation' name the propagation that triggers the
+propagation of a mouth state's recipe by its change.
+
+For the development of $v$ the coherent setup is equivalent to the incoherent
+setup, if the entry recipes are all the same and equal to $R(i)$. However, it
+can only be replaced if it is logically consistent in the context of the state
+machine. The minimal logical impact of a changed recipe is captured by cautious
+propagation. It is deterministic, since it applies successive functional
+composition. It applies a minimum amount of changes in mouth state recipes,
+namely only when correctness requires an incoherent setup where a coherent
+setup is found. Thus, if cautious propagation results in an entry recipe at
+state $i$ different from what it was when the coherent setup produced $R(i)$,
+then the recipe is inconsistent with itself in the frame of the state machine.
+Otherwise, the recipe is logically consistent and the change can be applied.
 
 If the propagation of $R_{new}(i)$ changes an entry recipe of state $i$ itself,
 then $R_{new}(i)$ is not stable.  It holds for a tansition sequence that passes
 state $i$ once, but not for an arbitrary transition sequence that passes more
 than once.  It is not a general solution and, therefore, the resulting
-configuration is incorrect.  Such a scenario is only possible, if $i$ is a
-successor state of itself. In other words, instable recipes $R(i)$ are only
-possible if state $i$ is part of a loop. Before the conditions for correctness 
-are stated the term 'propagation' needs to be specified.
+configuration is incorrect.  
+
+The propagation of a recipe $R(i)$ can only change an entry recipe of $i$ if
+there is a path from the exit of $i$ to the entry of $i$. In that cases,s $i$
+is part of a loop, i.e it belongs to the set of its own predecessor $i\in
+Pred*(i)$. Trivially, any mouth state $k$ on the path of $i$ to itself is
+equally part of that loop. Therefore $k\in Pred*(k)$ if $k$ is on a loop path
+of $i$. Conversely, if $k\notin Pred*(k)$  then $R(k)$ cannot produce a changed
+entry recipe of $k$, but also it does not lie on a path from a nesting
+propagation's start state to itself. 
+
+Thus, if $k\notin Pred*(k)$  then the change of an incoherent setup by a
+coherent setup in state $k$ cannot possibly cause any changed entry recipe
+of $k$ or any start state of its nesting propagations. The cautious propagation
+can now be modified into a general definition of propagation that also
+determines the conditions of its correctness.
 
 \begin{definition} Propagation of a recipe.
+    
+    If $R(i)$ is the exit recipe of start state $i$, then 'propagation'
+    of $R(i)$ means that the effect of this recipe on all successor states of
+    $i$ is successively determined. A minimum of changes is applied that could
+    effect a change of entry recipes of $i$.
+
+    The recipe $R(i)$ is the basis for successive functional composition along
+    all linear transition chains branching from state $i$. When a mouth state
+    $k$ is reached its exit recipe is left as is, except 
+
+    \begin{enumerate}
+       \item if a coherent setup must be changed to an incoherent setup.
+       \item if an incoherent setup can be replaced by a coherent setup, 
+             and $k\notin Pred*(k)$.
+    \end{enumerate}
+    
+    If the exit recipe of a  mouth state $k$ changes, then the propagation of
+    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
+
+    A propagation of $R(i)$ results in a correct configuration if it does not
+    result in a change of the $R(i)$ itself and if the propagations of the
+    recipes $R(k)$ of the reached mouths states results in correct
+    configurations.
+
+\end{definition}
+
+An incoherent setup is generally correct. However, a coherent setup is required
+to be consistent within the state machine. The correctness of a coherent setup
+can now be expressed in terms of its propagation.
+
+\begin{statement} Correctness of a Coherent Setup
+
+    A coherent setup is correct, if it is based on a correct configuration and 
+    the propagation of its recipe results in a correct configuration.
+    
+\end{statement}
+
+\section{Optimization}
+
+As soon as a mouth state $i$ is the successor of another mouth state $k$, it is
+conceivable that their coherent setup is excludes another coherent setup. That
+is, if a coherent setup is implemented in a state $i$ the propagation of $R(i)$
+implies that an incoherent setup must be implemented in state $k$.  In
+foresight of the optimization strategy, let the transition of an incoherent
+setup into a correct coherent setup be called a 'move'.  The former findings
+have some major implications:
+
+\begin{itemize}
+    \item The order of chosen moves is decissive for the final configuration.
+
+    \item Moves may cause configurations from where previously available 
+          moves are obstructed.
+
+    \item The quality of a move cannot be determined from the move alone, but
+          must be seen in the context of the possible final configuration.
+
+    \item There are different possible outcomes as final configurations.
+          
+\end{itemize}
+
+This situation can be specified as an extensive-form game (ref) with one single
+player, i.e. their is no chance player. The decision points are the correct
+configurations of the state machine, the choices are the possible moves and the
+payoff is the quality which needs to be attributed to a configuration. The solution
+is then a tree search for the configuration with the best payoff in the final
+configuration. The root of the tree is the configuration that can be reached
+by propagating coherent setups without being exposed to exlusive choices.
+
+
+The described situation is exactly that of what is solved by a 'game tree'.
+
+
+Understanding the transition from coherent to incoherent setup 
+
+
+Suce a scenario is only possible, if $i$ is a
+successor state of itself. In other words, instable recipes $R(i)$ are only
+possible if state $i$ is part of a loop. 
+
+
+and it applies minimal changes only if correctness necessitates them.
+The recipes determined by cautious propagation of $R(i)$ are \textit{necessary}
+consequences of the recipe $R(i)$.
+
+If the propagation of the recipe $R(i)$ from the coherent setup does not cause
+any change in the entry recipes of $i$ then the 
+
+
+
+
+If one of them changes, an
+incoherent setup is required and $R_{ref}$ would be the exit recipe. If all
+change, then $R(i)$ must also be different. Starting from a correct
+configuration, it can be assumed that all entry recipes of a state $i$ are
+correct. If all are equal, then the assumption that the exit recipe equal
+to the entry recipes is true under the condition that the entry recipes
+remain the same
+
+\begin{definition} Cautious Propagation of a recipe.
     
     If $R(i)$ is the exit recipe of state $i$, then 'propagation' of $R(i)$
     means that the effect of this recipe on all successor states of $i$ is 
@@ -462,8 +607,7 @@ are stated the term 'propagation' needs to be specified.
 
     The recipe $R(i)$ is the basis for successive functional composition along
     all linear transition chains branching from state $i$. When a mouth state
-    $k$ is reached its exit recipe is left as is, except for two cases:
-    
+    $k$ is reached its exit recipe is left as is, except 
     \begin{enumerate}
        \item if a coherent setup must be changed to an incoherent setup.
        \item if an incoherent setup can be replaced by a coherent setup, 
@@ -480,6 +624,10 @@ are stated the term 'propagation' needs to be specified.
     
 \end{definition}
 
+The result of a functional composition of an operation $op_i$ and a recipe
+$R(k)$ is correct, if and only if the recipe $R(k)$ is correct. Thus, the
+successive composition along a linear transition chain delivers correct
+recipes under the same condition that $R(k)$ is correct. 
 
 
 If $R_{ref}$ is propagated from state $i$ along a linear chain of
