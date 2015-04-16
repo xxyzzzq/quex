@@ -206,19 +206,23 @@ An example of a recipe is the line number counting recipe:
         the value of the reference variable has to be added or not. That is, $d$
         has two members::
 
+        \begin{verbatim}
                 d.line_number_offset
                 d.use_reference_variable
+        \end{verbatim}
         
     \item[Procedure:] The procedure to determine the current line number
         consists of adding the line number offset to the line number
         counters value (which is a 'hidden variable'), if it is not zero.::
 
+        \begin{verbatim}
                if d.use_reference_variable:
                    counter.line_number += reference.line_number_offset 
                    if d.line_number_offset != 0:
                        counter.line_number += d.line_number_offset 
                else if d.line_number_offset != 0:
                    counter.line_number += d.line_number_offset
+        \end{verbatim}
 
         The 'if' statements expresses conditions under which the required
         additions need to be implemented.
@@ -228,21 +232,27 @@ An example of a recipe is the line number counting recipe:
        Then the line number of the composition $op_i\circ R(k)$ is the sum of
        both. That is the '$d$' if the resulting recipe is given by::
 
+        \begin{verbatim}
                  d.line_number_offset     = dk.line_number_offset + delta
                  d.use_reference_variable = dk.use_reference_variable
+        \end{verbatim}
 
    \item[$R_{init}$:] Before entering the state machine the line number offset
         is assumed to be zero and no reference variable is used, i.e $d$ is
         initialized to::
 
+        \begin{verbatim}
                 d.line_number_offset     = 0
                 d.use_reference_variable = false
+        \end{verbatim}
 
    \item[$R_{ref}$:] The recipe that solely depends on the content of the
        reference variable has the settings of $d$ given by::
 
+        \begin{verbatim}
                 d.line_number_offset     = 0
                 d.use_reference_variable = true
+        \end{verbatim}
 
 \end{description}
 
@@ -436,13 +446,113 @@ Pred(i)$.  A mouth state may be setup in two ways.
         $R_E(i,k)$.  This setup is \textit{mandatory} if their are two or more
         entry recipes that differ.
 
-    \item[Coherent setup:] The exit recipe is set to $R_{new}(i)=R_E(i,k)$ for an 
-        arbitrary $k\in Pred(i)$. This setup is \textit{optional} but requires that all
-        input recipes are equal.
+    \item[Coherent setup:] The exit recipe is set to $R_{new}(i)=R_E(i,k)$ for
+        an arbitrary $k\in Pred(i)$. This setup is \textit{optional} but
+        requires that all input recipes are equal.
+
 \end{description}
 
+%% IDEA: incoherent --> coherent setup seems locally advantegeous
+%%       but implications on state machine may result in lesser quality.
+%% IDEA: 'propagation' must be explained.
+%% IDEA: logical implications --> set of possible configurations
+%% IDEA: configurations may 'block' other configurations from being reached
+%% IDEA: one coherent setup may be exclude another or more coherent setup.
+%% IDEA: recipe must be correct upon for any number of transitions
+%% IDEA: when state not in loop --> no consistency issues, but issues
+%%                                  of blocking other recipes
+%% IDEA: root configuration --> can all configurations be reached?
+%% IDEA: horizon, the determined entry determines coherence.
 The coherent setup requires less storing and restoring at run-time and is
-therefore superior to the incoherent setup.  However the propagation of the
+therefore superior to the incoherent setup--when considering only the state
+itself. The logical implications on the state machine must be considered,
+though.  That is the recipe must be propagated along the branching linear
+transition chains.  When mouth states are reached possible outcomes must be
+considered. The resulting configuration may, actually, contain more storing and
+restoring than before the coherent setup was applied.  Thus, it cannot be
+assumed that a transition from an incoherent to a coherent setup is generally
+advantageous.
+
+A coherent setup for a state $i$ is correct if the state's entry recipes are
+all the same and equal to the exit recipe $R_{new}(i)$. If all possible logical implications
+of $R_{new}(i)$ result in entry recipes of state $i$ that result in an exit
+recipe different from $R_{new}(i)$, then the coherent setup is not consistent.
+It cannot be applied. On the other hand, if there is a logical implication that
+does not change the exit recipe, then the recipe is consistent.  It correct
+under the provision that the logical implications are applied on the state
+machine.
+
+Let a coherent setup for a state $i$ be correct and the state
+machine be a correct configuration. Then the coherent setup is correct, if and
+only if the implicated changes to the state machine are consistent. The
+resulting state machine may require more storing and restoring then the one
+before state $i$ changed its setup. 
+
+
+Successive function composition of a recipe along linear transition chains are
+deterministic. There is no source of possible inconsistency. In mouth states
+with equal entry recipes there is a choice whether a coherent or an incoherent
+setup is implemented. Choice also does not expose contradictions.  The sole
+contradiction which may occur is the contradiction of a recipe with itself. If
+the consequences of an exit recipe of state $i$ result in a change of state
+$i$'s entry recipes and all possibly resulting exit recipes differ from the
+postulated one, then this is a contradiction. There is no correct configuration
+that could incorporate the recipe. On the other hand, if there is a
+configuration where the exit recipe of $i$ does not have to change, then the
+recipe is consistent and the given configuration is correct. Obviously,
+only states with exits that connect to their entries can possibly 
+be subject to such inconsistencies. Such states are part of a loop, i.e.
+$k\in Pred*(k)$.
+
+Propagation is the search for the set of correct configurations which
+are consistent with an exit recipe in a state. The result is a set of
+correct configurations. If the resulting set is empty, the recipe on
+which it is based is inconsistent within the state machine. 
+
+At each mouth state with equal entry recipes, propagation has the choice to
+continue with a coherent or an incoherent setup. Consequently, the product of
+propagation is not a single configuration, but a set of correct configurations
+depending on what choices are made in the mouth states capable of coherent
+setups. If the set of correct configurations that result from propagation
+is empty, then the original state is incorrect.
+
+\begin{definition} Propagation of a recipe.
+    
+    If $R(i)$ is the exit recipe of start state $i$, then 'propagation'
+    of $R(i)$ means that the effect of this recipe on all successor states of
+    $i$ is successively determined. A minimum of changes is applied that could
+    effect a change of entry recipes of $i$.
+
+    The recipe $R(i)$ is the basis for successive functional composition along
+    all linear transition chains branching from state $i$. When a mouth state
+    $k$ is reached its exit recipe is left as is, except 
+
+    \begin{enumerate}
+       \item if a coherent setup must be changed to an incoherent setup.
+       \item if an incoherent setup can be replaced by a coherent setup, 
+             and $k\notin Pred*(k)$.
+    \end{enumerate}
+    
+    If the exit recipe of a  mouth state $k$ changes, then the propagation of
+    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
+
+    A propagation of $R(i)$ results in a correct configuration if it does not
+    result in a change of the $R(i)$ itself and if the propagations of the
+    recipes $R(k)$ of the reached mouths states results in correct
+    configurations.
+
+\end{definition}
+
+Functional composition along linear transition chains are deterministic
+and can freely be reset, as long as the starting recipe is correct. 
+In mouth states choices about coherent 
+Whenever entry recipes are equal their are the two opportunities where
+either coherent or incoherent setup may be applied. The coherent setup of
+one state may obstruct the coherent setup of many others. The overal 
+efficiency of a configuration 
+
+
+.  However the propagation of the
 recipe $R_{new}(i)$ might result in an incorrect configuration.  Before the
 conditions for correctness are stated the term 'propagation' needs to be
 specified. At first, a cautious version is proposed.
@@ -465,7 +575,7 @@ specified. At first, a cautious version is proposed.
 \end{definition}
 
 Let the term 'nesting propagation' name the propagation that triggers the
-propagation of a mouth state's recipe by its change.
+propagation of a mouth state's recipe by changing its exit recipe.
 
 For the development of $v$ the coherent setup is equivalent to the incoherent
 setup, if the entry recipes are all the same and equal to $R(i)$. However, it
@@ -500,36 +610,9 @@ of $k$ or any start state of its nesting propagations. The cautious propagation
 can now be modified into a general definition of propagation that also
 determines the conditions of its correctness.
 
-\begin{definition} Propagation of a recipe.
-    
-    If $R(i)$ is the exit recipe of start state $i$, then 'propagation'
-    of $R(i)$ means that the effect of this recipe on all successor states of
-    $i$ is successively determined. A minimum of changes is applied that could
-    effect a change of entry recipes of $i$.
-
-    The recipe $R(i)$ is the basis for successive functional composition along
-    all linear transition chains branching from state $i$. When a mouth state
-    $k$ is reached its exit recipe is left as is, except 
-
-    \begin{enumerate}
-       \item if a coherent setup must be changed to an incoherent setup.
-       \item if an incoherent setup can be replaced by a coherent setup, 
-             and $k\notin Pred*(k)$.
-    \end{enumerate}
-    
-    If the exit recipe of a  mouth state $k$ changes, then the propagation of
-    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
-
-    A propagation of $R(i)$ results in a correct configuration if it does not
-    result in a change of the $R(i)$ itself and if the propagations of the
-    recipes $R(k)$ of the reached mouths states results in correct
-    configurations.
-
-\end{definition}
-
-An incoherent setup is generally correct. However, a coherent setup is required
-to be consistent within the state machine. The correctness of a coherent setup
-can now be expressed in terms of its propagation.
+An incoherent setup is generally correct. However, a coherent setup is requires
+the proof of consistency within the state machine. The correctness of a
+coherent setup can now be expressed in terms of its propagation.
 
 \begin{statement} Correctness of a Coherent Setup
 
@@ -537,6 +620,8 @@ can now be expressed in terms of its propagation.
     the propagation of its recipe results in a correct configuration.
     
 \end{statement}
+
+
 
 \section{Optimization}
 
@@ -557,1395 +642,24 @@ have some major implications:
     \item The quality of a move cannot be determined from the move alone, but
           must be seen in the context of the possible final configuration.
 
-    \item There are different possible outcomes as final configurations.
+    \item There are different possible final configurations.
           
 \end{itemize}
 
 This situation can be specified as an extensive-form game (ref) with one single
 player, i.e. their is no chance player. The decision points are the correct
-configurations of the state machine, the choices are the possible moves and the
-payoff is the quality which needs to be attributed to a configuration. The solution
-is then a tree search for the configuration with the best payoff in the final
-configuration. The root of the tree is the configuration that can be reached
-by propagating coherent setups without being exposed to exlusive choices.
+configurations of the state machine, the choices are the moves that transform a
+correct configuration into another correct configuration, and the payoff is the
+quality attributed to a configuration. The game ends when there is no new
+configuration that can be reached. When all possible combinations of moves are
+done, the optimal configuration is determined as the one with the greatest
+payoff. The shortest sequence of moves that guides from the starting
+configuration to the optimal configuration determines the sequence of
+propagation.
 
 
-The described situation is exactly that of what is solved by a 'game tree'.
+\section{-----}
 
-
-Understanding the transition from coherent to incoherent setup 
-
-
-Suce a scenario is only possible, if $i$ is a
-successor state of itself. In other words, instable recipes $R(i)$ are only
-possible if state $i$ is part of a loop. 
-
-
-and it applies minimal changes only if correctness necessitates them.
-The recipes determined by cautious propagation of $R(i)$ are \textit{necessary}
-consequences of the recipe $R(i)$.
-
-If the propagation of the recipe $R(i)$ from the coherent setup does not cause
-any change in the entry recipes of $i$ then the 
-
-
-
-
-If one of them changes, an
-incoherent setup is required and $R_{ref}$ would be the exit recipe. If all
-change, then $R(i)$ must also be different. Starting from a correct
-configuration, it can be assumed that all entry recipes of a state $i$ are
-correct. If all are equal, then the assumption that the exit recipe equal
-to the entry recipes is true under the condition that the entry recipes
-remain the same
-
-\begin{definition} Cautious Propagation of a recipe.
-    
-    If $R(i)$ is the exit recipe of state $i$, then 'propagation' of $R(i)$
-    means that the effect of this recipe on all successor states of $i$ is 
-    determined.
-
-    The recipe $R(i)$ is the basis for successive functional composition along
-    all linear transition chains branching from state $i$. When a mouth state
-    $k$ is reached its exit recipe is left as is, except 
-    \begin{enumerate}
-       \item if a coherent setup must be changed to an incoherent setup.
-       \item if an incoherent setup can be replaced by a coherent setup, 
-             and $k\notin Succ*(k)$.
-    \end{enumerate}
-    
-    If the exit recipe of a  mouth state $k$ changes, then the propagation of
-    $R(i)$ includes the propagation of the changed exit recipe $R(k)$.
-
-    A propagation of $R(i)$ results in a correct configuration if it does not
-    result in a change of the $R(i)$ itself and if the propagations of the
-    recipes $R(k)$ of the reached mouths states results in correct
-    configurations.
-    
-\end{definition}
-
-The result of a functional composition of an operation $op_i$ and a recipe
-$R(k)$ is correct, if and only if the recipe $R(k)$ is correct. Thus, the
-successive composition along a linear transition chain delivers correct
-recipes under the same condition that $R(k)$ is correct. 
-
-
-If $R_{ref}$ is propagated from state $i$ along a linear chain of
-transitions, then all recipes which are developed based on it depend on $v$
-being stored in $v_r$ upon entry into state $i$.  The correctness of the new
-recipe cannot be assumed if $v_r$ is not stored in $i$. 
-
-This becomes obvious considering the example in figure \ref{fig:no-coherence}.a.
-Both entry recipes into state $i$ increment $v_r$ by one. This way, at each
-transition of $i$ the value is increased. If the entry recipes where omitted,
-as in figure \ref{fig:no-coherence}.b, the value of $v_r$ would remain the same
-along any number of transitions of $i$ into itself.
-
-
-
-\begin{figure}[htbp] \leavevmode \label{fig:no-coherence}
-\begin{verbatim}
-
- a)
-              ---[v_r := v_r + 1]-->--.  
-                                       \     R(i) = v_r
-                                      ( i )-->---.
-                                       /         |
-              .--[v_r := v_r + 1]-->--'          |
-              |                                  |
-              '----------------------------------'
-
- b)
-              ---->--.  
-                      \     R(i) = v_r + 1
-                     ( i )-->---.
-                      /         |
-              .--->--'          |
-              |                 |
-              '-----------------'
-
-\end{verbatim}
-\caption{Self depending $v_r$}
-\end{figure}
-
-
-is a configuration of a recipe-based state machine that is functionally
-equivalent to the operation
-
-A mouth state is entered through multiple linear transition chains. Let the set 
-of linear mouth predecessors be defined as follows. 
-
-\begin{definition} $P_{ltc}(i)$ -- Set of Linear Mouth Predecessors
-
-    Given a mouth state $i$, the set of linear mouth predecessors $P_{ltc}(i)$
-    are the start states of all linear transition chains that have state $i$ as
-    a terminal.
-    
-\end{definition}
-
-Figure \ref{fig:linear-transition-chain} shows a linear transition chain. The
-start state is 1 which is followed by states 2, 3, and 4. The operations
-$op_2$, $op_3$, and $op_4$ can be composed deterministically. State 4,
-though, is a mouth state and the linear transition chain ends. The state $1*$,
-in this case, is state $3$, because it is the last state along the chain before
-entry into the terminal state. If the set of linear states in between the start
-and terminal state is empty, then there remains still the entry operation of
-the terminal, which is deterministic in itself. State $1$ is the start state of
-the linear transition chain that ends in $4$, so state $1$ is element of
-$P_{ltc}(4)$.
-
-\begin{figure}[htbp] \leavevmode \label{fig:linear-transition-chain}
-\begin{verbatim}
-
-    ( 1 )---[op_2]----( 2 )----[op_3]---( 3 )->-.
-                                                   \
-                                           ... ->---+--[op_4]---( 4 )
-                                                   /
-                                           ... ->-'
-\end{verbatim}
-\caption{A linear transition chain.}
-\end{figure}
-                                       
-%==============================================================================
-%
-%==============================================================================
-\section{Recipes}
-
-
-The fundamental difference between $R(i)$ and $V(i)$ is that the former
-describes a procedure and the latter represents the values which are produced.
-Operations $op^v_i$ in the original state machine produce the value of $v$ 
-while possibly taken the previous value of $v$ into account. The recipes
-$R^v_E(i,k)$ and $R(i)$ can produce a value $v$ but do not take any 
-variable $v\in V_c$ into account. They only consider the reference variables
-and hidden variables. 
-
-If a recipe $R(i)$ relies on an reference variable $v_r$ being taken in $i$, then
-the action of storing $v$ in $v_r$ is necessary for the recipe's correctness.
-The same is true for all recipes which are developed depending on it.  If the
-assignment of $v_r$ was not implemented in $i$, then recipe would refer to
-something stored somewhere else or even be void. In other words, a recipe must
-be always associated with a set of states which are required to perform $v_r=v$
-upon entry. The set of states may be empty, though. The 'stored reference
-dependence' provides a means to describe basic dependencies.
-
-\begin{definition} $S^v(X)$ Stored Reference Dependence
-
-    For a given procedure $X$ let $S^v(X)$ denotes if it depends on
-    stored references for $v$, i.e.
-    
-    \begin{equation} \label{eq:mouth-state-recipe}
-        S^v(X) = \begin{dcases*}
-                 true  & if $X$ applies $v_r$        \
-                 false & if $X$ does not apply $v_r$ \
-                \end{dcases*}
-    \end{equation}
-\end{definition}
-
-Another important concept is that of \textit{history dependence}.
-
-\begin{definition} History Dependence/-Independence
-
-    An operation $op_i$ is history independent with respect to a variable
-    $v\in V_c$, if it computes $v$ independently of a previous setting of
-    $V_c$.
-    
-    The general term 'history independent' is attributed to procedures which
-    are history independent for all variable that they produce.  A procedure
-    that is not history independent is history dependent.
-
-\end{definition}
-
-The function composition of an arbitrary procedure $X$ with a history
-independent operation $op_i$ does not require any storing of reference
-values, i.e.
-
-\begin{equation} \label{eq:historic-independence}
-    S^v(op_i) = false\,\,\Rightarrow\,\,S^v(op_i\circ X) = false.
-\end{equation}
-
-The operation '$v\coloneqq x+3$', with some variable $x\notin V_c$, is
-history-independent.  However, the operation '$v\coloneqq v+1$' is
-history-dependent because the assignment depends on the previous setting of
-'$v$. In that sense, the \textit{no operation} on variable $v$ is
-history-dependent. Its implementation is $v\coloneqq v$ which clearly depends
-on $v$.  A special history-independent procedure is the recipe from 'before
-entry' $R_{init}$. It is history-independent with respect to all $v\in V_c$--it
-actually initializes those. For example
-
-\begin{eqnarray}
-    R_{init} & = & \{ line_n \coloneqq line_{n,before} \}
-\end{eqnarray}
-
-initializes the variable $line_n$ with a constant $line_{n,before}$. This
-emphasizes the understanding of 'history' as something that evolves inside the
-state machine during the current phase of state transitions. What happend
-before, such as the operations to develop initial values in an earlier phase,
-is not considered as part of history. 
-
-It is conceivable, that a mouth state requires a variable $v \in V(i)$, but the
-predecessors did not actually assign anything to it.  Operations may depend on
-external conditions, or even on the path taken along the state machine. This is
-expressed using the term of 'indifference' as follows.
-
-\begin{definition} Indifference
-
-    An procedure $X$ is indifferent with respect to $v$, if it does not contain
-    a component $X^v$ that computes $v$.  Let this situation be expressed by
-    
-    \begin{equation} 
-        X^v \,=\,\eta 
-    \end{equation} 
-
-\end{definition}
-
-This has an important implication.  The conditions for applying a variable $v$
-in a recipe must be exactly the same as the conditions for $v$ receiving a
-valid setting.  If this was not the case, the procedure relying on $v$ would
-produce indeterministic results.  In consequence, $v_r$ may contain meaningless
-data when computed by an entry recipe, or $v$ may not be determined distinctly
-when the exit recipe is applied.  Therefore, any access to $v$ must be
-restricted to circumstances where it contains meaningful data.  Thus, the
-following condition must hold.
-
-\begin{definition} Access-Lock Condition \label{cond:access-lock}
-
-   If a recipe $R$ may exist wich is indifferent with respect to $v$, then
-   the access to variable $v$ must be protected by an access-lock. 
-
-   The lock must be initially locked.  No recipe shall access $v$ without the
-   access-lock being open. It is unlocked upon the first assignment to $v$.
-    
-\end{definition}
-
-This seems, at the first glance, as an unnatural constraint. However, if the
-nominal behavior does not automatically incorporate it, then the state machine
-itself is not able to behave deterministically.  Consider, for example, figure
-\ref{fig:access-lock}. In state 2, pattern 0 accepts the keyword 'if', but only
-if a pre-context 'pre0' is true. Then, the position register $r[0]$ stores the
-position where pattern 0 accepted, so that the next pattern match may continue
-right after the recognized keyword. $r[0]$ is irrelevant, if 'pre0' is not
-true. If in the states 2 and 3 a letter appears different from 'f' and 'y',
-then the state machine exits and the input position must be reset to the
-position where 'if' was accepted. But, $r[0]$ is only used, if pattern 0
-accepted, and pattern 0 only accepts, if 'pre0' is true.  In this case, the
-access lock to the potentially irrelevant $r[0]$ is provided by either 'pre0'
-or the condition 'a=0'. While the access-lock condition should not require any
-additional effort of implementation, it is necessary for the proof of
-correctness.
-
-\begin{figure}[htbp] \leavevmode \label{fig:access-lock}
-\begin{verbatim}
-
-          i               f            f            y         
-    ( 0 )------->( 1 )------->( 2 )------->( 3 )------->( 4 )
-                 ++i          ++i          ++i          ++i 
-                        pre0=>a=0                       a=1
-                           r[0]=i                    r[1]=i
-
-\end{verbatim}
-\caption{Access-lock to potentially irrelevant variable $r[0]$.}
-\end{figure}
-
-\section{Goal and Strategy}
-
-At this point, the overall goal can be formulated. The optimization transforms
-the given single-entry state machine based on transition operations $op_i$
-into a multi-entry state machine based on entry operations $op_E(i,k)$ and exit
-operations derived from recipes. Observing only the entry and exit, the changes
-to $V_c$ must comply to the nominal behavior. 
-
-Along sequences of linear states the effects on variables can be determined by
-function composition. If a mouth state stores the computed value of a variable
-in $v_r$ at each entry, then $v_r$ is the correct setting of $v$ independent of
-the path taken to the mouth state.  Let the dependency of correctness be
-expressed by the term 'dependency set'.
-
-\begin{definition} $D^v(i)$ -- Dependency Set
-
-    Given a mouth state $i$, the dependency set $D(i)$ contains all other
-    mouth states which need to store $v_r=v$ upon entry in order for the 
-    recipe $R(i)$ to be correct.
-    
-\end{definition}
-
-If a linear transition chain leads from a mouth state $k$ to another mouth
-state $i$, then values computed in $i$ depend on $k$ storing its values. An
-exception are those components where there is a history independent operation
-along the path from $k$ to $i$. History independent operations \textit{cut} off
-dependencies and therefore $S^v(R_E(i,k*))=false$ for such linear
-transition chains. The elements of $D(i)$ from $P_{ltc}(i)$ can be determined
-based on the stored reference dependence by
-
-\begin{equation}
-    D^v(i) \subset {k\in P_{ltc}(i): S^v(R_E(i,k*))\,=\,true }
-\end{equation}
-
-If $k$ depends on another state $q$, then the correctness of $i$ also depends
-on $q$, etc. Therefore, the of snapshot sets of entry recipes for $k\in
-P_{ltc}(i)$ only provides a subset of what needs to be determined
-recursively. So $D(i)$ can be generated by the rule
-
-\begin{equation}
-
-    \lambda\in\,D^v(i)\,\Rightarrow\,D^v(\lambda)\,\subset\,D^v(i)
-    
-\end{equation}
-
-Once, all entry recipes of a mouth state $i$ are found, it might be considered
-if the store/restore can be released. If all entry recipes are the same, the
-output recipe might take exact that form. For all other states in the state
-machine the dependency on $k$ is then translated into a dependency on $k$'s
-delivering mouth states. But, they are already in the depedency sets. Only $k$
-needs to be deleted from their dependency sets. 
-
-Their is a restriction, though: If any entry recipe of $k$ depends on $k$
-storing and restoring, then it cannot be released.  Otherwise, the necessary
-condition for the correctness of inputs would not hold which says that a recipe
-is only correct if its dependend states store $v$ in $v_r$.  Any dependency of
-an entry recipe is a subset of $D(k)$. So, the following statement must be 
-made
-
-\begin{statement} Removal of store and restore. \label{stm:release-sr}
-
-    The storing of a variable $v$ in a mouth state $i$ cannot be
-    removed under any circumstance, if $i\in\,D^v(i)$.
-    
-\end{statement}
-
-
-%==============================================================================
-%
-%==============================================================================
-\section{Composition and Interference}
-
-Linear states change variables in a deterministic way. There is only one entry
-into such a state $i$. If the predecessor state $k$'s recipe $R(k)$ is
-determined, then the state's recipe $R(i)$ by equation \eqref{eq:entry-recipe-concatenated} 
-is determined straight-forward.
-
-\begin{equation} \label{eq:linear-state-recipe}
-    R(i) \,=\,R_E(i,k) \,=\, op_i\,\circ\,R(k)
-\end{equation}
-
-For a mouth state, from equation \eqref{eq:entry-recipe-concatenated} and
-\eqref{eq:interference}, it follows directly
-
-\begin{equation} \label{eq:mouth-state-recipe}
-    R(i) = 
-        \begin{dcases*}
-        R_E(i,k_0) = op_i\circ R(k_0) & if entry from state $k_0$ \\
-        R_E(i,k_1) = op_i\circ R(k_1) & if entry from state $k_1$ \\
-        \ldots                                                     \\
-        R_E(i,k_n) = op_i\circ R(k_n) & if entry from state $k_n$ \\
-        \end{dcases*}
-\end{equation}
-
-For the general case, this shows that recipes may not be developed across
-mouth states, except if reference variables are computed. That is if there
-are entry operations in place which assign a value to an reference variable $v_r$
-\begin{equation}
-    v_r \coloneqq   \begin{dcases*}
-             R^v_E(i,k_0) & if entry from state $k_0$ \\
-             R^v_E(i,k_1) & if entry from state $k_1$ \\
-             \ldots \\
-             R^v_E(i,k_n) & if entry from state $k_n$ \\
-            \end{dcases*}
-            \,\forall\,v\,\in\,V(i)
-\end{equation}
-
-Relying on $v_r$, the path taken becomes unimportant, so that the recipe $R(i)$
-is determined by
-
-\begin{equation}
-    R^v(i) \,=\, \{ v \coloneqq v_r \}\,\,\forall\,v\,\in\,V(i)
-\end{equation}
-
-and can be used for further development of recipes. Obviously, if all entry
-recipes $R^v_E(i,k)$ are the same, then no storage in $v_r$ seems to be
-required. However, there is a restriction related to the dependency set. 
-If the state $i\notin D(i)$, then the new recipe may be developped and reworked
-through the subsequent paths. Since for all state $q$ with $i\in D(q)$, it holds
-that $D(i)\subset D(q)$, it is enough to remove $i$ from $D(q)$ to express the
-new situation. However, if $i\in D(i)$, then the developed recipe is only 
-correct if and only if $v_r$ is stored in state $i$. Conversely, 
-
-Instead, $R^v(i)$ could be chosen as the same as the entry recipes. The
-definition of coherence, below, supports a precise condition for assigning the
-output recipe with a prototype of the entry recipes. 
-
-\begin{definition} Coherence/Incoherence
-
-    The expression '$v$ is coherent' at the entry into a mouth state $i$
-    means, that all entry recipes $R_E(i,k)$ are equal or indifferent, i.e. 
-
-    \begin{equation} \label{eq:definition-coherence}
-         \forall\,k\,\in\,Pred(i)\,\,\mbox{with}\,\,k\,\neq\,k_0:\,R_E^v(i,k)\,=\,R_E^v(i,k_0)\,\,\vee\,\,R_E(i,k)\,=\,\eta
-    \end{equation}
-        
-    The expression '$v$ is incoherent' that the condition for coherence does
-    not hold.
-
-\end{definition}
-
-If the entry recipes of a state $i$ are coherent, then this means that the
-value of $v$ can be computed independent on the path taken. Consequently, 
-the output recipe can be determined without storing and restoring values
-of $v$. However, statement \ref{stm:release-sr} imposes another requirement, 
-namely that the mouth state's correctness may not depend on the mouth state's
-storing and restoring.
-
-\begin{definition} Interference
-
-    Interference develops a recipe $R(i)$ for a mouth state $i$ based on entry
-    recipes $R_E(i,k) = op_i\,\circ\,R(k)\,\mbox{with}\,k \in Pred(i)$.  The
-    output recipe $R(i)$ computes based on the coherence of $v$ and the
-    dependency set of the mouth state, i.e.
-
-    \begin{equation} \label{eq:interference-output}
-        R^v(i) = 
-        \begin{dcases*}
-            R_E^v(i,k_0) & if $v$ is coherent and $k\notin D^v(k)$\\
-            v_r         & else
-        \end{dcases*}
-    \end{equation}
-
-    for an arbitrary $R_E^v(i,k_0)\neq\eta$, or $\eta$ if all entry recipes are
-    indifferent. The snapshot set for an entry recipe computes to
-
-    \begin{equation} \label{eq:composition-aux}
-        S^v(R_E(i,k))\,=\,\begin{dcases*}
-                           \emptyset & if $op^v_i$ is history-independent. \\
-                           S^v(R(k)) & else.\\
-                          \end{dcases*}
-    \end{equation}
-\end{definition}
-
-Applying interference to linear states ends up again with equation
-\eqref{eq:linear-state-recipe}, because there is only one entry recipe.  One
-single recipe is naturally coherent on all $v\,\in\,V(i)$. This guides to a
-procedure to develop recipes across linear states.
-
-\begin{definition} Composition
-
-    Given a state $i$, its predecessor state $k$, the entry operation $op_i$
-    the predecessor's recipe $R(k)$, the recipe $R(i)$ is given by
-
-    \begin{equation}
-        R(i)\,=\,op_i\,\circ\,R(k)
-    \end{equation}
-
-    The dependency on stored $v$-s, i.e. the snapshot maps, do not change
-    except if $op^v_i$ is history-independent
-
-    \begin{equation} \label{eq:composition-aux}
-        S^v(R(i))\,=\,\begin{dcases*}
-                      \emptyset & if $op^v_i$ is history-independent. \\
-                      S^v(R(k)) & else.\\
-                      \end{dcases*}
-    \end{equation}
-
-    A prerequisite for composition is that $R(k)$ of the predecessor is 
-    determined.
-
-\end{definition}
-
-\subsection{Examples}
-                 
-Figure \ref{fig:two-state-machines}.a displayed a state machine with a single
-variable, i.e. $V_c=\{'v'\}$. The operations $op_i$ upon transition are
-$v\coloneqq v+1$ for all states. Let $A_a(v)$ hold the value of $v$ upon entry the
-state $a$.  This notation combines the recipe's procedure with its snapshot
-map.  In the above example, the recipe in state $a$ solely restores what has
-been stored.
-
-\begin{equation} 
-    R(a) = \{ v \coloneqq  A_a(v) \} 
-\end{equation}
-
-The recipe $R(b)=R_E(b,a)$ must be equivalent to the concatenated execution of
-$op_b$ and $R(a)$, i.e.
-
-\begin{eqnarray}
-    R(b)&=&\{\,v\,\coloneqq \,A_a(v);\,v\,\coloneqq \,v + 1;\} \\
-    R(b)&=&\{\,v\,\coloneqq \,A_a(v) + 1; \}                                 
-\end{eqnarray}
-
-This rule applied repeatedly to the states 'c' and 'd' leads to
-
-\begin{eqnarray}
-    R(c) &=&\{ v \coloneqq  A_a(v) + 2 \} \\
-    R(d) &=&\{ v \coloneqq  A_a(v) + 3 \}                                 
-\end{eqnarray}
-%%
-If the state machine exits at $a$, $b$, $c$, or $d$ the content of $v$ can be
-determined without relying on the intermediate operations $\{ v\coloneqq v+1 \}$. This
-was shown in figure \ref{fig:two-state-machines}.b. 
-%%
-The repeated composition of recipes along linear states comes to an end at
-mouth states. State $e$ in figure \ref{fig:interference-example} is such a
-mouth state. Its entry recipes $R_E(e,b)$ and $R_E(e,d)$ are an example of two
-identical entry procedures. However, both rely on stored values for $v$ and the
-place where those values where stored differ. That is $S^v(R_E(e,b))=a$ and
-$S^v(R_E(e,d)=c)$. Thus, $v$ is incoherent upon entry into state $e$.  In
-the resulting state machine the computed values of $v$ must be stored in an
-reference variable $v_r$ as shown in figure \ref{fig:interference-example}.b.
-%%
-\begin{figure}[htbp] \leavevmode \label{fig:interference-example}
-a)
-\begin{verbatim}
-
-  v_r = v                       R_E(e,b) = v_r + 2
-  - - - ->( a )-------->( b )--------.
-            |                         \
-            | v_r = v               ( e )--------->
-            |                         /
-  - - - ->( c )-------->( d )--------'
-   v_r = v                      R_E(e,d) = v_r + 2
-
-\end{verbatim}
-b)
-\begin{verbatim}
-                                 
-  - - - ->( b )---[ A_e(v) = v_r + 2 ]-----.
-                                             \     R(e) = v_r
-                                            ( e )---------------->
-                                             /
-  - - - ->( d )---[ A_e(v) = v_r + 2 ]-----'
-                                 
-
-\end{verbatim}
-\caption{Recipes upon exit replace transition operations.}
-\end{figure}
-
-The next section treats the recursive composition of recipes starting from
-springs.  It is conceivable, however, that right from the beginning there is no
-spring.  Even the initial state, if it has an entry other than from 'outside'
-it may be an undetermined.  In that case, the analysis directly starts with a
-so called 'dead-lock analysis' which is the subject of the next section but
-one.
-
-%==============================================================================
-%
-%==============================================================================
-\section{Deterministic Propagation of Recipes}
-
-If the recipe of a state $i$'s predecessor $k$ is determined, then the entry
-recipe $R_E(i,k)$ can be determined. The same is true if the predecessor is an initial
-spring, because then $R_E(i,k) = op_i\circ\,op_k$. Practically, this means
-that recipes can be determined starting from a spring along linear states by
-composition until the entry of a mouth state is reached. Linear states may
-have multiple successor states, so this walk can be accomplished by a recursive
-'tree walk'.  The termination criteria for the recursive composition walk is
-defined as follows.
-
-\begin{definition}
-Termination criteria for composition walk.
-
-A recursive composition walk does not enter the state ahead, if 
-
-\begin{itemize}
-    \item there is no state ahead.
-    \item the state ahead is a mouth state.
-\end{itemize}
-\end{definition}
-
-The first condition comes natural. The second condition exists, because recipes
-cannot be composited beyond mouth states. As a direct consequence, the walk
-can never go along loops, since a loop requires a state with more than one
-entry. The third condition tells that the walk stops where another walk begins
-or began.  
-
-\begin{figure}[htbp] \leavevmode \label{fig:algo-1}
-\begin{verbatim}
-   
-           (1) springs = init state + mouth states
-
-           (2) Composition of operations along linear transition chains.
-
-           (3) Determine D(i) for all mouth states.
-
-           (4) Determine best coherence (R_E-s, D(i))
-
-           (4) Determine sets of coherence candidates CC, i.e.
-
-               foreach i in CC: i not in Union(D(i))
-
-
-\end{verbatim}
-
-\caption{Deterministic propagation of recipes from springs.}
-\end{figure}
-
-\section{Optimal Coherences}
-
-The recipes resulting from deterministic propagation are shaped by the 
-operations $op_i$ of the original state machine and the spring recipes. No
-new 'branch recipe' can influence any resulting recipe. This allows to 
-statements to be made about correctness and determinacy.
-
-\begin{statement} Correctness of Deterministic Propagation \label{stm:correctness-rule}
-    
-    Thus recipes derived from deterministic propagation are granted
-    to be correct under the same conditions that springs are granted to be
-    correct.
-
-\end{statement}
-
-\begin{statement} Determinacy of Deterministic Propagation \label{stm:determinacy-rule}
-
-    For any recipe developed by deterministic propagation, it holds that it 
-    will not change as long as the spring recipes do not change.
-
-\end{statement}
-
-
-The algorithm in figure \ref{fig:algo-1} implements the procedure to determine
-recipes recursively through composition.  When this algorithm comes to an end,
-there might be still mouth states with undetermined entries.  The following
-section discusses a solution for the remaining states where the deterministic
-recursive composition of recipes could not provide a solution.
-
-%==============================================================================
-%
-%==============================================================================
-\section{Dead-Lock Resolution}
-
-Interference can only be performed, if all entry recipes of a mouth state are
-determined. Loops in the state machine graph, however, may cause
-\textit{circular dependencies} and undetermined mouth states.  Figure 8 shows
-an example, where the two states 1 and 2 mutually block each other. The recipe
-$R(1)$ for state 1 cannot be determined because it requires $R(2)$ which is
-undetermined. However, before $R(2)$ from state 2 can be determined, $R(1)$
-must be present. None of the states 1 and 2 is suitable for interference,
-because they are missing an entry recipe.  Circular dependencies as an origin
-of dead-lock states are intuitive. The precise proof is provided in the
-subsequent paragraphs. What follows describes a procedure to determine the
-behavior of those dead-lock states and their dependent states.
-
-\begin{figure}[htbp] \leavevmode
-\begin{verbatim}
-                                       R(1)
-                          R(0)     .---->----.
-                    ( 0 )------>( 1 )       ( 2 )
-                                   '----<----'
-                                       R(2)
-
-\end{verbatim}
-\caption{A dead-lock in mouth states 1 and 2.}
-\end{figure}
-
-\begin{definition} $U$ -- The Set of Dead-Lock States
-
-A dead-lock state $i\,\in\,U$ is a mouth state that, after deterministic
-propagation has ended, is still undetermined. It has at least one undetermined
-entry which prevents it from performing interference. $U$ is the set of all
-dead-lock states.
-
-\end{definition}
-
-
-\begin{definition} $H(S)$ -- Horizon
-
-    Let the term 'horizon of springs' indicate the set of mouth states that are
-    reached by 'deterministic propagation' of a given set of springs $S$, but
-    which cannot be determined by interference.
-
-\end{definition}
-
-Since horizon states are reached by deterministic propagation they have at least
-one predecessor with a determined recipe.  The name 'horizon' is chosen because
-it defines the border of determination.  Beyond that begins the realm of
-dead-locked indeterminacy.  In particular, if the initial state is undetermined, it becomes
-the one and only horizon state. The 'before begin state' with its recipe
-$R_{init}$ constitutes the predecessor with the determined recipe.  Figure
-\ref{fig:horizon-state} shows a horizon state which contains one determined
-entry and another undetermined entry. 
-
-\begin{figure}[htbp] \leavevmode \label{fig:horizon-state}
-\begin{verbatim}
-                         R(a) -->--.
-                                    \
-                                     +---[ op_i ]---( c )----> R(i)
-                                    /
-                     R(b) = ? -->--'
-
-\end{verbatim}
-\caption{A horizon state state with an entry from a determined state $a$ and 
-    an undetermined state $b$.}
-\end{figure}
-
-Horizon states cannot produce a definite output recipe, because, not all of
-their entry recipes are determined. However, a good guess can be made.  The
-guess being made as a starting point for a horizon point is 'optimistic' in a sense
-that it requires the least amount of store/restore operations. Let $P_d(h)$
-denote the set of determined predecessor states of horizon state $h$ and
-$P_u(h)$ the set of undetermined predecessor states. An optimistic guess is
-that the output recipe does not contain more incoherence than the incoherence
-inflicted by the already determined entry recipes.
-
-\begin{definition} Optimistic Interference
-
-    Optimistic interference develops a recipe $R(i)$ for a horizon state $i$
-    based on determined entry recipes $R_E(i,k) =
-    op_i\,\circ\,R(k)\,\mbox{with}\,k \in P_d(i)$.  The output recipe $R(i)$
-    depends on the coherence of $v$, i.e. 
-
-    \begin{equation} \label{eq:opt-interference-output}
-        R^v(i) = 
-        \begin{dcases*}
-            R_E^v(i,k_0) & if $v$ is coherent $\forall\,k\,\in\,P_d(i)$ \\
-            v_r         & else
-        \end{dcases*}
-    \end{equation}
-
-    for an arbitrary $R_E^v(i,k_0)\neq\eta$. For the snapshot sets of the
-    result recipe $R(i)$ it holds
-
-    \begin{equation} \label{eq:interference-snapshot-sets}
-        S^v(R(i)) = 
-        \begin{dcases*}
-            \bigcap_{k\in Pred(i)} S^v(R_E(i,k))            & if $v$ is coherent \\
-            \{\,i\,\}\,\bigcap_{k\in Pred(i)} S^v(R_E(i,k)) & else \\
-        \end{dcases*}
-    \end{equation}
-
-    A prerequisite for optimistic interference is that 
-    $size(P_d(i)) \neq \emptset$.
-
-\end{definition}
-
-The path from the init state to a horizon state must pass initially through a
-determined entry of the horizon state (TODO: proof). Thus, the optimistic
-interference, actually, produces a correct recipe for transition sequences
-where the horizon state is entered once (through a sequence from init state to
-$P_d(h)$). A deterministic propagation of the optimistic recipes explores tails
-of transition sequences that follow the horizon-reaching sequences. An algorithm
-that continues at every mouth state, if new influences are worked into the 
-output recipe, and stops when no new influences need to be worked in is safe
-to cover the behavior of the complete state machine. 
-
-There are three possible ends of of deterministic propagation:
-
-\begin{enumerate}
-    \item A terminal is reached, i.e. the end of a transition string. There are 
-        no successors, thus no further investigation is required. 
-
-    \item A not-yet reached mouth state is reached. \label{itm:not-yet-reached-mouth}
-
-        A stretch lies ahead which has not yet been explored.  Optimistic
-        interference provides a basis to explore such stretches.
-
-    \item A mouth state is reached which \textit{has} previously determined its
-        output recipe. Two cases are possible.
-,
-        \begin{enumerate}
-            \item Same output recipe.
-
-                The output recipe already captures all eventualities of the new
-                paths by which it is reached. Its successors may be considered
-                of implementing the correct recipes for any transition sequence
-                that starts with the ones that reached that state. No further
-                action is required.
-
-            \item New output recipe.
-
-                \begin{enumerate}
-                \item If previously coherent components become incoherent, then the
-                old recipe was not general enough to capture the differences at
-                the entry recipes.  Such components \textit{must} be propagated to all
-                successors to ensure that they are correct. \label{itm:new-recipe-coherent-to-incoherent}
-                    
-                \item If previously incoherent components become coherent, then this
-                expresses a potential of improvement. Implementing 'store/restore' 
-                in a mouth state is still generally correct. Thus, propagating this 
-                change is \textit{not necessary} for correctness.
-                \label{itm:new-recipe-incoherent-to-coherent}
-                \end{enumerate}
-          
-                A component $v$ which is incoherent in $op^v(h)\circ\,R(k)$ for
-                $k\in P_d(h)$ cannot become coherent. The cause of incoherence
-                lies already in difference of the old $P_d(h)$.  But, it can
-                become more incoherent, if the new entries differ. 
-
-        \end{enumerate}
-        
-\end{enumerate}
-
-The cases where the mouth state may become a spring for further deterministic
-propagation are \ref{itm:not-yet-reached-mouth},
-\ref{itm:new-recipe-coherent-to-incoherent}, and
-\ref{itm:new-recipe-incoherent-to-coherent}. Case
-\ref{itm:not-yet-reached-mouth} is required, so that information from every
-stretch in the state machine is collected.  Since any stretch in a state
-machine is adjacent to some other stretch, it is safe to assume that every such
-stretch in the state machine is eventually reached by analysis. Case
-\ref{itm:new-recipe-coherent-to-incoherent} needs to be followed, so that every
-influence of each transition scenario is worked into mouth state recipes. In
-other words, it ensures that they capture sufficient incoherence in the entry
-recipes. 
-
-Solely \ref{itm:new-recipe-incoherent-to-coherent} is not required for
-correctness, only for optimization. In fact, excluding the change from
-incoherent to coherent components avoids another type of dead lock scenario.
-It is conceivable that a new coherence in a mouth state $i$ triggers a new
-coherence in another mouth state $q$. This again, may then trigger incoherence
-in state $i$ which results in coherent in state $i$, and so on. Such scenarios
-are impossible if transitions from incoherent to coherent components are
-prevented.
-
-For case \ref{itm:not-yet-reached-mouth} optimistic interference, or normal
-interference is applied. The treatment of case
-\ref{itm:new-recipe-incoherent-to-coherent} is postponed. The behavior of treating
-new 'versions' of recipes can be expressed as 'cautious interference'. The fact
-that a component was incoherent in the last determined recipe is expressed
-as $i\in\,S^v(R(i))$
-
-\begin{definition} Cautious Interference
-
-    Cautious interference develops a recipe $R(i)$ for a mouth state $i$ 
-    based on entry recipes $R_E(i,k) =
-    op_i\,\circ\,R(k)\,\mbox{with}\,k \in P_d(i)$ and the previously developed
-    recipe $R_{prev}(i)$ by 
-
-    \begin{equation} \label{eq:opt-interference-output}
-        R^v(i) = 
-        \begin{dcases*}
-            R_E^v(i,k_0) & if $v$ is coherent $\forall  k\in P_d(i)$ and $i\notin S^v(R_{prev}(i))$\\
-            v_r         & else
-        \end{dcases*}
-    \end{equation}
-
-    for an arbitrary $R_E^v(i,k_0)\neq\eta$. For the snapshot sets of the
-    result recipe $R(i)$ it holds
-
-    \begin{equation} \label{eq:interference-snapshot-sets}
-        S^v(R(i)) = S^v(P_{prev}(i)) \cap
-        \begin{dcases*}
-            \bigcap_{k\in Pred(i)} S^v(R_E(i,k))            & if $v$ is coherent \\
-            \{\,i\,\}\,\bigcap_{k\in Pred(i)} S^v(R_E(i,k)) & else \\
-        \end{dcases*}
-    \end{equation}
-
-    A prerequisite for cautious interference is that $size(P_d(i)) \neq
-    \emptset$ and that $R_{prev}(i)$ exists.
-
-\end{definition}
-
-The influence on $V_c$ is developed by composition, respectively,
-deterministic propagation. It ends either in a terminal or at a mouth state
-where its setting influences interference. If the output recipe in such a mouth
-state remains the same, then it can be stated, that it is general enough to
-capture all incoming recipes. The influence of the stretch does not have to be
-considered twice. If it changes, though, then the output recipe was not general
-enough. The new recipe must be propagated along its paths ahead.  From this
-consideration, it is safe to assume that any influence along any stretch is
-included into consideration for any of its successor states that may be
-influenced.
-
-If a previous horizon state is reached through its undetermined predecessors
-$R_u(h)$, then new entry recipes become available, and the guess can be
-specified more precisely. First of all, it must be stated, that 
-
-
-If a new undetermined mouth state is reached, then it can be said, at least
-that the transition sequence which reached it has been considered. If the mouth
-state is reached the first time, then the stretch ahead gets on the 'todo-list'
-for deterministic propagation. This implies, that upon termination every
-stretche's impact on its mouth state ahead is considered.
-
-
-For a horizon state, using the statements on correctness
-\ref{stm:correctness-rule} and determinacy \label{stm:determinacy} of
-deterministic propagation a key rule can be derived that will allow to resolve
-the dead-lock states.
-
-Given is a horizon state $h$ with a set of determined predecessor recipes $R_d$
-and a set of undetermined predecessor recipes $R_u$. Let $R(i)=R^e(h)$ be an
-estimated recipe. If deterministic propagation is applied based on a virtual
-spring $h$ with a recipe $R(h)$ and all undetermined recipes $R_u$ are,
-as a result, determined, then the undetermined recipes solely depend on the 
-output recipe of $h$ (see determinacy \ref{stm:determinacy-rule}). As long
-as the output recipe does not change, the recipes $R_u$ will be the same. 
-If the interference in $h$ based on all recipes $R_d$ and $R_u$ result in the
-same recipe $R^e(h)$, then the output recipe will never change, regardless how
-many times the horizon state is repassed. 
-
-According to the correctness rule \ref{stm:correctness-rule}, the developped
-recipes are correct, if the springs are correct. Thus, $R^e(h)$ is chosen 
-so that it fits the interference of all determined entries, then $R^e(h)$
-is correct, as long as $h$ is entered by determined predecessors. Any path
-from the initial state to the horizon state, though, goes through deterministic
-recipes. Thus, it is primarily true for all transitions that pass through $h$
-once but not twice. It follows, that
-
-\begin{statement} Correctly Estimated Interference
-
-    Let  $R^e(h)$ be an estimated output recipe with an estimated snapshot set
-    $S^v(h)\forall v\in\,V(h)$. If deterministic propagation is applied with this
-    state as spring and 
-
-    \begin{enumerate}
-        \item as a result, all previously undetermined predecessor states are
-              determined, and
-        \item the interference of all entry recipes $R_E(h,k)$ produces the 
-              estimated recipe $R^e(h)$, 
-    \end{enumerate}
-
-    then $R^e(h)$ is the universally correct recipe for state $h$.
-    
-\end{statement}
-
-How can a good estimate recipe $R^e(h)$ be found?  There are two extreme
-assumptions that may be made with respect to $R(i)$ in the presence of
-uncertainty on $R(b)$. The most daring statement is to assume that the
-components of the determined entries which are coherent, will remain coherent
-with the remaining entries, once they are known. 
-
-do not enter the mouth state twice. directly after the horizon state. Or, more precisely it is true for
-transition sequences that do not reach another dead-lock state after the
-horizon.
-
-
-The most cautious assumption is that all components are
-incoherent, except for those where $op^v_i$ is history independent. The latter
-implements storing before and restoring after the mouth state, and is generally
-correct.  For the former 'daring' approach precise conditions must be derived
-before it can be applied.
-
-
-\begin{definition} Cautious Interference
-
-Cautious interference develops an output recipe for an undetermined mouth
-state. The output recipe $R(i)$ is determined by its components for each $v$
-          
-\begin{equation} \label{eq:cautious-output-recipe}
-    R^v(i) = \begin{dcases*}
-              op^v_i & if $op^v_i$ is history-independent \\
-              v_r    & else
-             \end{dcases*}
-\end{equation}
-
-The snapshot set for $R(i)$ is
-
-\begin{equation} \label{eq:cautious-interference-snapshot}
-    S^v(R(i)) = \{ \, i \, \}
-\end{equation}
-
-\end{definition}
-
-The snapshot set cannot be empty, because if $op^v_i$ has history-independent
-for all $v$, then it was an initial spring--which can never be a dead-lock
-state.  Thus, there is at least one case where state 'i' takes a snapshot. On
-the other hand, if $op^v_i$ is history-independent, then
-$S^v(R(i))=S^v(op^v_i)=\emptyset$. When the union expression from equation
-\eqref{eq:interference-snapshot-sets} is applied, the snapshot set consists of
-one single element: the state $i$ itself. 
-
-With the cautious interference, the deterministic propagation algorithm
-receives new springs from which it can develop further recipes. Again, deterministic
-propagation may end up with undetermined mouth states. Then, again, cautious
-interference may derive intermediate recipes for the hew horizon states. This
-loop continues until all recipes are found. 
-
-
-\begin{figure}[htbp] \leavevmode \label{fig:algo-2}
-\begin{verbatim}
-   
-           (1) springs = initial springs of state machine.
-
-   .- yes -(2) springs == empty set? <-----------------------------.
-   |                                                               |
-   |       (2) recursive composition starting at springs          |
-   |                                                               |
-   |       (4) springs = by interference --------------------------+
-   '-->---.                                                        |
-   .- yes -(5) All states determined?                              |
-   |                                                               |
-   |       (5) springs = by cautious interferences ----------------'
-   '------.
-           (6) Stop 
-
-\end{verbatim}
-
-\caption{Complete algorith for determination of recipes.}
-\end{figure}
-
-
-
-
-Let the following two predecessor recipes of a horizon state be defined:
-$k_d$ is the prototype of a determined predecessor recipe and $k_u$ is the
-prototype of an undetermined predecessor recipe. For the \textit{determined}
-entry, it holds that the path to it \textit{does not include a dead-lock state}
-except via a spring. But, an composition over a spring state $s$ sets
-$S(R(s))=\emptyset$. So, if there was a snapshot from a dead-lock state it must
-pass the spring and from there $S(R(i)))=\emptyset$ for all states $i$ on the
-path to the mouth's entry. It holds in general
-%%
-\begin{equation} \label{eq:before-horizon}
-        S(R^v(k_d))\,\cap\,U\,=\,\emptyset
-\end{equation}
-%%
-From equation \eqref{eq:cautious-interference-snapshot} it follows that no
-snapshot before a horizon state remains in the output recipe.
-%%
-\begin{equation}
-        S(R(i))\,\subseteq\,\{\,i\,\}
-\end{equation}
-%%
-Undetermined entry recipes develop from the outputs of cautious interference 
-recipes. Thus, their snapshots can only root back to horizons or their successor
-states, i.e.
-%%
-\begin{equation} \label{eq:after-horizon}
-        S(R^v(k_u))\,\subseteq\,\,U
-\end{equation}
-%%
-For recipes to pass a mouth state they need to be the equal for all entries. Also
-their snapshot maps must be equal. However, equations
-\eqref{eq:before-horizon} and \eqref{eq:after-horizon} can only be true, if
-%%
-\begin{equation} \label{eq:coherence-condition}
-    S(R^v(k_u))\,=\,S(R^v(k_d))\,=\,\emptyset 
-\end{equation}
-
-This in turn, is only true if $R^v(k_u)$ and $R^v(k_d)$ do not rely on stored
-values at all, i.e. they are history-independent. This result is very important. When
-$R^v(k_u)$ becomes determined, through subsequent composition, it is not
-possible that it produces a new component $R^v(i)$ through interference except
-that $S^v(R(i))=\varepsilon$.  For both cases, $op^v_i$ being history-independent and
-history-dependent, the combination of entry operations $op^v_E(i,k) = \{ v_r
-\coloneqq R_E(i,k) \}$ and the output recipe $R^v(i)=\{ v\coloneqq v_r \}$
-remains a correct solution $\blacksquare$.  
-
-The output recipe $R(i)$, the coherence database $H^v(i)$, and the snapshot
-maps $S^v(i)$ can be aquired based on existing procedures of composition and
-interference. The key for that is a special definition for the undetermined
-predecessor recipes. With such a 'cautious recipe' in place of undetermined
-entry recipes ordinary interference may be applied to produce the exact same
-result as defined in equation \eqref{eq:cautious-output-recipe}.  Let the
-undetermined predecessor recipes be defined as
-
-\begin{equation} \label{eq:undetermined-recipe}
-    R^v(k_u) = \{ v \coloneqq v_r \} \,\,\mbox{and}\,\, S^v(R(k_u)) = \sigma\,\,\forall\,v\,\in V(i)
-\end{equation}
-
-where $\sigma$ is a 'singular element'. Each $\sigma$ exists solely once. For
-any two sets $B$ and $C$ it holds that if a $\sigma \in B$ it follows that
-$\sigma \notin C$.  If $S^v(R_x)$ holds $\sigma$ no other snapshot map can hold
-the same sigma.  With such a definition, the components of a \textit{cautious
-entry recipe} $R_E(i,k_u)$ are determined by
-
-\begin{eqnarray}
-    R^v_E(i,k_u) & = & op^v_i \circ R(k_u) \\
-                 & = & \begin{dcases*}
-                       op^v_i         & if $op^v_i$ is history-independent \\
-                       x \coloneq v_r & else
-                       \end{dcases*}
-\end{eqnarray}
-
-Wherever $op^v_i$ is history-independent, $R_E(i,k_u)$ is independent of $R(k_u)$ and is
-therefore the same for all predecessors. It follows
-
-\begin{equation} \label{eq:cautious-recipe-coherence}
-    op^v_i \,\mbox{is history-independent}\,\Rightarrow\,H^v(i, k_u) = true
-\end{equation}
-
-The snapshot maps develop to
-\begin{eqnarray} \label{eq:cautious-repl-1}
-    S^v(R_E(i,k_u)) & = & S^v(op_i \circ R(k_u)) \\ 
-                    & = & \begin{dcases*}
-                          \varepsilon          & if $op^v_i$ is history-independent \\
-                          S^v(R(k_u)) = \sigma & else
-                          \end{dcases*}
-\end{eqnarray}
-
-Since $\sigma$ appears in the expressions for history-independent components
-$op^v_i$, $S^v(R_E(i,k_u))$ can never be the same for all predecessors.
-Ordinary interference, from definition \ref{def:interference}, imposes in that
-case incoherence. Thus,
-
-\begin{equation} \label{eq:cautious-recipe-incoherence}
-    op^v_i \,\mbox{is history-dependent}\,\Rightarrow\,H^v(i, k_u) = false
-\end{equation}
-
-Thus, the entry recipes are coherent if, and only if $op^v_i$ is history-independent.
-According to \eqref{eq:interference-output} applied interference delivers
-
-\begin{equation} \label{eq:interference-output-2}
-    R^v(i) = \begin{dcases*}
-              R_E^v(i,k) & if $op^v_i$ is history-independent.\\
-              v_r       & else
-             \end{dcases*}
-\end{equation}
-
-which directly corresponds first equation \eqref{eq:cautious-output-recipe}
-from the definition of cautious interference. The second equation
-\eqref{eq:cautious-coherence} on coherence is fulfilled by equations
-\eqref{eq:cautious-recipe-coherence} and
-\eqref{eq:cautious-recipe-incoherence} . The last equation on snapshot maps
-\eqref{eq:cautious-interference-snapshot} is maintained by
-\eqref{eq:cautious-repl-1}.  Cautious interference can, therefore, be
-implemented by the use of a special 'undetermined predecessor recipe' from
-equation \eqref{eq:undetermined-recipe}.  When composited with the state's
-$op_i$ and passed through ordinary interference, exact the same expressions
-result as they are required for cautious interference $\blacksquare$.
-
-The output recipes $R(i)$ can be used for recursive composition of recipes so
-that other dead-lock states receive determined entries and become part of the
-horizon.  The horizon moves, the set of dead-lock states shrinks and a new
-cycle begins.  This continues until no dead-lock state is left.  Eventually,
-all entry recipes are determined. Then, it is possible that those entries which
-are flagged with $H^v(i,k)=true$ implement the entry operation
-$op_E^v(i)=R_E^v(i,k)$.  Before, however, another opportunity to optimize is
-explored. 
-
-%==============================================================================
-%
-%==============================================================================
-\section{Fine Adjustment}
-
-As mentioned in the previous section, the condition of coherence in the entry
-recipes can be maintained, if they are history-independent--see equation
-\ref{eq:coherence-condition}.  During cautious interference, $op^v_i$ is
-overtaken to the output recipe $R^v(i)$ if it is history-independent.  With equation
-\ref{eq:coherence-condition} and determined entries $R_E(i,k)$ it is
-sufficient to require 
-
-\begin{equation} \label{eq:coherence-condition-2}
-    op^v_i\,\circ\,R(k)\,=\,C\,\,\mbox{for a constant $C$ and } \forall\,k\in\,Pred(i)
-\end{equation}
-
-That means, that all entry recipes produce the same constant value. Consider
-the following example.
-
-\begin{equation}
-    op^v_i = \{ v \coloneqq  v + 1 \}
-\end{equation}
-
-The operation is clearly dependent on the previous value of $v$--thus 
-history-dependent. However, if the predecessors recipe $R(k)$ assigns a constant $5$ to
-$v$, then the concatenation becomes
-
-\begin{equation}
-    op_i\,\circ\,R(k)) = \{ v \coloneqq  6 \}
-\end{equation}
-
-which does not depend on any reference variable. If all entry recipes of a
-mouth state result in the same constant assignment, then the entry recipes for
-$v$ are coherent.  The same constant may appear in the output recipe. Since
-no storing and restoring is now required for $v$, the 'entry operation
-implementation flag' can be turned of, that is
-
-\begin{equation}
-    H^v(i,k)\,=\,false\,\,\mbox{if}\,op^v_i\,\circ\,R(k)\,=\,\mbox{const.}\,\forall\,k\,\in\,Pred(i)
-\end{equation}
-
-A recipe $R(i)$ that replaces some components by constants can now again be
-propagated through composition. An entry is only constant if it is totally
-independent of its predecessor states. The output of a successor mouth state
-will only become constant, if all of its inputs are constant. Thus, constant
-components are only propagated beyond mouth states if all entries are constant.
-If all entries are constants they are all independent of their predecessors.
-Thus, also the mouth's output recipe remains constant. It follows that through
-constant propagation, recipes become constant but never change their value
-further.  In particular, it is impossible that they become non-constant.
-The repeated propagation of recipes may be applied with the difference of the
-following termination criteria.
-
-\begin{condition}
-Condition for interference during dead-lock fine-tuning.
-
-The result of interference is only to be taken into account, if the size of the
-new recipe's set of snapshot states is smaller than the size of the old
-recipe's set of snapshot states, i.e.
-
-\begin{equation} 
-    size(S(R_{new}(i)))\,<\,size(S(R_{old}(i)))
-\end{equation}
-
-\end{condition}
-
-With the mentioned requirement a mouth state $i$ can be passed at maximum a
-restricted $N$ number of times, where $N$ is the number of variables in $V(i)$.
-Since, number of states is restricted, in general, the total number of
-iterations is restricted. When no new interference is accomplished, no new
-constant entry recipes can be determined and the process comes to an end.
-Eventually, remaining entry operations $op_E^v(i)$ for which $H^v(i,k)=true$
-must be implemented according to $v_r \coloneqq  R_E^v(i,k)$.
-
-\section{Superset of Required Variables}
-
-In some cases, the precise set of required variables $V(i)$ cannot be
-determined without an excessive path-analysis. Such path analysis is difficult
-to tame with respect to computational effort and its correctness may be
-difficult to proof.  A superset of $V(i)$ is often much easier to determine.
-This implies that there might be variables in $V(i)$ which are actually not
-necessary. This section investigates the impact of using a superset instead
-of using the precise set with respect to correctness and performance. 
-
-\begin{figure}[htbp] \leavevmode \label{fig:fork-states}
-\begin{verbatim}
-         
-        ,---( 1 )---. .---( 4 )---.       
-     ( 0 )         ( 3 )         ( 6 )  ...
-        '---( 2 )---' '---( 5 )---'
-
-\end{verbatim}
-\caption{Sequence of forking states.}
-\end{figure}
-
-Consider a simple sequence of forking states as shown in figure
-\ref{fig:fork-states}.  The first state where paths meet is state 3. For this
-state there are two paths to consider: $0 \rightarrow 1 \rightarrow 3$ and $0
-\rightarrow 2 \rightarrow 3$.  The second state where paths meet is state 6. To
-reach this state four paths need to be considered: $0 \rightarrow 1 \rightarrow
-3 \rightarrow 4 \rightarrow 6$, $0 \rightarrow 1 \rightarrow 3 \rightarrow 5
-\rightarrow 6$, $0 \rightarrow 2 \rightarrow 3 \rightarrow 4 \rightarrow 6$,
-and $0 \rightarrow 2 \rightarrow 3 \rightarrow 5 \rightarrow 6$. A sequence of
-N meeting states with M forking paths in between each, requires to analyze
-$M^N$ different paths.  It is therefore easy to find configurations that cannot
-be analyzed even by the fastest machines.  Further, the influence of loops on
-$V(i)$ may introduce complications which are difficult to overview.  Briefly
-said, due restrictions of practical implementations it is impossible to
-determine the precise set of $V(i)$ in the general case. 
-
-What consequences arise if $V(i)$ contains unnecessary variables?  An operation
-$op_i$ that does not contain a component $op^v_i$ must implement it by the
-no-operation $v\coloneqq v$. With respect to the development of $v$ such
-operations are indifferent. The set of required variables $V(i)$ influences the
-optimization at the following stages:
-
-\begin{description}
-\item [Composition]
-
-    The resulting recipe $R(i) = op_i\circ R(k)$ may contain components
-    $R^v(i)$ which are unnecessary, because of unnecessarily added components
-    $op^v_i$. $R^v(i)$ only plays a role in the theoretical investigations.
-
-\item [Interference]
-
-    If $op_i$ or $R(k)$ contain a component for $v$, then the concatenation
-    produces possibly incoherent entry recipes $R^v_E(i,k)$.  In this case,
-    redundant entry operations $op_E^v(i,k)$ are added to the resulting state
-    machine. Consequently, the resulting recipe $R(i)$ contains a redundant
-    operation $v\coloneqq v_r$ and the set of snapshot states $S(R(i))$ uust
-    contain $i$.
-
-    If neither $op_i$ nor $R(k)$ contain a component for $v$, the $op^v_i$ is
-    assumed to be the no-operation. Thus $R_E^v(i,k)$ becomes the no-operation
-    for all predecessors, and $v$ is coherent. No additional entry
-    operations are added and the component $R^v(i)$ of the output recipe
-    becomes the no-operation.
-
-\item [Initial Springs]
-
-    Since the no-operation is not constant, if added redundantly as a component
-    to $op_i$ a state may fail to be considered an initial spring--despite, of
-    the constancy of its real components (see definition \ref{def:springs}).
-    That means, that the propagation of recipes may start with fewer starting
-    points. It is even conceivable, that there is no initial spring at all.
-    Then, however, the optimization is done entirely in the frame of dead-lock
-    analysis.
-
-\item [Springs]
-
-    A state $i$ is a spring if $R(i)$ is determined. Undetermined recipes,
-    however, originate in missing entry recipes at mouth states. Redundant
-    components $op^v_i$ do not influence this behavior.
-
-\item [Cautious Interference]
-
-    Redundant non-constant entry operations cause redundant entry operations
-    and no-operations in the output recipe. Some of them, might be removed
-    during fine adjustment after dead-lock analysis.
-
-\end{description}
-
-In conclusion, if the optimization is applied on a superset of $V(i)$ instead
-of $V(i)$ then redundant entry operations at mouth states may occur. It is
-assumed that from the composition of the recipe, the exit operations can filter
-out settings which are unnecessarily mentioned in $V(i)$. The consideration of
-a superset is appropriate. In order to judge the impact of this simplification,
-it is necessary to provide a \textit{overhead analysis} for the particular
-investigated behavior. That is, it must be clear under what circumstances what
-redundant operations are redundantly added to the resulting state machine.
-Based on that, decisions may be made about the effort to be put into a
-fine-tuning of the superset selection.
-
-______________________________________________________________________________
-PROOF THAT THERE ARE LOOPS IN DEAD LOCK STATES _______________________________
-
-The end of a string of linear states is only undetermined, if the begin of the
-string is undetermined. The begin of such a string must be a mouth state. Thus,
-a string of linear states is only undetermined, if at its beginning there is an
-undetermined mouth state. Consequently, the strings of linear states in between
-mouth states may be omitted from considerations on indeterminacy.
-
-An undetermined mouth state $i \in U$ must have at least one undetermined entry
-recipe. Either the state from which it is entered is an undetermined mouth state, 
-or the string of linear states backwards guides to an undetermined mouth state. 
-Let the fact that a mouth state $i_0$ is undetermined because of another
-undetermined mouth state $i_1$ be noted as $i_0 \vartriangleleft i_1$. Their might
-be more than one dependency, but considering one is enough for this proof. Each
-undetermined mouth state has at least one undetermined mouth state that feeds
-an undetermined entry. Thus, the sequence 
-
-\begin{equation}
-    i_0\,\vartriangleleft\,i_1\,\vartriangleleft\,i_2\,\vartriangleleft\,\ldots
-\end{equation}
-
-has no end. But the set of undetermined states $U$ is finite. Thus, there must
-be states appearing repeatedly in the sequence. Since the dependencies relate
-to transition paths, this proves that loops must be involved. Loops, or circular
-dependencies, are therefore a necessary condition for the existence of
-dead-lock states $\blacksquare$. 
-_______________________________________________________________________________
-
-In order to understand the nature of dead-lock states better, it makes sense to
-briefly review the recursive composition of recipes. The initial state $i_0$
-is the first state that is entered. It has at least one entry recipe
-$R_E(i0,outside)$, i.e. the recipe to be executed when coming from $outside$
-the state machine. If it has another entry that is undetermined and $op_{i0}$
-is history-dependent, then the initial state becomes a horizon state.  Otherwise, it
-is a spring and starting from $i0$ determined recipes are propagated through
-composition.  Composition ends with the determination of an entry into a
-mouth state. If the reached mouth state ends up with determined entries, then a
-determined recipe is propagated until a terminal or another mouth state is
-reached. If a mouth state is reached where not all entries are determined, then
-its output recipe is undetermined. Since by reaching it at least one entry is
-determined and, thus,the state is a horizon state. The output recipe is
-undetermined and no successor state is further reached with determined recipes.
-Consequently, all successor states of that state are undetermined.  Determined
-mouth states performed interference, and therefore must have all their entries
-determined.  None of their entries can directly originate in a dead-lock mouth
-state. From this discussion, an important conclusion can be drawn.  
-
-\begin{statement} \label{stm:dead-lock-horizon}
-A dead-lock state can only be reached by a path that guides through a horizon
-state.  Paths from dead-lock states to non-dead-lock mouth states must contain
-an initial spring.  
-\end{statement}
 
 \end{document}
 
-If $v$ is incoherent, an entry operation $op^v_E(i,k)$ must be implemented in
-the resulting state machine that stores the computed value of $v$ in $v_r$.
-
-The existence of the entry operations $op_E(i,k)$ is the reason why the result
-is expressed as a multi-entry state machine is required.  
-The set of mouth states which must implement entry operations is simply the
-union of all snapshot sets, i.e.
-
-\begin{euqation}
-    EOS \,=\, \Cup_{\forall i} S^v(R(i)) \, \cup \, \Cup_{\forall i,k} S^v(R_E(i,k))
-    
-\end{euqation}
-
-Eventually, when all recipe analysis is done, the entry operations in the
-resulting state machine may be implemented according the entry recipes, i.e.
-
-\begin{equation} \label{eq:entry-operation-implementation}
-      op_E^v(i,k) \,=\, \{ v_r \,=\, R^v_E(i,k) \} \,\mbox{if $i\,\in\,EOS$}.
-\end{equation}
