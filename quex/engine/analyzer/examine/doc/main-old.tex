@@ -117,7 +117,7 @@ implemented and produce $v$ and may also use $v$ as input. In the resulting
 state machine, as in the example of figure \ref{fig_se-vs-me}.b), a state may
 apply multiple entry recipes. These entry recipes are physically implemented,
 but produce reference variables $v_r$ not $v$.  They rely on reference values,
-but not directly on $v$. The recipe $R(i)$ is only physically implemted for the
+but not directly on $v$. The recipe $r_i$ is only physically implemted for the
 exit of the state machine from state $i$.  
 
 \begin{figure}[htbp] \leavevmode \label{fig:se-vs-me}
@@ -137,12 +137,12 @@ b)
      
 \begin{verbatim}
                   .---.
-           ...   ( k_0 )------[ v_r = R_E(1, k_0) ]----.
-                  '---'                                 \         .-.   R(i)
-           ...   ( k_1 )------[ v_r = R_E(1, k_1) ]------+-------( i )-------->  
+           ...   ( k_0 )------[ v_r = r^E(1, k_0) ]----.
+                  '---'                                 \         .-.   r_i
+           ...   ( k_1 )------[ v_r = r^E(1, k_1) ]------+-------( i )-------->  
                   '---'                                 /         '-'
-           ...   ( k_3 )------[ v_r = R_E(1, k_2) ]----'           : exit
-                  '---'                                       [ v = R(i) ]
+           ...   ( k_3 )------[ v_r = r^E(1, k_2) ]----'           : exit
+                  '---'                                       [ v = r_i ]
                                                                    :
 \end{verbatim}
 \caption{Two types of state modelling: a) Single entry state. 
@@ -183,17 +183,17 @@ be defined.
         (h, v_r) \rightarrow v 
     \end{equation}
 
-    The entry recipe $R^v_E(i,k)$ describes how to compute the value of $v$ upon
-    entry into a state $i$ from a predecessor state $k$. The exit recipe 
-    $R^v(i)$ describes how to compute $v$ upon exit from the state.
+    The entry recipe $r^v_{i,k}$ describes how to compute the value of $v$ upon
+    entry into a state $i$ from a predecessor state $k$. The exit recipe $r_i$
+    describes how to compute $v$ upon exit from the state.
 
     For each recipe it must be described how composition of operations and
-    recipes $op_i\circ R(k)$ produce a new recipe. 
+    recipes $op_i\circ r_k$ produce a new recipe. 
 
-    An initial recipe $R_{init}$ is required, which determines $d$ when the
+    An initial recipe $r_{init}$ is required, which determines $d$ when the
     state machine is entered. 
 
-    A reference value based recipe $R_{ref}$ is required, which determines
+    A reference value based recipe $r_{ref}$ is required, which determines
     a recipe that solely depends on a stored reference variable $v_r$.
 
 \end{definition}
@@ -228,8 +228,8 @@ An example of a recipe is the line number counting recipe:
         additions need to be implemented.
 
    \item[Composition:] Let \verb/delta/ be the value by which an operation increments
-       the line number and \verb/dk/ the '$d$' of the recipe $R(k)$.
-       Then the line number of the composition $op_i\circ R(k)$ is the sum of
+       the line number and \verb/dk/ the '$d$' of the recipe $r_k$.
+       Then the line number of the composition $op_i\circ r_k$ is the sum of
        both. That is the '$d$' if the resulting recipe is given by::
 
         \begin{verbatim}
@@ -237,7 +237,7 @@ An example of a recipe is the line number counting recipe:
                  d.use_reference_variable = dk.use_reference_variable
         \end{verbatim}
 
-   \item[$R_{init}$:] Before entering the state machine the line number offset
+   \item[$r_{init}$:] Before entering the state machine the line number offset
         is assumed to be zero and no reference variable is used, i.e $d$ is
         initialized to::
 
@@ -246,7 +246,7 @@ An example of a recipe is the line number counting recipe:
                 d.use_reference_variable = false
         \end{verbatim}
 
-   \item[$R_{ref}$:] The recipe that solely depends on the content of the
+   \item[$r_{ref}$:] The recipe that solely depends on the content of the
        reference variable has the settings of $d$ given by::
 
         \begin{verbatim}
@@ -263,13 +263,268 @@ and described in terms of recipes.
 %==============================================================================
 %
 %==============================================================================
-\section{Linear States and Mouth States}
+\section{Composition and Junction}
 
-There are two types of states in a state machine. One type of states where the
-setting of a variable is distinctly determined by its setting in the last step.
-In a second type of states a, variables value depends on the state from where the
-last step originated.  The two state types are defined below as linear and
-mouth states.
+The following section elaborates on two required concepts for the investigation
+of deterministic behavior, namely 'composition' and 'junction'.  Given a recipe
+$r_k$ to compute $v$ before an operation $op_i$ and given the operation $op_i$
+on $v$, functional composition describes how to produce a recipe $r^E_{i,k}$
+when $op_i$ is applied after $r_k$, i.e.
+
+\begin{equation} \label{eq:composition}
+    r^E_{i,k} = op_i \circ r_k
+\end{equation}
+
+The recipe $r^E_{i,k}$ is an entry recipe into state $i$. The correspondence
+between the recipes $r_k$, $r^E_{i,k}$, the operation $op_i$, and the state $k$
+and $i$, are shown in figure \ref{fig:composition}. Figure \ref{fig:junction}
+shows an example of thee different entry recipes $r_{i,a}$, $r_{i,b}$, and
+$r^E_{i,c}$ into a state $i$. Let the procedure to determine the exit
+recipe $r_i$ be called 'junction'. 
+
+\begin{figure}[htbp] \leavevmode \label{fig:composition}
+\begin{verbatim}
+                                                     
+                                                    
+                  .-.   r_k                r^E_{i,k}      .-.
+                 ( k )--------[ op_i ]----------  ... -->( i ) . . .
+                  '-'                                     '-'
+
+\end{verbatim}
+\caption{The concept of a linear state in a single-entry state machine.}
+\end{figure}
+
+\begin{figure}[htbp] \leavevmode \label{fig:junction}
+\begin{verbatim}
+                 r^E_{i,a}
+                  ------>----------.  
+                                    \ 
+                 r^E_{i,b}           \     r_i
+                  ------>-----------( i )----------> 
+                                     /          
+                 r^E_{i,c}          /
+                  ------>----------'
+\end{verbatim}
+\caption{The concept of a linear state in a single-entry state machine.}
+\end{figure}
+
+There are two ways to derive a recipe $r_i$ at a junction.  First of all, at
+each entry the entry recipe may be used to compute $v$, $v$ can be stored in a
+reference variable $v_r$, and the exit recipe can be set to $r_i=r_{ref}$.
+Second, if the procedure to compute $v$ is the same at every entry, then this
+procedure can be overtaken as exit recipe. The terms 'coherent' and 'incoherent'
+shall define the behavior at a junction. 
+
+\begin{description}
+
+    \item[Coherent setup:] The exit recipe is set to $r_i=r^E_{i,k}$ for
+        an arbitrary $k\in Pred(i)$. This setup is \textit{optional} but
+        requires that all input recipes are equal.
+
+    \item[Incoherent setup:] The exit recipe is $r_i=r_{ref}$ which restores $v_r$.
+        $v_r$ contains the value of $v$ as it is computed upon entry by
+        $r^E_{i,k}$.  This setup is \textit{mandatory} if their are two or more
+        entry recipes that differ.
+
+\end{description}
+
+The choice that is made becomes a condition which must hold for the exit recipe
+to be correct. The recipes developed on the basis of such a recipe inherit this
+condition. Let recipe conditions be defined as follows.
+
+\begin{definition} $(i,r_i), C(r), C_i(r)$ -- Recipe Condition
+
+    The tuple $(i, r_i)$ describes a condition which says that a specific $r_i$
+    must be the exit recipe of state $i$.      
+
+    The term $C(r)$ describes the conditions for a specific $r$ to be correct
+    at the place where it occurs.
+
+    The term $C_i(r)$ describes the prerequisite for a specific $r$ to be a
+    correct exit recipe in state $i$, i.e. $C_i(r) \Leftarrow (i, r)$. 
+
+    The term $C^E_{i,k}(r)$ describes the prerequisite for a specific $r$ to be a
+    correct entry recipe from state $k$ into state $i$.
+
+\end{definition}
+
+Using the attribute 'specific' emphasizes that a recipe condition focusses on a
+particular single recipe. The exit recipe conditions for incoherent and
+coherent setup are as follows.
+
+\begin{equation} \label{eq:choices}
+    C_i(r_i) = \begin{dcases*}
+               C_i(r_{ref}) = true \
+                        & for incoherent setup, i.e. $r_i=r_{ref}$. \\
+               \bigwedge_{k\in Pred(i)} C^E_{i,k}(r_i) \
+                        & for coherent setup, i.e. $r_i\noteq r_{ref}$ 
+             \end{dcases*}
+\end{equation}
+
+For the incoherent setup the condition $C_i(r_{ref})$ is always true, because
+it does not require any specific entry recipe. For the coherent setup, all
+entry recipes must be the same and equal to the exit recipe. Thus, its
+prerequisite is that the junction of all the conditions that the entry recipes
+are equal to $r_i$.
+
+Composition relies on the operation $op_i$ and $r_k$ to derive $r^E_{i,k}$. The
+operation $op_i$ of the original state machine must be assumed to be correct,
+i.e.  $C(op_i)=true$.  Thus, the only remaining condition is then one on $r_k$
+and it follows
+
+\begin{equation} \label{eq:composition}
+    C^E_{i,k}(r_i) = C(op_i \circ r_k) = C(op_i) \wedge C(r_k) = C_k(r_k)
+\end{equation}
+
+The existence of choice, i.e. the coherent or incoherent setup, implies
+alternative recipes for the state where the choice exists and each state that
+develops its recipes based on it. Let the term 'recipe alternatives' be defined
+as follows.
+
+\begin{defintion} $R_i$ -- Recipe Alternatives
+
+    For a given state $i$ the recipe alternatives $R_i$ describe the set of
+    possible recipes, i.e.
+
+    \begin{equation}
+       R_i = \{ r \,\forall\,\mbox{$r$ = candidate for $r_i$} \}
+    \end{equation}
+
+    Each recipe $r\in R_i$ is bound to a condition $C_i(r)$ under which it is
+    safe to assume that it is correct.  Respectively, the recipe alternatives
+    of the entry recipes are given by $R^E_{i,k}$ as specified below
+
+    \begin{equation}
+        R^E_{i,k} = \{ r \forall\,\mbox{$r$ = candidate for $r^E_{i,k}$} \}
+    \end{equation}
+
+    Each recipe $r\in R^E_{i,k}$ is bound to a condition $C^E_{i,k}(r)$ under
+    which it is safe assume that it is correct.  
+
+\end{defintion}
+
+As shown, the conditions of correctness remain the same upon composition. Thus,
+for a state $i$ it holds that each recipe of the predecessor state $k$ has it
+correspondence in the entry recipes.
+
+\begin{equation} \label{eq:R-entry-junction}
+    R^E_{i,k} = \{ op_i \circ r_k \,\forall\,r_k\in R_k \}
+\end{equation}
+
+In other words, for each $r\in R_k$ there is an $r_i\in R^E_{i,k}$ that is
+derived from it.  At a junction, storing and restoring is a generally correct
+solution. Thus, the reference value based recipe $r_{ref}$ is always an
+alternative. A coherent setup is only possible, if the recipe is the same at
+all entries and the conditions do not contradict. Thus, the exit recipe $R_i$
+becomes
+
+\begin{equation} \label{eq:pr-junction}
+    R_i = \{ r_{ref} \} \
+             \cap       \
+          r\in\Cap_{k\in Pred(i)} R^E_{i,k} 
+\end{equation}
+and
+\begin{equation} \label{eq:c-junction}
+    C_i(r_i) = \bigwedge_{k\in Pred(i)} C^E_{i,k}(r_i)
+\end{equation}
+
+Equation \ref{eq:pr-junction} has an important implication: If a set of entry
+recipes $R^E_{i,k}$ is completely determined, then this set is a superset of
+the possible set of exit recipes $R_i$, i.e.
+
+\begin{equation} \label{eq:pr-subset-junction}
+    R_i \subseteq R^E_{i,k} 
+\end{equation}
+
+Thus, with one given set of possible entry recipes $R^E_{i,k_0}$ the complete
+set of possible recipes $r\in R_i$ is cognizable--in absence of any further
+entry recipe. No $r_i$ is possible for state $i$, except for those in
+$R^E_{i,k_0}$. This fact is used later to prove the correctness and
+completeness of the algorithm to be applied. 
+
+\section{History}
+
+A special type of operations are 'historic independent operations' which modify
+a variable $v$ independently of its previous content. Practically, this means
+that the operation consists of assigning a constant to $v$. For historicy
+independent operations $op_i$ it holds '$op_i=op\circ r$ for an arbitrary recipe $r$. 
+Thus, all entry recipes $R^E_{i,k}$ are the same. It follows that in any 
+case, the coherent and the incoherent setup are possible, in the sense that 
+
+\begin{description}
+
+    \item[Coherent setup:] The exit recipe is set to $r_i=op_i$ with 
+        $C_i(op_i)=true$ in general.
+
+    \item[Incoherent setup:] The exit recipe is $r_i=r_{ref}$ which restores
+        $v_r$.  $v_r$ contains the value computed by $op_i$ as it is computed
+        upon entry. The condition for $C_i(r_{ref})=true$ holds also in
+        general.
+
+\end{description}
+
+The reason for $C_i(op_i)$ and $C_i(r_{ref})$ holding in general lies in the
+history independenance. The output $r_i$ is cut off history by $op_i$, so no
+specific setting of other states is required. Before this section, the set of
+alternative recipes and recipe conditions have been described in terms of
+others. For a state $i$ with a history independent operation $op_i$, $R_i$ can
+be described specifically and complete, i.e.
+
+\begin{equation} \label{eq:history-independent-completeness}
+    R_i = \{ op_i,\, r_{ref} \}\,\,\mbox{with}\,\,C_i(r)=true\,\forall\,r\in R_i.
+\end{equation}
+
+There is another recipe which is specific and complete: the initial recipe
+$r_{init}$.  It is associated to the virtual state in which the state machine
+is before it is entered. If state $0$ is the init state, then the entry recipe
+$r_{init,0}$ results from the composition
+
+\begin{equation}
+    r_{init} = op_0 \circ r_{init} \,\, \mbox{with} \,\, C^E_{init,0}(op_0\circ r_{init}=true.
+\end{equation}
+
+With the apriori-known complete recipe alternative sets introduced in this
+section as well as the rules for composition and junction, the groundwork for
+further analysis is layed out. The next section develops an algorithm to find
+the optimal configuration of a multi-entry state machine based on recipes.
+
+\section{Algorithm}
+
+By their nature of providing complete recipe alternatives and recipe conditions,
+history independent operations are ideal starting points of analysis. 
+
+\ref{eq:R-entry-junction} and \ref{eq:R-exit-junction}, with $op_i\circ
+r_k=op_i$, there are two setups possible--even if there is only one predecessor
+state. First of all, the recipe may be the constant operation itself, i.e.
+
+\begin{equation} \label{eq:R-entry-junction}
+    R_i = R^E_{i,k} = \{ op_i \} \,\,\mbox{ and } C_i(op_i) = true
+\end{equation}
+
+The conditions for the history independent operation are empty, because there 
+is no dependency on previous store-/restore-operations. Secondly, if the constant
+is stored in the reference variable, then the condition of correctness is
+exactly that store-operation. That is, 
+
+\begin{equation} \label{eq:R-entry-junction}
+    R_i = \{ r_{ref} \} \,\,\mbox{ and }  \,\, R^E_{i,k} = \{ v_r \coloneq op_i \}
+                        \,\,\mbox{ with } \,\, C_i(r_{ref}) = (i, r_{ref})
+\end{equation}
+
+History independent operations are special, because for the state in which they
+occur, the set of alternative recipes $R_i$ is completely determined and so are
+the conditions $C_i(r)$ under which they can be applied. For clarity,
+'complete' in the above sense shall mean that there cannot be a recipe in $R_i$
+and no condition $C_i(r)\forall r\in R_i$, except that it is known. Thus,
+history-independent operations in the single-entry state machine are the
+natural starting point of analysis.
+
+\section{Linear and Mouth States}
+
+Composition and junction have been identified as two key concepts to describe
+the deterministic behavior of a state machine on a variable $v$. Accordingly,
+let the terms 'linear state' and 'mouth state' be defined as follows to support
+the further discussion. 
 
 \begin{definition} Linear State
 
@@ -277,13 +532,112 @@ mouth states.
     states is 1, i.e. 
 
     \begin{equation}
-                               size(Pred(i))\,=\,1
+                size(Pred(i))\,=\,1
     \end{equation}
 
     The number of the immediate successor states is arbitrary, i.e.
     $size(Succ(i))\,\ge\,0$.
 
 \end{definition}
+
+Since a linear state has only one predecessor, the junction becomes trivial, i.e.
+\begin{equation} \label{eq:composition-complete-recipe}
+    R_i      = R^E_{i,k}      = op_i\circ R_k   
+\end{equation}
+Correspondingly, for the condition $C_i(r)$ it holds that it is the same as the
+condition of the recipe from which it results.
+\begin{equation} \label{eq:composition-complete-condition}
+    C_i(r_i) = C^E_{i,k}(r_i) = C^E_{i,k}(op_i\circ r_k) = C_k(r_k)
+\end{equation}
+
+A linear state may have multiple successor states, so the deterministic
+composition of recipes may propagate through a tree.  As soon as the root of a
+tree of linear states is known, the whole tree can be determined.  The
+counterpart to a linear state is a mouth state.
+
+\begin{definition} Mouth State
+
+    A mouth state is a state that is entered from more than one predecessor
+    state, i.e.
+
+    \begin{equation}
+                               size(Pred(i))\,>\,1
+    \end{equation}
+
+    The number of immediate successor states is arbitrary, i.e.
+    $size(Succ(i))\,\ge\,0$.
+
+\end{definition}
+For a mouth state, the presented formulas must be applied in their generality.
+That is the entry recipes are given by \ref{eq:R-entry-junction},  their 
+conditions by \ref{eq:C-entry-junction}, the possible exit recipes by 
+\ref{eq:pr-junction} and their conditions by \label{eq:c-junction}.
+
+\begin{figure}[htbp] \leavevmode \label{fig:mouth-state}
+\begin{verbatim}
+                  ------>-----[ op_i o r_a ]-----.
+                 r_a                              \
+                                                  .-.    r_i
+                  ------>-----[ op_i o r_b ]-----( i )--------> 
+                 r_b                              '-'
+                                                 /
+                  ------>-----[ op_i o r_c ]----'
+                 r_c 
+
+\end{verbatim}
+\caption{The concept of a mouth state in a single-entry state machine.}
+\end{figure}
+
+\section{Analysis}
+
+The following discussion uses the term 'linear transition chain' as defined
+below.
+
+\begin{definition} Linear Transition Chain
+
+    A linear transition chain consists of a start state $i_0$ followed by a
+    sequence of $N$ adjacent linear states $i_1 \ldots i_{N}$ and an end state
+    $i_{N+1}$. $N$ may be zero. State transitions lead from the start state to
+    the end state. 
+    
+    A linear transition chain is associated with a sequence of $N$ exit recipes
+    $r_{r0},\,\ldots\,r_{iN}$ and an entry recipe $r^E_{iN,iN+1}$ into the end
+    state.
+
+    Let $\roh(i_N)$ denote the first state in a linear transition chain which ends
+    at the entry of the successor of state $i_{N+1}$.
+    
+\end{definition}
+
+The end state of a linear transition chain may be a mouth state or a terminal
+state. A terminal is a state that has no transition to another state. 
+
+
+If a state $k$ inhibits a history-independent operation $op_k$, then $R_k$ and
+$C_k(r) \forall r\in R_k$ are complete. Then, composition according to equation
+\label{eq:composition-complete-recipe} and
+\label{eq:composition-complete-condition} can produce complete sets for $R_i$
+and $C_i(r) \forall r\in R_i$ in the successor state. This can be repeated
+along any sequence of linear states until the entry of mouth state is reached.
+When the set of alternative entry recipes $R^E_{i,k}$ and their conditions
+$C^E_{i,k}(r)$ are computed (see equation \ref{eq:} and \ref{eq:}), then they
+are consequently complete.
+
+At this point the relation $R_i \subseteq R^E_{i,k}$ from equation \eqref{} can
+be brought in, since $R^E_{i,k}$ is complete. Assuming $R_i = R^E_{i,k}$ and
+applying iterative composition derives with sets of recipes for each state the
+contain all of their feasible recipes, and may be some more.
+
+\begin{equation} \label{eq:pr-subset-junction}
+    R_i \subseteq R^E_{i,k} 
+\end{equation}
+
+
+again there are two types of recipes that can be developed. The first recipe stores
+the output of $op_i$ in a reference variable, and the recipe becomes $r_{ref}$.
+Secondly, the recipe becomes simply the constant to which $v$ has been set.
+In the first case, $C(r^E_i)=\emptyset$, in the second case $C(r^E_i)=storing in i$.
+
 
 \begin{figure}[htbp] \leavevmode \label{fig:linear-state}
 \begin{verbatim}
@@ -297,6 +651,38 @@ mouth states.
 \caption{The concept of a linear state in a single-entry state machine.}
 \end{figure}
 
+
+
+This has a very important implication: When a mouth state $i$ is reached with a
+set of possible recipes $R^E_{i,k}$ from state $k$, then those recipes are a
+\textit{superset} of the recipes in $R_i$. Developing those recipes along the
+transitions that branch from the state is sufficient to covers all possible
+recipes that originate from state $i$.  When a later entry's recipes
+$R^E_{i,l}$ are determined, \textit{no rework is required} with respect to the
+developed recipes.  Some recipe $r$ may have to be deleted from the first
+guessed $R_i$, because the later entry negates its coherence, i.e. $r \notin
+R^E_{i,k}$.
+
+The correctness of the exit recipe depends on the correctness of all of the
+entry recipes. That is, 
+
+\begin{equation}
+    C(r_i) = \bigwedge_{k\in Pred(i)} C(r^E_{i,k})
+\end{equation}
+
+If a recipe is developed based on a recipe $r_i$ it overtakes its conditions of
+correctness. Using this, the deletion of a recipe from $R_i$ can be expressed
+elegantly by setting $C(r_i)=false$. Then, any recipe that has been produced
+as a consequence of $r_i$ becomes unfeasible. 
+
+
+
+There are two types of states in a state machine. One type of states where the
+setting of a variable is distinctly determined by its setting in the last step.
+In a second type of states a, variables value depends on the state from where the
+last step originated.  The two state types are defined below as linear and
+mouth states.
+
 The concept of a linear state is shown in figure \eqref{fig:linear-state}. The
 operation $op_i$ takes the variable $v$ in the predecessor's state $k$ and
 derives $v$ in state current state $i$. This can be expressed as 
@@ -305,12 +691,12 @@ derives $v$ in state current state $i$. This can be expressed as
             v @ i = op_i(v @ k)                                         
 \end{equation}
 
-If there is a recipe to determine $v@k$, then the recipe
-to determine $v$ upon entry into $i$ is given by function composition. 
-The exit recipe is exactly the same as the entry recipe, thus
+If there is a recipe to determine $v@k$, then the recipe to determine $v$ upon
+entry into $i$ is given by \textit{function composition}.  The exit recipe is
+exactly the same as the entry recipe, thus
 
 \begin{equation} \label{eq:composition}
-    R(i) = R_E(i,k) = op_i \circ R(k)
+    r_i = r^E_{i,k} = op_i \circ r_k
 \end{equation}
 
 If $v$ of the last step is known, then $v@i$ is determined without
@@ -366,23 +752,23 @@ The entry recipes are determined by composition as they are for linear
 states, but here for each predecessor state separately.
 
 \begin{equation} \label{eq:mouth-composition}
-    R_E(i,k) = op_i \circ R(k),\,\forall\,\,k\,\in\,Pred(i)
+    r^E_{i,k} = op_i \circ r_k,\,\forall\,\,k\,\in\,Pred(i)
 \end{equation}
 
 It is generally correct to store the computed value for $v$ at runtime in a
 reference variable $v_r$. Then,  the exit recipe of the mouth state is plainly
-'take $v_r$' expressed as $R_{ref}$.
+'take $v_r$' expressed as $r_{ref}$.
 
 \begin{figure}[htbp] \leavevmode \label{fig:mouth-state}
     \begin{verbatim}
 
-         ( a )---->--[ v_r = R_E(i,a) ]---.
+         ( a )---->--[ v_r = r^E(i,a) ]---.
                                            \ 
-                                            \          .-.    R_{ref}
-         ( b )---->--[ v_r = R_E(i,b) ]------+--------( i )-------------> 
+                                            \          .-.    r_{ref}
+         ( b )---->--[ v_r = r^E(i,b) ]------+--------( i )-------------> 
                                             /          '-'
                                            /
-         ( c )---->--[ v_r = R_E(i,c) ]---'
+         ( c )---->--[ v_r = r^E(i,c) ]---'
              
 
     \end{verbatim}
@@ -395,26 +781,11 @@ The setting of a variable along a chain of linear states can be computed as the
 function composition of the entry operations along the states. Let the term 'linear
 transition chain' be defined as follows. 
 
-\begin{definition} Linear Transition Chain
-
-    A linear transition chain consists of a start state followed by a, possibly
-    empty, set of adjacent linear states and a end state. Transitions lead
-    from the start state to the end state.  The development of a variable
-    along a linear transition chain is deterministic.
-
-    Let $k*$ denote the last state in the linear transition chain which starts
-    at state $k$.
-    
-\end{definition}
-
-The end state of a linear transition chain may be a mouth state or a terminal
-state, i.e. a state that has no transition to another state. 
-
 With the notations above a first algorithm can be defined that transforms a
 operation-based state machine into a recipe-based state machine. The initial
 state and all mouth state builds the set of start states of linear transition
-chains. The exit recipe of the initial state is $op_0\circ R(init)$ if it is
-not a mouth state. The exit recipe of all mouth states is $R_{ref}$. Starting from
+chains. The exit recipe of the initial state is $op_0\circ r_{init}$ if it is
+not a mouth state. The exit recipe of all mouth states is $r_{ref}$. Starting from
 those states with the given recipes, the recipes along the linear transition
 chains can be determined by composition. Linear states may transit to multiple
 successor states, so a tree-search algorithm needs to be applied.  The
@@ -423,34 +794,168 @@ linear chain of transitions.  The last action is the determination of the entry
 recipe of the end state. 
 
 Let the term 'correct configuration' be name a state machine that is
-functionally equivalent to the original operation-based state machine. In this
-sense, the recipe-based state machine achieved by the above algorithm
-constitutes a correct configuration.  There might be other configurations,
-though, which are more efficient in terms of computational effort.
+functionally equivalent to the original operation-based state machine. That is,
+for any possible sequence of events triggering state transitions in the
+original state machine and ending with a setting $v_x$ of a variable $v$, the
+resulting state machine ends with the same value $v_x$ for variable $v$ upon
+exit from the state machine. 
+
+In this sense, the recipe-based state machine achieved by the above algorithm
+constitutes a correct configuration. This is so, since all transitions start
+with $r_{init}$ must be correct by definition. Successive functional composition
+is applied along the linear transition chains which is deterministic and,
+therefore, correct. Thus, the first mout state stores a correct value in $v_r$
+and restores it in the exit recipe. The exit recipe is propagated by successive
+functional composition, etc. This continues until each state in the state machine
+is reached.  
+
+At this point, it can be stated, that there is a correct configuration.
+However, there might be configurations which are also correct but also more
+efficient in terms of computational effort.
 
 \section{Coherence and Incoherence}
 
-In equation \eqref{eq:mouth-composition} entry recipes for a mouth state are
-developed. Computing the value of $v$, storing it in $v_r$, continuing with an
-exit recipe $R_{ref}$ that restores $v$ is a general solution. It is correct if
-some or all input recipes differ and it is correct if they are all equal.  A
-recipe is determined by its procedure describing data structure $d$. Thus,
-equality of two recipes can be linked to the equality of their $d$-s. Now, it
-is seductive to replace $R(i)$ by $R_{new}(i)=R_E(i,k)$ for an arbitrary $k\in
-Pred(i)$.  A mouth state may be setup in two ways.
+An exit recipe $r_i$ must provide a means to compute $v$ independent of the
+path that has been taken to state $i$. Storing and restoring, as mentioned in
+the last section is a generally correct solution. However, if all entry recipes
+are equal, then this means that the computation of $v$ for all paths to $i$ is
+the same.  A recipe is determined by its procedure describing data structure
+$d$. Thus, equality of two recipes can be detected by the equality of their
+$d$-s. Now, it is seductive to replace $r_i$ by $r^{new}_i=r^E_{i,k}$ for an
+arbitrary $k\in Pred(i)$. Let the two approaches be juxtaposed and named
+as follows.
 
-\begin{description}
+Replacing an incoherent setup with a coherent setup spares the storing and
+restoring of a reference variable. However, the recipe $r^{new}_i$ has impact
+on the remaining states. When successive functional composition is applied, new
+recipes result along the branching linear transition chains.  Then entry
+recipes of reached mouth states may change, and by consequence their exit
+recipes may change.  Their exit recipes must also be propagated and so on. 
 
-    \item[Incoherent setup:] The exit recipe is $R_{ref}$ which restores $v_r$.
-        $v_r$ contains the value of $v$ as it is computed upon entry by
-        $R_E(i,k)$.  This setup is \textit{mandatory} if their are two or more
-        entry recipes that differ.
+The logical implications of $r^{new}_i$ may affect entry recipes of other
+states. If the entry recipes differ, an incoherent setup must be imposed and
+possibly replace a coherent setup. Thus, the coherent setup in some states may
+be mutually exclusive with the coherent setup in other states. A resulting
+configuration may actually contain more storing and restoring than the
+previous.  If logical implications of a coherent recipe $r^{new}_i$ on the
+entry recipes of $i$ itself imposes a changed $r^{new}_i$, then it is not
+applicable for an arbitrary transition sequence. Then, it is in contradiction
+with itself.  Finding the optimal configuration requires a strategy to explore
+the space of possible configurations. It must be a strategy that takes all
+phenomena as discussed above into account.
 
-    \item[Coherent setup:] The exit recipe is set to $R_{new}(i)=R_E(i,k)$ for
-        an arbitrary $k\in Pred(i)$. This setup is \textit{optional} but
-        requires that all input recipes are equal.
+\section{The Search for the Optimum}
 
-\end{description}
+The strategy proposed in this section builds up on the following facts:
+
+\begin{itemize}
+    \item The initial recipe $r_{init}$ is correct by definition.
+
+    \item A recipe for a state is correct, if the predecessor's recipe is correct.
+
+    \item An entry recipe is sufficiently considered, if the logical
+        implications of all paths to it are considered.
+
+    \item A recipe is constant. That is, a recipe $r_i$ is correct, if and only
+        if it is the same for any the path to state $i$.
+
+    \item An incoherent setup produces a recipe $r_{ref}$ which is generally
+        correct.  This is so, because the 'storing' and 'restoring' cuts the
+        dependency on the paths.
+
+    \item For a coherent setup with a recipe $r^{new}_i\noteq r^{ref}$ it holds:
+
+        \begin{itemize}
+
+            \item $r^{new}_i$ is feasible, if there is a configuration where
+                the logical implications of it do not contradict with
+                $r^{new}_i$ itself.
+
+            \item $r^{new}_i$ is unfeasible if there is no configuration
+                except that $r^{new}_i$ is in contradiction with itself.
+
+        \end{itemize}
+
+\end{itemize}
+
+The analysis of logical implications of a recipe consists of two things: The
+successive functional composition along linear transition chains and the
+consideration of possibly more than one exit recipe in mouth states. Depending
+on coherent or incoherent setup, $r_i$ can be chosen.  The choice of $r_i$,
+however, becomes a condition for the correctness of the recipes that are
+derived from it.  Consequently, a recipe $r_i$ of a mouth state needs to be
+associated with the conditions developed along the path to state $i$. Also,
+when walking along the state transitions, a set of possible recipes $R$ must be
+considered, rather then only a single recipe.
+
+Recipes must be the same for any transition chain. Thus, only those recipes at
+the entry of a mouth state can be candidates for exit recipes which are present
+in every entry recipe. Thus, the set of possible recipes is the intersection of
+all entry recipes. The conditions of correctness for each recipe must hold,
+thus they are combined by union.
+
+A walk along the transitions of the state machine accumulates
+\begin{itemize}
+   \item The mouth state has been reached before. In that case,
+
+    
+\end{itemize}
+
+
+To trace the mouth state setups an additional data structure is introduced. The
+'mouth map'. 
+
+\begin{definition} Setup Map
+
+    The Setup map $S(i)$ describes the setup of a mouth state $i$. If $S(i)$ is
+    equal to $r_{ref}$, then the mouth state is in incoherent setup. If it is $\eta$, 
+    then its setup is unspecified. Otherwise, $S(i)$ contains the coherent recipe
+    of mouth state $i$ with which it has been setup. 
+    
+\end{definition}
+
+Together with the initial recipe, and the operations of of original state
+machine, the mouth map distinctly defines the resulting state machine. 
+Taking the initial recipe and walking along the state machine applying 
+successive functional composition derives recipes which are correct for the
+path taken. If a state is reached twice, then its recipe must either been
+$r_{ref}$ or the same as when it is reached the second time. If it is not
+the recipe is not true for an arbitrary sequence. If it is the same, then
+it shows that the path to itself does not change it. Another iteration 
+will result in the same entry recipes. Thus, it is generally correct.
+
+    (0) $M(i) = \eta$ for all $i$ in state machine.
+        
+    (1) Given a start state $i$ walk along tree of linear transition 
+        sequences. Along the LTS-s apply SFC until a mouth state is 
+        reached. 
+(1) Successive function composition based on $r_{init}$ until a mouth state
+    is reached (tree search).
+
+    When a mouth state is reached, 
+The second poing 
+
+       / r_{ref} --> restore
+C(i) = | r_i  --> coherent setup
+       \ 0     --> not yet determined
+
+A configuration a distinctly determined by the state
+machines mouth states implementing an incoherent or a coherent setup. Given a
+number of $N$ mouth states, the maximum number of configurations becomes $2^N$.
+Starting point: C(i) = 0 for all i in 'mouth_set'.
+
+
+By definition $r_{init}$ must be correct, so it must be consistent with any
+correct configuration. In other words, the logical implications of $r_{init}$
+must be present in any configuration candidate. The same is true for all
+recipes that are received by successive functional composition on $r_{init}$, 
+i.e. all linear states following it. When a mouth state is reached, however,
+the configuration may take two different shapes: If the remaining entry 
+recipes are either not found yet, or equal to the given entry recipe, then
+a coherent setup may be applied. In any case, the possibility of an 
+incoherent setup for the mouth state must 
+incoherent setup is applied the configuration contains
+
 
 %% IDEA: incoherent --> coherent setup seems locally advantegeous
 %%       but implications on state machine may result in lesser quality.
@@ -463,6 +968,31 @@ Pred(i)$.  A mouth state may be setup in two ways.
 %%                                  of blocking other recipes
 %% IDEA: root configuration --> can all configurations be reached?
 %% IDEA: horizon, the determined entry determines coherence.
+%%
+%% IDEA: Any sequence of transitions starts with a setting induced by r^init.
+%%       Thus, r^init is a constant that restricts the space of possible 
+%%       configurations.
+%% 
+%% APPROACH: (1) Start with r^init, since there is no way arround. 
+%%               R = r^init
+%%           (2) Successive functional composition (SFC) of R
+%%               until mouth state is reached. 
+%%
+%%           (3) In the space of possible configurations:
+%%               If mouth in configuration == determined
+%%                  if incoherent mandatory and coherence was 'tried' => configuration false
+%%                  if coherence found but different from existing    => configuration false
+%%                  else: configuration = OK. No further walk in this direction.
+%%
+%%               Add: current configuration + mouth = coherent
+%%                    (if determined entries do not contradict)
+%%                    current configuration + mouth = incoherent
+%%               => Rs = { r^coherent, r^restore }
+%%
+%%           (4) for all R in Rs: GOSUB 2
+%%
+%%           
+%%           
 The coherent setup requires less storing and restoring at run-time and is
 therefore superior to the incoherent setup--when considering only the state
 itself. The logical implications on the state machine must be considered,
@@ -474,9 +1004,9 @@ assumed that a transition from an incoherent to a coherent setup is generally
 advantageous.
 
 A coherent setup for a state $i$ is correct if the state's entry recipes are
-all the same and equal to the exit recipe $R_{new}(i)$. If all possible logical implications
-of $R_{new}(i)$ result in entry recipes of state $i$ that result in an exit
-recipe different from $R_{new}(i)$, then the coherent setup is not consistent.
+all the same and equal to the exit recipe $r^{new}_i$. If all possible logical implications
+of $r^{new}_i$ result in entry recipes of state $i$ that result in an exit
+recipe different from $r^{new}_i$, then the coherent setup is not consistent.
 It cannot be applied. On the other hand, if there is a logical implication that
 does not change the exit recipe, then the recipe is consistent.  It correct
 under the provision that the logical implications are applied on the state
@@ -518,12 +1048,12 @@ is empty, then the original state is incorrect.
 
 \begin{definition} Propagation of a recipe.
     
-    If $R(i)$ is the exit recipe of start state $i$, then 'propagation'
-    of $R(i)$ means that the effect of this recipe on all successor states of
+    If $r_i$ is the exit recipe of start state $i$, then 'propagation'
+    of $r_i$ means that the effect of this recipe on all successor states of
     $i$ is successively determined. A minimum of changes is applied that could
     effect a change of entry recipes of $i$.
 
-    The recipe $R(i)$ is the basis for successive functional composition along
+    The recipe $r_i$ is the basis for successive functional composition along
     all linear transition chains branching from state $i$. When a mouth state
     $k$ is reached its exit recipe is left as is, except 
 
@@ -534,11 +1064,11 @@ is empty, then the original state is incorrect.
     \end{enumerate}
     
     If the exit recipe of a  mouth state $k$ changes, then the propagation of
-    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
+    $r_i$ nests the propagation of the changed exit recipe $r_k$. 
 
-    A propagation of $R(i)$ results in a correct configuration if it does not
-    result in a change of the $R(i)$ itself and if the propagations of the
-    recipes $R(k)$ of the reached mouths states results in correct
+    A propagation of $r_i$ results in a correct configuration if it does not
+    result in a change of the $r_i$ itself and if the propagations of the
+    recipes $r_k$ of the reached mouths states results in correct
     configurations.
 
 \end{definition}
@@ -553,24 +1083,24 @@ efficiency of a configuration
 
 
 .  However the propagation of the
-recipe $R_{new}(i)$ might result in an incorrect configuration.  Before the
+recipe $r^{new}_i$ might result in an incorrect configuration.  Before the
 conditions for correctness are stated the term 'propagation' needs to be
 specified. At first, a cautious version is proposed.
 
 \begin{definition} Cautious Propagation of a recipe.
     
-    If $R(i)$ is the exit recipe of start state $i$, then 'cautious propagation'
-    of $R(i)$ means that the effect of this recipe on all successor states of
+    If $r_i$ is the exit recipe of start state $i$, then 'cautious propagation'
+    of $r_i$ means that the effect of this recipe on all successor states of
     $i$ is successively determined. It is tried to apply a minimum of changes
     to the state machine.
 
-    The recipe $R(i)$ is the basis for successive functional composition along
+    The recipe $r_i$ is the basis for successive functional composition along
     all linear transition chains branching from state $i$. When a mouth state
     $k$ is reached its exit recipe is left as is, except if a coherent
     setup must be changed to an incoherent setup.
     
     If the exit recipe of a  mouth state $k$ changes, then the propagation of
-    $R(i)$ nests the propagation of the changed exit recipe $R(k)$. 
+    $r_i$ nests the propagation of the changed exit recipe $r_k$. 
     
 \end{definition}
 
@@ -578,29 +1108,29 @@ Let the term 'nesting propagation' name the propagation that triggers the
 propagation of a mouth state's recipe by changing its exit recipe.
 
 For the development of $v$ the coherent setup is equivalent to the incoherent
-setup, if the entry recipes are all the same and equal to $R(i)$. However, it
+setup, if the entry recipes are all the same and equal to $r_i$. However, it
 can only be replaced if it is logically consistent in the context of the state
 machine. The minimal logical impact of a changed recipe is captured by cautious
 propagation. It is deterministic, since it applies successive functional
 composition. It applies a minimum amount of changes in mouth state recipes,
 namely only when correctness requires an incoherent setup where a coherent
 setup is found. Thus, if cautious propagation results in an entry recipe at
-state $i$ different from what it was when the coherent setup produced $R(i)$,
+state $i$ different from what it was when the coherent setup produced $r_i$,
 then the recipe is inconsistent with itself in the frame of the state machine.
 Otherwise, the recipe is logically consistent and the change can be applied.
 
-If the propagation of $R_{new}(i)$ changes an entry recipe of state $i$ itself,
-then $R_{new}(i)$ is not stable.  It holds for a tansition sequence that passes
+If the propagation of $r^{new}_i$ changes an entry recipe of state $i$ itself,
+then $r^{new}_i$ is not stable.  It holds for a tansition sequence that passes
 state $i$ once, but not for an arbitrary transition sequence that passes more
 than once.  It is not a general solution and, therefore, the resulting
 configuration is incorrect.  
 
-The propagation of a recipe $R(i)$ can only change an entry recipe of $i$ if
+The propagation of a recipe $r_i$ can only change an entry recipe of $i$ if
 there is a path from the exit of $i$ to the entry of $i$. In that cases,s $i$
 is part of a loop, i.e it belongs to the set of its own predecessor $i\in
 Pred*(i)$. Trivially, any mouth state $k$ on the path of $i$ to itself is
 equally part of that loop. Therefore $k\in Pred*(k)$ if $k$ is on a loop path
-of $i$. Conversely, if $k\notin Pred*(k)$  then $R(k)$ cannot produce a changed
+of $i$. Conversely, if $k\notin Pred*(k)$  then $r_k$ cannot produce a changed
 entry recipe of $k$, but also it does not lie on a path from a nesting
 propagation's start state to itself. 
 
@@ -627,7 +1157,7 @@ coherent setup can now be expressed in terms of its propagation.
 
 As soon as a mouth state $i$ is the successor of another mouth state $k$, it is
 conceivable that their coherent setup is excludes another coherent setup. That
-is, if a coherent setup is implemented in a state $i$ the propagation of $R(i)$
+is, if a coherent setup is implemented in a state $i$ the propagation of $r_i$
 implies that an incoherent setup must be implemented in state $k$.  In
 foresight of the optimization strategy, let the transition of an incoherent
 setup into a correct coherent setup be called a 'move'.  The former findings
