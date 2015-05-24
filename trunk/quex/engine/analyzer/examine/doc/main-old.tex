@@ -86,39 +86,52 @@ b)
 %==============================================================================
 %
 %==============================================================================
-\section{Basic}
+\section{Basics}
 
-For the present discussion the actual events that trigger state transitions are
-of no concern. Moreover, the focus lies on the operations as consequence of
-state transitions. In the frame of this discussion, the original state machine
-must be described in terms of \textit{single-entry states}. That is,
-independently from where a state $i$ is entered, the same modification to a
-variable $v$ is applied. The modification of a variable $v$ upon entry into a
-state $i$ is denoted as $m_i$. The modification may depend on $v$ itself and
-produces the subsequent $v$. In the original state machine no exit operations
-are necessary. The development of variables solely depends on the modifications
-applied along state transitions. 
+The present article focusses on the development of a single variable i$v$ along
+the transitions of a state machine. For example, in pattern matching $v$ may be
+the identifier of the winning pattern, when counting line or column numbers $v$
+may contain the according numerical values, or $v$ may contain the hash value
+of the incoming characters.  Let $S$ be the set of states of a state machine.
+The transitions from state to state triggered by events is given by a
+transition map, i.e.
 
-The resulting state machine is described in terms of \textit{multi-entry
-states}. The computation of a variable's value is postponed to the exit of the
-state machine. So called 'recipes' describe how a variable $v$ can be computed
-without iteratively depending on its previous value.  For a state $i$ an 'exit
-recipe' $r_i$ is provided that tells how determine $v$.  It is also used to
-determine subsequent recipes. For this reason, the exit recipe is refered to as
-'recipe'.  Those are assigned upon entry into states.  An 'entry recipe'
-$r^E_{i,k}$ computes $v$ when state $i$ is entered from state $k$.  If
-necessary, this value can be stored in a reference variable $v_r$ on which
-further recipes may rely.
+\begin{equation}
+    \mbox{transition map:}\,\,(k,\,event)\,\,\longrightarrow\,\,i
+\end{equation}
 
-Figure \ref{fig:se-vs-me}.a) shows an example of a state of an original state
-machine where the transitions from all predecessor states pass the same
-modification $m_i$ when entering state $i$. The modification $m_i$ is physically
-implemented and produce $v$ and may also use $v$ as input. In the resulting
-state machine, as in the example of figure \ref{fig_se-vs-me}.b), a state may
-apply multiple entry recipes. These entry recipes are physically implemented,
-but produce reference variables $v_r$ not $v$.  They rely on reference values,
-but not directly on $v$. The recipe $r_i$ is only physically implemted for the
-exit of the state machine from state $i$.  
+meaning that for each state $k\in S$ the transition map tells what events in
+state $k$ cause a transition to a target state $i$.  Let $Pred(i)$ be the set
+of states that enter $k$. With $m_{i,k}$ as the modification on $v$ upon entry
+from $k$ into state $i$ the modification-based state machine $sm_{m}$ can be
+specified as
+
+\begin{equation}
+    sm_m\,=\,\left \{ (i, \left \{m_{i,k}\forall k\in Pred(i) \right \}) \forall i\in S \right \} 
+\end{equation}
+
+For the following discussion the transition map remains untouched. Since it is
+not specific to $sm_m$ it is left out of its specification. The resulting 
+state machine $sm_r$ is recipe-based.
+
+\begin{equation}
+    sm_r\,=\,\left \{ (i, r_i) \forall i\in S \right \} 
+\end{equation}
+
+where the exit recipe $r_i$ describes how to compute $v$ independently of the
+previous setting of $v$. There are also entry recipes $r^E_{i,k}$ which are
+associated with the entry from state $k$ to state $i$. They may be used to
+prepare a snapshot of $v$ to be stored in a reference variable $v_r$. However,
+as shown later, entry recipes are distinctly determined by the exit recipe of
+the predecessor $r_k$ and $m_{i,k}$. Thus, the pairs $(i,r_i)$ are sufficient
+to conclusively describe the structure of $sm_r$.
+
+Figure \ref{fig:sm}.a) shows an example of a state transition of a modification-based
+state machine. The value of $v$ is determined directly when the state is entered.
+It is derived from the previous value of $v$. In contrast to that, figure \ref{fig:sm}.b)
+shows, in contrast, the transition described by recipes. Here, the value of $v$ is
+only computed upon exit from the state machine. The development of recipes $r^E_{b,a}$ 
+and $r_b$ happen at analysis time. 
 
 \begin{figure}[htbp] \leavevmode \label{fig:se-vs-me}
 a)
@@ -127,7 +140,7 @@ a)
                   .---.  
            ...   ( k_0 )------.
                   '---'        \                     .-.
-           ...   ( k_1 )--------+---[ v = m_i ]--->( i )----->   
+           ...   ( k_1 )--------+---[ v = m_{i,k} ]--->( i )----->   
                   '---'        /                     '-'
            ...   ( k_3 )------'       
                   '---'
@@ -149,32 +162,14 @@ b)
 b) Multi-entry state.}
 \end{figure}
 
-The variable $v$ refers to a value that is developed through transitions along
-the state machine. Upon exit from the state machine $v$ contains a value that
-corresponds to the event sequence that triggered all state transitions. For
-example, in pattern matching $v$ is the identifier of the winning pattern, when
-counting line or column numbers $v$ may contain the according numerical values,
-or $v$ may contain the hash value of the incoming characters. In recipes,
-deterministic behavior is captured in terms of constants. The path dependent
-behavior is captured relying on reference variables.
-
-\begin{definition} $v_r$ -- Reference Variable
-
-    The reference variable $v_r$ may store the 'snapshot' of a variable $v$-s
-    content. 
-
-\end{definition}
-
-Let \textit{initial state} 0 denote the state where the state machine is entered.
-The modification $m_0$ is the modification applied upon entry into the init state.
-Let the hidden variables $h$ refer to any accessible variable that does not
-directly relate to the state machine's state. Now, the term 'recipe' can 
+Let any accessible variable that is not $v$, $v_r$ or the state machine's state
+be called a hidden variable and be part of the set $h$.  Now, the 'recipe' can
 be defined.
 
 \begin{definition} Recipe 
 
     A recipe consists of a procedure to compute a variable $v$ and a data
-    structure $d$ that configures the procedure. It possibly applies hidden
+    structure that configures the procedure. It possibly applies hidden
     variables $h$ and the reference values $v_r$. That is, it performs the
     mapping
 
@@ -186,90 +181,109 @@ be defined.
     entry into a state $i$ from a predecessor state $k$. The exit recipe $r_i$
     describes how to compute $v$ upon exit from the state.
 
-    For each recipe it must be described how the functional composition
-    $m_i\circ r_k$ of a modification $m_i$ and predecessor recipes $r_k$
-    produces a new recipe. 
-
-    An initial recipe $r_{init}$ is required, which determines $d$ when the
-    state machine is entered. 
-
-    A reference value based recipe $r_{ref}$ is required, which determines
-    a recipe that solely depends on a stored reference variable $v_r$.
-
 \end{definition}
 
-The funtional composition of a modification $m_i$ and a predecessor recipe
+In order to develop recipes, the following three things must be provided along
+with the recipe:
+    
+\begin{description}
+
+   \item{Composition:} For each recipe it must be described how the functional
+       composition $m_{i,k}\circ r_k$ of a modification $m_{i,k}$ and predecessor
+       recipes $r_k$ produces a new recipe. 
+
+   \item{$r_{eon}$:} A recipe $r_{eon}$ describes a recipe to determine $v$
+       before the state machine is entered. 
+
+   \item{$r_{ref}$:} A reference value based recipe $r_{ref}$ describes a
+       recipe that solely depends on a stored reference variable $v_r$.
+
+\end{description}
+
+The funtional composition of a modification $m_{i,k}$ and a predecessor recipe
 $r_k$ must be equivalent to the procedure that results from replacing $v$ in
-$m_i(v)$ by $r_k$. Also, the reference value based recipe $r_{ref}$ is
+$m_{i,k}(v)$ by $r_k$. Also, the reference value based recipe $r_{ref}$ is
 mathematically trivial. In practical applications though, the composition and
-the reference balue based recipe are specific to the way that $d$ configures
-the recipe's procedure. An example of a recipe is the line number counting
-recipe:
+the reference value based recipe are specific to the way that a recipe's
+procedure is configured.  An example of a recipe is the line number counting
+recipe. In that case, the operations $m_{i,k}$ in $sm_m$ increment the line
+number at each appearing newline.  An approach to describe a recipe for
+corresponding $sm_r$ is mentioned below. 
 
 \begin{description}
-    \item[The procedure's data structure $d$:] The data structure that configures
+    \item[The procedure's data structure:] The data structure that configures
         the procedure holds the line number offset. A binary flag indicates whether
         the value of the reference variable has to be added or not. That is, $d$
-        has two members::
+        as the procedure's data structure has two members::
 
-        \begin{verbatim}
-                d.line_number_offset
-                d.use_reference_variable
-        \end{verbatim}
-        
+    \begin{verbatim}
+            d.line_number_offset
+            d.use_reference_variable
+    \end{verbatim}
+      
     \item[Procedure:] The procedure to determine the current line number
         consists of adding the line number offset to the line number
-        counters value (which is a 'hidden variable'), if it is not zero.::
+        counters value (which is a 'hidden variable').::
 
-        \begin{verbatim}
-               if d.use_reference_variable:
-                   counter.line_number += reference.line_number_offset 
-               counter.line_number += d.line_number_offset 
-        \end{verbatim}
+    \begin{verbatim}
+           h.line_number += d.line_number_offset 
+           if d.use_reference_variable:
+               h.line_number += ref.line_number_offset 
+    \end{verbatim}
 
-   \item[Composition:] Let \verb/delta/ be the value by which an modification
-       $m_i$ increments the line number and \verb/dk/ the '$d$' of the
-       predecessor's recipe $r_k$.  Then, $m_i\circ r_k$ is the sum of both.
-       That is the '$d$' if the resulting recipe is given by::
+        Let \verb|ref.line_number_offset| be the reference variable related to
+        the line number offset, and \verb|h.line_number| the variable that
+        actually maintains the counted line number.
 
-        \begin{verbatim}
-                 d.line_number_offset     = dk.line_number_offset + delta
-                 d.use_reference_variable = dk.use_reference_variable
-        \end{verbatim}
+   \item[Composition:] Let \verb/mi.delta/ be the value by which an modification
+       $m_{i,k}$ increments the line number and \verb/dk/ the '$d$' of the
+       predecessor's recipe $r_k$.  Then, $m_{i,k}\circ r_k$ is the sum of both.
+       That is, the '$d$' if the resulting recipe is given by::
 
-   \item[$r_{init}$:] Before entering the state machine the line number offset
+    \begin{verbatim}
+           d.line_number_offset   = dk.line_number_offset   + mi.delta
+           d.use_reference_variable = dk.use_reference_variable
+    \end{verbatim}
+
+   \item[$r_{eon}$:] Before entering the state machine the line number offset
         is assumed to be zero and no reference variable is used, i.e $d$ is
         initialized to::
 
-        \begin{verbatim}
-                d.line_number_offset     = 0
-                d.use_reference_variable = false
-        \end{verbatim}
+    \begin{verbatim}
+            d.line_number_offset   = 0
+            d.use_reference_variable = false
+    \end{verbatim}
 
    \item[$r_{ref}$:] The recipe that solely depends on the content of the
-       reference variable has the settings of $d$ given by::
+       reference variable is determined by 
 
-        \begin{verbatim}
-                d.line_number_offset     = 0
-                d.use_reference_variable = true
-        \end{verbatim}
+    \begin{verbatim}
+            d.line_number_offset   = 0
+            d.use_reference_variable = true
+    \end{verbatim}
 \end{description}
 
-Let $(i, m_i)$ describe the setup of a state in the original single entry state
-machine. It says that the modification $m_i$ is applied upon entry into state
-$i$. Let $(i, r_i)$ denote the setup of a state in the resulting multi-entry
-state machine. It says that recipe $r_i$ is the exit recipe of state $i$. The
-original state machine configuration $sm_{se}$ and the resulting state machine
-configuration $sm_{me}$ are given by
-
-\begin{eqnarray}
-    sm_{se} & = & \{(i,m_i) \forall i \in S\} \\
-    sm_{me} & = & \{(i,r_i) \forall i \in S\}
-\end{eqnarray}
+The meaning of a recipe becomes clearer, when the its manifestation is
+considered.  A line number counting recipe given by
+\verb|d.line_number_offset=0| and \verb|use_reference_variable=false|, for
+example requires no code. The code corresponding to 
+\verb|d.line_number_offset=35| and \verb|use_reference_variable=false| is
+\begin{verbatim}
+   h.line_number += 35
+\end{verbatim}
+example requires no code. The code corresponding to 
+\verb|d.line_number_offset=0| and \verb|use_reference_variable=true| is
+\begin{verbatim}
+   h.line_number += ref.line_number_offset 
+\end{verbatim}
+\verb|d.line_number_offset=78| and \verb|use_reference_variable=true| is
+\begin{verbatim}
+   h.line_number += 78 + ref.line_number_offset
+\end{verbatim}
 
 The procedure presented in this document determines the \textit{optimal}
-multi-entry state machine $sm_{me}$ that is functionally equivalent to 
-the original single entry state machine $sm_{se}$.
+recipe-based state machine $sm_r$ that is functionally equivalent to the
+modification-based state machine $sm_m$.
 
 %==============================================================================
 %
@@ -278,29 +292,26 @@ the original single entry state machine $sm_{se}$.
 
 The following section elaborates on two required concepts for the investigation
 of deterministic behavior, namely 'composition' and 'junction'.  Given a recipe
-$r_k$ to compute $v$ before an modification $m_i$ and given the modification
-$m_i$ on $v$, functional composition describes how to produce an entry recipe
-$r^E_{i,k}$ when $m_i$ is applied after $r_k$, i.e.
+$r_k$ to compute $v$ before a modification $m_{i,k}$ and given the modification
+$m_{i,k}$ on $v$, functional composition describes how to produce an entry recipe
+$r^E_{i,k}$ when $m_{i,k}$ is applied after $r_k$, i.e.
 
 \begin{equation} \label{eq:composition}
-    r^E_{i,k} = m_i \circ r_k
+    r^E_{i,k} = m_{i,k} \circ r_k
 \end{equation}
 
 The composition emphasizes that entry recipes are derived deterministically
 from predecessor exit recipes. This is the reason, why the configuration of the resulting
-configuration $sm_{me}$ relied solely on exit recipes.  The correspondence
-between the recipes $r_k$, $r^E_{i,k}$, the modification $m_i$, and the state
-$k$ and $i$, are shown in figure \ref{fig:composition}.  Figure
-\ref{fig:junction} shows an example of thee different entry recipes $r_{i,a}$,
-$r_{i,b}$, and $r^E_{i,c}$ into a state $i$. Let the procedure to determine the
-exit recipe $r_i$ be called 'junction'. 
+configuration $sm_r$ relied solely on exit recipes.  The correspondence
+between the recipes $r_k$, $r^E_{i,k}$, the modification $m_{i,k}$
+are shown in figure \ref{fig:kj-basic}.a.  
 
 \begin{figure}[htbp] \leavevmode \label{fig:composition}
 \begin{verbatim}
                                                      
                                                     
-                  .-.   r_k                r^E_{i,k}      .-.
-                 ( k )--------[ m_i ]----------  ... -->( i ) . . .
+                        r_k                r^E_{i,k}      .-.
+                 ( k )--------[ m_{i,k} ]----------  ... -->( i ) . . .
                   '-'                                     '-'
 
 \end{verbatim}
@@ -309,18 +320,22 @@ exit recipe $r_i$ be called 'junction'.
 
 \begin{figure}[htbp] \leavevmode \label{fig:junction}
 \begin{verbatim}
-                  ------>-----[ m_i o r_a ]-----.
-                 r_a                              \
-                                                  .-.    r_i
-                  ------>-----[ m_i o r_b ]-----( i )--------> 
-                 r_b                              '-'
-                                                 /
-                  ------>-----[ m_i o r_c ]----'
-                 r_c 
+                   r^E_{i,a}
+                   -----------.
+                               \
+                   r^E_{i,b}    \    r_i
+                   --------------+--------
+                                /
+                   r^E_{i,c}   /
+                   -----------'
 
 \end{verbatim}
 \caption{The concept of a linear state in a single-entry state machine.}
 \end{figure}
+
+Figure \ref{fig:kj-basic}.b shows an example of thee different entry recipes
+$r_{i,a}$, $r_{i,b}$, and $r^E_{i,c}$ into a state $i$.  Let the procedure to
+determine the exit recipe $r_i$ be called 'junction'. 
 
 There are two ways to derive a recipe $r_i$ at a junction.  First of all, at
 each entry the entry recipe may be used to compute $v$, $v$ can be stored in a
@@ -342,202 +357,232 @@ shall define the behavior at a junction.
 
 \end{description}
 
-The choice that is made becomes a condition which must hold for the exit recipe
-to be correct. The recipes developed on the basis of such a recipe inherit this
-condition. Let necessary recipe conditions be defined as follows.
+The existence of choice, i.e. the coherent or incoherent setup, implies that
+more than one recipe may be possibly assigned to a state.  Let the term 'recipe
+alternatives' be defined as follows.
 
-\begin{definition} $C(r), C_i(r)$ -- Necessary Recipe Condition
+\begin{definition} $R_i,\,R^E_{i,k}$ -- Recipe Alternatives
 
-    The term $C(r)$ describes the necessary conditions for a specific $r$ to be
-    correct at the place where it occurs.
+    Let $R^E_{i,k}$ denote the set of entry recipe alternatives. It contains
+    all recipes that are possible upon entry from state $k$ into state $i$
+    given the recipe alternatives of the predecessor $R_k$. 
 
-    The term $C_i(r)$ describes the necessary conditions for a specific $r$ to be a
-    correct exit recipe in state $i$, i.e. $C_i(r) \Leftarrow (i, r)$. 
+    The recipe alternatives $R_i$ consists of all possible exit recipes for
+    state $i$, given all entry recipe alternatives $R^E_{i,k}$ with $k\in
+    Pred(k)$.  
 
-    The term $C^E_{i,k}(r)$ describes the prerequisite for a specific $r$ to be a
-    correct entry recipe from state $k$ into state $i$.
-
+    Let $\tilde{R}_i$ and $\tilde{R}^E_{i,k}$ be any supersets of $R_i$ and
+    $R^E_{i,k}$.
+    
 \end{definition}
 
-Using the attribute 'specific' emphasizes that a recipe condition focusses on a
-particular single recipe. The exit recipe conditions for incoherent and
-coherent setup are as follows.
-
-\begin{equation} \label{eq:choices}
-    C_i(r_i) = \begin{dcases*}
-               (i, r_{ref}) \
-                        & for incoherent setup, i.e. $r_i=r_{ref}$. \\
-               \left( (i, r_i) \right) \wedge \bigwedge_{k\in Pred(i)} C^E_{i,k}(r_i) \
-                        & for coherent setup, i.e. $r_i\neq r_{ref}$ 
-             \end{dcases*}
-\end{equation}
-
-The condition for correctness of the incoherent setup $C_i(r_{ref})$ does not
-rely on any specific entry recipes. It relies on the correct values being
-stored upon entry, whatever they may be.  For the coherent setup, all entry
-recipes must be the same and equal to the exit recipe. Thus, its prerequisite
-is that the junction of all the conditions that the entry recipes are equal to
-$r_i$.
-
-Composition relies on the modification $m_i$ and $r_k$ to derive $r^E_{i,k}$. The
-modification $m_i$ of the original state machine must be assumed to be correct,
-i.e.  $C(m_i)=true$.  Thus, the only remaining condition is then one on $r_k$
-and it follows
-
-\begin{equation} \label{eq:composition}
-    C^E_{i,k}(r_i) = C(m_i \circ r_k) = C(m_i) \wedge C(r_k) = C_k(r_k)
-\end{equation}
-
-The existence of choice, i.e. the coherent or incoherent setup, implies
-alternative recipes for the state where the choice exists and each state that
-develops its recipes based on it. Let the term 'recipe alternatives' be defined
-as follows.
-
-\begin{definition} $R_i$ -- Recipe Alternatives
-
-    For a given state $i$ the recipe alternatives $R_i$ describe the set of
-    possible recipes, i.e.
-
-    \begin{equation}
-       R_i = \{ r \,\forall\,\mbox{$r$ = candidate for $r_i$} \}
-    \end{equation}
-
-    Each recipe $r\in R_i$ is bound to a condition $C_i(r)$ under which it is
-    safe to assume that it is correct.  Respectively, the recipe alternatives
-    of the entry recipes are given by $R^E_{i,k}$ as specified below
-
-    \begin{equation}
-        R^E_{i,k} = \{ r \forall\,\mbox{$r$ = candidate for $r^E_{i,k}$} \}
-    \end{equation}
-
-    Each recipe $r\in R^E_{i,k}$ is bound to a condition $C^E_{i,k}(r)$ under
-    which it is safe assume that it is correct.  
-
-\end{definition}
-
-Now, the behavior of recipe alternatives upon composition and junction can be
-investigated. Considering composition the predecessor recipes $R_k$ and the
-entry recipes $R^E_{i,k}$ may be subject to two different processes. First, the
-compostion $m_i \circ r_k$ may result in exactly one recipe $r^E_{i,k}$.
-Second, multiple predecessor recipes may result in the same entry recipe. For
-example, let two recipes $r_{k0},\,r_{k1}\in R_k$ be given by
-$r_{k0}=\{\longleftarrow -3\}$ and $r_{k1}=\{ \longleftarrow 3\}$ and
-$m_i(v)=\{ \longleftarrow v^2 \}$. Then, in both cases the entry recipe becomes
-$r^E_{i,k}=\{ \longleftarrow 9 \}$. A third procudure, namely the development
-of multiple entry recipes from a single predecessor recipe is impossible. This
-is so, since composition must represent the replacement of $v$ by $r_k$ in
-$m_i(v)$ which can only result in a single procedure.  Thus, for a state $i$ it
-holds 
+Composition and junction can now be understood in terms of recipe alternatives.
+The composition $m_{i,k} \circ r_k$ with $r_k\in R_k$ may be subject to two
+different processes. First, one predecessor recipe $r_k$ may be related
+one-to-one with the result of the compostion $r^E_{i,k} = m_{i,k} \circ r_k$.
+Second, multiple predecessor recipes may result in the same entry recipe%%
+%%
+\footnote{For example, let two recipes $r_{k0},\,r_{k1}\in R_k$ be given by
+$r_{k0}=\{\leftarrow -3\}$ and $r_{k1}=\{ \leftarrow 3\}$ and $m_{i,k}(v)=\{
+\leftarrow v^2 \}$. Then, in both cases the entry recipe becomes $r^E_{i,k}=\{
+\leftarrow 9 \}$.}
+%%
+A third procudure, namely the development of multiple entry
+recipes from a single predecessor recipe is impossible. This is so, since
+composition must represent the replacement of $v$ by $r_k$ in $m_{i,k}(v)$
+which can only result in a single procedure.  Thus, for a state $i$ it holds 
 
 \begin{equation} \label{eq:composition-recipe-alternatives}
-    R^E_{i,k} = \{ m_i \circ r_k \,\forall\,r_k\in R_k \} 
+    R^E_{i,k} = \{ m_{i,k} \circ r_k \,\forall\,r_k\in R_k \} 
     \,\,\mbox{ with }\,\,
     size(R^E_{i,k}) \le size(R_k) 
 \end{equation}
 
-The fact that multiple recipes $r_{k0},r_{k1},\ldots \in R_k$ may result in the
-same entry recipe $r\in R^E_{i,k}$ has consequences on $C^E_{i,k}$. It implies,
-that for $r^E_{i,k}=r$ to be correct only one condition of the set of conditions $C_k(r_{k0})$, 
-$C_k(r_{k1})$, $\ldots$ are met. Hence, the condition of correctness for
-$r^E_{i,k}=r$ becomes the disjunction of the conditions of all related
-predecessor recipes, i.e. 
-
-\begin{equation} \label{eq:composition-condition}
-    C^E_{i,k}(r) = \bigvee_{r_k\in X_{i,k}(r)} \
-                   \,\, \mbox{ with } \,\,     \
-                   X_{i,k}(r) = \{ r_k\in R_k: \mbox{ where } r = m_i\circ r_k \}
-\end{equation}
-
 At a junction, storing and restoring is a generally correct solution. Thus, the
 reference value based recipe $r_{ref}$ is always an alternative. A coherent
-setup is only possible, if the recipe is the same at all entries and the
-conditions do not contradict. Thus, the exit recipe $R_i$ becomes
+setup is only possible, if the recipe is the same at all entries.  Thus, the
+exit recipe alternatives $R_i$ become
 
-\begin{equation} \label{eq:pr-junction}
+\begin{equation} \label{eq:junction-recipe-alternatives}
     R_i = \{ r_{ref} \} \
-             \vee       \
-          r\in\Cap_{k\in Pred(i)} R^E_{i,k} 
-\end{equation}
-and
-\begin{equation} \label{eq:c-junction}
-    C_i(r_i) = \bigwedge_{k\in Pred(i)} C^E_{i,k}(r_i)
+             \cup       \
+          \bigcap_{k\in Pred(i)} R^E_{i,k} 
 \end{equation}
 
-whereby, $C^E_{i,k}(r)=false$ necessarily, if $r\notin R^E_{i,k}$. It follows
-that $C_i(r_i)=false$, if $r_i$ does not appear in all entry recipe alternatives
-$R^E_{i,k}$ for $k\in Pred(i)$.
+With equation \eqref{eq:junction-recipe-alternatives} and
+\eqref{eq:composition-recipe-alternatives} a recursive rule can be developed
+that determines recipes alternatives from predecessor recipe alternatives.
 
-Equation \ref{eq:pr-junction} has an important implication: If a set of entry
-recipes $R^E_{i,k}$ is completely determined, then this set is a superset of
-the possible sets of exit recipes $R_i$, i.e.
+\begin{equation} \label{eq:recursively-recipe-alternatives}
+    R_i = \{ r_{ref} \} \
+             \cup       \
+          \bigcap_{k\in Pred(i)} \{ m_{i,k} \circ r_k \,\forall\,r_k\in R_k \} 
+\end{equation}
+
+Recipes can not be chosen independently. Moreover, the constraints of
+correctness upon composition and junction need to be investigated.  Let the
+tuple $(i, k, r)_E$ denote the setting of $r$ as entry recipe into state $i$
+from state $k$.  According to the definition of coherent and incoherent setup,
+constraints can be defined for $(i,r)$, i.e. for the incoherent setup
+
+\begin{equation} \label{eq:constraint-junction-incoherent}
+    (i, r_{ref}) \Rightarrow true
+\end{equation}
+
+because, it is generally true. For the coherent setup all entry recipes must
+be the same, and it follows
+
+\begin{equation} \label{eq:constraint-junction-coherent}
+    (i, r) \Rightarrow \bigwedge_{k\in Pred(i)} (i,k,r)_E 
+\end{equation}
+
+Composition relies on the modification $m_{i,k}$ and $r_k$ to derive
+$r^E_{i,k}$.  The modification $m_{i,k}$ as part of the original $sm_m$ must be
+assumed to be correct.  Thus, the only remaining condition is the one on $r_k$.
+The fact that multiple recipes $r_{k0},r_{k1},\ldots \in R_k$ may result in the
+same entry recipe $r\in R^E_{i,k}$ implies that for $(i,k,r)_E$ there can
+be either $(i,r_{k0})$ or $(k, r_{k1}$, etc.  Hence, the constraint of
+$(i,k,r)_E$ becomes the disjunction of the conditions of all related
+predecessor recipes, i.e. 
+
+\begin{equation} \label{eq:constraint-composition}
+    (i,k,r)_E \Rightarrow \bigvee_{r_k\in X_{i,k}(r)} (k,r_k) 
+\end{equation}
+
+with $X_{i,k}(r)$ as the set of predecessor recipes $r_k$ that result in $r$
+when $m_{i,k}\circ r_k$ is applied, i.e.
+
+\begin{equation} \label{eq:condition-result-origin-set}
+    X_{i,k}(r) = \{ r_k\in R_k: \mbox{ where } r = m_{i,k}\circ r_k \}
+\end{equation}
+
+With \eqref{eq:constraint-junction-coherent} in
+\eqref{eq:constraint-composition} constraints for the coherent setup can be
+defined in terms of predecessor settings
+
+\begin{equation} \label{eq:recipe-constraints-recursively}
+    (i, r) \Rightarrow \bigwedge_{k\in Pred(i)} \
+                       \bigvee_{r_k\in X_{i,k}(r)} (k,r_k)
+\end{equation}
+
+\section{History} %%--------------------------------------------------------------
+
+A special type of modifications are 'history independent modifications' which
+modify a variable $v$ independently of its previous content. Practically, this
+means that the modification consists of assigning a constant to $v$. For
+history independent modifications $m_{i,k}$ it holds $m_{i,k}=m_{i,k}\circ r$
+for an arbitrary recipe $r$.  Accordingly, the set of possible entry recipes
+$R^E_{i,k}$ is independent of the predecessor's $R_k$ and, therefore,
+\textit{complete}, i.e.
+
+\begin{equation}
+    R^E_{i,k} = \{ m_{i,k} \} \,\, \mbox{ with } \,\, (i,k,m_{i,k})_E \Rightarrow true.
+\end{equation}
+
+There is one other set of possible entry recipes which can be determined
+beforehand, because its predecessor recipe is known. Let 'eon' be the virtual
+state in which the state machine resides before it is entered via the initial
+state $0$.  The recipe $r_{eon}$ describes how to compute $v$ when the state
+machine transits from inactivity into activity. It must be defined, because it
+is the root based on which all other recipes develop. The entry recipe into the
+initial state becomes
+
+\begin{equation}
+    R^E_{0,eon} = \{ m_{0,eon}\circ r_{eon} \} \,\, \mbox{ with } \,\, (i,k,m_{0,eon}\circ r_{eon})_E \Rightarrow true.
+\end{equation}
+
+Before this section, the recipe alternatives \eqref{eq:recipes-recursively} and
+recipe constraints \eqref{eq:recipe-constraints-recursively} have been
+expressed in terms of others. Equations \eqref{eq:recipes-independent},
+\eqref{eq:recipes-eon-independent}  and equations
+\eqref{eq:constraints-independent}, \eqref{eq:constraints-eon-independent}
+define recipes and constrains independently.  Thus, those are natural
+candidates for starting points based on which the recursive formulas may
+develop the remaining recipes. 
+
+\section{Algorithm} %%---------------------------------------------------------
+
+Recipes for $v$ can only be determined if the development of $v$ is traced
+along state transitions. This tracing falls into the domain of recursive graph
+search algorithms. To establish such an algorithm the following ingredients 
+must be present: One or more starting points, an operation to be applied upon 
+each step along the edges of the graph, and a terminal condition. Beforehand,
+two important statements must be made.
+
+First, the rule to derive an exit recipe in a junction
+\eqref{eq:junction-recipe-alternatives} implies that no recipe can be
+part of $R_i$, except that it is in all entry recipes $R^E_{i,k}$, or it 
+is $r_{ref}$. Vice versa, this means, that if one set of entry recipes is known,
+then a superset of what is possible for $R_i$ can be determined, namely
+
+\begin{equation}
+    \tilde{R}_i = \left \{ r_{ref} \right \} \cup \bigcap_{R^E_{i,k}=known} R^E_{i,k}
+\end{equation}
+
+Since $\tilde{R}^E_{i,k}$ can only contain more recipes than $R^E_{i,k}$ it holds
+
+\begin{equation}
+    \tilde{R}_i = \left \{ r_{ref} \right \} \cup \bigcap_{\tilde{R}^E_{i,k}=known} \tilde{R}^E_{i,k}
+\end{equation}
+
+The difference between $\tilde{R}_i$ and $R_i$ are those recipes for which the
+constraints \eqref{eq:} are consistent. This can be shown by proof of complete
+induction \ref{}. 
+
+The \textit{base clause} can be stated with the first $R_i_0$
+that is derived from a specific entry recipe $R^E_{i_0,k}$--not a 'guessed' one
+$\tilde{R}^E_{i_0,k}$. When $R_i_0$ is guessed as $\tilde{R}_i_0$ being equal
+to $R^E_{i_0,k}$, then this represents a feasible path. A recipe $r\in
+\tilde{R}_i_0$ can only be excluded from $R_i_0$, if there is another entry
+recipe that does not contain it. That is for the first $R_i_0$ it holds
+
+\begin{equation}
+    r\in R_i \,\, \Rightleftarrow\,\, r\in \tilde{R}_i\,\wedge\,\mbox{constraints hold for } (i,r) 
+\end{equation}
+
+If one entry recipe set $R^E_{i,k}$ is known specifically, not as superset
+$\tilde{R}^E_{i,k}$, then there is a feasible path that produces all recipes
+$R^E_{i,k}$. Thus, any $r\in R^E_{i,k}$ can occur in $R_i$, except if it
+does not appear 
+
+If a new set of entry recipe becomes known, $\tilde{R}_i$ does not have to be
+updated. Practically, this means that there is no impact on $\tilde{R}_i$ that
+necessitates a second walk along the successor transition paths--very important.
+
+The formula for constraints \eqref{eq:recipe-constraints-recursively} states
+that constraints are not developped. They can be expressed straightly for a
+given recipe $r$ in a given state $i$ 
+
+For a starting point, a situation is required that is completely determined.
+This is the case for the entry recipes $R^E_{i,k}=m_{i,k}$ of history
+independent modifications $m_{i,k}$ and for the entry recipes $R^E_{0,eon}$
+from $eon$. 
+
+The first procedure is the junction at all states where recipe alternatives
+from the worklist are involved. 
+
+According to \eqref{}, the constraints for a setting $(i,r)$ can be exclusively expressed by the
+constraints on the predecessor settings.  
+
+Equation \eqref{eq:junction-recipe-alternatives} has an important implication:
+If a set of entry recipes $R^E_{i,k}$ is completely determined, then this set
+is a superset of the possible sets of exit recipes $R_i$, i.e.
 
 \begin{equation} \label{eq:pr-subset-junction}
     R_i \subseteq R^E_{i,k} 
 \end{equation}
 
 Thus, with one given set of possible entry recipes $R^E_{i,k_0}$ the complete
-set of possible recipes $r\in R_i$ is cognizable--in absence of any further
+set of possible recipes $r\in R_i$ is overviewed--in absence of any further
 entry recipe. No $r_i$ is possible for state $i$, except for those in
-$R^E_{i,k_0}$. This fact is used later to prove the correctness and
-completeness of the algorithm to be applied. 
+$R^E_{i,k_0}$. 
 
-\section{History}
-
-A special type of modifications are 'historic independent modifications' which
-modify a variable $v$ independently of its previous content. Practically, this
-means that the modification consists of assigning a constant to $v$. For
-historic independent modifications $m_i$ it holds '$m_i=m_i\circ r$ for an
-arbitrary recipe $r$.  Thus, all entry recipes $R^E_{i,k}$ are the same. It
-follows that in any case, the coherent and the incoherent setup are possible,
-in the sense that 
-
-\begin{description}
-
-    \item[Coherent setup:] The exit recipe is set to $r_i=m_i$, independently
-        of the entry recipes.
-
-    \item[Incoherent setup:] The exit recipe is $r_i=r_{ref}$ which is linked
-        to the condition $(i,r_{ref})$.  $v_r$ contains the value computed by
-        $m_i$ as it is computed upon entry.  
-
-\end{description}
-
-The reason for $r_i=m_i$ being generally applicable lies in the history
-independenance of $m_i$. The output $r_i$ is cut off history by $m_i$, so no
-specific setting of other states is required. Before this section, the set of
-alternative recipes and recipe conditions have been described in terms of
-others. For a state $i$ with a history independent modification $m_i$, $R_i$
-can be described completely independent of other recipes, i.e.
-
-\begin{equation} \label{eq:history-independent-completeness}
-    R_i = \{ m_i,\, r_{ref} \}\,\,\mbox{with}\,\,C_i(r)=true\,\forall\,r\in R_i.
-\end{equation}
-
-There is another recipe which is complete, independently of other recipes: the
-initial recipe $r_{init}$.  It is associated to the virtual state in which the
-state machine is before it is entered. If state $0$ is the init state, then the
-entry recipe $r_{init,0}$ results from the composition
-
-\begin{equation}
-    r_{init} = m_0 \circ r_{init} \,\, \mbox{with} \,\, C^E_{init,0}(m_0\circ r_{init})=true.
-\end{equation}
-
-With the apriori-known complete recipe alternative sets introduced in this
-section as well as the rules for composition and junction, the groundwork for
-further analysis is layed out. The next section develops an algorithm to find
-the optimal configuration of a multi-entry state machine based on recipes.
-
-\section{Algorithm}
-
-By their nature of providing complete recipe alternatives and recipe conditions,
-history independent modifications are ideal starting points of analysis. 
-
-\ref{eq:R-entry-junction} and \ref{eq:R-exit-junction}, with $m_i\circ
-r_k=m_i$, there are two setups possible--even if there is only one predecessor
+\ref{eq:R-entry-junction} and \ref{eq:R-exit-junction}, with $m_{i,k}\circ
+r_k=m_{i,k}$, there are two setups possible--even if there is only one predecessor
 state. First of all, the recipe may be the constant modification itself, i.e.
 
 \begin{equation} \label{eq:R-entry-junction}
-    R_i = R^E_{i,k} = \{ m_i \} \,\,\mbox{ and } C_i(m_i) = true
+    R_i = R^E_{i,k} = \{ m_{i,k} \} \,\,\mbox{ and } C_i(m_{i,k}) = true
 \end{equation}
 
 The conditions for the history independent modification are empty, because there 
@@ -546,7 +591,7 @@ is stored in the reference variable, then the condition of correctness is
 exactly that store-modification. That is, 
 
 \begin{equation} \label{eq:R-entry-junction}
-    R_i = \{ r_{ref} \} \,\,\mbox{ and }  \,\, R^E_{i,k} = \{ v_r \coloneq m_i \}
+    R_i = \{ r_{ref} \} \,\,\mbox{ and }  \,\, R^E_{i,k} = \{ v_r \coloneq m_{i,k} \}
                         \,\,\mbox{ with } \,\, C_i(r_{ref}) = (i, r_{ref})
 \end{equation}
 
@@ -582,13 +627,13 @@ the further discussion.
 Since a linear state has only one predecessor, the junction becomes trivial, i.e.
 
 \begin{equation} \label{eq:composition-complete-recipe}
-    R_i      = R^E_{i,k}      = \{ m_i\circ r_k \,\forall\, r_k\in R_k \}
+    R_i      = R^E_{i,k}      = \{ m_{i,k}\circ r_k \,\forall\, r_k\in R_k \}
 \end{equation}
 
 Correspondingly, for the condition $C_i(r)$ it holds that it is the same as the
 condition of the recipe from which it results.
 \begin{equation} \label{eq:composition-complete-condition}
-    C_i(r_i) = C^E_{i,k}(r_i) = C^E_{i,k}(m_i\circ r_k) = C_k(r_k)
+    C_i(r_i) = C^E_{i,k}(r_i) = C^E_{i,k}(m_{i,k}\circ r_k) = C_k(r_k)
 \end{equation}
 
 The counterpart to a linear state is a mouth state.
@@ -614,13 +659,13 @@ conditions by \ref{eq:C-entry-junction}, the possible exit recipes by
 
 \begin{figure}[htbp] \leavevmode \label{fig:mouth-state}
 \begin{verbatim}
-                  ------>-----[ m_i o r_a ]-----.
-                 r_a                              \
-                                                  .-.    r_i
-                  ------>-----[ m_i o r_b ]-----( i )--------> 
-                 r_b                              '-'
-                                                 /
-                  ------>-----[ m_i o r_c ]----'
+                  ------>-----[ m_{i,a} o r_a ]-----.
+                 r_a                                 \
+                                                     .-.    r_i
+                  ------>-----[ m_{i,b} o r_b ]-----( i )--------> 
+                 r_b                                 '-'
+                                                    /
+                  ------>-----[ m_{i,c} o r_c ]----'
                  r_c 
 
 \end{verbatim}
@@ -634,7 +679,7 @@ of freedom. Upon junction though, it is may be possible to choose the exit
 recipe from a multitude (equation \ref{eq:}). Based on the choices made in
 these junctions the whole configuration of the resulting state machine is
 derived. A set of correct configurations can be determined based on recipe
-conditions.  With an assumed quality function, it is then possible to select
+constraints.  With an assumed quality function, it is then possible to select
 the optimal configuration. The discussion of these subjects finally yields an
 algorithm to determine an optimal  multi-entry state machine that is
 functionally equivalent to the original single-entry state machine.  The
