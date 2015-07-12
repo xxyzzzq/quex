@@ -274,27 +274,24 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(buffer_conversion_fill_region_finish)(QUEX_TYPE_ANALYZER* me,
                                                     const size_t        ByteN)
     {
-#       if ! defined(__QUEX_OPTION_PLAIN_C)
-        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
-        QUEX_NAME(BufferFiller_Converter)<void>*  filler = (QUEX_NAME(BufferFiller_Converter)<void>*)me->buffer.filler;
-#       else
-        QUEX_NAME(BufferFiller_Converter)*        filler = (QUEX_NAME(BufferFiller_Converter)*)me->buffer.filler;
-#       endif
         QUEX_TYPE_CHARACTER*  insertion_p = 0x0;
 
-        filler->raw_buffer.end += ByteN;
+        QUEX_CAST_FILLER(me->buffer.filler)->raw_buffer.end += ByteN;
 
         /*     -- Move away passed buffer content.                                      */
         QUEX_NAME(Buffer_move_away_passed_content)(&me->buffer);
 
         /*     -- Perform the conversion.                                               */
         insertion_p = me->buffer._memory._end_of_file_p;
-        filler->converter->convert(filler->converter, 
-                                   &filler->raw_buffer.iterator, filler->raw_buffer.end,
-                                   &insertion_p,                 QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
+        QUEX_CAST_FILLER(me->buffer.filler)->converter->convert(QUEX_CAST_FILLER(me->buffer.filler)->converter, 
+                                                                &QUEX_CAST_FILLER(me->buffer.filler)->raw_buffer.iterator, 
+                                                                QUEX_CAST_FILLER(me->buffer.filler)->raw_buffer.end,
+                                                                &insertion_p,                 
+                                                                QUEX_NAME(Buffer_content_back)(&me->buffer) + 1);
 
-        if( me->buffer._byte_order_reversion_active_f ) 
+        if( me->buffer._byte_order_reversion_active_f ) {
             QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, insertion_p);
+        }
 
         /*      -- 'convert' has adapted the insertion_p so that is points to the first 
          *         position after the last filled position.                             */
