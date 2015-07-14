@@ -705,7 +705,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, memory, (size_t)CharacterNToRead);
 
         if( buffer->_byte_order_reversion_active_f ) {
-            QUEX_NAME(Buffer_reverse_byte_order)(memory, memory + LoadedN);
+            QUEX_NAME(Buffer_reverse_byte_order)(memory, &memory[LoadedN]);
         }
         return LoadedN;
     }

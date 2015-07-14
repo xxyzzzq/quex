@@ -423,32 +423,35 @@ QUEX_NAMESPACE_MAIN_OPEN
      *            |----|
      *         fallback size                                                       */
     { 
-        QUEX_TYPE_CHARACTER*  ContentFront      = QUEX_NAME(Buffer_content_front)(me);
-        QUEX_TYPE_CHARACTER*  RemainderBegin    = me->_input_p;
-        QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_memory._end_of_file_p;
-        QUEX_TYPE_CHARACTER*  MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
-        ptrdiff_t             MoveRegionSize    = (ptrdiff_t)(RemainderEnd - MoveRegionBegin);
+        QUEX_TYPE_CHARACTER*  ContentFront   = QUEX_NAME(Buffer_content_front)(me);
+        QUEX_TYPE_CHARACTER*  RemainderBegin = me->_input_p;
+        QUEX_TYPE_CHARACTER*  RemainderEnd   = me->_memory._end_of_file_p;
+        QUEX_TYPE_CHARACTER*  MoveRegionBegin;
+        ptrdiff_t             MoveRegionSize;
 
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(me->_content_character_index_begin == 0); 
 
         /* If the distance to content front <= the fallback size, no move possible.  */
-        if( MoveRegionBegin <= ContentFront ) { return; }
+        if( RemainderBegin < &ContentFront[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
+            return;
+        }
 
+        MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
+        MoveRegionSize    = (ptrdiff_t)(RemainderEnd - MoveRegionBegin);
+
+        /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
+         * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
         __QUEX_STD_memmove((void*)ContentFront,
                            (void*)MoveRegionBegin,
                            (size_t)MoveRegionSize * sizeof(QUEX_TYPE_CHARACTER));
 
-
-        /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
-         * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
-
-        QUEX_NAME(Buffer_end_of_file_set)(me, ContentFront + MoveRegionSize);
+        QUEX_NAME(Buffer_end_of_file_set)(me, &ContentFront[MoveRegionSize]);
 
         /* (*) Pointer adaption:
          *     IMPORTANT: This function is called outside the 'engine' so the 
          *                next char to be read is: '_input_p' not '_input_p + 1'    */
-        me->_input_p        = ContentFront + QUEX_SETTING_BUFFER_MIN_FALLBACK_N;   
+        me->_input_p        = &ContentFront[QUEX_SETTING_BUFFER_MIN_FALLBACK_N];   
         /* NOTE: This operation can only happen from outside the lexical analysis
          *       process, i.e. either in a TERMINAL (pattern action) or outside the
          *       receive function calls.                                            */
@@ -460,7 +463,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     { return (size_t)(me->_back - me->_front + 1); }
 
     QUEX_INLINE void
-    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
+                                         const QUEX_TYPE_CHARACTER* End)
     {
         uint8_t              tmp = 0xFF;
         QUEX_TYPE_CHARACTER* iterator = 0x0;
