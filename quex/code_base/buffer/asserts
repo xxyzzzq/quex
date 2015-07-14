@@ -69,10 +69,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(QUEX_TYPE_CHARACTER* Begin, 
-                                            QUEX_TYPE_CHARACTER* End)
+    QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(const QUEX_TYPE_CHARACTER* Begin, 
+                                            const QUEX_TYPE_CHARACTER* End)
     {
-        QUEX_TYPE_CHARACTER* iterator = 0x0;
+        const QUEX_TYPE_CHARACTER* iterator = 0x0;
         __quex_assert(Begin <= End);
 
         for(iterator = Begin; iterator != End; ++iterator) {
@@ -90,7 +90,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QUEX_NAME(Buffer)* buffer)
     {
-        QUEX_TYPE_CHARACTER* End = buffer->_memory._back;
+        const QUEX_TYPE_CHARACTER* End = buffer->_memory._back;
 
         if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
         if( buffer->_memory._end_of_file_p != 0x0 ) End = buffer->_memory._end_of_file_p;

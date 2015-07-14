@@ -104,13 +104,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterIndex);
     QUEX_INLINE void       QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER* Position);
+    QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)*, 
+                                                          QUEX_TYPE_CHARACTER* Position);
     QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_NAME(Buffer)*);
     QUEX_INLINE bool    QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
     QUEX_INLINE bool    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER* Begin, 
-                                                             QUEX_TYPE_CHARACTER* End);
+    QUEX_INLINE void    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
+                                                             const QUEX_TYPE_CHARACTER* End);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)*);
 
