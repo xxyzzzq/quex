@@ -18,13 +18,13 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             const char*          CharacterEncodingName /* = 0x0   */,
                             bool                 ByteOrderReversionF   /* = false */)
 {
-    size_t  memory_size = BufferMemoryBegin != 0 ? BufferMemorySize 
-                          :                        QUEX_SETTING_BUFFER_SIZE;
+    size_t  memory_size = BufferMemoryBegin ? BufferMemorySize 
+                          :                   QUEX_SETTING_BUFFER_SIZE;
 #   ifdef QUEX_OPTION_ASSERTS
     QUEX_TYPE_CHARACTER*   iterator = 0x0;
 
     __quex_assert(memory_size == 0 || memory_size > 2);
-    if( BufferMemoryBegin != 0x0 ) {
+    if( BufferMemoryBegin ) {
         /* End of File must be inside the buffer, because we assume that the buffer
          * contains all that is required.                                           */
         if( BufferMemorySize <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
@@ -40,7 +40,7 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                             "Constructor: the buffer limit code character.\n");
         }
     }
-    if( BufferEndOfContentP != 0x0 ) {
+    if( BufferEndOfContentP ) {
         __quex_assert(BufferEndOfContentP >  BufferMemoryBegin);
         __quex_assert(BufferEndOfContentP <= BufferMemoryBegin + memory_size - 1);
 
@@ -59,12 +59,8 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
     }
 #   endif
 
-    QUEX_NAME(constructor_core)(me, 
-#   if defined(__QUEX_OPTION_PLAIN_C)
-                                (FILE*)0x0,
-#   else
-                                (void*)0x0, 
-#   endif
+    /* Avoid 'invalid conversion from (void*)0 to (FILE*)0' warning/error */
+    QUEX_NAME(constructor_core)(me, (ByteLoader*)0x0,
                                 CharacterEncodingName, ByteOrderReversionF,
                                 BufferMemoryBegin, memory_size, BufferEndOfContentP);
 }
@@ -92,18 +88,19 @@ QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
                           const char*         CharacterEncodingName /* = 0x0   */,
                           bool                ByteOrderReversionF   /* = false */)
 {
-    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
+    if( ! fh ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
      * This seemed suspicous to the author. To avoid compilation errors in the future
      * the test for the standard input is only active in 'C'. It is only about
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
 #   ifdef __QUEX_OPTION_PLAIN_C
-    if( fh == __QUEX_STD_STDIN ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR);
+    /* if( fh == __QUEX_STD_STDIN ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR); */
 #   endif
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    QUEX_NAME(constructor_core)(me, fh, 
+    QUEX_NAME(constructor_core)(me, 
+                                ByteLoader_FILE_new(fh),
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0);
 }
@@ -115,9 +112,10 @@ QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
                              const char*         CharacterEncodingName /* = 0x0   */,
                              bool                ByteOrderReversionF   /* = false */)
 {
-    if( p_input_stream == NULL )      QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    if( p_input_stream == &std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR);
+    if( ! p_input_stream ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    /* if( p_input_stream == &std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR); */
     QUEX_NAME(constructor_core)(me, p_input_stream, 
+                                ByteLoader_stream_new(p_input_stream),
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0,  QUEX_SETTING_BUFFER_SIZE, 0x0);
 }
@@ -131,9 +129,9 @@ QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
                               const char*         CharacterEncodingName /* = 0x0   */,
                               bool                ByteOrderReversionF   /* = false */)
 {
-    if( p_input_stream == NULL ) 
-        QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.\n");
-    QUEX_NAME(constructor_core)(me, p_input_stream, 
+    if( ! p_input_stream ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.\n");
+    QUEX_NAME(constructor_core)(me, 
+                                ByteLoader_stream_new(p_input_stream),
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0);
 }
@@ -241,7 +239,8 @@ QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_inpu
                                 bool             ByteOrderReversionF   /* = false */)
 {
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    QUEX_NAME(constructor_core)(this, p_input_stream, 
+    QUEX_NAME(constructor_core)(this, 
+                                ByteLoader_stream_new(p_input_stream),
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0);
 }

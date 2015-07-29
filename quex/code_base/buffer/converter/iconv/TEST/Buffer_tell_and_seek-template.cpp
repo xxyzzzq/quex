@@ -24,7 +24,9 @@ main(int argc, char** argv)
                                          9, 7, 5, 19, 999 };
     assert( fh != 0x0 );
 
-    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, 0x0, "UTF8", RawMemorySize, false);
+    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new)(fh, 
+                                                                  "UTF8", RawMemorySize);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, 0x0, 5, 0x0, false);
     assert((void*)((QUEX_NAME(BufferFiller_Converter)<FILE>*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 

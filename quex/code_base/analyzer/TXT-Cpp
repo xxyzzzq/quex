@@ -134,15 +134,16 @@ public:
     /* Direct Access to Memory */
     void*                 buffer_fill_region_append(void* ContentBegin, 
                                                     void* ContentEnd);
-    void*                 buffer_fill_region_append_conversion(void* ContentBegin, 
-                                                               void* ContentEnd);
-    void*                 buffer_fill_region_append_conversion_direct(void* ContentBegin, 
-                                                                      void* ContentEnd);
-    void                  buffer_fill_region_prepare();
+    ptrdiff_t             buffer_fill_region_prepare();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
     size_t                buffer_fill_region_size();
-    void                  buffer_fill_region_finish(const size_t LoadedN);
+    void                  buffer_fill_region_finish(const ptrdiff_t LoadedN);
+
+    void                  buffer_fill_region_append_conversion(void* ContentBegin, 
+                                                               void* ContentEnd);
+    void*                 buffer_fill_region_append_conversion_direct(void* ContentBegin, 
+                                                                      void* ContentEnd);
     void                  buffer_conversion_fill_region_prepare(); 
     uint8_t*              buffer_conversion_fill_region_begin();
     uint8_t*              buffer_conversion_fill_region_end();
@@ -269,8 +270,8 @@ public:
 
 public:
 
-    void        set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
-                                                                       QUEX_TYPE_CHARACTER*));
+    void    set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
+                                                  QUEX_TYPE_CHARACTER*));
 
     template <class InputHandleT> void reset(InputHandleT*  input_handle, 
                                              const char*    CharacterEncodingName = 0x0);
@@ -305,7 +306,7 @@ private:
     // (*) Common core of all constructors ___________________________________________
     TEMPLATE_IN(InputHandleT) friend void
     QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*       me,
-                                InputHandleT*             input_handle, 
+                                ByteLoader*               byte_loader, 
                                 const char*               CharacterEncodingName,
                                 bool                      ByteOrderReversionF,
                                 QUEX_TYPE_CHARACTER*      BufferMemory,    
@@ -332,10 +333,10 @@ $$CLASS_BODY_EXTENSION$$
 
 public:
     // At least warn those, who still use the old interface ...
-    void                  get_token() 
+    void   get_token() 
     { QUEX_ERROR_DEPRECATED("Member functions .get_token()", ".receive(...)"); }
-    void                  get_token(QUEX_TYPE_TOKEN*   result_p)  { (void)result_p; get_token(); }
-    void                  get_token(QUEX_TYPE_TOKEN**  result_pp) { (void)result_pp; get_token(); }
+    void   get_token(QUEX_TYPE_TOKEN*   result_p)  { (void)result_p; get_token(); }
+    void   get_token(QUEX_TYPE_TOKEN**  result_pp) { (void)result_pp; get_token(); }
 };
 
 QUEX_NAMESPACE_MAIN_CLOSE

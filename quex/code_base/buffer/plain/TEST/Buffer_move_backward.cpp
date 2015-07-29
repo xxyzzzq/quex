@@ -16,7 +16,12 @@ main(int argc, char** argv)
     const size_t       StepSize = atoi(argv[1]);
     FILE*              fh       = prepare_input(); /* Festgemauert ... */
 
-    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 5, 0x0, 0x0, 0, false);
+    const size_t       MemorySize = 5;
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
+
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                QUEX_NAME(BufferFiller_new)(byte_loader, QUEX_TYPE_BUFFER_FILLER_PLAIN, 0, 0), 
+                                0x0, MemorySize, 0, false);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {

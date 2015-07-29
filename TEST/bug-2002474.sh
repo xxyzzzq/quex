@@ -2,7 +2,7 @@
 bug=2002474
 if [[ $1 == "--hwut-info" ]]; then
     echo "attardi: $bug Segmentation Fault while UTF-8 Decoding"
-    echo "CHOICES:  iconv, icu, codec;"
+    echo "CHOICES:  iconv, icu, codec, iconv_c, icu_c, codec_c;"
     echo "SAME;"
     exit
 fi

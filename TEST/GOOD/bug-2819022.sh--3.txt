@@ -13,4 +13,6 @@ error-3.qx:7:warning:    }
 OTHER ''' 
 WORD 'silly' 
 QUOTE_S_PRE_COND ''s' 
-
+<TERMINATION> '' 
+| [END] number of token = 4
+`------------------------------------------------------------------------------------

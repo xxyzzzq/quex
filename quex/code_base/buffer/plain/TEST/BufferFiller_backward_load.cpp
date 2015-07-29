@@ -22,12 +22,16 @@ main(int argc, char** argv)
 
     fseek(fh, BeginIdx * sizeof(QUEX_TYPE_CHARACTER), SEEK_SET); 
 
-    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, MemorySize, 0x0, 0x0, 0, false);
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
+
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                QUEX_NAME(BufferFiller_new)(byte_loader, QUEX_TYPE_BUFFER_FILLER_PLAIN, 0, 0), 
+                                0x0, MemorySize, 0, false);
 
     /* Simulate, as if we started at 0, and now reached '15' */
     buffer._content_character_index_begin = 15;
     buffer._content_character_index_end   = buffer._content_character_index_begin + (MemorySize-2);
-    QUEX_NAME(BufferFiller_Plain)<FILE>*  filler = (QUEX_NAME(BufferFiller_Plain)<FILE>*)buffer.filler;
+    QUEX_NAME(BufferFiller_Plain)* filler = (QUEX_NAME(BufferFiller_Plain)*)buffer.filler;
     //filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
     filler->_last_stream_position  = ftell(fh);
     filler->start_position         = 0;

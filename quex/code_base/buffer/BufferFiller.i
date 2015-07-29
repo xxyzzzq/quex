@@ -31,21 +31,18 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, 
                                                                      const ptrdiff_t);
 
-#   if defined(__QUEX_OPTION_CONVERTER)
-
-    QUEX_INLINE QUEX_NAME(Converter)*   QUEX_NAME(__Converter_EMPTY_new)() { return 0x0; }
-
-    TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
-                                const char*    CharacterEncodingName,
-                                const size_t   TranslationBufferMemorySize)
+    QUEX_INLINE QUEX_NAME(BufferFiller)*
+    QUEX_NAME(BufferFiller_new)(ByteLoader*        byte_loader, 
+                                E_BufferFillerType BufferFillerType,
+                                const char*        CharacterEncodingName,
+                                const size_t       TranslationBufferMemorySize)
         /* CharacterEncoding == 0x0: Impossible; Converter requires codec name --> filler = 0x0
          * input_handle      == 0x0: Possible; Converter might be applied on buffer. 
          *                           (User writes into translation buffer).                     */
     {
         (void)TranslationBufferMemorySize;
 
-        if( CharacterEncodingName == 0x0 ) {
+        if( ! CharacterEncodingName ) {
 #           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
             __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
                               "Warning: analyzer was generated for use with a converter.\n" \
@@ -58,55 +55,56 @@ QUEX_NAMESPACE_MAIN_OPEN
             return (QUEX_NAME(BufferFiller*))0x0;
         } 
 
-        if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == QUEX_NAME(__Converter_EMPTY_new) ) {
-            QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
-                            "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
-                            "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
+        switch( BufferFillerType) {
+#       ifdef QUEX_OPTION_BUFFER_FILLER_PLAIN
+        case QUEX_TYPE_BUFFER_FILLER_PLAIN:
+            filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
+            break;
+#       endif
+#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICONV
+        case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV:
+            filler = QUEX_NAME(BufferFiller_ConverterIConv_new)(byte_loader,
+                                                               CharacterEncodingName, 
+                                                               /* Internal Coding: Default */0x0,
+                                                               TranslationBufferMemorySize);
+            break;
+#       endif
+#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICU
+        case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU:
+            filler = QUEX_NAME(BufferFiller_ConverterICU_new)(byte_loader,
+                                                              CharacterEncodingName, 
+                                                              /* Internal Coding: Default */0x0,
+                                                              TranslationBufferMemorySize);
+            break;
+#       endif
+
+#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_USER_DEFINED
+        case QUEX_TYPE_BUFFER_FILLER_CONVERTER_USER_DEFINED:
+#           if 0
+            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == QUEX_NAME(__Converter_EMPTY_new) ) {
+                QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
+                                "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
+                                "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
+            }
+#           endif
+
+            filler = QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW(byte_loader,
+                                                               CharacterEncodingName, 
+                                                               /* Internal Coding: Default */0x0,
+                                                               TranslationBufferMemorySize);
+            break;
+#       endif
+        default:
+            __quex_assert(false);
+            return (QUEX_NAME(BufferFiller)*)0;
         }
-
-        /* The specification of a CharacterEncodingName means that a converter is
-         * to be used. This can also happen if the engine is to work on plain memory.
-         * In the latter case the input_handle = 0x0 is passed to the 'new' allocator
-         * without the slightest harm.                                                 */
-        return (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(input_handle, 
-                                                                               QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW(),
-                                                                               CharacterEncodingName, 
-                                                                               /* Internal Coding: Default */0x0,
-                                                                               TranslationBufferMemorySize);
     }
-
-#   else /* NOT: __QUEX_OPTION_CONVERTER */
-
-    TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
-                                const char*    CharacterEncodingName,
-                                const size_t   TranslationBufferMemorySize)
-        /* CharacterEncoding != 0x0: Not possible, converter required   --> filler = 0x0
-         * input_handle      == 0x0: Not possible, data source required --> filler = 0x0 */
-    {
-        (void)TranslationBufferMemorySize;
-        if( CharacterEncodingName != 0x0 ) {
-            QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
-                            "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
-                            "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
-            return (QUEX_NAME(BufferFiller*))0x0;
-        } 
-        /* If no converter is required, it has to be considered whether the buffer needs
-         * filling or not. If the input source is not memory, then the 'plain' buffer
-         * filling is applied. If the input source is memory, no filler is required.     */
-        else if( input_handle == 0x0 ) {
-            return (QUEX_NAME(BufferFiller*))0x0;
-        }
-
-        return (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Plain_new)(input_handle);
-    }
-#   endif
 
     QUEX_INLINE void       
     QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)* me)
     { 
-        if( me->delete_self == 0x0 ) QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
-        else                         me->delete_self(me);
+        if( ! me->delete_self ) QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
+        else                    me->delete_self(me);
     }
 
     QUEX_INLINE void

@@ -18,7 +18,12 @@ main(int argc, char** argv)
     FILE*       fh = prepare_input_error();
     QUEX_NAME(Buffer)  buffer;
 
-    QUEX_NAME(Buffer_construct)(&buffer, fh, 0x0, 8, 0x0, 0x0, 0, false);
+    const size_t       MemorySize  = 8;
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
+
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                QUEX_NAME(BufferFiller_new)(byte_loader, QUEX_TYPE_BUFFER_FILLER_PLAIN, 0, 0), 
+                                0x0, MemorySize, 0, false);
 
     
     do {

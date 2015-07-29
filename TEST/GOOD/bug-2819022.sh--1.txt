@@ -13,4 +13,6 @@ asillya
 OTHER 'a' 
 WORD 'silly' 
 OTHER 'a' 
-
+<TERMINATION> '' 
+| [END] number of token = 4
+`------------------------------------------------------------------------------------

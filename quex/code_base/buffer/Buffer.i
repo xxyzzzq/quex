@@ -32,15 +32,13 @@ QUEX_NAMESPACE_MAIN_OPEN
                                  bool                      ExternalOwnerF);
     QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*    me, 
-                                InputHandleT*         input_handle,
-                                QUEX_TYPE_CHARACTER*  InputMemory,
-                                const size_t          MemorySize,
-                                QUEX_TYPE_CHARACTER*  EndOfFileP,
-                                const char*           CharacterEncodingName, 
-                                const size_t          TranslationBufferMemorySize,
-                                bool                  ByteOrderReversionF)
+    QUEX_INLINE void
+    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
+                                QUEX_NAME(BufferFiller)*  filler,
+                                QUEX_TYPE_CHARACTER*      InputMemory,
+                                const size_t              MemorySize,
+                                QUEX_TYPE_CHARACTER*      EndOfFileP,
+                                bool                      ByteOrderReversionF)
         /* The input can either come from MEMORY or from a STREAM. 
          *
          * input_handle == 0x0 => input via memory
@@ -50,9 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *             == 0x0  => get memory from memory manager.                              */ 
     {
 #       ifdef QUEX_OPTION_ASSERTS
-        if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
         if( InputMemory  != 0x0 ) { 
-            __quex_assert(input_handle == 0x0 );
             /* If the input memory is provided, the content **must** be properly set up.       */
             QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, EndOfFileP);
         }
@@ -64,10 +60,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                           InputMemory, MemorySize, EndOfFileP);      
 
         me->on_buffer_content_change = 0x0;
+        me->filler = filler;
 
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, 
-                                                 CharacterEncodingName, 
-                                                 TranslationBufferMemorySize);
         /* Until now, nothing is loaded into the buffer. */
 
         QUEX_NAME(Buffer_init)(me, ByteOrderReversionF);
@@ -77,11 +71,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me->_input_p == me->_memory._front + 1);
     }
 
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*  me, 
-                            InputHandleT*       input_handle, 
-                            const char*         CharacterEncodingName, 
-                            const size_t        TranslationBufferMemorySize)
+    QUEX_INLINE void
+    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*       me, 
+                            QUEX_NAME(BufferFiller)* filler) 
     /* NOTE:     me->_content_character_index_begin == 0 
      *       and me->_content_character_index_end   == 0 
      *       => buffer is filled the very first time.                                    
@@ -93,17 +85,17 @@ QUEX_NAMESPACE_MAIN_OPEN
      */
     {
         /* Setup the buffer filler for new analysis */
-        if( me->filler != 0x0 ) { 
+        if( me->filler ) { 
             /* If the same input handle is used, as before, than the following command
              * ensures, that we start at the same position.                            */
             me->filler->seek_character_index(me->filler, 0);
             me->filler->delete_self(me->filler);
         }
-        me->filler = QUEX_NAME(BufferFiller_new)(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+        me->filler = filler;
 
         QUEX_NAME(Buffer_init_analyzis)(me, me->_byte_order_reversion_active_f);
 
-        if( me->filler != 0x0 ) {
+        if( me->filler ) {
             /* We only have to reset the input stream, if we are not at position zero    */
             QUEX_NAME(BufferFiller_initial_load)(me);   
         } else {
@@ -113,7 +105,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-        __quex_assert(me->_input_p == me->_memory._front + 1);
+        __quex_assert(me->_input_p == &me->_memory._front[1]);
     }
 
     QUEX_INLINE void
@@ -341,7 +333,7 @@ QUEX_NAMESPACE_MAIN_OPEN
        }
        else {
            /* _input_p - CharacterN < _front + 1 >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_content_character_index_begin == 0 ) { 
+           if( ! me->filler ) { 
                me->_input_p = QUEX_NAME(Buffer_content_front)(me);
            } else {
                /* Reload until delta is reachable inside buffer. */
@@ -367,8 +359,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                } while( 1 + 1 == 2 );
            }
        }
-       me->_lexeme_start_p = me->_input_p;
-       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
+       me->_lexeme_start_p                = me->_input_p;
+       me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
@@ -383,13 +375,8 @@ QUEX_NAMESPACE_MAIN_OPEN
          * current setting of the input pointer. Note, that the content starts
          * at one position after the memory (buffer limitting char at _front.).         
          */
-        const ptrdiff_t DeltaToBufferBegin = me->_input_p - me->_memory._front - 1;
-        /* Adding the current offset of the content of the buffer in the stream. 
-         * If there is no filler, there is no stream, then there is also no offset. */
-        if( me->filler == 0x0 ) 
-            return DeltaToBufferBegin;
-        else
-            return DeltaToBufferBegin + me->_content_character_index_begin;
+        const ptrdiff_t DeltaToBufferBegin = me->_input_p - &me->_memory._front[1];
+        return DeltaToBufferBegin + me->_content_character_index_begin;
     }
 
     QUEX_INLINE void    
@@ -404,7 +391,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_NAME(Buffer_move_backward)(me, CurrentCharacterIndex - CharacterIndex);
     }
 
-    QUEX_INLINE void          
+    QUEX_INLINE ptrdiff_t        
     QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
     /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
      *
@@ -429,12 +416,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  MoveRegionBegin;
         ptrdiff_t             MoveRegionSize;
 
-        /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(me->_content_character_index_begin == 0); 
 
         /* If the distance to content front <= the fallback size, no move possible.  */
         if( RemainderBegin < &ContentFront[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
-            return;
+            return (ptrdiff_t)0;
         }
 
         MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
@@ -456,6 +441,8 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       process, i.e. either in a TERMINAL (pattern action) or outside the
          *       receive function calls.                                            */
         me->_lexeme_start_p = me->_input_p; 
+
+        return MoveRegionBegin - ContentFront; 
     }
 
     QUEX_INLINE size_t          

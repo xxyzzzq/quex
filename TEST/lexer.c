@@ -3,6 +3,14 @@
 #ifndef    CHARACTER_ENCODING_NAME 
 #   define CHARACTER_ENCODING_NAME 0x0
 #endif
+#ifndef    PRINT_TOKEN_FIRST_NUMBER 
+#   define PRINT_TOKEN_FIRST_NUMBER 0
+#endif
+#ifndef    TEST_EPILOG
+#   define TEST_EPILOG \
+    printf("| [END] number of token = %li\n", token_n); \
+    printf("`------------------------------------------------------------------------------------\n");
+#endif
 
 int 
 main(int argc, char** argv) 
@@ -12,7 +20,7 @@ main(int argc, char** argv)
     char         buffer[1024];
 #   endif
     quex_Token*   token_p = 0x0;
-    int           token_n = 0;
+    long          token_n = 0;
     quex_Simple   qlex;
 #   ifdef QUEX_OPTION_TOKEN_POLICY_SINGLE
     QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)0x0;
@@ -39,17 +47,21 @@ main(int argc, char** argv)
 #       else
         QUEX_NAME(receive)(&qlex, &token_p);
 #       endif
+
 #       ifdef PRINT_LINE_COLUMN_NUMBER
         printf("(%i, %i)  \t", (int)token_p->_line_n, (int)token_p->_column_n);
 #       endif
         /* Print out token information            */
         fflush(stderr);
 #       ifdef PRINT_TOKEN
-        printf("%s", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+        if( token_n >= PRINT_TOKEN_FIRST_NUMBER ) {
+            printf("%s", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+            printf("\n");
+        }
 #       else
         printf("%s", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
-#       endif
         printf("\n");
+#       endif
         fflush(stdout);
 
         ++token_n;
@@ -60,8 +72,7 @@ main(int argc, char** argv)
     } while( token_p->_id != QUEX_TKN_TERMINATION );
 #   endif
 
-    printf("| [END] number of token = %i\n", token_n);
-    printf("`------------------------------------------------------------------------------------\n");
+    TEST_EPILOG
 
     return 0;
 }

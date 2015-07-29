@@ -13,6 +13,7 @@ main(int argc, char** argv)
         return 0;
     }
     std::wstringstream    sh;
+    const size_t          MemorySize = 5;
     QUEX_NAME(Buffer)     buffer;
     size_t                SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 
                                             19, 4, 6, 20, 11, 0, 
@@ -22,7 +23,11 @@ main(int argc, char** argv)
     __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     sh << L"Fest gemauert in der Erden";
-    QUEX_NAME(Buffer_construct)(&buffer, &sh, 0x0, 5, 0x0, 0x0, 0, false);
+    ByteLoader*        byte_loader = ByteLoader_stream_new(&sh);
+
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                QUEX_NAME(BufferFiller_new)(byte_loader, QUEX_TYPE_BUFFER_FILLER_PLAIN, 0, 0), 
+                                0x0, MemorySize, 0, false);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }

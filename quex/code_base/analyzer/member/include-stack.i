@@ -24,6 +24,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                             const QUEX_NAME(Mode)* Mode, 
                             const char*            CharacterCodecName /* = 0x0 */)
     {
+        QUEX_NAME(BufferFiller)* filler;
+
         /* (A) Freezing and Copying away:
          *
          *     memento_pack(...): Store the lexical analyzer's to the state before including   */
@@ -34,20 +36,24 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Memento)*  m            = QUEX_NAME(memento_pack)(me, Optional_InputName, &input_handle);
 #       endif
 
-        if( input_handle == 0x0 ) {
+        if( ! input_handle ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
         }
 
         /* (B) Initializations on Inclusion:
          *  
          *    (1) A new buffer is required for the new content.                           */
-        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
+        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
+                                             QUEX_SETTING_BUFFER_FILLER_TYPE_WHAT?,
+                                             CharacterCodecName, 
+                                             QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+
+        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
                                     0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
-                                    CharacterCodecName, QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                     me->buffer._byte_order_reversion_active_f);
 
         /*    (2) If requested: transition to a specific mode for new file.               */
-        if( Mode != 0x0 ) QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
+        if( Mode ) QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
         /*        now leave alone:
          *               __current_mode_p 
          *               current_analyzer_function                                       

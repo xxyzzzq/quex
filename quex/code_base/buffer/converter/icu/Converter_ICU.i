@@ -80,10 +80,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and 
          *                  more source bytes are required.                  */
-        __quex_assert(me != 0x0);
+        __quex_assert(me);
+        __quex_assert(SourceEnd >= *source);
+        __quex_assert(DrainEnd >= *drain);
+
         me->status = U_ZERO_ERROR;
 
-        if( me->to_handle == 0x0 ) {
+        if( ! me->to_handle ) {
             /* Convert according to QUEX_TYPE_CHARACTER:
              *
              * NOTE: The author did not find a better way to do non-16bit 
@@ -108,9 +111,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                            /* flush = */FALSE,
                            &me->status);
 
-            if( *drain == DrainEnd ) return true;
-            else                     return false;
-
         } else {
             ucnv_convertEx(me->to_handle, me->from_handle,
                            (char**)drain,        (const char*)DrainEnd,
@@ -122,9 +122,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                            /* flush = */FALSE,
                            &me->status);
 
-            if( *drain == DrainEnd ) return true;
-            else                     return false;
         }
+
+        return *drain == DrainEnd ? true : false;
 
         /*
         if( me->status == U_BUFFER_OVERFLOW_ERROR) {

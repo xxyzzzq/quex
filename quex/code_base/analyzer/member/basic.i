@@ -15,9 +15,9 @@
 QUEX_NAMESPACE_MAIN_OPEN
     struct QUEX_NAME(Mode_tag);
 
-    TEMPLATE_IN(InputHandleT) void
+    QUEX_INLINE void
     QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER*     me,
-                               InputHandleT*           input_handle,
+                               ByteLoader*             byte_loader,
                                QUEX_TYPE_CHARACTER*    BufferMemory,
                                const size_t            BufferMemorySize,
                                QUEX_TYPE_CHARACTER*    EndOfFileP,
@@ -26,7 +26,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                bool                    ByteOrderReversionF)
     /* Initialization of Components of the Lexical Analyzer Engine ________________________
      *
-     * input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
+     * byte_loader == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
      *                     by hand in order to setup the memory:
@@ -35,6 +35,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      *                                                (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
+        QUEX_NAME(BufferFiller)* filler;
+
 #       if      defined(QUEX_OPTION_ASSERTS) \
            && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         __QUEX_STD_printf(__QUEX_MESSAGE_ASSERTS_INFO);
@@ -96,17 +98,21 @@ QUEX_NAMESPACE_MAIN_OPEN
          * if a member variable is not initialized before it is used.             */
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
+
+        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
+                                             buffer_filler_type,
+                                             CharacterEncodingName, 
+                                             TranslationBufferMemorySize);
         
-        QUEX_NAME(Buffer_construct)(&me->buffer, input_handle, 
+        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
                                     BufferMemory, BufferMemorySize, EndOfFileP,
-                                    CharacterEncodingName, TranslationBufferMemorySize,
                                     ByteOrderReversionF);
 
-        if( input_handle == 0x0 ) {
+        if( ! byte_loader ) {
             /* TWO CASES:
              * (1) The user provides a buffer memory: --> assume it is filled to the end.
              * (2) The user does not provide memory:  --> the memory IS empty.             */
-            if( BufferMemory == 0x0 ) {
+            if( ! BufferMemory ) {
                 /* 'buffer._memory._front' has been set at this point in time.             */
                 QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, me->buffer._memory._front + 1);
             }
@@ -126,6 +132,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                            const size_t         TranslationBufferMemorySize)
         /* Reset of Components of the Lexical Analyzer Engine ____________________________*/
     {
+        QUEX_NAME(BufferFiller)* filler;
         __QUEX_IF_COUNT( QUEX_NAME(Counter_reset)(&me->counter); )
 
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -147,9 +154,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         me->_mode_stack.end        = me->_mode_stack.begin;
-        me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+        me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
 
-        QUEX_NAME(Buffer_reset)(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
+                                             buffer_filler_type, 
+                                             CharacterEncodingName, 
+                                             TranslationBufferMemorySize);
+        QUEX_NAME(Buffer_reset)(&me->buffer, filler);
     }
 
 
@@ -180,7 +191,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(Buffer_destruct)(&me->buffer);
 
-        if( me->__file_handle_allocated_by_constructor != 0x0 ) {
+        if( me->__file_handle_allocated_by_constructor ) {
             __QUEX_STD_fclose(me->__file_handle_allocated_by_constructor); 
         }
     }
@@ -195,7 +206,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(buffer != 0x0);
         __quex_assert(buffer->filler != 0x0);
 
-        if( buffer->on_buffer_content_change != 0x0 ) {
+        if( buffer->on_buffer_content_change ) {
             /* In contrast to 'reload forward', a reload backward is very well 
              * conceivable, even if end of file pointer != 0x0.                          */
             buffer->on_buffer_content_change(buffer->_memory._front, 
@@ -228,7 +239,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             return 0;
         }
 
-        if( buffer->on_buffer_content_change != 0x0 ) {
+        if( buffer->on_buffer_content_change ) {
             /* If the end of file pointer is set, the reload will not be initiated,
              * and the buffer remains as is. No reload happens, see above. 
              * => HERE: end of content = end of buffer.                             */
