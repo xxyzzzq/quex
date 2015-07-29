@@ -12,3 +12,6 @@
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ID 'pathﬁnding' 
+<TERMINATION> '' 
+| [END] number of token = 2
+`------------------------------------------------------------------------------------

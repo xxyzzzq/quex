@@ -4,10 +4,16 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/loader/ByteLoader>
 
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
+     typedef enum {
+        QUEX_TYPE_BUFFER_FILLER_PLAIN,
+        QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV,
+        QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
+     } E_BufferFillerType;
 
      typedef struct QUEX_NAME(BufferFiller_tag) {
         /* PURPOSE: This is the interface that the buffer sees of the buffer filler. Its
@@ -63,10 +69,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                             QUEX_TYPE_CHARACTER*, const size_t),
                                             void         (*delete_self)(QUEX_NAME(BufferFiller)*));
-    TEMPLATE_IN(InputHandleT) QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(InputHandleT*  input_handle, 
-                                const char*    CharacterEncodingName,
-                                const size_t   TranslationBufferMemorySize);
+    QUEX_INLINE QUEX_NAME(BufferFiller)*
+    QUEX_NAME(BufferFiller_new)(ByteLoader*        byte_loader, 
+                                E_BufferFillerType BufferFillerType,
+                                const char*        CharacterEncodingName,
+                                const size_t       TranslationBufferMemorySize);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
@@ -82,10 +89,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#if defined(__QUEX_OPTION_CONVERTER)
-#   include <quex/code_base/buffer/converter/BufferFiller_Converter>
-#else
-#   include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#endif
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER */

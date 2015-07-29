@@ -7,4 +7,6 @@ THING 'di'
 THING 'Parigi' 
 NONE ',' 
 THING 'dipinse' 
-
+<TERMINATION> '' 
+| [END] number of token = 10
+`------------------------------------------------------------------------------------

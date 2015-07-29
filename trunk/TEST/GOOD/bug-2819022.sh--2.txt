@@ -15,4 +15,6 @@ OTHER '''
 WORD 'silly' 
 OTHER ''' 
 NEWLINE '' 
-
+<TERMINATION> '' 
+| [END] number of token = 5
+`------------------------------------------------------------------------------------

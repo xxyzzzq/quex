@@ -1,4 +1,4 @@
-## Buffer Size = 29
+## Buffer Size = 30
 clean
 BRACKET_O '' 
 BRACKET_C '' 
@@ -472,6 +472,8 @@ BRACKET_C ''
 SEMICOLON '' 
 CONTINUE '' 
 SEMICOLON '' 
+<TERMINATION> '' 
 Buffer Size = 30
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 clean
+

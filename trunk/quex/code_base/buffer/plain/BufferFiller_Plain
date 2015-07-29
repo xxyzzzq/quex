@@ -13,30 +13,30 @@
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/loader/ByteLoader>
 
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    TEMPLATIFIER(BufferFiller_Plain, InputHandleT) {
+    typedef struct QUEX_NAME(BufferFiller_Plain_tag) {
         /* Derived BufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
         QUEX_NAME(BufferFiller)   base;
 
-        InputHandleT*             ih;
+        ByteLoader*               byte_loader;
 
         /* position in stream where analysis started */
-        STREAM_POSITION_TYPE(InputHandleT)  start_position;  
-
-        STREAM_POSITION_TYPE(InputHandleT)  _last_stream_position;  
+        long        start_position;  
+        long        _last_stream_position;  
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
-        ptrdiff_t                           _character_index;
+        ptrdiff_t   _character_index;
 #       endif
-    } TEMPLATIFIER_END(BufferFiller_Plain);
+    } QUEX_NAME(BufferFiller_Plain);
 
-    TEMPLATE_IN(InputHandleT)  TEMPLATED(BufferFiller_Plain)*
-    QUEX_NAME(BufferFiller_Plain_new)(InputHandleT* input_handle);
+    QUEX_INLINE QUEX_NAME(BufferFiller_Plain)*
+    QUEX_NAME(BufferFiller_Plain_new)(ByteLoader* byte_loader);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read.                             */
 

@@ -2,12 +2,9 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-#ifndef __QUEX_OPTION_PLAIN_C
-TEMPLATE_IN(InputHandleT)
-#endif
 void
 QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
-                            InputHandleT*          input_handle, 
+                            ByteLoader*            byte_loader, 
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
                             QUEX_TYPE_CHARACTER*   BufferMemory,    
@@ -16,7 +13,7 @@ QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
 {
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-    QUEX_NAME(construct_basic)(me, input_handle,
+    QUEX_NAME(construct_basic)(me, byte_loader,
                                BufferMemory, BufferMemorySize, BufferEndOfFileP,
                                CharacterEncodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,

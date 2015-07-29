@@ -1,7 +1,93 @@
 .. _sec-direct-buffer-access:
 
-Direct Buffer Access
-====================
+Input Policies
+==============
+
+A major goal of Quex is to provide a maximum flexibility of input design. That
+is, the user shall be enabled to provide the input character stream in the most
+efficient and most appropriate way as possible in his particular application.
+Before features and APIs can be discussed a few fundamental concepts must be
+explained. First of all there are two timing schemes for the delivery of 
+data: 
+
+#. *File-based* is a setup when the entire data is available at all time. 
+   The time to access new data is small. Eventually, an 'end-of-stream'
+   can be detected when no more data is available.
+
+#. *Pipe-based* is a setup when the data is not necessarily available in
+   its entirety from the beginning. The time to access new data and the
+   amount of available data is undetermined. An 'end-of-stream' event
+   may have to be sent explicitly from the other end where the pipe is
+   fed with data. 
+
+In case of pipe based input there are three levels of 'sementic granularity' by
+which the input chunks can be delivered.
+
+#. *Syntactical* chunks never break inside a lexeme.
+
+#. *Character* chunks never break inside a character representing byte sequence.
+
+#. *Arbitrarily* chunked data may break inside a lexeme or even inside a
+   character representing byte sequence. 
+
+Lexical analysis runs on some type of linear storage: the engine's buffer.
+It can be filled in two manners.
+
+#. *Automatic* filling means that the engine's buffer is automatically filled
+   as soon as more data is required to continue analysis. No user interaction
+   is required.
+
+#. *Manual* means that the engine's buffer is filled manually by a user's calls
+   to an API for buffer access.
+
+Input may actually be preprocessed so that the following two scenarios for
+filling need to be considered.
+
+#. *Direct* filling means that data is directly used as the data on which the
+   engine runs. In this case, the engine's buffer is the only buffer that is
+   required.
+
+#. *Converterted* filling means that the incoming data is converted, for
+   example from some encoding to a unicode codec, such as ASCII or UCS32. When
+   conversion is involved a 'raw buffer' might be necessary to store incoming
+   data before it is converted and stored in the engine's buffer.
+
+A buffer is an array. The raw buffer, in case of converted filling, is always
+an array of bytes. The engine's buffer element type is diverse. In case of an
+engine running on ASCII codec, it may be an array of bytes (e.g. of type
+``uint8_t``). In case of UTF16, the engine's array may be an array of 2-byte
+chunks (e.g. of type ``uint16_t``). On very small, or very optimized systems
+the memory placement may be an issue and whether dynamic allocation is allowed
+or not.
+
+The aforementioned concepts constitute the pillars of an input policy design. 
+Once, a user has a concrete idea about those for his particular setup, the
+following sections provide guidance to find a dedicated solution.
+
+Input Streams
+#############
+
+File-based input is the easiest and most common use case as it appears in
+compilers or interpreters. In C, the related handle is a ``FILE`` pointer and
+in C++ it is a ``std::ifstream`` object. A generated lexical analyzer class
+may, of course, be applied to an *arbitrary* number of files. However, an
+analyzer's instance is bound to a *specific* file. If another file is to be
+parsed, it either needs to be included (see include stack handling), or another
+analyzer instance needs to be initialized. When relying on files, then the
+input buffer can either be filled up to its limits, or the end-of-file has
+been reached.
+
+Relying on pipes needs some elaborate consideration. When pipes are used
+no assumptions can be made about how long one needs to wait for an 
+incoming chunk of data. Further, no assumptions can be made how big that
+chunk is. Thus, the automatic filling approach may result in dead-locks
+waiting for input and the input buffer may not always be filled to its
+limits. Data may be absorbed from a pipe byte-wise, or line-wise.
+
+difference between files and pipes is that the
+
+
+
 
 
 A generated lexical analyzer runs its analysis on data located in a buffer. In
@@ -676,15 +762,11 @@ assumed that the input is raw. There are two possible cases:
 
    .. code-block:: cpp
 
-        uint8_t*  
         buffer_fill_region_append_conversion(uint8_t* Begin, uint8_t* End);
 
-    has to be used. This is the *safe* way of doing character conversion.
-
-    The return value is the pointer to the next content byte to be appended. If 
-    it is equal to ``End`` the whole content area from ``Begin`` to ``End``
-    has beend appended.
-
+    has to be used. This is the *safe* way of doing character conversion. The
+    content from ``Begin`` to ``End`` is pasted into an internal raw buffer. So,
+    incomplete characters 'wait' until the rest is pasted.
 
 #. The input chunks never cut in between an encoded character.  In this case,
    the function

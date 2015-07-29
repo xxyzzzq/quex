@@ -80,10 +80,15 @@ QUEX_NAMESPACE_MAIN_OPEN
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
         size_t source_bytes_left_n = (size_t)(SourceEnd - *source);
         size_t drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
+        size_t report;
 
-        size_t report = iconv(me->handle, 
-                              __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
-                              (char**)drain,                        &drain_bytes_left_n);
+        __quex_assert(me);
+        __quex_assert(SourceEnd >= *source);
+        __quex_assert(DrainEnd >= *drain);
+
+        report = iconv(me->handle, 
+                       __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
+                       (char**)drain,                        &drain_bytes_left_n);
 
         if( report != (size_t)-1 ) { 
             __quex_assert(source_bytes_left_n == 0);
@@ -123,8 +128,7 @@ QUEX_NAMESPACE_MAIN_OPEN
              * to the end of the buffer in front of the new buffer).                               
              * If it happens, that we just finished filling the drain buffer before this happend
              * than the 'read_characters()' function does not need to reload.                    */
-            if( *drain == DrainEnd ) return true;
-            else                     return false; 
+            return *drain == DrainEnd ? true : false;
 
         case E2BIG:
             /* The input buffer was not able to hold the number of converted characters.

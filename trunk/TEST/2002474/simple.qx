@@ -14,11 +14,11 @@ token {
 mode ONE_AND_ONLY
 {
   // Order is relevant
-  on_end_of_stream => TKN_TERMINATION(LexemeNull);
-  on_failure     { std::cerr << "unknown character: " << *Lexeme << std::endl; }
+  on_end_of_stream => QUEX_TKN_TERMINATION(LexemeNull);
+  on_failure     { fprintf(stderr, "unknown character: %c\n", (int)*Lexeme); }
   [ \t\r\n]+     { }
 
-  {P_TOK}        => TKN_TOK(Lexeme);
-  .              => TKN_NONE(Lexeme);
+  {P_TOK}        => QUEX_TKN_TOK(Lexeme);
+  .              => QUEX_TKN_NONE(Lexeme);
 }
 

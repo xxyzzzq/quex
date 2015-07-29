@@ -7,3 +7,6 @@ F 'beyond'
 G 'rabbits' 
 C 'backyard' 
 A 'elsewhere' 
+<TERMINATION> '' 
+| [END] number of token = 10
+`------------------------------------------------------------------------------------

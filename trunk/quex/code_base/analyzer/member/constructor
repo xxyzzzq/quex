@@ -12,12 +12,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 /* The constructor 'core' function is implemented per analyzer.
  * It's implementation happens inside the generated source file. */
-#ifndef __QUEX_OPTION_PLAIN_C
-TEMPLATE_IN(InputHandleT)
-#endif
 void
 QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
-                            InputHandleT*          input_handle, 
+                            ByteLoader*            byte_loader, 
                             const char*            CharacterEncodingName,
                             bool                   ByteOrderReversionF,
                             QUEX_TYPE_CHARACTER*   BufferMemory,    
@@ -64,9 +61,9 @@ QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
 QUEX_INLINE void
 QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me); 
 
-TEMPLATE_IN(InputHandleT) void
+QUEX_INLINE void
 QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*  me,
-                 InputHandleT*        input_handle, 
+                 ByteLoader*          byte_loader, 
                  const char*          CharacterEncodingName /* = 0x0 */);
 
 QUEX_INLINE QUEX_TYPE_CHARACTER*

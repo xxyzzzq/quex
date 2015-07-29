@@ -472,6 +472,7 @@ BRACKET_C ''
 SEMICOLON '' 
 CONTINUE '' 
 SEMICOLON '' 
+<TERMINATION> '' 
 Buffer Size = 29
 VALGRIND:   All heap blocks were freed -- no leaks are possible
 clean

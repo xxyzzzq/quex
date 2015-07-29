@@ -29,7 +29,7 @@ QUEXED_DEF(MemoryManager_free)(void*                        memory,
 { 
     (void)Type;
     /* The de-allocator shall never be called for LexemeNull object.     */
-    if( memory != (void*)0 ) {
+    if( memory ) {
         __QUEX_STD_free(memory); 
     }
 }
