@@ -41,6 +41,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                           (User writes into translation buffer).                     */
     {
         (void)TranslationBufferMemorySize;
+        QUEX_NAME(BufferFiller)* filler = (QUEX_NAME(BufferFiller)*)0;
 
         if( ! CharacterEncodingName ) {
 #           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
@@ -63,18 +64,20 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 #       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICONV
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV:
-            filler = QUEX_NAME(BufferFiller_ConverterIConv_new)(byte_loader,
-                                                               CharacterEncodingName, 
-                                                               /* Internal Coding: Default */0x0,
-                                                               TranslationBufferMemorySize);
-            break;
 #       endif
+            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
+                                                           QUEX_NAME(Converter_IConv_new)(), 
+                                                           CharacterEncodingName, 
+                                                           /* Internal Coding: Default */0x0,
+                                                           TranslationBufferMemorySize);
+            break;
 #       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICU
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU:
-            filler = QUEX_NAME(BufferFiller_ConverterICU_new)(byte_loader,
-                                                              CharacterEncodingName, 
-                                                              /* Internal Coding: Default */0x0,
-                                                              TranslationBufferMemorySize);
+            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
+                                                           QUEX_NAME(Converter_ICU_new)(), 
+                                                           CharacterEncodingName, 
+                                                           /* Internal Coding: Default */0x0,
+                                                           TranslationBufferMemorySize);
             break;
 #       endif
 
@@ -96,8 +99,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
         default:
             __quex_assert(false);
-            return (QUEX_NAME(BufferFiller)*)0;
         }
+        return filler;
     }
 
     QUEX_INLINE void       

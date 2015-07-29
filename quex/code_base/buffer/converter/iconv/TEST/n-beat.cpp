@@ -35,9 +35,10 @@ main(int argc, char** argv)
     assert(memory_size >= 1);
     assert(memory_size <= 9);
     QUEX_TYPE_CHARACTER  memory[memory_size];
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_IConv_new)(), 
+    QUEX_NAME(BufferFiller_Converter)* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, QUEX_NAME(Converter_IConv_new)(), 
                                               "UTF8", 
                                               target_charset, RawMemorySize);
 
