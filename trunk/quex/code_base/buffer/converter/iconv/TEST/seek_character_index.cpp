@@ -31,6 +31,7 @@ main(int argc, char** argv)
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
     /**/
     ptrdiff_t    Delta = 0;
     ptrdiff_t    Front = 0;
@@ -38,8 +39,8 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(fh, QUEX_NAME(Converter_IConv_new)(), "UTF8", target_charset, RawMemorySize);
+    QUEX_NAME(BufferFiller_Converter)* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, QUEX_NAME(Converter_IConv_new)(), "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     for(ptrdiff_t i=Front; ; i += Delta) {

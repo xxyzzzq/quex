@@ -7,9 +7,10 @@
 #include <quex/code_base/single.i>
 #include ___HEADER___
 
+#line 10 "seek_character_index-zikzak-template.cpp" 
 
 void 
-seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)<FILE>& , size_t, QUEX_TYPE_CHARACTER* );
+seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)& , size_t, QUEX_TYPE_CHARACTER* );
 
 int
 main(int argc, char** argv)
@@ -46,9 +47,10 @@ main(int argc, char** argv)
         printf("Input file not found.\n");
         exit(-1);
     }
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-         QUEX_NAME(BufferFiller_Converter_new)(fh, 
+    QUEX_NAME(BufferFiller_Converter)* filler = \
+         QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
                                                ___NEW___(), 
                                                source_charset, target_charset, 
                                                RawMemorySize);
@@ -84,7 +86,7 @@ main(int argc, char** argv)
     }
 }
 
-void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)<FILE>& filler, size_t Position, QUEX_TYPE_CHARACTER* reference)
+void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)& filler, size_t Position, QUEX_TYPE_CHARACTER* reference)
 {
     using namespace std;
 

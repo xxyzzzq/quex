@@ -4,6 +4,8 @@
 #include <quex/code_base/single.i>
 #include ___HEADER___
 
+#line 7 "Buffer_tell_and_seek-template.cpp"
+
 using namespace std;
 using namespace quex;
 
@@ -22,12 +24,14 @@ main(int argc, char** argv)
                                          2, 3, 15, 22, 17, 22, 21,
                                          0, 20, 13, 1, 16, 12, 14, 
                                          9, 7, 5, 19, 999 };
+    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
     assert( fh != 0x0 );
 
-    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new)(fh, 
+    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
+                                                                  ___FILLER_TYPE___,
                                                                   "UTF8", RawMemorySize);
     QUEX_NAME(Buffer_construct)(&buffer, filler, 0x0, 5, 0x0, false);
-    assert((void*)((QUEX_NAME(BufferFiller_Converter)<FILE>*)buffer.filler)->converter->convert 
+    assert((void*)((QUEX_NAME(BufferFiller_Converter)*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 
     test_seek_and_tell(&buffer, SeekIndices);

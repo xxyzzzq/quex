@@ -95,7 +95,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  
     QUEX_NAME(BufferFiller_Converter_init)(QUEX_NAME(BufferFiller_Converter)* me, 
-                                           ByteLoader*              ByteLoader,
+                                           ByteLoader*              byte_loader,
                                            QUEX_NAME(Converter)*    converter,
                                            const char*              FromCoding,
                                            const char*              ToCoding,
@@ -112,9 +112,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (disabled in case of buffer based lexical analyzis)                              */
         if( byte_loader ) {
             me->byte_loader    = byte_loader;
-            me->start_position = byte_loader->tell(byte_loader)
+            me->start_position = byte_loader->tell(byte_loader);
         } else { 
-            me->byte_loader    = (void*)0;
+            me->byte_loader    = (ByteLoader*)0;
             me->start_position = 0;
         }
 
@@ -417,7 +417,7 @@ QUEX_NAMESPACE_MAIN_OPEN
        FillSize          = (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN;
        /* We cannot load bytes, if buffer based analyzis is on.                        */
        if( me->byte_loader ) {
-           LoadedByteN = me->byte_loader->load(FillStartPosition, FillSize);
+           LoadedByteN = me->byte_loader->load(me->byte_loader, FillStartPosition, FillSize);
            buffer->end_stream_position = me->byte_loader->tell(me->byte_loader);
        }
        /* '.character_index' remains to be updated after character conversion */
