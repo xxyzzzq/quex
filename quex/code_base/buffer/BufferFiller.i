@@ -62,16 +62,16 @@ QUEX_NAMESPACE_MAIN_OPEN
             filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
             break;
 #       endif
-#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICONV
+#       ifdef QUEX_OPTION_CONVERTER_ICONV
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV:
-#       endif
             filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
                                                            QUEX_NAME(Converter_IConv_new)(), 
                                                            CharacterEncodingName, 
                                                            /* Internal Coding: Default */0x0,
                                                            TranslationBufferMemorySize);
             break;
-#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICU
+#       endif
+#       ifdef QUEX_OPTION_CONVERTER_ICU
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU:
             filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
                                                            QUEX_NAME(Converter_ICU_new)(), 
@@ -81,7 +81,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             break;
 #       endif
 
-#       ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_USER_DEFINED
+#       ifdef QUEX_OPTION_CONVERTER_USER_DEFINED
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_USER_DEFINED:
 #           if 0
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == QUEX_NAME(__Converter_EMPTY_new) ) {

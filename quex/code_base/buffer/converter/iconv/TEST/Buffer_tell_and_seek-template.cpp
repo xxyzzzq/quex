@@ -2,7 +2,12 @@
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/single.i>
-#include ___HEADER___
+#ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICONV
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#endif
+#ifdef QUEX_OPTION_BUFFER_FILLER_CONVERTER_ICU
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#endif
 
 #line 7 "Buffer_tell_and_seek-template.cpp"
 

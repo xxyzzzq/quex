@@ -37,8 +37,10 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QUEX_NAME(BufferFiller_Converter)<FILE>* filler = \
-             QUEX_NAME(BufferFiller_Converter_new)(fh, 
+    ByteLoader* byte_loader = ByteLoader_FILE_new(fh);
+
+    QUEX_NAME(BufferFiller_Converter)* filler = \
+             QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
                                                    QUEX_NAME(Converter_ICU_new)(), 
                                                    "UTF-8", 0x0, RawMemorySize);
 

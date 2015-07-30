@@ -26,6 +26,7 @@ GENERATED_FILES = \
 DEFS = -DQUEX_OPTION_ASSERTS \
 	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
        -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
+	   -DQUEX_OPTION_CONVERTER_ICU 
 
 # Use 'icu-config --ldflags' in order to get the linker flags
 ICU_FLAGS := $(shell icu-config --ldflags --cppflags) 
@@ -36,12 +37,12 @@ CC = \
 	g++ -I$(QUEX_PATH) $(DEFS) \
 		-ggdb  \
 		-Wall -Werror \
-        -Werror-implicit-function-declaration \
-		-DQUEX_OPTION_CONVERTER_ICU
+        -Werror-implicit-function-declaration 
 
 HEADER        = \<quex\/code_base\/buffer\/converter\/icu\/Converter_ICU\.i\>
 CONVERTER     = QUEX_NAME(Converter_ICU_convert)
 NEW_OPERATOR  = QUEX_NAME(Converter_ICU_new)
+FILLER_TYPE   = QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
 CODING_4_BYTE = "UTF-32BE"
 
 
@@ -56,6 +57,7 @@ hwut-end: clean
 	sed   -e 's/\_\_\_HEADER\_\_\_/$(HEADER)/g' $<    \
 	| sed -e 's/\_\_\_NEW\_\_\_/$(NEW_OPERATOR)/g'    \
 	| sed -e 's/\_\_\_CONVERT\_\_\_/$(CONVERTER)/g' \
+	| sed -e 's/\_\_\_FILLER_TYPE\_\_\_/$(FILLER_TYPE)/g' \
 	| sed -e 's/\_\_\_CODING_4_BYTE\_\_\_/$(CODING_4_BYTE)/g' \
 	> $@
 
