@@ -155,7 +155,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->base.open        = (QUEX_NAME(ConverterFunctionP_open))QUEX_NAME(Converter_IConv_open);
         me->base.convert     = (QUEX_NAME(ConverterFunctionP_convert))QUEX_NAME(Converter_IConv_convert);
         me->base.delete_self = (QUEX_NAME(ConverterFunctionP_delete_self))QUEX_NAME(Converter_IConv_delete_self);
-        me->base.on_conversion_discontinuity = 0x0;
+        me->base.on_conversion_discontinuity = (void (*)(struct QUEX_NAME(Converter_tag)*))0;
 
         me->handle = (iconv_t)-1;
 

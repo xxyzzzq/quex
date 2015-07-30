@@ -283,8 +283,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Some type of converters (actually, at the time of this writing, only IBM's ICU)
          * require a reset as soon as the conversion is discontinued, i.e. the stream of
          * character's is disrupted. The reset happens to cope with some internal 'statefulness'. */
-        if( me->converter->on_conversion_discontinuity != 0x0 )
+        if( me->converter->on_conversion_discontinuity ) {
             me->converter->on_conversion_discontinuity(me->converter);
+        }
 
         /* Depending on the character encoding, the seek procedure can be optimized there are the 
          * following two cases:
@@ -295,7 +296,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *   (2) The coding uses **dynamic** character width (e.g. UTF-8). Here the position cannot
          *       be computed. Instead, the conversion must start from a given 'known' position 
          *       until one reaches the specified character index.                                 */
-        if( me->converter->dynamic_character_size_f == false ) { 
+        if( ! me->converter->dynamic_character_size_f ) { 
             /* (1) Fixed Character Width */
             __quex_assert(buffer->end >= buffer->begin);
             ContentSize = buffer->end - buffer->begin;
@@ -307,14 +308,15 @@ QUEX_NAMESPACE_MAIN_OPEN
                 buffer->iterators_character_index = Index;
             }
             else  /* Index not in [BeginIndex:EndIndex) */ {
-                QUEX_TYPE_STREAM_POSITION avoid_tmp_arg =
+                QUEX_TYPE_STREAM_POSITION new_start_position =
                     (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER)) \
                     + me->start_position;
                 /* Seek stream position cannot be handled when buffer based analyzis is on.       */
                 if( me->byte_loader ) {
-                    me->byte_loader->seek(me->byte_loader, avoid_tmp_arg);
+                    me->byte_loader->seek(me->byte_loader, new_start_position);
+                    __quex_assert(new_start_position == me->byte_loader->tell(me->byte_loader));
                 }
-                buffer->end_stream_position = avoid_tmp_arg;
+                buffer->end_stream_position       = new_start_position;
                 /* iterator == end => trigger reload                                              */
                 buffer->iterator                  = buffer->end;
                 buffer->iterators_character_index = Index;
@@ -350,6 +352,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                 /* Seek stream position cannot be handled when buffer based analyzis is on.       */
                 if( me->byte_loader ) {
                     me->byte_loader->seek(me->byte_loader, me->start_position);
+                    __quex_assert(me->start_position == me->byte_loader->tell(me->byte_loader));
                 }
                 buffer->end_stream_position       = me->start_position;
                 /* trigger reload, not only conversion                                            */
@@ -395,13 +398,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         *         ==> The character index of the iterator relates always to the begin of 
         *             the buffer.
         */
-       /* NOTE: Some converters contain a weird statefulness. Let us assume that if
-        *       the converter provides a 'on_conversion_discontinuity()' function, than
-        *       it such a weird subject, and we cannot make any good assumptions about
-        *       character index and buffer position. The good news is that currently
-        *       only ICU converters behave so strangely.                               */
-       if( me->converter->on_conversion_discontinuity == 0x0 )
+
+       /* NOTE: Some converters contain a weird statefulness. Let us assume
+        *       that if the converter has a 'on_conversion_discontinuity()'
+        *       function, then no good assumptions can be made about character 
+        *       index and buffer position.  (Currently only ICU converters 
+        *       behave so strangely.                                         */
+
+       if( ! me->converter->on_conversion_discontinuity ) {
            me->hint_begin_character_index = buffer->iterators_character_index;
+       }
 
        /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
         * the buffer) where there are bytes left in the raw buffer. These need to be

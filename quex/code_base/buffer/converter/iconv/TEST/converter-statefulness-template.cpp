@@ -51,8 +51,9 @@ main(int argc, char** argv)
         uint8_t*                in_iterator = in;
         QUEX_TYPE_CHARACTER     out[Size];
         QUEX_TYPE_CHARACTER*    out_iterator = out;
-        if( converter->on_conversion_discontinuity != 0x0 ) 
+        if( converter->on_conversion_discontinuity ) {
             converter->on_conversion_discontinuity(converter);
+        }
         bool      Result = converter->convert(converter, &in_iterator, in + i, &out_iterator, out + Size);
         printf(">> result:  %s; ", Result ? "true" : "false");
         printf("output iterator offset: %04i\n", (int)(out_iterator - out));
