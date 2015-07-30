@@ -43,6 +43,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         (void)TranslationBufferMemorySize;
         QUEX_NAME(BufferFiller)* filler = (QUEX_NAME(BufferFiller)*)0;
 
+#       if    defined(QUEX_OPTION_CONVERTER_ICONV) \
+           || defined(QUEX_OPTION_CONVERTER_ICU) 
         if( ! CharacterEncodingName ) {
 #           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
             __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
@@ -55,13 +57,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 #           endif
             return (QUEX_NAME(BufferFiller*))0x0;
         } 
+#       endif
 
         switch( BufferFillerType) {
-#       ifdef QUEX_OPTION_BUFFER_FILLER_PLAIN
         case QUEX_TYPE_BUFFER_FILLER_PLAIN:
-            filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
+            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
             break;
-#       endif
 #       ifdef QUEX_OPTION_CONVERTER_ICONV
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV:
             filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
