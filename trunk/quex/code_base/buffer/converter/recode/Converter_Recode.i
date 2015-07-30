@@ -121,7 +121,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QuexConverter_ICU* me = (QuexConverter_ICU*)alter_ego;
 
         ucnv_reset(me->from_handle);
-        if( me->to_handle != 0x0 ) ucnv_reset(me->to_handle);
+        if( me->to_handle ) ucnv_reset(me->to_handle);
 
         /* Reset the pivot buffer iterators */
         me->pivot_iterator_begin = me->pivot_buffer;
