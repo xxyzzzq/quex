@@ -99,8 +99,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
 
-        buffer_filler_type = CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
-                                                   : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
+        buffer_filler_type = ! CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
+                                                     : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
+
         filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
                                              buffer_filler_type,
                                              CharacterEncodingName, 
@@ -160,8 +161,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
 
-        buffer_filler_type = CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
-                                                   : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
+        buffer_filler_type = ! CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
+                                                     : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
 
         filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
                                              buffer_filler_type, 
