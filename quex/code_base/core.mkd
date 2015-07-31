@@ -38,7 +38,6 @@ __QUEX_CORE = \
     ./buffer/converter/recode/Converter_Recode \
     ./buffer/MemoryPositionMimiker \
     ./buffer/Buffer_debug.i \
-    ./buffer/InputPolicy \
     ./buffer/plain/BufferFiller_Plain \
     ./buffer/plain/BufferFiller_Plain.i \
     ./buffer/asserts \

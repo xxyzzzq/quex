@@ -10,7 +10,6 @@
 #   include <stdexcept>
 #endif
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/MemoryManager>
