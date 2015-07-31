@@ -1,9 +1,9 @@
 {
 file_name: test-algebraic-relations.py;
 result_list: [
-  [ unary; OK; 5.269703; None; ]
-  [ binary; OK; 10.099794; None; ]
-  [ derived_binary; OK; 11.234991; None; ]
+  [ unary; OK; 4.060292; None; ]
+  [ binary; OK; 7.618720; None; ]
+  [ derived_binary; OK; 8.607368; None; ]
 ]
 title: Algebraic Relations;
 hwut_info_time: 1424896296L;
@@ -11,11 +11,11 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-complement.py;
 result_list: [
-  [ Sequence; OK; 0.150593; None; ]
-  [ Branches; OK; 0.266851; None; ]
-  [ Loops; OK; 0.159130; None; ]
-  [ BranchesLoops; OK; 0.351985; None; ]
-  [ Misc; OK; 0.737688; None; ]
+  [ Sequence; OK; 0.149761; None; ]
+  [ Branches; OK; 0.307813; None; ]
+  [ Loops; OK; 0.182968; None; ]
+  [ BranchesLoops; OK; 0.420719; None; ]
+  [ Misc; OK; 0.883188; None; ]
 ]
 title: Complementary State Machines;
 hwut_info_time: 1424896296L;
@@ -23,12 +23,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-difference.py;
 result_list: [
-  [ Easy; OK; 0.261123; None; ]
-  [ FalseCases; OK; 0.314124; None; ]
-  [ GoodCases; OK; 0.250767; None; ]
-  [ FalseCasesII; OK; 0.271547; None; ]
-  [ GoodCasesII; OK; 0.710568; None; ]
-  [ Misc; OK; 0.614668; None; ]
+  [ Easy; OK; 0.263420; None; ]
+  [ FalseCases; OK; 0.305382; None; ]
+  [ GoodCases; OK; 0.286594; None; ]
+  [ FalseCasesII; OK; 0.294336; None; ]
+  [ GoodCasesII; OK; 0.574219; None; ]
+  [ Misc; OK; 0.593367; None; ]
 ]
 title: Difference Operation;
 hwut_info_time: 1426921701L;
@@ -36,12 +36,12 @@ hwut_info_time: 1426921701L;
 {
 file_name: test-intersection.py;
 result_list: [
-  [ 0; OK; 0.283148; None; ]
-  [ 1; OK; 0.197593; None; ]
-  [ 2; OK; 0.179436; None; ]
-  [ 3; OK; 0.307871; None; ]
-  [ 4; OK; 0.782509; None; ]
-  [ 5; OK; 1.242863; None; ]
+  [ 0; OK; 0.179054; None; ]
+  [ 1; OK; 0.239108; None; ]
+  [ 2; OK; 0.182337; None; ]
+  [ 3; OK; 0.309991; None; ]
+  [ 4; OK; 0.786677; None; ]
+  [ 5; OK; 1.167098; None; ]
 ]
 title: Intersection;
 hwut_info_time: 1424896296L;
@@ -49,7 +49,7 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-unique-state-indices.py;
 result_list: [
-  [ ; OK; 0.739608; None; ]
+  [ ; OK; 0.788951; None; ]
 ]
 title: Unique State Indices;
 hwut_info_time: 1424896296L;
@@ -57,12 +57,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-complement_begin.py;
 result_list: [
-  [ 0; OK; 0.441022; None; ]
-  [ 1; OK; 0.278812; None; ]
-  [ 2; OK; 0.350845; None; ]
-  [ 3; OK; 0.464276; None; ]
-  [ 4; OK; 1.126357; None; ]
-  [ 5; OK; 0.788994; None; ]
+  [ 0; OK; 0.559377; None; ]
+  [ 1; OK; 0.333557; None; ]
+  [ 2; OK; 0.240362; None; ]
+  [ 3; OK; 0.478978; None; ]
+  [ 4; OK; 1.138242; None; ]
+  [ 5; OK; 0.804845; None; ]
 ]
 title: Cut patterns from P that begin with Q.;
 title_group: Complement Begin;
@@ -71,12 +71,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-complement_in.py;
 result_list: [
-  [ 0; OK; 0.464021; None; ]
-  [ 1; OK; 0.292688; None; ]
-  [ 2; OK; 0.191379; None; ]
-  [ 3; OK; 0.269348; None; ]
-  [ 4; OK; 0.447771; None; ]
-  [ 5; OK; 0.582172; None; ]
+  [ 0; OK; 0.421635; None; ]
+  [ 1; OK; 0.297957; None; ]
+  [ 2; OK; 0.196308; None; ]
+  [ 3; OK; 0.274131; None; ]
+  [ 4; OK; 0.543222; None; ]
+  [ 5; OK; 0.727510; None; ]
 ]
 title: Cut patterns from P that contain Q.;
 title_group: Complement Begin;
@@ -85,12 +85,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-complement_end.py;
 result_list: [
-  [ 0; OK; 0.269383; None; ]
-  [ 1; OK; 0.393809; None; ]
-  [ 2; OK; 0.197237; None; ]
-  [ 3; OK; 0.292194; None; ]
-  [ 4; OK; 0.548858; None; ]
-  [ 5; OK; 0.730505; None; ]
+  [ 0; OK; 0.267621; None; ]
+  [ 1; OK; 0.399088; None; ]
+  [ 2; OK; 0.244686; None; ]
+  [ 3; OK; 0.367972; None; ]
+  [ 4; OK; 0.684529; None; ]
+  [ 5; OK; 0.795212; None; ]
 ]
 title: Cut patterns from P that end with Q.;
 title_group: Complement End;
@@ -99,12 +99,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-cut_begin.py;
 result_list: [
-  [ 0; OK; 0.292026; None; ]
-  [ 1; OK; 0.186103; None; ]
-  [ 2; OK; 0.130177; None; ]
-  [ 3; OK; 0.217164; None; ]
-  [ 4; OK; 0.373379; None; ]
-  [ 5; OK; 0.190623; None; ]
+  [ 0; OK; 0.295367; None; ]
+  [ 1; OK; 0.185772; None; ]
+  [ 2; OK; 0.137305; None; ]
+  [ 3; OK; 0.246724; None; ]
+  [ 4; OK; 0.475391; None; ]
+  [ 5; OK; 0.213814; None; ]
 ]
 title: Cut P so that it does not start with Q.;
 title_group: Cut Begin;
@@ -113,12 +113,12 @@ hwut_info_time: 1424896296L;
 {
 file_name: test-cut_end.py;
 result_list: [
-  [ 0; OK; 0.452348; None; ]
-  [ 1; OK; 0.297641; None; ]
-  [ 2; OK; 0.189174; None; ]
-  [ 3; OK; 0.237984; None; ]
-  [ 4; OK; 0.641049; None; ]
-  [ 5; OK; 0.222968; None; ]
+  [ 0; OK; 0.377114; None; ]
+  [ 1; OK; 0.290364; None; ]
+  [ 2; OK; 0.180259; None; ]
+  [ 3; OK; 0.255670; None; ]
+  [ 4; OK; 0.472440; None; ]
+  [ 5; OK; 0.254626; None; ]
 ]
 title: Cut P so that it does not end with Q.;
 title_group: Cut End;
