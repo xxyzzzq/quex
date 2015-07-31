@@ -4,7 +4,6 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter>
 #include <quex/code_base/compatibility/iconv-argument-types.h>

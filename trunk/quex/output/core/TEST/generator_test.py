@@ -576,6 +576,7 @@ test_program_db = {
         /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
+        ByteLoader*       byte_loader = ByteLoader_FILE_new(fh);
 
 #       if defined(QUEX_OPTION_COMPUTED_GOTOS)
         $$COMPUTED_GOTOS$$
@@ -610,6 +611,7 @@ test_program_db = {
         TestAnalyzer  lexer_state;
         /**/
         istringstream istr("$$TEST_STRING$$");
+        ByteLoader*   byte_loader = ByteLoader_stream_new(&istr);
 
 #       if defined(QUEX_OPTION_COMPUTED_GOTOS)
         $$COMPUTED_GOTOS$$
@@ -617,7 +619,7 @@ test_program_db = {
         $$NO_COMPUTED_GOTOS$$
 #       endif
 
-        QUEX_NAME(construct_basic)(&lexer_state, &istr, 0x0,
+        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
         return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
@@ -639,6 +641,7 @@ test_program_db = {
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
+        ByteLoader*                   byte_loader = ByteLoader_stream_new(&strange_stream);
 
 #       if defined(QUEX_OPTION_COMPUTED_GOTOS)
         $$COMPUTED_GOTOS$$
@@ -646,8 +649,8 @@ test_program_db = {
         $$NO_COMPUTED_GOTOS$$
 #       endif
 
-        QUEX_NAME(construct_basic)(&lexer_state, &strange_stream, 0x0,
-                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
+        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
+                                   $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
         return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
     }\n""",
 
@@ -662,6 +665,7 @@ test_program_db = {
         size_t            buffer_size      = atoi(argv[2]);
         size_t            real_buffer_size = 0;
         char              test_string[65536];
+        ByteLoader*       byte_loader = ByteLoader_FILE_new(fh);
 
 #       if defined(QUEX_OPTION_COMPUTED_GOTOS)
         $$COMPUTED_GOTOS$$
@@ -671,7 +675,7 @@ test_program_db = {
         (void)fread(test_string, 1, 65536, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
+        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                    buffer_size, 0x0, 0x0,
                                    /* No translation, no translation buffer */0x0, false);
         /* Double check, that buffer size has been set. */

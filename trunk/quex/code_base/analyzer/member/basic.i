@@ -36,6 +36,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      */
     {
         QUEX_NAME(BufferFiller)* filler;
+        E_BufferFillerType       buffer_filler_type;
 
 #       if      defined(QUEX_OPTION_ASSERTS) \
            && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
@@ -48,9 +49,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 #       endif
 
-#       if      ! defined(__QUEX_OPTION_CONVERTER) \
-             ||   defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
-        if( CharacterEncodingName != (void*)0 ) {
+#       if  defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
+        if( CharacterEncodingName ) {
             __QUEX_STD_printf(__QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER, CharacterEncodingName);
         }
 #       endif
@@ -79,7 +79,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
 
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_construct)(&me->accumulator, (QUEX_TYPE_ANALYZER*)me);
+        QUEX_NAME(Accumulator_construct)(&me->accumulator, me);
 #       endif
        
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
@@ -91,7 +91,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         me->_mode_stack.end        = me->_mode_stack.begin;
-        me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+        me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Initialize everything to 0xFF which is most probably causing an error
@@ -99,6 +99,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
 
+        buffer_filler_type = CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
+                                                   : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
         filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
                                              buffer_filler_type,
                                              CharacterEncodingName, 
@@ -127,12 +129,14 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*  me,
-                           InputHandleT*        input_handle, 
+                           ByteLoader*          byte_loader, 
                            const char*          CharacterEncodingName, 
                            const size_t         TranslationBufferMemorySize)
         /* Reset of Components of the Lexical Analyzer Engine ____________________________*/
     {
         QUEX_NAME(BufferFiller)* filler;
+        E_BufferFillerType       buffer_filler_type;
+
         __QUEX_IF_COUNT( QUEX_NAME(Counter_reset)(&me->counter); )
 
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -156,11 +160,17 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.end        = me->_mode_stack.begin;
         me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
 
+        buffer_filler_type = CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
+                                                   : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; // --> DEFAULT
+
         filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
                                              buffer_filler_type, 
                                              CharacterEncodingName, 
                                              TranslationBufferMemorySize);
         QUEX_NAME(Buffer_reset)(&me->buffer, filler);
+
+        me->__current_mode_p = (void*)0x0; /* REQUIRED, for mode transition check */
+        QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
     }
 
 
