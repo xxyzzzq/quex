@@ -3,10 +3,6 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
-#if ! defined(__QUEX_OPTION_CONVERTER)
-#   error "This file should only be included if __QUEX_OPTION_CONVERTER is defined!"
-#endif
-
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/BufferFiller>

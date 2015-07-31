@@ -160,10 +160,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         buffer->_content_character_index_end   = me->tell_character_index(buffer->filler);
 
         if( me->tell_character_index(me) != (ptrdiff_t)LoadedN ) 
+        {
             QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
+        }
 
         /* If end of file has been reached, then the 'end of file' pointer needs to be set. */
-        if( LoadedN != (size_t)ContentSize ) QUEX_NAME(Buffer_end_of_file_set)(buffer, ContentFront + LoadedN);
+        if( LoadedN != (size_t)ContentSize ) QUEX_NAME(Buffer_end_of_file_set)(buffer, &ContentFront[LoadedN]);
         else                                 QUEX_NAME(Buffer_end_of_file_unset)(buffer);
 
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
@@ -717,11 +719,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/Buffer.i>
-#if defined(__QUEX_OPTION_CONVERTER)
-#   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#else
-#   include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
-#endif
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER_I */
 
