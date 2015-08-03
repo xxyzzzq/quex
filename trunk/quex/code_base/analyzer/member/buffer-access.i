@@ -9,12 +9,7 @@
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/buffer/Buffer>
 
-#if ! defined(__QUEX_OPTION_PLAIN_C)
-    /* The buffer filler for direct memory handling must be of a 'void' specialization. */
-#   define QUEX_CAST_FILLER(FILLER) ((QUEX_NAME(BufferFiller_Converter)<void>*)FILLER)
-#else
-#   define QUEX_CAST_FILLER(FILLER) ((QUEX_NAME(BufferFiller_Converter)*)FILLER)
-#endif
+#define QUEX_CAST_FILLER(FILLER) ((QUEX_NAME(BufferFiller_Converter)*)FILLER)
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -29,7 +24,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         (void)me;
 
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, (QUEX_TYPE_CHARACTER*)ContentEnd);
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, 
+                                                (QUEX_TYPE_CHARACTER*)ContentEnd);
         InsertedByteN = QUEXED(MemoryManager_insert)((uint8_t*)*insertion_p,  
                                                    (uint8_t*)BufferEnd,
                                                    (uint8_t*)ContentBegin, 
@@ -118,15 +114,15 @@ QUEX_NAMESPACE_MAIN_OPEN
          * has been filled with data.                                                        */
         if( me->buffer._byte_order_reversion_active_f ) {
             QUEX_NAME(Buffer_reverse_byte_order)(me->buffer._memory._end_of_file_p, 
-                                                 me->buffer._memory._end_of_file_p + CharacterN);
+                                                 &me->buffer._memory._end_of_file_p[CharacterN]);
         }
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(me->buffer._memory._end_of_file_p, 
-                                                me->buffer._memory._end_of_file_p + CharacterN);
+                                                &me->buffer._memory._end_of_file_p[CharacterN]);
 
         /* When lexing directly on the buffer, the end of file pointer is always set.        */
         QUEX_NAME(Buffer_end_of_file_set)(&me->buffer, 
-                                          me->buffer._memory._end_of_file_p + CharacterN); 
+                                          &me->buffer._memory._end_of_file_p[CharacterN]);
 
         /* NOT:
          *      buffer->_input_p        = front;

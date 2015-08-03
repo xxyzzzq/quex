@@ -26,10 +26,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me);
 
     QUEX_INLINE void
-    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*   me,
-                           ByteLoader*           byte_loader, 
-                           const char*           CharacterEncodingName, 
-                           const size_t          TranslationBufferMemorySize);
+    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*     me,
+                           ByteLoader*             byte_loader, 
+                           const QUEX_NAME(Mode)*  Mode, 
+                           const char*             CharacterEncodingName, 
+                           const size_t            TranslationBufferMemorySize);
 
     QUEX_INLINE void      QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
     QUEX_INLINE void      QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer, 

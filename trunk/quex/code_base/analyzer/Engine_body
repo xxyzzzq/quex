@@ -26,7 +26,6 @@
 #           endif
 #       endif
 
-
         QUEX_NAME(Buffer)      buffer;
 
 #if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
@@ -58,46 +57,9 @@
             struct QUEX_NAME(Mode_tag)** memory_end;
         }                                _mode_stack;
 
-        /*_________________________________________________________________________
-         *   __   __            ___  ___  __  
-         *  /  ` /  \ |  | |\ |  |  |__  |__) 
-         *  \__, \__/ \__/ | \|  |  |___ |  \ 
-         *                                                                         
-         * Dependent on setup all counting might be set to 'null operations'.    
-         * In case of no counting, we spend sizeof(void*) bytes for nothing, just
-         * to keep the code uniform.                                               */
         __QUEX_IF_COUNT(QUEX_NAME(Counter)              counter;)
+        __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator)          accumulator;)
+        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(Dictionary)           post_categorizer;)
+        __QUEX_IF_INCLUDE_STACK(struct QUEX_NAME(Memento_tag)*  _parent_memento;)
 
-        /*_________________________________________________________________________
-         *       __   __                            ___  __   __  
-         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
-         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
-         *                                                                         
-         *  Accumulate lexemes from multiple patterns.                             */
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator)          accumulator;
-#       endif
-
-        /*_________________________________________________________________________
-         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
-         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
-         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
-         *                                                                         
-         *  Fast and simple dictionary to post-classify lexemes.                   */
-#       ifdef QUEX_OPTION_POST_CATEGORIZER
-        QUEX_NAME(Dictionary)           post_categorizer;
-#       endif
-
-#       ifdef  QUEX_OPTION_INCLUDE_STACK
-        struct QUEX_NAME(Memento_tag)*  _parent_memento;
-#       endif
-
-        /*_________________________________________________________________________
-         *           __   __  
-         *   |\/| | /__` /  ` 
-         *   |  | | .__/ \__,                                                      */
-
-        /*  Temporary Filename ____________________________________________________
-         *  Sometimes we just want to tell the filename; handle owned by analyzer. */
-        FILE*    __file_handle_allocated_by_constructor;
 

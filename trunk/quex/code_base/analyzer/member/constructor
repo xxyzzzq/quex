@@ -73,6 +73,28 @@ QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*  me,
                         QUEX_TYPE_CHARACTER* BufferEndOfContentP,  /* = 0x0 */
                         const char*          CharacterEncodingName /* = 0x0 */);
 
+QUEX_INLINE void
+QUEX_NAME(reset_FILE)(QUEX_TYPE_ANALYZER*  me,
+                      __QUEX_STD_FILE*     fh, 
+                      const char*          CharacterEncodingName /* = 0x0 */);
+QUEX_INLINE void
+QUEX_NAME(reset_file_name)(QUEX_TYPE_ANALYZER*  me,
+                           const char*          FileName, 
+                           const char*          CharacterEncodingName /* = 0x0 */);
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void
+QUEX_NAME(reset_istream)(QUEX_TYPE_ANALYZER*  me,
+                         std::istream*        istream_p, 
+                         const char*          CharacterEncodingName /* = 0x0 */);
+#endif 
+
+#if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void
+QUEX_NAME(reset_wistream)(QUEX_TYPE_ANALYZER*  me,
+                          std::wistream*       istream_p, 
+                          const char*          CharacterEncodingName /* = 0x0 */);
+#endif
 QUEX_INLINE void 
 QUEX_NAME(reset_plain)(QUEX_TYPE_ANALYZER*  me,
                        const char*          CharacterEncodingName /* = 0x0 */);

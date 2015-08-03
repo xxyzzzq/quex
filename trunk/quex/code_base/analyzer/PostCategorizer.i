@@ -38,7 +38,7 @@ QUEX_NAME(PostCategorizer_allocate_node)(size_t RemainderL)
 QUEX_INLINE  void 
 QUEX_NAME(PostCategorizer_free_node)(QUEX_NAME(DictionaryNode)* node)
 { 
-    if( node == 0x0 ) return;
+    if( ! node ) return;
     
     QUEXED(MemoryManager_free)((void*)node, 
                                QUEXED(MemoryObjectType_POST_CATEGORIZER_NODE)); 
@@ -67,9 +67,7 @@ QUEX_NAME(PostCategorizer_construct)(QUEX_NAME(Dictionary)* me)
 QUEX_INLINE void
 QUEX_NAME(PostCategorizer_destruct)(QUEX_NAME(Dictionary)* me)
 {
-    if( me->root == 0x0 ) return;
-    QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
-    me->root = 0x0;
+    QUEX_NAME(PostCategorizer_clear)(me);
 }
 
 QUEX_INLINE int
@@ -158,8 +156,8 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
     /* Found a node with 'EntryName' */
 
     /* Remove node and re-order tree */
-    if( parent == 0x0 ) {
-        if( found->lesser != 0x0 ) {
+    if( ! parent ) {
+        if( found->lesser ) {
             for(node = found->lesser; node->greater != 0x0; node = node->greater );
             node->greater = found->greater;
             me->root      = found->lesser;
@@ -184,7 +182,7 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
          *     greater tree.
          *     => (ii) mount (greater tree) to the least node of the (parent's greater tree). */
         /* parent != 0x0, see above */
-        if( found->greater != 0x0 ) {
+        if( found->greater ) {
             for(node = found->greater; node->lesser != 0x0; node = node->lesser );
             node->lesser   = found->lesser;
             parent->lesser = found->greater;
@@ -198,7 +196,7 @@ QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)*  me,
          *     (i)  mount (greater tree) to the greatest node of (greater tree).                  
          *     (ii) mount (lesser tree) to the greatest node of the (parent's lesser tree). */
         /* parent != 0x0, see above */
-        if( found->lesser != 0x0 ) {
+        if( found->lesser ) {
             for(node = found->lesser; node->greater != 0x0; node = node->greater );
             node->greater   = found->greater;
             parent->greater = found->lesser;
@@ -228,13 +226,13 @@ QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)*  me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*       me, 
+QUEX_NAME(PostCategorizer_clear_recursively)(QUEX_NAME(Dictionary)*      me, 
                                              QUEX_NAME(DictionaryNode)*  branch)
 {
-    __quex_assert(branch != 0x0);
+    __quex_assert(branch);
 
-    if( branch->lesser  != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
-    if( branch->greater != 0x0 ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
+    if( branch->lesser )  QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->lesser);
+    if( branch->greater ) QUEX_NAME(PostCategorizer_clear_recursively)(me, branch->greater);
     QUEX_NAME(PostCategorizer_free_node)(branch);
 }
 
@@ -243,22 +241,23 @@ QUEX_NAME(PostCategorizer_get_token_id)(const QUEX_NAME(Dictionary)*  me,
                                         const QUEX_TYPE_CHARACTER*   Lexeme)
 {
     QUEX_NAME(DictionaryNode)* found = QUEX_NAME(PostCategorizer_find)(me, Lexeme);
-    if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
+    if( ! found ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
     return found->token_id;
 }
 
-    QUEX_INLINE void
+QUEX_INLINE void
 QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me)
 {
-    if( me->root == 0x0 ) return;
+    if( ! me->root ) return;
     QUEX_NAME(PostCategorizer_clear_recursively)(me, me->root);
+    me->root = (QUEX_NAME(DictionaryNode)*)0;
 }
 
     QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth)
 {
     int i = 0;
-    if( node == 0x0 ) {
+    if( ! node ) {
         for(i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
         __QUEX_STD_printf("[EMPTY]\n");
         return;
@@ -271,9 +270,9 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
 
     for(i=0; i<Depth; ++i) __QUEX_STD_printf("        ");
     {
-        uint8_t  drain[256];
-        uint8_t* drain_p = &drain[0];
-        uint8_t* remainder_p = (uint8_t*)0; 
+        uint8_t                    drain[256];
+        uint8_t*                   drain_p     = &drain[0];
+        uint8_t*                   remainder_p = (uint8_t*)0; 
         const QUEX_TYPE_CHARACTER* source_p     = &node->name_first_character;
         const QUEX_TYPE_CHARACTER* source_end_p = &source_p[1];
 
@@ -298,7 +297,7 @@ QUEX_NAME(PostCategorizer_print_tree)(QUEX_NAME(DictionaryNode)* node, int Depth
     QUEX_NAME(PostCategorizer_print_tree)(node->lesser, Depth + 1);
 }
 
-    QUEX_INLINE void
+QUEX_INLINE void
 QUEX_NAME(PostCategorizer_print_this)(QUEX_NAME(Dictionary)* me)
 {
     QUEX_NAME(PostCategorizer_print_tree)(me->root, 0);

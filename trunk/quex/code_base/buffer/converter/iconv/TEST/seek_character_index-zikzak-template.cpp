@@ -43,10 +43,10 @@ main(int argc, char** argv)
 
     if( strcmp(argv[1], "Dynamic") == 0 ) {
         fh             = fopen("test.txt", "r");
-        source_charset = (char*)"UTF8"; 
+        source_charset = (char*)___UCS_UTF8___; 
     } else {
         fh             = fopen("test-ucs4be.txt", "r");
-        source_charset = (char*)___CODING_4_BYTE___; 
+        source_charset = (char*)___UCS_4_BYTE_BE___; 
     }
     if( fh == 0x0 ) {
         printf("Input file not found.\n");
@@ -54,13 +54,13 @@ main(int argc, char** argv)
     }
     ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller_Converter)* filler = \
+    QUEX_NAME(BufferFiller)* filler = \
          QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
                                                ___NEW___(), 
                                                source_charset, target_charset, 
                                                RawMemorySize);
     /* Fill the reference buffer */
-    size_t loaded_n = filler->base.read_characters(&filler->base, reference, ReferenceSize);
+    size_t loaded_n = filler->read_characters(filler, reference, ReferenceSize);
 
     /* Print the reference buffer 
      * NOTE: The buffer filler does not know anything about buffer limit codes etc. It simply
@@ -79,13 +79,14 @@ main(int argc, char** argv)
      * to position B' (which would have to be done if B was set separately. Now let A iterate over all
      * positions and B from position 0 to A (consider the possibilities displayed on a matrix which
      * is symetric with respect to the diagonal.                                                       */
+    quex::QUEX_NAME(BufferFiller_Converter)* real = (quex::QUEX_NAME(BufferFiller_Converter)*)filler;
     for(size_t a = 0; a < 23 ; ++a) {
         for(size_t b = a; b < 23 ; ++b) {
-            seek_and_print(*filler, a, reference);
+            seek_and_print(*real, a, reference);
             printf(" --> ");
-            seek_and_print(*filler, b, reference);
+            seek_and_print(*real, b, reference);
             printf(" --> ");
-            seek_and_print(*filler, a, reference);
+            seek_and_print(*real, a, reference);
             printf("\n");
         }
     }

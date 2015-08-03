@@ -43,7 +43,9 @@ HEADER        = \<quex\/code_base\/buffer\/converter\/icu\/Converter_ICU\.i\>
 CONVERTER     = QUEX_NAME(Converter_ICU_convert)
 NEW_OPERATOR  = QUEX_NAME(Converter_ICU_new)
 FILLER_TYPE   = QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
-CODING_4_BYTE = "UTF-32BE"
+UCS_4_BYTE_BE = "UTF32-BE"
+UCS_4_BYTE_LE = "UTF32-LE"
+UCS_UTF8      = "UTF-8"
 
 
 hwut-info:
@@ -58,7 +60,9 @@ hwut-end: clean
 	| sed -e 's/\_\_\_NEW\_\_\_/$(NEW_OPERATOR)/g'    \
 	| sed -e 's/\_\_\_CONVERT\_\_\_/$(CONVERTER)/g' \
 	| sed -e 's/\_\_\_FILLER_TYPE\_\_\_/$(FILLER_TYPE)/g' \
-	| sed -e 's/\_\_\_CODING_4_BYTE\_\_\_/$(CODING_4_BYTE)/g' \
+	| sed -e 's/\_\_\_UCS_4_BYTE_BE\_\_\_/$(UCS_4_BYTE_BE)/g' \
+	| sed -e 's/\_\_\_UCS_4_BYTE_LE\_\_\_/$(UCS_4_BYTE_LE)/g' \
+	| sed -e 's/\_\_\_UCS_UTF8\_\_\_/$(UCS_UTF8)/g' \
 	> $@
 
 %.exe: %.cpp $(QUEX_CORE)

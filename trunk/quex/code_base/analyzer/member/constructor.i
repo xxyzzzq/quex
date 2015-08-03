@@ -65,21 +65,63 @@ QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
                                 BufferMemoryBegin, memory_size, BufferEndOfContentP);
 }
 
+QUEX_INLINE QUEX_TYPE_CHARACTER*
+/* TODO: Rename to 'reset_memory' to be homogeneous with 'construct_memory'  */
+QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*   me,
+                        QUEX_TYPE_CHARACTER*  BufferMemoryBegin, 
+                        size_t                BufferMemorySize,
+                        QUEX_TYPE_CHARACTER*  BufferEndOfContentP,  /* = 0x0 */
+                        const char*           CharacterEncodingName /* = 0x0 */) 
+{
+    QUEX_TYPE_CHARACTER* old_memory = 0x0;
+    /* End of Content **must** lie inside the provided buffer */
+#   if defined(QUEX_OPTION_ASSERTS)
+    if(    BufferEndOfContentP < BufferMemoryBegin 
+        || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize - 1)) {
+        QUEX_ERROR_EXIT("\nreset_buffer: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
+                        "reset_buffer: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').\n"
+                        "reset_buffer: Note, that the last element of the buffer is to be filled with\n"
+                        "reset_buffer: the buffer limit code character.\n");
+    }
+#   endif
+
+    /* reset_basic(...) does not reset the buffer memory itself. This must
+     * be done by hand.                                                    */
+    old_memory = me->buffer._memory._front;
+
+    if( ! BufferMemoryBegin ) {
+        return old_memory;
+    }
+    else {
+        QUEX_NAME(BufferMemory_destruct)(&me->buffer._memory);
+        QUEX_NAME(BufferMemory_construct)(&me->buffer._memory, 
+                                          BufferMemoryBegin, BufferMemorySize, 
+                                          BufferEndOfContentP, 
+                                          /* ExternalOwnerF */ true);
+    }
+
+    QUEX_NAME(reset_basic)(me, (ByteLoader*)0, CharacterEncodingName, 
+                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+
+    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+
+    return old_memory;
+}
+
 QUEX_INLINE void
 QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
                                const char*         Filename, 
                                const char*         CharacterEncodingName /* = 0x0   */,
                                bool                ByteOrderReversionF   /* = false */)
 {
-    /* Buffer: Size = (see macro def.), Fallback = 10 Characters
-     * prefer FILE* based buffers, because we can turn low-level buffering off.
-     * ownership of FILE* id passed to the input strategy of the buffer.         */
+    /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
+     * turned off.                                                               */
     __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
 
+    /* ByteLoader will overtake ownership over 'fh', so we do not need to 
+     * take care over 'free' and 'fclose'.                                       */
     QUEX_NAME(construct_FILE)(me, fh, CharacterEncodingName, ByteOrderReversionF);
-
-    /* Recall, that this thing as to be deleted/closed */
-    me->__file_handle_allocated_by_constructor = fh;
 }
 
 QUEX_INLINE void
@@ -112,8 +154,8 @@ QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
                              const char*         CharacterEncodingName /* = 0x0   */,
                              bool                ByteOrderReversionF   /* = false */)
 {
-    if( ! p_input_stream ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    /* if( p_input_stream == &std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR); */
+    if( ! istream_p ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    /* if( istream_p == &std::cin ) QUEX_ERROR_EXIT(__QUEX_MESSAGE_STDIN_IN_CONSTRUCTOR); */
     QUEX_NAME(constructor_core)(me, 
                                 ByteLoader_stream_new(istream_p),
                                 CharacterEncodingName, ByteOrderReversionF, 
@@ -129,7 +171,7 @@ QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
                               const char*         CharacterEncodingName /* = 0x0   */,
                               bool                ByteOrderReversionF   /* = false */)
 {
-    if( ! p_input_stream ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.\n");
+    if( ! istream_p ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.\n");
     QUEX_NAME(constructor_core)(me, 
                                 ByteLoader_stream_new(istream_p),
                                 CharacterEncodingName, ByteOrderReversionF, 
@@ -143,49 +185,17 @@ QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(destruct_basic)(me);
 }
 
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-/* TODO: Rename to 'reset_memory' to be homogeneous with 'construct_memory'  */
-QUEX_NAME(reset_buffer)(QUEX_TYPE_ANALYZER*   me,
-                        QUEX_TYPE_CHARACTER*  BufferMemoryBegin, 
-                        size_t                BufferMemorySize,
-                        QUEX_TYPE_CHARACTER*  BufferEndOfContentP,  /* = 0x0 */
-                        const char*           CharacterEncodingName /* = 0x0 */) 
-{
-    QUEX_TYPE_CHARACTER* old_memory = 0x0;
-    /* End of Content **must** lie inside the provided buffer */
-#   if defined(QUEX_OPTION_ASSERTS)
-    if(    BufferEndOfContentP < BufferMemoryBegin 
-        || BufferEndOfContentP > (BufferMemoryBegin + BufferMemorySize - 1)) {
-        QUEX_ERROR_EXIT("\nreset_buffer: Argument 'BufferEndOfContentP' must be inside the provided memory\n"
-                        "reset_buffer: buffer (speficied by 'BufferMemoryBegin' and 'BufferMemorySize').\n"
-                        "reset_buffer: Note, that the last element of the buffer is to be filled with\n"
-                        "reset_buffer: the buffer limit code character.\n");
-    }
-#   endif
-
-    /* reset_basic(...) does not reset the buffer memory itself. This must
-     * be done by hand.                                                    */
-    old_memory = QUEX_NAME(BufferMemory_reset)(&me->buffer._memory,
-                                               BufferMemoryBegin, BufferMemorySize, 
-                                               BufferEndOfContentP);
-
-    if( BufferMemoryBegin == 0x0 ) return old_memory;
-
-    QUEX_NAME(reset_basic)(me, /* InputHandle */ (FILE*)0x0, CharacterEncodingName, 
-                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
-
-    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
-
-    return old_memory;
-}
-
 QUEX_INLINE void
 QUEX_NAME(reset_file_name)(QUEX_TYPE_ANALYZER*  me,
                            const char*          FileName, 
                            const char*          CharacterEncodingName /* = 0x0 */) 
 {
+    /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
+     * turned off.                                                               */
     __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+
+    /* ByteLoader will overtake ownership over 'fh', so we do not need to 
+     * take care over 'free' and 'fclose'.                                       */
     QUEX_NAME(reset_FILE)(me, fh, CharacterEncodingName);
 }
 
@@ -200,6 +210,7 @@ QUEX_NAME(reset_FILE)(QUEX_TYPE_ANALYZER*  me,
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 }
 
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void
 QUEX_NAME(reset_istream)(QUEX_TYPE_ANALYZER*  me,
                          std::istream*        istream_p, 
@@ -210,6 +221,7 @@ QUEX_NAME(reset_istream)(QUEX_TYPE_ANALYZER*  me,
                            CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 }
+#endif
 
 #if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void
@@ -253,29 +265,29 @@ QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::FILE*   fh,
 { QUEX_NAME(construct_FILE)(this, fh, CharacterEncodingName, ByteOrderReversionF); }
 
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::istream*   p_input_stream, 
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::istream*   istream_p, 
                                  const char*     CharacterEncodingName /* = 0x0   */,
                                  bool            ByteOrderReversionF   /* = false */)
-{ QUEX_NAME(construct_istream)(this, p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
+{ QUEX_NAME(construct_istream)(this, istream_p, CharacterEncodingName, ByteOrderReversionF); }
 
 #if defined(__QUEX_OPTION_WCHAR_T)
 QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::wistream*  p_input_stream, 
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(std::wistream*  istream_p, 
                                  const char*     CharacterEncodingName /* = 0x0   */,
                                  bool            ByteOrderReversionF   /* = false */)
-{ QUEX_NAME(construct_wistream)(this, p_input_stream, CharacterEncodingName, ByteOrderReversionF); }
+{ QUEX_NAME(construct_wistream)(this, istream_p, CharacterEncodingName, ByteOrderReversionF); }
 #endif
 
 #if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */
 template<class UnderlyingStreamT> QUEX_INLINE
-QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-                                const char*      CharacterEncodingName /* = 0x0   */,
-                                bool             ByteOrderReversionF   /* = false */)
+QUEX_MEMBER(QUEX_TYPE0_ANALYZER)(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                                 const char*      CharacterEncodingName /* = 0x0   */,
+                                 bool             ByteOrderReversionF   /* = false */)
 {
-    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    if( istream_p == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
     QUEX_NAME(constructor_core)(this, 
-                                ByteLoader_stream_new(p_input_stream),
+                                ByteLoader_stream_new(istream_p),
                                 CharacterEncodingName, ByteOrderReversionF, 
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0);
 }
@@ -285,20 +297,24 @@ QUEX_INLINE
 QUEX_MEMBER(~QUEX_TYPE0_ANALYZER)() 
 { QUEX_NAME(destruct)(this); }
 
-inline template<InputHandleT> void
-QUEX_MEMBER(reset)<FILE>(InputHandle* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
-
-inline template<> void
-QUEX_MEMBER(reset)<FILE>(FILE* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
+inline void
+QUEX_MEMBER(reset)(QUEX_NAME(BufferFiller)* filler, const char* CharacterEncodingName /* = 0x0 */) 
+{
+    QUEX_NAME(reset_basic)(this, filler,
+                           CharacterEncodingName, 
+                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+}
+inline void
+QUEX_MEMBER(reset)(FILE* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
 { QUEX_NAME(reset_FILE)(this, input_handle, CharacterEncodingName); }
 
-inline template<> void
-QUEX_MEMBER(reset)<std:istream>(std:istream* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
+inline void
+QUEX_MEMBER(reset)(std:istream* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
 { QUEX_NAME(reset_istream)(this, input_handle, CharacterEncodingName); }
 
 #if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
-inline template<> void
-QUEX_MEMBER(reset)<std:wistream>(std::wistream* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
+inline void
+QUEX_MEMBER(reset)(std::wistream* input_handle, const char* CharacterEncodingName /* = 0x0 */) 
 { QUEX_NAME(reset_wistream)(this, input_handle, CharacterEncodingName); }
 #endif
 

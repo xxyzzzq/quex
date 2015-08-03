@@ -18,7 +18,7 @@ main(int argc, char** argv)
     ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
 
     QUEX_NAME(Buffer_construct)(&buffer, 
-                                QUEX_NAME(BufferFiller_new)(byte_loader, QUEX_TYPE_BUFFER_FILLER_PLAIN, 0, 0), 
+                                QUEX_NAME(BufferFiller_Plain_new)(byte_loader), 
                                 0x0, MemorySize, 0, false);
 
     test_seek_and_tell(&buffer, SeekIndices);

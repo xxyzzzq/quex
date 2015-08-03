@@ -78,19 +78,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     /* Facilitate the task of converting to apropriate function pointers from derived 
      * member functions.                                                                  */
-    typedef void    (*QUEX_NAME(ConverterFunctionP_open))(QUEX_NAME(Converter)*, 
-                                                          const char* FromCodingName, 
-                                                          const char* ToCodingName);  
 
-    typedef bool    (*QUEX_NAME(ConverterFunctionP_convert))(QUEX_NAME(Converter)*, 
-                                                             uint8_t**        source, 
-                                                             const uint8_t*   SourceEnd, 
-                                                             QUEX_TYPE_CHARACTER**      drain,  
-                                                             const QUEX_TYPE_CHARACTER* DrainEnd);
-
-    typedef void    (*QUEX_NAME(ConverterFunctionP_on_conversion_discontinuity))(QUEX_NAME(Converter)*);
-
-    typedef void    (*QUEX_NAME(ConverterFunctionP_delete_self))(QUEX_NAME(Converter)*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

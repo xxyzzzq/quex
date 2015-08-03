@@ -15,6 +15,31 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
+    QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, 
+                                    QUEX_TYPE_TOKEN*       Memory, 
+                                    const size_t           N)
+    /* me:     The token queue.
+     * Memory: Pointer to memory of token queue, 0x0 --> no initial memory.
+     * N:      Number of token objects that the array can carry.               */
+    {
+#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        QUEX_TYPE_TOKEN* iterator   = 0x0;
+#       endif
+        QUEX_TYPE_TOKEN* memory_end = &Memory[N];
+
+        __quex_assert(Memory != 0x0);
+        __quex_assert(N != 0);
+
+#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+        /* Call placement new (plain constructor) for all tokens in chunk. */
+        for(iterator = Memory; iterator != memory_end; ++iterator) {
+            QUEX_NAME_TOKEN(construct)(iterator);
+        }
+#       endif
+        QUEX_NAME(TokenQueue_init)(me, Memory, memory_end); 
+    }
+
+    QUEX_INLINE void
     QUEX_NAME(TokenQueue_reset)(QUEX_NAME(TokenQueue)* me) 
     {                                                    
         me->read_iterator  = (QUEX_TYPE_TOKEN*)me->begin; 
@@ -32,30 +57,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(TokenQueue_reset)(me);                                
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(TokenQueue_construct)(QUEX_NAME(TokenQueue)* me, 
-                                    QUEX_TYPE_TOKEN*       Memory, 
-                                    const size_t           N)
-    /* me:     The token queue.
-     * Memory: Pointer to memory of token queue, 0x0 --> no initial memory.
-     * N:      Number of token objects that the array can carry.               */
-    {
-#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-        QUEX_TYPE_TOKEN* iterator   = 0x0;
-#       endif
-        QUEX_TYPE_TOKEN* memory_end = Memory + N;
-
-        __quex_assert(Memory != 0x0);
-        __quex_assert(N != 0);
-
-#       if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
-        /* Call placement new (plain constructor) for all tokens in chunk. */
-        for(iterator = Memory; iterator != memory_end; ++iterator) {
-            QUEX_NAME_TOKEN(construct)(iterator);
-        }
-#       endif
-        QUEX_NAME(TokenQueue_init)(me, Memory, memory_end); 
-    }
 
     QUEX_INLINE void
     QUEX_NAME(TokenQueue_destruct)(QUEX_NAME(TokenQueue)* me)

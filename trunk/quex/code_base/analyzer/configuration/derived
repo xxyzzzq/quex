@@ -380,3 +380,19 @@
 #   define __QUEX_IF_ASSERT(X)  /* Ignore */
 #endif
 
+#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#    define __QUEX_IF_STRING_ACCUMULATOR(X) X
+#else
+#    define __QUEX_IF_STRING_ACCUMULATOR(X) /* No operation */
+#endif
+#ifdef QUEX_OPTION_POST_CATEGORIZER
+#    define __QUEX_IF_POST_CATEGORIZER(X) X
+#else
+#    define __QUEX_IF_POST_CATEGORIZER(X) /* No operation */
+#endif
+#ifdef  QUEX_OPTION_INCLUDE_STACK
+#    define __QUEX_IF_INCLUDE_STACK(X) X
+#else
+#    define __QUEX_IF_INCLUDE_STACK(X) /* No operation */
+#endif
+

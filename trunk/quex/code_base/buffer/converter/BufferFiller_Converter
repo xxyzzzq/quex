@@ -140,7 +140,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(BufferFiller_Converter);
 
 
-    QUEX_INLINE QUEX_NAME(BufferFiller_Converter)*
+    QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
                                           QUEX_NAME(Converter)*  converter,
                                           const char*            FromCoding,

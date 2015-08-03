@@ -28,4 +28,3 @@
         struct QUEX_NAME(Memento_tag)*  _parent_memento;
 #       endif
 
-        FILE*                           __file_handle_allocated_by_constructor;

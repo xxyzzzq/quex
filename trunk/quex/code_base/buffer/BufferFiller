@@ -10,6 +10,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
      typedef enum {
+        QUEX_TYPE_BUFFER_FILLER_NONE,
         QUEX_TYPE_BUFFER_FILLER_PLAIN,
         QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV,
         QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
@@ -29,6 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          element of the derived struct is to be of this type and best called 'base'.
          *          For example, please, consider the 'plain' and 'iconv' implementations
          *          in the correspondent sub directories.                                    */
+        ByteLoader*               byte_loader;
 
         /*************************************************************************************
          ** NOTE: The 'InputHandle' is not located in this class, in order to avoid         **
@@ -68,10 +70,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                                  const ptrdiff_t),
                                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                             QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*));
+                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                            ByteLoader*  byte_loader);
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(ByteLoader*        byte_loader, 
-                                E_BufferFillerType BufferFillerType,
                                 const char*        CharacterEncodingName,
                                 const size_t       TranslationBufferMemorySize);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
