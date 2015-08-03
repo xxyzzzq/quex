@@ -65,7 +65,6 @@ QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*   me,
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     memento->accumulator                      = self.accumulator;
 #   endif
-    memento->__file_handle_allocated_by_constructor = self.__file_handle_allocated_by_constructor;
 
     /* Deriberately not subject to include handling:
      *    -- Mode stack.
@@ -104,7 +103,6 @@ QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*  me,
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     self.accumulator                      = memento->accumulator;
 #   endif
-    self.__file_handle_allocated_by_constructor = memento->__file_handle_allocated_by_constructor;
 
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     /* QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue); */

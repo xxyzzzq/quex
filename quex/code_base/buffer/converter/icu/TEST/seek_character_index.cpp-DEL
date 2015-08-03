@@ -30,6 +30,7 @@ main(int argc, char** argv)
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
     /**/
     ptrdiff_t    Delta = 0;
     ptrdiff_t    Front = 0;
@@ -37,26 +38,25 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    ByteLoader* byte_loader = ByteLoader_FILE_new(fh);
-
-    QUEX_NAME(BufferFiller_Converter)* filler = \
-             QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
-                                                   QUEX_NAME(Converter_ICU_new)(), 
-                                                   "UTF-8", 0x0, RawMemorySize);
+    QUEX_NAME(BufferFiller)* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
+                                              QUEX_NAME(Converter_ICU_new)(), 
+                                              "UTF-8", 0x0, 
+                                              RawMemorySize);
 
     size_t loaded_n = 0;
-    for(int i=Front; ; i += Delta) {
+    for(ptrdiff_t i=Front; ; i += Delta) {
 
-        filler->base.seek_character_index(&filler->base, i);
+        filler->seek_character_index(filler, i);
 
-        assert(filler->base.tell_character_index(&filler->base) == i);
+        assert(filler->tell_character_index(filler) == i);
 
-        loaded_n = filler->base.read_characters(&filler->base, 
-                                               (QUEX_TYPE_CHARACTER*)memory, MemorySize);
+        loaded_n = filler->read_characters(filler, 
+                                          (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */
-            uint8_t*  raw = (uint8_t*)(memory);
+            uint8_t*  raw = (uint8_t*)&memory[0];
             printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
         }
 

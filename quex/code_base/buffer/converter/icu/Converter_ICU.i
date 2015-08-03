@@ -16,11 +16,48 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
-    QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter_ICU)* me, 
-                                  const char*               FromCodingName, 
-                                  const char*               ToCodingName)
+    QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* me, 
+                                  const char*           FromCodingName, 
+                                  const char*           ToCodingName);
+    QUEX_INLINE bool
+    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       me, 
+                                     uint8_t**                   source, 
+                                     const uint8_t*              SourceEnd, 
+                                     QUEX_TYPE_CHARACTER**       drain,  
+                                     const QUEX_TYPE_CHARACTER*  DrainEnd);
+    QUEX_INLINE void
+    QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter)* me);
+
+    QUEX_INLINE void 
+    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter)* me);
+
+    QUEX_INLINE QUEX_NAME(Converter)*
+    QUEX_NAME(Converter_ICU_new)()
     {
-        __quex_assert(me != 0x0);
+        QUEX_NAME(Converter_ICU)*  me = \
+             (QUEX_NAME(Converter_ICU)*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_ICU)),
+                                                                       QUEXED(MemoryObjectType_CONVERTER));
+
+        me->base.open        = QUEX_NAME(Converter_ICU_open);
+        me->base.convert     = QUEX_NAME(Converter_ICU_convert);
+        me->base.delete_self = QUEX_NAME(Converter_ICU_delete_self);
+        me->base.on_conversion_discontinuity = QUEX_NAME(Converter_ICU_on_conversion_discontinuity);
+
+        me->to_handle   = 0x0;
+        me->from_handle = 0x0;
+        me->status      = U_ZERO_ERROR;
+
+        return &me->base;
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego, 
+                                  const char*           FromCodingName, 
+                                  const char*           ToCodingName)
+    {
+        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+
+        __quex_assert(me);
 
         /* Default: assume input encoding to have dynamic character sizes.   */
         me->base.dynamic_character_size_f = true;
@@ -31,7 +68,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( ! U_SUCCESS(me->status) ) 
             QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
 
-        if( ToCodingName != 0x0 ) {
+        if( ToCodingName ) {
             me->to_handle = ucnv_open(ToCodingName, &me->status);
         } else {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
@@ -73,10 +110,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool
-    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter_ICU)*    me, 
+    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)* alter_ego, 
                                      uint8_t**             source, const uint8_t*              SourceEnd, 
                                      QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
+        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and 
          *                  more source bytes are required.                  */
@@ -101,7 +139,7 @@ QUEX_NAMESPACE_MAIN_OPEN
              * We need to cast to UChar, since otherwise the code would not 
              * compile for sizeof() != 2. Nevertheless, in this case the code 
              * would never be executed.                                      */
-            __quex_assert( sizeof(QUEX_TYPE_CHARACTER) == 2 );
+            //__quex_assert( sizeof(QUEX_TYPE_CHARACTER) == 2 );
 
             /* 16 bit --> nothing to be done */
             ucnv_toUnicode(me->from_handle, 
@@ -142,8 +180,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter_ICU)* me)
+    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter)* alter_ego)
     {
+        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+
         ucnv_reset(me->from_handle);
         if( me->to_handle != 0x0 ) ucnv_reset(me->to_handle);
 
@@ -155,8 +195,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter_ICU)* me)
+    QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter)* alter_ego)
     {
+        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+
         ucnv_close(me->from_handle);
         ucnv_close(me->to_handle);
 
@@ -165,26 +207,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* There should be a way to call 'ucnv_flushCache()' as soon as all converters
          * are freed automatically.                                                       */
         u_cleanup();
-    }
-
-    QUEX_INLINE QUEX_NAME(Converter)*
-    QUEX_NAME(Converter_ICU_new)()
-    {
-        QUEX_NAME(Converter_ICU)*  me = \
-             (QUEX_NAME(Converter_ICU)*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_ICU)),
-                                                                       QUEXED(MemoryObjectType_CONVERTER));
-
-        me->base.open        = (QUEX_NAME(ConverterFunctionP_open))QUEX_NAME(Converter_ICU_open);
-        me->base.convert     = (QUEX_NAME(ConverterFunctionP_convert))QUEX_NAME(Converter_ICU_convert);
-        me->base.delete_self = (QUEX_NAME(ConverterFunctionP_delete_self))QUEX_NAME(Converter_ICU_delete_self);
-        me->base.on_conversion_discontinuity  = \
-         (QUEX_NAME(ConverterFunctionP_on_conversion_discontinuity))QUEX_NAME(Converter_ICU_on_conversion_discontinuity);
-
-        me->to_handle   = 0x0;
-        me->from_handle = 0x0;
-        me->status      = U_ZERO_ERROR;
-
-        return (QUEX_NAME(Converter)*)me;
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

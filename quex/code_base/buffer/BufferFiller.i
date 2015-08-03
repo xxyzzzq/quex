@@ -33,7 +33,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(ByteLoader*        byte_loader, 
-                                E_BufferFillerType BufferFillerType,
                                 const char*        CharacterEncodingName,
                                 const size_t       TranslationBufferMemorySize)
         /* CharacterEncoding == 0x0: Impossible; Converter requires codec name --> filler = 0x0
@@ -42,6 +41,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         (void)TranslationBufferMemorySize;
         QUEX_NAME(BufferFiller)* filler = (QUEX_NAME(BufferFiller)*)0;
+        E_BufferFillerType       buffer_filler_type;
+
+        if( byte_loader ) {
+            buffer_filler_type = ! CharacterEncodingName ? QUEX_TYPE_BUFFER_FILLER_PLAIN \
+                                                         : QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU; /* --> DEFAULT */
+        } else {
+            buffer_filler_type = QUEX_TYPE_BUFFER_FILLER_NONE;
+        }
 
 #       if    defined(QUEX_OPTION_CONVERTER_ICONV) \
            || defined(QUEX_OPTION_CONVERTER_ICU) 
@@ -59,26 +66,31 @@ QUEX_NAMESPACE_MAIN_OPEN
         } 
 #       endif
 
-        switch( BufferFillerType) {
-        case QUEX_TYPE_BUFFER_FILLER_PLAIN:
-            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
+        switch( buffer_filler_type ) {
+        case QUEX_TYPE_BUFFER_FILLER_NONE:
+            filler = (QUEX_NAME(BufferFiller)*)0;
             break;
+
+        case QUEX_TYPE_BUFFER_FILLER_PLAIN:
+            filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
+            break;
+
 #       ifdef QUEX_OPTION_CONVERTER_ICONV
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV:
-            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
-                                                           QUEX_NAME(Converter_IConv_new)(), 
-                                                           CharacterEncodingName, 
-                                                           /* Internal Coding: Default */0x0,
-                                                           TranslationBufferMemorySize);
+            filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
+                                 QUEX_NAME(Converter_IConv_new)(), 
+                                 CharacterEncodingName, 
+                                 /* Internal Coding: Default */0x0,
+                                 TranslationBufferMemorySize);
             break;
 #       endif
 #       ifdef QUEX_OPTION_CONVERTER_ICU
         case QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU:
-            filler = (QUEX_NAME(BufferFiller)*)QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
-                                                           QUEX_NAME(Converter_ICU_new)(), 
-                                                           CharacterEncodingName, 
-                                                           /* Internal Coding: Default */0x0,
-                                                           TranslationBufferMemorySize);
+            filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
+                               QUEX_NAME(Converter_ICU_new)(), 
+                               CharacterEncodingName, 
+                               /* Internal Coding: Default */0x0,
+                               TranslationBufferMemorySize);
             break;
 #       endif
 
@@ -118,20 +130,23 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                                  const ptrdiff_t),
                                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                             QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*))
+                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                            ByteLoader*  byte_loader)
     {
-        __quex_assert(me != 0x0);
-        __quex_assert(tell_character_index != 0x0);
-        __quex_assert(seek_character_index != 0x0);
-        __quex_assert(read_characters != 0x0);
-        __quex_assert(delete_self != 0x0);
+        __quex_assert(me);
+        __quex_assert(tell_character_index);
+        __quex_assert(seek_character_index);
+        __quex_assert(read_characters);
+        __quex_assert(delete_self);
 
 
         me->tell_character_index = tell_character_index;
         me->seek_character_index = seek_character_index;
         me->read_characters      = read_characters;
-        me->_on_overflow         = 0x0;
         me->delete_self          = delete_self;
+        me->_on_overflow         = 0x0;
+
+        me->byte_loader          = byte_loader;
     }
 
     QUEX_INLINE void
@@ -149,9 +164,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* end   != 0, means that the buffer is filled.
          * begin == 0, means that we are standing at the begin.
          * => end != 0 and begin == 0, means that the initial content is loaded already.    */
-        /* if( buffer->_content_character_index_begin == 0 ) {
-         *     if ( buffer->_content_character_index_end != 0) return;
-         *} else {*/
         me->seek_character_index(me, 0);
         /*} */
         LoadedN = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);

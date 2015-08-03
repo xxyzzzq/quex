@@ -470,6 +470,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/analyzer/asserts.i>
+#include <quex/code_base/analyzer/member/mode-handling.i>
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue.i>
 #endif
@@ -588,7 +589,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QUEX_NAME(construct_basic)(&lexer_state, fh, 0x0,
+        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0,
                                     /* No translation, no translation buffer */0x0, false);
         /**/

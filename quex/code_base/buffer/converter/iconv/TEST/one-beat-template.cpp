@@ -3,8 +3,12 @@
 
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
-#include <quex/code_base/buffer/Buffer.i>
+#ifdef QUEX_OPTION_CONVERTER_ICONV
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#endif
+#ifdef QUEX_OPTION_CONVERTER_ICU
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#endif
 #include <quex/code_base/single.i>
 
 using namespace std;
@@ -28,24 +32,26 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*   fh = fopen("test.txt", "r");
-    size_t       raw_memory_size = 3;
+    std::FILE*           fh = fopen("test.txt", "r");
+    size_t               raw_memory_size = 3;
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
     assert(raw_memory_size <= 9);
+
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
-    ByteLoader* byte_loader = ByteLoader_FILE_new(fh);
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller_Converter)* filler = \
+    QUEX_NAME(BufferFiller)* filler = \
         QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
-                                              QUEX_NAME(Converter_ICU_new)(), 
-                                              "UTF-8", 
-                                              0x0, raw_memory_size);
+                                              ___NEW___(),
+                                              ___UCS_UTF8___, 
+                                              ___UCS_4_BYTE_LE___, 
+                                              raw_memory_size);
 
     size_t loaded_n = 0;
-    loaded_n = filler->base.read_characters(&filler->base, 
-                                           (QUEX_TYPE_CHARACTER*)memory, MemorySize);
+    loaded_n = filler->read_characters(filler, 
+                                       (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
     cout << "## loaded character n = " << loaded_n << endl;
 

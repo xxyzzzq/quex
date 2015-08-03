@@ -3,7 +3,7 @@
 
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/single.i>
 
@@ -29,29 +29,29 @@ main(int argc, char** argv)
 
     std::FILE*           fh = fopen("test.txt", "r");
     const int            RawMemorySize = 6;
-    char*                target_charset = (char*)"UCS-4BE";
     size_t               memory_size = 3;
     memory_size = argv[1][0] - '0';
     assert(memory_size >= 1);
     assert(memory_size <= 9);
     QUEX_TYPE_CHARACTER  memory[memory_size];
-    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller_Converter)* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, QUEX_NAME(Converter_IConv_new)(), 
+    QUEX_NAME(BufferFiller)* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
+                                              QUEX_NAME(Converter_ICU_new)(), 
                                               "UTF8", 
-                                              target_charset, RawMemorySize);
+                                              0x0, RawMemorySize);
 
     size_t loaded_n = 0;
     do {
-        loaded_n = filler->base.read_characters(&filler->base, 
-                                                (QUEX_TYPE_CHARACTER*)memory, memory_size);
+        loaded_n = filler->read_characters(filler, 
+                                           (QUEX_TYPE_CHARACTER*)memory, memory_size);
 
         cout << "## loaded character n = " << loaded_n << endl;
      
         for(size_t i=0; i < loaded_n ; ++i) {
-            uint8_t*  raw = (uint8_t*)(memory + i);
-            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+            uint8_t*  raw = (uint8_t*)&memory[i];
+            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
         }
     } while( loaded_n == memory_size );
 }

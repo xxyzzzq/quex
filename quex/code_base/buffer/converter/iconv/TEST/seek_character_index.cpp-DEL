@@ -3,7 +3,12 @@
 
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#ifdef QUEX_OPTION_CONVERTER_ICONV
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#endif
+#ifdef QUEX_OPTION_CONVERTER_ICU
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#endif
 #include <quex/code_base/single.i>
 
 using namespace std;
@@ -27,7 +32,6 @@ main(int argc, char** argv)
     }
 
     std::FILE*           fh = fopen("test.txt", "r");
-    char*                target_charset = (char*)"UCS-4BE";
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
@@ -39,23 +43,27 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QUEX_NAME(BufferFiller_Converter)* filler = \
-        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, QUEX_NAME(Converter_IConv_new)(), "UTF8", target_charset, RawMemorySize);
+    QUEX_NAME(BufferFiller)* filler = \
+        QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
+                                              QUEX_NAME(Converter_IConv_new)(),
+                                              "UTF8", 
+                                              "UCS-4LE", 
+                                              RawMemorySize);
 
     size_t loaded_n = 0;
     for(ptrdiff_t i=Front; ; i += Delta) {
 
-        filler->base.seek_character_index(&filler->base, i);
+        filler->seek_character_index(filler, i);
 
-        assert(filler->base.tell_character_index(&filler->base) == i);
+        assert(filler->tell_character_index(filler) == i);
 
-        loaded_n = filler->base.read_characters(&filler->base, 
-                                               (QUEX_TYPE_CHARACTER*)memory, MemorySize);
+        loaded_n = filler->read_characters(filler, 
+                                          (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */
-            uint8_t*  raw = (uint8_t*)(memory);
-            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+            uint8_t*  raw = (uint8_t*)&memory[0];
+            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
         }
 
         if( i == Back ) break;

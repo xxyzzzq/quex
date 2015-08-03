@@ -104,6 +104,9 @@ public:
     typedef QUEX_TYPE_TOKEN_ID   token_id_type;
     typedef QUEX_TYPE_CHARACTER  char_type;
 
+    $$LEXER_CLASS_NAME$$(QUEX_NAME(BufferFiller)* filler, 
+    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
+    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
     $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
     $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
@@ -111,17 +114,17 @@ public:
     $$LEXER_CLASS_NAME$$(const std::string&   Filename,       
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
     $$___SPACE___$$bool                 ByteOrderReversionF   = false);
-    $$LEXER_CLASS_NAME$$(std::istream*        p_input_stream, 
+    $$LEXER_CLASS_NAME$$(std::FILE*     fh,       
+    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
+    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
+    $$LEXER_CLASS_NAME$$(std::istream*  istream_p, 
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
     $$___SPACE___$$bool                 ByteOrderReversionF   = false);
 #   if defined(__QUEX_OPTION_WCHAR_T)
-    $$LEXER_CLASS_NAME$$(std::wistream*       p_input_stream,
+    $$LEXER_CLASS_NAME$$(std::wistream* istream_p,
     $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
     $$___SPACE___$$bool                 ByteOrderReversionF   = false);
 #   endif
-    $$LEXER_CLASS_NAME$$(std::FILE*           input_fh,       
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
         $$LEXER_CLASS_NAME$$(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
@@ -273,28 +276,46 @@ public:
     void    set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
                                                   QUEX_TYPE_CHARACTER*));
 
-    template <class InputHandleT> void reset(InputHandleT*  input_handle, 
-                                             const char*    CharacterEncodingName = 0x0);
-    void                               reset(const char*    CharacterEncodingName = 0x0) 
-    { reset<void>((void*)0x0, CharacterEncodingName); }
+    void reset(QUEX_NAME(BufferFiller)*  filler, 
+               const char*               CharacterEncodingName = 0x0);
+    QUEX_TYPE_CHARACTER*  
+         reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                      size_t               BufferMemorySize,
+                      QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                      const char*          CharacterEncodingName = 0x0);
+    void reset(__QUEX_STD_FILE*  fh, 
+               const char*       CharacterEncodingName = 0x0);
+    void reset(std::istream*     istream_p, 
+               const char*       CharacterEncodingName = 0x0);
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    void reset(std::wistream*    istream_p, 
+               const char*       CharacterEncodingName = 0x0);
+#   endif
 
-    QUEX_TYPE_CHARACTER*               reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                                    size_t               BufferMemorySize,
-                                                    QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
-                                                    const char*          CharacterEncodingName = 0x0);
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 public:
-    template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
-                                                    const QUEX_NAME(Mode)*   Mode            = 0x0, 
-                                                    const char*              IANA_CodingName = 0x0);
-    template<class InputHandleT> void  include_push(InputHandleT*            sh, 
-                                                    const QUEX_NAME(Mode)*   Mode            = 0x0, 
-                                                    const char*              IANA_CodingName = 0x0);
-    bool                               include_pop();
+    void  include_push(QUEX_NAME(BufferFiller)* filler, 
+                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
+                       const char*              CharacterEncodingName = 0x0);
+    void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
+                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
+                       const char*              CharacterEncodingName = 0x0);
+    void  include_push(__QUEX_STD_FILE*         fh, 
+                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
+                       const char*              CharacterEncodingName = 0x0);
+    void  include_push(std::istream*            istream_p, 
+                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
+                       const char*              CharacterEncodingName = 0x0);
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    void  include_push(std::wistream*           istream_p, 
+                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
+                       const char*              CharacterEncodingName = 0x0);
+#   endif
+    bool  include_pop();
 
 protected:
-    void                               include_stack_delete();
+    void  include_stack_delete();
 
 private:
 #   endif
