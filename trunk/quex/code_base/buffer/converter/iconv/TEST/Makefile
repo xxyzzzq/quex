@@ -1,25 +1,17 @@
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 FILES = \
-		converter-16.exe \
-		converter-32.exe \
-		converter-statefulness-16.exe \
-		converter-statefulness-32.exe \
-		one-beat.exe \
-		n-beat.exe \
-		seek_character_index.exe \
+		converter-16.exe                \
+		converter-32.exe                \
+		converter-statefulness-16.exe   \
+		converter-statefulness-32.exe   \
+		one-beat.exe                    \
+		n-beat.exe                      \
+		seek_character_index.exe        \
 		seek_character_index-zikzak.exe \
-		Buffer_move_forward.exe \
-		Buffer_tell_and_seek.exe \
+		Buffer_move_forward.exe         \
+		Buffer_tell_and_seek.exe        \
 		Buffer_move_backward.exe
-
-GENERATED_FILES = \
-				  Buffer_tell_and_seek.cpp \
-		          Buffer_move_forward.cpp  \
-		          Buffer_move_backward.cpp \
-				  converter.cpp            \
-				  converter-statefulness.cpp      \
-		          seek_character_index-zikzak.cpp 
 
 DEFS = -DQUEX_OPTION_ASSERTS \
 	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
@@ -32,14 +24,6 @@ CC = \
 		-Wall -Werror \
         -Werror-implicit-function-declaration 
 
-HEADER        = \<quex\/code_base\/buffer\/converter\/iconv\/Converter_IConv\.i\>
-CONVERTER     = QUEX_NAME(Converter_IConv_convert)
-NEW_OPERATOR  = QUEX_NAME(Converter_IConv_new)
-FILLER_TYPE   = QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV
-UCS_4_BYTE_BE = "UCS-4BE"
-UCS_4_BYTE_LE = "UCS-4LE"
-UCS_UTF8      = "UTF8"
-
 all: $(FILES)
 
 hwut-info:
@@ -48,14 +32,17 @@ hwut-info:
 hwut-end: clean
 	@echo Bye
 
-%.cpp: %-template.cpp
-	sed   -e 's/\_\_\_NEW\_\_\_/$(NEW_OPERATOR)/g' $<         \
-	| sed -e 's/\_\_\_CONVERT\_\_\_/$(CONVERTER)/g'           \
-	| sed -e 's/\_\_\_FILLER_TYPE\_\_\_/$(FILLER_TYPE)/g'     \
-	| sed -e 's/\_\_\_UCS_4_BYTE_BE\_\_\_/$(UCS_4_BYTE_BE)/g' \
-	| sed -e 's/\_\_\_UCS_4_BYTE_LE\_\_\_/$(UCS_4_BYTE_LE)/g' \
-	| sed -e 's/\_\_\_UCS_UTF8\_\_\_/$(UCS_UTF8)/g' \
-	> $@
+HEADER            := \<quex\/code_base\/buffer\/converter\/iconv\/Converter_IConv\.i\>
+CONVERTER         := QUEX_NAME(Converter_IConv_convert)
+NEW_OPERATOR      := QUEX_NAME(Converter_IConv_new)
+FILLER_TYPE       := QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV
+UCS_4_BYTE_BE     := "UCS-4BE"
+UCS_4_BYTE_LE     := "UCS-4LE"
+UCS_2_BYTE_LE     := "UCS-2LE"
+UCS_UTF8          := "UTF8"
+TEST_TEMPLATE_DIR := ../../TEST-TEMPLATE/#
+
+include $(TEST_TEMPLATE_DIR)/Makefile
 
 %.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
@@ -75,4 +62,4 @@ seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp $(QUEX_CORE)
 
 clean:
 	rm -f $(FILES)
-	rm -f $(GENERATED_FILES)
+	rm -f $(TEST_TEMPLATE_RESULTS)

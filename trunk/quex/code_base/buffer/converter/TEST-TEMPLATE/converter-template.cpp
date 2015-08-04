@@ -44,8 +44,8 @@ main(int argc, char** argv)
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
     switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-    case 4: converter->open(converter, argv[1], 0x0); break;
-    case 2: converter->open(converter, argv[1], 0x0); break;
+    case 4: converter->open(converter, argv[1], ___UCS_4_BYTE_LE___); break;
+    case 2: converter->open(converter, argv[1], ___UCS_2_BYTE_LE___); break;
     }
 
     /* (2.1) Load file content corresponding the input coding */
@@ -76,12 +76,12 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 {
     const char* filename = 0x0;
     if ( strcmp("UTF-8",  Choice) == 0 ) {
-        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "example-32.utf8";
-        else                                   filename = "example-16.utf8";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/example-32.utf8";
+        else                                   filename = "___DATA_DIR___/example-16.utf8";
     }
     else if( strcmp("UTF-16", Choice) == 0 ) {
-        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "example-32.utf16";
-        else                                   filename = "example-16.utf16";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/example-32.utf16";
+        else                                   filename = "___DATA_DIR___/example-16.utf16";
     }
     else {
         printf("Coding %s not supported, use --hwut-info;\n", Choice);

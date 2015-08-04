@@ -31,7 +31,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("test.txt", "r");
+    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "r");
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
