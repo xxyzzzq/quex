@@ -24,7 +24,7 @@ main(int argc, char** argv)
 
     QUEX_NAME(Buffer)  buffer;
     const int          RawMemorySize = 6;
-    std::FILE*         fh            = fopen("test.txt", "r");
+    std::FILE*         fh            = fopen("___DATA_DIR___/test.txt", "r");
     size_t             SeekIndices[] = { 10, 4, 22, 8, 18, 11, 6, 
                                          2, 3, 15, 22, 17, 22, 21,
                                          0, 20, 13, 1, 16, 12, 14, 

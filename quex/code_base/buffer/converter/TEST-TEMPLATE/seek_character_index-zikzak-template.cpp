@@ -42,7 +42,7 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER  reference[ReferenceSize];
 
     if( strcmp(argv[1], "Dynamic") == 0 ) {
-        fh             = fopen("test.txt", "r");
+        fh             = fopen("___DATA_DIR___/test.txt", "r");
         source_charset = (char*)___UCS_UTF8___; 
     } else {
         fh             = fopen("test-ucs4be.txt", "r");

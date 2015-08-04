@@ -26,7 +26,7 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer)  buffer;
     const int          RawMemorySize = 6;
     const size_t       StepSize      = atoi(argv[1]);
-    std::FILE*         fh            = fopen("test.txt", "r");
+    std::FILE*         fh            = fopen("___DATA_DIR___/test.txt", "r");
     assert( fh != 0x0 );
     ByteLoader*        byte_loader   = ByteLoader_FILE_new(fh);
 

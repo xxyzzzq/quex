@@ -32,7 +32,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("test.txt", "r");
+    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "r");
     const int            RawMemorySize = 6;
     size_t               memory_size = 3;
     memory_size = argv[1][0] - '0';

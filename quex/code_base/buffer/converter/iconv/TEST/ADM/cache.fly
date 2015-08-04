@@ -1,0 +1,139 @@
+{
+file_name: converter-16.exe;
+result_list: [
+  [ UTF-8; OK; 0.007204; None; ]
+  [ UTF-16; OK; 0.009134; None; ]
+]
+make_dependent_f: True;
+same_f: True;
+title: Plain 16 bit;
+title_group: Converter;
+hwut_info_time: 1438662841L;
+}
+{
+file_name: converter-32.exe;
+result_list: [
+  [ UTF-8; OK; 0.009208; None; ]
+  [ UTF-16; OK; 0.009422; None; ]
+]
+make_dependent_f: True;
+same_f: True;
+title: Plain 32 bit;
+title_group: Converter;
+hwut_info_time: 1438662841L;
+}
+{
+file_name: converter-statefulness-16.exe;
+result_list: [
+  [ UTF-8; OK; 0.004853; None; ]
+  [ UTF-16; OK; 0.004834; None; ]
+]
+make_dependent_f: True;
+title: Possible 'statefulness' has been ruled out (16 bit);
+title_group: Converter;
+hwut_info_time: 1438662842L;
+}
+{
+file_name: converter-statefulness-32.exe;
+result_list: [
+  [ UTF-8; OK; 0.007958; None; ]
+  [ UTF-16; OK; 0.006745; None; ]
+]
+make_dependent_f: True;
+title: Possible 'statefulness' has been ruled out (32 bit);
+title_group: Converter;
+hwut_info_time: 1438662843L;
+}
+{
+file_name: Buffer_move_backward.exe;
+result_list: [
+  [ 1; OK; 0.004929; None; ]
+  [ 2; OK; 0.004813; None; ]
+  [ 3; OK; 0.005640; None; ]
+  [ 4; OK; 0.005733; None; ]
+  [ 5; OK; 0.005938; None; ]
+]
+make_dependent_f: True;
+title: Backward (BPC=4);
+title_group: Move by Offset;
+hwut_info_time: 1438662847L;
+}
+{
+file_name: Buffer_move_forward.exe;
+result_list: [
+  [ 1; OK; 0.005084; None; ]
+  [ 2; OK; 0.005002; None; ]
+  [ 3; OK; 0.005443; None; ]
+  [ 4; OK; 0.005417; None; ]
+  [ 5; OK; 0.005135; None; ]
+]
+make_dependent_f: True;
+title: Forward (BPC=4);
+title_group: Move by Offset;
+hwut_info_time: 1438662845L;
+}
+{
+file_name: seek_character_index.exe;
+result_list: [
+  [ Forward; OK; 0.005482; None; ]
+  [ Backward; OK; 0.005310; None; ]
+]
+make_dependent_f: True;
+title: Plain search;
+title_group: Stream Position Seek;
+hwut_info_time: 1438662844L;
+}
+{
+file_name: seek_character_index-zikzak.exe;
+result_list: [
+  [ Fixed; OK; 0.014793; None; ]
+  [ Dynamic; OK; 0.007137; None; ]
+]
+make_dependent_f: True;
+title: Total Zik-Zak;
+title_group: Stream Position Seek;
+hwut_info_time: 1438662865L;
+}
+{
+file_name: Buffer_tell_and_seek.exe;
+result_list: [
+  [ ; OK; 0.005323; None; ]
+]
+make_dependent_f: True;
+title: Bytes Per Character (BPC)=4;
+title_group: Tell and Seek;
+hwut_info_time: 1438662846L;
+}
+{
+file_name: one-beat.exe;
+result_list: [
+  [ 6; OK; 0.004527; None; ]
+  [ 7; OK; 0.004725; None; ]
+  [ 8; OK; 0.005081; None; ]
+  [ 9; OK; 0.005438; None; ]
+]
+make_dependent_f: True;
+same_f: True;
+title: Raw buffer size varries (UTF-8);
+title_group: read_characters;
+hwut_info_time: 1438662797L;
+}
+{
+file_name: n-beat.exe;
+result_list: [
+  [ 1; OK; 0.007288; None; ]
+  [ 2; OK; 0.004846; None; ]
+  [ 3; OK; 0.005714; None; ]
+  [ 4; OK; 0.005094; None; ]
+  [ 5; OK; 0.008613; None; ]
+  [ 6; OK; 0.004573; None; ]
+  [ 7; OK; 0.004865; None; ]
+  [ 8; OK; 0.004487; None; ]
+  [ 9; OK; 0.004751; None; ]
+]
+make_dependent_f: True;
+same_f: True;
+title: User buffer size varries (UTF-8);
+title_group: read_characters;
+hwut_info_time: 1438662843L;
+}

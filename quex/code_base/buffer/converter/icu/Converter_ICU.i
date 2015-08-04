@@ -77,7 +77,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                  * coding names:
                  * http://demo.icu-project.org/icu-bin/convexp?s=IANA        */
 #               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
-                me->to_handle = ucnv_open("UTF32-PlatformEndian", &me->status); 
+                me->to_handle = ucnv_open("UTF32", &me->status); 
 #               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
                 me->to_handle = ucnv_open("UTF32-LE", &me->status); 
 #               elif defined(__QUEX_OPTION_BIG_ENDIAN)
@@ -89,7 +89,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                  * feature request 2749855                                   */
 #               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
                 /* 2 byte encoding may use the 'direct converter for UChar'  */
-                me->to_handle = 0x0; 
+                me->to_handle = ucnv_open("UTF16", &me->status); 
 #               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
                 me->to_handle = ucnv_open("UTF16-LE", &me->status); 
 #               elif defined(__QUEX_OPTION_BIG_ENDIAN)
@@ -121,46 +121,19 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me);
         __quex_assert(SourceEnd >= *source);
         __quex_assert(DrainEnd >= *drain);
+        __quex_assert(me->handle);
 
         me->status = U_ZERO_ERROR;
 
-        if( ! me->to_handle ) {
-            /* Convert according to QUEX_TYPE_CHARACTER:
-             *
-             * NOTE: The author did not find a better way to do non-16bit 
-             *       conversion than converting 'normally' and then shifting
-             *       according to the size of QUEX_TYPE_CHARACTER. If you 
-             *       read these lines and know of a better method, please, 
-             *       let me know (email: fschaef@users.sourceforge.net).   
-             *
-             * NOTE: 'UChar' is defined to be wchar_t, if sizeof(wchar_t) is 
-             *       2 byte, otherwise it as defined as uint16_t.                        
-             *
-             * We need to cast to UChar, since otherwise the code would not 
-             * compile for sizeof() != 2. Nevertheless, in this case the code 
-             * would never be executed.                                      */
-            //__quex_assert( sizeof(QUEX_TYPE_CHARACTER) == 2 );
-
-            /* 16 bit --> nothing to be done */
-            ucnv_toUnicode(me->from_handle, 
-                           (UChar**)drain,       (const UChar*)DrainEnd,
-                           (const char**)source, (const char*)SourceEnd, 
-                           /* offsets */NULL,
-                           /* flush = */FALSE,
-                           &me->status);
-
-        } else {
-            ucnv_convertEx(me->to_handle, me->from_handle,
-                           (char**)drain,        (const char*)DrainEnd,
-                           (const char**)source, (const char*)SourceEnd,
-                           me->pivot_buffer, 
-                           &me->pivot_iterator_begin, &me->pivot_iterator_end, 
-                           me->pivot_buffer + QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE,
-                           /* reset = */FALSE, 
-                           /* flush = */FALSE,
-                           &me->status);
-
-        }
+        ucnv_convertEx(me->to_handle, me->from_handle,
+                       (char**)drain,        (const char*)DrainEnd,
+                       (const char**)source, (const char*)SourceEnd,
+                       me->pivot_buffer, 
+                       &me->pivot_iterator_begin, &me->pivot_iterator_end, 
+                       me->pivot_buffer + QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE,
+                       /* reset = */FALSE, 
+                       /* flush = */FALSE,
+                       &me->status);
 
         return *drain == DrainEnd ? true : false;
 

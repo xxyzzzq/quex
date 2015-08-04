@@ -42,7 +42,10 @@ main(int argc, char** argv)
 
     QUEX_NAME(Converter)*  converter = ___NEW___();
     /* (1) opening the converter with default internal character format */
-    converter->open(converter, argv[1], 0x0);
+    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+    case 4: converter->open(converter, argv[1], ___UCS_4_BYTE_LE___); break;
+    case 2: converter->open(converter, argv[1], ___UCS_2_BYTE_LE___); break;
+    }
 
     /* (2.1) Load file content corresponding the input coding */
     const size_t Size = 16384;
@@ -77,8 +80,8 @@ int
 get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 {
     const char* filename = 0x0;
-    if     ( strcmp("UTF-8",  Choice) == 0 )  filename = "example2.utf8";
-    else if( strcmp("UTF-16", Choice) == 0 )  filename = "example2.utf16";
+    if     ( strcmp("UTF-8",  Choice) == 0 )  filename = "___DATA_DIR___/example2.utf8";
+    else if( strcmp("UTF-16", Choice) == 0 )  filename = "___DATA_DIR___/example2.utf16";
     else {
         printf("Coding %s not supported, use --hwut-info;\n", Choice);
         return 0;

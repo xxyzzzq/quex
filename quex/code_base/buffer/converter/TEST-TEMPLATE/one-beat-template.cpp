@@ -32,7 +32,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("test.txt", "r");
+    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "r");
     size_t               raw_memory_size = 3;
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
