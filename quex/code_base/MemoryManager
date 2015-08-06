@@ -32,6 +32,9 @@ extern size_t
 QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                  uint8_t* source_begin_p, uint8_t* source_end_p);
 
+extern bool 
+QUEXED_DEF(system_is_little_endian)(void);
+
 QUEX_NAMESPACE_QUEX_CLOSE
  
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__ */

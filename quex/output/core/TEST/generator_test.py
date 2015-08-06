@@ -498,16 +498,69 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #   endif
 #endif
 
-static           __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER*);
-/* NOT static */ __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_analyzer_function)(QUEX_TYPE_ANALYZER*);
-/* Do not declare Mrs as 'static' otherwise there might be complaints if it
- * is never defined.                                                          */
+#ifdef __QUEX_OPTION_PLAIN_C
+quex_TestAnalyzer    lexer_state;
+#else
+quex::TestAnalyzer   lexer_state;
+endif
+
+static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER*);
+static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_analyzer_function)(QUEX_TYPE_ANALYZER*);
+
+struct Mode my_modes[] = {
+    { 
+      /* id                */ 0, 
+      /* name              */ "Mode0", 
+      /* the_lexer         */ &lexer_state,  
+      /* analyzer_function */ QUEX_NAME(Mr_analyzer_function),
+#     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+      /* on_indentation    */ NULL,
+#     endif
+      /* on_entry          */ 0,
+      /* on_exit           */ 0, 
+#     ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+      /* has_base          */ NULL,
+      /* has_entry_from)   */ NULL,
+      /* has_exit_to       */ NULL,
+#     endif
+    },
+    { 
+      /* id                */ 1, 
+      /* name              */ "Mode1", 
+      /* the_lexer         */ &lexer_state,  
+      /* analyzer_function */ QUEX_NAME(Mrs_analyzer_function),
+#     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+      /* on_indentation    */ NULL,
+#     endif
+      /* on_entry          */ 0,
+      /* on_exit           */ 0, 
+#     ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+      /* has_base          */ NULL,
+      /* has_entry_from)   */ NULL,
+      /* has_exit_to       */ NULL,
+#     endif
+    },
+};
+
+#define SETUP_MODE_DB() \
+        do {                                      \
+            lexer_state.mode_db[0] = my_modes[0]; \
+            lexer_state.mode_db[1] = my_modes[1]; \
+        } while(0) 
+
+#if defined(QUEX_OPTION_COMPUTED_GOTOS)
+#   define DEAL_WITH_COMPUTED_GOTOS() \
+            $$COMPUTED_GOTOS$$
+#else
+#   define DEAL_WITH_COMPUTED_GOTOS() \
+           $$NO_COMPUTED_GOTOS$$
+#endif
 
 static int
 run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 {
-    lexer->current_analyzer_function = QUEX_NAME(Mr_analyzer_function);
-
+    (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);
+            
     printf("(*) test string: \\n'%s'%s\\n", TestString, Comment);
     printf("(*) result:\\n");
 
@@ -548,23 +601,17 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        quex_TestAnalyzer    lexer_state;
         QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
-#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
-        $$COMPUTED_GOTOS$$
-#       else
-        $$NO_COMPUTED_GOTOS$$
-#       endif
-
+        DEAL_WITH_COMPUTED_GOTOS();
+        SETUP_MODE_DB();
         QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
                                    TestString, MemorySize, TestString + MemorySize - 1, 
                                    0x0, 0, false);
-        lexer_state.current_analyzer_function = QUEX_NAME(Mr_analyzer_function);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
-        return run_test((const char*)(TestString + 1), "$$COMMENT$$", &lexer_state);
+        return run_test((const char*)(TestString + 1), "$$COMMENT$$");
     }\n""",
 
     "ANSI-C": """
@@ -573,27 +620,21 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        quex_TestAnalyzer lexer_state;
-        /**/
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
         ByteLoader*       byte_loader = ByteLoader_FILE_new(fh);
-
-#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
-        $$COMPUTED_GOTOS$$
-#       else
-        $$NO_COMPUTED_GOTOS$$
-#       endif
 
         /* Write test string into temporary file */
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
+        DEAL_WITH_COMPUTED_GOTOS();
+        SETUP_MODE_DB();
         QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0,
                                     /* No translation, no translation buffer */0x0, false);
         /**/
-        (void)run_test(test_string, "$$COMMENT$$", &lexer_state);
+        (void)run_test(test_string, "$$COMMENT$$");
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
         return 0;
@@ -609,21 +650,15 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        TestAnalyzer  lexer_state;
-        /**/
         istringstream istr("$$TEST_STRING$$");
         ByteLoader*   byte_loader = ByteLoader_stream_new(&istr);
 
-#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
-        $$COMPUTED_GOTOS$$
-#       else
-        $$NO_COMPUTED_GOTOS$$
-#       endif
-
+        DEAL_WITH_COMPUTED_GOTOS();
+        SETUP_MODE_DB();
         QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
-        return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
+        return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",
 
     "Cpp_StrangeStream": """
@@ -638,21 +673,15 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        TestAnalyzer lexer_state;
-        /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
         ByteLoader*                   byte_loader = ByteLoader_stream_new(&strange_stream);
 
-#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
-        $$COMPUTED_GOTOS$$
-#       else
-        $$NO_COMPUTED_GOTOS$$
-#       endif
-
+        DEAL_WITH_COMPUTED_GOTOS();
+        SETUP_MODE_DB();
         QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
-        return run_test("$$TEST_STRING$$", "$$COMMENT$$", &lexer_state);
+        return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",
 
     "ANSI-C-from-file": """
@@ -661,24 +690,22 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        quex_TestAnalyzer lexer_state;
-        FILE*             fh               = fopen(argv[1], "rb");
-        size_t            buffer_size      = atoi(argv[2]);
-        size_t            real_buffer_size = 0;
-        char              test_string[65536];
-        ByteLoader*       byte_loader = ByteLoader_FILE_new(fh);
+        char        test_string[65536];
+        FILE*       fh               = fopen(argv[1], "rb");
+        size_t      buffer_size      = atoi(argv[2]);
+        size_t      real_buffer_size = 0;
+        ByteLoader* byte_loader      = ByteLoader_FILE_new(fh);
 
-#       if defined(QUEX_OPTION_COMPUTED_GOTOS)
-        $$COMPUTED_GOTOS$$
-#       else
-        $$NO_COMPUTED_GOTOS$$
-#       endif
+
         (void)fread(test_string, 1, 65536, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
+        DEAL_WITH_COMPUTED_GOTOS();
+        SETUP_MODE_DB();
         QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
                                    buffer_size, 0x0, 0x0,
                                    /* No translation, no translation buffer */0x0, false);
+
         /* Double check, that buffer size has been set. */
         real_buffer_size = lexer_state.buffer._memory._back - lexer_state.buffer._memory._front + 1;
         printf("## buffer_size: { required: %i; real: %i; }\\n",
@@ -687,7 +714,7 @@ test_program_db = {
         {
             abort();
         }
-        (void)run_test(test_string, "$$COMMENT$$", &lexer_state);
+        (void)run_test(test_string, "$$COMMENT$$");
 
         fclose(fh); 
         return 0;

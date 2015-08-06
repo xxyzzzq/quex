@@ -47,6 +47,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->base.convert     = QUEX_NAME(Converter_IConv_convert);
         me->base.delete_self = QUEX_NAME(Converter_IConv_delete_self);
         me->base.on_conversion_discontinuity = (void (*)(struct QUEX_NAME(Converter_tag)*))0;
+        me->base.virginity_f = true;
 
         me->handle = (iconv_t)-1;
 
@@ -59,29 +60,28 @@ QUEX_NAMESPACE_MAIN_OPEN
                                     const char*           ToCoding)
     {
         QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
+#       if   defined(__QUEX_OPTION_LITTLE_ENDIAN)
+        const bool little_endian_f = true;
+#       elif defined(__QUEX_OPTION_BIG_ENDIAN)
+        const bool little_endian_f = false;
+#       elif defined(__QUEX_OPTION_SYSTEM_ENDIAN) 
+        const bool little_endian_f = QUEXED(system_is_little_endian)();
+#       endif
 
         /* Default: assume input encoding to have dynamic character sizes. */
         me->base.dynamic_character_size_f = true;
+        me->base.virginity_f              = true;
 
         /* Setup conversion handle */
-        if( ToCoding == 0 ) {
+        if( ! ToCoding ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+            case 4:  ToCoding = little_endian_f ? "UCS-4LE" : "UCS-4BE"; break;
+            case 2:  ToCoding = little_endian_f ? "UCS-2LE" : "UCS-2BE"; break;
+            case 1:  ToCoding = "ASCII"; break;
             default:  __quex_assert(false); return;
-#           if   defined (__QUEX_OPTION_SYSTEM_ENDIAN) 
-            case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
-            case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
-#           elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
-            case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
-            case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
-#           elif defined(__QUEX_OPTION_BIG_ENDIAN)
-            case 4:  me->handle = iconv_open("UCS-4BE",  FromCoding);  break;
-            case 2:  me->handle = iconv_open("UCS-2BE",  FromCoding);  break;
-#           endif
-            case 1:  me->handle = iconv_open("ASCII",    FromCoding);  break;
             }
-        } else {
-            me->handle = iconv_open(ToCoding, FromCoding);
-        }
+        } 
+        me->handle = iconv_open(ToCoding, FromCoding);
 
         if( me->handle == (iconv_t)-1 ) {
             /* __QUEX_STD_fprintf(stderr, "Source coding: '%s'\n", FromCoding);
@@ -96,6 +96,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                        QUEX_TYPE_CHARACTER**  drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
+        QUEX_TYPE_CHARACTER*        drain_begin = *drain;
         /* RETURNS:  true  --> User buffer is filled as much as possible with converted 
          *                     characters.
          *           false --> More raw bytes are needed to fill the user buffer.           
@@ -112,9 +113,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          *
          *  as a compile option. If you have an elegant solution to solve the problem for 
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
-        size_t source_bytes_left_n = (size_t)(SourceEnd - *source);
-        size_t drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
-        size_t report;
+        size_t  source_bytes_left_n = (size_t)(SourceEnd - *source);
+        size_t  drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
+        size_t  report;
 
         __quex_assert(me);
         __quex_assert(SourceEnd >= *source);
@@ -124,26 +125,42 @@ QUEX_NAMESPACE_MAIN_OPEN
                        __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
                        (char**)drain,                        &drain_bytes_left_n);
 
+        /* Check for BOM and, if necessary move it away (safety measure).    */
+        if( *drain != drain_begin && drain_begin[0] == 0xfeff )
+        {
+            if( ! me->base.virginity_f ) {
+                QUEX_ERROR_EXIT("Converter 'IConv' produced BOM upon not-first call to 'convert'\n"
+                                "Better make sure that converter NEVER produces BOM.\n"
+                                "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
+            }
+            __QUEX_STD_memmove(&drain_begin[0], &drain_begin[1], 
+                               (*drain - &drain_begin[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+            *drain = &(*drain)[-1];
+        }
+
         if( report != (size_t)-1 ) { 
             __quex_assert(source_bytes_left_n == 0);
-            /* The input sequence (raw buffer content) has been converted completely.
-             * But, is the user buffer filled to its limits?                                   */
+            /* The input sequence (raw buffer content) has been converted 
+             * completely. But, is the user buffer filled to its limits?     */
             if( drain_bytes_left_n == 0 ) {
                 __quex_assert(*drain == DrainEnd);
                 return true; 
             }
-            /* If the buffer was not filled completely, then was it because we reached EOF?
-             * NOTE: Here, 'source->iterator' points to the position after the last byte
-             *       that has been converted. If this is the end of the buffer, then it means
-             *       that the raw buffer was read. If not, it means that the buffer has not been
-             *       filled to its border which happens only if End of File occured.           */
-            if( *source != SourceEnd ) {
-                /*__quex_assert(me->raw_buffer.end != me->raw_buffer.memory_end);*/
+            else if( *source != SourceEnd ) {
+                /* If the buffer was not filled completely, then was it because
+                 * we reached EOF?  NOTE: Here, 'source->iterator' points to
+                 * the position after the last byte that has been converted. If
+                 * this is the end of the buffer, then it means that the raw
+                 * buffer was read. If not, it means that the buffer has not
+                 * been filled to its border which happens only if End of File
+                 * occured.                                                  */
                 return true;
             }
             else {
-                /* Else: The user buffer is still hungry, thus the raw buffer needs more bytes. */
-                /* *source == SourceEnd anyway, so 'refill' is triggered at any time.           */
+
+                /* Else: The user buffer is still hungry, thus the raw buffer
+                 * needs more bytes. *source == SourceEnd anyway, so 'refill'
+                 * is triggered at any time.                                 */
                 return false; 
             }
         }

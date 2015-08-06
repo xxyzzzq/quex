@@ -61,6 +61,18 @@ QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
     return size;
 }
 
+bool 
+QUEXED_DEF(system_is_little_endian)(void)
+{
+    union {
+        long int multi_bytes;
+        char     c[sizeof (long int)];
+    } u;
+    u.multi_bytes = 1;
+    return u.c[sizeof(long int)-1] != 1;
+}
+
+
 QUEX_NAMESPACE_QUEX_CLOSE
  
 #endif /*  __QUEX_INCLUDE_GUARD__MEMORY_MANAGER_I */

@@ -74,6 +74,9 @@ QUEX_NAMESPACE_MAIN_OPEN
          * characters. Others, such as ASCII or UCS-4 use the same number of bytes for
          * all characters of the character set. Using the flag, the buffer filler can
          * adapt the seek algorithm for navigation in the character stream.               */
+
+        bool    virginity_f;
+
     } QUEX_NAME(Converter);
 
     /* Facilitate the task of converting to apropriate function pointers from derived 

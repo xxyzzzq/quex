@@ -4,9 +4,9 @@
          *   |  /  \ |__/ |__  |\ | /__` 
          *   |  \__/ |  \ |___ | \| .__/ 
          *                                                                        
-         *  Allow public access, for user's special tricks.                       */
-
-        /*  Tokens are placed directly before the buffer. They are one of the most
+         *  Allow public access, for user's special tricks.                       
+         *
+         *  Tokens are placed directly before the buffer. They are one of the most
          *  used variables. The most used variables shall be stored close to each
          *  other, in order to prevent cache misses.                               
          * 
@@ -15,7 +15,7 @@
          *  at the top, and thus the addresses close to the buffer shall be used
          *  more often than the addresses far from it.                            */
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        QUEX_NAME(TokenQueue)  _token_queue;  
+            QUEX_NAME(TokenQueue)  _token_queue;  
 #           if ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
             uint8_t            __memory_token_queue[sizeof(QUEX_TYPE_TOKEN)*QUEX_SETTING_TOKEN_QUEUE_SIZE];
 #           endif
@@ -57,9 +57,9 @@
             struct QUEX_NAME(Mode_tag)** memory_end;
         }                                _mode_stack;
 
-        __QUEX_IF_COUNT(QUEX_NAME(Counter)              counter;)
-        __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator)          accumulator;)
-        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(Dictionary)           post_categorizer;)
+        __QUEX_IF_COUNT(QUEX_NAME(Counter)                      counter;)
+        __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator)     accumulator;)
+        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(Dictionary)        post_categorizer;)
         __QUEX_IF_INCLUDE_STACK(struct QUEX_NAME(Memento_tag)*  _parent_memento;)
 
 

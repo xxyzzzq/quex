@@ -10,7 +10,7 @@
 #if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
 #   error "Cannot define little endian and big endian at the same time."
 #endif
-#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN) && ! defined(__QUEX_OPTION_SYSTEM_ENDIAN)
 #   error "Either little endian or big endian must be defined."
 #endif
 
