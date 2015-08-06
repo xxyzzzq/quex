@@ -52,7 +52,8 @@ QUEX_NAMESPACE_MAIN_OPEN
             memory        = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
                                                MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
                                                QUEXED(MemoryObjectType_BUFFER));
-            end_of_file_p = (QUEX_TYPE_CHARACTER*)0x0;
+            end_of_file_p = filler ? (QUEX_TYPE_CHARACTER*)0x0
+                                   : &memory[1];
             external_f    = false; /* We own the memory, not someone outside.*/
         } 
         else
@@ -64,7 +65,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
-        QUEX_NAME(BufferMemory_construct)(&me->_memory, memory, MemorySize, end_of_file_p, 
+        QUEX_NAME(BufferMemory_construct)(&me->_memory, 
+                                          memory, MemorySize, end_of_file_p, 
                                           external_f); 
         
         me->on_buffer_content_change = (void (*)(QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*))0;

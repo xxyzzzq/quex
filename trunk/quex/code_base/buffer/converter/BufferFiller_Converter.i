@@ -85,6 +85,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Initialize the conversion operations                                             */
         me->converter = converter;
         me->converter->open(me->converter, FromCoding, ToCoding);
+        me->converter->virginity_f = true;
 
         /* Setup the tell/seek of character positions                                      
          * (disabled in case of buffer based lexical analyzis)                              */
@@ -183,6 +184,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             if( me->converter->convert(me->converter, 
                                        &me->raw_buffer.iterator, me->raw_buffer.end,
                                        &buffer_insertion_p, BufferEnd) ) {
+                me->converter->virginity_f = false;
                 break;
             }
 
@@ -195,12 +197,14 @@ QUEX_NAMESPACE_MAIN_OPEN
 
             if( ! QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(me) ) {
                 /* No bytes have been loaded. */
-                if( me->raw_buffer.end != me->raw_buffer.begin ) 
+                if( me->raw_buffer.end != me->raw_buffer.begin ) {
                     /* There are still bytes, but they were not converted by the converter. */
                     QUEX_ERROR_EXIT("Error. At end of file, byte sequence not interpreted as character.");
+                }
                 break;
             }
         }
+        me->converter->virginity_f = false;
 
         ConvertedCharN = buffer_insertion_p - user_memory_p;
         me->raw_buffer.iterators_character_index = StartCharacterIndex + ConvertedCharN;
@@ -208,7 +212,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( ConvertedCharN != (ptrdiff_t)N ) {
             /* The buffer was not filled completely, because the end of the file was reached.   */
             __quex_assert(BufferEnd >= buffer_insertion_p);
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
             QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferEnd);
         }
         return (size_t)ConvertedCharN;

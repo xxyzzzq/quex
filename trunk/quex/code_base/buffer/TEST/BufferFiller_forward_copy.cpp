@@ -39,12 +39,12 @@ main(int argc, char** argv)
     printf("## NOTE: And the end of file has not been reached yet.\n");
     buffer._memory._end_of_file_p = 0x0;
 
-    /* We want to observe the standard error output in HWUT, so redirect to stdout */
     for(buffer._lexeme_start_p = buffer._memory._back; 
         buffer._lexeme_start_p != buffer._memory._front; 
         --(buffer._lexeme_start_p) ) { 
 
-        memcpy((void*)(buffer._memory._front + 1), (void*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
+        memcpy(&buffer._memory._front[1], (void*)content, 
+               (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 

@@ -37,8 +37,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *                     by hand in order to setup the memory:
      *
      *                     QuexBufferMemory_construct(analyse->buffer._memory, 
-     *                                                (uint8_t*)MyMemoryP, MyMemorySize); 
-     */
+     *                                                (uint8_t*)MyMemoryP, MyMemorySize); */
     {
         QUEX_NAME(BufferFiller)* filler;
 
@@ -51,6 +50,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, me));
        
         __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
+
         filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
                                              CharacterEncodingName, 
                                              TranslationBufferMemorySize);
@@ -59,7 +59,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                     BufferMemory, BufferMemorySize, EndOfFileP,
                                     ByteOrderReversionF);
 
-        QUEX_NAME(set_mode_brutally)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+        QUEX_NAME(set_mode_brutally)(me, me->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
     }
 
     TEMPLATE_IN(InputHandleT) void

@@ -1,5 +1,12 @@
+#line 1 "converter-statefulness-template.cpp"
 #include <cstring>
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
+#ifdef    __QUEX_OPTION_LITTLE_ENDIAN
+#   undef __QUEX_OPTION_LITTLE_ENDIAN
+#endif
+#ifdef    __QUEX_OPTION_BIG_ENDIAN
+#   undef __QUEX_OPTION_BIG_ENDIAN
+#endif
 #include <quex/code_base/buffer/Buffer.i>
 #ifdef QUEX_OPTION_CONVERTER_ICONV
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
@@ -19,7 +26,7 @@
 using namespace std;
 using namespace quex;
 
-int get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
+int get_input(const char* Choice, uint8_t* buffer, size_t BufferSize);
 void print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
 int cl_has(int argc, char** argv, const char* What)
@@ -40,30 +47,35 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QUEX_NAME(Converter)*  converter = ___NEW___();
-    /* (1) opening the converter with default internal character format */
-    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-    case 4: converter->open(converter, argv[1], ___UCS_4_BYTE_LE___); break;
-    case 2: converter->open(converter, argv[1], ___UCS_2_BYTE_LE___); break;
-    }
+    const char*            input_codec = argv[1];
+    QUEX_NAME(Converter)*  converter   = ___NEW___();
 
-    /* (2.1) Load file content corresponding the input coding */
-    const size_t Size = 16384;
-    uint8_t      in[Size];
+    /* Load file content corresponding the input coding                      */
+    const size_t  Size = 16384;
+    uint8_t       in[Size];
+    const size_t  ContentSize = get_input(input_codec, in, Size);
+    if( ! ContentSize ) return -1;
 
-    const size_t ContentSize = get_input(argv[1], in, Size);
-    if( ContentSize == 0 ) return -1;
+    /* (1) opening the converter with DEFAULT internal character format      */
+    converter->open(converter, input_codec, 0x0);
 
-    /* (2.2) Convert buffer content. */
-    for(size_t i=ContentSize; i != 0 ; --i){
+    QUEX_TYPE_CHARACTER         out[Size];
+    const QUEX_TYPE_CHARACTER*  out_end = &out[Size];
 
-        uint8_t*                in_iterator = in;
-        QUEX_TYPE_CHARACTER     out[Size];
-        QUEX_TYPE_CHARACTER*    out_iterator = out;
+    /* (2.2) Convert buffer content.                                         */
+    for(size_t i=ContentSize; i != 0 ; --i) {
+        uint8_t*                in_iterator  = &in[0];
+        uint8_t*                in_end       = &in[i];
+        QUEX_TYPE_CHARACTER*    out_iterator = &out[0];
+
         if( converter->on_conversion_discontinuity ) {
             converter->on_conversion_discontinuity(converter);
         }
-        bool      Result = converter->convert(converter, &in_iterator, in + i, &out_iterator, out + Size);
+
+        bool   Result = converter->convert(converter, 
+                                           &in_iterator,  in_end, 
+                                           &out_iterator, out_end);
+
         printf(">> result:  %s; ", Result ? "true" : "false");
         printf("output iterator offset: %04i\n", (int)(out_iterator - out));
         printf("## input iterator offset:  %04i\n", (int)(in_iterator - in));
@@ -77,11 +89,19 @@ main(int argc, char** argv)
 }
 
 int 
-get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
+get_input(const char* Choice, uint8_t* buffer, size_t BufferSize)
 {
     const char* filename = 0x0;
-    if     ( strcmp("UTF-8",  Choice) == 0 )  filename = "___DATA_DIR___/example2.utf8";
-    else if( strcmp("UTF-16", Choice) == 0 )  filename = "___DATA_DIR___/example2.utf16";
+
+    /* Converters may differ parsing the default UTF-16 and UTF-8 encoding.
+     * Depending on the particular behavior, the BOM may have to be provided.
+     * Thus, each directory provides its own example2.* files.               */
+    if     ( strcmp("UTF-8",  Choice) == 0 ) {
+        filename = "example2.utf8";
+    }
+    else if( strcmp("UTF-16", Choice) == 0 )  {
+        filename = "example2.utf16";
+    }
     else {
         printf("Coding %s not supported, use --hwut-info;\n", Choice);
         return 0;
@@ -95,8 +115,9 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
         return 0;
     } 
     fread(buffer, 16384, sizeof(char), fh);
+
     content_size = ftell(fh);
-    if( content_size == 0 ) {
+    if( ! content_size ) {
         printf("File '%s' is empty.\n", filename);
         return 0;
     }
@@ -109,10 +130,8 @@ print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     uint8_t   utf8_c[10];
     uint8_t*  p = 0x0;
 
-    size_t    i = 0;
-
     printf("%i: [", (int)(End-Begin));
-    for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++i) {
+    for(const QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ) {
         p = utf8_c;
         switch( sizeof(QUEX_TYPE_CHARACTER) ) {
         case 1:  quex::utf8_to_utf8_character((const uint8_t**)&iterator, &p); break;

@@ -35,7 +35,7 @@ main(int argc, char** argv)
     }
 
     std::FILE*           fh = 0x0;            
-    char*                target_charset = (char*)"UCS-2LE"; 
+    char*                target_charset = (char*)___UCS_2_BYTE_LE___; 
     char*                source_charset = (char*)""; 
     size_t               RawMemorySize = 6;
     const int            ReferenceSize = 24; 
@@ -45,7 +45,7 @@ main(int argc, char** argv)
         fh             = fopen("___DATA_DIR___/test.txt", "r");
         source_charset = (char*)___UCS_UTF8___; 
     } else {
-        fh             = fopen("test-ucs4be.txt", "r");
+        fh             = fopen("___DATA_DIR___/test-ucs4be.txt", "r");
         source_charset = (char*)___UCS_4_BYTE_BE___; 
     }
     if( fh == 0x0 ) {

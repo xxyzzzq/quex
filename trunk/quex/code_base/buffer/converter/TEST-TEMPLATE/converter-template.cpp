@@ -40,12 +40,13 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QUEX_NAME(Converter)*  converter = ___NEW___();
+    QUEX_NAME(Converter)*  converter   = ___NEW___();
+    const char*            input_codec = argv[1];
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
     switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-    case 4: converter->open(converter, argv[1], ___UCS_4_BYTE_LE___); break;
-    case 2: converter->open(converter, argv[1], ___UCS_2_BYTE_LE___); break;
+    case 4: converter->open(converter, input_codec, ___UCS_4_BYTE_LE___); break;
+    case 2: converter->open(converter, input_codec, ___UCS_2_BYTE_LE___); break;
     }
 
     /* (2.1) Load file content corresponding the input coding */
@@ -59,7 +60,10 @@ main(int argc, char** argv)
     if( ContentSize == 0 ) return -1;
 
     /* (2.2) Convert buffer content. */
-    bool Result = converter->convert(converter, &in_iterator, in + ContentSize, &out_iterator, out + Size);
+    bool Result = converter->convert(converter, 
+                                     &in_iterator,  &in[ContentSize], 
+                                     &out_iterator, &out[Size]);
+
     printf("conversion result:      %s\n", Result ? "true" : "false");
     printf("output iterator offset: %04i\n", (int)(out_iterator - out));
     printf("## input iterator offset:  %04i\n", (int)(in_iterator - in));

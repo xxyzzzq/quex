@@ -3,6 +3,7 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I
 
+#include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/stdint.h>
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/converter/icu/Converter_ICU>
@@ -17,8 +18,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* me, 
-                                  const char*           FromCodingName, 
-                                  const char*           ToCodingName);
+                                  const char*           FromCoding, 
+                                  const char*           ToCoding);
     QUEX_INLINE bool
     QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       me, 
                                      uint8_t**                   source, 
@@ -42,6 +43,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->base.convert     = QUEX_NAME(Converter_ICU_convert);
         me->base.delete_self = QUEX_NAME(Converter_ICU_delete_self);
         me->base.on_conversion_discontinuity = QUEX_NAME(Converter_ICU_on_conversion_discontinuity);
+        me->base.virginity_f = true;
 
         me->to_handle   = 0x0;
         me->from_handle = 0x0;
@@ -52,57 +54,49 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego, 
-                                  const char*           FromCodingName, 
-                                  const char*           ToCodingName)
+                                  const char*           FromCoding, 
+                                  const char*           ToCoding)
     {
         QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+#       if   defined(__QUEX_OPTION_LITTLE_ENDIAN)
+        const bool little_endian_f = true;
+#       elif defined(__QUEX_OPTION_BIG_ENDIAN)
+        const bool little_endian_f = false;
+#       elif defined(__QUEX_OPTION_SYSTEM_ENDIAN) 
+        const bool little_endian_f = QUEXED(system_is_little_endian)();
+#       endif
 
         __quex_assert(me);
 
         /* Default: assume input encoding to have dynamic character sizes.   */
         me->base.dynamic_character_size_f = true;
+        if(    __QUEX_STD_strcmp(FromCoding, "UTF-32") == 0 
+            || __QUEX_STD_strcmp(FromCoding, "UTF32") == 0 )
+        {
+            FromCoding = "UTF32_PlatformEndian";
+        }
+        else if(    __QUEX_STD_strcmp(FromCoding, "UTF-16") == 0 
+                 || __QUEX_STD_strcmp(FromCoding, "UTF16") == 0 )
+        {
+            FromCoding = "UTF16_PlatformEndian";
+        }
 
         /* Open conversion handles                                           */
-        me->from_handle = ucnv_open(FromCodingName, &me->status);
+        me->from_handle = ucnv_open(FromCoding, &me->status);
 
         if( ! U_SUCCESS(me->status) ) 
             QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
 
-        if( ToCodingName ) {
-            me->to_handle = ucnv_open(ToCodingName, &me->status);
-        } else {
+        if( ! ToCoding ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-            case 4:  
-                /* Please, use the ICU converter utility to find correct ICU 
-                 * coding names:
-                 * http://demo.icu-project.org/icu-bin/convexp?s=IANA        */
-#               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
-                me->to_handle = ucnv_open("UTF32", &me->status); 
-#               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
-                me->to_handle = ucnv_open("UTF32-LE", &me->status); 
-#               elif defined(__QUEX_OPTION_BIG_ENDIAN)
-                me->to_handle = ucnv_open("UTF32-BE", &me->status); 
-#               endif
-                break;
-            case 2:  
-                /* Currently no concept exists to handle this case. See 
-                 * feature request 2749855                                   */
-#               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
-                /* 2 byte encoding may use the 'direct converter for UChar'  */
-                me->to_handle = ucnv_open("UTF16", &me->status); 
-#               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
-                me->to_handle = ucnv_open("UTF16-LE", &me->status); 
-#               elif defined(__QUEX_OPTION_BIG_ENDIAN)
-                me->to_handle = ucnv_open("UTF16-BE", &me->status); 
-#               endif
-                break;
-            case 1:  
-                me->to_handle = ucnv_open("ISO-8859-1", &me->status); 
-                break;
-            default:
-                QUEX_ERROR_EXIT("ICU character conversion: target coding different from unicode not yet supported.");
+            case 4:  ToCoding = little_endian_f ? "UTF32-LE" : "UTF32-BE"; break;
+            case 2:  ToCoding = little_endian_f ? "UTF16-LE" : "UTF16-BE"; break;
+            case 1:  ToCoding = "ISO-8859-1"; break;
+            default:  __quex_assert(false); return;
             }
-        }
+        } 
+
+        me->to_handle = ucnv_open(ToCoding, &me->status);
 
         /* Setup the pivot buffer */
         me->pivot_iterator_begin = me->pivot_buffer;
@@ -115,13 +109,15 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+        QUEX_TYPE_CHARACTER*      drain_begin = *drain;
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and 
          *                  more source bytes are required.                  */
         __quex_assert(me);
         __quex_assert(SourceEnd >= *source);
         __quex_assert(DrainEnd >= *drain);
-        __quex_assert(me->handle);
+        __quex_assert(me->to_handle);
+        __quex_assert(me->from_handle);
 
         me->status = U_ZERO_ERROR;
 
@@ -129,11 +125,23 @@ QUEX_NAMESPACE_MAIN_OPEN
                        (char**)drain,        (const char*)DrainEnd,
                        (const char**)source, (const char*)SourceEnd,
                        me->pivot_buffer, 
-                       &me->pivot_iterator_begin, &me->pivot_iterator_end, 
-                       me->pivot_buffer + QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE,
+                       &me->pivot_iterator_begin, 
+                       &me->pivot_iterator_end, 
+                       &me->pivot_buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE],
                        /* reset = */FALSE, 
                        /* flush = */FALSE,
                        &me->status);
+
+        if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
+            if( ! me->base.virginity_f ) {
+                QUEX_ERROR_EXIT("Converter 'ICU' produced BOM upon not-first call to 'convert'\n"
+                                "Better make sure that converter NEVER produces BOM.\n"
+                                "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
+            }
+            __QUEX_STD_memmove(&drain_begin[0], &drain_begin[1], 
+                               (*drain - &drain_begin[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+            *drain = &(*drain)[-1];
+        }
 
         return *drain == DrainEnd ? true : false;
 
