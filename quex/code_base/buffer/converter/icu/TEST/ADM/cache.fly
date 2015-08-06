@@ -1,139 +1,139 @@
 {
 file_name: converter-16.exe;
 result_list: [
-  [ UTF-8; OK; 0.008340; None; ]
-  [ UTF-16; OK; 0.011515; None; ]
+  [ UTF-8; OK; 0.008659; None; ]
+  [ UTF-16; OK; 0.013889; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Plain 16 bit;
 title_group: Converter;
-hwut_info_time: 1438892893L;
+hwut_info_time: 1438892905L;
 }
 {
 file_name: converter-32.exe;
 result_list: [
-  [ UTF-8; OK; 0.011904; None; ]
-  [ UTF-16; OK; 0.012315; None; ]
+  [ UTF-8; OK; 0.009186; None; ]
+  [ UTF-16; OK; 0.009527; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Plain 32 bit;
 title_group: Converter;
-hwut_info_time: 1438892888L;
+hwut_info_time: 1438892899L;
 }
 {
 file_name: converter-statefulness-16.exe;
 result_list: [
-  [ UTF-8; OK; 0.005631; None; ]
-  [ UTF-16; OK; 0.006227; None; ]
+  [ UTF-8; OK; 0.006402; None; ]
+  [ UTF-16; OK; 0.005503; None; ]
 ]
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (16 bit);
 title_group: Converter;
-hwut_info_time: 1438892889L;
+hwut_info_time: 1438892900L;
 }
 {
 file_name: converter-statefulness-32.exe;
 result_list: [
-  [ UTF-8; OK; 0.006031; None; ]
-  [ UTF-16; OK; 0.005492; None; ]
+  [ UTF-8; OK; 0.005387; None; ]
+  [ UTF-16; OK; 0.007581; None; ]
 ]
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (32 bit);
 title_group: Converter;
-hwut_info_time: 1438892896L;
+hwut_info_time: 1438892910L;
 }
 {
 file_name: Buffer_move_backward.exe;
 result_list: [
-  [ 1; OK; 0.005430; None; ]
-  [ 2; OK; 0.005308; None; ]
-  [ 3; OK; 0.005187; None; ]
-  [ 4; OK; 0.005148; None; ]
-  [ 5; OK; 0.005045; None; ]
+  [ 1; OK; 0.006398; None; ]
+  [ 2; OK; 0.005414; None; ]
+  [ 3; OK; 0.008841; None; ]
+  [ 4; OK; 0.008030; None; ]
+  [ 5; OK; 0.006441; None; ]
 ]
 make_dependent_f: True;
 title: Backward (BPC=4);
 title_group: Move by Offset;
-hwut_info_time: 1438892895L;
+hwut_info_time: 1438892909L;
 }
 {
 file_name: Buffer_move_forward.exe;
 result_list: [
-  [ 1; OK; 0.005735; None; ]
-  [ 2; OK; 0.005226; None; ]
-  [ 3; OK; 0.005324; None; ]
-  [ 4; OK; 0.005159; None; ]
-  [ 5; OK; 0.005108; None; ]
+  [ 1; OK; 0.005999; None; ]
+  [ 2; OK; 0.005715; None; ]
+  [ 3; OK; 0.007115; None; ]
+  [ 4; OK; 0.006896; None; ]
+  [ 5; OK; 0.005552; None; ]
 ]
 make_dependent_f: True;
 title: Forward (BPC=4);
 title_group: Move by Offset;
-hwut_info_time: 1438892892L;
+hwut_info_time: 1438892904L;
 }
 {
 file_name: seek_character_index.exe;
 result_list: [
-  [ Forward; OK; 0.005133; None; ]
-  [ Backward; OK; 0.005722; None; ]
+  [ Forward; OK; 0.005837; None; ]
+  [ Backward; OK; 0.006248; None; ]
 ]
 make_dependent_f: True;
 title: Plain search;
 title_group: Stream Position Seek;
-hwut_info_time: 1438892894L;
+hwut_info_time: 1438892907L;
 }
 {
 file_name: seek_character_index-zikzak.exe;
 result_list: [
-  [ Fixed; OK; 0.009912; None; ]
-  [ Dynamic; OK; 0.007649; None; ]
+  [ Fixed; OK; 0.012798; None; ]
+  [ Dynamic; OK; 0.008195; None; ]
 ]
 make_dependent_f: True;
 title: Total Zik-Zak;
 title_group: Stream Position Seek;
-hwut_info_time: 1438892891L;
+hwut_info_time: 1438892902L;
 }
 {
 file_name: Buffer_tell_and_seek.exe;
 result_list: [
-  [ ; OK; 0.006046; None; ]
+  [ ; OK; 0.006281; None; ]
 ]
 make_dependent_f: True;
 title: Bytes Per Character (BPC)=4;
 title_group: Tell and Seek;
-hwut_info_time: 1438892897L;
+hwut_info_time: 1438892911L;
 }
 {
 file_name: one-beat.exe;
 result_list: [
-  [ 6; OK; 0.005636; None; ]
-  [ 7; OK; 0.005413; None; ]
-  [ 8; OK; 0.005879; None; ]
-  [ 9; OK; 0.005749; None; ]
+  [ 6; OK; 0.006545; None; ]
+  [ 7; OK; 0.006035; None; ]
+  [ 8; OK; 0.005332; None; ]
+  [ 9; OK; 0.004726; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Raw buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1438892890L;
+hwut_info_time: 1438892901L;
 }
 {
 file_name: n-beat.exe;
 result_list: [
-  [ 1; OK; 0.005531; None; ]
-  [ 2; OK; 0.005941; None; ]
-  [ 3; OK; 0.005881; None; ]
-  [ 4; OK; 0.005377; None; ]
-  [ 5; OK; 0.005317; None; ]
-  [ 6; OK; 0.005336; None; ]
-  [ 7; OK; 0.005871; None; ]
-  [ 8; OK; 0.005161; None; ]
-  [ 9; OK; 0.005075; None; ]
+  [ 1; OK; 0.008564; None; ]
+  [ 2; OK; 0.005058; None; ]
+  [ 3; OK; 0.004878; None; ]
+  [ 4; OK; 0.005330; None; ]
+  [ 5; OK; 0.015440; None; ]
+  [ 6; OK; 0.005401; None; ]
+  [ 7; OK; 0.005684; None; ]
+  [ 8; OK; 0.004687; None; ]
+  [ 9; OK; 0.005412; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: User buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1438892894L;
+hwut_info_time: 1438892906L;
 }
