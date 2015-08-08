@@ -88,9 +88,15 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
 
         if( ! ToCoding ) {
+             /* From the ICU Documentation: "ICU does not use UCS-2. UCS-2 is a
+              * subset of UTF-16. UCS-2 does not support surrogates, and UTF-16
+              * does support surrogates. This means that UCS-2 only supports
+              * UTF-16's Base Multilingual Plane (BMP). The notion of UCS-2 is
+              * deprecated and dead. Unicode 2.0 in 1996 changed its default
+              * encoding to UTF-16." (userguide.icu-project.org/icufaq)      */
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-            case 4:  ToCoding = little_endian_f ? "UTF32-LE" : "UTF32-BE"; break;
-            case 2:  ToCoding = little_endian_f ? "UTF16-LE" : "UTF16-BE"; break;
+            case 4:  ToCoding = little_endian_f ? "UTF32-LE" : "UTF32-LE"; break;
+            case 2:  ToCoding = little_endian_f ? "UTF16-LE" : "UTF16-LE"; break;
             case 1:  ToCoding = "ISO-8859-1"; break;
             default:  __quex_assert(false); return;
             }
@@ -114,10 +120,10 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          'false' if the drain could not be filled completely and 
          *                  more source bytes are required.                  */
         __quex_assert(me);
-        __quex_assert(SourceEnd >= *source);
-        __quex_assert(DrainEnd >= *drain);
         __quex_assert(me->to_handle);
         __quex_assert(me->from_handle);
+        __quex_assert(SourceEnd >= *source);
+        __quex_assert(DrainEnd >= *drain);
 
         me->status = U_ZERO_ERROR;
 

@@ -9,4 +9,5 @@ python *.py
 --not error.py
 --not __init__.py
 --not debug.py
+--not generator_simple_test.py
 ------------------------------------------------------

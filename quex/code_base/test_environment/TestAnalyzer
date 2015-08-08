@@ -58,7 +58,8 @@ QUEX_NAMESPACE_TOKEN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
-    /* Forward declaration of the derived memento, which is used by the analyzer. */
+    /* Forward declaration of the derived memento, which is used by the 
+     * analyzer.                                                             */
     struct  QUEX_NAME(Memento_tag);
 #   endif
 
@@ -67,17 +68,41 @@ QUEX_NAMESPACE_MAIN_OPEN
 #  if ! defined(__QUEX_OPTION_PLAIN_C)
    class TestAnalyzer {
       /* Most compilers put the virtual function table in front of the object.
-       * So, if the derived class has a virtual function, and therefore a v-table,
-       * the cast towards the base class and back might not work. Thus let us
-       * ensure that all related objects contain a v-table by having one virtual
-       * function.                                                                      */
+       * So, if the derived class has a virtual function, and therefore a
+       * v-table, the cast towards the base class and back might not work. Thus
+       * let us ensure that all related objects contain a v-table by having one
+       * virtual function.                                                   */
+
       public:
       virtual ~TestAnalyzer() {}
 #     include <quex/code_base/analyzer/Engine_body>
+      
+      // (*) Mode handling (copied from TXT-Cpp)
+      //     -- modes: read access
+      QUEX_NAME(Mode)&      mode();
+      int                   mode_id() const;
+      const char*           mode_name() const;
+      //
+      //     -- modes: changing lexical analysis mode
+      void                  set_mode_brutally(const int ModeId);
+      void                  set_mode_brutally(const QUEX_NAME(Mode)& Mode);
+      //                    
+      void                  operator<<(const int ModeId);               
+      void                  operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
+      //                    
+      void                  pop_mode();
+      void                  pop_drop_mode();
+      void                  push_mode(QUEX_NAME(Mode)& new_mode);
+      //                    
+      void                  enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
+      //
+      //     -- map: mode id to mode and vice versa
+      QUEX_NAME(Mode)&      map_mode_id_to_mode(const int              ModeID);       
+      int                   map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
    };
 #  else
    typedef struct quex_TestAnalyzer_tag { 
-#      include <quex/code_base/analyzer/Engine_body>
+#     include <quex/code_base/analyzer/Engine_body>
    } quex_TestAnalyzer;
 #  endif
 
