@@ -147,7 +147,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
         Setup.compression_type_list = [ E_Compression.PATH_UNIFORM ]
 
     elif Language == "ANSI-C-PathTemplate":
-        Language = "Cpp"
+        Language = "ANSI-C"
         Setup.compression_type_list = [ E_Compression.PATH, E_Compression.TEMPLATE ]
         Setup.compression_template_min_gain = 0
 
@@ -176,6 +176,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     if len(SecondPatternActionPairList) != 0:
         dial_db.clear()
+        CompileOptionStr += "-DQUEX_UNIT_TEST_SECOND_MODE"
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
                                                             BufferLimitCode,
@@ -187,7 +188,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                              "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n"       + \
                              state_machine_code
 
-    source_code =   create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN, BufferLimitCode) \
+    source_code =   create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN, BufferLimitCode, ComputedGotoF=computed_goto_f) \
                   + state_machine_code \
                   + test_program
 
@@ -302,14 +303,6 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
     txt = txt.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
     txt = txt.replace("$$TEST_STRING$$", test_str)
 
-    # Verify that the compilation is done with/without computed gotos
-    if ComputedGotoF:   
-        txt = txt.replace("$$COMPUTED_GOTOS$$",    "/* Correct */")
-        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS not active!\\n\");")
-    else:
-        txt = txt.replace("$$COMPUTED_GOTOS$$",    "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS active!\\n\");")
-        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "/* Correct */")
-
     if CommentTestStrF: txt = txt.replace("$$COMMENT$$", "##")
     else:               txt = txt.replace("$$COMMENT$$", "")
 
@@ -317,7 +310,8 @@ def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=Fals
 
 def create_common_declarations(Language, QuexBufferSize, TestStr, 
                                QuexBufferFallbackN=-1, BufferLimitCode=0, 
-                               IndentationSupportF=False, TokenQueueF=False):
+                               IndentationSupportF=False, TokenQueueF=False,
+                               ComputedGotoF=False):
     # Determine the 'fallback' region size in the buffer
     if QuexBufferFallbackN == -1: 
         QuexBufferFallbackN = QuexBufferSize - 3
@@ -330,6 +324,13 @@ def create_common_declarations(Language, QuexBufferSize, TestStr,
 
     txt += test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", 
                                                     repr(QuexBufferFallbackN))
+
+    if ComputedGotoF:   
+        txt = txt.replace("$$COMPUTED_GOTOS$$",    "/* Correct */")
+        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS not active!\\n\");")
+    else:
+        txt = txt.replace("$$COMPUTED_GOTOS$$",    "QUEX_ERROR_EXIT(\"QUEX_OPTION_COMPUTED_GOTOS active!\\n\");")
+        txt = txt.replace("$$NO_COMPUTED_GOTOS$$", "/* Correct */")
 
     txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
 
@@ -501,13 +502,15 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #ifdef __QUEX_OPTION_PLAIN_C
 quex_TestAnalyzer    lexer_state;
 #else
-quex::TestAnalyzer   lexer_state;
-endif
+TestAnalyzer         lexer_state;
+#endif
 
 static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER*);
+#ifdef QUEX_UNIT_TEST_SECOND_MODE
 static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_analyzer_function)(QUEX_TYPE_ANALYZER*);
+#endif
 
-struct Mode my_modes[] = {
+QUEX_NAME(Mode) my_modes[] = {
     { 
       /* id                */ 0, 
       /* name              */ "Mode0", 
@@ -523,8 +526,9 @@ struct Mode my_modes[] = {
       /* has_entry_from)   */ NULL,
       /* has_exit_to       */ NULL,
 #     endif
-    },
-    { 
+    }
+#ifdef QUEX_UNIT_TEST_SECOND_MODE
+    , { 
       /* id                */ 1, 
       /* name              */ "Mode1", 
       /* the_lexer         */ &lexer_state,  
@@ -539,25 +543,26 @@ struct Mode my_modes[] = {
       /* has_entry_from)   */ NULL,
       /* has_exit_to       */ NULL,
 #     endif
-    },
+    }
+#endif
 };
 
-#define SETUP_MODE_DB() \
-        do {                                      \
-            lexer_state.mode_db[0] = my_modes[0]; \
-            lexer_state.mode_db[1] = my_modes[1]; \
+#define SETUP_MODE_DB() \\
+        do {                                       \\
+            lexer_state.mode_db[0] = &my_modes[0]; \\
+            lexer_state.mode_db[1] = &my_modes[1]; \\
         } while(0) 
 
 #if defined(QUEX_OPTION_COMPUTED_GOTOS)
 #   define DEAL_WITH_COMPUTED_GOTOS() \
-            $$COMPUTED_GOTOS$$
+           $$COMPUTED_GOTOS$$
 #else
 #   define DEAL_WITH_COMPUTED_GOTOS() \
            $$NO_COMPUTED_GOTOS$$
 #endif
 
 static int
-run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
+run_test(const char* TestString, const char* Comment)
 {
     (void)QUEX_NAME_TOKEN(DumpedTokenIdObject);
             
@@ -566,17 +571,17 @@ run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE)
 
-    while( lexer->current_analyzer_function(lexer) == true );
+    while( lexer_state.current_analyzer_function(&lexer_state) == true );
 
 #   else
 
     while( 1 + 1 == 2 ) {
-        lexer->current_analyzer_function(lexer);
+        lexer_state.current_analyzer_function(&lexer_state);
         printf("---\\n");
 
         /* Print the token queue */
-        while( QUEX_NAME(TokenQueue_is_empty)(&lexer->_token_queue) == false ) {        
-            switch( QUEX_NAME(TokenQueue_pop)(&lexer->_token_queue)->_id ) {
+        while( QUEX_NAME(TokenQueue_is_empty)(&lexer_state._token_queue) == false ) {        
+            switch( QUEX_NAME(TokenQueue_pop)(&lexer_state._token_queue)->_id ) {
             case QUEX_TKN_INDENT:      printf("INDENT\\n"); break;
             case QUEX_TKN_DEDENT:      printf("DEDENT\\n"); break;
             case QUEX_TKN_NODENT:      printf("NODENT\\n"); break;
@@ -584,7 +589,7 @@ run_test(const char* TestString, const char* Comment, QUEX_TYPE_ANALYZER* lexer)
             default:                   printf("Unknown Token ID\\n"); break;
             }
         }
-        QUEX_NAME(TokenQueue_reset)(&lexer->_token_queue);
+        QUEX_NAME(TokenQueue_reset)(&lexer_state._token_queue);
     }
 
 #   endif

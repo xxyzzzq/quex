@@ -218,25 +218,21 @@ public:
     const char*           mode_name() const;
     //
     //     -- modes: changing lexical analysis mode
-    void        set_mode_brutally(const int       LexerMode);
-    void        set_mode_brutally(const QUEX_NAME(Mode)& Mode);
-    //
-    void        operator<<(const int MODE_ID);               
-    void        operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
-    //
-    void        pop_mode();
-    void        pop_drop_mode();
-    void        push_mode(QUEX_NAME(Mode)& new_mode);
-    //
-    void        enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
+    void                  set_mode_brutally(const int ModeId);
+    void                  set_mode_brutally(const QUEX_NAME(Mode)& Mode);
+    //                    
+    void                  operator<<(const int ModeId);               
+    void                  operator<<(/* NOT const*/ QUEX_NAME(Mode)& Mode);  
+    //                    
+    void                  pop_mode();
+    void                  pop_drop_mode();
+    void                  push_mode(QUEX_NAME(Mode)& new_mode);
+    //                    
+    void                  enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
     //
     //     -- map: mode id to mode and vice versa
-    QUEX_NAME(Mode)&   map_mode_id_to_mode(const int              ModeID);       
-    int                map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
-
-    // (*) Token sending happens only via 'self_send*(...)' macros
-    void        send(const QUEX_TYPE_TOKEN_ID TokenID)
-    { (void)TokenID; QUEX_ERROR_DEPRECATED("Member functions .send()", "macros: self_send*()"); }
+    QUEX_NAME(Mode)&      map_mode_id_to_mode(const int              ModeID);       
+    int                   map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     size_t      line_number() const             { return line_number_at_begin(); }
@@ -353,6 +349,9 @@ $$CLASS_BODY_EXTENSION$$
 #undef  self
 
 public:
+    // (*) Token sending happens only via 'self_send*(...)' macros
+    void   send(const QUEX_TYPE_TOKEN_ID TokenID)
+    { (void)TokenID; QUEX_ERROR_DEPRECATED("Member functions .send()", "macros: self_send*()"); }
     // At least warn those, who still use the old interface ...
     void   get_token() 
     { QUEX_ERROR_DEPRECATED("Member functions .get_token()", ".receive(...)"); }

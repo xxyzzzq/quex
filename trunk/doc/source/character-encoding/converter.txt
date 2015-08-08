@@ -19,11 +19,11 @@ arguments. Those are
 
 .. data:: --icu
 
-   If you want to use IBM's ICU library for conversion.
+   If you want to use IBM's ICU library by-default for conversion.
 
 .. data:: --iconv
 
-   If you want to use GNU IConv for conversion.
+   If you want to use GNU IConv by-default for conversion.
 
 The decision which one to choose needs to be made should not have to do anything
 with the judgement about the clarity of the API of those libraries. The user
@@ -46,4 +46,13 @@ the class definition of the generated lexical analyzer class.
 .. code-block:: cpp
 
    quex::tiny_lexer  qlex("example.txt", "UTF-8");
+
+Further, each conversion library has some specific behavior. Under some
+circumstances, they might sometimes require or even produce the byte ordering
+mark (BOM). Quex's converter interfaces tries to handle as much as possible any
+predictable eventualities. In case that problems arise, the user might have to
+manually look into the implementatios of 'Converter_ICU.i' and
+'Converter_IConv.i'.  In the rare case, that problems arise setting the right
+byte ordering scheme (little or big endian), or specifiying appropriate coding
+names might bring the solution.
 

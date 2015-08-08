@@ -27,7 +27,7 @@
 #endif
 
 #if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
-    && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)            \
+    && ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)  \
     && ! defined(QUEX_OPTION_TOKEN_REPETITION_SUPPORT)
 
 #   if defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
