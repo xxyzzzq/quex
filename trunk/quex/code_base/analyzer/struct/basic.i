@@ -17,117 +17,106 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void QUEX_NAME(Asserts_construct)(const char* CharacterEncodingName);
     QUEX_INLINE void QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me);
+    QUEX_INLINE void QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me);
     QUEX_INLINE void QUEX_NAME(Tokens_destruct)(QUEX_TYPE_ANALYZER* me);
     QUEX_INLINE void QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me);
+    QUEX_INLINE void QUEX_NAME(BufferFiller_DEFAULT)(QUEX_TYPE_ANALYZER* me);
 
     QUEX_INLINE void
-    QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER*     me,
-                               ByteLoader*             byte_loader,
-                               QUEX_TYPE_CHARACTER*    BufferMemory,
-                               const size_t            BufferMemorySize,
-                               QUEX_TYPE_CHARACTER*    EndOfFileP,
-                               const char*             CharacterEncodingName, 
-                               const size_t            TranslationBufferMemorySize,
-                               bool                    ByteOrderReversionF)
-    /* Initialization of Components of the Lexical Analyzer Engine ________________________
-     *
-     * byte_loader == 0x0 means that there is no stream/file to read from. Instead, the 
-     *                     user intends to perform the lexical analysis directly on plain
-     *                     memory. In this case, the user needs to call the following function
-     *                     by hand in order to setup the memory:
-     *
-     *                     QuexBufferMemory_construct(analyse->buffer._memory, 
-     *                                                (uint8_t*)MyMemoryP, MyMemorySize); */
+    QUEX_NAME(construct_from_byte_loader)(QUEX_TYPE_ANALYZER*  me,
+                                          ByteLoader*          byte_loader,
+                                          const char*          CharacterEncodingName) 
     {
         QUEX_NAME(BufferFiller)* filler;
-
         QUEX_NAME(Asserts_construct)(CharacterEncodingName);
+
+        filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, 
+                                                 CharacterCodecName);
+        
+        QUEX_NAME(construct_from_buffer_filler)(me, filler);
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(construct_from_buffer_filler)(QUEX_TYPE_ANALYZER*  me,
+                                            QUEX_NAME(BufferFiller)* filler)
+    {
+        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
+                                    QUEX_SETTING_BUFFER_SIZE); 
+        QUEX_NAME(construct_basic)(me)
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(construct_from_memory)(QUEX_TYPE_ANALYZER*     me,
+                                     QUEX_TYPE_CHARACTER*    Memory,
+                                     const size_t            MemorySize,
+                                     QUEX_TYPE_CHARACTER*    EndOfFileP)
+    /* When memory is provided from extern, the 'external entity' is
+     * responsible for filling it. There is no 'file/stream handle', no 'byte
+     * loader', and 'no buffer filler'.                                      */
+    {
+        QUEX_NAME(Buffer_construct_with_memory)(&me->buffer, 
+                                                QUEX_NAME(BufferFiller*)0,
+                                                Memory, MemorySize, EndOfFileP,
+                                                /* External */ true);
+        QUEX_NAME(construct_basic)(me)
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER* me)
+    {
+        me->memory_allocate = QUEXED(MemoryManager_allocate);
+        me->memory_free     = QUEXED(MemoryManager_free);
 
         QUEX_NAME(Tokens_construct)(me);
         QUEX_NAME(ModeStack_construct)(me);
-        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
-        __QUEX_IF_INCLUDE_STACK(me->_parent_memento = (QUEX_NAME(Memento)*)0);
+        __QUEX_IF_INCLUDE_STACK(     me->_parent_memento = (QUEX_NAME(Memento)*)0);
         __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, me));
-       
-        __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
-
-        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
-                                             CharacterEncodingName, 
-                                             TranslationBufferMemorySize);
-        
-        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
-                                    BufferMemory, BufferMemorySize, EndOfFileP,
-                                    ByteOrderReversionF);
+        __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
+        __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&me->counter); )
 
         QUEX_NAME(set_mode_brutally)(me, me->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
     }
 
-    TEMPLATE_IN(InputHandleT) void
-    QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*     me,
-                           ByteLoader*             byte_loader, 
-                           const QUEX_NAME(Mode)*  Mode, 
-                           const char*             CharacterEncodingName, 
-                           const size_t            TranslationBufferMemorySize)
+    QUEX_INLINE void
+    QUEX_NAME(reset_with_byte_loader)(QUEX_TYPE_ANALYZER*     me,
+                                      const QUEX_NAME(Mode)*  Mode, 
+                                      ByteLoader*             byte_loader) 
         /* Reset of Components of the Lexical Analyzer Engine ____________________________*/
     {
         QUEX_NAME(BufferFiller)* filler;
 
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
-#       endif
+        if( me->buffer.filler ) {
+            me->buffer.filler->delete_self(me->buffer.filler);
+        }
+
+        filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, 
+                                                 CharacterCodecName);
+
+
+        QUEX_NAME(reset_with_buffer_filler)(me, Mode, filler);
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(reset_with_buffer_filler)(QUEX_TYPE_ANALYZER*      me,
+                                        const QUEX_NAME(Mode)*   Mode, 
+                                        QUEX_NAME(BufferFiller)* filler)
+    { 
+        QUEX_NAME(Buffer_init_analyzis)(&me->buffer, filler, 
+                                        me->buffer._byte_order_reversion_active_f);
+
+        QUEX_NAME(Tokens_reset)(me);
 
         QUEX_NAME(ModeStack_construct)(me);
         __QUEX_IF_INCLUDE_STACK(QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)me));
         /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE *
          *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. */
         __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_clear)(&me->accumulator));
-        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer));
-        __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
-        __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
-
-        if( me->buffer.filler ) {
-            me->buffer.filler->delete_self(me->buffer.filler);
-        }
-        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
-                                             CharacterEncodingName, 
-                                             TranslationBufferMemorySize);
-        QUEX_NAME(Buffer_init_analyzis)(&me->buffer, 
-                                        filler, 
-                                        me->buffer._byte_order_reversion_active_f);
+        __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer));
+        __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
+        __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&me->counter); )
 
         QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
     }
-
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    QUEX_INLINE void
-    QUEX_NAME(include_push_basic)(QUEX_TYPE_ANALYZER*     me,
-                                  ByteLoader*             byte_loader,
-                                  const QUEX_NAME(Mode)*  Mode, 
-                                  const char*             CharacterCodecName /* = 0x0 */)
-    {
-        /* (A) Freezing and Copying away:
-         *
-         *     memento_pack(...): Store the lexical analyzer's to the state before including   */
-        QUEX_NAME(Memento)*      m = QUEX_NAME(memento_pack)(me, byte_loader);
-        QUEX_NAME(BufferFiller*) filler;
-       
-        QUEX_NAME(ModeStack_construct)(me);
-        __QUEX_IF_INCLUDE_STACK(me->_parent_memento = m);
-        __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, me));
-
-        __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
-        filler = QUEX_NAME(BufferFiller_new)(byte_loader, 
-                                             CharacterEncodingName, 
-                                             TranslationBufferMemorySize);
-
-        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
-                                    0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
-                                    me->buffer._byte_order_reversion_active_f);
-
-        QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
-    }   
-#   endif /* QUEX_OPTION_INCLUDE_STACK */
-
 
     QUEX_INLINE void
     QUEX_NAME(destruct_basic)(QUEX_TYPE_ANALYZER* me)
@@ -142,6 +131,70 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(Buffer_destruct)(&me->buffer);
     }
+
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    QUEX_INLINE void
+    QUEX_NAME(include_push_byte_loader)(QUEX_TYPE_ANALYZER*     me,
+                                        const QUEX_NAME(Mode)*  Mode, 
+                                        ByteLoader*             byte_loader,
+                                        const char*             CharacterCodecName /* = 0x0 */)
+    {
+        QUEX_NAME(BufferFiller*) filler;
+       
+        filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, 
+                                                 CharacterCodecName);
+
+        QUEX_NAME(include_push_buffer_filler)(me, Mode, filler);
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(include_push_buffer_filler)(QUEX_TYPE_ANALYZER*      me,
+                                          const QUEX_NAME(Mode)*   Mode, 
+                                          QUEX_NAME(BufferFiller)* filler)
+    {
+        QUEX_NAME(Memento)*      m = QUEX_NAME(memento_pack)(me, byte_loader);
+
+        QUEX_NAME(Buffer_construct)(&me->buffer, filler,
+                                    0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
+                                    me->buffer._byte_order_reversion_active_f);
+
+        __QUEX_IF_INCLUDE_STACK(me->_parent_memento = m);
+        __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
+
+        QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
+    }   
+
+    QUEX_INLINE bool
+    QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me) 
+    {
+        /* Not included? return 'false' to indicate we're on the top level   */
+        if( ! me->_parent_memento ) return false; 
+
+        QUEX_NAME(Buffer_destruct)(&me->buffer);
+        /* memento_unpack():
+         *    => Current mode
+         *           => __current_mode_p 
+         *              current_analyzer_function                                       
+         *              DEBUG_analyzer_function_at_entry                                   
+         *    => Line/Column Counters
+         *
+         * Unchanged by memento_unpack():
+         *    -- Mode stac
+         *    -- Tokens and token queues.
+         *    -- Accumulator.
+         *    -- Post categorizer.
+         *    -- File handle by constructor                                  */
+              
+        /* Copy Back of content that was stored upon inclusion.              */
+        QUEX_NAME(memento_unpack)(me, me->_parent_memento);
+
+        /* Return to including file succesful */
+        return true;
+    }
+
+#   endif /* QUEX_OPTION_INCLUDE_STACK */
+
 
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
      *       addresses related to acceptance positions need to be adapted. This
@@ -274,6 +327,17 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
     }
 
+    QUEX_INLINE void 
+    QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me)
+    {
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+        QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
+#       else
+        QUEX_NAME(Tokens_destruct(me));
+        QUEX_NAME(Tokens_construct(me));
+#       endif
+    }
+
     QUEX_INLINE void
     QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me)
     {
@@ -281,6 +345,22 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
     }
 
+    QUEX_INLINE QUEX_NAME(BufferFiller)* 
+    QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
+                                    const char*   CharacterEncodingName) 
+    {
+#       ifdef QUEX_OPTION_CONVERTER_ICU
+        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_ICU_new);
+#       elif defined(QUEX_OPTION_CONVERTER_ICONV)
+        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_IConv_new);
+#       else
+        QUEX_NAME(Converter)* (*converters_new)(void) = 0;
+#       endif
+
+        return QUEX_NAME(BufferFiller_new)(byte_loader, converters_new,
+                                           CharacterEncodingName, 
+                                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+    }
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

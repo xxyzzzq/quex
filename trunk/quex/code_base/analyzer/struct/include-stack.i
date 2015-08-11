@@ -63,43 +63,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 #   endif
 
-    QUEX_INLINE bool
-    QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me) 
-    {
-        /* Not included? return 'false' to indicate we're on the top level       */
-        if( me->_parent_memento == 0x0 ) return false; 
-
-        /* (A) Uninitializing of unused objects:                                 
-         *    (1) A new buffer is required for the new content.                           */
-        QUEX_NAME(Buffer_destruct)(&me->buffer);
-
-        /*    (2) Current mode will be determined by unfreeze/copy back.                  */
-        /*        now leave alone:
-         *               __current_mode_p 
-         *               current_analyzer_function                                       
-         *               DEBUG_analyzer_function_at_entry                                 */
-
-        /*    (*) Mode stack is not subject to include handling.                          */
-        /*    (*) Tokens and token queues are not subject to include handling.            */
-
-        /*    (3) Counters will be determined by unfreeze/copy back.                      */
-        /*    (4) Allocated accumulator content needs to be freed, previous content is      
-         *        restored by unfreeze/copy back.                                         */
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_NAME(Accumulator_destruct)(&me->accumulator);
-#       endif
-        /*    (*) Post categorizer is not subject to include handling.                    */
-        /*    (5) File handle allocated by **initial constructor** reset by unfreeze.     */
-
-        /*    (6) Keep track of 'who's your daddy?' handled by unfreeze/copy back.        */
-
-        /* (B) Unfreezing / Copy Back of content that was stored upon inclusion.          */
-        QUEX_NAME(memento_unpack)(me, me->_parent_memento);
-
-        /* Return to including file succesful */
-        return true;
-    }
-
     QUEX_INLINE void
     QUEX_NAME(include_stack_delete)(QUEX_TYPE_ANALYZER* me) 
     {
