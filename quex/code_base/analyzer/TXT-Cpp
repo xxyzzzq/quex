@@ -235,21 +235,21 @@ public:
     int                   map_mode_to_mode_id(const QUEX_NAME(Mode)& Mode) const;
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    size_t      line_number() const             { return line_number_at_begin(); }
-    size_t      line_number_at_begin() const    { return counter._line_number_at_begin; }
-    size_t      line_number_at_end() const      { return counter._line_number_at_end; }
+    size_t      line_number() const            { return line_number_at_begin(); }
+    size_t      line_number_at_begin() const   { return counter._line_number_at_begin; }
+    size_t      line_number_at_end() const     { return counter._line_number_at_end; }
     /*          line_number_set(...) defines the column number of the next pattern match. */
-    void        line_number_set(size_t Y)       { counter._line_number_at_end = Y; }
+    void        line_number_set(size_t Y)      { counter._line_number_at_end = Y; }
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    size_t      column_number() const             { return column_number_at_begin(); }
-    size_t      column_number_at_begin() const    { return counter._column_number_at_begin; }
-    size_t      column_number_at_end() const      { return counter._column_number_at_end; }
+    size_t      column_number() const          { return column_number_at_begin(); }
+    size_t      column_number_at_begin() const { return counter._column_number_at_begin; }
+    size_t      column_number_at_end() const   { return counter._column_number_at_end; }
     /*          column_number_set(...) defines the column number of the next pattern match. */
-    void        column_number_set(size_t X)       { counter._column_number_at_end = X; }
+    void        column_number_set(size_t X)    { counter._column_number_at_end = X; }
 #   endif
 #   ifdef   QUEX_OPTION_INDENTATION_TRIGGER
-    size_t      indentation()                    { return counter._indentation_stack.back - counter._indentation_stack.front + 1; }
+    size_t      indentation()                  { return counter._indentation_stack.back - counter._indentation_stack.front + 1; }
 #   endif
 
     // (*) Version information

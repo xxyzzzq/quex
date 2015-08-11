@@ -6,21 +6,13 @@ void
 QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
                             ByteLoader*            byte_loader, 
                             const char*            CharacterEncodingName,
-                            bool                   ByteOrderReversionF,
-                            QUEX_TYPE_CHARACTER*   BufferMemory,    
-                            size_t                 BufferMemorySize,
-                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP)
+                            bool                   ByteOrderReversionF)
 {
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
     QUEX_NAME(construct_basic)(me, byte_loader,
-                               BufferMemory, BufferMemorySize, BufferEndOfFileP,
                                CharacterEncodingName, 
-                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                ByteOrderReversionF);
-
-    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's constructor extensions _______________________________________*/
