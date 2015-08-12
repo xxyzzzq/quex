@@ -110,9 +110,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE bool
-    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)* alter_ego, 
-                                     uint8_t**             source, const uint8_t*              SourceEnd, 
-                                     QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
+    QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego, 
+                                     uint8_t**                   source, 
+                                     const uint8_t*              SourceEnd, 
+                                     QUEX_TYPE_CHARACTER**       drain,  
+                                     const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
         QUEX_TYPE_CHARACTER*      drain_begin = *drain;

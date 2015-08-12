@@ -18,7 +18,8 @@
 #include    <quex/code_base/analyzer/member/buffer-access.i>
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/navigation.i>
-#include    <quex/code_base/analyzer/member/constructor.i>
+#include    <quex/code_base/analyzer/struct/constructor.i>
+#include    <quex/code_base/analyzer/struct/reset.i>
 
 #include    <quex/code_base/analyzer/member/basic.i>
 #include    <quex/code_base/analyzer/Mode.i>
@@ -34,7 +35,7 @@
 #   include <quex/code_base/analyzer/Counter.i>
 #endif
 #ifdef      QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/analyzer/member/include-stack.i>
+#   include <quex/code_base/analyzer/struct/include-stack.i>
 #endif
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>

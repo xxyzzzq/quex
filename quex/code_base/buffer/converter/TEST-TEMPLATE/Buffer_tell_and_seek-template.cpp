@@ -35,7 +35,7 @@ main(int argc, char** argv)
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_Converter_new)(
                                                         byte_loader, ___NEW___(),
                                                         "UTF8", 0, RawMemorySize);
-    QUEX_NAME(Buffer_construct)(&buffer, filler, 0x0, 5, 0x0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, 5, false);
     assert((void*)((QUEX_NAME(BufferFiller_Converter)*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 

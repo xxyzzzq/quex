@@ -56,11 +56,12 @@ __QUEX_CORE = \
     ./analyzer/member/basic \
     ./analyzer/member/basic.i \
     ./analyzer/asserts \
-    ./analyzer/member/include-stack.i \
     ./analyzer/member/mode-handling.i \
     ./analyzer/member/buffer-access.i \
     ./analyzer/member/token-receiving.i \
-    ./analyzer/member/constructor.i \
+    ./analyzer/struct/include-stack.i \
+    ./analyzer/struct/reset.i \
+    ./analyzer/struct/constructor.i \
     ./analyzer/member/misc.i \
     ./analyzer/configuration/TXT \
     ./analyzer/configuration/validation \
