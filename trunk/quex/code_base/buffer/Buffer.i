@@ -25,19 +25,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
                                 QUEX_NAME(BufferFiller)*  filler,
-                                QUEX_TYPE_CHARACTER*      memory,
                                 const size_t              MemorySize,
-                                QUEX_TYPE_CHARACTER*      end_of_file_p,
                                 bool                      ByteOrderReversionF)
-    /* The input can either come from MEMORY or from a STREAM. 
-     *
-     * input_handle == 0x0 => input via memory
-     *              != 0x0 => input via stream (spec. by input_handle)
-     *
-     * InputMemory != 0x0  => run directly on specified memory.
-     *             == 0x0  => get memory from memory manager.                */ 
     {
-        bool external_f;
+        __quex_assert(filler);
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Initialize everything to 0xFF which is most probably causing an error
@@ -46,23 +37,31 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         /* InputMemory == 0x0 => interact with memory manager to get memory. */
-        if( ! memory ) { 
             /* The actual 'memory chunk' is an 'owned member resource' accessed by pointer.
              * Thus, it is allocated in the constructor.                                    */
-            memory        = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
-                                               MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
-                                               QUEXED(MemoryObjectType_BUFFER));
-            end_of_file_p = filler ? (QUEX_TYPE_CHARACTER*)0x0
-                                   : &memory[1];
-            external_f    = false; /* We own the memory, not someone outside.*/
-        } 
-        else
-        {
-            /* If the input memory is provided, the content **must** be 
-             * properly set up.                                              */
-            QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(&memory[1], end_of_file_p);
-            external_f = true;
-        }
+        memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
+                                              MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
+                                              QUEXED(MemoryObjectType_BUFFER));
+
+        QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
+                                                /* EndOfFileP */ &memory[0], 
+                                                ByteOrderReversionF,
+                                                /* ExternalF */ false);
+    }
+
+    QUEX_INLINE void
+    QUEX_NAME(Buffer_construct_with_memory)(QUEX_NAME(Buffer)*        me, 
+                                            QUEX_NAME(BufferFiller)*  filler,
+                                            QUEX_TYPE_CHARACTER*      memory,
+                                            const size_t              MemorySize,
+                                            QUEX_TYPE_CHARACTER*      end_of_file_p,
+                                            bool                      ByteOrderReversionF,
+                                            bool                      ExternalF)
+    {
+        /* If the input memory is provided, the content **must** be 
+         * properly set up.                                                  */
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(&memory[1], end_of_file_p);
+        external_f = ExternalF;
 
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
         QUEX_NAME(BufferMemory_construct)(&me->_memory, 
@@ -472,38 +471,29 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       QUEX_TYPE_CHARACTER*      EndOfFileP,
                                       bool                      ExternalOwnerF) 
     {
-        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
-         * one character to be read in forward direction.                                   */
-        __quex_assert(Memory != 0x0);
-        __quex_assert(Size != 0);
-#       ifdef QUEX_OPTION_ASSERTS
-        if( Size <= QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2) {
-            QUEX_ERROR_EXIT("Error: Tried to initialize buffer memory with a size less or equal\n"
-                            "Error: to QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2. Maybe, define\n"
-                            "Error: -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0, if no pre-contexts\n"
-                            "Error: are involved.");
-        }
-        else if( EndOfFileP != 0x0 ) {
-            __quex_assert(EndOfFileP > Memory);
-            __quex_assert(EndOfFileP <= Memory + Size);
-        }
-#       endif
+        __quex_assert(Memory);
+        /* "Memory size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2" is reqired.
+         * Maybe, define '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0' for 
+         * compilation (assumed no pre-contexts.)                            */
+        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
+        __quex_assert((! EndOfFileP) || EndOfFileP > Memory);
+        __quex_assert((! EndOfFileP) || EndOfFileP <= Memory + Size);
 
         me->_front            = Memory;
         me->_end_of_file_p    = EndOfFileP;
-        me->_back             = Memory + (Size - 1);
+        me->_back             = &Memory[Size-1];
         me->_external_owner_f = ExternalOwnerF;
         *(me->_front)         = QUEX_SETTING_BUFFER_LIMIT_CODE;
         *(me->_back)          = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        if( me->_end_of_file_p != 0x0 ) {
+        if( me->_end_of_file_p ) {
             *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
-        if( EndOfFileP != 0x0 ) {
-           if( EndOfFileP < me->_back - 1 ) {
-               __QUEX_STD_memset(EndOfFileP + 1, 0xFF, (size_t)((me->_back - EndOfFileP) - (ptrdiff_t)(1)));
-            }
+        if( EndOfFileP && &EndOfFileP[1] < &me->_back ) {
+            __QUEX_STD_memset(&EndOfFileP[1], 0xFF, 
+                              (size_t)(&me->_back - &EndOfFileP[1])
+                              * sizeof(QUEX_TYPE_CHARACTER));
         } 
 #       endif 
     }

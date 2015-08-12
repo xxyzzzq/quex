@@ -30,7 +30,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          element of the derived struct is to be of this type and best called 'base'.
          *          For example, please, consider the 'plain' and 'iconv' implementations
          *          in the correspondent sub directories.                                    */
-        ByteLoader*               byte_loader;
+        ByteLoader* byte_loader;
 
         /*************************************************************************************
          ** NOTE: The 'InputHandle' is not located in this class, in order to avoid         **
@@ -38,29 +38,57 @@ QUEX_NAMESPACE_MAIN_OPEN
          **       This templating would extend then to the buffer class etc.                **
          *************************************************************************************/
  
-        /* -- 'Tell' returns the character index of the last character read. This corresponds   
-         *    to the character index of the last character that is currently in the buffer.  */
+        /* PASSIVE API: Lexical analyzer requests BufferFiller to fill its
+         *               buffer.                                             */
+
+        /* -- 'Read' reads N characters from a stream into a buffer 
+         * (independent of their size)                                       */
+        size_t      (*read_characters)(struct QUEX_NAME(BufferFiller_tag)*,
+                                       QUEX_TYPE_CHARACTER* memory, const size_t N);
+
+        /* -- 'Tell' returns the character index of the last character read.
+         * This corresponds   to the character index of the last character that
+         * is currently in the buffer.                                       */
         ptrdiff_t   (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
 
         /* -- 'Seek' sets the input position for the next buffer-read-action.
-         *    NOTE: This differs from Buffer_seek(...) in the sense, that it only sets the
-         *          stream to a particular position given by a character index. Buffer_seek(..)
-         *          sets the _input_p to a particular position.                                      */
-        void        (*seek_character_index)(struct QUEX_NAME(BufferFiller_tag)*, 
+         * NOTE: This differs from Buffer_seek(...) in the sense, that it only
+         * sets the stream to a particular position given by a character index.
+         * Buffer_seek(..) sets the _input_p to a particular position.       */
+        void        (*seek_character_index)(struct
+                                            QUEX_NAME(BufferFiller_tag)*,
                                             const ptrdiff_t Index);
-
-        /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)      */
-        size_t      (*read_characters)(struct QUEX_NAME(BufferFiller_tag)*,
-                                       QUEX_TYPE_CHARACTER* memory, const size_t N);
  
-        /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
-         *    to lexeme end exceeds the buffer size.                                                 */
+        /* -- 'Overflow' is user defined handler for the case that the distance
+         * from lexeme start  to lexeme end exceeds the buffer size.         */
         bool        (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
-        /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
-         *    pointer to BufferFiller, and requires a way to delete the whole object.            */ 
+        /* -- 'Destructor' -- There are derived 'classes' from this one. The
+         * user only stores a pointer to BufferFiller, and requires a way to
+         * delete the whole object.                                          */ 
         void        (*delete_self)(struct QUEX_NAME(BufferFiller_tag)*);
 
+
+        /* ACTIVE: User fills the buffer manually                     
+         *                                                                   */
+        void        (*fill)(struct QUEX_NAME(BufferFiller_tag)*,
+                            cstruct QUEX_NAME(Buffer_tag)*,
+                            const uint8_t* Memory, const size_t ByteN);
+        void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
+                                    struct QUEX_NAME(Buffer_tag)*);
+        void        (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                          struct QUEX_NAME(Buffer_tag)*);
+        void        (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                         struct QUEX_NAME(Buffer_tag)*);
+        void        (*fill_flush)(struct QUEX_NAME(BufferFiller_tag)*,
+                                  cstruct QUEX_NAME(Buffer_tag)*,
+                                  const uint8_t* Memory, const size_t ByteN);
+
+        size_t      (*_fill_insert)(QUEX_NAME(BufferFiller)* me,
+                                    QUEX_TYPE_CHARACTER**    insertion_p,
+                                    QUEX_TYPE_CHARACTER*     BufferEnd,
+                                    void*                    ContentBegin,
+                                    void*                    ContentEnd);
     } QUEX_NAME(BufferFiller);
 
     QUEX_INLINE void 
@@ -71,11 +99,23 @@ QUEX_NAMESPACE_MAIN_OPEN
                                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                             QUEX_TYPE_CHARACTER*, const size_t),
                                             void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                            size_t       (*_fill_insert)(QUEX_NAME(BufferFiller)* me,
+                                                                         QUEX_TYPE_CHARACTER**    insertion_p,
+                                                                         QUEX_TYPE_CHARACTER*     BufferEnd,
+                                                                         void*                    ContentBegin,
+                                                                         void*                    ContentEnd),
+                                            void         (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                                         struct QUEX_NAME(Buffer_tag)*),
+                                            void         (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                                                struct QUEX_NAME(Buffer_tag)*);
+                                            void         (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                                              struct QUEX_NAME(Buffer_tag)*),
                                             ByteLoader*  byte_loader);
     QUEX_INLINE QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(ByteLoader*        byte_loader, 
-                                const char*        CharacterEncodingName,
-                                const size_t       TranslationBufferMemorySize);
+    QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
+                                QUEX_NAME(Converter)* (*converters_new)(void),
+                                const char*           CharacterEncodingName,
+                                const size_t          TranslationBufferMemorySize);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);

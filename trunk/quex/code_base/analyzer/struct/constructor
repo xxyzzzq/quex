@@ -12,41 +12,22 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 /* The constructor 'core' function is implemented per analyzer.
  * It's implementation happens inside the generated source file. */
-void
-QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
-                            ByteLoader*            byte_loader, 
-                            const char*            CharacterEncodingName,
-                            bool                   ByteOrderReversionF,
-                            QUEX_TYPE_CHARACTER*   BufferMemory,    
-                            size_t                 BufferMemorySize,
-                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP);
-
-QUEX_INLINE void
-QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
-                            QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                            size_t               BufferMemorySize,
-                            QUEX_TYPE_CHARACTER* BufferEndOfFileP, 
-                            const char*          CharacterEncodingName /* = 0x0   */,
-                            bool                 ByteOrderReversionF   /* = false */);
 
 QUEX_INLINE void
 QUEX_NAME(construct_file_name)(QUEX_TYPE_ANALYZER* me,
                                const char*         Filename, 
-                               const char*         CharacterEncodingName /* = 0x0   */,
-                               bool                ByteOrderReversionF   /* = false */);
+                               const char*         ConversionCodecName /* = 0x0   */):
 
 QUEX_INLINE void
 QUEX_NAME(construct_FILE)(QUEX_TYPE_ANALYZER* me,
                           __QUEX_STD_FILE*    fh, 
-                          const char*         CharacterEncodingName /* = 0x0   */,
-                          bool                ByteOrderReversionF   /* = false */);
+                          const char*         ConversionCodecName /* = 0x0   */)
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void
 QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
                              std::istream*       p_input_stream, 
-                             const char*         CharacterEncodingName /* = 0x0   */,
-                             bool                ByteOrderReversionF   /* = false */);
+                             const char*         ConversionCodecName /* = 0x0   */);
 
 #endif
 
@@ -54,9 +35,33 @@ QUEX_NAME(construct_istream)(QUEX_TYPE_ANALYZER* me,
 QUEX_INLINE void
 QUEX_NAME(construct_wistream)(QUEX_TYPE_ANALYZER* me,
                               std::wistream*      p_input_stream, 
-                              const char*         CharacterEncodingName /* = 0x0   */,
-                              bool                ByteOrderReversionF   /* = false */);
+                              const char*         ConversionCodecName /* = 0x0   */);
 #endif
+
+QUEX_INLINE void
+QUEX_NAME(construct_memory)(QUEX_TYPE_ANALYZER*  me,
+                            QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                            size_t               BufferMemorySize,
+                            QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+
+void
+QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*    me,
+                            ByteLoader*            byte_loader, 
+                            const char*            ConversionCodecName,
+                            bool                   ByteOrderReversionF,
+                            QUEX_TYPE_CHARACTER*   BufferMemory,    
+                            size_t                 BufferMemorySize,
+                            QUEX_TYPE_CHARACTER*   BufferEndOfFileP);
+
+QUEX_INLINE void
+QUEX_NAME(construct_basic)(QUEX_TYPE_ANALYZER*   me,
+                           ByteLoader*           byte_loader,
+                           QUEX_TYPE_CHARACTER*  BufferMemory,
+                           const size_t          BufferMemorySize,
+                           QUEX_TYPE_CHARACTER*  EndOfFileP,
+                           const char*           CharacterEncodingName, 
+                           const size_t          TranslationBufferMemorySize,
+                           bool                  ByteOrderReversionF);
 
 QUEX_INLINE void
 QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER* me); 
