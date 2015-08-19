@@ -12,7 +12,7 @@ main(int argc, char** argv)
     quex_tiny_lexer      qlex;
     QUEX_TYPE_CHARACTER* remainder = 0x0;
 
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, 0x0, false);
 
     /* In this example we do the same as in 'point.cpp'
      * -- only that the use different buffers for each run.
@@ -68,7 +68,7 @@ test(quex_tiny_lexer* qlex)
     /* QUEX_NAME(Buffer_show_byte_content)(&qlex->buffer, 5); */
 
     /* -- Loop until the 'termination' token arrives */
-    QUEX_NAME(token_p_switch)(qlex, &token);
+    QUEX_NAME(token_p_swap)(qlex, &token);
     do {
         QUEX_NAME(receive)(qlex);
 

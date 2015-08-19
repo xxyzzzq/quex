@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* ACTIVE: User fills the buffer manually                     
          *                                                                   */
         void        (*fill)(struct QUEX_NAME(BufferFiller_tag)*,
-                            cstruct QUEX_NAME(Buffer_tag)*,
+                            struct QUEX_NAME(Buffer_tag)*,
                             const uint8_t* Memory, const size_t ByteN);
         void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
                                     struct QUEX_NAME(Buffer_tag)*);
@@ -81,41 +81,48 @@ QUEX_NAMESPACE_MAIN_OPEN
         void        (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
                                          struct QUEX_NAME(Buffer_tag)*);
         void        (*fill_flush)(struct QUEX_NAME(BufferFiller_tag)*,
-                                  cstruct QUEX_NAME(Buffer_tag)*,
+                                  struct QUEX_NAME(Buffer_tag)*,
                                   const uint8_t* Memory, const size_t ByteN);
 
-        size_t      (*_fill_insert)(QUEX_NAME(BufferFiller)* me,
+        size_t      (*_fill_insert)(struct QUEX_NAME(BufferFiller_tag)* me,
                                     QUEX_TYPE_CHARACTER**    insertion_p,
                                     QUEX_TYPE_CHARACTER*     BufferEnd,
                                     void*                    ContentBegin,
                                     void*                    ContentEnd);
+
+        /*     -- byte order (i.e little- vs. big-endian) reversion: enable 
+         *        disable the reversion of byte order.                       */
+        bool      _byte_order_reversion_active_f;
+
     } QUEX_NAME(BufferFiller);
 
-    QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
-                                            ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
-                                                                                 const ptrdiff_t),
-                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                                            QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
-                                            size_t       (*_fill_insert)(QUEX_NAME(BufferFiller)* me,
-                                                                         QUEX_TYPE_CHARACTER**    insertion_p,
-                                                                         QUEX_TYPE_CHARACTER*     BufferEnd,
-                                                                         void*                    ContentBegin,
-                                                                         void*                    ContentEnd),
-                                            void         (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                                         struct QUEX_NAME(Buffer_tag)*),
-                                            void         (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                                                struct QUEX_NAME(Buffer_tag)*);
-                                            void         (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                                              struct QUEX_NAME(Buffer_tag)*),
-                                            ByteLoader*  byte_loader);
     QUEX_INLINE QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
-                                QUEX_NAME(Converter)* (*converters_new)(void),
-                                const char*           CharacterEncodingName,
-                                const size_t          TranslationBufferMemorySize);
+    QUEX_NAME(BufferFiller_new)(ByteLoader*                      byte_loader, 
+                                struct QUEX_NAME(Converter_tag)* (*converters_new)(void),
+                                const char*                      CharacterEncodingName,
+                                const size_t                     TranslationBufferMemorySize);
+    QUEX_INLINE QUEX_NAME(BufferFiller)* 
+                        QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
+                                                        const char*   CharacterEncodingName);
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
+                             ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                             void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
+                                                                  const ptrdiff_t),
+                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                             QUEX_TYPE_CHARACTER*, const size_t),
+                             void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                             size_t       (*_fill_insert)(QUEX_NAME(BufferFiller)* me,
+                                                          QUEX_TYPE_CHARACTER**    insertion_p,
+                                                          QUEX_TYPE_CHARACTER*     BufferEnd,
+                                                          void*                    ContentBegin,
+                                                          void*                    ContentEnd),
+                             void         (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                          struct QUEX_NAME(Buffer_tag)*),
+                             void         (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                                 struct QUEX_NAME(Buffer_tag)*),
+                             void         (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
+                                                               struct QUEX_NAME(Buffer_tag)*),
+                             ByteLoader*  byte_loader);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);

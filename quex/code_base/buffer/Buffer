@@ -63,27 +63,22 @@ QUEX_NAMESPACE_MAIN_OPEN
          *        of the stream position.                                                     */
         ptrdiff_t _content_character_index_end;
         
-        /*     -- byte order (i.e little- vs. big-endian) reversion: enable disable the 
-         *        reversion of byte order.                                                    */
-        bool      _byte_order_reversion_active_f;
-
         struct    QUEX_NAME(BufferFiller_tag)*             filler;
 
         void      (*on_buffer_content_change)(QUEX_TYPE_CHARACTER*  BeginOfContent,
                                               QUEX_TYPE_CHARACTER*  EndOfContent);
     } QUEX_NAME(Buffer);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
-                                                    QUEX_NAME(BufferFiller)*  filler,
-                                                    const size_t              BufferMemorySize,
-                                                    bool                      ByteOrderReversionF);
-    QUEX_INLINE void    QUEX_NAME(Buffer_construct_with_memory)(QUEX_NAME(Buffer)*        me, 
-                                                                QUEX_NAME(BufferFiller)*  filler,
-                                                                QUEX_TYPE_CHARACTER*      memory,
-                                                                const size_t              MemorySize,
-                                                                QUEX_TYPE_CHARACTER*      end_of_file_p,
-                                                                bool                      ByteOrderReversionF,
-                                                                bool                      ExternalF);
+    QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
+                                                    struct QUEX_NAME(BufferFiller_tag)*  filler,
+                                                    const size_t                         BufferMemorySize);
+    QUEX_INLINE void    QUEX_NAME(Buffer_construct_with_memory)(QUEX_NAME(Buffer)*                   me, 
+                                                                struct QUEX_NAME(BufferFiller_tag)*  filler,
+                                                                QUEX_TYPE_CHARACTER*                 memory,
+                                                                const size_t                         MemorySize,
+                                                                QUEX_TYPE_CHARACTER*                 end_of_file_p,
+                                                                bool                                 ByteOrderReversionF,
+                                                                bool                                 ExternalF);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 
                                                 struct QUEX_NAME(BufferFiller_tag)* filler); 

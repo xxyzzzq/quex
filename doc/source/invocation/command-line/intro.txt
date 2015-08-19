@@ -316,7 +316,7 @@ Default: queue
 
 
     It provides the functions ``token_queue_memory_switch(...)`` for token policy 'queue' 
-    and ``token_p_switch(...)`` for token policy 'single'.  
+    and ``token_p_swap(...)`` for token policy 'single'.  
 
     
 

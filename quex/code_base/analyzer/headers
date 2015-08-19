@@ -35,7 +35,7 @@
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
 
-#include    <quex/code_base/analyzer/member/basic>
+#include    <quex/code_base/analyzer/struct/basic>
 
 #include    <quex/code_base/analyzer/struct/constructor>
 #include    <quex/code_base/analyzer/struct/reset>

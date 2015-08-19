@@ -13,7 +13,7 @@ main(int argc, char** argv)
     bool                  continue_lexing_f = true;
     QUEX_TYPE_CHARACTER*  tmp = 0x0;
     
-    QUEX_NAME(construct_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0, false);
 
     printf(",------------------------------------------------------------------------------------\n");
     printf("| [START]\n");

@@ -29,7 +29,7 @@ main(int argc, char** argv)
     }
 
     /* The lexer **must** be constructed after the BOM-cut */
-    QUEX_NAME(construct_FILE)(&qlex, fh, "UTF8", false);
+    QUEX_NAME(from_FILE)(&qlex, fh, "UTF8", false);
 
     printf(",-----------------------------------------------------------------\n");
     printf("| [START]\n");

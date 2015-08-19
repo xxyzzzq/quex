@@ -9,7 +9,7 @@ main(int argc, char** argv)
     int         token_n = 0;
     char        tmp[256];
 
-    QUEX_NAME(construct_file_name)(&qlex, "example.txt", "UTF8", false);
+    QUEX_NAME(from_file_name)(&qlex, "example.txt", "UTF8", false);
     QUEX_NAME_TOKEN(construct)(&token);
 
     printf(",------------------------------------------------------------------------------------\n");

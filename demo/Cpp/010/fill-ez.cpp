@@ -16,7 +16,7 @@ main(int argc, char** argv)
     quex::Token       token;
     quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); /* No args to constructor --> raw memory */
 
-    (void)qlex.token_p_switch(&token);
+    (void)qlex.token_p_swap(&token);
     while( 1 + 1 == 2 ) {
         // -- Initialize the filling of the fill region
         qlex.buffer_fill_region_prepare();

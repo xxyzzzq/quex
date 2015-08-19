@@ -34,7 +34,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
     { me->token = TokenP; }
 
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_NAME(token_p_switch)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
+    QUEX_NAME(token_p_swap)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_TOKEN* TokenP)
     {
         QUEX_TYPE_TOKEN* prev_token_p = me->token;
         me->token = TokenP;
@@ -69,7 +69,7 @@ QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)
     }
 
     QUEX_INLINE void
-    QUEX_NAME(token_queue_switch)(QUEX_TYPE_ANALYZER* me, 
+    QUEX_NAME(token_queue_swap)(QUEX_TYPE_ANALYZER* me, 
                                   QUEX_TYPE_TOKEN**   memory, size_t* n)
     { 
         QUEX_TYPE_TOKEN*  prev_memory = 0x0;
@@ -148,8 +148,8 @@ QUEX_MEMBER(token_p)()
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMBER(token_p_switch)(QUEX_TYPE_TOKEN* TokenP)
-    { return QUEX_NAME(token_p_switch)(this, TokenP); }
+    QUEX_MEMBER(token_p_swap)(QUEX_TYPE_TOKEN* TokenP)
+    { return QUEX_NAME(token_p_swap)(this, TokenP); }
 #   endif
 
 #else
@@ -164,8 +164,8 @@ QUEX_MEMBER(token_p)()
 
 #   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
     QUEX_INLINE void
-    QUEX_MEMBER(token_queue_switch)(QUEX_TYPE_TOKEN** memory, size_t* n)
-    { QUEX_NAME(token_queue_switch)(this, memory, n); }
+    QUEX_MEMBER(token_queue_swap)(QUEX_TYPE_TOKEN** memory, size_t* n)
+    { QUEX_NAME(token_queue_swap)(this, memory, n); }
 
     QUEX_INLINE void
     QUEX_MEMBER(token_queue_get)(QUEX_TYPE_TOKEN** begin, size_t* size)

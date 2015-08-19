@@ -58,6 +58,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         } 
 #       endif
 
+        me->_byte_order_reversion_active_f = false;
+
         if( ! byte_loader ) {
             return (QUEX_NAME(BufferFiller)*)0;
         }
@@ -72,6 +74,23 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         return filler;
+    }
+
+    QUEX_INLINE QUEX_NAME(BufferFiller)* 
+    QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
+                                    const char*   CharacterEncodingName) 
+    {
+#       ifdef QUEX_OPTION_CONVERTER_ICU
+        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_ICU_new);
+#       elif defined(QUEX_OPTION_CONVERTER_ICONV)
+        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_IConv_new);
+#       else
+        QUEX_NAME(Converter)* (*converters_new)(void) = 0;
+#       endif
+
+        return QUEX_NAME(BufferFiller_new)(byte_loader, converters_new,
+                                           CharacterEncodingName, 
+                                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     }
 
     QUEX_INLINE void       

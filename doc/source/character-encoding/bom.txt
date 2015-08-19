@@ -176,7 +176,7 @@ fragment shows an initialization in C language:
     }
 
     /* The lexer **must** be constructed after the BOM-cut */
-    QUEX_NAME(construct_FILE)(&qlex, fh, "UTF8", false);
+    QUEX_NAME(from_FILE)(&qlex, fh, "UTF8", false);
 
     /* Now, the qlex is ready for analyzis. */
     ... 

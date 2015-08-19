@@ -58,6 +58,6 @@ get_wfile_input(quex_tiny_wlexer* qlex)
 
     assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
-    QUEX_NAME(construct_file_name)(qlex, "wchar_t-example.txt", 0x0, false);
+    QUEX_NAME(from_file_name)(qlex, "wchar_t-example.txt", 0x0, false);
 }
 

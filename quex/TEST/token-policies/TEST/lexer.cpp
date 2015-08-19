@@ -65,7 +65,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
         QUEX_TYPE_TOKEN*  begin new QUEX_TYPE_TOKEN[32];
         size_t            n     = 32;
 
-        qley.token_queue_switch(&begin, &n);
+        qley.token_queue_swap(&begin, &n);
         if( begin != 0x0 ) delete [] begin;
     }
 #   endif

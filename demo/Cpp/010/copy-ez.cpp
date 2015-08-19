@@ -25,7 +25,7 @@ main(int argc, char** argv)
     chunk.begin = chunk.end;
 
     // -- LOOP until 'bye' token arrives
-    (void)qlex.token_p_switch(&token);
+    (void)qlex.token_p_swap(&token);
     while( 1 + 1 == 2 ) {
         // -- Receive content from a messaging framework
         //    The function 'buffer_fill_region_append()' may possibly not

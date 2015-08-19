@@ -67,12 +67,12 @@ base_analyzer = """
 /analyzer/headers.i
 /analyzer/EngineMemento_body
 /analyzer/Engine_body
-/analyzer/member/basic
-/analyzer/member/basic.i
+/analyzer/struct/basic
+/analyzer/struct/basic.i
 /analyzer/member/buffer-access
 /analyzer/member/buffer-access.i
-/analyzer/member/constructor
-/analyzer/member/constructor.i
+/analyzer/struct/constructor
+/analyzer/struct/constructor.i
 /analyzer/member/misc
 /analyzer/member/misc.i
 /analyzer/member/mode-handling
@@ -102,8 +102,8 @@ analyzer_post_categorizer = """
 """
 
 analyzer_include_stack = """
-/analyzer/member/include-stack
-/analyzer/member/include-stack.i
+/analyzer/struct/include-stack
+/analyzer/struct/include-stack.i
 """
 
 token_policy = "/token/TokenPolicy"

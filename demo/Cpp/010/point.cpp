@@ -35,7 +35,7 @@ main(int argc, char** argv)
         /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
         /* -- Loop until the 'termination' token arrives */
-        (void)qlex.token_p_switch(&token);
+        (void)qlex.token_p_swap(&token);
         do {
             qlex.receive();
 

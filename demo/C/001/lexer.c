@@ -8,7 +8,7 @@ main(int argc, char** argv)
     tiny_lexer   qlex;
     int          token_n = 0;
 
-    QUEX_NAME(construct_file_name)(&qlex, "example.txt", 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, "example.txt", 0x0, false);
 
     printf(",------------------------------------------------------------------------------------\n");
     printf("| [START]\n");

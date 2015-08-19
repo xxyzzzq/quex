@@ -21,7 +21,7 @@ main(int argc, char** argv)
     }
 
     QUEX_NAME_TOKEN(construct)(&token);
-    QUEX_NAME(construct_memory)(&qlex, 
+    QUEX_NAME(from_memory)(&qlex, 
                                 MESSAGING_FRAMEWORK_BUFFER, 
                                 MESSAGING_FRAMEWORK_BUFFER_SIZE, 
                                 MESSAGING_FRAMEWORK_BUFFER + 1, 
@@ -41,7 +41,7 @@ main(int argc, char** argv)
         /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
 
         /* -- Loop until the 'termination' token arrives */
-        QUEX_NAME(token_p_switch)(&qlex, &token);
+        QUEX_NAME(token_p_swap)(&qlex, &token);
         do {
             QUEX_NAME(receive)(&qlex);
 

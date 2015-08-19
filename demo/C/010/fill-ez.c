@@ -16,10 +16,10 @@ main(int argc, char** argv)
     char             buffer[1024];
     bool             out_f = false;
 
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
     QUEX_NAME_TOKEN(construct)(&token);
 
-    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
+    (void)QUEX_NAME(token_p_swap)(&qlex, &token);
     while( 1 + 1 == 2 ) {
         /* -- Initialize the filling of the fill region         */
         QUEX_NAME(buffer_fill_region_prepare)(&qlex);

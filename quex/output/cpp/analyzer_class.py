@@ -221,7 +221,7 @@ def get_constructor_code(Modes):
 
     for mode in Modes:
         if mode.abstract_f(): continue
-        txt += "        me->mode_db[QUEX_NAME(ModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
+        txt += "        this->mode_db[QUEX_NAME(ModeID_%s)]%s = &(QUEX_NAME(%s));\n" % \
                (mode.name, " " * (L-len(mode.name)), mode.name)
     return txt
 

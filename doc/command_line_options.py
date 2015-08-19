@@ -228,7 +228,7 @@ Option("token_memory_management_by_user_f", None,
      Block("QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY"),
      """
      It provides the functions \\v{token_queue_memory_switch(...)} for
-     token policy 'queue' and \\v{token_p_switch(...)} for token policy
+     token policy 'queue' and \\v{token_p_swap(...)} for token policy
      'single'.
      """),
 Option("token_queue_size", "number", 

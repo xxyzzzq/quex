@@ -22,7 +22,7 @@ main(int argc, char** argv)
     cout << "Please, terminate each line with pressing [enter].\n";
 
     int number_of_tokens = 0;
-    (void)qlex.token_p_switch(&token);
+    (void)qlex.token_p_swap(&token);
     while( cin ) {
         qlex.buffer_fill_region_prepare();
         

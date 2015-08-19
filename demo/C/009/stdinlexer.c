@@ -14,7 +14,7 @@ main(int argc, char** argv)
 
     QUEX_NAME_TOKEN(construct)(&token);
     /* Zero pointer to constructor --> use raw memory */
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
 
     printf("Please, type an arbitrary sequence of the following:\n");
     printf("-- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.\n");
@@ -22,7 +22,7 @@ main(int argc, char** argv)
     printf("-- The word 'bye' in order to terminate.\n");
     printf("Please, terminate each line with pressing [enter].\n");
 
-    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
+    (void)QUEX_NAME(token_p_swap)(&qlex, &token);
     while( received_n ) {
         QUEX_NAME(buffer_fill_region_prepare)(&qlex);
         
