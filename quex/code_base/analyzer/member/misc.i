@@ -96,11 +96,17 @@ QUEX_NAME(version)(QUEX_TYPE_ANALYZER* me)
 
 QUEX_INLINE bool
 QUEX_NAME(byte_order_reversion)(QUEX_TYPE_ANALYZER* me)
-{ return me->buffer._byte_order_reversion_active_f; }
+{ 
+    __quex_assert(me->buffer.filler);
+    return me->buffer.filler->_byte_order_reversion_active_f; 
+}
 
 QUEX_INLINE void     
 QUEX_NAME(byte_order_reversion_set)(QUEX_TYPE_ANALYZER* me, bool Value)
-{ me->buffer._byte_order_reversion_active_f = Value; }
+{ 
+    __quex_assert(me->buffer.filler);
+    me->buffer.filler->_byte_order_reversion_active_f = Value; 
+}
 
 
 QUEX_INLINE void
