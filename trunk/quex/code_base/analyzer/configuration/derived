@@ -318,6 +318,8 @@
 #   define QUEX_FUNCTION_DEF(NAME)                      NAME
 #   define QUEX_FUNCTION(NAME)                          QUEX_FUNCTION_PREFIX NAME
 
+    /* Avoid __VA_ARGS__ because some compilers still cannot handle it
+     * properly.                                                             */
 #   define QUEX_SIGNATURE(CLASS, FUNCTION)              CLASS  ## :: ## FUNCTION
 #   define QUEX_THIS_IS_ME(C)                           C* me = this;
 #   define QUEX_MEMBERF(C, F)                           QUEX_SIGNATURE(C, F)()
@@ -325,6 +327,25 @@
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(ARG0, ARG1)
 #   define QUEX_MEMBERF3(C, F, ARG0, ARG1, ARG2)        QUEX_SIGNATURE(C, F)(ARG0, ARG1, ARG2)
 #   define QUEX_MEMBERF4(C, F, ARG0, ARG1, ARG2, ARG3)  QUEX_SIGNATURE(C, F)(ARG0, ARG1, ARG2, ARG3)
+
+#   define QUEX_CONSTRUCTOR(N)                          QUEX_MEMBER(init)()
+#   define QUEX_CONSTRUCTOR1(N, A)                      QUEX_MEMBER(init)(A)
+#   define QUEX_CONSTRUCTOR2(N, A, B)                   QUEX_MEMBER(init)(A, B)
+#   define QUEX_CONSTRUCTOR3(N, A, B, C)                QUEX_MEMBER(init)(A, B, C)
+#   define QUEX_CONSTRUCTOR_CALL(N)                     QUEX_MEMBER(init)()
+#   define QUEX_CONSTRUCTOR_CALL1(N, A)                 QUEX_MEMBER(init)(A)
+#   define QUEX_CONSTRUCTOR_CALL2(N, A, B)              QUEX_MEMBER(init)(A, B)
+#   define QUEX_CONSTRUCTOR_CALL3(N, A, B, C)           QUEX_MEMBER(init)(A, B, C)
+#   define QUEX_DESTRUCTOR()                            QUEX_MEMBER(~QUEX_TYPE0_ANALYZER)()
+#   define QUEX_MEMBER_FUNCTION(N, SFX)                 QUEX_MEMBER(N)()
+#   define QUEX_MEMBER_FUNCTION1(N, SFX, A)             QUEX_MEMBER(N)(A)      
+#   define QUEX_MEMBER_FUNCTION2(N, SFX, A, B)          QUEX_MEMBER(N)(A, B)   
+#   define QUEX_MEMBER_FUNCTION3(N, SFX, A, B, C)       QUEX_MEMBER(N)(A, B, C)
+#   define QUEX_MEMBER_FUNCTION_CALL(N, SFX)            QUEX_MEMBER(N)()
+#   define QUEX_MEMBER_FUNCTION_CALL1(N, SFX, A)        QUEX_MEMBER(N)(A)      
+#   define QUEX_MEMBER_FUNCTION_CALL2(N, SFX, A, B)     QUEX_MEMBER(N)(A, B)   
+#   define QUEX_MEMBER_FUNCTION_CALL3(N, SFX, A, B, C)  QUEX_MEMBER(N)(A, B, C)
+
 #else
     /* Go through '__QUEX_APPEND' to ensure macro expansion, before concatination. */
 #   define QUEX_FUNCTION_DEF(NAME)                      __QUEX_APPEND(QUEX_FUNCTION_DEF_PREFIX, NAME)
@@ -338,6 +359,27 @@
 #   define QUEX_MEMBERF2(C, F, ARG0, ARG1)              QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1)
 #   define QUEX_MEMBERF3(C, F, ARG0, ARG1, ARG2)        QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1, ARG2)
 #   define QUEX_MEMBERF4(C, F, ARG0, ARG1, ARG2, ARG3)  QUEX_SIGNATURE(C, F)(QUEX_THIS(C), ARG0, ARG1, ARG2, ARG3)
+
+    /* Avoid __VA_ARGS__ because some compilers still cannot handle it
+     * properly.                                                             */
+#   define QUEX_CONSTRUCTOR(N)                          QUEX_NAME(N)(QUEX_TYPE_ANALYZER* this)
+#   define QUEX_CONSTRUCTOR1(N, A)                      QUEX_NAME(N)(QUEX_TYPE_ANALYZER* this, A)
+#   define QUEX_CONSTRUCTOR2(N, A, B)                   QUEX_NAME(N)(QUEX_TYPE_ANALYZER* this, A, B)
+#   define QUEX_CONSTRUCTOR3(N, A, B, C)                QUEX_NAME(N)(QUEX_TYPE_ANALYZER* this, A, B, C)
+#   define QUEX_CONSTRUCTOR_CALL(N)                     QUEX_NAME(N)(this)
+#   define QUEX_CONSTRUCTOR_CALL1(N, A)                 QUEX_NAME(N)(this, A)
+#   define QUEX_CONSTRUCTOR_CALL2(N, A, B)              QUEX_NAME(N)(this, A, B)
+#   define QUEX_CONSTRUCTOR_CALL3(N, A, B, C)           QUEX_NAME(N)(this, A, B, C)
+#   define QUEX_DESTRUCTOR()                            QUEX_NAME(destruct)()
+#   define QUEX_MEMBER_FUNCTION(N, SFX)                 QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this)
+#   define QUEX_MEMBER_FUNCTION1(N, SFX, A)             QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A)      
+#   define QUEX_MEMBER_FUNCTION2(N, SFX, A, B)          QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A, B)   
+#   define QUEX_MEMBER_FUNCTION3(N, SFX, A, B, C)       QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A, B, C)
+#   define QUEX_MEMBER_FUNCTION_CALL(N, SFX)            QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this)
+#   define QUEX_MEMBER_FUNCTION_CALL1(N, SFX, A)        QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A)      
+#   define QUEX_MEMBER_FUNCTION_CALL2(N, SFX, A, B)     QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A, B)   
+#   define QUEX_MEMBER_FUNCTION_CALL3(N, SFX, A, B, C)  QUEX_TYPE0_ANALYZER ## _ ## NAME ## _ ## SFX(QUEX_TYPE_ANALYZER* this, A, B, C)
+
 #endif
 
 #define QUEX_A_MEMBERF (FUNCTION)                          QUEX_MEMBERF(QUEX_TYPE0_ANALYZER, FUNCTION)

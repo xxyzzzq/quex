@@ -296,7 +296,7 @@ To do the read-out and set operation in one step the function
 
 .. code-block:: cpp
 
-    QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
+    QUEX_TYPE_TOKEN*  token_p_swap(QUEX_TYPE_TOKEN*);
 
 is provided. It returns the a pointer to the currently set token inside the
 analyzer and sets the token pointer to what is provided as a second argument.
@@ -315,7 +315,7 @@ scenerio looks like
         token_id = lexer.receive();
         ...
         if( content_is_important_f ) {
-            store_away(lexer.token_p_switch(get_new_token());
+            store_away(lexer.token_p_swap(get_new_token());
         }
     }
 
@@ -330,7 +330,7 @@ can be take by means of the functions
 
        void  token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
        void  token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
-       void  token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+       void  token_queue_swap(QUEX_TYPE_TOKEN** queue, 
                                 size_t*           size); 
 
 
@@ -349,7 +349,7 @@ The following code fragment displays a sample application of this approach:
         iterator    = qlex.receive();
         /* consider the first token, the remainder is in the queue.
         ...
-        qlex.token_queue_switch(&queue);
+        qlex.token_queue_swap(&queue);
 
         /* Manual iteration over received token queue */
         for(iterator = queue; iterator != queue_watermark ; ++iterator) {

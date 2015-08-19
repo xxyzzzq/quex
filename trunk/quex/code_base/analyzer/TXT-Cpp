@@ -104,35 +104,140 @@ public:
     typedef QUEX_TYPE_TOKEN_ID   token_id_type;
     typedef QUEX_TYPE_CHARACTER  char_type;
 
-    $$LEXER_CLASS_NAME$$(QUEX_NAME(BufferFiller)* filler, 
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
-    $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-    $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP   = 0x0,
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
-    $$LEXER_CLASS_NAME$$(const std::string&   Filename,       
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
-    $$LEXER_CLASS_NAME$$(std::FILE*     fh,       
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
-    $$LEXER_CLASS_NAME$$(std::istream*  istream_p, 
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
+    /*_________________________________________________________________________
+     * Constructor:
+     *
+     * 'construct' functions are provided so that explicit constructor calls 
+     * can be done without placement ::new or sophisticated C++11 features.  */
+    void    construct(const char*  Filename, const char*  CodecName = 0x0);
+    void    construct(std::FILE* fh, const char*  CodecName = 0x0);
+    void    construct(std::istream* istream_p, const char*  CodecName = 0x0);
+    void    construct(std::wistream* istream_p, const char*  CodecName = 0x0);
+    void    construct(ByteLoader* byte_loader, const char*  CodecName = 0x0);
+    void    construct(QUEX_NAME(BufferFiller)* filler);
+    void    construct(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                      size_t               BufferMemorySize,
+                      QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
+
+    /* Level (1) ______________________________________________________________
+     *                                                                       */
+    $$LEXER_CLASS_NAME$$(const char*  Filename, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(Filename, CodecName); }
+    $$LEXER_CLASS_NAME$$(const std::string&  Filename, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(Filename.c_str(), CodecName); }
+
+    /* Level (2) ______________________________________________________________
+     *                                                                       */
+    $$LEXER_CLASS_NAME$$(std::FILE*     fh, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(fh, CodecName); }
+    $$LEXER_CLASS_NAME$$(std::istream*  istream_p, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(istream_p, CodecName); }
 #   if defined(__QUEX_OPTION_WCHAR_T)
-    $$LEXER_CLASS_NAME$$(std::wistream* istream_p,
-    $$___SPACE___$$const char*          CharacterEncodingName = 0x0,
-    $$___SPACE___$$bool                 ByteOrderReversionF   = false);
+    $$LEXER_CLASS_NAME$$(std::wistream* istream_p, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(istream_p, CodecName); }
 #   endif
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
-        $$LEXER_CLASS_NAME$$(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-        $$___SPACE___$$const char*                              CharacterEncodingName = 0x0,
-        $$___SPACE___$$bool                                     ByteOrderReversionF   = false);
+    $$LEXER_CLASS_NAME$$(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+    $$___SPACE___$$const char*                              CodecName = 0x0)
+    $$___SPACE___$${ construct(istream_p, CodecName); }
 #   endif
 
+    /* Level (3) ______________________________________________________________
+     *                                                                       */
+    $$LEXER_CLASS_NAME$$(ByteLoader*  byte_loader, const char*  CodecName = 0x0)
+    $$___SPACE___$${ construct(byte_loader, CodecName); }
+
+    /* Level (4) ______________________________________________________________
+     *                                                                       */
+    $$LEXER_CLASS_NAME$$(QUEX_NAME(BufferFiller)* filler)
+    $$___SPACE___$${ construct(filler); }
+
+    /* Level (5) ______________________________________________________________
+     *                                                                       */
+    $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    $$___SPACE___$$size_t               BufferMemorySize,
+    $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0)
+    $$___SPACE___$${ construct(BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP); }
+
     virtual ~$$LEXER_CLASS_NAME$$();
+
+    /*_________________________________________________________________________
+     * Reset:
+     *
+     * Level (1) ______________________________________________________________
+     *                                                                       */
+    void    reset(const char*  FileName, const char*  CodecName = 0x0);
+    void    reset(const std::string&  FileName, const char*  CodecName = 0x0)
+            { reset(FileName.c_str(), CodecName); }
+
+    /* Level (2) ______________________________________________________________
+     *                                                                       */
+    void    reset(__QUEX_STD_FILE*  fh, const char*  CodecName = 0x0);
+    void    reset(std::istream*     istream_p, const char*  CodecName = 0x0);
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    void    reset(std::wistream*    istream_p, const char*  CodecName = 0x0);
+#   endif
+#   if defined(__QUEX_OPTION_UNIT_TEST)
+    template <class UnderlyingStreamT>
+    void    reset(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                  const char*                              CodecName = 0x0);
+#   endif
+
+    /* Level (3) ______________________________________________________________
+     *                                                                       */
+    void    reset(ByteLoader*  byte_loader, const char*  CodecName = 0x0);
+
+    /* Level (4) ______________________________________________________________
+     *                                                                       */
+    void    reset(QUEX_NAME(BufferFiller)*  filler); 
+
+    /* Level (5) ______________________________________________________________
+     *                                                                       */
+    void    reset(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                  size_t               BufferMemorySize,
+                  QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    /*_________________________________________________________________________
+     * Include:
+     *
+     * Level (1) ______________________________________________________________
+     *                                                                       */
+    void    include_push(const char*  FileName, const char*  CodecName = 0x0);
+    void    include_push(const std::string&  FileName, const char*  CodecName = 0x0)
+            { include_push(FileName.c_str(), CodecName); }
+
+    /* Level (2) ______________________________________________________________
+     *                                                                       */
+    void    include_push(__QUEX_STD_FILE*  fh, const char*  CodecName = 0x0);
+    void    include_push(std::istream*     istream_p, const char*  CodecName = 0x0);
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    void    include_push(std::wistream*    istream_p, const char*  CodecName = 0x0);
+#   endif
+#   if defined(__QUEX_OPTION_UNIT_TEST)
+    template <class UnderlyingStreamT>
+    void    include_push(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                         const char*                              CodecName = 0x0);
+#   endif
+
+    /* Level (3) ______________________________________________________________
+     *                                                                       */
+    void    include_push(ByteLoader*  byte_loader, const char*  CodecName = 0x0);
+
+    /* Level (4) ______________________________________________________________
+     *                                                                       */
+    void    include_push(QUEX_NAME(BufferFiller)*  filler); 
+
+    /* Level (5) ______________________________________________________________
+     *                                                                       */
+    void    include_push(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                         size_t               BufferMemorySize,
+                         QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+
+    bool    include_pop();
+    void    include_stack_delete();
+#   endif
 
     /* Direct Access to Memory */
     void*                 buffer_fill_region_append(void* ContentBegin, 
@@ -196,7 +301,7 @@ public:
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLE) 
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
        void              token_p_set(QUEX_TYPE_TOKEN*);
-       QUEX_TYPE_TOKEN*  token_p_switch(QUEX_TYPE_TOKEN*);
+       QUEX_TYPE_TOKEN*  token_p_swap(QUEX_TYPE_TOKEN*);
 #      endif
 #   else
        bool              token_queue_is_empty();
@@ -204,7 +309,7 @@ public:
 #      if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
        void              token_queue_get(QUEX_TYPE_TOKEN** begin, size_t* size);
        void              token_queue_set(QUEX_TYPE_TOKEN* Begin, size_t Size);
-       void              token_queue_switch(QUEX_TYPE_TOKEN** queue, 
+       void              token_queue_swap(QUEX_TYPE_TOKEN** queue, 
                                             size_t*           size); 
 #      endif
 #   endif
@@ -272,71 +377,19 @@ public:
     void    set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
                                                   QUEX_TYPE_CHARACTER*));
 
-    void reset(QUEX_NAME(BufferFiller)*  filler, 
-               const char*               CharacterEncodingName = 0x0);
-    QUEX_TYPE_CHARACTER*  
-         reset_buffer(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                      size_t               BufferMemorySize,
-                      QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
-                      const char*          CharacterEncodingName = 0x0);
-    void reset(__QUEX_STD_FILE*  fh, 
-               const char*       CharacterEncodingName = 0x0);
-    void reset(std::istream*     istream_p, 
-               const char*       CharacterEncodingName = 0x0);
-#   if defined(__QUEX_OPTION_WCHAR_T)
-    void reset(std::wistream*    istream_p, 
-               const char*       CharacterEncodingName = 0x0);
-#   endif
-
-
-#   ifdef QUEX_OPTION_INCLUDE_STACK
 public:
-    void  include_push(QUEX_NAME(BufferFiller)* filler, 
-                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
-                       const char*              CharacterEncodingName = 0x0);
-    void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
-                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
-                       const char*              CharacterEncodingName = 0x0);
-    void  include_push(__QUEX_STD_FILE*         fh, 
-                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
-                       const char*              CharacterEncodingName = 0x0);
-    void  include_push(std::istream*            istream_p, 
-                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
-                       const char*              CharacterEncodingName = 0x0);
-#   if defined(__QUEX_OPTION_WCHAR_T)
-    void  include_push(std::wistream*           istream_p, 
-                       const QUEX_NAME(Mode)*   Mode                  = 0x0, 
-                       const char*              CharacterEncodingName = 0x0);
-#   endif
-    bool  include_pop();
-
-protected:
-    void  include_stack_delete();
+    void    print_this();
 
 private:
-#   endif
+    // (*) Common for constructor, reset, and include push ___________________________
+    void    basic_constructor();
+    void    basic_include_push(QUEX_NAME(Memento)*); 
+    void    basic_reset();
 
-public:
-    void  print_this();
-
-private:
-    // (*) Common core of all constructors ___________________________________________
-    TEMPLATE_IN(InputHandleT) friend void
-    QUEX_NAME(constructor_core)(QUEX_TYPE_ANALYZER*       me,
-                                ByteLoader*               byte_loader, 
-                                const char*               CharacterEncodingName,
-                                bool                      ByteOrderReversionF,
-                                QUEX_TYPE_CHARACTER*      BufferMemory,    
-                                size_t                    BufferMemorySize);
-
-    template<class InputHandleT> friend QUEX_NAME(Memento)*
-    QUEX_NAME(memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
-                            InputHandleT**);
-    friend void
-    QUEX_NAME(memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_NAME(Memento)*);
-
-    template<class InputHandleT> friend void
-    QUEX_NAME(reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
+    void    user_constructor();
+    void    user_memento_pack(QUEX_NAME(Memento)*); 
+    void    user_memento_unpack(QUEX_NAME(Memento)*);
+    void    user_reset();
 
     /* (*) All Modes are Friends ___________________________________________________*/
 $$MODE_CLASS_FRIENDS$$  

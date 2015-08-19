@@ -28,6 +28,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                 const size_t              MemorySize,
                                 bool                      ByteOrderReversionF)
     {
+        QUEX_TYPE_CHARACTER* memory;
+        
         __quex_assert(filler);
 
 #       ifdef QUEX_OPTION_ASSERTS
@@ -61,12 +63,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* If the input memory is provided, the content **must** be 
          * properly set up.                                                  */
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(&memory[1], end_of_file_p);
-        external_f = ExternalF;
 
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
         QUEX_NAME(BufferMemory_construct)(&me->_memory, 
                                           memory, MemorySize, end_of_file_p, 
-                                          external_f); 
+                                          ExternalF); 
         
         me->on_buffer_content_change = (void (*)(QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*))0;
 

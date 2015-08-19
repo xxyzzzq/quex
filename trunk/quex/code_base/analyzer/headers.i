@@ -21,7 +21,7 @@
 #include    <quex/code_base/analyzer/struct/constructor.i>
 #include    <quex/code_base/analyzer/struct/reset.i>
 
-#include    <quex/code_base/analyzer/member/basic.i>
+#include    <quex/code_base/analyzer/struct/basic.i>
 #include    <quex/code_base/analyzer/Mode.i>
 
 #include    <quex/code_base/buffer/Buffer.i>

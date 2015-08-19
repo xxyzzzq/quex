@@ -959,7 +959,7 @@ cpp_reload_backward_str = [
 """]
 
 cpp_header_definition_str = """
-#include <quex/code_base/analyzer/member/basic>
+#include <quex/code_base/analyzer/struct/basic>
 #include <quex/code_base/buffer/Buffer>
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue>

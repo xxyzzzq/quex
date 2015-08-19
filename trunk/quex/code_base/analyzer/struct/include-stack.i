@@ -17,95 +17,219 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void    
-    QUEX_NAME(include_push_file_name)(QUEX_TYPE_ANALYZER*      me,
-                                      QUEX_TYPE_CHARACTER*     FileName,
-                                      const QUEX_NAME(Mode)*   mode, 
-                                      const char*              CharacterCodecName /* = 0x0 */)
-    {
-        __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
-        /* The Optional_InputHandle = 0x0, which indicates that FileName tells how to 
-         * open the input stream.                                                       */
-        QUEX_NAME(include_push_FILE)(me, 0x0, FileName, mode, CharacterCodecName);
-    }
+/* Level (1) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION2(include_push, file_name, 
+                      const char* FileName, 
+                      const char* CodecName /* = 0x0 */) 
+{
+    /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
+     * turned off.                                                               */
+    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
 
-    QUEX_INLINE void    
-    QUEX_NAME(include_push_FILE)(QUEX_TYPE_ANALYZER*      me,
-                                 __QUEX_STD_FILE*         fh,
-                                 const QUEX_NAME(Mode)*   mode, 
-                                 const char*              CharacterCodecName /* = 0x0 */)
+    /* ByteLoader will overtake ownership over 'fh', so we do not need to 
+     * take care over 'free' and 'fclose'.                                       */
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, FILE, fh, CodecName);
+}
+
+/* Level (2) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION2(include_push, FILE,
+                      __QUEX_STD_FILE*    fh, 
+                      const char*         CodecName /* = 0x0   */)
+{
+    __quex_assert( ! fh );
+
+    /* At the time of this writing 'stdin' as located in the C++ global namespace. 
+     * This seemed suspicous to the author. To avoid compilation errors in the future
+     * the test for the standard input is only active in 'C'. It is only about
+     * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
+    setbuf(fh, 0);   /* turn off system based buffering! 
+    **               ** this is essential to profit from the quex buffer! */
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
+                               ByteLoader_FILE_new(fh), CodecName); 
+}
+
+#ifndef __QUEX_OPTION_PLAIN_C
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION2(include_push, istream,
+                      std::istream*   istream_p, 
+                      const char*     CodecName /* = 0x0   */)
+{
+    __quex_assert( ! istream_p );
+
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
+                               ByteLoader_stream_new(istream_p), CodecName); 
+}
+#endif
+
+
+#if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION2(include_push, wistream,
+                      std::wistream*  istream_p, 
+                      const char*     CodecName /* = 0x0   */)
+{
+    __quex_assert( ! istream_p );
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
+                               ByteLoader_stream_new(istream_p), CodecName); 
+}
+#endif
+
+#if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
+/* StrangeStreams are not for C-language stuff */
+template<class UnderlyingStreamT> QUEX_INLINE
+QUEX_MEMBER_FUNCTION2(include_push, strange_stream, 
+                      quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                      const char*                              CodecName /* = 0x0   */)
+{
+    if( istream_p == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader,
+                               ByteLoader_stream_new(istream_p), CodecName); 
+}
+#endif
+
+
+/* Level (3) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION2(include_push, ByteLoader,
+                      ByteLoader*   byte_loader,
+                      const char*   CodecName) 
+{
+    QUEX_NAME(BufferFiller)* filler;
+    QUEX_NAME(Asserts_construct)(CodecName);
+
+    if( this->filler )
     {
-        QUEX_NAME(include_push)(me, ByteLoader_FILE_new(fh), mode, CharacterCodecName);
+        QUEX_NAME(BufferFiller_delete_self)(this->filler);
     }
+    filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    
+    QUEX_MEMBER_FUNCTION_CALL1(include_push, BufferFiller, filler);
+}
+
+/* Level (4) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
+                      QUEX_NAME(BufferFiller)* filler)
+{
+    QUEX_NAME(Buffer_destruct)(&me->buffer); 
+    QUEX_NAME(Buffer_construct)(&me->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
+    QUEX_MEMBER_FUNCTION_CALL(include_push, basic);
+}
+
+/* Level (5) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION3(include_push, memory,
+                      QUEX_TYPE_CHARACTER*    Memory,
+                      const size_t            MemorySize,
+                      QUEX_TYPE_CHARACTER*    EndOfFileP)
+/* When memory is provided from extern, the 'external entity' is
+ * responsible for filling it. There is no 'file/stream handle', no 'byte
+ * loader', and 'no buffer filler'.                                          */
+{
+    QUEX_NAME(Buffer_destruct)(&me->buffer); 
+    QUEX_NAME(Buffer_construct_with_memory)(&me->buffer, 
+                                            QUEX_NAME(BufferFiller*)0,
+                                            Memory, MemorySize, EndOfFileP,
+                                            /* External */ true);
+    QUEX_MEMBER_FUNCTION_CALL(include_push, basic);
+}
+
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION3(include_push, basic,
+                      QUEX_TYPE_ANALYZER*      me,
+                      const QUEX_NAME(Mode)*   Mode, 
+                      QUEX_NAME(BufferFiller)* filler)
+{
+    QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
+                                     sizeof(QUEX_NAME(Memento)), QUEXED(MemoryObjectType_MEMENTO));
+#   ifndef __QUEX_OPTION_PLAIN_C
+    /* Use placement 'new' for explicit call of constructor. 
+     * Necessary in C++: Trigger call to constructor for user defined members.   */
+    new ((void*)memento) QUEX_NAME(Memento);
+#   endif
+
+    memento->_parent_memento                  = this->_parent_memento;
+    memento->buffer                           = this->buffer;
+    memento->__current_mode_p                 = this->__current_mode_p; 
+    memento->current_analyzer_function        = this->current_analyzer_function;
+#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+       || defined(QUEX_OPTION_ASSERTS)
+    memento->DEBUG_analyzer_function_at_entry = this->DEBUG_analyzer_function_at_entry;
+#   endif
+    __QUEX_IF_COUNT( memento->counter         = self.counter);
+
+    /* Deriberately not subject to include handling:
+     *    -- Mode stack.
+     *    -- Token and token queues.
+     *    -- Post categorizer.                                                 */
+    QUEX_MEMBER_FUNCTION_CALL1(user_memento_pack, , memento);
+
+    me->_parent_memento = memento;
+
+    QUEX_NAME(Buffer_construct)(&me->buffer, filler,
+                                0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
+                                me->buffer._byte_order_reversion_active_f);
+
+    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
+
+    QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
+}   
+
+QUEX_INLINE bool
+QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me) 
+{
+    QUEX_NAME(Memento)* memento;
+    /* Not included? return 'false' to indicate we're on the top level   */
+    if( ! me->_parent_memento ) return false; 
+
+    QUEX_NAME(Buffer_destruct)(&me->buffer);
+    /* memento_unpack():
+     *    => Current mode
+     *           => __current_mode_p 
+     *              current_analyzer_function                                       
+     *              DEBUG_analyzer_function_at_entry                                   
+     *    => Line/Column Counters
+     *
+     * Unchanged by memento_unpack():
+     *    -- Mode stack
+     *    -- Tokens and token queues.
+     *    -- Accumulator.
+     *    -- Post categorizer.
+     *    -- File handle by constructor                                  */
+          
+    /* Copy Back of content that was stored upon inclusion.              */
+    memento = this->_parent_memento;
+
+    this->_parent_memento                  = memento->_parent_memento;
+    this->buffer                           = memento->buffer;
+    this->__current_mode_p                 = memento->__current_mode_p; 
+    this->current_analyzer_function        = memento->current_analyzer_function;
+#   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+       || defined(QUEX_OPTION_ASSERTS)
+    this->DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
+#   endif
+    __QUEX_IF_COUNT(this->counter          = memento->counter);
+
+    QUEX_MEMBER_FUNCTION_CALL1(user_memento_unpack, ,memento);
 
 #   ifndef __QUEX_OPTION_PLAIN_C
-    QUEX_INLINE void
-    QUEX_NAME(include_push_istream)(QUEX_TYPE_ANALYZER*      me,
-                                    std::istream*            istream_p, 
-                                    const QUEX_NAME(Mode)*   mode, 
-                                    const char*              CharacterCodecName /* = 0x0 */)
-    {
-        QUEX_NAME(include_push)(me, ByteLoader_stream_new(istream_p), mode, CharacterCodecName);
-    }
+    /* Counterpart to placement new: Explicit destructor call.
+     * Necessary in C++: Trigger call to destructor for user defined members.  */
+    memento->~QUEX_NAME(Memento_tag)();
 #   endif
 
-#   if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
-    QUEX_INLINE void
-    QUEX_NAME(include_push_wistream)(QUEX_TYPE_ANALYZER*      me,
-                                    std::wistream*           istream_p, 
-                                    const QUEX_NAME(Mode)*   mode, 
-                                    const char*              CharacterCodecName /* = 0x0 */)
-    {
-        ByteLoader* byte_loader = ByteLoader_stream_new(istream_p); 
+    QUEXED(MemoryManager_free)((void*)memento, QUEXED(MemoryObjectType_MEMENTO)); 
 
-        QUEX_NAME(include_push_basic)(me, byte_loader,
-                                      mode, CharacterCodecName);
-    }
-#   endif
-
-    QUEX_INLINE void
-    QUEX_NAME(include_stack_delete)(QUEX_TYPE_ANALYZER* me) 
-    {
-        while( me->_parent_memento != 0x0 ) {
-            if( QUEX_NAME(include_pop)(me) == false ) {
-                QUEX_ERROR_EXIT("Error during deletion of include stack.");
-            }
-        }
-    }
-
-#if ! defined( __QUEX_OPTION_PLAIN_C )
-    QUEX_INLINE void    
-    QUEX_MEMBER(include_push)(QUEX_TYPE_CHARACTER*   InputName,
-                              const QUEX_NAME(Mode)* Mode, 
-                              const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_NAME(include_push_file_name)(this, InputName, Mode, CharacterCodecName); }
-
-    QUEX_INLINE void    
-    QUEX_MEMBER(include_push)(__QUEX_STD_FILE*       fh,
-                              const QUEX_NAME(Mode)* Mode, 
-                              const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_NAME(include_push_FILE)(this, fh, Mode, CharacterCodecName); }
-
-    QUEX_INLINE void    
-    QUEX_MEMBER(include_push)(std::istream*          stream_p,
-                              const QUEX_NAME(Mode)* Mode, 
-                              const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_NAME(include_push_istream)(this, stream_p, Mode, CharacterCodecName); }
-
-    QUEX_INLINE void    
-    QUEX_MEMBER(include_push)(std::wistream*         stream_p,
-                              const QUEX_NAME(Mode)* Mode, 
-                              const char*            CharacterCodecName /* = 0x0 */)
-    { QUEX_NAME(include_push_wistream)(this, stream_p, Mode, CharacterCodecName); }
-
-    QUEX_INLINE bool
-    QUEX_MEMBER(include_pop)() 
-    { return QUEX_NAME(include_pop)(this); }
-
-    QUEX_INLINE void
-    QUEX_MEMBER(include_stack_delete)() 
-    { QUEX_NAME(include_stack_delete)(this); }
-#endif
+    /* Return to including file succesful */
+    return true;
+}
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

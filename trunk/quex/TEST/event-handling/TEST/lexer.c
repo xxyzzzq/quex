@@ -24,7 +24,7 @@ main(int argc, char** argv)
 
     snprintf(file_name, (size_t)256, "./examples/%s.txt", (const char*)argv[1]);
     /* printf("%s\n", file_name); */
-    QUEX_NAME(construct_file_name)(&qlex, file_name, (const char*)0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, file_name, (const char*)0x0, false);
     FLUSH();
 
     fprintf(stderr, "| [START]\n");

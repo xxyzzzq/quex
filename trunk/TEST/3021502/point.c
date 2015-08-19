@@ -9,7 +9,7 @@ main(int argc, char** argv)
     uint8_t      buffer[4711];
     size_t       BufferSize = 4711;
 
-    QUEX_NAME(construct_memory)(&qlex, 
+    QUEX_NAME(from_memory)(&qlex, 
                                 buffer, BufferSize, buffer + 1, 
                                 0x0, false);
 

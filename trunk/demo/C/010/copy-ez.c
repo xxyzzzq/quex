@@ -22,13 +22,13 @@ main(int argc, char** argv)
     bool                  out_f      = false;
 
     QUEX_NAME_TOKEN(construct)(&token);
-    QUEX_NAME(construct_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
 
     /* -- trigger reload of memory */
     chunk.begin = chunk.end;
 
     /* -- LOOP until 'bye' token arrives */
-    (void)QUEX_NAME(token_p_switch)(&qlex, &token);
+    (void)QUEX_NAME(token_p_swap)(&qlex, &token);
     while( 1 + 1 == 2 ) {
         /* -- Receive content from a messaging framework                   */
         /*    The function 'buffer_fill_region_append()' may possibly not  */

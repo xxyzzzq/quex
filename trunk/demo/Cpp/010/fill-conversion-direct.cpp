@@ -19,7 +19,7 @@ main(int argc, char** argv)
     // -- initialize the token pointers
     prev_token = &(token_bank[1]);
     token_bank[0].set(QUEX_TKN_TERMINATION);
-    qlex.token_p_switch(&token_bank[0]);
+    qlex.token_p_swap(&token_bank[0]);
 
     while( 1 + 1 == 2 ) {
         // -- Initialize the filling of the fill region
@@ -40,7 +40,7 @@ main(int argc, char** argv)
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             // Let the previous token be the current token of the previous run.
-            prev_token = qlex.token_p_switch(prev_token);
+            prev_token = qlex.token_p_swap(prev_token);
 
             token_id = qlex.receive();
             if( token_id == QUEX_TKN_TERMINATION || token_id == QUEX_TKN_BYE )

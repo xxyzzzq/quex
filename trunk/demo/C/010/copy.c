@@ -29,7 +29,7 @@ main(int argc, char** argv)
     size_t                size = (size_t)-1;
     QUEX_TYPE_TOKEN_ID    token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
-    quex_tiny_lexer_construct_memory(&qlex, 0x0, 0x0, 0, 0x0, false);
+    quex_tiny_lexer_from_memory(&qlex, 0x0, 0x0, 0, 0x0, false);
 
     /* -- initialize the token pointers */
     quex_Token_construct(&token_bank[0]);
@@ -38,7 +38,7 @@ main(int argc, char** argv)
 
     prev_token = &(token_bank[1]);
 
-    QUEX_NAME(token_p_switch)(&qlex, &token_bank[0]);
+    QUEX_NAME(token_p_swap)(&qlex, &token_bank[0]);
 
     /* -- trigger reload of memory */
     chunk.begin = chunk.end;
@@ -75,7 +75,7 @@ main(int argc, char** argv)
             prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
             
             /* Let the previous token be the current token of the previous run. */
-            prev_token = QUEX_NAME(token_p_switch)(&qlex, prev_token);
+            prev_token = QUEX_NAME(token_p_swap)(&qlex, prev_token);
 
             token_id = QUEX_NAME(receive)(&qlex);
 

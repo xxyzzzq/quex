@@ -1,9 +1,9 @@
 Constructors
 
-X_construct_memory
-X_construct_istream
-X_construct_wistream
-X_construct_FILE
+X_from_memory
+X_from_istream
+X_from_wistream
+X_from_FILE
 
 Destructor
 

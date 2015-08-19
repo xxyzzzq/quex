@@ -277,7 +277,7 @@ The analyzis start with the following:
         chunk.end = chunk.begin;
 
         // -- LOOP until 'bye' token arrives
-        token = qlex.token_p_switch(&token);
+        token = qlex.token_p_swap(&token);
         while( 1 + 1 == 2 ) {
             // -- Receive content from a messaging framework
             if( chunk.begin == chunk.end ) {
@@ -434,7 +434,7 @@ The following code fragment shows all required variables and their initializatio
         // -- initialize the token pointers
         prev_token = &(token_bank[1]);
         token_bank[0].set(QUEX_TKN_TERMINATION);
-        qlex.token_p_switch(&token_bank[0]);
+        qlex.token_p_swap(&token_bank[0]);
 
         //
         // -- trigger reload of memory
@@ -465,7 +465,7 @@ must be considered.
             prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
             
             // Let the previous token be the current token of the previous run.
-            prev_token = qlex.token_p_switch(prev_token);
+            prev_token = qlex.token_p_swap(prev_token);
 
             const int TokenID = qlex.receive();
 
@@ -572,7 +572,7 @@ shown below.
         // -- initialize the token pointers
         prev_token = &(token_bank[1]);
         token_bank[0].set(QUEX_TKN_TERMINATION);
-        qlex.token_p_switch(&token_bank[0]);
+        qlex.token_p_swap(&token_bank[0]);
 
         // -- trigger reload of memory
         chunk.begin = chunk.end;
@@ -598,7 +598,7 @@ shown below.
                 prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
                 
                 // Let the previous token be the current token of the previous run.
-                prev_token = qlex.token_p_switch(prev_token);
+                prev_token = qlex.token_p_swap(prev_token);
 
                 token_id = qlex.receive();
 
