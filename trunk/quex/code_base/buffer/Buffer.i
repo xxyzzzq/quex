@@ -25,8 +25,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
                                 QUEX_NAME(BufferFiller)*  filler,
-                                const size_t              MemorySize,
-                                bool                      ByteOrderReversionF)
+                                const size_t              MemorySize)
     {
         QUEX_TYPE_CHARACTER* memory;
         
@@ -47,7 +46,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
                                                 /* EndOfFileP */ &memory[0], 
-                                                ByteOrderReversionF,
                                                 /* ExternalF */ false);
     }
 
@@ -57,7 +55,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                             QUEX_TYPE_CHARACTER*      memory,
                                             const size_t              MemorySize,
                                             QUEX_TYPE_CHARACTER*      end_of_file_p,
-                                            bool                      ByteOrderReversionF,
                                             bool                      ExternalF)
     {
         /* If the input memory is provided, the content **must** be 
@@ -75,16 +72,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* By setting begin and end to zero, we indicate to the loader that
          * this is the very first load procedure.                           */
-        QUEX_NAME(Buffer_init_analyzis)(me, filler, ByteOrderReversionF);
+        QUEX_NAME(Buffer_init_analyzis)(me, filler);
     }
 
     QUEX_INLINE void
     QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*       me, 
-                                    QUEX_NAME(BufferFiller)* filler, 
-                                    bool                     ByteOrderReversionF)
+                                    QUEX_NAME(BufferFiller)* filler) 
     {
-        me->_byte_order_reversion_active_f = ByteOrderReversionF;
-
         /* Init is a special kind of reset, where some things might not be reset. */
         me->_input_p        = &me->_memory._front[1];  /* First State does not increment */
         me->_lexeme_start_p = &me->_memory._front[1];  /* Thus, set it on your own.      */
@@ -534,7 +528,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
         __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)me->_content_character_index_begin);
         __QUEX_STD_printf("   _content_character_index_end   = %i;\n", (int)me->_content_character_index_end);
-        __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->_byte_order_reversion_active_f ? "true" : "false");
+        if( me->filler ) {
+            __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->filler->_byte_order_reversion_active_f ? "true" : "false");
+        }
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

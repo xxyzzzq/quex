@@ -5,6 +5,7 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
 
 #include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/BufferFiller.i>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -133,7 +134,7 @@ QUEX_MEMBER_FUNCTION3(construct, memory,
  * loader', and 'no buffer filler'.                                          */
 {
     QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
-                                            QUEX_NAME(BufferFiller*)0,
+                                            (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
     QUEX_MEMBER_FUNCTION_CALL(basic_constructor,);
