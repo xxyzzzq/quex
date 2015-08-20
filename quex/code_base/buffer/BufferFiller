@@ -71,22 +71,19 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* ACTIVE: User fills the buffer manually                     
          *                                                                   */
-        void*       (*fill)(struct QUEX_NAME(Buffer_tag)*,
-                            const void* Memory, const void* MemoryEnd);
-        void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*,
-                                    struct QUEX_NAME(Buffer_tag)*);
-        void*       (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                          struct QUEX_NAME(Buffer_tag)*);
-        void*       (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                         struct QUEX_NAME(Buffer_tag)*);
-        void        (*fill_flush)(struct QUEX_NAME(BufferFiller_tag)*,
-                                  struct QUEX_NAME(Buffer_tag)*,
-                                  const uint8_t* Memory, const size_t ByteN);
-        size_t      (*_fill_insert)(struct QUEX_NAME(BufferFiller_tag)* me,
+        void*       (*fill)(QUEX_NAME(Buffer)*,
+                            const void* Memory, 
+                            const void* MemoryEnd);
+        void        (*fill_prepare)(QUEX_NAME(Buffer)*);
+        void*       (*fill_region_begin_p)(QUEX_NAME(Buffer)*);
+        void*       (*fill_region_end_p)(QUEX_NAME(Buffer)*);
+        void        (*fill_flush)(QUEX_NAME(Buffer)* buffer,
+                                  const ptrdiff_t CharacterN);
+        size_t      (*_fill_insert)(struct QUEX_NAME(BufferFiller_tag)* buffer,
                                     QUEX_TYPE_CHARACTER**    insertion_p,
                                     QUEX_TYPE_CHARACTER*     BufferEnd,
-                                    void*                    ContentBegin,
-                                    void*                    ContentEnd);
+                                    const void*              ContentBegin,
+                                    const void*              ContentEnd);
 
         /*     -- byte order (i.e little- vs. big-endian) reversion: enable 
          *        disable the reversion of byte order.                       */
