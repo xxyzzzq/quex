@@ -35,6 +35,17 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                   QUEX_TYPE_CHARACTER*     start_of_buffer, 
                                                   const size_t             N);
 
+    QUEX_INLINE void 
+    QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  me,
+                                               void**              begin_p,
+                                               const void**        end_p);
+
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                              QUEX_TYPE_CHARACTER*       insertion_p,
+                                              const QUEX_TYPE_CHARACTER* BufferEnd,
+                                              const void*                ContentEnd);
+
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_Plain_new)(ByteLoader* byte_loader)
     {
@@ -59,9 +70,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                    QUEX_NAME(BufferFiller_Plain_seek_character_index), 
                                    QUEX_NAME(BufferFiller_Plain_read_characters),
                                    QUEX_NAME(BufferFiller_Plain_delete_self), 
-                                   QUEX_NAME(BufferFiller_Plain_fill_insert), 
-                                   QUEX_NAME(BufferFiller_Plain_fill_region_begin_p), 
-                                   QUEX_NAME(BufferFiller_Plain_fill_region_end_p), 
+                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
+                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
                                    byte_loader);
 
         me->start_position        = me->base.byte_loader->tell(me->base.byte_loader);
@@ -190,39 +200,31 @@ QUEX_NAMESPACE_MAIN_OPEN
         return CharacterN;
     }
 
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(BufferFiller_Plain_fill_region_begin_p)(QUEX_TYPE_ANALYZER* me)
-    { 
-        return QUEX_NAME(Buffer_text_end)(&me->buffer); 
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_NAME(BufferFiller_Plain_fill_region_end_p)(QUEX_TYPE_ANALYZER* me)
-    { 
-        return &QUEX_NAME(Buffer_content_back)(&me->buffer)[1]; 
-    }
-
-    QUEX_INLINE size_t 
-    QUEX_NAME(BufferFiller_Plain_fill_insert)(QUEX_NAME(BufferFiller)*  me,
-                                              QUEX_TYPE_CHARACTER**     insertion_p,
-                                              QUEX_TYPE_CHARACTER*      BufferEnd,
-                                              void*                     ContentBegin,
-                                              void*                     ContentEnd)
+    QUEX_INLINE void 
+    QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
+                                               void**              begin_p,
+                                               const void**        end_p)
     {
-        size_t InsertedByteN = 0;
+        /* Move-away of passed content in engine's buffer is done by caller. */
+        *begin_p = (void*)QUEX_NAME(Buffer_text_end)(buffer);
+        *end_p   = (void*)&QUEX_NAME(Buffer_content_back)(buffer)[1];
+    }
 
-        (void)me;
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                              QUEX_TYPE_CHARACTER*       insertion_p,
+                                              const QUEX_TYPE_CHARACTER* BufferEnd,
+                                              const void*                ContentEnd)
+    {
+        (void)alter_ego;
+        (void)BufferEnd;
+        __quex_assert(ContentEnd >= insertion_p);
+        __quex_assert(ContentEnd <= BufferEnd);
 
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE((QUEX_TYPE_CHARACTER*)ContentBegin, 
-                                                (QUEX_TYPE_CHARACTER*)ContentEnd);
-        InsertedByteN = QUEXED(MemoryManager_insert)((uint8_t*)*insertion_p,  
-                                                     (uint8_t*)BufferEnd,
-                                                     (uint8_t*)ContentBegin, 
-                                                     (uint8_t*)ContentEnd);
+        /* Copying of content is done, already, by caller.                   */
 
-        *insertion_p += (InsertedByteN / sizeof(QUEX_TYPE_CHARACTER)); 
-
-        return InsertedByteN;
+        /* Inserted number of characters = End - Begin.                      */
+        return (ptrdiff_t)((QUEX_TYPE_CHARACTER*)ContentEnd - insertion_p);
     }
 
 

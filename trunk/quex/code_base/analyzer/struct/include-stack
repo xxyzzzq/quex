@@ -66,8 +66,9 @@ QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, memory,
 
 /* Basic constructions ________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, basic);
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, user);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION(basic_include_push,);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION(user_include_push,);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_stack_delete,)();
 
 #endif
 

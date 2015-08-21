@@ -6,6 +6,7 @@
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/analyzer/struct/include-stack>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -152,14 +153,14 @@ QUEX_MEMBER_FUNCTION(basic_constructor,)
 
     QUEX_NAME(set_mode_brutally)(this, this->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
 
-    QUEX_MEMBER_FUNCTION(user_constructor,)();
+    QUEX_MEMBER_FUNCTION_CALL(user_constructor,);
 }
 
-QUEX_INLINE void
+QUEX_INLINE 
 QUEX_DESTRUCTOR() 
 {
     QUEX_NAME(Tokens_destruct)(this);
-    __QUEX_IF_INCLUDE_STACK(QUEX_NAME(include_stack_delete)((QUEX_TYPE_ANALYZER*)this));
+    __QUEX_IF_INCLUDE_STACK(QUEX_MEMBER_FUNCTION_CALL(include_stack_delete,));
     /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE 
      *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. 
      * TODO: Why? I cannot see a reason <fschaef 15y08m03d>                  */
@@ -175,9 +176,11 @@ QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
                                size_t               BufferMemorySize,
                                QUEX_TYPE_CHARACTER* EndOfContentP  /* = 0x0   */)
 {
+    (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)EndOfContentP;
+
+#   ifdef QUEX_OPTION_ASSERTS
     size_t  memory_size = BufferMemoryBegin ? BufferMemorySize 
                           :                   QUEX_SETTING_BUFFER_SIZE;
-#   ifdef QUEX_OPTION_ASSERTS
     QUEX_TYPE_CHARACTER*   iterator = 0x0;
 
     __quex_assert(memory_size == 0 || memory_size > 2);

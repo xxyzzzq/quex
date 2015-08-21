@@ -88,8 +88,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void
-    QUEX_NAME(Asserts_construct)(const char* CharacterEncodingName)
+    QUEX_NAME(Asserts_construct)(const char* CodecName)
     {
+        (void)CodecName;
+
 #       if      defined(QUEX_OPTION_ASSERTS) \
         && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         __QUEX_STD_printf(__QUEX_MESSAGE_ASSERTS_INFO);
@@ -102,8 +104,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
 #       if  defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
-        if( CharacterEncodingName ) {
-            __QUEX_STD_printf(__QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER, CharacterEncodingName);
+        if( CodecName ) {
+            __QUEX_STD_printf(__QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER, CodecName);
         }
 #       endif
     }
