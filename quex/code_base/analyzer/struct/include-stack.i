@@ -26,7 +26,7 @@ QUEX_MEMBER_FUNCTION2(include_push, file_name,
 {
     /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
      * turned off.                                                               */
-    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(FileName, "rb");
 
     /* ByteLoader will overtake ownership over 'fh', so we do not need to 
      * take care over 'free' and 'fclose'.                                       */
@@ -102,9 +102,9 @@ QUEX_MEMBER_FUNCTION2(include_push, ByteLoader,
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    if( this->filler )
+    if( this->buffer.filler )
     {
-        QUEX_NAME(BufferFiller_delete_self)(this->filler);
+        QUEX_NAME(BufferFiller_delete_self)(this->buffer.filler);
     }
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
     
@@ -117,9 +117,9 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer_destruct)(&me->buffer); 
-    QUEX_NAME(Buffer_construct)(&me->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALL(include_push, basic);
+    QUEX_NAME(Buffer_destruct)(&this->buffer); 
+    QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
+    QUEX_MEMBER_FUNCTION_CALL(basic_include_push,);
 }
 
 /* Level (5) __________________________________________________________________
@@ -133,18 +133,17 @@ QUEX_MEMBER_FUNCTION3(include_push, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
-    QUEX_NAME(Buffer_destruct)(&me->buffer); 
-    QUEX_NAME(Buffer_construct_with_memory)(&me->buffer, 
-                                            QUEX_NAME(BufferFiller*)0,
+    QUEX_NAME(Buffer_destruct)(&this->buffer); 
+    QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
+                                            (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALL(include_push, basic);
+    QUEX_MEMBER_FUNCTION_CALL(basic_include_push,);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION3(include_push, basic,
+QUEX_MEMBER_FUNCTION2(basic_include_push,,
                       QUEX_TYPE_ANALYZER*      me,
-                      const QUEX_NAME(Mode)*   Mode, 
                       QUEX_NAME(BufferFiller)* filler)
 {
     QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
@@ -171,13 +170,13 @@ QUEX_MEMBER_FUNCTION3(include_push, basic,
      *    -- Post categorizer.                                                 */
     QUEX_MEMBER_FUNCTION_CALL1(user_memento_pack, , memento);
 
-    me->_parent_memento = memento;
+    this->_parent_memento = memento;
 
-    QUEX_NAME(Buffer_construct)(&me->buffer, filler,
+    QUEX_NAME(Buffer_construct)(&this->buffer, filler,
                                 0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
-                                me->buffer._byte_order_reversion_active_f);
+                                this->buffer._byte_order_reversion_active_f);
 
-    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&me->counter); )
+    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&this->counter); )
 
     QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
 }   
@@ -187,9 +186,9 @@ QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me)
 {
     QUEX_NAME(Memento)* memento;
     /* Not included? return 'false' to indicate we're on the top level   */
-    if( ! me->_parent_memento ) return false; 
+    if( ! this->_parent_memento ) return false; 
 
-    QUEX_NAME(Buffer_destruct)(&me->buffer);
+    QUEX_NAME(Buffer_destruct)(&this->buffer);
     /* memento_unpack():
      *    => Current mode
      *           => __current_mode_p 

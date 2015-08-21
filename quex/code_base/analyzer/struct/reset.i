@@ -20,7 +20,7 @@ QUEX_MEMBER_FUNCTION2(reset, file_name,
 {
     /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
      * turned off.                                                               */
-    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(FileName, "rb");
 
     /* ByteLoader will overtake ownership over 'fh', so we do not need to 
      * take care over 'free' and 'fclose'.                                       */
@@ -96,9 +96,9 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    if( this->filler )
+    if( this->buffer.filler )
     {
-        QUEX_NAME(BufferFiller_delete_self)(this->filler);
+        QUEX_NAME(BufferFiller_delete_self)(this->buffer.filler);
     }
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
     
@@ -111,9 +111,9 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer_destruct)(&me->buffer); 
-    QUEX_NAME(Buffer_construct)(&me->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALL(reset, basic);
+    QUEX_NAME(Buffer_destruct)(&this->buffer); 
+    QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
+    QUEX_MEMBER_FUNCTION_CALL(basic_reset,);
 }
 
 /* Level (5) __________________________________________________________________
@@ -127,33 +127,33 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
-    QUEX_NAME(Buffer_destruct)(&me->buffer); 
-    QUEX_NAME(Buffer_construct_with_memory)(&me->buffer, 
-                                            QUEX_NAME(BufferFiller*)0,
+    QUEX_NAME(Buffer_destruct)(&this->buffer); 
+    QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
+                                            (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALL(reset, basic);
+    QUEX_MEMBER_FUNCTION_CALL(basic_reset,);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(reset, basic)
+QUEX_MEMBER_FUNCTION(basic_reset,)
 {
     QUEX_NAME(Tokens_destruct)(this);
     QUEX_NAME(Tokens_construct)(this);
 
     QUEX_NAME(ModeStack_construct)(this);
 
-    __QUEX_IF_INCLUDE_STACK(     me->_parent_memento = (QUEX_NAME(Memento)*)0);
+    __QUEX_IF_INCLUDE_STACK(     this->_parent_memento = (QUEX_NAME(Memento)*)0);
 
-    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_destruct)(&me->accumulator));
-    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, this));
+    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_destruct)(&this->accumulator));
+    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&this->accumulator, this));
 
-    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer));
-    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
+    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_destruct)(&this->post_categorizer));
+    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&this->post_categorizer));
 
-    __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&me->counter); )
+    __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&this->counter); )
 
-    QUEX_NAME(set_mode_brutally)(this, me->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
+    QUEX_NAME(set_mode_brutally)(this, this->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
 
     QUEX_MEMBER_FUNCTION_CALL(user_reset, );
 }

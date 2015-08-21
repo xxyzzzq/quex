@@ -36,20 +36,16 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t 
     QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(QUEX_NAME(BufferFiller_Converter)*  me);
 
-    QUEX_INLINE size_t 
-    QUEX_NAME(BufferFiller_Converter_insert)(QUEX_NAME(BufferFiller)*  alter_ego,
-                                             QUEX_TYPE_CHARACTER**     insertion_p,
-                                             QUEX_TYPE_CHARACTER*      BufferEnd,
-                                             void*                     ContentBegin,
-                                             void*                     ContentEnd);
+    QUEX_INLINE void 
+    QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  me,
+                                                   void**              begin_p,
+                                                   const void**        end_p);
 
-    QUEX_INLINE void*        
-    QUEX_NAME(BufferFiller_Converter_fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                          struct QUEX_NAME(Buffer_tag)*);
-
-    QUEX_INLINE void*        
-    QUEX_NAME(BufferFiller_Converter_fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                        struct QUEX_NAME(Buffer_tag)*);
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                                  QUEX_TYPE_CHARACTER*       insertion_p,
+                                                  const QUEX_TYPE_CHARACTER* BufferEnd,
+                                                  const void*                ContentEnd);
 
     QUEX_INLINE void   
     QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
@@ -93,9 +89,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 QUEX_NAME(BufferFiller_Converter_seek_character_index), 
                                                 QUEX_NAME(BufferFiller_Converter_read_characters),
                                                 QUEX_NAME(BufferFiller_Converter_delete_self),
-                                                QUEX_NAME(BufferFillerUser_Converter_insert),
-                                                QUEX_NAME(BufferFillerUser_Converter_fill_region_begin_p),
-                                                QUEX_NAME(BufferFillerUser_Converter_fill_region_end_p),
+                                                QUEX_NAME(BufferFiller_Converter_fill_prepare),
+                                                QUEX_NAME(BufferFiller_Converter_fill_finish),
                                                 byte_loader);
         uint8_t* raw_buffer_p;
 
@@ -438,50 +433,44 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 
-    QUEX_INLINE size_t 
-    QUEX_NAME(BufferFiller_Converter_insert)(QUEX_NAME(BufferFiller)*  alter_ego,
-                                             QUEX_TYPE_CHARACTER**     insertion_p,
-                                             QUEX_TYPE_CHARACTER*      BufferEnd,
-                                             void*                     ContentBegin,
-                                             void*                     ContentEnd)
+    QUEX_INLINE void 
+    QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
+                                                   void**              begin_p,
+                                                   const void**        end_p)
+    {
+        QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)buffer->filler; 
+        QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
+
+        *begin_p = (void*)me->raw_buffer.iterator; 
+        *end_p   = (void*)me->raw_buffer.end;
+    }
+
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                                  QUEX_TYPE_CHARACTER*       insertion_p,
+                                                  const QUEX_TYPE_CHARACTER* BufferEnd,
+                                                  const void*                FilledEndP)
         /* Appends the content first into a 'raw' buffer and then converts it. This
          * is useful in cases where the 'break' may appear in between characters, or
          * where the statefulness of the converter cannot be controlled.              */
     {
-        size_t CopiedByteN = 0;
+        QUEX_NAME(BufferFiller_Converter)*  me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+        QUEX_TYPE_CHARACTER*                insertion_begin_p = insertion_p;
 
-        QUEX_NAME(BufferFiller_Converter)*        me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-
-        /* (1) Append the content to the 'raw' buffer. */
-        /*     -- Move away passed buffer content.                                      */
-        QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
-
-        CopiedByteN = QUEXED(MemoryManager_insert)(me->raw_buffer.end, 
-                                                   me->raw_buffer.memory_end,
-                                                   (uint8_t*)ContentBegin, 
-                                                   (uint8_t*)ContentEnd);
-
-        me->raw_buffer.end += CopiedByteN;
+        __quex_assert(FilledEndP >= me->raw_buffer.iterator);
+        __quex_assert(FilledEndP <= me->raw_buffer.end);
 
         /* (2) Convert data from the 'raw' buffer into the analyzer buffer.             */
 
         /*     -- Perform the conversion.                                               */
         me->converter->convert(me->converter, 
-                               &me->raw_buffer.iterator, me->raw_buffer.end,
-                               insertion_p,              BufferEnd);
+                               &me->raw_buffer.iterator, (const uint8_t*)FilledEndP,
+                               &insertion_p,              BufferEnd);
 
-        return CopiedByteN;
+        me->raw_buffer.iterator = (uint8_t*)FilledEndP;
+        
+        return insertion_p - insertion_begin_p;
     }
-
-     QUEX_INLINE void*        
-     QUEX_NAME(fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                    struct QUEX_NAME(Buffer_tag)*)
-    { return (void*)me->raw_buffer.begin; }
-
-     QUEX_INLINE void*        
-     QUEX_NAME(fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                  struct QUEX_NAME(Buffer_tag)*)
-    { return (void*)me->raw_buffer.memory_end_p; }
 
     QUEX_INLINE void 
     QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(QUEX_NAME(BufferFiller_Converter)*  me)
