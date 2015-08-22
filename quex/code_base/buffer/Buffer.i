@@ -45,7 +45,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                               QUEXED(MemoryObjectType_BUFFER));
 
         QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
-                                                /* EndOfFileP */ &memory[0], 
+                                                /* EndOfFileP */ (QUEX_TYPE_CHARACTER*)0,
                                                 /* ExternalF */ false);
     }
 
@@ -57,10 +57,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                             QUEX_TYPE_CHARACTER*      end_of_file_p,
                                             bool                      ExternalF)
     {
-        /* If the input memory is provided, the content **must** be 
-         * properly set up.                                                  */
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(&memory[1], end_of_file_p);
-
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
         QUEX_NAME(BufferMemory_construct)(&me->_memory, 
                                           memory, MemorySize, end_of_file_p, 
@@ -485,9 +481,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
-        if( EndOfFileP && &EndOfFileP[1] < &me->_back ) {
+        if( EndOfFileP && &EndOfFileP[1] < me->_back ) {
             __QUEX_STD_memset(&EndOfFileP[1], 0xFF, 
-                              (size_t)(&me->_back - &EndOfFileP[1])
+                              (size_t)(me->_back - &EndOfFileP[1])
                               * sizeof(QUEX_TYPE_CHARACTER));
         } 
 #       endif 

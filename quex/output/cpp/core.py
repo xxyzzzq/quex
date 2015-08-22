@@ -3,11 +3,11 @@
 from   quex.engine.analyzer.door_id_address_label         import get_plain_strings, \
                                                                  dial_db
 from   quex.engine.analyzer.terminal.core                 import Terminal
-from   quex.output.core.variable_db        import variable_db
-import quex.output.core.base                         as     generator
+from   quex.output.core.variable_db                       import variable_db
+import quex.output.core.base                              as     generator
 from   quex.engine.state_machine.engine_state_machine_set import EngineStateMachineSet
 from   quex.engine.counter                                import CountOpFactory
-from   quex.engine.misc.tools                                  import all_isinstance, \
+from   quex.engine.misc.tools                             import all_isinstance, \
                                                                  typed
 import quex.output.cpp.counter                            as     counter
 from   quex.input.regular_expression.construct            import Pattern

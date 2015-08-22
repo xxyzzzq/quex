@@ -17,52 +17,52 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 /* Level (1) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, file_name,
-                                      const char* Filename, 
-                                      const char* CodecName /* = 0x0   */):
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, file_name,
+                                       const char* Filename, 
+                                       const char* CodecName /* = 0x0   */):
 
 /* Level (2) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, FILE,
-                                      __QUEX_STD_FILE*  fh, 
-                                      const char*       CodecName /* = 0x0   */)
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, FILE,
+                                       __QUEX_STD_FILE*  fh, 
+                                       const char*       CodecName /* = 0x0   */)
 
 #if defined(QUEX_OPTION_POSIX)
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, POSIX,
-                                      __QUEX_STD_FILE*  fh, 
-                                      const char*       CodecName /* = 0x0   */)
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, POSIX,
+                                       __QUEX_STD_FILE*  fh, 
+                                       const char*       CodecName /* = 0x0   */)
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, istream,
-                                      std::istream*  istream_p, 
-                                      const char*    CodecName /* = 0x0   */);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, istream,
+                                       std::istream*  istream_p, 
+                                       const char*    CodecName /* = 0x0   */);
 
 #endif
 
 #if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, wistream,
-                                      std::wistream*  istream_p, 
-                                      const char*     CodecName /* = 0x0   */);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, wistream,
+                                       std::wistream*  istream_p, 
+                                       const char*     CodecName /* = 0x0   */);
 #endif
 
 /* Level (3) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, ByteLoader,
-                                      ByteLoader* byte_loader,
-                                      const char* CodecName);
+QUEX_INLINE void QUEX_MEMBER_FUNCTION2(include_push, ByteLoader,
+                                       ByteLoader* byte_loader,
+                                       const char* CodecName);
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, BufferFiller,
-                                      QUEX_NAME(BufferFiller)*); 
+QUEX_INLINE void QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
+                                       QUEX_NAME(BufferFiller)*); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(include_push, memory,
-                                      QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                      size_t               BufferMemorySize,
-                                      QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+QUEX_INLINE void QUEX_MEMBER_FUNCTION3(include_push, memory,
+                                       QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                       size_t               BufferMemorySize,
+                                       QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
 
 /* Basic constructions ________________________________________________________
  *                                                                           */

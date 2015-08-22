@@ -89,6 +89,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 QUEX_NAMESPACE_MAIN_OPEN 
 
+extern QUEX_NAME(Mode)*  (QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]);  
+
 typedef struct $$LEXER_CLASS_NAME_SAFE$$_tag {
 
 #include <quex/code_base/analyzer/Engine_body>

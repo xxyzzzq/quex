@@ -3,29 +3,38 @@ from   quex.blackboard                   import setup as Setup, \
                                                 Lng, \
                                                 E_IncidenceIDs
 
-def do(Modes):
+def do(ModeDb):
     LexerClassName   = Setup.analyzer_class_name
     DerivedClassName = Setup.analyzer_derived_class_name
 
+    mode_db_setup_txt = __setup(ModeDb)
+
     # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
-    mode_class_member_functions_txt = write_member_functions(Modes.values())
+    mode_class_member_functions_txt = write_member_functions(ModeDb.values())
 
-    mode_objects_txt = ""    
-    for mode_name, mode in Modes.items():
-        if mode.abstract_f(): continue
-        mode_objects_txt += "/* Global */QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode_name
-
-    txt  = "%s%s%s%s" % (
+    txt  = "".join([
         "QUEX_NAMESPACE_MAIN_OPEN\n",
-        mode_objects_txt,
+        mode_db_setup_txt,
         mode_class_member_functions_txt,
         "QUEX_NAMESPACE_MAIN_CLOSE\n"
-    )
+    ])
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
     
     return txt
+
+def mode_id_definition(ModeDb):
+    result = "" 
+    for i, info in enumerate(ModeDb.items()):
+        name = info[0]
+        mode = info[1]
+        if mode.abstract_f(): continue
+        result += "    QUEX_NAME(ModeID_%s) = %i,\n" % (name, i)
+
+    if result:
+        result = result[:-2]
+    return result
 
 def write_member_functions(Modes):
     # -- get the implementation of mode class functions
@@ -334,3 +343,146 @@ def get_on_indentation_handler(Mode):
                       ["$$N-DEDENT-PROCEDURE$$",          on_n_dedent_str],
                       ["$$INDENTATION-ERROR-PROCEDURE$$", on_indentation_error]])
     return txt
+
+def get_related_code_fragments(ModeDb):
+    """
+       RETURNS:  -- members of the lexical analyzer class for the mode classes
+                 -- static member functions declaring the analyzer functions for he mode classes 
+                 -- constructor init expressions (before '{'),       
+                 -- constructor text to be executed at construction time 
+                 -- friend declarations for the mode classes/functions
+
+    """
+    Modes = ModeDb.values()
+    members_txt = ""    
+    for mode in Modes:
+        if mode.abstract_f(): continue
+        members_txt += "        extern QUEX_NAME(Mode)  QUEX_NAME(%s);\n" % mode.name
+
+    mode_functions_txt = __get_function_declaration(Modes, FriendF=False)
+    friends_txt        = __get_function_declaration(Modes, FriendF=True)
+
+    return members_txt,        \
+           mode_functions_txt, \
+           friends_txt
+
+def __get_function_declaration(Modes, FriendF=False):
+
+    if FriendF: prolog = "    friend "
+    else:       prolog = "extern "
+
+    def functions(Prolog, ReturnType, NameList, ArgList):
+        txt = ""
+        for name in NameList:
+            function_signature = "%s QUEX_NAME(%s_%s)(%s);" % \
+                     (ReturnType, mode.name, name, ArgList)
+            txt += "%s" % Prolog + "    " + function_signature + "\n"
+
+        return txt
+
+    txt = ""
+    on_indentation_txt = ""
+    for mode in Modes:
+        if mode.abstract_f(): continue
+
+        txt += functions(prolog, "__QUEX_TYPE_ANALYZER_RETURN_VALUE", 
+                                ["analyzer_function"],
+                                "QUEX_TYPE_ANALYZER*")
+
+        # If one of the following events is specified, then we need an 'on_indentation' handler
+        if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER): 
+            on_indentation_txt = functions(prolog, "void", ["on_indentation"], 
+                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_CHARACTER*")
+
+        if mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY): 
+            txt += functions(prolog, "void", ["on_entry"], 
+                                    "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
+
+        if mode.incidence_db.has_key(E_IncidenceIDs.MODE_EXIT): 
+            txt += functions(prolog, "void", ["on_exit"], 
+                                    "QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*")
+
+        txt += "#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
+        txt += functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
+                                "const QUEX_NAME(Mode)*")
+        txt += "#endif\n"
+
+    txt += on_indentation_txt
+    txt += "\n"
+
+    return txt
+
+def __setup(ModeDb):
+    txt = [
+        initialization(mode)
+        for mode in ModeDb.itervalues() if not mode.abstract_f()
+    ]
+    txt.append("\n")
+    txt.append("QUEX_NAME(Mode)* (QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]) = {\n")
+
+    content_txt = [
+        "    &QUEX_NAME(%s),\n" % mode.name
+        for mode_id, mode in sorted(ModeDb.iteritems()) if not mode.abstract_f()
+    ]
+    # delete trailing comma
+    if content_txt: 
+        content_txt[-1] = "%s\n" % content_txt[-1][:-2]
+
+    txt.extend(content_txt)
+    txt.append("};\n")
+
+    return "".join(txt)
+
+def initialization(mode):
+    assert not mode.abstract_f()
+    
+    analyzer_function = "QUEX_NAME(%s_analyzer_function)" % mode.name
+    on_indentation    = "QUEX_NAME(%s_on_indentation)"    % mode.name
+    on_entry          = "QUEX_NAME(%s_on_entry)"          % mode.name
+    on_exit           = "QUEX_NAME(%s_on_exit)"           % mode.name
+    has_base          = "QUEX_NAME(%s_has_base)"          % mode.name
+    has_entry_from    = "QUEX_NAME(%s_has_entry_from)"    % mode.name
+    has_exit_to       = "QUEX_NAME(%s_has_exit_to)"       % mode.name
+
+    #if mode.abstract_f(): 
+    #    analyzer_function = "QUEX_NAME(Mode_uncallable_analyzer_function)"
+
+    if not mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY):
+        on_entry = "QUEX_NAME(Mode_on_entry_exit_null_function)"
+
+    if not mode.incidence_db.has_key(E_IncidenceIDs.MODE_EXIT):
+        on_exit = "QUEX_NAME(Mode_on_entry_exit_null_function)"
+
+    if not mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER):
+        on_indentation = "QUEX_NAME(Mode_on_indentation_null_function)"
+
+    txt = blue_print(mode_setup_str,
+                [["$$MN$$",             mode.name],
+                 ["$analyzer_function", analyzer_function],
+                 ["$on_indentation",    on_indentation],
+                 ["$on_entry",          on_entry],
+                 ["$on_exit",           on_exit],
+                 ["$has_base",          has_base],
+                 ["$has_entry_from",    has_entry_from],
+                 ["$has_exit_to",       has_exit_to]])
+
+    return txt
+
+mode_setup_str = """QUEX_NAME(Mode) QUEX_NAME($$MN$$) = {
+    /* id                */ QUEX_NAME(ModeID_$$MN$$),
+    /* name              */ "$$MN$$",
+#   if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \\
+       && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
+    /* on_indentation    */ $on_indentation,
+#   endif
+    /* on_entry          */ $on_entry,
+    /* on_exit           */ $on_exit,
+#   if      defined(QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK)
+    /* has_base          */ $has_base,
+    /* has_entry_from    */ $has_entry_from,
+    /* has_exit_to       */ $has_exit_to,
+#   endif
+    /* analyzer_function */ $analyzer_function
+};
+"""
+

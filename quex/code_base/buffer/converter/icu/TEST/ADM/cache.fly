@@ -1,57 +1,57 @@
 {
 file_name: converter-16.exe;
 result_list: [
-  [ UTF-8; OK; 0.009302; None; ]
-  [ UTF-16; OK; 0.009917; None; ]
+  [ UTF-8; OK; 0.009797; None; ]
+  [ UTF-16; OK; 0.010066; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Plain 16 bit;
 title_group: Converter;
-hwut_info_time: 1439021213L;
+hwut_info_time: 1440239424L;
 }
 {
 file_name: converter-32.exe;
 result_list: [
-  [ UTF-8; OK; 0.009987; None; ]
-  [ UTF-16; OK; 0.009110; None; ]
+  [ UTF-8; OK; 0.009537; None; ]
+  [ UTF-16; OK; 0.010098; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Plain 32 bit;
 title_group: Converter;
-hwut_info_time: 1439021208L;
+hwut_info_time: 1440239419L;
 }
 {
 file_name: converter-statefulness-16.exe;
 result_list: [
-  [ UTF-8; OK; 0.006115; None; ]
-  [ UTF-16; OK; 0.004818; None; ]
+  [ UTF-8; OK; 0.006217; None; ]
+  [ UTF-16; OK; 0.005973; None; ]
 ]
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (16 bit);
 title_group: Converter;
-hwut_info_time: 1439021209L;
+hwut_info_time: 1440239420L;
 }
 {
 file_name: converter-statefulness-32.exe;
 result_list: [
-  [ UTF-8; OK; 0.006251; None; ]
-  [ UTF-16; OK; 0.004852; None; ]
+  [ UTF-8; OK; 0.007007; None; ]
+  [ UTF-16; OK; 0.006509; None; ]
 ]
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (32 bit);
 title_group: Converter;
-hwut_info_time: 1439021216L;
+hwut_info_time: 1440239427L;
 }
 {
 file_name: Buffer_move_backward.exe;
 result_list: [
-  [ 1; OK; 0.005150; None; ]
-  [ 2; OK; 0.005387; None; ]
-  [ 3; OK; 0.006724; None; ]
-  [ 4; OK; 0.006681; None; ]
-  [ 5; OK; 0.007429; None; ]
+  [ 1; MAKE FAILED; 0.005150; None; ]
+  [ 2; MAKE FAILED; 0.005387; None; ]
+  [ 3; MAKE FAILED; 0.006724; None; ]
+  [ 4; MAKE FAILED; 0.006681; None; ]
+  [ 5; MAKE FAILED; 0.007429; None; ]
 ]
 make_dependent_f: True;
 title: Backward (BPC=4);
@@ -61,11 +61,11 @@ hwut_info_time: 1439021215L;
 {
 file_name: Buffer_move_forward.exe;
 result_list: [
-  [ 1; OK; 0.005964; None; ]
-  [ 2; OK; 0.005799; None; ]
-  [ 3; OK; 0.006056; None; ]
-  [ 4; OK; 0.005083; None; ]
-  [ 5; OK; 0.005136; None; ]
+  [ 1; MAKE FAILED; 0.005964; None; ]
+  [ 2; MAKE FAILED; 0.005799; None; ]
+  [ 3; MAKE FAILED; 0.006056; None; ]
+  [ 4; MAKE FAILED; 0.005083; None; ]
+  [ 5; MAKE FAILED; 0.005136; None; ]
 ]
 make_dependent_f: True;
 title: Forward (BPC=4);
@@ -75,8 +75,8 @@ hwut_info_time: 1439021212L;
 {
 file_name: seek_character_index.exe;
 result_list: [
-  [ Forward; OK; 0.007314; None; ]
-  [ Backward; OK; 0.006788; None; ]
+  [ Forward; MAKE FAILED; 0.007314; None; ]
+  [ Backward; MAKE FAILED; 0.006788; None; ]
 ]
 make_dependent_f: True;
 title: Plain search;
@@ -86,8 +86,8 @@ hwut_info_time: 1439021214L;
 {
 file_name: seek_character_index-zikzak.exe;
 result_list: [
-  [ Fixed; OK; 0.013401; None; ]
-  [ Dynamic; OK; 0.012584; None; ]
+  [ Fixed; MAKE FAILED; 0.013401; None; ]
+  [ Dynamic; MAKE FAILED; 0.012584; None; ]
 ]
 make_dependent_f: True;
 title: Total Zik-Zak;
@@ -97,7 +97,7 @@ hwut_info_time: 1439021211L;
 {
 file_name: Buffer_tell_and_seek.exe;
 result_list: [
-  [ ; OK; 0.006128; None; ]
+  [ ; MAKE FAILED; 0.006128; None; ]
 ]
 make_dependent_f: True;
 title: Bytes Per Character (BPC)=4;
@@ -107,10 +107,10 @@ hwut_info_time: 1439021217L;
 {
 file_name: one-beat.exe;
 result_list: [
-  [ 6; OK; 0.007963; None; ]
-  [ 7; OK; 0.005532; None; ]
-  [ 8; OK; 0.006140; None; ]
-  [ 9; OK; 0.006009; None; ]
+  [ 6; MAKE FAILED; 0.007963; None; ]
+  [ 7; MAKE FAILED; 0.005532; None; ]
+  [ 8; MAKE FAILED; 0.006140; None; ]
+  [ 9; MAKE FAILED; 0.006009; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
@@ -121,15 +121,15 @@ hwut_info_time: 1439021210L;
 {
 file_name: n-beat.exe;
 result_list: [
-  [ 1; OK; 0.006001; None; ]
-  [ 2; OK; 0.005080; None; ]
-  [ 3; OK; 0.004936; None; ]
-  [ 4; OK; 0.007198; None; ]
-  [ 5; OK; 0.006933; None; ]
-  [ 6; OK; 0.005071; None; ]
-  [ 7; OK; 0.005006; None; ]
-  [ 8; OK; 0.004969; None; ]
-  [ 9; OK; 0.005800; None; ]
+  [ 1; MAKE FAILED; 0.006001; None; ]
+  [ 2; MAKE FAILED; 0.005080; None; ]
+  [ 3; MAKE FAILED; 0.004936; None; ]
+  [ 4; MAKE FAILED; 0.007198; None; ]
+  [ 5; MAKE FAILED; 0.006933; None; ]
+  [ 6; MAKE FAILED; 0.005071; None; ]
+  [ 7; MAKE FAILED; 0.005006; None; ]
+  [ 8; MAKE FAILED; 0.004969; None; ]
+  [ 9; MAKE FAILED; 0.005800; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
