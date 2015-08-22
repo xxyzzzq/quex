@@ -138,6 +138,9 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION(basic_reset,)
 {
+    bool  byte_order_reversion_f = this->buffer.filler ? 
+                                     this->buffer.filler->_byte_order_reversion_active_f
+                                   : false;
     QUEX_NAME(Tokens_destruct)(this);
     QUEX_NAME(Tokens_construct)(this);
 
@@ -153,8 +156,12 @@ QUEX_MEMBER_FUNCTION(basic_reset,)
 
     __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&this->counter); )
 
-    QUEX_NAME(set_mode_brutally)(this, this->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
+    QUEX_NAME(set_mode_brutally_by_id)(this, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
+    if( this->buffer.filler && byte_order_reversion_f )
+    {
+        this->buffer.filler->_byte_order_reversion_active_f = true;
+    }
     QUEX_MEMBER_FUNCTION_CALL(user_reset, );
 }
 

@@ -142,10 +142,11 @@ QUEX_MEMBER_FUNCTION3(include_push, memory,
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(basic_include_push,,
-                      QUEX_TYPE_ANALYZER*      me,
-                      QUEX_NAME(BufferFiller)* filler)
+QUEX_MEMBER_FUNCTION(basic_include_push,)
 {
+    bool                byte_order_reversion_f = this->buffer.filler ? 
+                                                   this->buffer.filler->_byte_order_reversion_active_f
+                                                 : false;
     QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
                                      sizeof(QUEX_NAME(Memento)), QUEXED(MemoryObjectType_MEMENTO));
 #   ifndef __QUEX_OPTION_PLAIN_C
@@ -162,27 +163,25 @@ QUEX_MEMBER_FUNCTION2(basic_include_push,,
        || defined(QUEX_OPTION_ASSERTS)
     memento->DEBUG_analyzer_function_at_entry = this->DEBUG_analyzer_function_at_entry;
 #   endif
-    __QUEX_IF_COUNT( memento->counter         = self.counter);
+    __QUEX_IF_COUNT( memento->counter         = this->counter);
+    this->_parent_memento = memento;
+
+    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&this->counter); )
+
+    if( this->buffer.filler && byte_order_reversion_f )
+    {
+        this->buffer.filler->_byte_order_reversion_active_f = true;
+    }
 
     /* Deriberately not subject to include handling:
      *    -- Mode stack.
      *    -- Token and token queues.
      *    -- Post categorizer.                                                 */
     QUEX_MEMBER_FUNCTION_CALL1(user_memento_pack, , memento);
-
-    this->_parent_memento = memento;
-
-    QUEX_NAME(Buffer_construct)(&this->buffer, filler,
-                                0x0, QUEX_SETTING_BUFFER_SIZE, 0x0,
-                                this->buffer._byte_order_reversion_active_f);
-
-    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&this->counter); )
-
-    QUEX_NAME(set_mode_brutally)(me, (QUEX_NAME(Mode)*)Mode);
 }   
 
 QUEX_INLINE bool
-QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me) 
+QUEX_MEMBER_FUNCTION(include_pop,) 
 {
     QUEX_NAME(Memento)* memento;
     /* Not included? return 'false' to indicate we're on the top level   */
@@ -228,6 +227,16 @@ QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* me)
 
     /* Return to including file succesful */
     return true;
+}
+     
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTION(include_stack_delete,)
+{
+    while( this->_parent_memento ) {
+        if( ! QUEX_MEMBER_FUNCTION_CALL(include_pop,) ) {
+            QUEX_ERROR_EXIT("Error during deletion of include stack.");
+        }
+    }
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

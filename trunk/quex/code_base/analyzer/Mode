@@ -27,9 +27,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct QUEX_NAME(Mode_tag) {  
         int                  id;
         const char*          name;
-        QUEX_TYPE_ANALYZER*  the_lexer;
-
-        QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
 
 #       ifdef QUEX_OPTION_INDENTATION_TRIGGER        
         void (*on_indentation)(QUEX_TYPE_ANALYZER*    me, 
@@ -43,6 +40,13 @@ QUEX_NAMESPACE_MAIN_OPEN
         bool (*has_entry_from)(const struct QUEX_NAME(Mode_tag)* Mode);
         bool (*has_exit_to)(const struct QUEX_NAME(Mode_tag)* Mode);
 #       endif
+
+        /* Choose the analyzer function to be the last, because it has a unique
+         * signature. The function pointers are assigned in a table. If the 
+         * content of this class changes, any mismatch of pointers is likely
+         * to trigger a compilation error, thus signalling that the setup is
+         * incorrect.                                                        */
+        QUEX_NAME(AnalyzerFunctionP)    analyzer_function;
     } QUEX_NAME(Mode);
     
     QUEX_INLINE __QUEX_TYPE_ANALYZER_RETURN_VALUE

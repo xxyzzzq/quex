@@ -43,14 +43,6 @@
         QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
         struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
 
-        /*_________________________________________________________________________
-         *        __   __   ___  __  
-         *  |\/| /  \ |  \ |__  /__` 
-         *  |  | \__/ |__/ |___ .__/ 
-         *                                                                         */
-        /* Map: mode-id --> mode object                                            */
-        struct QUEX_NAME(Mode_tag)*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
-
         struct {
             struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
             struct QUEX_NAME(Mode_tag)** end;

@@ -15,7 +15,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void   QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
                              QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                              size_t               BufferMemorySize,
-                             QUEX_TYPE_CHARACTER* EndOfContentP  /* = 0x0   */);
+                             QUEX_TYPE_CHARACTER* BufferEndOfContentP  /* = 0x0   */);
 QUEX_INLINE void   QUEX_NAME(Asserts_construct)(const char* CodecName);
 QUEX_INLINE void   QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me);
@@ -151,7 +151,7 @@ QUEX_MEMBER_FUNCTION(basic_constructor,)
     __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&this->post_categorizer));
     __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&this->counter); )
 
-    QUEX_NAME(set_mode_brutally)(this, this->mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]);
+    QUEX_NAME(set_mode_brutally_by_id)(this, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
     QUEX_MEMBER_FUNCTION_CALL(user_constructor,);
 }
@@ -174,9 +174,9 @@ QUEX_INLINE void
 QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
                                QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                                size_t               BufferMemorySize,
-                               QUEX_TYPE_CHARACTER* EndOfContentP  /* = 0x0   */)
+                               QUEX_TYPE_CHARACTER* BufferEndOfContentP  /* = 0x0   */)
 {
-    (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)EndOfContentP;
+    (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)BufferEndOfContentP;
 
 #   ifdef QUEX_OPTION_ASSERTS
     size_t  memory_size = BufferMemoryBegin ? BufferMemorySize 

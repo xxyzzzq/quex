@@ -2,13 +2,13 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-void
+QUEX_INLINE void
 QUEX_MEMBER_FUNCTION(user_constructor, )
 {
     (void)this;
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's constructor extensions _______________________________________*/
 $$CONSTRUCTOR_EXTENSTION$$
 /* END: _______________________________________________________________________*/

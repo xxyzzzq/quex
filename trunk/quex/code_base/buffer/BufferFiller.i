@@ -790,7 +790,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->_memory._end_of_file_p, 
-                                                &buffer->_memory._end_of_file_p[CharacterN]);
+                                                &buffer->_memory._end_of_file_p[inserted_character_n]);
         /* When lexing directly on the buffer, the end of file pointer is 
          * always set.                                                       */
         QUEX_NAME(Buffer_end_of_file_set)(buffer, 

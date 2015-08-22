@@ -24,8 +24,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller)   base;
 
         /* position in stream where analysis started */
-        long        start_position;  
-        long        _last_stream_position;  
+        QUEX_TYPE_STREAM_POSITION   start_position;  
+        QUEX_TYPE_STREAM_POSITION   _last_stream_position;  
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
         ptrdiff_t   _character_index;
