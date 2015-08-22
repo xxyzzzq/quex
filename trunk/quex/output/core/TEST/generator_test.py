@@ -514,8 +514,6 @@ QUEX_NAME(Mode) my_modes[] = {
     { 
       /* id                */ 0, 
       /* name              */ "Mode0", 
-      /* the_lexer         */ &lexer_state,  
-      /* analyzer_function */ QUEX_NAME(Mr_analyzer_function),
 #     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
       /* on_indentation    */ NULL,
 #     endif
@@ -526,13 +524,12 @@ QUEX_NAME(Mode) my_modes[] = {
       /* has_entry_from)   */ NULL,
       /* has_exit_to       */ NULL,
 #     endif
+      /* analyzer_function */ QUEX_NAME(Mr_analyzer_function),
     }
 #ifdef QUEX_UNIT_TEST_SECOND_MODE
     , { 
       /* id                */ 1, 
       /* name              */ "Mode1", 
-      /* the_lexer         */ &lexer_state,  
-      /* analyzer_function */ QUEX_NAME(Mrs_analyzer_function),
 #     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
       /* on_indentation    */ NULL,
 #     endif
@@ -543,15 +540,17 @@ QUEX_NAME(Mode) my_modes[] = {
       /* has_entry_from)   */ NULL,
       /* has_exit_to       */ NULL,
 #     endif
+      /* analyzer_function */ QUEX_NAME(Mrs_analyzer_function),
     }
 #endif
 };
 
-#define SETUP_MODE_DB() \\
-        do {                                       \\
-            lexer_state.mode_db[0] = &my_modes[0]; \\
-            lexer_state.mode_db[1] = &my_modes[1]; \\
-        } while(0) 
+QUEX_NAME(Mode) *(QUEX_NAME(mode_db)[]) = {
+   &my_modes[0],
+#ifdef QUEX_UNIT_TEST_SECOND_MODE
+   &my_modes[1]
+#endif
+};
 
 #if defined(QUEX_OPTION_COMPUTED_GOTOS)
 #   define DEAL_WITH_COMPUTED_GOTOS() \
@@ -610,8 +609,7 @@ test_program_db = {
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         DEAL_WITH_COMPUTED_GOTOS();
-        SETUP_MODE_DB();
-        QUEX_NAME(construct_basic)(&lexer_state, (void*)0x0,
+        QUEX_NAME(basic_constructor)(&lexer_state, (void*)0x0,
                                    TestString, MemorySize, TestString + MemorySize - 1, 
                                    0x0, 0, false);
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
@@ -634,8 +632,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        SETUP_MODE_DB();
-        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
+        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
                                     $$BUFFER_SIZE$$, 0x0, 0x0,
                                     /* No translation, no translation buffer */0x0, false);
         /**/
@@ -659,8 +656,7 @@ test_program_db = {
         ByteLoader*   byte_loader = ByteLoader_stream_new(&istr);
 
         DEAL_WITH_COMPUTED_GOTOS();
-        SETUP_MODE_DB();
-        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
+        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
 
         return run_test("$$TEST_STRING$$", "$$COMMENT$$");
@@ -683,8 +679,7 @@ test_program_db = {
         ByteLoader*                   byte_loader = ByteLoader_stream_new(&strange_stream);
 
         DEAL_WITH_COMPUTED_GOTOS();
-        SETUP_MODE_DB();
-        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
+        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
                                    $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
         return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",
@@ -706,8 +701,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        SETUP_MODE_DB();
-        QUEX_NAME(construct_basic)(&lexer_state, byte_loader, 0x0,
+        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
                                    buffer_size, 0x0, 0x0,
                                    /* No translation, no translation buffer */0x0, false);
 

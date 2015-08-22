@@ -65,6 +65,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     struct QUEX_NAME(Mode_tag);
 
+    extern QUEX_NAME(Mode)*  (QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]);  
+
 #  if ! defined(__QUEX_OPTION_PLAIN_C)
    class TestAnalyzer {
       /* Most compilers put the virtual function table in front of the object.
