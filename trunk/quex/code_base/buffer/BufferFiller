@@ -9,6 +9,9 @@
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
+     struct QUEX_NAME(Converter_tag);
+     struct QUEX_NAME(Buffer_tag);
+
      typedef enum {
         QUEX_TYPE_BUFFER_FILLER_NONE,
         QUEX_TYPE_BUFFER_FILLER_PLAIN,
@@ -103,23 +106,22 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_NAME(BufferFiller)* 
                         QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
                                                         const char*   CharacterEncodingName);
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
-                             ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                             void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
-                                                                  const ptrdiff_t),
-                             size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                             QUEX_TYPE_CHARACTER*, const size_t),
-                             void         (*delete_self)(QUEX_NAME(BufferFiller)*),
-                             size_t       (*fill_insert)(QUEX_NAME(BufferFiller)* me,
-                                                         QUEX_TYPE_CHARACTER**    insertion_p,
-                                                         QUEX_TYPE_CHARACTER*     BufferEnd,
-                                                         void*                    ContentBegin,
-                                                         void*                    ContentEnd),
-                             void*        (*fill_region_begin_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                                 struct QUEX_NAME(Buffer_tag)*),
-                             void*        (*fill_region_end_p)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                               struct QUEX_NAME(Buffer_tag)*),
-                             ByteLoader*  byte_loader);
+    QUEX_INLINE void    
+    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
+                                            ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
+                                                                                 const ptrdiff_t),
+                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                                            QUEX_TYPE_CHARACTER*, const size_t),
+                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                            void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
+                                                                                 void**              begin_p,
+                                                                                 const void**        end_p),
+                                            ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
+                                                                                QUEX_TYPE_CHARACTER*       BeginP,
+                                                                                const QUEX_TYPE_CHARACTER* EndP,
+                                                                                const void*                FilledEndP),
+                                            ByteLoader*  byte_loader);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);

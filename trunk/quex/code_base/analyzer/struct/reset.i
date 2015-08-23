@@ -5,6 +5,7 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET_I
 
 #include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/analyzer/struct/reset>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -113,7 +114,7 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
 {
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
     QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALL(basic_reset,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
 /* Level (5) __________________________________________________________________
@@ -132,11 +133,11 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
                                             (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALL(basic_reset,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(basic_reset,)
+QUEX_MEMBER_FUNCTIONO(basic_reset)
 {
     bool  byte_order_reversion_f = this->buffer.filler ? 
                                      this->buffer.filler->_byte_order_reversion_active_f
@@ -162,7 +163,7 @@ QUEX_MEMBER_FUNCTION(basic_reset,)
     {
         this->buffer.filler->_byte_order_reversion_active_f = true;
     }
-    QUEX_MEMBER_FUNCTION_CALL(user_reset, );
+    QUEX_MEMBER_FUNCTION_CALLO(user_reset);
 }
 
 

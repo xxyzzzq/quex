@@ -3,7 +3,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(user_constructor, )
+QUEX_MEMBER_FUNCTIONO(user_constructor)
 {
     (void)this;
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
@@ -16,7 +16,7 @@ $$CONSTRUCTOR_EXTENSTION$$
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(user_reset, ) 
+QUEX_MEMBER_FUNCTIONO(user_reset) 
 {
     (void)this;
 /* START: User's 'reset' ______________________________________________________*/
@@ -27,7 +27,7 @@ $$MEMENTO_EXTENSIONS_PACK$$
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION1(user_memento_pack, , QUEX_NAME(Memento)* memento) 
+QUEX_MEMBER_FUNCTIONO1(user_memento_pack, QUEX_NAME(Memento)* memento) 
 {
     (void)this; (void)memento;
 
@@ -37,7 +37,7 @@ $$MEMENTO_EXTENSIONS_PACK$$
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION1(user_memento_unpack, , QUEX_NAME(Memento)*  memento)
+QUEX_MEMBER_FUNCTIONO1(user_memento_unpack, QUEX_NAME(Memento)*  memento)
 {
     (void)this; (void)memento;
 

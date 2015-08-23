@@ -152,7 +152,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void    QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
                                                   uint8_t* Begin, size_t SizeInBytes,
-                                                  long StartPosition);
+                                                  QUEX_TYPE_STREAM_POSITION StartPosition);
 
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                         \

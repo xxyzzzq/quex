@@ -49,8 +49,8 @@ QUEX_NAMESPACE_MAIN_OPEN
          * input_handle      == 0x0: Possible; Converter might be applied on buffer. 
          *                           (User writes into translation buffer).                     */
     {
-        (void)TranslationBufferMemorySize;
         QUEX_NAME(BufferFiller)* filler;
+        (void)TranslationBufferMemorySize;
 
 #       if    defined(QUEX_OPTION_CONVERTER_ICONV) \
            || defined(QUEX_OPTION_CONVERTER_ICU) 
@@ -734,10 +734,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Copy as much as possible of the new content into the designated
          * region in memory.                                                 */
-        copy_n = QUEXED(MemoryManager_insert)((uint8_t*)begin_p,  
-                                              (uint8_t*)end_p,
-                                              (uint8_t*)ContentBegin, 
-                                              (uint8_t*)ContentEnd);
+        copy_n = (ptrdiff_t)QUEXED(MemoryManager_insert)((uint8_t*)begin_p,  
+                                                         (uint8_t*)end_p,
+                                                         (uint8_t*)ContentBegin, 
+                                                         (uint8_t*)ContentEnd);
 
         /* Flush into buffer what has been filled from &begin[0] to 
          * &begin[inserted_byte_n].                                          */
@@ -817,6 +817,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/loader/ByteLoader.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 

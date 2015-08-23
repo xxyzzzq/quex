@@ -59,9 +59,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                           const char*            ToCoding,
                                           size_t                 RawBufferSize)
     { 
-        __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long*/
-
         QUEX_NAME(BufferFiller_Converter)*  me;
+        __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long*/
 
         /* The 'BufferFiller_Converter' is the same host for all converters.
          * Converters are pointed to by 'converter',                         */
@@ -84,6 +83,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 const char*            ToCoding,
                                                 size_t                 RawBufferSize)
     {
+        uint8_t* raw_buffer_p;
+
         QUEX_NAME(BufferFiller_setup_functions)(&me->base,
                                                 QUEX_NAME(BufferFiller_Converter_tell_character_index),
                                                 QUEX_NAME(BufferFiller_Converter_seek_character_index), 
@@ -92,8 +93,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                 QUEX_NAME(BufferFiller_Converter_fill_prepare),
                                                 QUEX_NAME(BufferFiller_Converter_fill_finish),
                                                 byte_loader);
-        uint8_t* raw_buffer_p;
-
 
         /* Initialize the conversion operations                                             */
         me->converter = converter;
@@ -137,6 +136,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 
+        if( me->base.byte_loader ) {
+            me->base.byte_loader->delete_self(me->base.byte_loader);
+            me->base.byte_loader = (ByteLoader*)0;
+        }
         me->converter->delete_self(me->converter);
 
         QUEXED(MemoryManager_free)((void*)me->raw_buffer.begin,
