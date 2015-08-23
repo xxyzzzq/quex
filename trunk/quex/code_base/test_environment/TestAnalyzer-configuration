@@ -24,7 +24,7 @@
 #endif
 
 #define QUEX_SETTING_VERSION           "0.65.5-pre"
-#define QUEX_SETTING_BUILD_DATE        "Sat Aug 22 12:35:01 2015"
+#define QUEX_SETTING_BUILD_DATE        "Sun Aug 23 23:25:32 2015"
 #define QUEX_SETTING_ANALYZER_VERSION  "0.0.0-pre-release"
 
 #ifndef    __QUEX_OPTION_PLAIN_C
@@ -60,7 +60,7 @@
 /* #define QUEX_OPTION_COMPUTED_GOTOS */
 #endif
 
-#define    __QUEX_SETTING_MAX_MODE_CLASS_N         (0)
+#define    __QUEX_SETTING_MAX_MODE_CLASS_N         (64)
 #ifndef    __QUEX_SETTING_INITIAL_LEXER_MODE_ID
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID    (QUEX_NAME(ModeID_))
 #endif

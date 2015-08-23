@@ -471,6 +471,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 
 #include <quex/code_base/test_environment/TestAnalyzer>
 #include <quex/code_base/analyzer/asserts.i>
+#include <quex/code_base/analyzer/struct/constructor.i>
 #include <quex/code_base/analyzer/member/mode-handling.i>
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/token/TokenQueue.i>
@@ -510,8 +511,8 @@ static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mr_analyzer_function)(QUEX_T
 static __QUEX_TYPE_ANALYZER_RETURN_VALUE  QUEX_NAME(Mrs_analyzer_function)(QUEX_TYPE_ANALYZER*);
 #endif
 
-QUEX_NAME(Mode) my_modes[] = {
-    { 
+QUEX_NAMESPACE_MAIN_OPEN
+QUEX_NAME(Mode) first_mode = {
       /* id                */ 0, 
       /* name              */ "Mode0", 
 #     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
@@ -525,9 +526,10 @@ QUEX_NAME(Mode) my_modes[] = {
       /* has_exit_to       */ NULL,
 #     endif
       /* analyzer_function */ QUEX_NAME(Mr_analyzer_function),
-    }
+};
+
 #ifdef QUEX_UNIT_TEST_SECOND_MODE
-    , { 
+QUEX_NAME(Mode) second_mode = {
       /* id                */ 1, 
       /* name              */ "Mode1", 
 #     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
@@ -541,16 +543,16 @@ QUEX_NAME(Mode) my_modes[] = {
       /* has_exit_to       */ NULL,
 #     endif
       /* analyzer_function */ QUEX_NAME(Mrs_analyzer_function),
-    }
-#endif
 };
+#endif
 
-QUEX_NAME(Mode) *(QUEX_NAME(mode_db)[]) = {
-   &my_modes[0],
+QUEX_NAME(Mode) *(QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]) = {
+   &first_mode
 #ifdef QUEX_UNIT_TEST_SECOND_MODE
-   &my_modes[1]
+   , &second_mode
 #endif
 };
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #if defined(QUEX_OPTION_COMPUTED_GOTOS)
 #   define DEAL_WITH_COMPUTED_GOTOS() \
@@ -649,12 +651,10 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        istringstream istr("$$TEST_STRING$$");
-        ByteLoader*   byte_loader = ByteLoader_stream_new(&istr);
+        istringstream* istr = new istringstream("$$TEST_STRING$$");
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
-                                   $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
+        lexer_state.from(istr, 0x0);
 
         return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",

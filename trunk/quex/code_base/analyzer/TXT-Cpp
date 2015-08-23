@@ -241,27 +241,6 @@ public:
     void    include_stack_delete();
 #   endif
 
-    /* Direct Access to Memory */
-    void*                 buffer_fill_region_append(void* ContentBegin, 
-                                                    void* ContentEnd);
-    ptrdiff_t             buffer_fill_region_prepare();
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
-    size_t                buffer_fill_region_size();
-    void                  buffer_fill_region_finish(const ptrdiff_t LoadedN);
-
-    void                  buffer_fill_region_append_conversion(void* ContentBegin, 
-                                                               void* ContentEnd);
-    void*                 buffer_fill_region_append_conversion_direct(void* ContentBegin, 
-                                                                      void* ContentEnd);
-    void                  buffer_conversion_fill_region_prepare(); 
-    uint8_t*              buffer_conversion_fill_region_begin();
-    uint8_t*              buffer_conversion_fill_region_end();
-    size_t                buffer_conversion_fill_region_size();
-    void                  buffer_conversion_fill_region_finish(const size_t  ByteN);
-    QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
-    void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
-
     /* -- activate/deactivate byte order reversion (big-/little-endian)      */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);

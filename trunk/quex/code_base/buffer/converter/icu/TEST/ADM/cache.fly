@@ -8,7 +8,7 @@ make_dependent_f: True;
 same_f: True;
 title: Plain 16 bit;
 title_group: Converter;
-hwut_info_time: 1440337418L;
+hwut_info_time: 1440367409L;
 }
 {
 file_name: converter-32.exe;
@@ -20,7 +20,7 @@ make_dependent_f: True;
 same_f: True;
 title: Plain 32 bit;
 title_group: Converter;
-hwut_info_time: 1440337413L;
+hwut_info_time: 1440367404L;
 }
 {
 file_name: converter-statefulness-16.exe;
@@ -31,7 +31,7 @@ result_list: [
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (16 bit);
 title_group: Converter;
-hwut_info_time: 1440337414L;
+hwut_info_time: 1440367405L;
 }
 {
 file_name: converter-statefulness-32.exe;
@@ -42,7 +42,7 @@ result_list: [
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (32 bit);
 title_group: Converter;
-hwut_info_time: 1440337422L;
+hwut_info_time: 1440367414L;
 }
 {
 file_name: Buffer_move_backward.exe;
@@ -81,7 +81,7 @@ result_list: [
 make_dependent_f: True;
 title: Plain search;
 title_group: Stream Position Seek;
-hwut_info_time: 1440337420L;
+hwut_info_time: 1440367412L;
 }
 {
 file_name: seek_character_index-zikzak.exe;
@@ -92,7 +92,7 @@ result_list: [
 make_dependent_f: True;
 title: Total Zik-Zak;
 title_group: Stream Position Seek;
-hwut_info_time: 1440337416L;
+hwut_info_time: 1440367408L;
 }
 {
 file_name: Buffer_tell_and_seek.exe;
@@ -116,7 +116,7 @@ make_dependent_f: True;
 same_f: True;
 title: Raw buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1440337415L;
+hwut_info_time: 1440367406L;
 }
 {
 file_name: n-beat.exe;
@@ -135,5 +135,5 @@ make_dependent_f: True;
 same_f: True;
 title: User buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1440337419L;
+hwut_info_time: 1440367411L;
 }
