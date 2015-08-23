@@ -26,5 +26,11 @@ BeginOfLineSupportF = True
 IndentationSupportF = False     
 
 txt = configuration.do({})
+result = []
+for line in txt.splitlines():
+    if line.find("__QUEX_SETTING_MAX_MODE_CLASS_N") != -1: 
+        line = line.replace("(0)", "(64)")
+    result.append("%s\n" % line)
 
-open("TestAnalyzer-configuration", "w").write(txt)
+
+open("TestAnalyzer-configuration", "w").write("".join(result))
