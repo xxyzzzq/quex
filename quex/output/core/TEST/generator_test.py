@@ -625,16 +625,13 @@ test_program_db = {
     {
         const char*       test_string = "$$TEST_STRING$$";
         FILE*             fh          = tmpfile();
-        ByteLoader*       byte_loader = ByteLoader_FILE_new(fh);
 
         /* Write test string into temporary file */
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
-                                    $$BUFFER_SIZE$$, 0x0, 0x0,
-                                    /* No translation, no translation buffer */0x0, false);
+        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0);
         /**/
         (void)run_test(test_string, "$$COMMENT$$");
 

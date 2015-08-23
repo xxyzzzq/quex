@@ -218,17 +218,18 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
                                               QUEX_TYPE_CHARACTER*       insertion_p,
                                               const QUEX_TYPE_CHARACTER* BufferEnd,
-                                              const void*                ContentEnd)
+                                              const void*                FilledEndP)
     {
+        const QUEX_TYPE_CHARACTER*  EndP = (const QUEX_TYPE_CHARACTER*)FilledEndP;
         (void)alter_ego;
         (void)BufferEnd;
-        __quex_assert(ContentEnd >= insertion_p);
-        __quex_assert(ContentEnd <= BufferEnd);
+        __quex_assert(EndP >= insertion_p);
+        __quex_assert(EndP <= BufferEnd);
 
         /* Copying of content is done, already, by caller.                   */
 
         /* Inserted number of characters = End - Begin.                      */
-        return (ptrdiff_t)((QUEX_TYPE_CHARACTER*)ContentEnd - insertion_p);
+        return (ptrdiff_t)(EndP - insertion_p);
     }
 
 
