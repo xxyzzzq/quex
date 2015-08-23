@@ -1,106 +1,106 @@
 {
 file_name: accumulator.exe;
 result_list: [
-  [ String; OK; 0.005908; None; ]
-  [ Character; OK; 0.004375; None; ]
-  [ N-Character; OK; 0.006468; None; ]
-  [ N-String; OK; 0.005954; None; ]
-  [ Mix; OK; 0.005862; None; ]
+  [ String; OK; 0.003981; None; ]
+  [ Character; OK; 0.004172; None; ]
+  [ N-Character; OK; 0.005619; None; ]
+  [ N-String; OK; 0.005190; None; ]
+  [ Mix; OK; 0.004881; None; ]
 ]
 make_dependent_f: True;
 title: Accumulator;
-hwut_info_time: 1440238996L;
+hwut_info_time: 1440336922L;
 }
 {
 file_name: statistics.exe;
 result_list: [
-  [ ; OK; 0.005298; None; ]
+  [ ; OK; 0.003816; None; ]
 ]
 make_dependent_f: True;
 title: Statistics Module;
-hwut_info_time: 1440238994L;
+hwut_info_time: 1440336920L;
 }
 {
 file_name: post-categorizer-find.exe;
 result_list: [
-  [ 0; OK; 0.004341; None; ]
-  [ 1; OK; 0.004499; None; ]
-  [ 2; OK; 0.004086; None; ]
-  [ 3; OK; 0.004255; None; ]
-  [ 4; OK; 0.004457; None; ]
-  [ 5; OK; 0.005787; None; ]
-  [ 6; OK; 0.003975; None; ]
+  [ 0; OK; 0.007863; None; ]
+  [ 1; OK; 0.003777; None; ]
+  [ 2; OK; 0.003178; None; ]
+  [ 3; OK; 0.004543; None; ]
+  [ 4; OK; 0.005219; None; ]
+  [ 5; OK; 0.004787; None; ]
+  [ 6; OK; 0.004641; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Enter;
 title_group: Post Categorizer;
-hwut_info_time: 1440238994L;
+hwut_info_time: 1440336920L;
 }
 {
 file_name: post-categorizer-enter.exe;
 result_list: [
-  [ 0; OK; 0.004364; None; ]
-  [ 1; OK; 0.003977; None; ]
-  [ 2; OK; 0.004818; None; ]
-  [ 3; OK; 0.005020; None; ]
-  [ 4; OK; 0.003672; None; ]
-  [ 5; OK; 0.004412; None; ]
-  [ 6; OK; 0.006275; None; ]
+  [ 0; OK; 0.005068; None; ]
+  [ 1; OK; 0.004604; None; ]
+  [ 2; OK; 0.004212; None; ]
+  [ 3; OK; 0.005793; None; ]
+  [ 4; OK; 0.004626; None; ]
+  [ 5; OK; 0.004447; None; ]
+  [ 6; OK; 0.004225; None; ]
 ]
 make_dependent_f: True;
 title: Enter;
 title_group: Post Categorizer;
-hwut_info_time: 1440238999L;
+hwut_info_time: 1440336926L;
 }
 {
 file_name: post-categorizer-remove-2.exe;
 result_list: [
-  [ Ab; OK; 0.006677; None; ]
-  [ Ad; OK; 0.003791; None; ]
-  [ Af; OK; 0.004182; None; ]
-  [ Ah; OK; 0.003386; None; ]
-  [ Bb; OK; 0.004713; None; ]
-  [ Bd; OK; 0.004376; None; ]
-  [ Bf; OK; 0.005013; None; ]
+  [ Ab; OK; 0.004400; None; ]
+  [ Ad; OK; 0.003861; None; ]
+  [ Af; OK; 0.004293; None; ]
+  [ Ah; OK; 0.003595; None; ]
+  [ Bb; OK; 0.002759; None; ]
+  [ Bd; OK; 0.004222; None; ]
+  [ Bf; OK; 0.004887; None; ]
 ]
 make_dependent_f: True;
 title: Remove Existent Node;
 title_group: Post Categorizer;
-hwut_info_time: 1440238997L;
+hwut_info_time: 1440336923L;
 }
 {
 file_name: post-categorizer-remove.exe;
 result_list: [
-  [ Aa; OK; 0.004010; None; ]
-  [ Ac; OK; 0.005257; None; ]
-  [ Ae; OK; 0.007935; None; ]
-  [ Ag; OK; 0.004418; None; ]
-  [ Ai; OK; 0.004043; None; ]
-  [ Ba; OK; 0.003310; None; ]
-  [ Bc; OK; 0.004394; None; ]
-  [ Be; OK; 0.004412; None; ]
+  [ Aa; OK; 0.003567; None; ]
+  [ Ac; OK; 0.003752; None; ]
+  [ Ae; OK; 0.004829; None; ]
+  [ Ag; OK; 0.004142; None; ]
+  [ Ai; OK; 0.003315; None; ]
+  [ Ba; OK; 0.003411; None; ]
+  [ Bc; OK; 0.003560; None; ]
+  [ Be; OK; 0.002840; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Remove Non-Existent Node;
 title_group: Post Categorizer;
-hwut_info_time: 1440238998L;
+hwut_info_time: 1440336925L;
 }
 {
 file_name: post-categorizer-remove-total.exe;
 result_list: [
-  [ 1; OK; 0.004849; None; ]
-  [ 2; OK; 0.005681; None; ]
-  [ 3; OK; 0.005481; None; ]
-  [ 4; OK; 0.005129; None; ]
-  [ 5; OK; 0.004415; None; ]
-  [ 6; OK; 0.003329; None; ]
-  [ 7; OK; 0.007066; None; ]
+  [ 1; OK; 0.003633; None; ]
+  [ 2; OK; 0.003716; None; ]
+  [ 3; OK; 0.007919; None; ]
+  [ 4; OK; 0.004015; None; ]
+  [ 5; OK; 0.003869; None; ]
+  [ 6; OK; 0.004176; None; ]
+  [ 7; OK; 0.009161; None; ]
 ]
 make_dependent_f: True;
 same_f: True;
 title: Remove Total;
 title_group: Post Categorizer;
-hwut_info_time: 1440238995L;
+hwut_info_time: 1440336921L;
 }

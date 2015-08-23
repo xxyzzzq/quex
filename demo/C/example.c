@@ -19,7 +19,7 @@ main(int argc, char** argv)
 #   endif
     const char*     FileName = (argc == 1) ? "example.txt" : argv[1];
 
-    quex_EasyLexer_from_file_name(&qlex, FileName, ENCODING_NAME, false);
+    quex_EasyLexer_from_file_name(&qlex, FileName, ENCODING_NAME);
     /* Alternatives:
      * QUEX_NAME(from_memory)(&qlex, MemoryBegin, MemorySize,
      *                             CharacterEncodingName (default 0x0),

@@ -48,8 +48,8 @@ example.o: ../example.c  EasyLexer.c
 	$(CC) $< -o $@ 
 
 # Macro expansions (only for debugging):
-%.E: %.cpp    
-	$(CC) -E $< -o $@ 
+%.E: %.c    
+	$(CC) -E $< > $@ 
 
 EasyLexer.c: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \

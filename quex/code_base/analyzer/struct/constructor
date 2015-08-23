@@ -16,59 +16,66 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 /* Level (1) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_file_name,
+QUEX_INLINE void QUEX_NAME(from_file_name)(
+                                  QUEX_TYPE_ANALYZER*,
                                   const char* Filename, 
-                                  const char* CodecName /* = 0x0   */):
+                                  const char* CodecName /* = 0x0   */);
 
 /* Level (2) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_FILE,
+QUEX_INLINE void QUEX_NAME(from_FILE)(
+                                  QUEX_TYPE_ANALYZER*,
                                   __QUEX_STD_FILE*  fh, 
-                                  const char*       CodecName /* = 0x0   */)
+                                  const char*       CodecName /* = 0x0   */);
 
 #if defined(QUEX_OPTION_POSIX)
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_POSIX,
+QUEX_INLINE void QUEX_NAME(from_POSIX)(
+                                  QUEX_TYPE_ANALYZER*,
                                   __QUEX_STD_FILE*  fh, 
-                                  const char*       CodecName /* = 0x0   */)
+                                  const char*       CodecName /* = 0x0   */);
 #endif
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_istream,
+QUEX_INLINE void QUEX_NAME(from_istream)(
+                                  QUEX_TYPE_ANALYZER*,
                                   std::istream*  istream_p, 
                                   const char*    CodecName /* = 0x0   */);
 
 #endif
 
 #if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_wistream,
+QUEX_INLINE void QUEX_NAME(from_wistream)(
+                                  QUEX_TYPE_ANALYZER*,
                                   std::wistream*  istream_p, 
                                   const char*     CodecName /* = 0x0   */);
 #endif
 
 /* Level (3) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR2(from_ByteLoader,
+QUEX_INLINE void QUEX_NAME(from_ByteLoader)(
+                                  QUEX_TYPE_ANALYZER*,
                                   ByteLoader* byte_loader,
                                   const char* CodecName);
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR1(from_BufferFiller,
+QUEX_INLINE void QUEX_NAME(from_BufferFiller)(
+                                  QUEX_TYPE_ANALYZER*,
                                   QUEX_NAME(BufferFiller)*); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR3(from_memory,
+QUEX_INLINE void QUEX_NAME(from_memory)(
+                                  QUEX_TYPE_ANALYZER*,
                                   QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                                   size_t               BufferMemorySize,
                                   QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
 
 /* Basic constructions ________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_CONSTRUCTOR(basic);
-QUEX_INLINE void QUEX_MEMBER_FUNCTION(user_constructor)();
-
-QUEX_INLINE void QUEX_DESTRUCTOR(); 
+QUEX_INLINE void QUEX_NAME(basic_constructor)(QUEX_TYPE_ANALYZER*);
+QUEX_INLINE void QUEX_NAME(user_constructor)(QUEX_TYPE_ANALYZER*);
+QUEX_INLINE void QUEX_NAME(destruct)(QUEX_TYPE_ANALYZER*); 
 
 #endif
 QUEX_NAMESPACE_MAIN_CLOSE 

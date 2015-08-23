@@ -21,13 +21,15 @@ QUEX_INLINE void   QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_destruct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me);
-QUEX_INLINE void   QUEX_NAME(BufferFiller_DEFAULT)(QUEX_TYPE_ANALYZER* me);
+QUEX_INLINE QUEX_NAME(BufferFiller)* 
+                   QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
+                                                   const char*   CharacterEncodingName);
 
 
 /* Level (1) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(construct, file_name,
+QUEX_MEMBER_FUNCTION2(from, file_name,
                       const char*  Filename, 
                       const char*  CodecName)
 {
@@ -37,13 +39,13 @@ QUEX_MEMBER_FUNCTION2(construct, file_name,
 
     /* ByteLoader will overtake ownership over 'fh', so we do not need to 
      * take care over 'free' and 'fclose'.                                   */
-    QUEX_MEMBER_FUNCTION_CALL2(construct, FILE, fh, CodecName);
+    QUEX_MEMBER_FUNCTION_CALL2(from, FILE, fh, CodecName);
 }
 
 /* Level (2) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(construct, FILE,
+QUEX_MEMBER_FUNCTION2(from, FILE,
                       __QUEX_STD_FILE*    fh, 
                       const char*         CodecName /* = 0x0   */)
 {
@@ -55,18 +57,18 @@ QUEX_MEMBER_FUNCTION2(construct, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    QUEX_MEMBER_FUNCTION_CALL2(construct, ByteLoader, ByteLoader_FILE_new(fh), 
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_FILE_new(fh), 
                            CodecName); 
 }
 
 #ifndef __QUEX_OPTION_PLAIN_C
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(construct, istream,
+QUEX_MEMBER_FUNCTION2(from, istream,
                       std::istream*   istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(construct, ByteLoader, ByteLoader_stream_new(istream_p), 
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
                            CodecName); 
 }
 #endif
@@ -74,12 +76,12 @@ QUEX_MEMBER_FUNCTION2(construct, istream,
 
 #if defined(__QUEX_OPTION_WCHAR_T) && ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void 
-QUEX_MEMBER_FUNCTION2(construct, wistream,
+QUEX_MEMBER_FUNCTION2(from, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(construct, ByteLoader, ByteLoader_stream_new(istream_p), 
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
                            CodecName); 
 }
 #endif
@@ -87,12 +89,12 @@ QUEX_MEMBER_FUNCTION2(construct, wistream,
 #if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */
 template<class UnderlyingStreamT> QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(construct, strange_stream, 
+QUEX_MEMBER_FUNCTION2(from, strange_stream, 
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
     if( istream_p == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    QUEX_MEMBER_FUNCTION_CALL2(construct, ByteLoader, ByteLoader_stream_new(istream_p), 
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
                            CodecName); 
 }
 #endif
@@ -101,7 +103,7 @@ QUEX_MEMBER_FUNCTION2(construct, strange_stream,
 /* Level (3) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(construct, ByteLoader,
+QUEX_MEMBER_FUNCTION2(from, ByteLoader,
                       ByteLoader*   byte_loader,
                       const char*   CodecName) 
 {
@@ -110,23 +112,23 @@ QUEX_MEMBER_FUNCTION2(construct, ByteLoader,
 
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
     
-    QUEX_MEMBER_FUNCTION_CALL1(construct, BufferFiller, filler);
+    QUEX_MEMBER_FUNCTION_CALL1(from, BufferFiller, filler);
 }
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION1(construct, BufferFiller,
+QUEX_MEMBER_FUNCTION1(from, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
     QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALL(basic_constructor,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION3(construct, memory,
+QUEX_MEMBER_FUNCTION3(from, memory,
                       QUEX_TYPE_CHARACTER*    Memory,
                       const size_t            MemorySize,
                       QUEX_TYPE_CHARACTER*    EndOfFileP)
@@ -138,11 +140,11 @@ QUEX_MEMBER_FUNCTION3(construct, memory,
                                             (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALL(basic_constructor,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(basic_constructor,)
+QUEX_MEMBER_FUNCTIONO(basic_constructor)
 {
     QUEX_NAME(Tokens_construct)(this);
     QUEX_NAME(ModeStack_construct)(this);
@@ -153,14 +155,18 @@ QUEX_MEMBER_FUNCTION(basic_constructor,)
 
     QUEX_NAME(set_mode_brutally_by_id)(this, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
-    QUEX_MEMBER_FUNCTION_CALL(user_constructor,);
+    QUEX_MEMBER_FUNCTION_CALLO(user_constructor);
 }
 
 QUEX_INLINE 
 QUEX_DESTRUCTOR() 
 {
     QUEX_NAME(Tokens_destruct)(this);
-    __QUEX_IF_INCLUDE_STACK(QUEX_MEMBER_FUNCTION_CALL(include_stack_delete,));
+    if( this->buffer.filler ) {
+        this->buffer.filler->delete_self(this->buffer.filler);
+    }
+
+    __QUEX_IF_INCLUDE_STACK(QUEX_MEMBER_FUNCTION_CALLO(include_stack_delete));
     /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE 
      *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. 
      * TODO: Why? I cannot see a reason <fschaef 15y08m03d>                  */

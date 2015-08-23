@@ -119,7 +119,7 @@ QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
 {
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
     QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALL(basic_include_push,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_include_push);
 }
 
 /* Level (5) __________________________________________________________________
@@ -138,11 +138,11 @@ QUEX_MEMBER_FUNCTION3(include_push, memory,
                                             (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALL(basic_include_push,);
+    QUEX_MEMBER_FUNCTION_CALLO(basic_include_push);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(basic_include_push,)
+QUEX_MEMBER_FUNCTIONO(basic_include_push)
 {
     bool                byte_order_reversion_f = this->buffer.filler ? 
                                                    this->buffer.filler->_byte_order_reversion_active_f
@@ -177,11 +177,11 @@ QUEX_MEMBER_FUNCTION(basic_include_push,)
      *    -- Mode stack.
      *    -- Token and token queues.
      *    -- Post categorizer.                                                 */
-    QUEX_MEMBER_FUNCTION_CALL1(user_memento_pack, , memento);
+    QUEX_MEMBER_FUNCTION_CALLO1(user_memento_pack, memento);
 }   
 
 QUEX_INLINE bool
-QUEX_MEMBER_FUNCTION(include_pop,) 
+QUEX_MEMBER_FUNCTIONO(include_pop) 
 {
     QUEX_NAME(Memento)* memento;
     /* Not included? return 'false' to indicate we're on the top level   */
@@ -215,7 +215,7 @@ QUEX_MEMBER_FUNCTION(include_pop,)
 #   endif
     __QUEX_IF_COUNT(this->counter          = memento->counter);
 
-    QUEX_MEMBER_FUNCTION_CALL1(user_memento_unpack, ,memento);
+    QUEX_MEMBER_FUNCTION_CALLO1(user_memento_unpack,memento);
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Counterpart to placement new: Explicit destructor call.
@@ -230,10 +230,10 @@ QUEX_MEMBER_FUNCTION(include_pop,)
 }
      
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION(include_stack_delete,)
+QUEX_MEMBER_FUNCTIONO(include_stack_delete)
 {
     while( this->_parent_memento ) {
-        if( ! QUEX_MEMBER_FUNCTION_CALL(include_pop,) ) {
+        if( ! QUEX_MEMBER_FUNCTION_CALLO(include_pop) ) {
             QUEX_ERROR_EXIT("Error during deletion of include stack.");
         }
     }

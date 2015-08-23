@@ -691,28 +691,21 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         char        test_string[65536];
-        FILE*       fh               = fopen(argv[1], "rb");
         size_t      buffer_size      = atoi(argv[2]);
         size_t      real_buffer_size = 0;
-        ByteLoader* byte_loader      = ByteLoader_FILE_new(fh);
-
 
         (void)fread(test_string, 1, 65536, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
-                                   buffer_size, 0x0, 0x0,
-                                   /* No translation, no translation buffer */0x0, false);
+        QUEX_NAME(construct_file_name)(&lexer_state, argv[1], 0x0);
 
         /* Double check, that buffer size has been set. */
         real_buffer_size = lexer_state.buffer._memory._back - lexer_state.buffer._memory._front + 1;
         printf("## buffer_size: { required: %i; real: %i; }\\n",
                (int)(buffer_size), (int)real_buffer_size);
-        if( real_buffer_size != buffer_size )
-        {
-            abort();
-        }
+        __quex_assert( real_buffer_size != buffer_size );
+
         (void)run_test(test_string, "$$COMMENT$$");
 
         fclose(fh); 

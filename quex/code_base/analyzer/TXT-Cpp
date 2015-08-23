@@ -109,58 +109,58 @@ public:
     /*_________________________________________________________________________
      * Constructor:
      *
-     * 'construct' functions are provided so that explicit constructor calls 
+     * 'from' functions are provided so that explicit constructor calls 
      * can be done without placement ::new or sophisticated C++11 features.  */
-    void    construct(const char*  Filename, const char*  CodecName = 0x0);
-    void    construct(std::FILE* fh, const char*  CodecName = 0x0);
-    void    construct(std::istream* istream_p, const char*  CodecName = 0x0);
-    void    construct(std::wistream* istream_p, const char*  CodecName = 0x0);
-    void    construct(ByteLoader* byte_loader, const char*  CodecName = 0x0);
-    void    construct(QUEX_NAME(BufferFiller)* filler);
-    void    construct(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                      size_t               BufferMemorySize,
-                      QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
+    void    from(const char*  Filename, const char*  CodecName = 0x0);
+    void    from(std::FILE* fh, const char*  CodecName = 0x0);
+    void    from(std::istream* istream_p, const char*  CodecName = 0x0);
+    void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
+    void    from(ByteLoader* byte_loader, const char*  CodecName = 0x0);
+    void    from(QUEX_NAME(BufferFiller)* filler);
+    void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                 size_t               BufferMemorySize,
+                 QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
 
     /* Level (1) ______________________________________________________________
      *                                                                       */
     $$LEXER_CLASS_NAME$$(const char*  Filename, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(Filename, CodecName); }
+    $$___SPACE___$${ from(Filename, CodecName); }
     $$LEXER_CLASS_NAME$$(const std::string&  Filename, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(Filename.c_str(), CodecName); }
+    $$___SPACE___$${ from(Filename.c_str(), CodecName); }
 
     /* Level (2) ______________________________________________________________
      *                                                                       */
     $$LEXER_CLASS_NAME$$(std::FILE*     fh, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(fh, CodecName); }
+    $$___SPACE___$${ from(fh, CodecName); }
     $$LEXER_CLASS_NAME$$(std::istream*  istream_p, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(istream_p, CodecName); }
+    $$___SPACE___$${ from(istream_p, CodecName); }
 #   if defined(__QUEX_OPTION_WCHAR_T)
     $$LEXER_CLASS_NAME$$(std::wistream* istream_p, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(istream_p, CodecName); }
+    $$___SPACE___$${ from(istream_p, CodecName); }
 #   endif
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
     $$LEXER_CLASS_NAME$$(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
     $$___SPACE___$$const char*                              CodecName = 0x0)
-    $$___SPACE___$${ construct(istream_p, CodecName); }
+    $$___SPACE___$${ from(istream_p, CodecName); }
 #   endif
 
     /* Level (3) ______________________________________________________________
      *                                                                       */
     $$LEXER_CLASS_NAME$$(ByteLoader*  byte_loader, const char*  CodecName = 0x0)
-    $$___SPACE___$${ construct(byte_loader, CodecName); }
+    $$___SPACE___$${ from(byte_loader, CodecName); }
 
     /* Level (4) ______________________________________________________________
      *                                                                       */
     $$LEXER_CLASS_NAME$$(QUEX_NAME(BufferFiller)* filler)
-    $$___SPACE___$${ construct(filler); }
+    $$___SPACE___$${ from(filler); }
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
     $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
     $$___SPACE___$$size_t               BufferMemorySize,
     $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0)
-    $$___SPACE___$${ construct(BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP); }
+    $$___SPACE___$${ from(BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP); }
 
     virtual ~$$LEXER_CLASS_NAME$$();
 
