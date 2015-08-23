@@ -459,18 +459,19 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_NAME(BufferFiller_Converter)*  me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_TYPE_CHARACTER*                insertion_begin_p = insertion_p;
+        const uint8_t*                      EndP = (const uint8_t*)FilledEndP;
 
-        __quex_assert(FilledEndP >= me->raw_buffer.iterator);
-        __quex_assert(FilledEndP <= me->raw_buffer.end);
+        __quex_assert(EndP >= me->raw_buffer.iterator);
+        __quex_assert(EndP <= me->raw_buffer.end);
 
         /* (2) Convert data from the 'raw' buffer into the analyzer buffer.             */
 
         /*     -- Perform the conversion.                                               */
         me->converter->convert(me->converter, 
-                               &me->raw_buffer.iterator, (const uint8_t*)FilledEndP,
-                               &insertion_p,              BufferEnd);
+                               &me->raw_buffer.iterator, EndP,
+                               &insertion_p,             BufferEnd);
 
-        me->raw_buffer.iterator = (uint8_t*)FilledEndP;
+        me->raw_buffer.iterator = (uint8_t*)EndP;
         
         return insertion_p - insertion_begin_p;
     }
