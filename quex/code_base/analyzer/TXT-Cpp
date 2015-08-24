@@ -114,7 +114,13 @@ public:
     void    from(const char*  Filename, const char*  CodecName = 0x0);
     void    from(std::FILE* fh, const char*  CodecName = 0x0);
     void    from(std::istream* istream_p, const char*  CodecName = 0x0);
+#   if defined(__QUEX_OPTION_WCHAR_T)
     void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
+#   endif
+#   if defined(__QUEX_OPTION_UNIT_TEST)
+    template <class UnderlyingStreamT>
+    from(quex::StrangeStream<UnderlyingStreamT>*  istream_p, const char* CodecName = 0x0);
+#   endif
     void    from(ByteLoader* byte_loader, const char*  CodecName = 0x0);
     void    from(QUEX_NAME(BufferFiller)* filler);
     void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
