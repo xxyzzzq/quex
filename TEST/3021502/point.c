@@ -10,8 +10,7 @@ main(int argc, char** argv)
     size_t       BufferSize = 4711;
 
     QUEX_NAME(from_memory)(&qlex, 
-                                buffer, BufferSize, buffer + 1, 
-                                0x0, false);
+                           buffer, BufferSize, buffer + 1); 
 
     printf("Buffer Size: %i\n",
            (int)QUEX_NAME(buffer_fill_region_size)(&qlex));
