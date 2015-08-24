@@ -179,8 +179,6 @@ QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
                                size_t               BufferMemorySize,
                                QUEX_TYPE_CHARACTER* BufferEndOfContentP  /* = 0x0   */)
 {
-    (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)BufferEndOfContentP;
-
 #   ifdef QUEX_OPTION_ASSERTS
     size_t  memory_size = BufferMemoryBegin ? BufferMemorySize 
                           :                   QUEX_SETTING_BUFFER_SIZE;
@@ -221,6 +219,9 @@ QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
         }
     }
 #   endif
+
+    /* NOT: before ifdef, otherwise c90 issue: mixed declarations and code   */
+    (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)BufferEndOfContentP;
 }
 
 
