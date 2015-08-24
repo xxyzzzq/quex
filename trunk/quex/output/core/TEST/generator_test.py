@@ -321,6 +321,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr,
     # Parameterize the common declarations
     txt  = "#define   __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
     txt += "#define QUEX_TYPE_CHARACTER unsigned char\n" 
+    txt += "#define __QUEX_OPTION_UNIT_TEST\n" 
 
     txt += test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", 
                                                     repr(QuexBufferFallbackN))
@@ -671,7 +672,7 @@ test_program_db = {
         using namespace quex;
 
         istringstream                  istr("$$TEST_STRING$$");
-        StrangeStream<istringstream>*  strange_stream = new StrangeStream(&istr);
+        StrangeStream<istringstream>*  strange_stream = new StrangeStream<istringstream>(&istr);
 
         DEAL_WITH_COMPUTED_GOTOS();
         lexer_state.from(strange_stream, 0x0);

@@ -220,12 +220,12 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     assert all_isinstance(function_txt, str)
 
-    return   "#define  __QUEX_OPTION_UNIT_TEST\n" \
-           + nonsense_default_counter(not SecondModeF) \
+    return   nonsense_default_counter(not SecondModeF) \
            + "".join(function_txt)
 
 test_program_common_declarations = """
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#define __QUEX_OPTION_UNIT_TEST
 #define QUEX_TYPE_CHARACTER unsigned char
 
 $$__QUEX_OPTION_PLAIN_C$$
