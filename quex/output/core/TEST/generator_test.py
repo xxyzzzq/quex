@@ -611,9 +611,8 @@ test_program_db = {
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(basic_constructor)(&lexer_state, (void*)0x0,
-                                   TestString, MemorySize, TestString + MemorySize - 1, 
-                                   0x0, 0, false);
+        QUEX_NAME(from_memory)(&lexer_state, 
+                               TestString, MemorySize, TestString + MemorySize - 1); 
         QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         return run_test((const char*)(TestString + 1), "$$COMMENT$$");
@@ -671,13 +670,11 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        istringstream                 istr("$$TEST_STRING$$");
-        StrangeStream<istringstream>  strange_stream(&istr);
-        ByteLoader*                   byte_loader = ByteLoader_stream_new(&strange_stream);
+        istringstream                  istr("$$TEST_STRING$$");
+        StrangeStream<istringstream>*  strange_stream = new StrangeStream(&istr);
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(basic_constructor)(&lexer_state, byte_loader, 0x0,
-                                   $$BUFFER_SIZE$$, 0x0, 0x0, /* No translation, no translation buffer */0x0, false);
+        lexer_state.from(strange_stream, 0x0);
         return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",
 

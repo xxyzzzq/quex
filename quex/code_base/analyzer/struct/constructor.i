@@ -162,9 +162,6 @@ QUEX_INLINE
 QUEX_DESTRUCTOR() 
 {
     QUEX_NAME(Tokens_destruct)(this);
-    if( this->buffer.filler ) {
-        this->buffer.filler->delete_self(this->buffer.filler);
-    }
 
     __QUEX_IF_INCLUDE_STACK(QUEX_MEMBER_FUNCTION_CALLO(include_stack_delete));
     /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE 
