@@ -52,6 +52,12 @@ base_buffer = """
 /buffer/Buffer_debug.i
 /buffer/Buffer.i
 /buffer/MemoryPositionMimiker
+/buffer/loader/ByteLoader
+/buffer/loader/ByteLoader.i
+/buffer/loader/ByteLoader_FILE
+/buffer/loader/ByteLoader_FILE.i
+/buffer/loader/ByteLoader_stream
+/buffer/loader/ByteLoader_stream.i
 """
 
 base_analyzer = """
@@ -67,12 +73,16 @@ base_analyzer = """
 /analyzer/headers.i
 /analyzer/EngineMemento_body
 /analyzer/Engine_body
-/analyzer/struct/basic
-/analyzer/struct/basic.i
 /analyzer/member/buffer-access
 /analyzer/member/buffer-access.i
+/analyzer/struct/basic
+/analyzer/struct/basic.i
 /analyzer/struct/constructor
 /analyzer/struct/constructor.i
+/analyzer/struct/reset
+/analyzer/struct/reset.i
+/analyzer/struct/include-stack
+/analyzer/struct/include-stack.i
 /analyzer/member/misc
 /analyzer/member/misc.i
 /analyzer/member/mode-handling
@@ -119,7 +129,6 @@ token_default_Cpp = "/token/CppDefault.qx"
 buffer_filler = """
 /buffer/BufferFiller
 /buffer/BufferFiller.i
-/buffer/InputPolicy
 """
 
 buffer_filler_plain = """
@@ -188,14 +197,11 @@ def do():
 
     if BufferFillerF:
         txt += buffer_filler
-        if Setup.converter_f:
-            txt += buffer_filler_converter
-            if   Setup.converter_icu_f:                   txt += buffer_filler_icu
-            elif Setup.converter_iconv_f:                 txt += buffer_filler_iconv
-            elif len(Setup.converter_user_new_func) != 0: pass
-            else:                                         assert False
-        else:
-            txt += buffer_filler_plain
+        txt += buffer_filler_converter
+        if   Setup.converter_icu_f:                   txt += buffer_filler_icu
+        elif Setup.converter_iconv_f:                 txt += buffer_filler_iconv
+        elif len(Setup.converter_user_new_func) != 0: pass
+        txt += buffer_filler_plain
 
     # if Setup.converter_helper_required_f:
     txt +=   converter_helper       \
