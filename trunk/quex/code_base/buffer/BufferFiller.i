@@ -83,10 +83,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
         
         if( ! filler ) {
-            return filler;
+            return (QUEX_NAME(BufferFiller)*)0;
         }
         else {
-            filler->_byte_order_reversion_active_f = false;
             return filler;
         }
     }
@@ -116,21 +115,21 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void    
-    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
-                                            ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
-                                                                                 const ptrdiff_t),
-                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                                            QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
-                                            void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                                                                 void**              begin_p,
-                                                                                 const void**        end_p),
-                                            ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
-                                                                                QUEX_TYPE_CHARACTER*       BeginP,
-                                                                                const QUEX_TYPE_CHARACTER* EndP,
-                                                                                const void*                FilledEndP),
-                                            ByteLoader*  byte_loader)
+    QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
+                                  ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                                  void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
+                                                                       const ptrdiff_t),
+                                  size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                                  QUEX_TYPE_CHARACTER*, const size_t),
+                                  void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                  void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
+                                                                       void**              begin_p,
+                                                                       const void**        end_p),
+                                  ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
+                                                                      QUEX_TYPE_CHARACTER*       BeginP,
+                                                                      const QUEX_TYPE_CHARACTER* EndP,
+                                                                      const void*                FilledEndP),
+                                  ByteLoader*  byte_loader)
     {
         __quex_assert(me);
         __quex_assert(tell_character_index);
@@ -154,6 +153,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->derived_fill_finish  = derived_fill_finish;
 
         me->byte_loader          = byte_loader;
+
+        me->_byte_order_reversion_active_f = false;
     }
 
     QUEX_INLINE void

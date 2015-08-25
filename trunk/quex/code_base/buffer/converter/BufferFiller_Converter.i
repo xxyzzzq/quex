@@ -85,14 +85,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         uint8_t* raw_buffer_p;
 
-        QUEX_NAME(BufferFiller_setup_functions)(&me->base,
-                                                QUEX_NAME(BufferFiller_Converter_tell_character_index),
-                                                QUEX_NAME(BufferFiller_Converter_seek_character_index), 
-                                                QUEX_NAME(BufferFiller_Converter_read_characters),
-                                                QUEX_NAME(BufferFiller_Converter_delete_self),
-                                                QUEX_NAME(BufferFiller_Converter_fill_prepare),
-                                                QUEX_NAME(BufferFiller_Converter_fill_finish),
-                                                byte_loader);
+        QUEX_NAME(BufferFiller_setup)(&me->base,
+                                      QUEX_NAME(BufferFiller_Converter_tell_character_index),
+                                      QUEX_NAME(BufferFiller_Converter_seek_character_index), 
+                                      QUEX_NAME(BufferFiller_Converter_read_characters),
+                                      QUEX_NAME(BufferFiller_Converter_delete_self),
+                                      QUEX_NAME(BufferFiller_Converter_fill_prepare),
+                                      QUEX_NAME(BufferFiller_Converter_fill_finish),
+                                      byte_loader);
 
         /* Initialize the conversion operations                                             */
         me->converter = converter;
