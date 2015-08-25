@@ -4,7 +4,7 @@ FILES = lexer codec-lexer iconv-lexer icu-lexer lexer-x
 
 CC = g++ -I$(QUEX_PATH) \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-	 -ggdb
+	 -ggdb # -fsanitize=address
 
 codec-lexer: lexer.cpp 
 	quex -i simple-hindi.qx -o Simple --token-policy single --codec utf8 --debug-exception
