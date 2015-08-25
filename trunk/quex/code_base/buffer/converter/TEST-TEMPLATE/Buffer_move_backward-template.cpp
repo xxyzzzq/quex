@@ -28,15 +28,12 @@ main(int argc, char** argv)
     const int          RawMemorySize = 6;
     const size_t       StepSize      = atoi(argv[1]);
     std::FILE*         fh            = fopen("___DATA_DIR___/test.txt", "r");
-
     assert( fh != 0x0 );
-
-    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
-
+    ByteLoader*              byte_loader = ByteLoader_FILE_new(fh);
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_Converter_new)(
                                                   byte_loader, ___NEW___(),
                                                   "UTF8", 0, RawMemorySize);
-    QUEX_NAME(Buffer_construct)(&buffer, filler, 5, false);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, 5);
     assert((void*)((QUEX_NAME(BufferFiller_Converter)*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 

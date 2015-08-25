@@ -40,7 +40,7 @@ QUEX_MEMBER_FUNCTION2(include_push, FILE,
                       __QUEX_STD_FILE*    fh, 
                       const char*         CodecName /* = 0x0   */)
 {
-    __quex_assert( ! fh );
+    __quex_assert( fh );
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
      * This seemed suspicous to the author. To avoid compilation errors in the future
@@ -58,7 +58,7 @@ QUEX_MEMBER_FUNCTION2(include_push, istream,
                       std::istream*   istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
-    __quex_assert( ! istream_p );
+    __quex_assert( istream_p );
 
     QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
                                ByteLoader_stream_new(istream_p), CodecName); 
@@ -72,7 +72,7 @@ QUEX_MEMBER_FUNCTION2(include_push, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
-    __quex_assert( ! istream_p );
+    __quex_assert( istream_p );
     QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
                                ByteLoader_stream_new(istream_p), CodecName); 
 }
@@ -102,10 +102,6 @@ QUEX_MEMBER_FUNCTION2(include_push, ByteLoader,
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    if( this->buffer.filler )
-    {
-        QUEX_NAME(BufferFiller_delete_self)(this->buffer.filler);
-    }
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
     
     QUEX_MEMBER_FUNCTION_CALL1(include_push, BufferFiller, filler);
