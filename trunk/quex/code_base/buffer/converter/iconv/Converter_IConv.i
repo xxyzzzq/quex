@@ -134,7 +134,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                 "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
             }
             __QUEX_STD_memmove(&drain_begin[0], &drain_begin[1], 
-                               (*drain - &drain_begin[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+                               ((size_t)(*drain - &drain_begin[1])) * sizeof(QUEX_TYPE_CHARACTER)); 
             *drain = &(*drain)[-1];
         }
 

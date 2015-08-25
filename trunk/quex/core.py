@@ -125,6 +125,7 @@ def analyzer_functions_get(ModeDB):
     #     (abstract modes only serve as common base)
     mode_name_list = ModeDB.keys()  
 
+    mode_id = 0
     for name, mode_descr in ModeDB.iteritems():        
         dial_db.clear()
 
@@ -132,7 +133,11 @@ def analyzer_functions_get(ModeDB):
         mode = Mode(mode_descr)
         blackboard.mode_db[name] = mode
 
-        if not mode.is_implemented(): continue
+        if not mode.is_implemented(): 
+            mode.mode_id = None
+            continue
+        mode.mode_id  = mode_id
+        mode_id      += 1
 
         txt_analyzer = cpp_generator.do(mode, mode_name_list)
         txt_counter  = cpp_generator.do_default_counter(mode)
