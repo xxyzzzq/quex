@@ -28,25 +28,32 @@ QUEX_NAMESPACE_MAIN_OPEN
                                 const size_t              MemorySize)
     {
         QUEX_TYPE_CHARACTER* memory;
+        QUEX_TYPE_CHARACTER* end_of_file_p;
         
-        __quex_assert(filler);
-
 #       ifdef QUEX_OPTION_ASSERTS
-        /* Initialize everything to 0xFF which is most probably causing an error
-         * if a member variable is not initialized before it is used.             */
+        /* Initialize everything to 0xFF which is most probably causing an
+         * error if a member variable is not initialized before it is used.  */
         __QUEX_STD_memset((void*)me, 0xFF, sizeof(QUEX_NAME(Buffer)));
 #       endif
 
-        /* InputMemory == 0x0 => interact with memory manager to get memory. */
-            /* The actual 'memory chunk' is an 'owned member resource' accessed by pointer.
-             * Thus, it is allocated in the constructor.                                    */
+        /* InputMemory == 0x0 => interact with memory manager to get memory. 
+         * The actual 'memory chunk' is an 'owned member resource' accessed by 
+         * pointer. Thus, it is allocated in the constructor.                */
         memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
                                               MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
                                               QUEXED(MemoryObjectType_BUFFER));
+        if( memory )
+        {
+            end_of_file_p = filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[MemorySize-1];
 
-        QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
-                                                /* EndOfFileP */ (QUEX_TYPE_CHARACTER*)0,
-                                                /* ExternalF */ false);
+            QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
+                                                    end_of_file_p, /* ExternalF */ false);
+        }
+        else
+        {
+            me->_memory._front = (QUEX_TYPE_CHARACTER*)0;
+            me->_memory._back  = (QUEX_TYPE_CHARACTER*)0;
+        }
     }
 
     QUEX_INLINE void

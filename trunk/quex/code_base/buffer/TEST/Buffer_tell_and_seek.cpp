@@ -17,7 +17,7 @@ main(int argc, char** argv)
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
-    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, 0x0, memory_size, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, memory_size);
     QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;
