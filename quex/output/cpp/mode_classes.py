@@ -2,6 +2,7 @@ from   quex.engine.misc.string_handling  import blue_print
 from   quex.blackboard                   import setup as Setup, \
                                                 Lng, \
                                                 E_IncidenceIDs
+from   operator import attrgetter
 
 def do(ModeDb):
     LexerClassName   = Setup.analyzer_class_name
@@ -23,18 +24,6 @@ def do(ModeDb):
                            ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
     
     return txt
-
-def mode_id_definition(ModeDb):
-    result = "" 
-    for i, info in enumerate(ModeDb.items()):
-        name = info[0]
-        mode = info[1]
-        if mode.abstract_f(): continue
-        result += "    QUEX_NAME(ModeID_%s) = %i,\n" % (name, i)
-
-    if result:
-        result = result[:-2]
-    return result
 
 def write_member_functions(Modes):
     # -- get the implementation of mode class functions
@@ -412,17 +401,28 @@ def __get_function_declaration(Modes, FriendF=False):
 
     return txt
 
+def mode_id_definition(ModeDb):
+    if not ModeDb: return ""
+
+    result = "".join(
+        "    QUEX_NAME(ModeID_%s) = %i,\n" % (mode.name, mode.mode_id)
+        for mode in sorted(ModeDb.itervalues(), key=attrgetter("mode_id"))
+            if not mode.abstract_f()
+    )
+
+    return result[:-2]
+
 def __setup(ModeDb):
     txt = [
         initialization(mode)
-        for mode in ModeDb.itervalues() if not mode.abstract_f()
+        for mode in sorted(ModeDb.itervalues(), key=attrgetter("mode_id")) if not mode.abstract_f()
     ]
     txt.append("\n")
     txt.append("QUEX_NAME(Mode)* (QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]) = {\n")
 
     content_txt = [
         "    &QUEX_NAME(%s),\n" % mode.name
-        for mode_id, mode in sorted(ModeDb.iteritems()) if not mode.abstract_f()
+        for mode in sorted(ModeDb.itervalues(), key=attrgetter("mode_id")) if not mode.abstract_f()
     ]
     # delete trailing comma
     if content_txt: 

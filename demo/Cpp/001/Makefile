@@ -51,7 +51,7 @@ EasyLexer.cpp: simple.qx $(QUEX_CORE)
 	quex -i                 simple.qx  \
 	     -o           EasyLexer  \
 		 --token-id-offset     0x1000     \
-		 --post-categorizer
+		 --post-categorizer --debug-exception
 
 # (*) HELPERS __________________________________________________________________
 clean:	
