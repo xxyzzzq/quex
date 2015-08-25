@@ -686,6 +686,7 @@ test_program_db = {
     int main(int argc, char** argv)
     {
         char        test_string[65536];
+        FILE*       fh               = fopen(argv[1], "rb");
         size_t      buffer_size      = atoi(argv[2]);
         size_t      real_buffer_size = 0;
 
@@ -693,7 +694,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(construct_file_name)(&lexer_state, argv[1], 0x0);
+        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0);
 
         /* Double check, that buffer size has been set. */
         real_buffer_size = lexer_state.buffer._memory._back - lexer_state.buffer._memory._front + 1;
