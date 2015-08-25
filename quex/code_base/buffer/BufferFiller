@@ -26,7 +26,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *          All fillers must provide functions for the following pointers. The 
          *          pointers are set with the function
          *
-         *              BufferFiller_setup_functions(...) 
+         *              BufferFiller_setup(...) 
          *
          *          which shall be called in any '_construct' function of a filler. Note,
          *          that filler types shall inherit this class. This means, that the first
@@ -107,21 +107,21 @@ QUEX_NAMESPACE_MAIN_OPEN
                         QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
                                                         const char*   CharacterEncodingName);
     QUEX_INLINE void    
-    QUEX_NAME(BufferFiller_setup_functions)(QUEX_NAME(BufferFiller)*   me,
-                                            ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                                            void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
-                                                                                 const ptrdiff_t),
-                                            size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                                            QUEX_TYPE_CHARACTER*, const size_t),
-                                            void         (*delete_self)(QUEX_NAME(BufferFiller)*),
-                                            void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                                                                 void**              begin_p,
-                                                                                 const void**        end_p),
-                                            ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
-                                                                                QUEX_TYPE_CHARACTER*       BeginP,
-                                                                                const QUEX_TYPE_CHARACTER* EndP,
-                                                                                const void*                FilledEndP),
-                                            ByteLoader*  byte_loader);
+    QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
+                                  ptrdiff_t    (*tell_character_index)(QUEX_NAME(BufferFiller)*),
+                                  void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
+                                                                       const ptrdiff_t),
+                                  size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                                  QUEX_TYPE_CHARACTER*, const size_t),
+                                  void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                  void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
+                                                                       void**              begin_p,
+                                                                       const void**        end_p),
+                                  ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
+                                                                      QUEX_TYPE_CHARACTER*       BeginP,
+                                                                      const QUEX_TYPE_CHARACTER* EndP,
+                                                                      const void*                FilledEndP),
+                                  ByteLoader*  byte_loader);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);

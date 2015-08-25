@@ -65,14 +65,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me, 
                                             ByteLoader*                    byte_loader)
     {
-        QUEX_NAME(BufferFiller_setup_functions)(&me->base,
-                                   QUEX_NAME(BufferFiller_Plain_tell_character_index),
-                                   QUEX_NAME(BufferFiller_Plain_seek_character_index), 
-                                   QUEX_NAME(BufferFiller_Plain_read_characters),
-                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
-                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
-                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
-                                   byte_loader);
+        QUEX_NAME(BufferFiller_setup)(&me->base,
+                                      QUEX_NAME(BufferFiller_Plain_tell_character_index),
+                                      QUEX_NAME(BufferFiller_Plain_seek_character_index), 
+                                      QUEX_NAME(BufferFiller_Plain_read_characters),
+                                      QUEX_NAME(BufferFiller_Plain_delete_self), 
+                                      QUEX_NAME(BufferFiller_Plain_fill_prepare), 
+                                      QUEX_NAME(BufferFiller_Plain_fill_finish), 
+                                      byte_loader);
 
         me->start_position        = me->base.byte_loader->tell(me->base.byte_loader);
         me->_last_stream_position = me->start_position;
