@@ -15,26 +15,24 @@ main(int argc, char** argv)
                sizeof(QUEX_TYPE_CHARACTER), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
-    FILE*             fh = prepare_input();
-    QUEX_NAME(Buffer) buffer;
-    const size_t      MemorySize = 12;
-    const size_t      BeginIdx = 15;
+    QUEX_NAME(Buffer)         buffer;
+    FILE*                     fh = prepare_input(); /* Festgemauert ... */
+    ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
+    QUEX_NAME(BufferFiller*)  filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+    const size_t              MemorySize = 12;
+    const size_t              BeginIdx = 15;
 
     fseek(fh, BeginIdx * sizeof(QUEX_TYPE_CHARACTER), SEEK_SET); 
 
-    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
-
-    QUEX_NAME(Buffer_construct)(&buffer, 
-                                QUEX_NAME(BufferFiller_Plain_new)(byte_loader), 
-                                0x0, MemorySize, 0, false);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, MemorySize);
 
     /* Simulate, as if we started at 0, and now reached '15' */
     buffer._content_character_index_begin = 15;
     buffer._content_character_index_end   = buffer._content_character_index_begin + (MemorySize-2);
-    QUEX_NAME(BufferFiller_Plain)* filler = (QUEX_NAME(BufferFiller_Plain)*)buffer.filler;
+    QUEX_NAME(BufferFiller_Plain)* pfiller = (QUEX_NAME(BufferFiller_Plain)*)buffer.filler;
     //filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
-    filler->_last_stream_position  = ftell(fh);
-    filler->start_position         = 0;
+    pfiller->_last_stream_position  = ftell(fh);
+    pfiller->start_position         = 0;
 
     do {
         printf("------------------------------------------------------------\n");
