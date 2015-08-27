@@ -3,6 +3,26 @@
 Reset and Change of Input Source
 ================================
 
+TODO: Mention that ownership of objects are passed to the lexer.
+      Thus, passing a FILE handle twice will cause an error, e.g.
+
+          FILE* fh = open("file.txt", "rb");
+
+          Lexer  lex(fh);
+          ...
+
+          lex.reset(fh)
+
+      will cause an error! In the aforementioned case it is sufficient
+      to call
+
+          lex.reset()
+
+      to achieve the desired effect.
+
+
+
+
 In many practical applications the source of input is changed in
 the form of included files that are 'pasted' at the point where 
 the according statement occurs. The handling of this scenerio

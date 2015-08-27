@@ -131,11 +131,13 @@
            goto RELOAD_LABEL; } while (0)
 
 #define __QUEX_PRINT_SOURCE_POSITION()                             \
-        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, __LINE__) 
+        __QUEX_STD_fprintf(stderr, "%s:%i:\t", __FILE__, (int)__LINE__) 
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_ERROR_EXIT(Msg) \
            do { \
+               __QUEX_STD_fprintf(stderr, __FILE__); \
+               __QUEX_STD_fprintf(stderr, "%i", (int)__LINE__); \
                __QUEX_PRINT_SOURCE_POSITION(); \
                throw std::runtime_error(Msg); \
            } while(0)

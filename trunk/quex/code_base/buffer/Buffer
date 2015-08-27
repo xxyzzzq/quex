@@ -81,8 +81,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 
                                                 struct QUEX_NAME(BufferFiller_tag)* filler); 
-    QUEX_INLINE void    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*                  me, 
-                                                        struct QUEX_NAME(BufferFiller_tag)* filler); 
+    QUEX_INLINE void    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)* me); 
 
     QUEX_INLINE void                  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
 

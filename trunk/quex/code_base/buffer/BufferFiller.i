@@ -801,6 +801,25 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
 
+    QUEX_INLINE void
+    QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, ByteLoader* new_byte_loader)
+    {
+        __quex_assert(new_byte_loader);
+
+        if( new_byte_loader == me->byte_loader ) {
+            /* nothing to be done. */
+        }
+        else if( ByteLoader_compare(new_byte_loader, me->byte_loader) ) {
+            QUEX_ERROR_EXIT("Upon 'reset': current and new ByteLoader objects contain same input handle.");
+        }
+        else {
+            me->byte_loader->delete_self(me->byte_loader);
+            me->byte_loader = new_byte_loader;
+        }
+
+        me->byte_loader->seek(me->byte_loader, (QUEX_TYPE_STREAM_POSITION)0);
+    }
+
     QUEX_INLINE size_t       
     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*    buffer, 
                                               QUEX_TYPE_CHARACTER*  memory, 

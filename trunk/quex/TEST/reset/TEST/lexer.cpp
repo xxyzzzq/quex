@@ -47,11 +47,8 @@ main(int argc, char** argv)
         (void)qlex.receive();
     } 
 
-#   ifdef __QUEX_OPTION_CONVERTER
-    qlex.reset(fh, "UTF8");
-#   else
-    qlex.reset(fh);
-#   endif
+    qlex.reset();
+
     printf("## repeated: %i\n", N);
 
     do {

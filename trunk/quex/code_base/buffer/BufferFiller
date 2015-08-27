@@ -127,6 +127,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 
+                                                      ByteLoader*              new_byte_loader);
 
     /* Helper function for buffer fillers trying to deal with strange streams or 
      * dynamic length character encodings.                                             */

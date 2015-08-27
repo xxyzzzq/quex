@@ -173,9 +173,13 @@ public:
     /*_________________________________________________________________________
      * Reset:
      *
-     * Level (1) ______________________________________________________________
+     * Level (0) ______________________________________________________________
      *                                                                       */
-    void    reset(const char*  FileName, const char*  CodecName = 0x0);
+    void    reset();
+
+    /* Level (1) ______________________________________________________________
+     *                                                                       */
+    void    reset(const char* FileName, const char*  CodecName = 0x0);
     void    reset(const std::string&  FileName, const char*  CodecName = 0x0)
             { reset(FileName.c_str(), CodecName); }
 

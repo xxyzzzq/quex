@@ -34,7 +34,7 @@ main(int argc, char** argv)
 
     // printf("BEFORE Reset:\n");
     // qlex.print_this();
-    qlex.reset(fh);
+    qlex.reset();
 
     printf("AFTER Reset:\n");
     qlex.print_this();

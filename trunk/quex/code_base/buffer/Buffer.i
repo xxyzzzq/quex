@@ -75,12 +75,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* By setting begin and end to zero, we indicate to the loader that
          * this is the very first load procedure.                           */
-        QUEX_NAME(Buffer_init_analyzis)(me, filler);
+        me->filler = filler;
+        QUEX_NAME(Buffer_init_analyzis)(me);
     }
 
     QUEX_INLINE void
-    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*       me, 
-                                    QUEX_NAME(BufferFiller)* filler) 
+    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*       me) 
     {
         /* Init is a special kind of reset, where some things might not be reset. */
         me->_input_p        = &me->_memory._front[1];  /* First State does not increment */
@@ -95,8 +95,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
 #       endif
 
-        me->filler = filler;
-
         if( me->filler ) {
             /* We only have to reset the input stream, if we are not at position zero    */
             QUEX_NAME(BufferFiller_initial_load)(me);   
@@ -105,7 +103,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->_content_character_index_end   = 0;
         }
 
-        if( ! filler || ! filler->byte_loader ) {
+        if( ! me->filler || ! me->filler->byte_loader ) {
             /* TWO CASES:
              * (1) The user provides a buffer memory: --> assume it is filled to the end.
              * (2) The user does not provide memory:  --> the memory IS empty.             */
