@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim:set syntax=cpp:
- * (C) 2005-2009 Frank-Rene Schaefer
- * ABSOLUTELY NO WARRANTY                   */
+ * (C)  Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY                                                    */
 #ifndef __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET_I
 #define __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET_I
 
@@ -11,6 +11,19 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+/* Level (0) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void
+QUEX_MEMBER_FUNCTIONO(reset)  
+{
+    QUEX_NAME(BufferFiller)* filler = this->buffer.filler;
+
+    if( filler ) {
+        QUEX_NAME(BufferFiller_reset)(filler, filler->byte_loader);
+    }
+
+    QUEX_MEMBER_FUNCTION_CALL1(reset, BufferFiller, filler);
+}
 
 /* Level (1) __________________________________________________________________
  *                                                                           */
@@ -19,12 +32,12 @@ QUEX_MEMBER_FUNCTION2(reset, file_name,
                       const char* FileName, 
                       const char* CodecName /* = 0x0 */) 
 {
-    /* Prefer FILE* based byte-loaders, because turn low-level buffering can be
-     * turned off.                                                               */
+    /* Prefer FILE* based byte-loaders, because low-level buffering can be
+     * turned off.                                                           */
     __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(FileName, "rb");
 
     /* ByteLoader will overtake ownership over 'fh', so we do not need to 
-     * take care over 'free' and 'fclose'.                                       */
+     * take care over 'free' and 'fclose'.                                   */
     QUEX_MEMBER_FUNCTION_CALL2(reset, FILE, fh, CodecName);
 }
 
@@ -32,8 +45,8 @@ QUEX_MEMBER_FUNCTION2(reset, file_name,
  *                                                                           */
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION2(reset, FILE,
-                      __QUEX_STD_FILE*    fh, 
-                      const char*         CodecName /* = 0x0   */)
+                      __QUEX_STD_FILE* fh, 
+                      const char*      CodecName /* = 0x0   */)
 {
     __quex_assert( fh );
 
@@ -80,7 +93,7 @@ QUEX_MEMBER_FUNCTION2(reset, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
-    if( istream_p == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    __quex_assert( istream_p );
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader,
                                ByteLoader_stream_new(istream_p), CodecName); 
 }
@@ -94,11 +107,16 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
                       ByteLoader*   byte_loader,
                       const char*   CodecName) 
 {
-    QUEX_NAME(BufferFiller)* filler;
+    QUEX_NAME(BufferFiller)* filler = this->buffer.filler;
     QUEX_NAME(Asserts_construct)(CodecName);
-
-    filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
     
+    if( filler ) {
+        QUEX_NAME(BufferFiller_reset)(filler, byte_loader);
+    }
+    else {
+        filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    }
+
     QUEX_MEMBER_FUNCTION_CALL1(reset, BufferFiller, filler);
 }
 
@@ -108,8 +126,14 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer_destruct)(&this->buffer); 
-    QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
+    if( filler != this->buffer.filler ) {
+        this->buffer.filler->delete_self(this->buffer.filler);
+        this->buffer.filler = filler;
+    }
+    else {
+        /* Assume, that buffer filler has been reset.                        */
+    }
+    QUEX_NAME(Buffer_init_analyzis)(&this->buffer); 
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 

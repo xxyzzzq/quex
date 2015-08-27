@@ -8,7 +8,7 @@ make_dependent_f: True;
 same_f: True;
 title: Plain 16 bit;
 title_group: Converter;
-hwut_info_time: 1440534604L;
+hwut_info_time: 1440651157L;
 }
 {
 file_name: converter-32.exe;
@@ -20,7 +20,7 @@ make_dependent_f: True;
 same_f: True;
 title: Plain 32 bit;
 title_group: Converter;
-hwut_info_time: 1440534599L;
+hwut_info_time: 1440651151L;
 }
 {
 file_name: converter-statefulness-16.exe;
@@ -31,7 +31,7 @@ result_list: [
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (16 bit);
 title_group: Converter;
-hwut_info_time: 1440534600L;
+hwut_info_time: 1440651152L;
 }
 {
 file_name: converter-statefulness-32.exe;
@@ -42,7 +42,7 @@ result_list: [
 make_dependent_f: True;
 title: Possible 'statefulness' has been ruled out (32 bit);
 title_group: Converter;
-hwut_info_time: 1440534608L;
+hwut_info_time: 1440651162L;
 }
 {
 file_name: Buffer_move_backward.exe;
@@ -56,7 +56,7 @@ result_list: [
 make_dependent_f: True;
 title: Backward (BPC=4);
 title_group: Move by Offset;
-hwut_info_time: 1440534607L;
+hwut_info_time: 1440651160L;
 }
 {
 file_name: Buffer_move_forward.exe;
@@ -70,7 +70,7 @@ result_list: [
 make_dependent_f: True;
 title: Forward (BPC=4);
 title_group: Move by Offset;
-hwut_info_time: 1440534603L;
+hwut_info_time: 1440651156L;
 }
 {
 file_name: seek_character_index.exe;
@@ -81,7 +81,7 @@ result_list: [
 make_dependent_f: True;
 title: Plain search;
 title_group: Stream Position Seek;
-hwut_info_time: 1440534606L;
+hwut_info_time: 1440651159L;
 }
 {
 file_name: seek_character_index-zikzak.exe;
@@ -92,7 +92,7 @@ result_list: [
 make_dependent_f: True;
 title: Total Zik-Zak;
 title_group: Stream Position Seek;
-hwut_info_time: 1440534601L;
+hwut_info_time: 1440651154L;
 }
 {
 file_name: Buffer_tell_and_seek.exe;
@@ -102,7 +102,7 @@ result_list: [
 make_dependent_f: True;
 title: Bytes Per Character (BPC)=4;
 title_group: Tell and Seek;
-hwut_info_time: 1440534609L;
+hwut_info_time: 1440651163L;
 }
 {
 file_name: one-beat.exe;
@@ -116,7 +116,7 @@ make_dependent_f: True;
 same_f: True;
 title: Raw buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1440534600L;
+hwut_info_time: 1440651153L;
 }
 {
 file_name: n-beat.exe;
@@ -135,5 +135,5 @@ make_dependent_f: True;
 same_f: True;
 title: User buffer size varries (UTF-8);
 title_group: read_characters;
-hwut_info_time: 1440534605L;
+hwut_info_time: 1440651158L;
 }

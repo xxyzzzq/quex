@@ -15,6 +15,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 /* The constructor 'core' function is implemented per analyzer.
  * It's implementation happens inside the generated source file.             */
 
+/* Level (0) __________________________________________________________________
+ *                                                                           */
+QUEX_INLINE void QUEX_NAME(reset)(QUEX_TYPE_ANALYZER* this);
+
 /* Level (1) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(reset_file_name)(QUEX_TYPE_ANALYZER* this,

@@ -93,7 +93,7 @@ QUEX_MEMBER_FUNCTION2(from, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
-    if( istream_p == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    __quex_assert( istream_p );
     QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
                            CodecName); 
 }
