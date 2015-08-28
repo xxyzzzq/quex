@@ -374,7 +374,7 @@ public:
 private:
     // (*) Common for constructor, reset, and include push ___________________________
     void    basic_constructor();
-    void    basic_include_push(); 
+    void    basic_include_push(QUEX_NAME(Buffer)* new_buffer_setup); 
     void    basic_reset();
 
     void    user_constructor();

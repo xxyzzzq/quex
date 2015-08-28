@@ -19,9 +19,11 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(user_reset) 
 {
     (void)this;
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's 'reset' ______________________________________________________*/
-$$MEMENTO_EXTENSIONS_PACK$$
+$$RESET_EXTENSIONS$$
 /* END: _______________________________________________________________________*/
+#undef self
 }
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
@@ -31,9 +33,11 @@ QUEX_MEMBER_FUNCTIONO1(user_memento_pack, QUEX_NAME(Memento)* memento)
 {
     (void)this; (void)memento;
 
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's memento 'pack' _______________________________________________*/
 $$MEMENTO_EXTENSIONS_PACK$$
 /* END: _______________________________________________________________________*/
+#undef self
 }
 
 QUEX_INLINE void
@@ -41,9 +45,11 @@ QUEX_MEMBER_FUNCTIONO1(user_memento_unpack, QUEX_NAME(Memento)*  memento)
 {
     (void)this; (void)memento;
 
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's memento 'unpack' _____________________________________________*/
 $$MEMENTO_EXTENSIONS_UNPACK$$
 /* END: _______________________________________________________________________*/
+#undef self
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */
 

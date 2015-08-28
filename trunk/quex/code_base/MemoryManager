@@ -10,6 +10,7 @@ QUEX_NAMESPACE_QUEX_OPEN
 
 typedef enum {
     QUEXED_DEF(MemoryObjectType_BUFFER),
+    QUEXED_DEF(MemoryObjectType_BUFFER_MEMORY),
     QUEXED_DEF(MemoryObjectType_BYTE_LOADER),
     QUEXED_DEF(MemoryObjectType_BUFFER_FILLER),
     QUEXED_DEF(MemoryObjectType_BUFFER_RAW),

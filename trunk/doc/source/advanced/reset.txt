@@ -21,7 +21,8 @@ TODO: Mention that ownership of objects are passed to the lexer.
       to achieve the desired effect.
 
 
-
+TODO: mention 'reset { ... }'  section to define reset extensions
+      after all reset has been done.
 
 In many practical applications the source of input is changed in
 the form of included files that are 'pasted' at the point where 

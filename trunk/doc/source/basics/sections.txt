@@ -142,6 +142,12 @@ for the given section-name. The available sections are the following:
 
    Initializes a self declared member of the analyzer ``my_counter`` to 4711.
 
+.. data:: reset
+
+   Section that defines customized behavior upon reset. This fragment is
+   executed after the reset of the remaining parts of the lexical analyser.
+   The analyzer is referred to by ``self``.
+
 A customized token type can easily be defined in a section called
 
 .. data:: token_type
