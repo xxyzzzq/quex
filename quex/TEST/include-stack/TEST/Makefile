@@ -9,7 +9,7 @@ ENGINE = ISLexer.cpp
 all: $(TESTS)
 
 CC =  \
-     g++ -ggdb -Wall -Werror \
+     g++ -ggdb -Wall -Werror -fsanitize=address     \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=5              \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \

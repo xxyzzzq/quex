@@ -41,7 +41,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * pointer. Thus, it is allocated in the constructor.                */
         memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
                                               MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
-                                              QUEXED(MemoryObjectType_BUFFER));
+                                              QUEXED(MemoryObjectType_BUFFER_MEMORY));
         if( memory )
         {
             end_of_file_p = filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[MemorySize-1];
@@ -498,8 +498,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
     {
         if( (! me->_external_owner_f)  && me->_front ) {
-            QUEXED(MemoryManager_free)((void*)me->_front, QUEXED(MemoryObjectType_BUFFER));
+            QUEXED(MemoryManager_free)((void*)me->_front, 
+                                       QUEXED(MemoryObjectType_BUFFER_MEMORY));
         }
+        /* Protect against double-destruction.                               */
         me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
     }
 

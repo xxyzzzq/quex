@@ -113,9 +113,13 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer_destruct)(&this->buffer); 
-    QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
-    QUEX_MEMBER_FUNCTION_CALLO(basic_include_push);
+    QUEX_NAME(Buffer) new_buffer_setup;
+    QUEX_NAME(Buffer_construct)(&new_buffer_setup, filler, 
+                                QUEX_SETTING_BUFFER_SIZE); 
+
+    /* The 'new_buffer_setup' is only copied including the reference to the
+     * new memory. However, the box object 'new_buffer_setup' is left alone. */
+    QUEX_MEMBER_FUNCTION_CALLO1(basic_include_push, &new_buffer_setup);
 }
 
 /* Level (5) __________________________________________________________________
@@ -129,27 +133,35 @@ QUEX_MEMBER_FUNCTION3(include_push, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
-    QUEX_NAME(Buffer_destruct)(&this->buffer); 
-    QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
+    QUEX_NAME(Buffer) new_buffer_setup;
+    QUEX_NAME(Buffer_construct_with_memory)(&new_buffer_setup, 
                                             (QUEX_NAME(BufferFiller)*)0,
                                             Memory, MemorySize, EndOfFileP,
                                             /* External */ true);
-    QUEX_MEMBER_FUNCTION_CALLO(basic_include_push);
+
+    /* The 'new_buffer_setup' is only copied including the reference to the
+     * new memory. However, the box object 'new_buffer_setup' is left alone. */
+    QUEX_MEMBER_FUNCTION_CALLO1(basic_include_push, &new_buffer_setup);
 }
 
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTIONO(basic_include_push)
+QUEX_MEMBER_FUNCTIONO1(basic_include_push, 
+                       QUEX_NAME(Buffer)* new_buffer_setup)
 {
-    bool                byte_order_reversion_f = this->buffer.filler ? 
-                                                   this->buffer.filler->_byte_order_reversion_active_f
-                                                 : false;
     QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
                                      sizeof(QUEX_NAME(Memento)), QUEXED(MemoryObjectType_MEMENTO));
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 
-     * Necessary in C++: Trigger call to constructor for user defined members.   */
+     * Necessary in C++: Call to constructor for user defined members.       */
     new ((void*)memento) QUEX_NAME(Memento);
 #   endif
+    if( this->buffer.filler )
+    {
+        /* By default overtake the byte order reversion behavior of the 
+         * including buffer.                                                 */
+        new_buffer_setup->filler->_byte_order_reversion_active_f = \
+                          this->buffer.filler->_byte_order_reversion_active_f;
+    }
 
     memento->_parent_memento                  = this->_parent_memento;
     memento->buffer                           = this->buffer;
@@ -159,20 +171,16 @@ QUEX_MEMBER_FUNCTIONO(basic_include_push)
        || defined(QUEX_OPTION_ASSERTS)
     memento->DEBUG_analyzer_function_at_entry = this->DEBUG_analyzer_function_at_entry;
 #   endif
-    __QUEX_IF_COUNT( memento->counter         = this->counter);
+    __QUEX_IF_COUNT(memento->counter          = this->counter);
     this->_parent_memento = memento;
 
-    __QUEX_IF_COUNT( QUEX_NAME(Counter_construct)(&this->counter); )
-
-    if( this->buffer.filler && byte_order_reversion_f )
-    {
-        this->buffer.filler->_byte_order_reversion_active_f = true;
-    }
+    this->buffer                              = *new_buffer_setup;
+    __QUEX_IF_COUNT(QUEX_NAME(Counter_construct)(&this->counter); )
 
     /* Deriberately not subject to include handling:
      *    -- Mode stack.
      *    -- Token and token queues.
-     *    -- Post categorizer.                                                 */
+     *    -- Post categorizer.                                               */
     QUEX_MEMBER_FUNCTION_CALLO1(user_memento_pack, memento);
 }   
 
@@ -180,25 +188,25 @@ QUEX_INLINE bool
 QUEX_MEMBER_FUNCTIONO(include_pop) 
 {
     QUEX_NAME(Memento)* memento;
-    /* Not included? return 'false' to indicate we're on the top level   */
-    if( ! this->_parent_memento ) return false; 
-
-    QUEX_NAME(Buffer_destruct)(&this->buffer);
-    /* memento_unpack():
-     *    => Current mode
-     *           => __current_mode_p 
-     *              current_analyzer_function                                       
-     *              DEBUG_analyzer_function_at_entry                                   
-     *    => Line/Column Counters
-     *
-     * Unchanged by memento_unpack():
-     *    -- Mode stack
-     *    -- Tokens and token queues.
-     *    -- Accumulator.
-     *    -- Post categorizer.
-     *    -- File handle by constructor                                  */
-          
-    /* Copy Back of content that was stored upon inclusion.              */
+    /* Not included? return 'false' to indicate we're on the top level       */
+    if( ! this->_parent_memento ) return false;                             
+                                                                            
+    QUEX_NAME(Buffer_destruct)(&this->buffer);                              
+    /* memento_unpack():                                                    
+     *    => Current mode                                                   
+     *           => __current_mode_p                                        
+     *              current_analyzer_function                                           
+     *              DEBUG_analyzer_function_at_entry                                       
+     *    => Line/Column Counters                                           
+     *                                                                      
+     * Unchanged by memento_unpack():                                       
+     *    -- Mode stack                                                     
+     *    -- Tokens and token queues.                                       
+     *    -- Accumulator.                                                   
+     *    -- Post categorizer.                                              
+     *    -- File handle by constructor                                      */
+                                                                            
+    /* Copy Back of content that was stored upon inclusion.                  */
     memento = this->_parent_memento;
 
     this->_parent_memento                  = memento->_parent_memento;
@@ -215,13 +223,13 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
 
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Counterpart to placement new: Explicit destructor call.
-     * Necessary in C++: Trigger call to destructor for user defined members.  */
+     * Necessary in C++: Trigger call to destructor for user defined members.*/
     memento->~QUEX_NAME(Memento_tag)();
 #   endif
 
     QUEXED(MemoryManager_free)((void*)memento, QUEXED(MemoryObjectType_MEMENTO)); 
 
-    /* Return to including file succesful */
+    /* Return to including file succesful                                    */
     return true;
 }
      

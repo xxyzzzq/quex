@@ -51,31 +51,33 @@ QUEX_INLINE void QUEX_NAME(include_push_wistream)(
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(include_push_ByteLoader)(
                            QUEX_TYPE_ANALYZER*  this,
-                                       ByteLoader* byte_loader,
-                                       const char* CodecName);
+                           ByteLoader*          byte_loader,
+                           const char*          CodecName);
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(include_push_BufferFiller)(
-                           QUEX_TYPE_ANALYZER*  this,
-                                       QUEX_NAME(BufferFiller)*); 
+                           QUEX_TYPE_ANALYZER*      this,
+                           QUEX_NAME(BufferFiller)* filler); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(include_push_memory)(
                            QUEX_TYPE_ANALYZER*  this,
-                                       QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                       size_t               BufferMemorySize,
-                                       QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+                           QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                           size_t               BufferMemorySize,
+                           QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
 
 /* Basic constructions ________________________________________________________
  *                                                                           */
-QUEX_INLINE bool   QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* this);
-QUEX_INLINE void   QUEX_NAME(basic_include_push)(QUEX_TYPE_ANALYZER* this);
+QUEX_INLINE void   QUEX_NAME(basic_include_push)(QUEX_TYPE_ANALYZER* this,
+                                                 QUEX_NAME(Buffer)* new_buffer_setup);
 QUEX_INLINE void   QUEX_NAME(user_memento_pack)(QUEX_TYPE_ANALYZER* this, 
                                                 struct QUEX_NAME(Memento_tag)* memento);
 QUEX_INLINE void   QUEX_NAME(user_memento_unpack)(QUEX_TYPE_ANALYZER* this, 
                                                   struct QUEX_NAME(Memento_tag)* memento);
+
+QUEX_INLINE bool   QUEX_NAME(include_pop)(QUEX_TYPE_ANALYZER* this);
 QUEX_INLINE void   QUEX_NAME(include_stack_delete)(QUEX_TYPE_ANALYZER* this);
 
 #endif

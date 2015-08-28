@@ -299,6 +299,10 @@ class_body_extension = CodeFragment_NULL
 #-----------------------------------------------------------------------------------------
 class_constructor_extension = CodeFragment_NULL
 
+# reset_extension: code fragment for user defined reset actions
+#-----------------------------------------------------------------------------------------
+reset_extension = CodeFragment_NULL
+
 #-----------------------------------------------------------------------------------------
 # memento_extension: fragment to be pasted into the memento  class's body.
 #-----------------------------------------------------------------------------------------
@@ -318,6 +322,7 @@ fragment_db = {
     "header":         "header",
     "body":           "class_body_extension",
     "init":           "class_constructor_extension",
+    "reset":          "reset_extension",
     "memento":        "memento_class_extension",
     "memento_pack":   "memento_pack_extension",
     "memento_unpack": "memento_unpack_extension",
