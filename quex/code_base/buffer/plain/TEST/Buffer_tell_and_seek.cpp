@@ -17,9 +17,10 @@ main(int argc, char** argv)
 
     size_t             SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 19, 4, 6, 20, 11, 0, 
                                          23, 18, 12, 21, 17, 27, 16, 26, 14, 24, 10, 13, 1, 22, 999 };
-    const size_t       MemorySize = 5;
+    const size_t         MemorySize = 5;
+    QUEX_TYPE_CHARACTER  memory[MemorySize];
 
-    QUEX_NAME(Buffer_construct)(&buffer, filler, MemorySize);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
 
     test_seek_and_tell(&buffer, SeekIndices);
 

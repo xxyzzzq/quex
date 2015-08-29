@@ -7,8 +7,8 @@ hwut_info_time: 1440837601L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ UTF-8; FAIL; 0.254863; None; ]
-  [ UTF-16; FAIL; 0.256458; None; ]
+  [ UTF-8; MAKE FAILED; 0.254863; None; ]
+  [ UTF-16; MAKE FAILED; 0.256458; None; ]
 ]
 }
 {
@@ -20,8 +20,8 @@ hwut_info_time: 1440837597L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ UTF-8; FAIL; 0.256589; None; ]
-  [ UTF-16; FAIL; 0.257241; None; ]
+  [ UTF-8; MAKE FAILED; 0.256589; None; ]
+  [ UTF-16; MAKE FAILED; 0.257241; None; ]
 ]
 }
 {
@@ -32,8 +32,8 @@ file_name: converter-statefulness-16.exe;
 hwut_info_time: 1440837597L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; FAIL; 0.241870; None; ]
-  [ UTF-16; NO OUTPUT; 0.251605; None; ]
+  [ UTF-8; MAKE FAILED; 0.241870; None; ]
+  [ UTF-16; MAKE FAILED; 0.251605; None; ]
 ]
 }
 {
@@ -44,8 +44,8 @@ file_name: converter-statefulness-32.exe;
 hwut_info_time: 1440837604L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; FAIL; 0.238407; None; ]
-  [ UTF-16; NO OUTPUT; 0.238788; None; ]
+  [ UTF-8; MAKE FAILED; 0.238407; None; ]
+  [ UTF-16; MAKE FAILED; 0.238788; None; ]
 ]
 }
 {
@@ -87,7 +87,7 @@ hwut_info_time: 1440837602L;
 make_dependent_f: True;
 result_list: [
   [ Forward; OK; 0.005087; None; ]
-  [ Backward; NO OUTPUT; 0.242161; None; ]
+  [ Backward; MAKE FAILED; 0.242161; None; ]
 ]
 }
 {
@@ -98,8 +98,8 @@ file_name: seek_character_index-zikzak.exe;
 hwut_info_time: 1440837599L;
 make_dependent_f: True;
 result_list: [
-  [ Fixed; NO OUTPUT; 0.238097; None; ]
-  [ Dynamic; NO OUTPUT; 0.239485; None; ]
+  [ Fixed; MAKE FAILED; 0.238097; None; ]
+  [ Dynamic; MAKE FAILED; 0.239485; None; ]
 ]
 }
 {

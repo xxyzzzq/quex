@@ -30,16 +30,17 @@ QUEX_INLINE QUEX_NAME(BufferFiller)*
  *                                                                           */
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION2(from, file_name,
-                      const char*  Filename, 
+                      const char*  FileName, 
                       const char*  CodecName)
 {
-    /* Prefer FILE* based byte-loaders, because turn low-level buffering can   
-     * be turned off.                                                        */
-    __QUEX_STD_FILE*   fh = __QUEX_STD_fopen(Filename, "rb");
+    ByteLoader*   byte_loader;
+
+    byte_loader = ByteLoader_FILE_new_from_file_name(FileName);
+    if( ! byte_loader) return;
 
     /* ByteLoader will overtake ownership over 'fh', so we do not need to 
      * take care over 'free' and 'fclose'.                                   */
-    QUEX_MEMBER_FUNCTION_CALL2(from, FILE, fh, CodecName);
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
 
 /* Level (2) __________________________________________________________________
@@ -58,7 +59,9 @@ QUEX_MEMBER_FUNCTION2(from, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    byte_loader            = ByteLoader_FILE_new(fh);
+    byte_loader = ByteLoader_FILE_new(fh);
+    if( ! byte_loader) return;
+
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
@@ -72,7 +75,9 @@ QUEX_MEMBER_FUNCTION2(from, istream,
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader = ByteLoader_stream_new(istream_p);
+    if( ! byte_loader) return;
+
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
@@ -88,7 +93,9 @@ QUEX_MEMBER_FUNCTION2(from, wistream,
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader = ByteLoader_stream_new(istream_p);
+    if( ! byte_loader) return;
+
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
@@ -104,7 +111,9 @@ QUEX_MEMBER_FUNCTION2(from, strange_stream,
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader = ByteLoader_stream_new(istream_p);
+    if( ! byte_loader) return;
+
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
@@ -122,8 +131,9 @@ QUEX_MEMBER_FUNCTION2(from, ByteLoader,
     QUEX_NAME(Asserts_construct)(CodecName);
 
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    if( ! filler ) return; 
+
     filler->ownership = E_Ownership_LEXICAL_ANALYZER;
-    
     QUEX_MEMBER_FUNCTION_CALL1(from, BufferFiller, filler);
 }
 
@@ -138,9 +148,8 @@ QUEX_MEMBER_FUNCTION1(from, BufferFiller,
     memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
                        QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_CHARACTER), 
                        E_MemoryObjectType_BUFFER_MEMORY);
-    if( ! memory ) {
-        return;
-    }
+    if( ! memory ) return;
+
     QUEX_NAME(Buffer_construct)(&this->buffer, filler,
                                 memory, QUEX_SETTING_BUFFER_SIZE, 
                                 filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[QUEX_SETTING_BUFFER_SIZE],
