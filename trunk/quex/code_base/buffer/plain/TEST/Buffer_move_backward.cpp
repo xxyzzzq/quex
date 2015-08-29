@@ -19,7 +19,9 @@ main(int argc, char** argv)
     const size_t              StepSize = atoi(argv[1]);
     const size_t              MemorySize = 5;
 
-    QUEX_NAME(Buffer_construct)(&buffer, filler, MemorySize);
+    QUEX_TYPE_CHARACTER  memory[MemorySize];
+
+    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {

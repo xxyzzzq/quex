@@ -24,7 +24,9 @@ main(int argc, char** argv)
 
     fseek(fh, BeginIdx * sizeof(QUEX_TYPE_CHARACTER), SEEK_SET); 
 
-    QUEX_NAME(Buffer_construct)(&buffer, filler, MemorySize);
+    QUEX_TYPE_CHARACTER  memory[MemorySize];
+
+    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
 
     /* Simulate, as if we started at 0, and now reached '15' */
     buffer._content_character_index_begin = 15;

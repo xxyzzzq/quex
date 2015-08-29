@@ -97,11 +97,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       else
         QUEX_NAME(Converter)* converter = (QUEX_NAME(Converter)*)0;
 #       endif
-        if( ! converter ) {
-            return (QUEX_NAME(BufferFiller)*)0;;
+        if( converter ) {
+            converter->ownership = E_Ownership_LEXICAL_ANALYZER;
         }
-        converter->ownership = E_Ownership_LEXICAL_ANALYZER;
-
         return QUEX_NAME(BufferFiller_new)(byte_loader, converter,
                                            CharacterEncodingName, 
                                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
