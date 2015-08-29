@@ -3,6 +3,7 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER
 
 #include<quex/code_base/definitions>
+#include<quex/code_base/MemoryManager>
 
 #if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_OPTION_PLAIN_C)
 #   include<quex/code_base/buffer/MemoryPositionMimiker>
@@ -13,6 +14,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct { 
+        E_Ownership           ownership;
+
         /* (*) Buffer Memory Setup:
          *      memory[0]             = lower buffer limit code character
          *      memory[1]             = first char of content
@@ -27,8 +30,6 @@ QUEX_NAMESPACE_MAIN_OPEN
          *       is not inside the buffer.                                            */
         QUEX_TYPE_CHARACTER*  _end_of_file_p; 
 
-        /* Store whether the memory has an external owner */
-        bool                  _external_owner_f;
     } QUEX_NAME(BufferMemory);
 
     QUEX_INLINE size_t  QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)*);
@@ -71,13 +72,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
                                                     struct QUEX_NAME(BufferFiller_tag)*  filler,
-                                                    const size_t                         BufferMemorySize);
-    QUEX_INLINE void    QUEX_NAME(Buffer_construct_with_memory)(QUEX_NAME(Buffer)*                   me, 
-                                                                struct QUEX_NAME(BufferFiller_tag)*  filler,
-                                                                QUEX_TYPE_CHARACTER*                 memory,
-                                                                const size_t                         MemorySize,
-                                                                QUEX_TYPE_CHARACTER*                 end_of_file_p,
-                                                                bool                                 ExternalF);
+                                                    QUEX_TYPE_CHARACTER*                 memory,
+                                                    const size_t                         MemorySize,
+                                                    QUEX_TYPE_CHARACTER*                 end_of_file_p,
+                                                    E_Ownership                          Ownership);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 
                                                 struct QUEX_NAME(BufferFiller_tag)* filler); 

@@ -140,6 +140,7 @@ buffer_filler_converter = """
 /buffer/converter/BufferFiller_Converter
 /buffer/converter/BufferFiller_Converter.i
 /buffer/converter/Converter
+/buffer/converter/Converter.i
 """
 
 buffer_filler_iconv = """

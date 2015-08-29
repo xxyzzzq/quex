@@ -43,7 +43,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
-                                QUEX_NAME(Converter)* (*converters_new)(void),
+                                QUEX_NAME(Converter)* converter,
                                 const char*           CharacterEncodingName,
                                 const size_t          TranslationBufferMemorySize)
         /* CharacterEncoding == 0x0: Impossible; Converter requires codec name --> filler = 0x0
@@ -72,37 +72,37 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( ! byte_loader ) {
             return (QUEX_NAME(BufferFiller)*)0;
         }
-        else if( converters_new ) {
+        else if( converter ) {
             filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
-                               converters_new(), CharacterEncodingName, 
-                               /* Internal Coding: Default */0x0,
-                               TranslationBufferMemorySize);
+                                                           converter, CharacterEncodingName, 
+                                                           /* Internal Coding: Default */0x0,
+                                                           TranslationBufferMemorySize);
         }
         else {
             filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
         }
         
-        if( ! filler ) {
-            return (QUEX_NAME(BufferFiller)*)0;
-        }
-        else {
-            return filler;
-        }
+        filler->ownership = E_Ownership_EXTERNAL;
+        return filler;
     }
 
     QUEX_INLINE QUEX_NAME(BufferFiller)* 
     QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
                                     const char*   CharacterEncodingName) 
     {
-#       ifdef QUEX_OPTION_CONVERTER_ICU
-        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_ICU_new);
+#       if   defined(QUEX_OPTION_CONVERTER_ICU)
+        QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)();
 #       elif defined(QUEX_OPTION_CONVERTER_ICONV)
-        QUEX_NAME(Converter)* (*converters_new)(void) = QUEX_NAME(Converter_IConv_new);
+        QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)();
 #       else
-        QUEX_NAME(Converter)* (*converters_new)(void) = 0;
+        QUEX_NAME(Converter)* converter = (QUEX_NAME(Converter)*)0;
 #       endif
+        if( ! converter ) {
+            return (QUEX_NAME(BufferFiller)*)0;;
+        }
+        converter->ownership = E_Ownership_LEXICAL_ANALYZER;
 
-        return QUEX_NAME(BufferFiller_new)(byte_loader, converters_new,
+        return QUEX_NAME(BufferFiller_new)(byte_loader, converter,
                                            CharacterEncodingName, 
                                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     }
@@ -110,8 +110,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void       
     QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)* me)
     { 
-        if( ! me->delete_self ) QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
-        else                    me->delete_self(me);
+        if( me->ownership != E_Ownership_LEXICAL_ANALYZER) return;
+        else if( me->delete_self )                         me->delete_self(me);
+        QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
     }
 
     QUEX_INLINE void    

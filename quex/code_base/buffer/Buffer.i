@@ -19,55 +19,21 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                         QUEX_TYPE_CHARACTER*      Memory, 
                                                         const size_t              Size,
                                                         QUEX_TYPE_CHARACTER*      EndOfFileP,
-                                                        bool                      ExternalOwnerF);
+                                                        E_Ownership               Ownership);
     QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
     QUEX_INLINE void
     QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
                                 QUEX_NAME(BufferFiller)*  filler,
-                                const size_t              MemorySize)
-    {
-        QUEX_TYPE_CHARACTER* memory;
-        QUEX_TYPE_CHARACTER* end_of_file_p;
-        
-#       ifdef QUEX_OPTION_ASSERTS
-        /* Initialize everything to 0xFF which is most probably causing an
-         * error if a member variable is not initialized before it is used.  */
-        __QUEX_STD_memset((void*)me, 0xFF, sizeof(QUEX_NAME(Buffer)));
-#       endif
-
-        /* InputMemory == 0x0 => interact with memory manager to get memory. 
-         * The actual 'memory chunk' is an 'owned member resource' accessed by 
-         * pointer. Thus, it is allocated in the constructor.                */
-        memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
-                                              MemorySize * sizeof(QUEX_TYPE_CHARACTER), 
-                                              QUEXED(MemoryObjectType_BUFFER_MEMORY));
-        if( memory )
-        {
-            end_of_file_p = filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[MemorySize-1];
-
-            QUEX_NAME(Buffer_construct_with_memory)(me, filler, memory, MemorySize,
-                                                    end_of_file_p, /* ExternalF */ false);
-        }
-        else
-        {
-            me->_memory._front = (QUEX_TYPE_CHARACTER*)0;
-            me->_memory._back  = (QUEX_TYPE_CHARACTER*)0;
-        }
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_construct_with_memory)(QUEX_NAME(Buffer)*        me, 
-                                            QUEX_NAME(BufferFiller)*  filler,
-                                            QUEX_TYPE_CHARACTER*      memory,
-                                            const size_t              MemorySize,
-                                            QUEX_TYPE_CHARACTER*      end_of_file_p,
-                                            bool                      ExternalF)
+                                QUEX_TYPE_CHARACTER*      memory,
+                                const size_t              MemorySize,
+                                QUEX_TYPE_CHARACTER*      end_of_file_p,
+                                E_Ownership               Ownership)
     {
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
         QUEX_NAME(BufferMemory_construct)(&me->_memory, 
                                           memory, MemorySize, end_of_file_p, 
-                                          ExternalF); 
+                                          Ownership); 
         
         me->on_buffer_content_change = (void (*)(QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*))0;
 
@@ -465,7 +431,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       QUEX_TYPE_CHARACTER*      Memory, 
                                       const size_t              Size,
                                       QUEX_TYPE_CHARACTER*      EndOfFileP,
-                                      bool                      ExternalOwnerF) 
+                                      E_Ownership               Ownership) 
     {
         __quex_assert(Memory);
         /* "Memory size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2" is reqired.
@@ -478,7 +444,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_front            = Memory;
         me->_end_of_file_p    = EndOfFileP;
         me->_back             = &Memory[Size-1];
-        me->_external_owner_f = ExternalOwnerF;
+        me->ownership         = Ownership;
         *(me->_front)         = QUEX_SETTING_BUFFER_LIMIT_CODE;
         *(me->_back)          = QUEX_SETTING_BUFFER_LIMIT_CODE;
         if( me->_end_of_file_p ) {
@@ -497,9 +463,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
     {
-        if( (! me->_external_owner_f)  && me->_front ) {
+        if( me->_front && me->ownership == E_Ownership_LEXICAL_ANALYZER ) {
             QUEXED(MemoryManager_free)((void*)me->_front, 
-                                       QUEXED(MemoryObjectType_BUFFER_MEMORY));
+                                       E_MemoryObjectType_BUFFER_MEMORY);
         }
         /* Protect against double-destruction.                               */
         me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
@@ -520,7 +486,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             __QUEX_STD_printf("      _end_of_file_p = <void>;\n");
 
         /* Store whether the memory has an external owner */
-        __QUEX_STD_printf("      _external_owner_f = %s;\n", me->_memory._external_owner_f ? "true" : "false");
+        __QUEX_STD_printf("      _external_owner_f = %s;\n", me->_memory.ownership == E_Ownership_EXTERNAL ? "true" : "false");
 
         __QUEX_STD_printf("   _input_p        = +0x%X;\n", (int)(me->_input_p        - Offset));
         __QUEX_STD_printf("   _lexeme_start_p = +0x%X;\n", (int)(me->_lexeme_start_p - Offset));

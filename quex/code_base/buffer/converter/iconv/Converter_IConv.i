@@ -41,13 +41,16 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Converter_IConv)*  me = \
            (QUEX_NAME(Converter_IConv)*)
            QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_IConv)),
-                                          QUEXED(MemoryObjectType_CONVERTER));
+                                          E_MemoryObjectType_CONVERTER);
+        if( ! me ) {
+            return (QUEX_NAME(Converter)*)0;
+        }
 
-        me->base.open        = QUEX_NAME(Converter_IConv_open);
-        me->base.convert     = QUEX_NAME(Converter_IConv_convert);
-        me->base.delete_self = QUEX_NAME(Converter_IConv_delete_self);
-        me->base.on_conversion_discontinuity = (void (*)(struct QUEX_NAME(Converter_tag)*))0;
-        me->base.virginity_f = true;
+        QUEX_NAME(Converter_construct)(&me->base,
+                                       QUEX_NAME(Converter_IConv_open),
+                                       QUEX_NAME(Converter_IConv_convert),
+                                       QUEX_NAME(Converter_IConv_delete_self),
+                                       (void (*)(struct QUEX_NAME(Converter_tag)*))0);
 
         me->handle = (iconv_t)-1;
 
@@ -194,7 +197,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
 
         iconv_close(me->handle); 
-        QUEXED(MemoryManager_free)((void*)me, QUEXED(MemoryObjectType_CONVERTER));
+        QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_CONVERTER);
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

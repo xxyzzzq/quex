@@ -37,6 +37,6 @@ main(int argc, char** argv)
         printf("\n");
     } while( 1 + 1 == 2 );
 
-    fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
+    filler->delete_self(filler);
 }
 

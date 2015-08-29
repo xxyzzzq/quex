@@ -66,7 +66,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * Converters are pointed to by 'converter',                         */
         me = (QUEX_NAME(BufferFiller_Converter)*) \
               QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(BufferFiller_Converter)),
-                                             QUEXED(MemoryObjectType_BUFFER_FILLER));
+                                             E_MemoryObjectType_BUFFER_FILLER);
         __quex_assert(me);
 
         QUEX_NAME(BufferFiller_Converter_construct)(me, byte_loader, converter, FromCoding, ToCoding, RawBufferSize);
@@ -112,7 +112,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
         raw_buffer_p = QUEXED(MemoryManager_allocate)(RawBufferSize, 
-                                                      QUEXED(MemoryObjectType_BUFFER_RAW));
+                                                      E_MemoryObjectType_BUFFER_RAW);
         QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
                                   me->start_position);
 
@@ -123,31 +123,26 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
     }
 
-    QUEX_INLINE void  
-    QUEX_NAME(BufferFiller_Converter_reset)(QUEX_NAME(BufferFiller_Converter)* me, ByteLoader* byte_loader)
-    {
-        (void)me;
-        (void)byte_loader;
-    }
-
     QUEX_INLINE void   
     QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
     { 
         QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+        if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
 
         if( me->base.byte_loader ) {
-            me->base.byte_loader->delete_self(me->base.byte_loader);
+            ByteLoader_delete(me->base.byte_loader);
             me->base.byte_loader = (ByteLoader*)0;
         }
-        me->converter->delete_self(me->converter);
+        if( me->converter ) {
+            me->converter->delete_self(me->converter);
+        }
 
         QUEXED(MemoryManager_free)((void*)me->raw_buffer.begin,
-                                      QUEXED(MemoryObjectType_BUFFER_RAW)); 
+                                   E_MemoryObjectType_BUFFER_RAW); 
 
-        QUEXED(MemoryManager_free)((void*)me, QUEXED(MemoryObjectType_BUFFER_FILLER));
+        QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
     }
-
 
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFiller_Converter_read_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
@@ -536,6 +531,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/BufferFiller.i>
+
+#include <quex/code_base/buffer/converter/Converter.i>
 
 #ifdef QUEX_OPTION_CONVERTER_ICONV
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>

@@ -40,6 +40,7 @@ QUEX_MEMBER_FUNCTION2(include_push, FILE,
                       __QUEX_STD_FILE*    fh, 
                       const char*         CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( fh );
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
@@ -48,8 +49,9 @@ QUEX_MEMBER_FUNCTION2(include_push, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
-                               ByteLoader_FILE_new(fh), CodecName); 
+    byte_loader            = ByteLoader_FILE_new(fh);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, byte_loader, CodecName);
 }
 
 #ifndef __QUEX_OPTION_PLAIN_C
@@ -58,10 +60,13 @@ QUEX_MEMBER_FUNCTION2(include_push, istream,
                       std::istream*   istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
 
-    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
-                               ByteLoader_stream_new(istream_p), CodecName); 
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, byte_loader, CodecName);
 }
 #endif
 
@@ -72,9 +77,12 @@ QUEX_MEMBER_FUNCTION2(include_push, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, 
-                               ByteLoader_stream_new(istream_p), CodecName); 
+
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, byte_loader, CodecName);
 }
 #endif
 
@@ -85,9 +93,12 @@ QUEX_MEMBER_FUNCTION2(include_push, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader,
-                               ByteLoader_stream_new(istream_p), CodecName); 
+
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(include_push, ByteLoader, byte_loader, CodecName);
 }
 #endif
 
@@ -103,7 +114,9 @@ QUEX_MEMBER_FUNCTION2(include_push, ByteLoader,
     QUEX_NAME(Asserts_construct)(CodecName);
 
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
-    
+    if( ! filler ) return;
+
+    filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL1(include_push, BufferFiller, filler);
 }
 
@@ -113,9 +126,19 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(include_push, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer) new_buffer_setup;
-    QUEX_NAME(Buffer_construct)(&new_buffer_setup, filler, 
-                                QUEX_SETTING_BUFFER_SIZE); 
+    QUEX_TYPE_CHARACTER* memory;
+    QUEX_NAME(Buffer)    new_buffer_setup;
+
+    memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
+                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_CHARACTER), 
+                       E_MemoryObjectType_BUFFER_MEMORY);
+    if( ! memory ) {
+        return;
+    }
+    QUEX_NAME(Buffer_construct)(&new_buffer_setup, filler,
+                                memory, QUEX_SETTING_BUFFER_SIZE, 
+                                filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[QUEX_SETTING_BUFFER_SIZE],
+                                E_Ownership_LEXICAL_ANALYZER);
 
     /* The 'new_buffer_setup' is only copied including the reference to the
      * new memory. However, the box object 'new_buffer_setup' is left alone. */
@@ -134,10 +157,10 @@ QUEX_MEMBER_FUNCTION3(include_push, memory,
  * loader', and 'no buffer filler'.                                          */
 {
     QUEX_NAME(Buffer) new_buffer_setup;
-    QUEX_NAME(Buffer_construct_with_memory)(&new_buffer_setup, 
-                                            (QUEX_NAME(BufferFiller)*)0,
-                                            Memory, MemorySize, EndOfFileP,
-                                            /* External */ true);
+    QUEX_NAME(Buffer_construct)(&new_buffer_setup, 
+                                (QUEX_NAME(BufferFiller)*)0,
+                                Memory, MemorySize, EndOfFileP,
+                                E_Ownership_EXTERNAL);
 
     /* The 'new_buffer_setup' is only copied including the reference to the
      * new memory. However, the box object 'new_buffer_setup' is left alone. */
@@ -149,7 +172,7 @@ QUEX_MEMBER_FUNCTIONO1(basic_include_push,
                        QUEX_NAME(Buffer)* new_buffer_setup)
 {
     QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
-                                     sizeof(QUEX_NAME(Memento)), QUEXED(MemoryObjectType_MEMENTO));
+                                     sizeof(QUEX_NAME(Memento)), E_MemoryObjectType_MEMENTO);
 #   ifndef __QUEX_OPTION_PLAIN_C
     /* Use placement 'new' for explicit call of constructor. 
      * Necessary in C++: Call to constructor for user defined members.       */
@@ -227,7 +250,7 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
     memento->~QUEX_NAME(Memento_tag)();
 #   endif
 
-    QUEXED(MemoryManager_free)((void*)memento, QUEXED(MemoryObjectType_MEMENTO)); 
+    QUEXED(MemoryManager_free)((void*)memento, E_MemoryObjectType_MEMENTO); 
 
     /* Return to including file succesful                                    */
     return true;

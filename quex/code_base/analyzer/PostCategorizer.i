@@ -30,7 +30,7 @@ QUEX_NAME(PostCategorizer_allocate_node)(size_t RemainderL)
     uint8_t*       base          = 
                       (uint8_t*)
                       QUEXED(MemoryManager_allocate)(BaseSize + RemainderSize, 
-                                                     QUEXED(MemoryObjectType_POST_CATEGORIZER_NODE));
+                                                     E_MemoryObjectType_POST_CATEGORIZER_NODE);
     ((QUEX_NAME(DictionaryNode)*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
     return (QUEX_NAME(DictionaryNode)*)base;
 }
@@ -41,7 +41,7 @@ QUEX_NAME(PostCategorizer_free_node)(QUEX_NAME(DictionaryNode)* node)
     if( ! node ) return;
     
     QUEXED(MemoryManager_free)((void*)node, 
-                               QUEXED(MemoryObjectType_POST_CATEGORIZER_NODE)); 
+                               E_MemoryObjectType_POST_CATEGORIZER_NODE); 
 }
 
 QUEX_INLINE QUEX_NAME(DictionaryNode)* 

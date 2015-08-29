@@ -52,7 +52,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller_Plain)*  me = \
              (QUEX_NAME(BufferFiller_Plain)*) \
               QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(BufferFiller_Plain)),
-                                             QUEXED(MemoryObjectType_BUFFER_FILLER));
+                                             E_MemoryObjectType_BUFFER_FILLER);
         __quex_assert(me);
         __quex_assert(byte_loader);
 
@@ -90,7 +90,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->base.byte_loader->delete_self(me->base.byte_loader);
             me->base.byte_loader = (ByteLoader*)0;
         }
-        QUEXED(MemoryManager_free)((void*)me, QUEXED(MemoryObjectType_BUFFER_FILLER));
+        QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
 
     }
 

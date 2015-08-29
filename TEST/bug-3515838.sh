@@ -5,6 +5,7 @@ case $1 in
     --hwut-info)
         echo "liancheng: $bug 0.62.5 Namespace specifications cause errors"
         echo "CHOICES: Cpp, C;"
+        exit
     ;;
 
     Cpp)

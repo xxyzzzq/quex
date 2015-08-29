@@ -149,10 +149,10 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
  * loader', and 'no buffer filler'.                                          */
 {
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
-    QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
-                                            (QUEX_NAME(BufferFiller)*)0,
-                                            Memory, MemorySize, EndOfFileP,
-                                            /* External */ true);
+    QUEX_NAME(Buffer_construct)(&this->buffer, 
+                                (QUEX_NAME(BufferFiller)*)0,
+                                Memory, MemorySize, EndOfFileP,
+                                E_Ownership_EXTERNAL);
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
