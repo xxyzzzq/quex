@@ -105,6 +105,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct {
+        E_Ownership               ownership;
+
         uint8_t*                  begin;
         uint8_t*                  end;
         uint8_t*                  memory_end;
@@ -114,7 +116,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         
         QUEX_TYPE_STREAM_POSITION end_stream_position;
 
-        bool                      _external_owner_f;
     } QUEX_NAME(RawBuffer);
 
     typedef struct {
@@ -126,6 +127,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
         QUEX_NAME(BufferFiller)   base;
+
         ByteLoader*               byte_loader;
         QUEX_NAME(Converter)*     converter;
         QUEX_NAME(RawBuffer)      raw_buffer;

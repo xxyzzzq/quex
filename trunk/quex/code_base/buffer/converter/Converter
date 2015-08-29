@@ -6,6 +6,8 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct QUEX_NAME(Converter_tag) {
+        E_Ownership   ownership;
+
         void    (*open)(struct QUEX_NAME(Converter_tag)*, 
                         const char* FromCodingName, const char* ToCodingName);  
         /* Opens internally a conversion handle for the conversion from 'FromCodingName'
@@ -82,6 +84,18 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* Facilitate the task of converting to apropriate function pointers from derived 
      * member functions.                                                                  */
 
+QUEX_INLINE void
+QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
+                    void    (*open)(struct QUEX_NAME(Converter_tag)*, 
+                                    const char* FromCodingName, const char* ToCodingName),  
+                    bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 
+                                       uint8_t**             source, const uint8_t*             SourceEnd, 
+                                       QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
+                    void    (*on_conversion_discontinuity)(struct QUEX_NAME(Converter_tag)*),
+                    void    (*delete_self)(struct QUEX_NAME(Converter_tag)*));
+
+QUEX_INLINE void
+QUEX_NAME(Converter_delete)(QUEX_NAME(Converter)* me);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

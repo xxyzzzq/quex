@@ -42,7 +42,7 @@ $INCLUDE_CONVERTER_DECLARATION
    destructor {
        if( self.text != LexemeNull ) {
            QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
-                                      QUEXED(MemoryObjectType_TEXT));
+                                      E_MemoryObjectType_TEXT);
            self.text = LexemeNull;
        }
    }
@@ -52,13 +52,13 @@ $INCLUDE_CONVERTER_DECLARATION
 
         if( self.text != LexemeNull ) {
             QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
-                                       QUEXED(MemoryObjectType_TEXT));
+                                       E_MemoryObjectType_TEXT);
         }
         if( Other.text != LexemeNull ) {
             self.text = QUEXED(MemoryManager_allocate)(
                                     sizeof(QUEX_TYPE_CHARACTER) 
                                   * (QUEX_NAME(strlen)(Other.text) + 1), 
-                                  QUEXED(MemoryObjectType_TEXT));
+                                  E_MemoryObjectType_TEXT);
             __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
                                 sizeof(QUEX_TYPE_CHARACTER) 
                               * (QUEX_NAME(strlen)(Other.text) + 1));
@@ -91,12 +91,12 @@ $INCLUDE_CONVERTER_DECLARATION
 
         if( self.text != LexemeNull ) {
             QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
-                                       QUEXED(MemoryObjectType_TEXT));
+                                       E_MemoryObjectType_TEXT);
         }
         if( Begin != LexemeNull ) {
             self.text = QUEXED(MemoryManager_allocate)(
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1), 
-                              QUEXED(MemoryObjectType_TEXT));
+                              E_MemoryObjectType_TEXT);
             __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
                               sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin));
             /* The string is not necessarily zero terminated, so terminate it here. */

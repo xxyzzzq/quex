@@ -49,6 +49,7 @@ QUEX_MEMBER_FUNCTION2(from, FILE,
                       __QUEX_STD_FILE*    fh, 
                       const char*         CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( fh );
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
@@ -57,8 +58,9 @@ QUEX_MEMBER_FUNCTION2(from, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_FILE_new(fh), 
-                           CodecName); 
+    byte_loader            = ByteLoader_FILE_new(fh);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
 
 #ifndef __QUEX_OPTION_PLAIN_C
@@ -67,9 +69,12 @@ QUEX_MEMBER_FUNCTION2(from, istream,
                       std::istream*   istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
-                           CodecName); 
+
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
 #endif
 
@@ -80,9 +85,12 @@ QUEX_MEMBER_FUNCTION2(from, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
-                           CodecName); 
+
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
 #endif
 
@@ -93,9 +101,12 @@ QUEX_MEMBER_FUNCTION2(from, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
+    ByteLoader*   byte_loader;
     __quex_assert( istream_p );
-    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, ByteLoader_stream_new(istream_p), 
-                           CodecName); 
+
+    byte_loader            = ByteLoader_stream_new(istream_p);
+    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    QUEX_MEMBER_FUNCTION_CALL2(from, ByteLoader, byte_loader, CodecName); 
 }
 #endif
 
@@ -111,6 +122,7 @@ QUEX_MEMBER_FUNCTION2(from, ByteLoader,
     QUEX_NAME(Asserts_construct)(CodecName);
 
     filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     
     QUEX_MEMBER_FUNCTION_CALL1(from, BufferFiller, filler);
 }
@@ -121,7 +133,18 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(from, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
-    QUEX_NAME(Buffer_construct)(&this->buffer, filler, QUEX_SETTING_BUFFER_SIZE); 
+    QUEX_TYPE_CHARACTER* memory;
+
+    memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
+                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_CHARACTER), 
+                       E_MemoryObjectType_BUFFER_MEMORY);
+    if( ! memory ) {
+        return;
+    }
+    QUEX_NAME(Buffer_construct)(&this->buffer, filler,
+                                memory, QUEX_SETTING_BUFFER_SIZE, 
+                                filler ? (QUEX_TYPE_CHARACTER*)0 : &memory[QUEX_SETTING_BUFFER_SIZE],
+                                E_Ownership_LEXICAL_ANALYZER);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
 
@@ -136,10 +159,10 @@ QUEX_MEMBER_FUNCTION3(from, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
-    QUEX_NAME(Buffer_construct_with_memory)(&this->buffer, 
-                                            (QUEX_NAME(BufferFiller)*)0,
-                                            Memory, MemorySize, EndOfFileP,
-                                            /* External */ true);
+    QUEX_NAME(Buffer_construct)(&this->buffer, 
+                                (QUEX_NAME(BufferFiller)*)0,
+                                Memory, MemorySize, EndOfFileP,
+                                E_Ownership_EXTERNAL);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
 
