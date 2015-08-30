@@ -28,7 +28,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         int                  id;
         const char*          name;
 
-#       ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+#   if      defined(QUEX_OPTION_INDENTATION_TRIGGER) \
+       && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
         void (*on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                QUEX_TYPE_INDENTATION  Indentation, 
                                QUEX_TYPE_CHARACTER*   Begin);

@@ -931,6 +931,17 @@ cpp_include_Multi_i_str = """
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    /* Detect whether the buffer limit code appeared at non-border.          */
+    if( me->buffer._memory._end_of_file_p ) {
+        if( me->buffer._input_p != me->buffer._memory._end_of_file_p ) {
+            __quex_assert(false); /* Later: on codec error! */
+        }
+    }
+    else {
+        if( me->buffer._input_p != me->buffer._memory._back ) {
+            __quex_assert(false); /* Later: on codec error! */
+        }
+    }
     if( me->buffer._memory._end_of_file_p == 0x0 ) {
 """,
 """
@@ -948,6 +959,10 @@ cpp_reload_forward_str = [
 cpp_reload_backward_str = [
 """    __quex_debug3("RELOAD_BACKWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    /* Detect whether the buffer limit code appeared at non-border.          */
+    if( me->buffer._input_p != me->buffer._memory._front ) {
+        __quex_assert(false); /* Later: on codec error! */
+    }
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
         __quex_debug_reload_before();          /* Report source position. */
         QUEX_NAME(buffer_reload_backward)(&me->buffer);

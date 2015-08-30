@@ -33,7 +33,8 @@ main(int argc, char** argv)
     stderr = stdout;
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QUEX_NAME(Buffer_construct)(&buffer, 0x0, memory_size);
+    QUEX_TYPE_CHARACTER  memory[memory_size];
+    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, &memory[0], memory_size, 0, E_Ownership_EXTERNAL);
     QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");

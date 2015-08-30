@@ -106,11 +106,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void       
-    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)* me)
+    QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
     { 
-        if( me->ownership != E_Ownership_LEXICAL_ANALYZER) return;
-        else if( me->delete_self )                         me->delete_self(me);
-        QUEX_ERROR_EXIT("BufferFiller object did not specify 'delete_self()'\n");
+        if( ! *me )                                           {}
+        if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) {}
+        else if( (*me)->delete_self )                         (*me)->delete_self(*me);
+        (*me) = (QUEX_NAME(BufferFiller)*)0;
     }
 
     QUEX_INLINE void    
@@ -812,8 +813,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Upon 'reset': current and new ByteLoader objects contain same input handle.");
         }
         else {
-            me->byte_loader->delete_self(me->byte_loader);
-            me->byte_loader = new_byte_loader;
+            ByteLoader_delete(&me->byte_loader);
         }
 
         me->byte_loader->seek(me->byte_loader, (QUEX_TYPE_STREAM_POSITION)0);

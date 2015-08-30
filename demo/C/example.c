@@ -56,7 +56,7 @@ main(int argc, char** argv)
     printf("| [END] number of token = %i\n", number_of_tokens);
     printf("`-----------------------------------------------------------------\n");
 
-    QUEX_NAME(destruct)(&qlex);
+    quex_EasyLexer_destruct(&qlex);
 
     return 0;
 }
