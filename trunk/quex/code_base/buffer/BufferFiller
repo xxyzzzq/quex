@@ -124,7 +124,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                       const QUEX_TYPE_CHARACTER* EndP,
                                                                       const void*                FilledEndP),
                                   ByteLoader*  byte_loader);
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
+    QUEX_INLINE void    QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);

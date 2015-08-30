@@ -142,7 +142,7 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
     if( filler != this->buffer.filler ) {
-        this->buffer.filler->delete_self(this->buffer.filler);
+        QUEX_NAME(BufferFiller_delete)(&this->buffer.filler);
         this->buffer.filler = filler;
     }
     else {

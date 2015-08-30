@@ -40,16 +40,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                        E_MemoryObjectType_CONVERTER);
 
         QUEX_NAME(Converter_construct)(&me->base,
-                                       QUEX_NAME(Converter_IConv_open),
-                                       QUEX_NAME(Converter_IConv_convert),
-                                       QUEX_NAME(Converter_IConv_delete_self),
+                                       QUEX_NAME(Converter_ICU_open),
+                                       QUEX_NAME(Converter_ICU_convert),
+                                       QUEX_NAME(Converter_ICU_delete_self),
                                        QUEX_NAME(Converter_ICU_on_conversion_discontinuity));
-
-        me->base.open        = QUEX_NAME(Converter_ICU_open);
-        me->base.convert     = QUEX_NAME(Converter_ICU_convert);
-        me->base.delete_self = QUEX_NAME(Converter_ICU_delete_self);
-        me->base.on_conversion_discontinuity = 
-        me->base.virginity_f = true;
 
         me->to_handle   = 0x0;
         me->from_handle = 0x0;

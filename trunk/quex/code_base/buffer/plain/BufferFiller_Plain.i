@@ -86,10 +86,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego) 
     {
         QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-        if( me->base.byte_loader ) {
-            me->base.byte_loader->delete_self(me->base.byte_loader);
-            me->base.byte_loader = (ByteLoader*)0;
-        }
+        ByteLoader_delete(&me->base.byte_loader); 
         QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
 
     }

@@ -48,21 +48,22 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*       me) 
     {
-        /* Init is a special kind of reset, where some things might not be reset. */
-        me->_input_p        = &me->_memory._front[1];  /* First State does not increment */
-        me->_lexeme_start_p = &me->_memory._front[1];  /* Thus, set it on your own.      */
-        /* NOTE: The terminating zero is stored in the first character **after** the  
-         *       lexeme (matching character sequence). The begin of line pre-condition  
-         *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.                          */
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+        /* The first state in the state machine does not increment. Thus, the
+         * input pointer is set to the first position, not before.          */
+        me->_input_p        = &me->_memory._front[1];  
+        me->_lexeme_start_p = &me->_memory._front[1];  
+
+        /* The terminating zero is stored in the first character **after** the
+         * lexeme (matching character sequence). The begin of line
+         * pre-condition  is concerned with the last character in the lexeme,
+         * which is the one  before the 'char_covered_by_terminating_zero'.  */
+        me->_character_at_lexeme_start = '\0';  /* 0 => no character covered */
 
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line     */
 #       endif
 
         if( me->filler ) {
-            /* We only have to reset the input stream, if we are not at position zero    */
             QUEX_NAME(BufferFiller_initial_load)(me);   
         } else {
             me->_content_character_index_begin = 0; 
@@ -70,32 +71,21 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         if( ! me->filler || ! me->filler->byte_loader ) {
-            /* TWO CASES:
-             * (1) The user provides a buffer memory: --> assume it is filled to the end.
-             * (2) The user does not provide memory:  --> the memory IS empty.             */
             if( ! &me->_memory._front[0] ) {
-                /* 'buffer._memory._front' has been set at this point in time.             */
+                /* 'buffer._memory._front' has not been set yet.             */
                 QUEX_NAME(Buffer_end_of_file_set)(me, &me->_memory._front[1]);
             }
-            /* When working on plain memory, the '_end_of_file_p' must be set to indicate
-             * the end of the content.                                                     */
-            __quex_assert(me->_memory._end_of_file_p >  me->_memory._front);
-            __quex_assert(me->_memory._end_of_file_p <= me->_memory._back);
         }
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        /* NOT YET: QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me)               */
         __quex_assert(me->_input_p == &me->_memory._front[1]);
     }
 
     QUEX_INLINE void
     QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me)
     {
-        if( me->filler ) { 
-            me->filler->delete_self(me->filler); 
-            me->filler = (QUEX_NAME(BufferFiller)*)0x0;
-        }
-
+        QUEX_NAME(BufferFiller_delete)(&me->filler); 
         QUEX_NAME(BufferMemory_destruct)(&me->_memory);
     }
 

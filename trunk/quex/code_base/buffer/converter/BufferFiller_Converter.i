@@ -130,13 +130,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
         if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
 
-        if( me->base.byte_loader ) {
-            ByteLoader_delete(me->base.byte_loader);
-            me->base.byte_loader = (ByteLoader*)0;
-        }
-        if( me->converter ) {
-            me->converter->delete_self(me->converter);
-        }
+        ByteLoader_delete(&me->base.byte_loader);
+        QUEX_NAME(Converter_delete)(&me->converter); 
 
         QUEXED(MemoryManager_free)((void*)me->raw_buffer.begin,
                                    E_MemoryObjectType_BUFFER_RAW); 
