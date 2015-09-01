@@ -19,7 +19,7 @@ main(int argc, char** argv)
     printf("##    Note this works only when engine is generated with -b 1 (or no -b)\n");
     printf("##    and therefore QUEX_TYPE_CHARACTER == uint8_t.\n");
     assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(uint8_t));
-    QUEX_NAME(from_file_name)(&qlex, "example.txt", 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, "example.txt", 0x0);
 
     printf(",-----------------------------------------------------------------\n");
     printf("| [START]\n");

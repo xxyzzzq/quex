@@ -11,7 +11,7 @@ main(int argc, char** argv)
     size_t             BufferSize = 1024;
     char               buffer[1024];
     
-    QUEX_NAME(from_file_name)(&qlex, "example-iso8859-7.txt", 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, "example-iso8859-7.txt", 0x0);
 
     // (*) loop until the 'termination' token arrives
     do {

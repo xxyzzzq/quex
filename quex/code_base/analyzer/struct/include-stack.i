@@ -350,8 +350,9 @@ QUEX_INLINE bool
 QUEX_MEMBER_FUNCTIONO1(include_detect_recursion,
                        const char* InputName)
 {
-    for(QUEX_NAME(Memento)* iterator = this->_parent_memento;
-        iterator ; iterator = iterator->_parent_memento ) {
+    QUEX_NAME(Memento)* iterator;
+    for(iterator = this->_parent_memento; iterator ; 
+        iterator = iterator->_parent_memento ) {
         if( __QUEX_STD_strcmp(iterator->input_name, InputName) == 0 ) {
             return true;
         }

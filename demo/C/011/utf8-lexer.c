@@ -11,7 +11,7 @@ main(int argc, char** argv)
     char          buffer[1024];
     quex_UTF8Lex  qlex;
     
-    QUEX_NAME(from_file_name)(&qlex, "example-utf8.txt", 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, "example-utf8.txt", 0x0);
 
     // (*) loop until the 'termination' token arrives
     do {
