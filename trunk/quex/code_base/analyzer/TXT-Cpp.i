@@ -28,16 +28,19 @@ $$RESET_EXTENSIONS$$
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-QUEX_INLINE void
-QUEX_MEMBER_FUNCTIONO1(user_memento_pack, QUEX_NAME(Memento)* memento) 
+QUEX_INLINE bool
+QUEX_MEMBER_FUNCTIONO2(user_memento_pack, 
+                       const char*         InputName, 
+                       QUEX_NAME(Memento)* memento) 
 {
-    (void)this; (void)memento;
+    (void)this; (void)memento; (void)InputName;
 
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's memento 'pack' _______________________________________________*/
 $$MEMENTO_EXTENSIONS_PACK$$
 /* END: _______________________________________________________________________*/
 #undef self
+    return true;
 }
 
 QUEX_INLINE void

@@ -216,39 +216,51 @@ public:
      *
      * Level (1) ______________________________________________________________
      *                                                                       */
-    void    include_push(const char*  FileName, const char*  CodecName = 0x0);
-    void    include_push(const std::string&  FileName, const char*  CodecName = 0x0)
-            { include_push(FileName.c_str(), CodecName); }
+    bool    include_push(const char*  FileName, const char*  CodecName = 0x0);
+    bool    include_push(const std::string&  FileName, const char*  CodecName = 0x0)
+            { return include_push(FileName.c_str(), CodecName); }
 
     /* Level (2) ______________________________________________________________
      *                                                                       */
-    void    include_push(__QUEX_STD_FILE*  fh, const char*  CodecName = 0x0);
-    void    include_push(std::istream*     istream_p, const char*  CodecName = 0x0);
+    bool    include_push(const char*       InputName, 
+                         __QUEX_STD_FILE*  fh, 
+                         const char*       CodecName = 0x0);
+    bool    include_push(const char*       InputName,
+                         std::istream*     istream_p, 
+                         const char*       CodecName = 0x0);
 #   if defined(__QUEX_OPTION_WCHAR_T)
-    void    include_push(std::wistream*    istream_p, const char*  CodecName = 0x0);
+    bool    include_push(const char*    InputName, 
+                         std::wistream* istream_p, 
+                         const char*    CodecName = 0x0);
 #   endif
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
-    void    include_push(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+    bool    include_push(const char*                              InputName, 
+                         quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                          const char*                              CodecName = 0x0);
 #   endif
 
     /* Level (3) ______________________________________________________________
      *                                                                       */
-    void    include_push(ByteLoader*  byte_loader, const char*  CodecName = 0x0);
+    bool    include_push(const char*  InputName, 
+                         ByteLoader*  byte_loader, 
+                         const char*  CodecName = 0x0);
 
     /* Level (4) ______________________________________________________________
      *                                                                       */
-    void    include_push(QUEX_NAME(BufferFiller)*  filler); 
+    bool    include_push(const char*               InputName, 
+                         QUEX_NAME(BufferFiller)*  filler); 
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
-    void    include_push(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    bool    include_push(const char*          InputName, 
+                         QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                          size_t               BufferMemorySize,
                          QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
 
     bool    include_pop();
     void    include_stack_delete();
+    bool    include_detect_recursion(const char* InputName);
 #   endif
 
     /* -- activate/deactivate byte order reversion (big-/little-endian)      */
@@ -374,11 +386,11 @@ public:
 private:
     // (*) Common for constructor, reset, and include push ___________________________
     void    basic_constructor();
-    void    basic_include_push(QUEX_NAME(Buffer)* new_buffer_setup); 
+    bool    basic_include_push(const char* InputName, QUEX_NAME(Buffer)* new_buffer_setup); 
     void    basic_reset();
 
     void    user_constructor();
-    void    user_memento_pack(QUEX_NAME(Memento)*); 
+    bool    user_memento_pack(const char* InputName, QUEX_NAME(Memento)*); 
     void    user_memento_unpack(QUEX_NAME(Memento)*);
     void    user_reset();
 

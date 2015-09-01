@@ -63,6 +63,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*);
 
+    typedef struct {
+        QUEX_NAME(Mode)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+        QUEX_NAME(Mode)** end;
+        QUEX_NAME(Mode)** memory_end;
+    } QUEX_NAME(ModeStack);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>

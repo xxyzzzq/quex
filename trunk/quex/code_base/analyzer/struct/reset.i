@@ -35,8 +35,11 @@ QUEX_MEMBER_FUNCTION2(reset, file_name,
     ByteLoader*   byte_loader;
 
     byte_loader = ByteLoader_FILE_new_from_file_name(FileName);
-    if( ! byte_loader) return;
-
+    /* NOT: Abort/return if byte_loader == 0 !!
+     *      Incomplete construction => propper destruction IMPOSSIBLE!       */
+    if( byte_loader ) {
+        byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader, byte_loader, CodecName); 
 }
 
@@ -57,9 +60,11 @@ QUEX_MEMBER_FUNCTION2(reset, FILE,
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
     byte_loader = ByteLoader_FILE_new(fh);
-    if( ! byte_loader ) return;
-
-    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    /* NOT: Abort/return if byte_loader == 0 !!
+     *      Incomplete construction => propper destruction IMPOSSIBLE!       */
+    if( byte_loader ) {
+        byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader, byte_loader, CodecName); 
 }
 
@@ -73,9 +78,11 @@ QUEX_MEMBER_FUNCTION2(reset, istream,
     __quex_assert( istream_p );
 
     byte_loader = ByteLoader_stream_new(istream_p);
-    if( ! byte_loader ) return;
-
-    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    /* NOT: Abort/return if byte_loader == 0 !!
+     *      Incomplete construction => propper destruction IMPOSSIBLE!       */
+    if( byte_loader ) {
+        byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader, byte_loader, CodecName); 
 }
 #endif
@@ -90,9 +97,11 @@ QUEX_MEMBER_FUNCTION2(reset, wistream,
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
     byte_loader = ByteLoader_stream_new(istream_p);
-    if( ! byte_loader ) return;
-
-    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    /* NOT: Abort/return if byte_loader == 0 !!
+     *      Incomplete construction => propper destruction IMPOSSIBLE!       */
+    if( byte_loader ) {
+        byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader, byte_loader, CodecName); 
 }
 #endif
@@ -107,9 +116,11 @@ QUEX_MEMBER_FUNCTION2(reset, strange_stream,
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
     byte_loader = ByteLoader_stream_new(istream_p);
-    if( ! byte_loader ) return;
-
-    byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    /* NOT: Abort/return if byte_loader == 0 !!
+     *      Incomplete construction => propper destruction IMPOSSIBLE!       */
+    if( byte_loader ) {
+        byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
     QUEX_MEMBER_FUNCTION_CALL2(reset, ByteLoader, byte_loader, CodecName); 
 }
 #endif
@@ -130,6 +141,11 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
     }
     else {
         filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+        /* NOT: Abort/return if filler == 0 !!
+         *      Incomplete construction => propper destruction IMPOSSIBLE!   */
+        if( filler ) {
+            filler->ownership = E_Ownership_LEXICAL_ANALYZER;
+        }
     }
 
     QUEX_MEMBER_FUNCTION_CALL1(reset, BufferFiller, filler);
