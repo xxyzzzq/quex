@@ -44,8 +44,10 @@ main(int argc, char** argv)
                 break;
             }
             print(&qlex, ">> including: ", (const char*)token->get_text().c_str());
-            QUEX_TYPE_CHARACTER* tmp = (QUEX_TYPE_CHARACTER*)token->get_text().c_str();
-            qlex.include_push<FILE>(tmp);
+            const char* file_name = (const char*)token->get_text().c_str();
+            /* In real life: BETTER COPY THE FILENAME TO A SAFE PLACE! 
+             * Otherwise, when the buffer switches it may get overwritten! */
+            qlex.include_push(file_name);
         }
         else if( token_id == QUEX_TKN_TERMINATION ) {
             if( qlex.include_pop() == false ) 

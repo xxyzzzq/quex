@@ -172,20 +172,10 @@ sections allow to make additions to the memento scheme of the include handler:
    ``memento``: Pointer to the memento object.
 
    ``self``: Reference to the lexical analyzer object.
-    
-   ``input_handle``: Pointer to Pointer to an input handle, usually a pointer to 
-                     a pointer to a stream object that is to be included. If
-                     ``*input_handle == 0x0`` this means that the input handle 
-                     must be assigned based on the ``InputName``, i.e. something
-                     like::
-                       
-                              *input_handle = fopen(InputName, "rb");
 
-                     This option, is the reason that ``input_handle`` is a pointer
-                     to a pointer and not just a pointer.
-
-   ``InputName``: Name of the new data source to be included. This is only to be used
-                  if ``input_handle == 0x0``.
+   ``InputName``: Name of the new data source to be included. This may be a file name
+                  or any artificial identifier passed to one of the include-push
+                  functions (:ref:`Inclusion`).
 
    Code to be treated when the state of a lexical analyzer is stored in a memento.
 

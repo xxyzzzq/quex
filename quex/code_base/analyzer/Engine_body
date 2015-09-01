@@ -26,7 +26,8 @@
 #           endif
 #       endif
 
-        QUEX_NAME(Buffer)      buffer;
+        const char*        input_name;
+        QUEX_NAME(Buffer)  buffer;
 
 #if     defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
      || defined(QUEX_OPTION_ASSERTS)
@@ -41,17 +42,12 @@
          * to the currently active mode's function is stored redundantly in 
          * 'current_analyzer_function' to accelerate the access to it.            */
         QUEX_NAME(AnalyzerFunctionP)  current_analyzer_function;
-        struct QUEX_NAME(Mode_tag)*   __current_mode_p; 
+        QUEX_NAME(Mode)*              __current_mode_p; 
 
-        struct {
-            struct QUEX_NAME(Mode_tag)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            struct QUEX_NAME(Mode_tag)** end;
-            struct QUEX_NAME(Mode_tag)** memory_end;
-        }                                _mode_stack;
+        QUEX_NAME(ModeStack)                                    _mode_stack;
 
         __QUEX_IF_COUNT(QUEX_NAME(Counter)                      counter;)
         __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator)     accumulator;)
         __QUEX_IF_POST_CATEGORIZER(QUEX_NAME(Dictionary)        post_categorizer;)
         __QUEX_IF_INCLUDE_STACK(struct QUEX_NAME(Memento_tag)*  _parent_memento;)
-
 

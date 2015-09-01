@@ -11,7 +11,7 @@ main(int argc, char** argv)
     QUEX_TYPE_ANALYZER    qlex;
     int                   number_of_tokens = 0;
     bool                  continue_lexing_f = true;
-    QUEX_TYPE_CHARACTER*  tmp = 0x0;
+    const char*           included_file_name = 0x0;
     
     QUEX_NAME(from_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0);
 
@@ -37,8 +37,10 @@ main(int argc, char** argv)
                 break;
             }
             print(&qlex, ">> including: ", (const char*)token_p->text, 0x0);
-            tmp = ((QUEX_TYPE_CHARACTER*)token_p->text);
-            QUEX_NAME(include_push)(&qlex, 0x0, tmp, 0x0, 0x0);
+            included_file_name = ((const char*)token_p->text);
+            /* In real life: BETTER COPY THE FILENAME TO A SAFE PLACE! 
+             * Otherwise, when the buffer switches it may get overwritten! */
+            QUEX_NAME(include_push_file_name)(&qlex, included_file_name, 0x0);
         }
         else if( token_id == QUEX_TKN_TERMINATION ) {
             if( QUEX_NAME(include_pop)(&qlex) == false ) 

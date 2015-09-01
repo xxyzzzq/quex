@@ -18,27 +18,19 @@ init {
 
 memento {
     size_t   my_letter_count_store;
-    FILE*    included_file_handle;
 }
 
 memento_pack {
-    *input_handle = fopen((const char*)(InputName), "r");
-    if( *input_handle == NULL ) {
-        printf("file not found\n");
-        return 0;
-    }
     memento->my_letter_count_store = self.letter_count;
     self.letter_count = 0;
     self.include_depth += 1;
     /* Store the file handle, so that it can be closed later */
-    memento->included_file_handle = *input_handle;
 }
 
 memento_unpack {
     self.letter_count = memento->my_letter_count_store;
     self.include_depth -= 1;
     /* Close the file handle */
-    fclose(memento->included_file_handle);
 }
 
 token {

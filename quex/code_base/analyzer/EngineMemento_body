@@ -1,6 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) 2005-2010 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                      */
+        const char*                     input_name;
 
         QUEX_NAME(Buffer)               buffer;
 
