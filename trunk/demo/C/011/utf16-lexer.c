@@ -22,7 +22,8 @@ main(int argc, char** argv)
     /* NOTE: On a big endian machine (e.g. PowerPC) the byte reversion flag
      *       might be set to 'not BigEndianF'                                */
 
-    QUEX_NAME(from_file_name)(&qlex, file_name, 0x0, BigEndianF);
+    QUEX_NAME(from_file_name)(&qlex, file_name, 0x0);
+    QUEX_NAME(byte_order_reversion_set)(&qlex, BigEndianF);
 
     printf("## input file           = %s\n", file_name);
     printf("## byte order reversion = %s\n", QUEX_NAME(byte_order_reversion)(&qlex) ? "true" : "false");
