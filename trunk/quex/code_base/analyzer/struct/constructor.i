@@ -273,6 +273,90 @@ QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
     (void)me; (void)BufferMemoryBegin; (void)BufferMemorySize; (void)BufferEndOfContentP;
 }
 
+/* AUXILIARY FUNCTIONS FOR CONSTRUCTION _______________________________________                                     
+ *                                                                           */
+
+QUEX_INLINE void
+QUEX_NAME(Asserts_construct)(const char* CodecName)
+{
+    (void)CodecName;
+
+#   if      defined(QUEX_OPTION_ASSERTS) \
+       && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
+    __QUEX_STD_printf(__QUEX_MESSAGE_ASSERTS_INFO);
+#   endif
+
+#   if defined(QUEX_OPTION_ASSERTS) 
+    if( QUEX_SETTING_BUFFER_LIMIT_CODE == QUEX_SETTING_PATH_TERMINATION_CODE ) {
+        QUEX_ERROR_EXIT("Path termination code (PTC) and buffer limit code (BLC) must be different.\n");
+    }
+#   endif
+
+#   if defined(__QUEX_OPTION_ENGINE_RUNNING_ON_CODEC)
+    if( CodecName ) {
+        __QUEX_STD_printf(__QUEX_MESSAGE_CHARACTER_ENCODING_SPECIFIED_WITHOUT_CONVERTER, CodecName);
+    }
+#   endif
+}
+
+#if ! defined(QUEX_TYPE_TOKEN)
+#      error "QUEX_TYPE_TOKEN must be defined before inclusion of this file."
+#endif
+QUEX_INLINE void
+QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me)
+{
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   if defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+    /* Assume that the user will pass us a constructed token queue */
+    QUEX_NAME(TokenQueue_init)(&me->_token_queue, 0, 0x0);
+#   else
+    QUEX_NAME(TokenQueue_construct)(&me->_token_queue, 
+                                    (QUEX_TYPE_TOKEN*)&me->__memory_token_queue,
+                                    QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#   endif
+#elif defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
+    /* Assume that the user will pass us a constructed token */
+    me->token = (QUEX_TYPE_TOKEN*)0x0;     
+#   else
+    me->token = &me->__memory_token;     
+#   ifdef __QUEX_OPTION_PLAIN_C
+    QUEX_NAME_TOKEN(construct)(me->token);
+#   endif
+#endif
+}
+
+QUEX_INLINE void
+QUEX_NAME(Tokens_destruct)(QUEX_TYPE_ANALYZER* me)
+{
+    /* Even if the token memory is user managed, the destruction (not the
+     * freeing of memory) must happen at this place.                     */
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
+    QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
+#else
+#   ifdef __QUEX_OPTION_PLAIN_C
+        QUEX_NAME_TOKEN(destruct)(me->token);
+#   endif
+#endif
+}
+
+QUEX_INLINE void 
+QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me)
+{
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+    QUEX_NAME(TokenQueue_reset)(&me->_token_queue);
+#else
+    QUEX_NAME(Tokens_destruct(me));
+    QUEX_NAME(Tokens_construct(me));
+#endif
+}
+
+QUEX_INLINE void
+QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me)
+{
+    me->_mode_stack.end        = me->_mode_stack.begin;
+    me->_mode_stack.memory_end = &me->_mode_stack.begin[QUEX_SETTING_MODE_STACK_SIZE];
+}
+
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

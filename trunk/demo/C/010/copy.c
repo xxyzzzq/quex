@@ -29,7 +29,7 @@ main(int argc, char** argv)
     size_t                size = (size_t)-1;
     QUEX_TYPE_TOKEN_ID    token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
-    quex_tiny_lexer_from_memory(&qlex, 0x0, 0x0, 0, 0x0, false);
+    quex_tiny_lexer_from_memory(&qlex, 0x0, 0x0, 0);
 
     /* -- initialize the token pointers */
     quex_Token_construct(&token_bank[0]);
@@ -67,7 +67,7 @@ main(int argc, char** argv)
         /*     different from 'chunk.end'. This would indicate the there    */
         /*     are still bytes left. The next call of '_apend(...)' will    */
         /*     deal with it.)                                               */
-        chunk.begin = (uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
+        chunk.begin = qlex.buffer->filler->(uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
         token_id = (QUEX_TYPE_TOKEN_ID)-1;
