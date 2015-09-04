@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
 	quex_Calc_lexer qlex;
     
-    QUEX_NAME(from_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0, false);
+    QUEX_NAME(from_file_name)(&qlex, argc == 1 ? "example.txt" : argv[1], 0x0);
 
     printf("Calculator Example Application\n");
     printf("Contributed by: Marco Antonelli (date: 09y11m7d)\n\n");

@@ -89,6 +89,9 @@
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
+#define QUEX_MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
+#define QUEX_MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
+
 /* Support of computed goto */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS
     typedef  void*     QUEX_TYPE_GOTO_LABEL;
@@ -136,8 +139,6 @@
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_ERROR_EXIT(Msg) \
            do { \
-               __QUEX_STD_fprintf(stderr, __FILE__); \
-               __QUEX_STD_fprintf(stderr, "%i", (int)__LINE__); \
                __QUEX_PRINT_SOURCE_POSITION(); \
                throw std::runtime_error(Msg); \
            } while(0)

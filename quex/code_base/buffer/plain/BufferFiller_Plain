@@ -21,14 +21,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct QUEX_NAME(BufferFiller_Plain_tag) {
         /* Derived BufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
-        QUEX_NAME(BufferFiller)   base;
+        QUEX_NAME(BufferFiller)     base;
 
         /* position in stream where analysis started */
-        QUEX_TYPE_STREAM_POSITION   start_position;  
         QUEX_TYPE_STREAM_POSITION   _last_stream_position;  
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
-        ptrdiff_t   _character_index;
+        ptrdiff_t                   _character_index;
 #       endif
     } QUEX_NAME(BufferFiller_Plain);
 

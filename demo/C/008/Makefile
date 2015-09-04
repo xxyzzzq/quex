@@ -24,7 +24,7 @@ APPLICATION    = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = gcc -ggdb -Wall -Werror -Wno-error=conversion -Wno-error=sign-conversion
+COMPILER = gcc -ggdb -Wall -Werror -Wno-error=conversion -Wno-error=sign-conversion #-Wno-warning=conversion -Wno-warning=sign-conversion
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled

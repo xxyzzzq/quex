@@ -54,7 +54,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* -- 'Tell' returns the character index of the last character read.
          * This corresponds   to the character index of the last character that
          * is currently in the buffer.                                       */
-        ptrdiff_t   (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
+        QUEX_TYPE_STREAM_POSITION   
+                    (*tell_character_index)(struct QUEX_NAME(BufferFiller_tag)*);
 
         /* -- 'Seek' sets the input position for the next buffer-read-action.
          * NOTE: This differs from Buffer_seek(...) in the sense, that it only
@@ -62,7 +63,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * Buffer_seek(..) sets the _input_p to a particular position.       */
         void        (*seek_character_index)(struct
                                             QUEX_NAME(BufferFiller_tag)*,
-                                            const ptrdiff_t Index);
+                                            const QUEX_TYPE_STREAM_POSITION Index);
  
         /* -- 'Overflow' is user defined handler for the case that the distance
          * from lexeme start  to lexeme end exceeds the buffer size.         */

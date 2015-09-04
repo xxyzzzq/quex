@@ -15,26 +15,30 @@ main(int argc, char** argv)
                sizeof(QUEX_TYPE_CHARACTER), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
-    QUEX_NAME(Buffer)         buffer;
-    FILE*                     fh = prepare_input(); /* Festgemauert ... */
-    ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
-    QUEX_NAME(BufferFiller*)  filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
     const size_t              MemorySize = 12;
     const size_t              BeginIdx = 15;
 
+    QUEX_NAME(Buffer)               buffer;
+    FILE*                           fh = prepare_input(); /* Festgemauert ... */
+    ByteLoader*                     byte_loader; 
+    QUEX_NAME(BufferFiller_Plain)*  filler;
+    QUEX_TYPE_CHARACTER             memory[MemorySize];
+
     fseek(fh, BeginIdx * sizeof(QUEX_TYPE_CHARACTER), SEEK_SET); 
 
-    QUEX_TYPE_CHARACTER  memory[MemorySize];
-
-    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
+    /* When the filler is created, the current position of the byte loader is treated
+     * as reference position. */
+    byte_loader = ByteLoader_FILE_new(fh);
+    filler      = (QUEX_NAME(BufferFiller_Plain)*)QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+    QUEX_NAME(Buffer_construct)(&buffer, &filler->base, &memory[0], MemorySize, 0, 
+                                E_Ownership_EXTERNAL);
 
     /* Simulate, as if we started at 0, and now reached '15' */
-    buffer._content_character_index_begin = 15;
-    buffer._content_character_index_end   = buffer._content_character_index_begin + (MemorySize-2);
-    QUEX_NAME(BufferFiller_Plain)* pfiller = (QUEX_NAME(BufferFiller_Plain)*)buffer.filler;
-    //filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
-    pfiller->_last_stream_position  = ftell(fh);
-    pfiller->start_position         = 0;
+    byte_loader->initial_position         = 0;
+    buffer._content_character_index_begin = BeginIdx;
+    buffer._content_character_index_end   = BeginIdx + (MemorySize-2);
+    //filler->_character_index            = buffer._content_character_index_begin + (MemorySize-2);
+    filler->_last_stream_position         = ftell(fh);
 
     do {
         printf("------------------------------------------------------------\n");
@@ -42,7 +46,7 @@ main(int argc, char** argv)
         printf("     ");
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
-        if( buffer._content_character_index_begin == 0 ) break;
+        if( buffer._content_character_index_begin <= 0 ) break;
         buffer._input_p        = buffer._memory._front;
         buffer._lexeme_start_p = buffer._memory._front + 1;
         /**/
@@ -50,7 +54,7 @@ main(int argc, char** argv)
         printf("\n");
     } while( 1 + 1 == 2 );
 
-    filler->delete_self(filler);
+    filler->base.delete_self(&filler->base);
 }
 
 

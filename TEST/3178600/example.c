@@ -12,7 +12,7 @@ main(int argc, char** argv)
     char           buffer[1024];
     const char*    FileName = "example.txt";
 
-    QUEX_NAME(from_file_name)(&qlex, FileName, (void*)0, false);
+    QUEX_NAME(from_file_name)(&qlex, FileName, (void*)0);
 
     do {
         QUEX_NAME(receive)(&qlex, &token_p);

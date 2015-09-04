@@ -39,7 +39,7 @@ void test(size_t Size0, size_t ContentSize0, size_t Size1, size_t ContentSize1)
     cout << "   size       = " << (qlex.buffer._memory._back + 1      - qlex.buffer._memory._front) << endl;
     cout << "   eof offset = " << (qlex.buffer._memory._end_of_file_p - qlex.buffer._memory._front) << endl;
 
-    QUEX_TYPE_CHARACTER*  prev = qlex.reset_buffer(buffer_1, Size1, buffer_1 + ContentSize1 + 1);
+    QUEX_TYPE_CHARACTER*  prev = qlex.reset(buffer_1, Size1, buffer_1 + ContentSize1 + 1);
     if( prev != 0x0 ) delete [] prev;
 
     cout << "\n\n";
@@ -53,7 +53,7 @@ void test(size_t Size0, size_t ContentSize0, size_t Size1, size_t ContentSize1)
     cout << "   eof offset = " << (qlex.buffer._memory._end_of_file_p - qlex.buffer._memory._front) << endl;
 
     if( buffer_1 != 0x0 ) {
-        prev = qlex.reset_buffer(0x0, 0, 0x0);
+        prev = qlex.reset(0x0, 0, 0x0);
         cout << "\n\n";
         cout << "reset_buffer reported buffer: " << ((prev == buffer_1) ? "Correct" : "False");
         if( prev != buffer_1 ) cout << "\n## " << (long)prev << " " << (long)buffer_1 << endl;

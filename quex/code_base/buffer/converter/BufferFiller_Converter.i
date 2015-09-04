@@ -23,12 +23,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void   
     QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
-    QUEX_INLINE ptrdiff_t 
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
     QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
     
     QUEX_INLINE void   
-    QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                           const ptrdiff_t          CharacterIndex); 
+    QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
+                                                           const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFiller_Converter_read_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                       QUEX_TYPE_CHARACTER*     start_of_buffer, 
@@ -103,18 +103,15 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (disabled in case of buffer based lexical analyzis)                              */
         if( byte_loader ) {
             me->base.byte_loader = byte_loader;
-            me->start_position   = byte_loader->tell(byte_loader);
         } else { 
             me->base.byte_loader = (ByteLoader*)0;
-            me->start_position   = 0;
         }
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
         raw_buffer_p = QUEXED(MemoryManager_allocate)(RawBufferSize, 
                                                       E_MemoryObjectType_BUFFER_RAW);
-        QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
-                                  me->start_position);
+        QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 0);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
         me->hint_begin_character_index = (ptrdiff_t)-1;
@@ -223,12 +220,12 @@ QUEX_NAMESPACE_MAIN_OPEN
         return (size_t)ConvertedCharN;
     }
 
-    QUEX_INLINE ptrdiff_t 
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
     QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego)
     { 
         QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-        __quex_assert(alter_ego != 0x0); 
-        __quex_assert(me->converter != 0x0);
+        __quex_assert(alter_ego); 
+
         /* The raw buffer iterator stands on the next character to be read. In general it holds
          * that the raw_buffer's iterator points to the first byte of the next character to be
          * converted when the next user buffer is to be filled.                                      */
@@ -237,7 +234,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void   
     QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
-                                                           const ptrdiff_t           Index)
+                                                           const QUEX_TYPE_STREAM_POSITION           Index)
     { 
         /* The goal of the 'seek' is that the next filling of the user buffer starts at 
          * the specified character index 'Index'. This can be achieved by setting the 
@@ -274,7 +271,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->converter->on_conversion_discontinuity(me->converter);
         }
 
-        /* Depending on the character encoding, the seek procedure can be optimized there are the 
+        /* Depending on the character encoding, the seek procedure can be optimized. There are the 
          * following two cases:
          *
          *   (1) The coding uses **fixed** character widths (such as ASCII, UCS2, UCS4, etc.) where
@@ -296,14 +293,12 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
             else  /* Index not in [BeginIndex:EndIndex) */ {
                 QUEX_TYPE_STREAM_POSITION new_start_position =
-                    (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER)) \
-                    + me->start_position;
+                    (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER));
                 /* Seek stream position cannot be handled when buffer based analyzis is on.       */
                 if( me->base.byte_loader ) {
                     me->base.byte_loader->seek(me->base.byte_loader, new_start_position);
                     __quex_assert(new_start_position == me->base.byte_loader->tell(me->base.byte_loader));
                 }
-                buffer->end_stream_position       = new_start_position;
                 /* iterator == end => trigger reload                                              */
                 buffer->iterator                  = buffer->end;
                 buffer->iterators_character_index = Index;
@@ -338,10 +333,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
                 /* Seek stream position cannot be handled when buffer based analyzis is on.       */
                 if( me->base.byte_loader ) {
-                    me->base.byte_loader->seek(me->base.byte_loader, me->start_position);
-                    __quex_assert(me->start_position == me->base.byte_loader->tell(me->base.byte_loader));
+                    me->base.byte_loader->seek(me->base.byte_loader, 0);
                 }
-                buffer->end_stream_position       = me->start_position;
                 /* trigger reload, not only conversion                                            */
                 buffer->end                       = buffer->begin;
                 /* iterator == end => trigger reload                                              */
@@ -369,10 +362,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
        QUEX_ASSERT_BUFFER_INFO(buffer);
        __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
-       /* End stream position cannot be handled when buffer based analyzis is on.      */
-       if( me->base.byte_loader ) {
-           __quex_assert(buffer->end_stream_position == me->base.byte_loader->tell(me->base.byte_loader));
-       }
 
        /* Store information about the current position's character index. 
         * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
@@ -411,7 +400,6 @@ QUEX_NAMESPACE_MAIN_OPEN
        /* We cannot load bytes, if buffer based analyzis is on.                        */
        if( me->base.byte_loader ) {
            LoadedByteN                 = me->base.byte_loader->load(me->base.byte_loader, FillStartPosition, FillSize);
-           buffer->end_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
        }
        /* '.character_index' remains to be updated after character conversion */
 
@@ -508,7 +496,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->begin               = Begin;
 
         me->end                 = Begin;
-        me->end_stream_position = StartPosition;
 
         me->memory_end          = &Begin[(ptrdiff_t)SizeInBytes];
         /* iterator == end --> trigger reload */
