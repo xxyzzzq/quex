@@ -40,4 +40,5 @@ The task of a byte loader is to grab plain byte streams from an input source.
 The task of a filler is to deliver this data so that it fits the engine's
 buffer codec and character width.
 
-
+TODO: When to use dedicated ByteLoader, BufferFiller (byte order reversion, 
+start position).

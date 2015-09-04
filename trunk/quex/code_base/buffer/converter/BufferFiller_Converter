@@ -112,9 +112,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         uint8_t*                  memory_end;
        
         uint8_t*                  iterator;
-        ptrdiff_t                 iterators_character_index;
-        
-        QUEX_TYPE_STREAM_POSITION end_stream_position;
+        QUEX_TYPE_STREAM_POSITION iterators_character_index;
 
     } QUEX_NAME(RawBuffer);
 
@@ -134,10 +132,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Store information of the character index at the begin of the raw buffer. This 
          * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
-        ptrdiff_t                 hint_begin_character_index;
-
-        /* Position where the whole analysis starts. It is the position '0' on reset.       */
-        QUEX_TYPE_STREAM_POSITION start_position;  
+        QUEX_TYPE_STREAM_POSITION hint_begin_character_index;
 
     } QUEX_NAME(BufferFiller_Converter);
 

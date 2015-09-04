@@ -31,6 +31,7 @@ main(int argc, char** argv)
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Token Policy '" POLICY_NAME "': " UMM_NAME NAME ";\n");
+        printf("HAPPY: :[0-9]+;\n");
         return 0;
     }
     printf("NOTE: The production of an assertion error might be part of the test.\n");

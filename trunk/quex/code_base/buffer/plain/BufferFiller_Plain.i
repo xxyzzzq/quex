@@ -24,12 +24,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void   
     QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
-    QUEX_INLINE ptrdiff_t 
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
     QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
 
     QUEX_INLINE void   
     QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
-                                                         const ptrdiff_t           CharacterIndex); 
+                                                       const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
     QUEX_INLINE size_t 
     QUEX_NAME(BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                   QUEX_TYPE_CHARACTER*     start_of_buffer, 
@@ -74,8 +74,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       QUEX_NAME(BufferFiller_Plain_fill_finish), 
                                       byte_loader);
 
-        me->start_position        = me->base.byte_loader->tell(me->base.byte_loader);
-        me->_last_stream_position = me->start_position;
+        me->_last_stream_position = 0;
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index = 0;
@@ -91,7 +90,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     }
 
-    QUEX_INLINE ptrdiff_t 
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
     QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego) 
     { 
        /* The type cast is necessary, since the function signature needs to 
@@ -109,8 +108,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #      else
        /* The stream position type is most likely >= size_t >= ptrdiff_t so let the 
         * computation happen with that type, then cast to what needs to be returned. */
-       return (ptrdiff_t)(  (me->_last_stream_position - me->start_position) 
-                          / (long)sizeof(QUEX_TYPE_CHARACTER));
+       return (QUEX_TYPE_STREAM_POSITION)(me->_last_stream_position / (QUEX_TYPE_STREAM_POSITION)sizeof(QUEX_TYPE_CHARACTER));
 #      endif
     }
 
@@ -119,8 +117,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      *       stream to a particular position given by a character index. QuexBuffer_seek(..)
      *       sets the _input_p to a particular position.                                      */
     QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                       const ptrdiff_t          CharacterIndex) 
+    QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
+                                                       const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 
     { 
         QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
         long                           avoid_tmp_arg = -1;
@@ -130,8 +128,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * work with the first argument being of base class type. */
         __quex_assert(me->base.byte_loader != 0x0); 
 
-        avoid_tmp_arg =   (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER)) \
-                        + (long)(me->start_position); 
+        avoid_tmp_arg = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
 
         me->base.byte_loader->seek(me->base.byte_loader, avoid_tmp_arg);
         me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
@@ -155,7 +152,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex - me->_character_index);
         }
         else { /* me->_character_index > CharacterIndex */
-            me->base.byte_loader->seek(me->base.byte_loader, me->start_position);
+            me->base.byte_loader->seek(me->base.byte_loader, 0);
 #           ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
             me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
 #           endif
