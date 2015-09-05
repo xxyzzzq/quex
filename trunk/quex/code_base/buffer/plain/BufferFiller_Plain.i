@@ -138,8 +138,8 @@ QUEX_NAMESPACE_MAIN_OPEN
      * necessarily proportional to the amount of read-in characters. Note, that the seek function is
      * the only function that is significantly different for this case.                           */
     QUEX_INLINE void 
-    QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)* alter_ego, 
-                                                       const ptrdiff_t          CharacterIndex) 
+    QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*        alter_ego, 
+                                                       const QUEX_TYPE_STREAM_POSITION CharacterIndex) 
     { 
         __quex_assert(alter_ego != 0x0); 
         QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;

@@ -169,6 +169,7 @@ QUEX_MEMBER_FUNCTION1(from, BufferFiller,
 
     QUEX_NAME(Buffer_construct)(&this->buffer, filler,
                                 memory, QUEX_SETTING_BUFFER_SIZE, 
+                                (QUEX_TYPE_CHARACTER*)0,
                                 E_Ownership_LEXICAL_ANALYZER);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
@@ -186,9 +187,8 @@ QUEX_MEMBER_FUNCTION3(from, memory,
 {
     QUEX_NAME(Buffer_construct)(&this->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
-                                Memory, MemorySize, 
+                                Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
-    QUEX_NAME(Buffer_end_of_file_set)(&this->buffer, EndOfFileP);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
 

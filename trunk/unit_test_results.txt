@@ -2146,7 +2146,7 @@
                                  ANSI-C-ASSERTS ......................[OK]
                                  ANSI-C-CG ...........................[OK]
                                  ANSI-C-PathTemplate .................[OK]
-                                 ANSI-C-PlainMemory ................[FAIL]
+                                 ANSI-C-PlainMemory ..................[OK]
                                  Cpp .................................[OK]
                                  Cpp-ASSERTS .........................[OK]
                                  Cpp-Path ............................[OK]
@@ -2160,7 +2160,7 @@
                                   ANSI-C-ASSERTS .....................[OK]
                                   ANSI-C-CG ..........................[OK]
                                   ANSI-C-PathTemplate ................[OK]
-                                  ANSI-C-PlainMemory ...............[FAIL]
+                                  ANSI-C-PlainMemory .................[OK]
                                   Cpp ................................[OK]
                                   Cpp-ASSERTS ........................[OK]
                                   Cpp-Path ...........................[OK]
@@ -2169,13 +2169,13 @@
                                   Cpp-PathUniform-CG .................[OK]
                                   Cpp-Template .......................[OK]
                                   Cpp-Template-CG ....................[OK]
-                                  Cpp_StrangeStream ................[FAIL]
+                                  Cpp_StrangeStream ..................[OK]
     No Backward Reload -- Precondition at Border
         test-no-backward-reloading.py ANSI-C .........................[OK]
                                       ANSI-C-ASSERTS .................[OK]
                                       ANSI-C-CG ......................[OK]
                                       ANSI-C-PathTemplate ............[OK]
-                                      ANSI-C-PlainMemory ...........[FAIL]
+                                      ANSI-C-PlainMemory .............[OK]
                                       Cpp ............................[OK]
                                       Cpp-ASSERTS ....................[OK]
                                       Cpp-Path .......................[OK]
@@ -2184,7 +2184,7 @@
                                       Cpp-PathUniform-CG .............[OK]
                                       Cpp-Template ...................[OK]
                                       Cpp-Template-CG ................[OK]
-                                      Cpp_StrangeStream ............[FAIL]
+                                      Cpp_StrangeStream ..............[OK]
 
  * CONTINUE:
 
@@ -2192,7 +2192,7 @@
         test-continue-without-return.py ANSI-C .......................[OK]
                                         ANSI-C-CG ....................[OK]
                                         ANSI-C-PathTemplate ..........[OK]
-                                        ANSI-C-PlainMemory .........[FAIL]
+                                        ANSI-C-PlainMemory ...........[OK]
                                         Cpp ..........................[OK]
                                         Cpp-Path .....................[OK]
                                         Cpp-Path-CG ..................[OK]
@@ -2200,7 +2200,7 @@
                                         Cpp-PathUniform-CG ...........[OK]
                                         Cpp-Template .................[OK]
                                         Cpp-Template-CG ..............[OK]
-                                        Cpp_StrangeStream ..........[FAIL]
+                                        Cpp_StrangeStream ............[OK]
 
  * Post Conditions:
 
@@ -2208,7 +2208,7 @@
         test-post-conditions-2.py ANSI-C .............................[OK]
                                   ANSI-C-CG ..........................[OK]
                                   ANSI-C-PathTemplate ................[OK]
-                                  ANSI-C-PlainMemory ...............[FAIL]
+                                  ANSI-C-PlainMemory .................[OK]
                                   Cpp ................................[OK]
                                   Cpp-Path ...........................[OK]
                                   Cpp-Path-CG ........................[OK]
@@ -2216,7 +2216,7 @@
                                   Cpp-PathUniform-CG .................[OK]
                                   Cpp-Template .......................[OK]
                                   Cpp-Template-CG ....................[OK]
-                                  Cpp_StrangeStream ................[FAIL]
+                                  Cpp_StrangeStream ..................[OK]
     Part I
         test-post-conditions.py ANSI-C ...............................[OK]
                                 ANSI-C-CG ............................[OK]
@@ -2232,7 +2232,7 @@
         test-pre-conditions-3.py ANSI-C ..............................[OK]
                                  ANSI-C-CG ...........................[OK]
                                  ANSI-C-PathTemplate .................[OK]
-                                 ANSI-C-PlainMemory ................[FAIL]
+                                 ANSI-C-PlainMemory ..................[OK]
                                  Cpp .................................[OK]
                                  Cpp-Path ............................[OK]
                                  Cpp-Path-CG .........................[OK]
@@ -2240,12 +2240,12 @@
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
     Part 2
         test-pre-conditions-2.py ANSI-C ..............................[OK]
                                  ANSI-C-CG ...........................[OK]
                                  ANSI-C-PathTemplate .................[OK]
-                                 ANSI-C-PlainMemory ................[FAIL]
+                                 ANSI-C-PlainMemory ..................[OK]
                                  Cpp .................................[OK]
                                  Cpp-Path ............................[OK]
                                  Cpp-Path-CG .........................[OK]
@@ -2253,7 +2253,7 @@
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
 
  * Pre- and Post- Conditions:
 
@@ -2261,7 +2261,7 @@
         test-pre-post-condition.py ANSI-C ............................[OK]
                                    ANSI-C-CG .........................[OK]
                                    ANSI-C-PathTemplate ...............[OK]
-                                   ANSI-C-PlainMemory ..............[FAIL]
+                                   ANSI-C-PlainMemory ................[OK]
                                    Cpp ...............................[OK]
                                    Cpp-Path ..........................[OK]
                                    Cpp-Path-CG .......................[OK]
@@ -2269,7 +2269,7 @@
                                    Cpp-PathUniform-CG ................[OK]
                                    Cpp-Template ......................[OK]
                                    Cpp-Template-CG ...................[OK]
-                                   Cpp_StrangeStream ...............[FAIL]
+                                   Cpp_StrangeStream .................[OK]
 
  * Pre-conditions:
 
@@ -2284,24 +2284,24 @@
         test-pseudo_ambiguous_post_conditions.py ANSI-C ..............[OK]
                                                  ANSI-C-CG ...........[OK]
                                                  ANSI-C-PathTemplate .[OK]
-                                                 ANSI-C-PlainMemory [FAIL]
+                                                 ANSI-C-PlainMemory ..[OK]
                                                  Cpp .................[OK]
                                                  Cpp-Path ............[OK]
                                                  Cpp-Path-CG .........[OK]
                                                  Cpp-Template ........[OK]
                                                  Cpp-Template-CG .....[OK]
-                                                 Cpp_StrangeStream .[FAIL]
+                                                 Cpp_StrangeStream ...[OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C ............[OK]
                                                    ANSI-C-CG .........[OK]
                                                    ANSI-C-PathTemplate [OK]
-                                                   ANSI-C-PlainMemory [FAIL]
+                                                   ANSI-C-PlainMemory [OK]
                                                    Cpp ...............[OK]
                                                    Cpp-Path ..........[OK]
                                                    Cpp-Path-CG .......[OK]
                                                    Cpp-Template ......[OK]
                                                    Cpp-Template-CG ...[OK]
-                                                   Cpp_StrangeStream [FAIL]
+                                                   Cpp_StrangeStream .[OK]
 
  * Simple:
 
@@ -2309,7 +2309,7 @@
         test-bol-eol.py ANSI-C .......................................[OK]
                         ANSI-C-CG ....................................[OK]
                         ANSI-C-PathTemplate ..........................[OK]
-                        ANSI-C-PlainMemory .........................[FAIL]
+                        ANSI-C-PlainMemory ...........................[OK]
                         Cpp ..........................................[OK]
                         Cpp-Path .....................................[OK]
                         Cpp-Path-CG ..................................[OK]
@@ -2317,23 +2317,23 @@
                         Cpp-PathUniform-CG ...........................[OK]
                         Cpp-Template .................................[OK]
                         Cpp-Template-CG ..............................[OK]
-                        Cpp_StrangeStream ..........................[FAIL]
+                        Cpp_StrangeStream ............................[OK]
     Keywords 'for', 'forest', 'forester', and 'formidable'
         test-simple-5.py ANSI-C ......................................[OK]
                          ANSI-C-CG ...................................[OK]
                          ANSI-C-PathTemplate .........................[OK]
-                         ANSI-C-PlainMemory ........................[FAIL]
+                         ANSI-C-PlainMemory ..........................[OK]
                          Cpp .........................................[OK]
                          Cpp-Path ....................................[OK]
                          Cpp-Path-CG .................................[OK]
                          Cpp-Template ................................[OK]
                          Cpp-Template-CG .............................[OK]
-                         Cpp_StrangeStream .........................[FAIL]
+                         Cpp_StrangeStream ...........................[OK]
     Maximum Length Match
         test-simple-2.py ANSI-C ......................................[OK]
                          ANSI-C-CG ...................................[OK]
                          ANSI-C-PathTemplate .........................[OK]
-                         ANSI-C-PlainMemory ........................[FAIL]
+                         ANSI-C-PlainMemory ..........................[OK]
                          Cpp .........................................[OK]
                          Cpp-Path ....................................[OK]
                          Cpp-Path-CG .................................[OK]
@@ -2341,7 +2341,7 @@
                          Cpp-PathUniform-CG ..........................[OK]
                          Cpp-Template ................................[OK]
                          Cpp-Template-CG .............................[OK]
-                         Cpp_StrangeStream .........................[FAIL]
+                         Cpp_StrangeStream ...........................[OK]
     Reload Init State
         test-continue-without-return-2.py ANSI-C .....................[OK]
                                           ANSI-C-CG ..................[OK]
@@ -2361,7 +2361,7 @@
         test-simple.py ANSI-C ........................................[OK]
                        ANSI-C-CG .....................................[OK]
                        ANSI-C-PathTemplate ...........................[OK]
-                       ANSI-C-PlainMemory ..........................[FAIL]
+                       ANSI-C-PlainMemory ............................[OK]
                        Cpp ...........................................[OK]
                        Cpp-Path ......................................[OK]
                        Cpp-Path-CG ...................................[OK]
@@ -2369,7 +2369,7 @@
                        Cpp-PathUniform-CG ............................[OK]
                        Cpp-Template ..................................[OK]
                        Cpp-Template-CG ...............................[OK]
-                       Cpp_StrangeStream ...........................[FAIL]
+                       Cpp_StrangeStream .............................[OK]
 
  * Single State:
 
@@ -2380,38 +2380,10 @@
                                          B-UTF8 ......................[OK]
                                          C ...........................[OK]
                                          C-UTF8 ......................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] test-backward_loading.py _ ANSI-C-PlainMemory
-    [FAIL] test-position_adaption.py _ ANSI-C-PlainMemory
-                                   \__ Cpp_StrangeStream
-    [FAIL] test-no-backward-reloading.py _ ANSI-C-PlainMemory
-                                       \__ Cpp_StrangeStream
-    [FAIL] test-continue-without-return.py _ ANSI-C-PlainMemory
-                                         \__ Cpp_StrangeStream
-    [FAIL] test-post-conditions-2.py _ ANSI-C-PlainMemory
-                                   \__ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-3.py _ ANSI-C-PlainMemory
-                                  \__ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-2.py _ ANSI-C-PlainMemory
-                                  \__ Cpp_StrangeStream
-    [FAIL] test-pre-post-condition.py _ ANSI-C-PlainMemory
-                                    \__ Cpp_StrangeStream
-    [FAIL] test-pseudo_ambiguous_post_conditions.py _ ANSI-C-PlainMemory
-                                                  \__ Cpp_StrangeStream
-    [FAIL] test-pseudo_ambiguous_post_conditions-2.py _ ANSI-C-PlainMemory
-                                                    \__ Cpp_StrangeStream
-    [FAIL] test-bol-eol.py _ ANSI-C-PlainMemory
-                         \__ Cpp_StrangeStream
-    [FAIL] test-simple-5.py _ ANSI-C-PlainMemory
-                          \__ Cpp_StrangeStream
-    [FAIL] test-simple-2.py _ ANSI-C-PlainMemory
-                          \__ Cpp_StrangeStream
-    [FAIL] test-simple.py _ ANSI-C-PlainMemory
-                        \__ Cpp_StrangeStream
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                                   Output Cpp                                   
@@ -3166,16 +3138,16 @@ SUMMARY:
            13      [OK] ........................./check/TEST             
            56      [OK] ..../input/TEST                                  
            27      [OK] ........../regular_expression/TEST               
-       27  196   [FAIL] ..../output/core/TEST                            
+           196     [OK] ..../output/core/TEST                            
        29  29    [FAIL] ................/skipper/TEST                    
            22      [OK] ................/state/transition_map/TEST       
            30      [OK] .........../cpp/TEST                             
 
 -------------------------------------------------------------------------------
-     _____     _ _          _____  ____    ___            
-    |  ___|_ _(_) |___     |___ / |___ \  / _ \     __  __
-    | |_ / _` | | / __|      |_ \   __) || (_) |    \ \/ /
-    |  _| (_| | | \__ \     ___) | / __/  \__, |     >  < 
-    |_|  \__,_|_|_|___/    |____/ |_____|   /_/     /_/\_\
+     _____     _ _          _____   ___   ____            
+    |  ___|_ _(_) |___     |___ /  / _ \ |___ \     __  __
+    | |_ / _` | | / __|      |_ \ | | | |  __) |    \ \/ /
+    |  _| (_| | | \__ \     ___) || |_| | / __/      >  < 
+    |_|  \__,_|_|_|___/    |____/  \___/ |_____|    /_/\_\
                                                                    (1509 tests)
 ===============================================================================
