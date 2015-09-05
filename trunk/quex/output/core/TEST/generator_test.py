@@ -516,7 +516,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_NAME(Mode) first_mode = {
       /* id                */ 0, 
       /* name              */ "Mode0", 
-#     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+#     if      defined( QUEX_OPTION_INDENTATION_TRIGGER) \
+         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
       /* on_indentation    */ NULL,
 #     endif
       /* on_entry          */ 0,
@@ -533,7 +534,8 @@ QUEX_NAME(Mode) first_mode = {
 QUEX_NAME(Mode) second_mode = {
       /* id                */ 1, 
       /* name              */ "Mode1", 
-#     ifdef QUEX_OPTION_INDENTATION_TRIGGER        
+#     if      defined( QUEX_OPTION_INDENTATION_TRIGGER) \
+         && ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
       /* on_indentation    */ NULL,
 #     endif
       /* on_entry          */ 0,
