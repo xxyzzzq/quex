@@ -18,7 +18,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void  QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
                                                         QUEX_TYPE_CHARACTER*      Memory, 
                                                         const size_t              Size,
-                                                        QUEX_TYPE_CHARACTER*      EndOfFileP,
                                                         E_Ownership               Ownership);
     QUEX_INLINE void  QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
@@ -27,29 +26,30 @@ QUEX_NAMESPACE_MAIN_OPEN
                                 QUEX_NAME(BufferFiller)*  filler,
                                 QUEX_TYPE_CHARACTER*      memory,
                                 const size_t              MemorySize,
-                                QUEX_TYPE_CHARACTER*      end_of_file_p,
                                 E_Ownership               Ownership)
     {
         /* Ownership of InputMemory is passed to 'me->_memory'.              */
-        QUEX_NAME(BufferMemory_construct)(&me->_memory, 
-                                          memory, MemorySize, end_of_file_p, 
+        QUEX_NAME(BufferMemory_construct)(&me->_memory, memory, MemorySize, 
                                           Ownership); 
         
-        me->on_buffer_content_change = (void (*)(QUEX_TYPE_CHARACTER*, QUEX_TYPE_CHARACTER*))0;
+        me->on_buffer_content_change = (void (*)(const QUEX_TYPE_CHARACTER*, const QUEX_TYPE_CHARACTER*))0;
 
-        /* Until now, nothing is loaded into the buffer. */
+        /* Until now, nothing is loaded into the buffer.                     */
 
         /* By setting begin and end to zero, we indicate to the loader that
-         * this is the very first load procedure.                           */
+         * this is the very first load procedure.                            */
         me->filler = filler;
         QUEX_NAME(Buffer_init_analyzis)(me);
     }
 
     QUEX_INLINE void
-    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*       me) 
+    QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*  me) 
     {
-        /* The first state in the state machine does not increment. Thus, the
-         * input pointer is set to the first position, not before.          */
+        /* (1) BEFORE LOAD: The pointers must be defined which restrict the 
+         *                  fill region. 
+         *
+         * The first state in the state machine does not increment. Thus, the
+         * input pointer is set to the first position, not before.           */
         me->_input_p        = &me->_memory._front[1];  
         me->_lexeme_start_p = &me->_memory._front[1];  
 
@@ -60,26 +60,31 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_character_at_lexeme_start = '\0';  /* 0 => no character covered */
 
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line     */
+        me->_character_before_lexeme_start = QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;  /* --> begin of line     */
 #       endif
 
-        if( me->filler ) {
+        /* (2) Load content, determine character indices of borders, determine
+         *     end of file pointer.                                          */
+        if( me->filler && me->filler->byte_loader ) {
             QUEX_NAME(BufferFiller_initial_load)(me);   
+            /* Fills buffer and sets: _content_character_index_begin
+             *                        _content_character_index_end
+             *                        _memory._end_of_file_p                 */
         } else {
             me->_content_character_index_begin = 0; 
             me->_content_character_index_end   = 0;
+            me->_memory._end_of_file_p         = &me->_memory._front[1];
         }
 
-        if( ! me->filler || ! me->filler->byte_loader ) {
-            if( ! &me->_memory._front[0] ) {
-                /* 'buffer._memory._front' has not been set yet.             */
-                QUEX_NAME(Buffer_end_of_file_set)(me, &me->_memory._front[1]);
-            }
+        if( me->_memory._end_of_file_p ) {
+            *(me->_memory._end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+            QUEX_IF_ASSERTS_poison(&me->_memory._end_of_file_p[1], 
+                                   me->_memory._back);
         }
+        *(me->_memory._back) = QUEX_SETTING_BUFFER_LIMIT_CODE;
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         /* NOT YET: QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me)               */
-        __quex_assert(me->_input_p == &me->_memory._front[1]);
     }
 
     QUEX_INLINE void
@@ -158,8 +163,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)* me)
     {
         /* Returns a pointer to the position after the last text content inside the buffer. */
-        if( me->_memory._end_of_file_p != 0 ) return me->_memory._end_of_file_p;
-        else                                  return me->_memory._back;   
+        if( me->_memory._end_of_file_p ) return me->_memory._end_of_file_p;
+        else                             return me->_memory._back;   
     }
 
     QUEX_INLINE ptrdiff_t
@@ -420,7 +425,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
                                       QUEX_TYPE_CHARACTER*      Memory, 
                                       const size_t              Size,
-                                      QUEX_TYPE_CHARACTER*      EndOfFileP,
                                       E_Ownership               Ownership) 
     {
         __quex_assert(Memory);
@@ -428,26 +432,13 @@ QUEX_NAMESPACE_MAIN_OPEN
          * Maybe, define '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0' for 
          * compilation (assumed no pre-contexts.)                            */
         __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
-        __quex_assert((! EndOfFileP) || EndOfFileP > Memory);
-        __quex_assert((! EndOfFileP) || EndOfFileP <= Memory + Size);
 
         me->_front            = Memory;
-        me->_end_of_file_p    = EndOfFileP;
         me->_back             = &Memory[Size-1];
+        me->_end_of_file_p    = (QUEX_TYPE_CHARACTER*)0; /* Set in Buffer_init_analyzis() */;
         me->ownership         = Ownership;
         *(me->_front)         = QUEX_SETTING_BUFFER_LIMIT_CODE;
         *(me->_back)          = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        if( me->_end_of_file_p ) {
-            *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        }
-
-#       ifdef QUEX_OPTION_ASSERTS
-        if( EndOfFileP && &EndOfFileP[1] < me->_back ) {
-            __QUEX_STD_memset(&EndOfFileP[1], 0xFF, 
-                              (size_t)(me->_back - &EndOfFileP[1])
-                              * sizeof(QUEX_TYPE_CHARACTER));
-        } 
-#       endif 
     }
 
     QUEX_INLINE void 

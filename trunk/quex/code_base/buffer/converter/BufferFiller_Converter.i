@@ -99,14 +99,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->converter->open(me->converter, FromCoding, ToCoding);
         me->converter->virginity_f = true;
 
-        /* Setup the tell/seek of character positions                                      
-         * (disabled in case of buffer based lexical analyzis)                              */
-        if( byte_loader ) {
-            me->base.byte_loader = byte_loader;
-        } else { 
-            me->base.byte_loader = (ByteLoader*)0;
-        }
-
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
         raw_buffer_p = QUEXED(MemoryManager_allocate)(RawBufferSize, 

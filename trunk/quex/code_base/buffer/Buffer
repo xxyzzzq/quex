@@ -66,15 +66,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         
         struct    QUEX_NAME(BufferFiller_tag)*             filler;
 
-        void      (*on_buffer_content_change)(QUEX_TYPE_CHARACTER*  BeginOfContent,
-                                              QUEX_TYPE_CHARACTER*  EndOfContent);
+        void      (*on_buffer_content_change)(const QUEX_TYPE_CHARACTER*  BeginOfContent,
+                                              const QUEX_TYPE_CHARACTER*  EndOfContent);
     } QUEX_NAME(Buffer);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
                                                     struct QUEX_NAME(BufferFiller_tag)*  filler,
                                                     QUEX_TYPE_CHARACTER*                 memory,
                                                     const size_t                         MemorySize,
-                                                    QUEX_TYPE_CHARACTER*                 end_of_file_p,
                                                     E_Ownership                          Ownership);
 
     QUEX_INLINE void    QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 

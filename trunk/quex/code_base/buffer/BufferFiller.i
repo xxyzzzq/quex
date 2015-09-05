@@ -69,10 +69,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         } 
 #       endif
 
-        if( ! byte_loader ) {
-            return (QUEX_NAME(BufferFiller)*)0;
-        }
-        else if( converter ) {
+        /* byte_loader = 0; possible if memory is filled manually. */
+
+        if( converter ) {
             filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
                                                            converter, CharacterEncodingName, 
                                                            /* Internal Coding: Default */0x0,
@@ -82,7 +81,9 @@ QUEX_NAMESPACE_MAIN_OPEN
             filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
         }
         
-        filler->ownership = E_Ownership_EXTERNAL;
+        if( filler ) {
+            filler->ownership = E_Ownership_EXTERNAL;
+        }
         return filler;
     }
 
@@ -161,33 +162,35 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)* buffer)
     {
-        const ptrdiff_t          ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
-        QUEX_TYPE_CHARACTER*     ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
-        QUEX_NAME(BufferFiller)* me           = buffer->filler;
-        size_t                   LoadedN      = 0;
+        QUEX_NAME(BufferFiller)*  me           = buffer->filler;
+        const ptrdiff_t           ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
+        QUEX_TYPE_CHARACTER*      ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
+        ptrdiff_t                 loaded_n;
+        QUEX_TYPE_STREAM_POSITION character_index_after_load;
 
-        /* Assume: Buffer initialization happens independently */
+        /* Assume: Buffer initialization happens independently               */
         __quex_assert(buffer->_input_p        == ContentFront);   
         __quex_assert(buffer->_lexeme_start_p == ContentFront);
 
         /* end   != 0, means that the buffer is filled.
          * begin == 0, means that we are standing at the begin.
-         * => end != 0 and begin == 0, means that the initial content is loaded already.    */
+         * => end != 0 and begin == 0, initial content is loaded already.    */
         me->seek_character_index(me, 0);
 
-        LoadedN = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
+        loaded_n = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
+        character_index_after_load = me->tell_character_index(buffer->filler);
 
-        buffer->_content_character_index_begin = 0; 
-        buffer->_content_character_index_end   = me->tell_character_index(buffer->filler);
-
-        if( me->tell_character_index(me) != (ptrdiff_t)LoadedN ) 
+        if( character_index_after_load != (QUEX_TYPE_STREAM_POSITION)loaded_n ) 
         {
             QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
         }
 
-        /* If end of file has been reached, then the 'end of file' pointer needs to be set. */
-        if( LoadedN != (size_t)ContentSize ) QUEX_NAME(Buffer_end_of_file_set)(buffer, &ContentFront[LoadedN]);
-        else                                 QUEX_NAME(Buffer_end_of_file_unset)(buffer);
+        buffer->_memory._end_of_file_p = (loaded_n != ContentSize) ? 
+           &ContentFront[loaded_n]  /* end of file lies inside loaded region */
+         : (QUEX_TYPE_CHARACTER*)0; /* end of file lies beyond               */
+
+        buffer->_content_character_index_begin = 0; 
+        buffer->_content_character_index_end   = character_index_after_load;
 
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
     } 
@@ -260,14 +263,13 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
         }
-        else if( buffer->_memory._end_of_file_p != 0x0 ) { 
-            /* End of file has been reached before, we cannot load more.                    */
+        else if( buffer->_memory._end_of_file_p ) { 
+            /* End of file has been reached before, we cannot load more.     */
             return 0;                               
         }
-        /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                             * (3)*/  
+        /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!              * (3)*/  
 
-
-        /*___________________________________________________________________________________*/
+        /*___________________________________________________________________*/
         /* (1) Handle fallback region */
         FallBackN    = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(buffer, 
                                                                                  Distance_LexemeStart_to_InputP); 
@@ -276,10 +278,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(buffer, FallBackN);
 
-        /*___________________________________________________________________________________*/
-        /* (2) Load new content*/
-        /* NOTE: Due to backward loading the character index might not stand on the end of
-         *       the buffer. Thus a seek is necessary.                                       */
+        /*___________________________________________________________________*/
+        /* (2) Load new content
+         *
+         * NOTE: Due to backward loading the character index might not stand 
+         *       on the end of the buffer. Thus a seek is necessary.         */
+
         me->seek_character_index(me, buffer->_content_character_index_end);
         buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
@@ -771,7 +775,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
-                                       const void*        FilledEndP)
+                                        const void*        FilledEndP)
     {
         ptrdiff_t  inserted_character_n;
 
