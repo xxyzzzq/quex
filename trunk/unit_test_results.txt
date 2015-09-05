@@ -1550,85 +1550,56 @@
  * Backward:
 
     Copy Region (BPC=1)
-        BufferFiller_backward_copy.exe Normal ...............[MAKE FAILED]
-                                       StartOfStream ........[MAKE FAILED]
+        BufferFiller_backward_copy.exe Normal ........................[OK]
+                                       StartOfStream .................[OK]
     Copy Region (BPC=4)
-        BufferFiller_backward_copy-32.exe Normal ............[MAKE FAILED]
-                                          StartOfStream .....[MAKE FAILED]
+        BufferFiller_backward_copy-32.exe Normal .....................[OK]
+                                          StartOfStream ..............[OK]
 
  * Forward:
 
     Copy Fallback Region (BPC=1)
-        BufferFiller_forward_copy.exe .......................[MAKE FAILED]
+        BufferFiller_forward_copy.exe ................................[OK]
     Copy Fallback Region (BPC=4)
-        BufferFiller_forward_copy-32.exe ....................[MAKE FAILED]
+        BufferFiller_forward_copy-32.exe .............................[OK]
 
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward.exe 1 ..........................[MAKE FAILED]
-                                 2 ..........................[MAKE FAILED]
-                                 3 ..........................[MAKE FAILED]
-                                 4 ..........................[MAKE FAILED]
-                                 5 ..........................[MAKE FAILED]
+        Buffer_move_backward.exe 1 ...................................[OK]
+                                 2 ...................................[OK]
+                                 3 ...................................[OK]
+                                 4 ...................................[OK]
+                                 5 ...................................[OK]
     Backward (BPC=4)
-        Buffer_move_backward-32.exe 1 .......................[MAKE FAILED]
-                                    2 .......................[MAKE FAILED]
-                                    3 .......................[MAKE FAILED]
-                                    4 .......................[MAKE FAILED]
-                                    5 .......................[MAKE FAILED]
+        Buffer_move_backward-32.exe 1 ................................[OK]
+                                    2 ................................[OK]
+                                    3 ................................[OK]
+                                    4 ................................[OK]
+                                    5 ................................[OK]
     Forward (BPC=1)
-        Buffer_move_forward.exe 1 ...........................[MAKE FAILED]
-                                2 ...........................[MAKE FAILED]
-                                3 ...........................[MAKE FAILED]
-                                4 ...........................[MAKE FAILED]
-                                5 ...........................[MAKE FAILED]
+        Buffer_move_forward.exe 1 ....................................[OK]
+                                2 ....................................[OK]
+                                3 ....................................[OK]
+                                4 ....................................[OK]
+                                5 ....................................[OK]
     Forward (BPC=4)
-        Buffer_move_forward-32.exe 1 ........................[MAKE FAILED]
-                                   2 ........................[MAKE FAILED]
-                                   3 ........................[MAKE FAILED]
-                                   4 ........................[MAKE FAILED]
-                                   5 ........................[MAKE FAILED]
+        Buffer_move_forward-32.exe 1 .................................[OK]
+                                   2 .................................[OK]
+                                   3 .................................[OK]
+                                   4 .................................[OK]
+                                   5 .................................[OK]
 
  * Tell and Seek:
 
     Bytes Per Character (BPC)=1
-        Buffer_tell_and_seek.exe ............................[MAKE FAILED]
+        Buffer_tell_and_seek.exe .....................................[OK]
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek-32.exe .........................[MAKE FAILED]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] BufferFiller_backward_copy.exe _ Normal
-                                        \__ StartOfStream
-    [FAIL] BufferFiller_backward_copy-32.exe _ Normal
-                                           \__ StartOfStream
-    [FAIL] BufferFiller_forward_copy.exe
-    [FAIL] BufferFiller_forward_copy-32.exe
-    [FAIL] Buffer_move_backward.exe _ 1
-                                  \__ 2
-                                  \__ 3
-                                  \__ 4
-                                  \__ 5
-    [FAIL] Buffer_move_backward-32.exe _ 1
-                                     \__ 2
-                                     \__ 3
-                                     \__ 4
-                                     \__ 5
-    [FAIL] Buffer_move_forward.exe _ 1
-                                 \__ 2
-                                 \__ 3
-                                 \__ 4
-                                 \__ 5
-    [FAIL] Buffer_move_forward-32.exe _ 1
-                                    \__ 2
-                                    \__ 3
-                                    \__ 4
-                                    \__ 5
-    [FAIL] Buffer_tell_and_seek.exe
-    [FAIL] Buffer_tell_and_seek-32.exe
+        Buffer_tell_and_seek-32.exe ..................................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -2445,136 +2416,90 @@
  * Load Backward:
 
     Character=1 Byte(s), Fallback=0
-        BufferFiller_backward_load-1.exe ....................[MAKE FAILED]
+        BufferFiller_backward_load-1.exe .............................[OK]
     Character=2 Byte(s), Fallback=0
-        BufferFiller_backward_load-2.exe ....................[MAKE FAILED]
+        BufferFiller_backward_load-2.exe .............................[OK]
     Character=4 Byte(s), Fallback=0
-        BufferFiller_backward_load-4.exe ....................[MAKE FAILED]
+        BufferFiller_backward_load-4.exe .............................[OK]
 
  * Load Forward:
 
     Character=1 Byte(s), Fallback=0
-        BufferFiller_forward_load-1-fb0.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-1-fb0.exe ..........................[OK]
     Character=1 Byte(s), Fallback=1
-        BufferFiller_forward_load-1-fb1.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-1-fb1.exe ..........................[OK]
     Character=1 Byte(s), Fallback=5
-        BufferFiller_forward_load-1-fb5.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-1-fb5.exe ..........................[OK]
     Character=2 Byte(s), Fallback=0
-        BufferFiller_forward_load-2-fb0.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-2-fb0.exe ..........................[OK]
     Character=2 Byte(s), Fallback=1
-        BufferFiller_forward_load-2-fb1.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-2-fb1.exe ..........................[OK]
     Character=2 Byte(s), Fallback=5
-        BufferFiller_forward_load-2-fb5.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-2-fb5.exe ..........................[OK]
     Character=4 Byte(s), Fallback=0
-        BufferFiller_forward_load-4-fb0.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-4-fb0.exe ..........................[OK]
     Character=4 Byte(s), Fallback=1
-        BufferFiller_forward_load-4-fb1.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-4-fb1.exe ..........................[OK]
     Character=4 Byte(s), Fallback=5
-        BufferFiller_forward_load-4-fb5.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-4-fb5.exe ..........................[OK]
     With Error in Stream (Character=4 Byte(s))
-        BufferFiller_forward_load-error.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-error.exe ........................[FAIL]
 
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward-1-fb0.exe 1 ....................[MAKE FAILED]
-                                       2 ....................[MAKE FAILED]
-                                       3 ....................[MAKE FAILED]
-                                       4 ....................[MAKE FAILED]
-                                       5 ....................[MAKE FAILED]
+        Buffer_move_backward-1-fb0.exe 1 .............................[OK]
+                                       2 .............................[OK]
+                                       3 .............................[OK]
+                                       4 .............................[OK]
+                                       5 .............................[OK]
     Backward (BPC=1)
-        Buffer_move_backward-1-fb1.exe 1 ....................[MAKE FAILED]
-                                       2 ....................[MAKE FAILED]
-                                       3 ....................[MAKE FAILED]
-                                       4 ....................[MAKE FAILED]
-                                       5 ....................[MAKE FAILED]
+        Buffer_move_backward-1-fb1.exe 1 .............................[OK]
+                                       2 .............................[OK]
+                                       3 .............................[OK]
+                                       4 .............................[OK]
+                                       5 .............................[OK]
     Backward (BPC=4)
-        Buffer_move_backward-4-fb0.exe 1 ....................[MAKE FAILED]
-                                       2 ....................[MAKE FAILED]
-                                       3 ....................[MAKE FAILED]
-                                       4 ....................[MAKE FAILED]
-                                       5 ....................[MAKE FAILED]
+        Buffer_move_backward-4-fb0.exe 1 .............................[OK]
+                                       2 .............................[OK]
+                                       3 .............................[OK]
+                                       4 .............................[OK]
+                                       5 .............................[OK]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb0.exe 1 .....................[MAKE FAILED]
-                                      2 .....................[MAKE FAILED]
-                                      3 .....................[MAKE FAILED]
-                                      4 .....................[MAKE FAILED]
-                                      5 .....................[MAKE FAILED]
+        Buffer_move_forward-1-fb0.exe 1 ..............................[OK]
+                                      2 ..............................[OK]
+                                      3 ..............................[OK]
+                                      4 ..............................[OK]
+                                      5 ..............................[OK]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb1.exe 1 .....................[MAKE FAILED]
-                                      2 .....................[MAKE FAILED]
-                                      3 .....................[MAKE FAILED]
-                                      4 .....................[MAKE FAILED]
-                                      5 .....................[MAKE FAILED]
+        Buffer_move_forward-1-fb1.exe 1 ..............................[OK]
+                                      2 ..............................[OK]
+                                      3 ..............................[OK]
+                                      4 ..............................[OK]
+                                      5 ..............................[OK]
     Forward (BPC=4)
-        Buffer_move_forward-4-fb0.exe 1 .....................[MAKE FAILED]
-                                      2 .....................[MAKE FAILED]
-                                      3 .....................[MAKE FAILED]
-                                      4 .....................[MAKE FAILED]
-                                      5 .....................[MAKE FAILED]
+        Buffer_move_forward-4-fb0.exe 1 ..............................[OK]
+                                      2 ..............................[OK]
+                                      3 ..............................[OK]
+                                      4 ..............................[OK]
+                                      5 ..............................[OK]
 
  * Tell and Seek:
 
     Bytes Per Character (BPC)=1
-        Buffer_tell_and_seek-1-fb0.exe ......................[MAKE FAILED]
+        Buffer_tell_and_seek-1-fb0.exe ...............................[OK]
     Bytes Per Character (BPC)=1
-        Buffer_tell_and_seek-1-fb1.exe ......................[MAKE FAILED]
+        Buffer_tell_and_seek-1-fb1.exe ...............................[OK]
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek-4-fb0.exe ......................[MAKE FAILED]
+        Buffer_tell_and_seek-4-fb0.exe ...............................[OK]
     wiostream
-        Buffer_tell_and_seek-wiostream.exe ..................[MAKE FAILED]
+        Buffer_tell_and_seek-wiostream.exe ...........................[OK]
                                                            ___   _    _   _    
                                                           |  _| / \  | | | |   
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] BufferFiller_backward_load-1.exe
-    [FAIL] BufferFiller_backward_load-2.exe
-    [FAIL] BufferFiller_backward_load-4.exe
-    [FAIL] BufferFiller_forward_load-1-fb0.exe
-    [FAIL] BufferFiller_forward_load-1-fb1.exe
-    [FAIL] BufferFiller_forward_load-1-fb5.exe
-    [FAIL] BufferFiller_forward_load-2-fb0.exe
-    [FAIL] BufferFiller_forward_load-2-fb1.exe
-    [FAIL] BufferFiller_forward_load-2-fb5.exe
-    [FAIL] BufferFiller_forward_load-4-fb0.exe
-    [FAIL] BufferFiller_forward_load-4-fb1.exe
-    [FAIL] BufferFiller_forward_load-4-fb5.exe
     [FAIL] BufferFiller_forward_load-error.exe
-    [FAIL] Buffer_move_backward-1-fb0.exe _ 1
-                                        \__ 2
-                                        \__ 3
-                                        \__ 4
-                                        \__ 5
-    [FAIL] Buffer_move_backward-1-fb1.exe _ 1
-                                        \__ 2
-                                        \__ 3
-                                        \__ 4
-                                        \__ 5
-    [FAIL] Buffer_move_backward-4-fb0.exe _ 1
-                                        \__ 2
-                                        \__ 3
-                                        \__ 4
-                                        \__ 5
-    [FAIL] Buffer_move_forward-1-fb0.exe _ 1
-                                       \__ 2
-                                       \__ 3
-                                       \__ 4
-                                       \__ 5
-    [FAIL] Buffer_move_forward-1-fb1.exe _ 1
-                                       \__ 2
-                                       \__ 3
-                                       \__ 4
-                                       \__ 5
-    [FAIL] Buffer_move_forward-4-fb0.exe _ 1
-                                       \__ 2
-                                       \__ 3
-                                       \__ 4
-                                       \__ 5
-    [FAIL] Buffer_tell_and_seek-1-fb0.exe
-    [FAIL] Buffer_tell_and_seek-1-fb1.exe
-    [FAIL] Buffer_tell_and_seek-4-fb0.exe
-    [FAIL] Buffer_tell_and_seek-wiostream.exe
 ===============================================================================
                                                                                
                              State Machine Algebra                             
@@ -2824,17 +2749,17 @@
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 ..........................[MAKE FAILED]
-                                 2 ..........................[MAKE FAILED]
-                                 3 ..........................[MAKE FAILED]
-                                 4 ..........................[MAKE FAILED]
-                                 5 ..........................[MAKE FAILED]
+        Buffer_move_backward.exe 1 ...................................[OK]
+                                 2 ...................................[OK]
+                                 3 ...................................[OK]
+                                 4 ...................................[OK]
+                                 5 ...................................[OK]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ...........................[MAKE FAILED]
-                                2 ...........................[MAKE FAILED]
-                                3 ...........................[MAKE FAILED]
-                                4 ...........................[MAKE FAILED]
-                                5 ...........................[MAKE FAILED]
+        Buffer_move_forward.exe 1 ....................................[OK]
+                                2 ....................................[OK]
+                                3 ....................................[OK]
+                                4 ....................................[OK]
+                                5 ....................................[OK]
 
  * Stream Position Seek:
 
@@ -2848,7 +2773,7 @@
  * Tell and Seek:
 
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek.exe ............................[MAKE FAILED]
+        Buffer_tell_and_seek.exe .....................................[OK]
 
  * read_characters:
 
@@ -2867,22 +2792,10 @@
                    7 .................................................[OK]
                    8 .................................................[OK]
                    9 .................................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] Buffer_move_backward.exe _ 1
-                                  \__ 2
-                                  \__ 3
-                                  \__ 4
-                                  \__ 5
-    [FAIL] Buffer_move_forward.exe _ 1
-                                 \__ 2
-                                 \__ 3
-                                 \__ 4
-                                 \__ 5
-    [FAIL] Buffer_tell_and_seek.exe
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -2908,17 +2821,17 @@
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 ..........................[MAKE FAILED]
-                                 2 ..........................[MAKE FAILED]
-                                 3 ..........................[MAKE FAILED]
-                                 4 ..........................[MAKE FAILED]
-                                 5 ..........................[MAKE FAILED]
+        Buffer_move_backward.exe 1 ...................................[OK]
+                                 2 ...................................[OK]
+                                 3 ...................................[OK]
+                                 4 ...................................[OK]
+                                 5 ...................................[OK]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ...........................[MAKE FAILED]
-                                2 ...........................[MAKE FAILED]
-                                3 ...........................[MAKE FAILED]
-                                4 ...........................[MAKE FAILED]
-                                5 ...........................[MAKE FAILED]
+        Buffer_move_forward.exe 1 ....................................[OK]
+                                2 ....................................[OK]
+                                3 ....................................[OK]
+                                4 ....................................[OK]
+                                5 ....................................[OK]
 
  * Stream Position Seek:
 
@@ -2932,7 +2845,7 @@
  * Tell and Seek:
 
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek.exe ............................[MAKE FAILED]
+        Buffer_tell_and_seek.exe .....................................[OK]
 
  * read_characters:
 
@@ -2951,22 +2864,10 @@
                    7 .................................................[OK]
                    8 .................................................[OK]
                    9 .................................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] Buffer_move_backward.exe _ 1
-                                  \__ 2
-                                  \__ 3
-                                  \__ 4
-                                  \__ 5
-    [FAIL] Buffer_move_forward.exe _ 1
-                                 \__ 2
-                                 \__ 3
-                                 \__ 4
-                                 \__ 5
-    [FAIL] Buffer_tell_and_seek.exe
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                          Pathwalker State Construction                         
@@ -3121,10 +3022,10 @@ SUMMARY:
            4       [OK] ........./token-policies/TEST                    
            10      [OK] ..../code_base/TEST                              
            42      [OK] ............../analyzer/TEST                     
-       28  28    [FAIL] ............../buffer/TEST                       
-       11  36    [FAIL] ...................../converter/iconv/TEST       
-       11  36    [FAIL] .............................../icu/TEST         
-       47  47    [FAIL] ...................../plain/TEST                 
+           28      [OK] ............../buffer/TEST                       
+           36      [OK] ...................../converter/iconv/TEST       
+           36      [OK] .............................../icu/TEST         
+        1  47    [FAIL] ...................../plain/TEST                 
            10      [OK] ............../converter_helper/TEST             
            42      [OK] ..../engine/TEST                                 
            112     [OK] .........../analyzer/TEST                        
@@ -3144,10 +3045,10 @@ SUMMARY:
            30      [OK] .........../cpp/TEST                             
 
 -------------------------------------------------------------------------------
-     _____     _ _          _____   ___   ____            
-    |  ___|_ _(_) |___     |___ /  / _ \ |___ \     __  __
-    | |_ / _` | | / __|      |_ \ | | | |  __) |    \ \/ /
-    |  _| (_| | | \__ \     ___) || |_| | / __/      >  < 
-    |_|  \__,_|_|_|___/    |____/  \___/ |_____|    /_/\_\
+     _____     _ _          ____    ___    __             
+    |  ___|_ _(_) |___     |___ \  / _ \  / /_      __  __
+    | |_ / _` | | / __|      __) || | | || '_ \     \ \/ /
+    |  _| (_| | | \__ \     / __/ | |_| || (_) |     >  < 
+    |_|  \__,_|_|_|___/    |_____| \___/  \___/     /_/\_\
                                                                    (1509 tests)
 ===============================================================================
