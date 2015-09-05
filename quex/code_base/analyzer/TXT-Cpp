@@ -377,8 +377,8 @@ public:
 
 public:
 
-    void    set_callback_on_buffer_content_change(void (*callback)(QUEX_TYPE_CHARACTER*, 
-                                                  QUEX_TYPE_CHARACTER*));
+    void    set_callback_on_buffer_content_change(void (*callback)(const QUEX_TYPE_CHARACTER*, 
+                                                                   const QUEX_TYPE_CHARACTER*));
 
 public:
     void    print_this();

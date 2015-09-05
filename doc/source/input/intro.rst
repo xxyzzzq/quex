@@ -42,3 +42,6 @@ buffer codec and character width.
 
 TODO: When to use dedicated ByteLoader, BufferFiller (byte order reversion, 
 start position).
+  
+Starting from a position X while not taking it as zero position:
+

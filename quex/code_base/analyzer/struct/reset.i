@@ -182,8 +182,9 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
     QUEX_NAME(Buffer_construct)(&this->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
-                                Memory, MemorySize, EndOfFileP,
+                                Memory, MemorySize, 
                                 E_Ownership_EXTERNAL);
+    QUEX_NAME(Buffer_end_of_file_set)(&this->buffer, EndOfFileP);
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 

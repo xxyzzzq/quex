@@ -15,7 +15,10 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
+    /* Create a buffer filler without byte loader. */
+    quex::QUEX_NAME(BufferFiller)* filler = quex::QUEX_NAME(BufferFiller_DEFAULT)(0, 0);
+
+    quex::tiny_lexer  qlex(filler);   // No args to constructor --> raw memory 
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -63,12 +66,13 @@ main(int argc, char** argv)
         //     different from 'chunk.end'. This would indicate the there
         //     are still bytes left. The next call of '_apend(...)' will
         //     deal with it.)
-        chunk.begin = (uint8_t*)qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+        chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, 
+                                                         chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
         QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)-1;
         while( 1 + 1 == 2 ) {
-            prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
+            prev_lexeme_start_p = qlex.buffer._lexeme_start_p;
             
             // Let the previous token be the current token of the previous run.
             prev_token = qlex.token_p_swap(prev_token);
@@ -91,7 +95,7 @@ main(int argc, char** argv)
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
-        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        qlex.buffer._input_p = prev_lexeme_start_p;
     }
 
     return 0;
