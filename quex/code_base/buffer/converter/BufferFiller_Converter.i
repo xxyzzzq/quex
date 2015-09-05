@@ -49,8 +49,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void   
     QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
-                              uint8_t* Begin, size_t SizeInBytes,
-                              QUEX_TYPE_STREAM_POSITION StartPosition);
+                              uint8_t* Begin, size_t SizeInBytes);
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
@@ -103,7 +102,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (setup to trigger initial reload)                                                */
         raw_buffer_p = QUEXED(MemoryManager_allocate)(RawBufferSize, 
                                                       E_MemoryObjectType_BUFFER_RAW);
-        QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize, 0);
+        QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_buffer_p, RawBufferSize);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
         me->hint_begin_character_index = (ptrdiff_t)-1;
@@ -159,10 +158,10 @@ QUEX_NAMESPACE_MAIN_OPEN
          *     THUS: No pre-load before the first conversion, even if the first conversion
          *           runs on zero bytes!                                                    */
 
-        QUEX_TYPE_CHARACTER*        buffer_insertion_p   = user_memory_p;
-        const QUEX_TYPE_CHARACTER*  BufferEnd            = &user_memory_p[N];
-        const ptrdiff_t             StartCharacterIndex  = me->raw_buffer.iterators_character_index;
-        ptrdiff_t                   ConvertedCharN       = 0;
+        QUEX_TYPE_CHARACTER*             buffer_insertion_p   = user_memory_p;
+        const QUEX_TYPE_CHARACTER*       BufferEnd            = &user_memory_p[N];
+        const QUEX_TYPE_STREAM_POSITION  StartCharacterIndex  = me->raw_buffer.iterators_character_index;
+        ptrdiff_t                        ConvertedCharN       = 0;
 
         __quex_assert(me->converter);
         __quex_assert(alter_ego); 
@@ -238,10 +237,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller_Converter)*  me     = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_NAME(RawBuffer)*               buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
-        const ptrdiff_t  Hint_Index   = me->hint_begin_character_index;
+        const QUEX_TYPE_STREAM_POSITION     Hint_Index   = me->hint_begin_character_index;
+        QUEX_TYPE_STREAM_POSITION           EndIndex     = 0;
         uint8_t*         Hint_Pointer = buffer->begin;
         ptrdiff_t        ContentSize  = 0;
-        ptrdiff_t        EndIndex     = 0;
         uint8_t*         new_iterator = 0;
 
         __quex_assert(alter_ego != 0x0); 
@@ -315,7 +314,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                 buffer->iterators_character_index = Hint_Index;
                 buffer->iterator                  = Hint_Pointer;
                 QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, 
-                                                                  Index - Hint_Index);
+                                                                  (ptrdiff_t)(Index - Hint_Index));
                 /* assert on index position, see end of 'step_forward_n_characters(...)'.         */
             }
             else  /* Index < BeginIndex */ {
@@ -332,7 +331,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                 /* iterator == end => trigger reload                                              */
                 buffer->iterator                  = buffer->end;
                 buffer->iterators_character_index = 0;
-                QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, Index);
+                QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, 
+                                                                  (ptrdiff_t)Index);
                 /* We can assume, that the index is reachable, since the current index is higher. */
                 __quex_assert(buffer->iterators_character_index == Index);
             } 
@@ -482,13 +482,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void   
     QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
-                              uint8_t* Begin, size_t SizeInBytes,
-                              QUEX_TYPE_STREAM_POSITION StartPosition)
+                              uint8_t* Begin, size_t SizeInBytes)
     {
         me->begin               = Begin;
-
         me->end                 = Begin;
-
         me->memory_end          = &Begin[(ptrdiff_t)SizeInBytes];
         /* iterator == end --> trigger reload */
         me->iterator                  = me->end;
