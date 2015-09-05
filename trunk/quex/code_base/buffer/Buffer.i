@@ -310,27 +310,27 @@ QUEX_NAMESPACE_MAIN_OPEN
        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
 
-    QUEX_INLINE ptrdiff_t  
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
     QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)* me)
     {
         /* This function returns the character index that corresponds to the 
          * current setting of the input pointer. Note, that the content starts
          * at one position after the memory (buffer limitting char at _front.).         
          */
-        const ptrdiff_t DeltaToBufferBegin = me->_input_p - &me->_memory._front[1];
+        const QUEX_TYPE_STREAM_POSITION DeltaToBufferBegin = me->_input_p - &me->_memory._front[1];
         return DeltaToBufferBegin + me->_content_character_index_begin;
     }
 
     QUEX_INLINE void    
-    QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterIndex)
+    QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const QUEX_TYPE_STREAM_POSITION CharacterIndex)
     {
         /* This function sets the _input_p according to a character index of the
          * input stream (if there is a stream). It is the inverse of 'tell()'.   */
-        const ptrdiff_t CurrentCharacterIndex = QUEX_NAME(Buffer_tell)(me);
+        const QUEX_TYPE_STREAM_POSITION CurrentCharacterIndex = QUEX_NAME(Buffer_tell)(me);
         if( CharacterIndex > CurrentCharacterIndex )
-            QUEX_NAME(Buffer_move_forward)(me, CharacterIndex - CurrentCharacterIndex);
+            QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)(CharacterIndex - CurrentCharacterIndex));
         else
-            QUEX_NAME(Buffer_move_backward)(me, CurrentCharacterIndex - CharacterIndex);
+            QUEX_NAME(Buffer_move_backward)(me,(ptrdiff_t)(CurrentCharacterIndex - CharacterIndex));
     }
 
     QUEX_INLINE ptrdiff_t        

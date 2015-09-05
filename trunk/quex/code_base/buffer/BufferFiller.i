@@ -177,7 +177,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * => end != 0 and begin == 0, initial content is loaded already.    */
         me->seek_character_index(me, 0);
 
-        loaded_n = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
+        loaded_n = (ptrdiff_t)QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
         character_index_after_load = me->tell_character_index(buffer->filler);
 
         if( character_index_after_load != (QUEX_TYPE_STREAM_POSITION)loaded_n ) 
@@ -414,13 +414,13 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t   
     QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
     {
-        QUEX_NAME(BufferFiller)* me = buffer->filler;
-        QUEX_TYPE_CHARACTER*     ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
-        QUEX_TYPE_CHARACTER*     ContentBack  = QUEX_NAME(Buffer_content_back)(buffer);
-        ptrdiff_t                BackwardDistance              = (ptrdiff_t)-1;
-        ptrdiff_t                NewContentCharacterIndexBegin = (ptrdiff_t)-1;
+        QUEX_NAME(BufferFiller)*   me = buffer->filler;
+        QUEX_TYPE_CHARACTER*       ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
+        QUEX_TYPE_CHARACTER*       ContentBack  = QUEX_NAME(Buffer_content_back)(buffer);
+        ptrdiff_t                  BackwardDistance              = (ptrdiff_t)-1;
+        QUEX_TYPE_STREAM_POSITION  NewContentCharacterIndexBegin = (ptrdiff_t)-1;
 #       if defined(QUEX_OPTION_ASSERTS)
-        size_t                   LoadedN                       = (size_t)-1;
+        size_t                     LoadedN                       = (size_t)-1;
 #       endif
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
@@ -539,12 +539,12 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer)
     {
         const ptrdiff_t  ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
-        ptrdiff_t        IntendedBackwardDistance = (ptrdiff_t)-1;
-        ptrdiff_t        Distance_InputP_to_LexemeStart = (ptrdiff_t)-1;
-        ptrdiff_t        LimitBackwardDist_1 = -1; 
-        ptrdiff_t        LimitBackwardDist_2 = -1;
-        ptrdiff_t        Limit_1_and_2 = -1;
-        ptrdiff_t        BackwardDistance = -1;
+        QUEX_TYPE_STREAM_POSITION  IntendedBackwardDistance = (ptrdiff_t)-1;
+        QUEX_TYPE_STREAM_POSITION  Distance_InputP_to_LexemeStart = (ptrdiff_t)-1;
+        QUEX_TYPE_STREAM_POSITION  LimitBackwardDist_1 = -1; 
+        QUEX_TYPE_STREAM_POSITION  LimitBackwardDist_2 = -1;
+        QUEX_TYPE_STREAM_POSITION  Limit_1_and_2 = -1;
+        QUEX_TYPE_STREAM_POSITION  BackwardDistance = -1;
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* Copying backward shall **only** happen when new content is to be loaded. In back
