@@ -164,7 +164,7 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
     else {
         /* Assume, that buffer filler has been reset.                        */
     }
-    QUEX_NAME(Buffer_init_analyzis)(&this->buffer); 
+    QUEX_NAME(Buffer_init_analyzis)(&this->buffer, (QUEX_TYPE_CHARACTER*)0); 
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
@@ -182,9 +182,8 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
     QUEX_NAME(Buffer_construct)(&this->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
-                                Memory, MemorySize, 
+                                Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
-    QUEX_NAME(Buffer_end_of_file_set)(&this->buffer, EndOfFileP);
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 

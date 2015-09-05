@@ -613,8 +613,7 @@ test_program_db = {
 
         DEAL_WITH_COMPUTED_GOTOS();
         QUEX_NAME(from_memory)(&lexer_state, 
-                               TestString, MemorySize, TestString + MemorySize - 1); 
-        QUEX_NAME(Buffer_end_of_file_set)(&lexer_state.buffer, TestString + MemorySize - 1);
+                               TestString, MemorySize, &TestString[MemorySize - 1]); 
         /**/
         return run_test((const char*)(TestString + 1), "$$COMMENT$$");
     }\n""",
