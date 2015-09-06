@@ -1,0 +1,60 @@
+/* (C) Frank-Rene Schaefer */
+#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER
+#define QUEX_INCLUDE_GUARD_BYTE_LOADER
+
+typedef struct ByteLoader_tag {
+    QUEX_TYPE_STREAM_POSITION (*tell)(struct ByteLoader_tag* me);
+    void                      (*seek)(struct ByteLoader_tag* me, QUEX_TYPE_STREAM_POSITION Pos);
+    size_t                    (*load)(struct ByteLoader_tag*, void*, const size_t);
+    void                      (*delete_self)(struct ByteLoader_tag*);
+
+    /* .compare_handle(A, B):
+     *
+     * Quex checks whether A and B are of the same class (comparing the
+     * function pointer '.load'). The derived class can safely cast both
+     * to its pointer type.
+     *
+     * Upon reset, the the new input handle might be the same as the old one.
+     * Such a usage is against the design of the reset functions! To detect
+     * these situations, the byte loader provides '.compare_handle()'.
+     *
+     * In case of doubt, return always 'false'. The only disadvantage is that
+     * if the user makes the aforementioned error, he will not get a nice hint
+     * upon crash.                                                           
+     *
+     * ByteLoader_FILE, ByteLoader_stream, and ByteLoader_POSIX implement the
+     * function propperly.                                                   */
+    bool                      (*compare_handle)(const struct ByteLoader_tag* A, 
+                                                const struct ByteLoader_tag* B);
+
+    E_Ownership               handle_ownership;
+    E_Ownership               ownership;
+
+    /* Upon construction, the stream handle may be setup to a particular 
+     * position in the stream. This is going to be the reference position.   
+     * The consideration of offsets is handled in this base class' functions.
+     * The derived class does not need to know about an initial offset.      */
+    QUEX_TYPE_STREAM_POSITION initial_position;
+
+    QUEX_TYPE_STREAM_POSITION (*derived_tell)(struct ByteLoader_tag* me);
+    void                      (*derived_seek)(struct ByteLoader_tag* me, QUEX_TYPE_STREAM_POSITION Pos);
+} ByteLoader;
+
+QUEX_INLINE void  ByteLoader_construct(ByteLoader* me, 
+                                       QUEX_TYPE_STREAM_POSITION  (*tell)(ByteLoader* me),
+                                       void                       (*seek)(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos),
+                                       size_t                     (*load)(ByteLoader*, void*, const size_t),
+                                       void                       (*delete_self)(ByteLoader*),
+                                       bool                       (*compare_handle)(const ByteLoader*, const ByteLoader*));
+QUEX_INLINE bool  ByteLoader_compare(const ByteLoader* A, const ByteLoader* B);
+QUEX_INLINE void  ByteLoader_delete(ByteLoader** me);
+
+#include <quex/code_base/buffer/loader/ByteLoader_FILE>
+#include <quex/code_base/buffer/loader/ByteLoader_stream>
+#if 0
+#   include <quex/buffer/loader/ByteLoader_POSIX>    /* (tm) */
+#   include <quex/buffer/loader/ByteLoader_FreeRTOS> /* (tm) */
+#   include <quex/buffer/loader/ByteLoader_PalmOS>   /* (tm) */
+#endif
+
+#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER */
