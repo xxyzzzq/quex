@@ -1,0 +1,15 @@
+#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM
+#define QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM
+#ifdef __cplusplus
+
+template <class StreamType>
+struct ByteLoader_stream { 
+    ByteLoader     base;
+    StreamType*    input_handle;
+};
+
+template <class StreamType> QUEX_INLINE ByteLoader*
+ByteLoader_stream_new(StreamType* sh);
+
+#endif /* __cplusplus                           */
+#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM */

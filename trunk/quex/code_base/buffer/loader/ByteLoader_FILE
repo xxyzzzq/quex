@@ -1,0 +1,21 @@
+#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
+#define QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <stdio.h>
+#ifdef __cplusplus
+}
+#endif
+
+typedef struct { 
+    ByteLoader     base;
+    FILE*          input_handle;
+} ByteLoader_FILE;
+
+QUEX_INLINE ByteLoader*    ByteLoader_FILE_new(FILE* fh);
+QUEX_INLINE ByteLoader*    ByteLoader_FILE_new_from_file_name(const char*);
+
+
+#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE */
