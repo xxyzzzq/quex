@@ -263,6 +263,9 @@ public:
     bool    include_detect_recursion(const char* InputName);
 #   endif
 
+    QUEX_TYPE_CHARACTER*  lexeme_start_pointer_get();
+    void                  input_pointer_set(QUEX_TYPE_CHARACTER*);
+
     /* -- activate/deactivate byte order reversion (big-/little-endian)      */
     bool                  byte_order_reversion();
     void                  byte_order_reversion_set(bool Value);

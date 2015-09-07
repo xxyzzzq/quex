@@ -1,4 +1,3 @@
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TESTS = \
 		queue.exe \
@@ -20,17 +19,17 @@ CC =  \
 hwut-info:
 	@echo $(TESTS)
 
-queue.exe:       lexer.cpp simple.qx $(QUEX_CORE)
+queue.exe:       lexer.cpp simple.qx 
 	quex -i simple.qx -o ISLexer --token-policy queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -lefence -o $@
 
-users_token.exe: lexer.cpp simple.qx $(QUEX_CORE)
+users_token.exe: lexer.cpp simple.qx 
 	quex -i simple.qx -o ISLexer --token-policy single
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 ## User's queue has been deprecated
 ##
-## users_queue.exe: lexer.cpp simple.qx $(QUEX_CORE)
+## users_queue.exe: lexer.cpp simple.qx 
 ##	quex -i simple.qx -o ISLexer --token-policy users_queue
 ##	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 

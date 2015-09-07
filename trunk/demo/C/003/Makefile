@@ -13,7 +13,6 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-include $(QUEX_PATH)/quex/code_base/core.mkd
 .PHONY: clean
 
 ifndef QUEX_PATH
@@ -24,7 +23,6 @@ ifndef BYTES_PER_CHARACTER
     BYTES_PER_CHARACTER = 2
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -95,7 +93,7 @@ example-bom.o: example-bom.c EasyLexer.c
 %.E: %.c    
 	$(CC) -E $< -o $@ 
 
-EasyLexer.c: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+EasyLexer.c: definitions.qx end_of_file.qx program.qx 
 	quex -i                 definitions.qx end_of_file.qx program.qx \
 	     -o           EasyLexer  \
 		 --token-id-offset     0x1000     \

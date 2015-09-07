@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS
 
@@ -52,7 +51,7 @@ example.o: $(QUEX_PATH)/TEST/lexer.c  Simple.c
 %.E: %.c    
 	$(CC) -E $< -o $@ 
 
-Simple.c: $(QX_FILE) $(QUEX_CORE)
+Simple.c: $(QX_FILE) 
 	quex -i $(QX_FILE) -o Simple --language C --token-policy single #--debug-exception
 
 # (*) HELPERS __________________________________________________________________

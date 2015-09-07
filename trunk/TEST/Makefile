@@ -1,6 +1,5 @@
 TEST_FILES = bug-1935701.exe
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 DEBUGF = -ggdb \
 	 -D__QUEX_OPTION_UNIT_TEST \
@@ -16,7 +15,7 @@ all: $(TEST_FILES)
 hwut-info:
 	@echo $(TEST_FILES) 
 
-%.exe: %.cpp  $(QUEX_CORE)
+%.exe: %.cpp  
 	g++ -Wall -Werror -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
 
 clean:

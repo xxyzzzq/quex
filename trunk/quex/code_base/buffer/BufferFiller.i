@@ -81,9 +81,6 @@ QUEX_NAMESPACE_MAIN_OPEN
             filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader); 
         }
         
-        if( filler ) {
-            filler->ownership = E_Ownership_EXTERNAL;
-        }
         return filler;
     }
 
@@ -110,7 +107,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
     { 
         if( ! *me )                                           {}
-        if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) {}
+        if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
         else if( (*me)->delete_self )                         (*me)->delete_self(*me);
         (*me) = (QUEX_NAME(BufferFiller)*)0;
     }
@@ -157,6 +154,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->byte_loader          = byte_loader;
 
         me->_byte_order_reversion_active_f = false;
+
+        /* Default: External ownership */
+        me->ownership = E_Ownership_EXTERNAL;
     }
 
     QUEX_INLINE void

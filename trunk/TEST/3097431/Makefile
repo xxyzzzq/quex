@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -48,7 +47,7 @@ example.o: $q/demo/Cpp/example.cpp  EasyLexer.cpp
 %.E: %.cpp    
 	$(CC) -E $< -o $@ 
 
-EasyLexer.cpp: masm.qx $(QUEX_CORE)
+EasyLexer.cpp: masm.qx 
 	quex -i masm.qx  -o  EasyLexer --debug-exception
 
 # (*) HELPERS __________________________________________________________________

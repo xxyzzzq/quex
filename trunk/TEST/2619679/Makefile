@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 # -- INPUT
@@ -39,7 +38,7 @@ $(APPLICATION): ../lexer-simply.cpp $(ENGINE_NAME).cpp
 	$(CC) -o $(APPLICATION) \
 		  ../lexer-simply.cpp $(ENGINE_NAME).cpp 
           
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
+$(ENGINE_SOURCES): $(MODE_FILES) 
 	quex -i $(MODE_FILES) -o $(ENGINE_NAME) 
 
 # (*) HELPERS __________________________________________________________________

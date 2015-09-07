@@ -1,4 +1,3 @@
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 FILES = \
 		converter-16.exe                \
@@ -44,19 +43,19 @@ TEST_TEMPLATE_DIR := ../../TEST-TEMPLATE/#
 
 include $(TEST_TEMPLATE_DIR)/Makefile
 
-%.exe: %.cpp $(QUEX_CORE)
+%.exe: %.cpp 
 	$(CC) $< -o $@ \
         -DQUEX_TYPE_CHARACTER=uint32_t 
 
-%-16.exe: %.cpp $(QUEX_CORE)
+%-16.exe: %.cpp 
 	$(CC) $< -o $@ \
         -DQUEX_TYPE_CHARACTER=uint16_t 
 
-%-32.exe: %.cpp $(QUEX_CORE)
+%-32.exe: %.cpp 
 	$(CC) $< -o $@ \
         -DQUEX_TYPE_CHARACTER=uint32_t 
 
-seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp $(QUEX_CORE)
+seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp 
 	$(CC) $< -o $@ \
 		-DQUEX_TYPE_CHARACTER=uint16_t 
 

@@ -22,7 +22,7 @@ main(int argc, char** argv)
     bool                  out_f      = false;
 
     QUEX_NAME_TOKEN(construct)(&token);
-    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0);
 
     /* -- trigger reload of memory */
     chunk.begin = chunk.end;

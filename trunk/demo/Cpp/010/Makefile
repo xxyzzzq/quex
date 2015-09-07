@@ -11,7 +11,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 OBJS      = tiny_lexer.o      messaging-framework.o
@@ -42,43 +41,43 @@ all: $(FILES)
 
 # -- char application
           
-copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS)  
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
           
-copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS)  
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
 
-fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS)  
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
 
-%.exe:                      %.cpp $(OBJS) $(QUEX_CORE) 
+%.exe:                      %.cpp $(OBJS)  
 	$(CC)      -o $@ $< $(OBJS) 
 
-point.exe:                  point.cpp $(QUEX_CORE) NON_UTF8
+point.exe:                  point.cpp  NON_UTF8
 	# All related files must be compiled with fallback_n = 0
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
           
-re-point.exe:               re-point.cpp $(QUEX_CORE) NON_UTF8
+re-point.exe:               re-point.cpp  NON_UTF8
 	# All related files must be compiled with fallback_n = 0
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
           
-%_utf8.o:                   %_utf8.cpp $(QUEX_CORE) UTF8
+%_utf8.o:                   %_utf8.cpp  UTF8
 	$(CC_UTF8) -c $< -o $@ 
 
-messaging-framework_utf8.o: messaging-framework.cpp $(QUEX_CORE) UTF8
+messaging-framework_utf8.o: messaging-framework.cpp  UTF8
 	$(CC_UTF8) -c $< -o $@ 
           
-%.o:                     %.cpp $(QUEX_CORE) NON_UTF8
+%.o:                     %.cpp  NON_UTF8
 	$(CC)      -c $< -o $@  
           
-%.E:                     %.cpp $(QUEX_CORE) NON_UTF8
+%.E:                     %.cpp  NON_UTF8
 	$(CC)      -E $< -o $@  
           
 tiny_lexer tiny_lexer.cpp:            NON_UTF8
 
 tiny_lexer_utf8 tiny_lexer_utf8.cpp:  UTF8
 
-NON_UTF8: simple.qx $(QUEX_CORE)
+NON_UTF8: simple.qx 
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
 	quex -i             simple.qx          \
@@ -86,7 +85,7 @@ NON_UTF8: simple.qx $(QUEX_CORE)
 		 --token-policy single             \
 		 --token-memory-management-by-user 
 
-UTF8: simple_utf8.qx $(QUEX_CORE)
+UTF8: simple_utf8.qx 
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
 	# does all what is required.
 	quex -i                    simple_utf8.qx   \

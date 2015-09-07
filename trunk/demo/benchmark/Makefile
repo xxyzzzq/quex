@@ -24,7 +24,6 @@ SETUP= \
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 SOURCES = $(addprefix in/, lexer.cpp report.cpp main.cpp)
 
@@ -97,7 +96,7 @@ run/lexer-quex-lc: out/quex_scan.cpp $(SOURCES)
 
 # Scanners ____________________________________________________________________
 
-out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
+out/quex_scan.cpp: in/quex/c.qx 
 	quex -i $< \
          --foreign-token-id-file  in/token-ids.h \
 	     --output-directory       out            \
@@ -109,7 +108,7 @@ out/quex_scan.cpp: in/quex/c.qx $(QUEX_CORE)
 	     --no-mode-transition-check              \
 		 --single-mode-analyzer
 
-out/quex_hey_scan.cpp: in/quex/hey.qx $(QUEX_CORE)
+out/quex_hey_scan.cpp: in/quex/hey.qx 
 	quex -i $< \
 	     --output-directory       out            \
 		 -o                 quex_scan      \

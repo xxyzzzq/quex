@@ -2,7 +2,6 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 #
@@ -71,7 +70,7 @@ $(ENGINE_NAME).o: $(ENGINE_SOURCES)
 %.E: %.c
 	$(CC:-c=-E) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
+$(ENGINE_SOURCES): $(MODE_FILES) 
 	quex --mode-files $(MODE_FILES)    \
 	     -o     $(ENGINE_NAME)   \
 		 --language C

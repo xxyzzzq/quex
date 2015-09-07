@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -44,7 +43,7 @@ lexer:          example.o EasyLexer.o
 %.E: %.c    
 	$(CC) -E $< -o $@ 
 
-EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
+EasyLexer EasyLexer.c: simple.qx 
 	quex -i simple.qx -o EasyLexer \
 		 --token-policy single           \
 		 --language C

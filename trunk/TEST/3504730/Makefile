@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) COMPILER SETTINGS ________________________________________________________
 CC = gcc                              \

@@ -9,7 +9,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -48,11 +47,11 @@ Case5: $(QUEX_PATH)/TEST/lexer.c
 	$(CC) $^ Simple.c -o $@ \
 		  -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
-Case2.c: case2.qx $(QUEX_CORE)
+Case2.c: case2.qx 
 	## Case2 causes an error message which we want to see: no '--debug-exception'
 	quex -i $<  -o $(@:.c=) --language C 
 
-Case%.c: case%.qx $(QUEX_CORE)
+Case%.c: case%.qx 
 	quex -i $<  -o $(@:.c=) --language C --debug-exception
 
 # (*) HELPERS __________________________________________________________________
