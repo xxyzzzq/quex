@@ -447,13 +447,15 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void 
     QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
+    /* Does not set 'me->_front' to zero, if it is not deleted. Thus, the user
+     * may detect wether it needs to be deleted or not.                      */
     {
         if( me->_front && me->ownership == E_Ownership_LEXICAL_ANALYZER ) {
             QUEXED(MemoryManager_free)((void*)me->_front, 
                                        E_MemoryObjectType_BUFFER_MEMORY);
+            /* Protect against double-destruction.                           */
+            me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
         }
-        /* Protect against double-destruction.                               */
-        me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
     }
 
     QUEX_INLINE void  

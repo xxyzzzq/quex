@@ -206,7 +206,8 @@ public:
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
-    void    reset(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    QUEX_TYPE_CHARACTER*
+            reset(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                   size_t               BufferMemorySize,
                   QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
 
