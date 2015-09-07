@@ -84,11 +84,7 @@ chunk is. Thus, the automatic filling approach may result in dead-locks
 waiting for input and the input buffer may not always be filled to its
 limits. Data may be absorbed from a pipe byte-wise, or line-wise.
 
-difference between files and pipes is that the
-
-
-
-
+difference between files and pipes is that the ... TODO
 
 A generated lexical analyzer runs its analysis on data located in a buffer. In
 general, this buffer is filled automatically by the underlying buffer
@@ -107,12 +103,45 @@ data.
 
    **Example**: ``demo/010/copy.cpp``.
 
+   Copying content into the engine's buffer happens by means of the buffer
+   filler's member function ``fill()``. If the buffer filler is 'plain' it
+   directly copies the content into the engine's buffer. If it is a converter
+   it copies only converted contend. The filler takes care of trailing bytes
+   etc. An exemplary call in C++ or C looks like:
+
+        lexer.buffer->filler->fill(&lexer.buffer, Begin, End);
+
+   Where ``Begin`` points to the beginning of the data to be copied and ``End``
+   points to the first address behind the content to be copied. Both pointers
+   are of type ``void*`` so that the interface is homogeneous across any
+   type of buffer fillers. 
+
+
 #. *Immediate Filling* of the buffer.
 
    The framework writes its data in chunks into a memory location which is
    specified by the user.
 
    **Example**: ``demo/010/fill.cpp``.
+
+   In this case, the buffer needs to be prepared calling ``fill_prepare()``.
+   During preparation, quex determines the begin and end pointers of the region
+   which might be filled.  After the buffer is filled the ``fill_finish()``
+   function needs to be called. It performs all necessary to initiate the
+   analysis process.  An immediate filling sequence looks like::
+
+        lexer.buffer.filler->fill_prepare(&qlex.buffer, 
+                                          (void**)&begin_p, 
+                                          (const void**)&end_p);
+
+        receive_n = my_receive_to_buffer(begin_p, end_p - begin_p); 
+
+        lexer.buffer.filler->fill_finish(&qlex.buffer, &begin_p[receive_n]);
+
+   The process is indifferent of the type of buffer filling. Procedures
+   such as converting happen behind the scenes. Again, the pointers to
+   specify the begin and end of the regions are converted to ``void**``
+   and ``const void**`` for the sake of homogeneity.
 
 #. *Pointing* to a memory address where the buffer shall analyze data.
 
@@ -130,6 +159,11 @@ data.
    them explicitly. A so called 'buffer filler' can be created ouside the quex
    engine.
 
+   In that case, the analyzers constructor is pointed to memory and the
+   analyzer soley runs on that. Once, it is finished the analyzer's object
+   has done its task and can be deleted. If there is more to be done,
+   the buffer might be 'reset' by
+
 .. note::
 
    In some frameworks, the buffer filling implies that a terminating
@@ -140,24 +174,25 @@ data.
 
    To avoid this, report one character less when using ``buffer_fill_region_finish``,
    or make sure that the terminating zero is not copied.
+
+TODO: Mention usuage of 'BufferFiller*' constructor where the filler needs
+      to be deleted manually.
       
 In case of interrupted character streams, there is no direct way for the
 analyzer engine to determine wether a stream is terminated or not. Thus, either
-a 'end of analyzis' pattern must be introduced, or the analyzis is to be
+an 'end of analyzis' pattern must be introduced, or the analyzis is to be
 supervised by another thread which may end the analyzis based on time-out
 conditions. In the following description it is assumed that there exists a
 pattern that tells the analyzer that the stream is ended.  It produces a
-``BYE`` token.  Direct buffer access can be performed by means of the following
-member functions:
+``BYE`` token.  
+
+Direct buffer access can be performed by means of the following member
+functions of the filler
 
     .. code-block:: cpp
 
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_append(ContentBegin, ContentEnd);
-        void                  buffer_fill_region_prepare();
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
-        size_t                buffer_fill_region_size();
-        void                  buffer_fill_region_finish(FilledCharacterN);
+        QUEX_TYPE_CHARACTER*  fill_prepare(ContentBegin, ContentEnd);
+        void                  fill_finish();
 
 Analyzers that work directly on user managed memory should use 
 the following constructor:

@@ -33,7 +33,7 @@ main(int argc, char** argv)
         /* -- Initialize the filling of the fill region                                    */
         qlex.buffer.filler->fill_prepare(&qlex.buffer, (void**)&begin_p, (const void**)&end_p);
 
-        /* -- Call the low lever driver to fill the fill region                            */
+        /* -- Call the low level driver to fill the fill region                            */
         receive_n = messaging_framework_receive_into_buffer(begin_p, end_p - begin_p); 
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */

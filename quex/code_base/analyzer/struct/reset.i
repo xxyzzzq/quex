@@ -170,21 +170,32 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void
+QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_MEMBER_FUNCTION3(reset, memory,
                       QUEX_TYPE_CHARACTER*    Memory,
                       const size_t            MemorySize,
                       QUEX_TYPE_CHARACTER*    EndOfFileP)
 /* When memory is provided from extern, the 'external entity' is
  * responsible for filling it. There is no 'file/stream handle', no 'byte
- * loader', and 'no buffer filler'.                                          */
+ * loader', and 'no buffer filler'.                                          
+ *
+ * RETURN: != 0, previous buffer memory, in case that the user is responsible
+ *               for deleting it.
+ *         == 0  if the previous memory was owned by the lexical analyzer and
+ *               accordingly, it deleted it itself.                          */
 {
+    QUEX_TYPE_CHARACTER* previous_buffer_memory;
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
+    /* In case, that the memory was owned by the analyzer, the destructor did
+     * not delete it and did not set 'me->buffer._memory._front' to zero.    */
+    previous_buffer_memory = this->buffer._memory._front;
     QUEX_NAME(Buffer_construct)(&this->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
                                 Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
+
+    return previous_buffer_memory;
 }
 
 QUEX_INLINE void

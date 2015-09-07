@@ -67,7 +67,8 @@ main(int argc, char** argv)
         //     are still bytes left. The next call of '_apend(...)' will
         //     deal with it.)
         chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, 
-                                                         chunk.begin, chunk.end);
+                                                         (void**)chunk.begin, 
+                                                         (const void**)chunk.end);
 
         // -- Loop until the 'termination' token arrives
         QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)-1;
@@ -98,6 +99,7 @@ main(int argc, char** argv)
         qlex.buffer._input_p = prev_lexeme_start_p;
     }
 
+    filler->delete_self(filler);
     return 0;
 }
 

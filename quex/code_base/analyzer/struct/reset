@@ -53,20 +53,21 @@ QUEX_INLINE void QUEX_NAME(reset_wistream)(QUEX_TYPE_ANALYZER* this,
 /* Level (3) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(reset_ByteLoader)(QUEX_TYPE_ANALYZER* this,
-                                      ByteLoader* byte_loader,
-                                      const char* CodecName);
+                                             ByteLoader* byte_loader,
+                                             const char* CodecName);
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(reset_BufferFiller)(QUEX_TYPE_ANALYZER* this,
-                                      QUEX_NAME(BufferFiller)*); 
+                                               QUEX_NAME(BufferFiller)*); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_NAME(reset_memory)(QUEX_TYPE_ANALYZER* this,
-                                      QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                      size_t               BufferMemorySize,
-                                      QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+QUEX_INLINE QUEX_TYPE_CHARACTER* 
+                 QUEX_NAME(reset_memory)(QUEX_TYPE_ANALYZER* this,
+                                         QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                         size_t               BufferMemorySize,
+                                         QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
 
 /* Basic constructions ________________________________________________________
  *                                                                           */
