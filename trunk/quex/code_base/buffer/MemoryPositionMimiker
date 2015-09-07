@@ -44,19 +44,14 @@ QUEX_NAMESPACE_MAIN_OPEN
     */
     struct QUEX_NAME(MemoryPositionMimiker) {
 
-        typedef size_t character_index; // Assume: The 'start position' is stored in
-        //                              // terms of 'character index' rather the stream
-        //                              // position. This is so, since some coding have
-        //                              // a dynamically sized character encoding.
-
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be
         //        can be initialized via a pointer, as a normal pointer does, e.g.
         //        "QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);"
-        QUEX_NAME(MemoryPositionMimiker)(QUEX_TYPE_CHARACTER* Adr=0x0, character_index Pos=0) 
+        QUEX_NAME(MemoryPositionMimiker)(QUEX_TYPE_CHARACTER* Adr=0x0, QUEX_TYPE_STREAM_POSITION Pos=0) 
             : address(Adr), buffer_start_position(Pos) {}
 
-        QUEX_TYPE_CHARACTER*  address;
-        character_index       buffer_start_position;
+        QUEX_TYPE_CHARACTER*       address;
+        QUEX_TYPE_STREAM_POSITION  buffer_start_position;
 
         bool operator==(const QUEX_NAME(MemoryPositionMimiker)& That)
         { 
@@ -72,8 +67,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         // When loading forward from the stream, the pointers to memory_positions move backwards.
         // Thus, the signs in the operators are mirrored.
         // (operators not to be used in concatination -> void)
-        void operator+=(const ptrdiff_t Value) { address += Value; buffer_start_position -= (character_index)Value; }
-        void operator-=(const ptrdiff_t Value) { address -= Value; buffer_start_position += (character_index)Value; }
+        void operator+=(const ptrdiff_t Value) { address += Value; buffer_start_position -= (QUEX_TYPE_STREAM_POSITION)Value; }
+        void operator-=(const ptrdiff_t Value) { address -= Value; buffer_start_position += (QUEX_TYPE_STREAM_POSITION)Value; }
 
         // conversion operator, so that the object can be used at any place
         // where a normal provided_QUEX_TYPE_CHARACTER pointer is required (integrates seemingless)
