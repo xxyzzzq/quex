@@ -50,7 +50,7 @@ EasyLexer.cpp: simple.qx
 	quex -i                 simple.qx  \
 	     -o           EasyLexer  \
 		 --token-id-offset     0x1000     \
-		 --post-categorizer --debug-exception
+		 --post-categorizer 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
