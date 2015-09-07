@@ -1,6 +1,7 @@
 #ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM_I
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM_I
-#ifdef __cplusplus
+
+#if ! defined(__QUEX_OPTION_PLAIN_C)
 
 template <class StreamType> QUEX_INLINE QUEX_TYPE_STREAM_POSITION  ByteLoader_stream_tell(ByteLoader* me);
 template <class StreamType> QUEX_INLINE void                       ByteLoader_stream_seek(ByteLoader* me, 
