@@ -1,4 +1,3 @@
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 FILES = lexer codec-lexer iconv-lexer icu-lexer lexer-x
 

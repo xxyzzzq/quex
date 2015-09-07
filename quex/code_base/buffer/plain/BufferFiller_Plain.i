@@ -54,7 +54,7 @@ QUEX_NAMESPACE_MAIN_OPEN
               QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(BufferFiller_Plain)),
                                              E_MemoryObjectType_BUFFER_FILLER);
         __quex_assert(me);
-        __quex_assert(byte_loader);
+        /* __quex_assert(byte_loader); not for manual filling. */
 
         QUEX_NAME(BufferFiller_Plain_construct)(me, byte_loader);
 

@@ -29,7 +29,10 @@ main(int argc, char** argv)
     size_t                size = (size_t)-1;
     QUEX_TYPE_TOKEN_ID    token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
-    quex_tiny_lexer_from_memory(&qlex, 0x0, 0x0, 0);
+    QUEX_NAME(BufferFiller)*  filler = QUEX_NAME(BufferFiller_Plain_new)(0);
+
+    __quex_assert(filler);
+    quex_tiny_lexer_from_BufferFiller(&qlex, filler);
 
     /* -- initialize the token pointers */
     quex_Token_construct(&token_bank[0]);
@@ -67,12 +70,12 @@ main(int argc, char** argv)
         /*     different from 'chunk.end'. This would indicate the there    */
         /*     are still bytes left. The next call of '_apend(...)' will    */
         /*     deal with it.)                                               */
-        chunk.begin = qlex.buffer->filler->(uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
+        chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
         token_id = (QUEX_TYPE_TOKEN_ID)-1;
         while( 1 + 1 == 2 ) {
-            prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
+            prev_lexeme_start_p = QUEX_NAME(lexeme_start_pointer_get)(&qlex);
             
             /* Let the previous token be the current token of the previous run. */
             prev_token = QUEX_NAME(token_p_swap)(&qlex, prev_token);
@@ -95,10 +98,12 @@ main(int argc, char** argv)
 
         /* -- Reset the input pointer, so that the last lexeme before TERMINATION */
         /*    enters the matching game again.                                     */
-        QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
+        QUEX_NAME(input_pointer_set)(&qlex, prev_lexeme_start_p);
     }
 
     QUEX_NAME(destruct)(&qlex);
+    filler->delete_self(filler); /* QUEX_NAME(BufferFiller_delete) deletes only
+                                  * things that belong to analyzer.              */
     QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
     QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;

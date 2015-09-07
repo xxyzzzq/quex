@@ -63,7 +63,7 @@ QUEX_INLINE void
 ByteLoader_delete(ByteLoader** me)
 {
     if( ! *me )                                                 {}
-    else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER ) {}
+    else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER ) return;
     else if( (*me)->delete_self )                               (*me)->delete_self(*me);
     (*me) = (ByteLoader*)0;
 }

@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
@@ -57,13 +56,13 @@ example%.o: ../example.cpp  Easy%.cpp
 %.E: %.cpp    
 	$(CC) -E $< -o $@ 
 
-EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+EasyLexer EasyLexer.cpp: simple.qx 
 	quex -i simple.qx -o EasyLexer
 
-EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx $(QUEX_CORE)
+EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx 
 	quex -i simple_bad_space.qx -o EasyLexer_bad_space  
 
-EasyLexer_bad_tab EasyLexer_bad_tab.cpp: simple.qx $(QUEX_CORE)
+EasyLexer_bad_tab EasyLexer_bad_tab.cpp: simple.qx 
 	quex -i simple_bad_tab.qx -o EasyLexer_bad_tab  
 
 # (*) HELPERS __________________________________________________________________

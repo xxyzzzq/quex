@@ -1,5 +1,4 @@
 # Get: QUEX_CORE dedendencies
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TEST_FILES = \
 	       BufferFiller_forward_copy.exe \
@@ -27,15 +26,15 @@ hwut-info:
 hwut-end: clean
 	@echo Bye
 
-%.exe: %.cpp $(QUEX_CORE)
+%.exe: %.cpp 
 	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
 		-Wall -Werror \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
-%.E: %.cpp $(QUEX_CORE)
+%.E: %.cpp 
 	g++ -E -DQUEX_TYPE_CHARACTER=uint8_t -I$(QUEX_PATH) $(DEFS) $< -o $@
 
-%-32.exe: %.cpp $(QUEX_CORE)
+%-32.exe: %.cpp 
 	g++ -DQUEX_TYPE_CHARACTER=uint32_t \
 		-Wall -Werror \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@

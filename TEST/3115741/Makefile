@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 ifeq ($(QX_FILE),example.qx)
 	ADD_DEFINES=-DQUEX_SETTING_BUFFER_SIZE=8
@@ -50,7 +49,7 @@ example.o: $(QUEX_PATH)/TEST/lexer.c  Simple.c
 %.E: %.c    
 	$(CC) -E $< -o $@ 
 
-Simple.c: $(QX_FILE) $(QUEX_CORE)
+Simple.c: $(QX_FILE) 
 	quex -i $(QX_FILE) -o Simple --language C --token-policy single --debug-exception
 
 # (*) HELPERS __________________________________________________________________

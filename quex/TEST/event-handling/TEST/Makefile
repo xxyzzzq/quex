@@ -13,7 +13,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 # (*) COMPILER SETTINGS ________________________________________________________
@@ -51,13 +50,13 @@ on_skip_range_open-customized.sh: on_skip_range_open-customized.exe
 	chmod ua+rx $@
 
 
-transit%.exe: transit%.qx lexer.c $(QUEX_CORE)
+transit%.exe: transit%.qx lexer.c 
 	$(QUEX) -i $< -o EHLexer --token-id-prefix TK_ --token-policy single --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
 		-D__TEST_DESCRIPTION='"Mode Transitions: $<"' \
 		-D__TEST_CHOICES='"1, 2, 3, error"'
 
-on_skip_range_open.exe: on_skip_range_open.qx $(QUEX_CORE)
+on_skip_range_open.exe: on_skip_range_open.qx 
 	echo $<
 	$(QUEX) -i $< -o EHLexer --token-policy single --token-id-prefix TK_ --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
@@ -65,7 +64,7 @@ on_skip_range_open.exe: on_skip_range_open.qx $(QUEX_CORE)
 		-D__TEST_CHOICES='"default"' \
           -DQUEX_SETTING_BUFFER_SIZE=4 \
 
-on_skip_range_open-customized.exe: on_skip_range_open-customized.qx $(QUEX_CORE)
+on_skip_range_open-customized.exe: on_skip_range_open-customized.qx 
 	$(QUEX) -i $< -o EHLexer --token-policy single --token-id-prefix TK_ --debug-exception --language C
 	$(LD) ./lexer.c EHLexer.c -o $@ \
 		-D__TEST_DESCRIPTION='"Customized 'on_skip_range_open' event."' \

@@ -1,4 +1,3 @@
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TEST_FILES = \
 		   Buffer_tell_and_seek-1-fb0.exe \
@@ -35,7 +34,7 @@ TEST_FILES = \
 	       #BufferFiller_backward_load.exe
 
 HEADERS =  \
-		   $(QUEX_CORE) \
+		    \
            test-helper.h
 
 DEFS = -DQUEX_OPTION_ASSERTS

@@ -1,5 +1,4 @@
 # Get: QUEX_CORE dedendencies
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 PROGRAMS = \
 		   post-categorizer-enter.exe \
@@ -25,23 +24,23 @@ MYFLAGS = \
 
 CC = g++ $(MYFLAGS)
 
-post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
+post-categorizer-%.exe:   post-categorizer-%.cpp 
 	$(CC) -I./. $< post-categorizer-common.cpp -o $@ 
 	
-counter-%.exe:   counter-%.cpp $(QUEX_CORE)
+counter-%.exe:   counter-%.cpp 
 	$(CC) -I./. $< -o $@ 
 
-accumulator.exe: accumulator.cpp $(QUEX_CORE)
+accumulator.exe: accumulator.cpp 
 	$(CC) -I./. $< -o $@ 
 
-nonsense.exe: nonsense.cpp $(QUEX_CORE)
+nonsense.exe: nonsense.cpp 
 	$(CC) -I./. $< -o $@ 
 
-statistics.exe: statistics.c $(QUEX_CORE)
+statistics.exe: statistics.c 
 	gcc $(MYFLAGS) -I./. -I$(HWUT_PATH) $< -o $@ \
 		-D__QUEX_OPTION_PLAIN_C
 
-%.E:   %.cpp $(QUEX_CORE)
+%.E:   %.cpp 
 	$(CC) -E -I./. $< -o $@ 
 
 clean: 

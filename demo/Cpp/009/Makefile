@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
@@ -41,13 +40,13 @@ lexer: lexer.o tiny_lexer.o
 stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
 	$(CC) -o $@  $^
           
-tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
+tiny_lexer_st.cpp:   hello.qx 
 	quex -i hello.qx -o tiny_lexer_st \
 		 --token-memory-management-by-user   \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
 		 
-$(SOURCES): simple.qx $(QUEX_CORE)
+$(SOURCES): simple.qx 
 	quex -i simple.qx -o tiny_lexer \
 		 --token-policy single
 		 # CERTAINLY NOT: "--bet wchar_t" 
@@ -56,7 +55,7 @@ $(SOURCES): simple.qx $(QUEX_CORE)
 wlexer: wlexer.o tiny_wlexer.o 
 	$(LD) -o $@  wlexer.o tiny_wlexer.o 
           
-$(WSOURCES): simple.qx $(QUEX_CORE)
+$(WSOURCES): simple.qx 
 	quex -i simple.qx -o tiny_wlexer \
 		 --bet wchar_t \
 		 --token-policy single
