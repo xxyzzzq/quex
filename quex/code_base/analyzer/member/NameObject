@@ -1,3 +1,5 @@
+#ifndef QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT
+#define QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT
 
 typedef struct {
     long     hash;
@@ -17,13 +19,13 @@ QUEX_NAME(NameObject_new)(const void* Name,
     const uint8_t*             p;
     const QUEX_TYPE_CHARACTER* qtc_p;
     size_t                     size;
-    long                       hash = QUEX_HASH_DBJ2_INIT_VALUE;
+    long                       hash = QUEX_HASH_INIT_VALUE;
     uint8_t*                   memory;
 
     if( ! NameEnd ) {
         qtc_p = (QUEX_TYPE_CHARACTER*)Name;
         while( *qtc_p ) { 
-            QUEX_HASH_DBJ2(hash, *qtc_p);
+            hash = QUEX_HASH_NEXT(hash, *qtc_p);
            ++qtc_p; 
         }
         end_p = (const uint8_t*)qtc_p;
@@ -31,7 +33,7 @@ QUEX_NAME(NameObject_new)(const void* Name,
     else {
         end_p = (const uint8_t*)NameEnd;
         while( p != end_p ) {
-            QUEX_HASH_DBJ2(hash, *p);
+            hash = QUEX_HASH_NEXT(hash, *p);
             ++p;
         }
     }
@@ -72,3 +74,4 @@ QUEX_NAME(NameObject_delete)(NameObject** me)
     *me = (NameObject*)0;
 }
 
+#endif /* QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT */

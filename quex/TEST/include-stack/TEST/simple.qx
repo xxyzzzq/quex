@@ -6,7 +6,6 @@ header {
 }
 
 body {
-    std::string file_name;
     std::string directory;
     size_t      include_depth;
 
@@ -21,16 +20,13 @@ init {
 }
 
 memento {
-    std::string     file_name;
 }
 
 memento_pack {
-    memento->file_name = self.file_name;
     self.include_depth += 1;
 }
 
 memento_unpack {
-    self.file_name = memento->file_name;
     self.space();
     std::cout << "<< Memento " << std::endl;
     self.include_depth -= 1;
@@ -67,7 +63,7 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
             if( ! input_handle || input_handle->fail() ) {
                 delete input_handle;
                 self.space(1);
-                printf("%s: file '%s' cannot be opened.\n", self.file_name.c_str(), Filename.c_str());
+                printf("%s: file '%s' cannot be opened.\n", self.input_name, Filename.c_str());
             }
             else {
                 /* Pop the previous mode, so that the right mode is setup when one
@@ -78,10 +74,9 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
                 std::cout << ">> Memento " << std::endl;
 
                 self.space(1);
-                printf("%s:%i: include '%s'.\n", self.file_name.c_str(), (int)self.line_number(), Filename.c_str());
+                printf("%s:%i: include '%s'.\n", self.input_name, (int)self.line_number(), Filename.c_str());
 
-                self.include_push(input_handle);
-                self.file_name = Filename;
+                self.include_push(Filename.c_str(), input_handle);
             }
         }
         /* IMPORTANT */
@@ -90,7 +85,7 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
 
 
     . { 
-        printf("%s: missing file name after 'include'.", self.file_name.c_str());
+        printf("%s: missing file name after 'include'.", self.input_name);
         exit(-1);
     }
 }

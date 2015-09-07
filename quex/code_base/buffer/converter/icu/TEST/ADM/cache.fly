@@ -1,150 +1,150 @@
 {
 title: Plain 16 bit;
 title_group: Converter;
-build_time: 0.8792309761047363;
+build_time: 0.8868849277496338;
 file_name: converter-16.exe;
-hwut_info_time: 1441545341L;
+hwut_info_time: 1441600783L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009243; None; ]
-  [ UTF-16; OK; 0.009818; None; ]
+  [ UTF-8; OK; 0.009356; None; ]
+  [ UTF-16; OK; 0.007879; None; ]
 ]
 }
 {
 title: Plain 32 bit;
 title_group: Converter;
-build_time: 0.8861980438232422;
+build_time: 0.8975849151611328;
 file_name: converter-32.exe;
-hwut_info_time: 1441545336L;
+hwut_info_time: 1441600778L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009192; None; ]
-  [ UTF-16; OK; 0.009180; None; ]
+  [ UTF-8; OK; 0.009214; None; ]
+  [ UTF-16; OK; 0.009162; None; ]
 ]
 }
 {
 title: Possible 'statefulness' has been ruled out (16 bit);
 title_group: Converter;
-build_time: 0.8901047706604004;
+build_time: 0.9027040004730225;
 file_name: converter-statefulness-16.exe;
-hwut_info_time: 1441545337L;
+hwut_info_time: 1441600779L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.006577; None; ]
-  [ UTF-16; OK; 0.004893; None; ]
+  [ UTF-8; OK; 0.004859; None; ]
+  [ UTF-16; OK; 0.004877; None; ]
 ]
 }
 {
 title: Possible 'statefulness' has been ruled out (32 bit);
 title_group: Converter;
-build_time: 0.879767894744873;
+build_time: 0.8870749473571777;
 file_name: converter-statefulness-32.exe;
-hwut_info_time: 1441545345L;
+hwut_info_time: 1441600787L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.006757; None; ]
-  [ UTF-16; OK; 0.006585; None; ]
+  [ UTF-8; OK; 0.006111; None; ]
+  [ UTF-16; OK; 0.004858; None; ]
 ]
 }
 {
 title: Backward (BPC=4);
 title_group: Move by Offset;
-build_time: 1.100693941116333;
+build_time: 1.1042799949645996;
 file_name: Buffer_move_backward.exe;
-hwut_info_time: 1441545344L;
+hwut_info_time: 1441600786L;
 make_dependent_f: True;
 result_list: [
-  [ 1; OK; 0.004980; None; ]
-  [ 2; OK; 0.007204; None; ]
-  [ 3; OK; 0.007406; None; ]
-  [ 4; OK; 0.006715; None; ]
-  [ 5; OK; 0.006457; None; ]
+  [ 1; OK; 0.006978; None; ]
+  [ 2; OK; 0.004923; None; ]
+  [ 3; OK; 0.007638; None; ]
+  [ 4; OK; 0.007341; None; ]
+  [ 5; OK; 0.006731; None; ]
 ]
 }
 {
 title: Forward (BPC=4);
 title_group: Move by Offset;
-build_time: 1.0691840648651123;
+build_time: 1.079571008682251;
 file_name: Buffer_move_forward.exe;
-hwut_info_time: 1441545340L;
+hwut_info_time: 1441600782L;
 make_dependent_f: True;
 result_list: [
-  [ 1; OK; 0.006817; None; ]
-  [ 2; OK; 0.006321; None; ]
-  [ 3; OK; 0.005654; None; ]
-  [ 4; OK; 0.005491; None; ]
-  [ 5; OK; 0.004954; None; ]
+  [ 1; OK; 0.004909; None; ]
+  [ 2; OK; 0.004933; None; ]
+  [ 3; OK; 0.007555; None; ]
+  [ 4; OK; 0.006540; None; ]
+  [ 5; OK; 0.006673; None; ]
 ]
 }
 {
 title: Plain search;
 title_group: Stream Position Seek;
-build_time: 0.9089031219482422;
+build_time: 0.9155700206756592;
 file_name: seek_character_index.exe;
-hwut_info_time: 1441545343L;
+hwut_info_time: 1441600785L;
 make_dependent_f: True;
 result_list: [
-  [ Forward; OK; 0.005694; None; ]
-  [ Backward; OK; 0.004889; None; ]
+  [ Forward; OK; 0.005675; None; ]
+  [ Backward; OK; 0.006689; None; ]
 ]
 }
 {
 title: Total Zik-Zak;
 title_group: Stream Position Seek;
-build_time: 0.9083378314971924;
+build_time: 0.9168930053710938;
 file_name: seek_character_index-zikzak.exe;
-hwut_info_time: 1441545339L;
+hwut_info_time: 1441600781L;
 make_dependent_f: True;
 result_list: [
-  [ Fixed; OK; 0.010317; None; ]
-  [ Dynamic; OK; 0.011114; None; ]
+  [ Fixed; OK; 0.013023; None; ]
+  [ Dynamic; OK; 0.011076; None; ]
 ]
 }
 {
 title: Bytes Per Character (BPC)=4;
 title_group: Tell and Seek;
-build_time: 1.1075639724731445;
+build_time: 1.115225076675415;
 file_name: Buffer_tell_and_seek.exe;
-hwut_info_time: 1441545346L;
+hwut_info_time: 1441600788L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.008781; None; ]
+  [ ; OK; 0.006729; None; ]
 ]
 }
 {
 title: Raw buffer size varries (UTF-8);
 title_group: read_characters;
-build_time: 0.9016129970550537;
+build_time: 0.911768913269043;
 file_name: one-beat.exe;
-hwut_info_time: 1441545338L;
+hwut_info_time: 1441600780L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 6; OK; 0.005572; None; ]
-  [ 7; OK; 0.006208; None; ]
-  [ 8; OK; 0.005462; None; ]
-  [ 9; OK; 0.004854; None; ]
+  [ 6; OK; 0.005673; None; ]
+  [ 7; OK; 0.005571; None; ]
+  [ 8; OK; 0.005485; None; ]
+  [ 9; OK; 0.004909; None; ]
 ]
 }
 {
 title: User buffer size varries (UTF-8);
 title_group: read_characters;
-build_time: 0.878852128982544;
+build_time: 0.8856871128082275;
 file_name: n-beat.exe;
-hwut_info_time: 1441545342L;
+hwut_info_time: 1441600784L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 1; OK; 0.004887; None; ]
-  [ 2; OK; 0.005434; None; ]
-  [ 3; OK; 0.004822; None; ]
-  [ 4; OK; 0.004850; None; ]
-  [ 5; OK; 0.007516; None; ]
-  [ 6; OK; 0.005731; None; ]
-  [ 7; OK; 0.005420; None; ]
-  [ 8; OK; 0.004774; None; ]
-  [ 9; OK; 0.004932; None; ]
+  [ 1; OK; 0.004847; None; ]
+  [ 2; OK; 0.007407; None; ]
+  [ 3; OK; 0.005752; None; ]
+  [ 4; OK; 0.005442; None; ]
+  [ 5; OK; 0.005493; None; ]
+  [ 6; OK; 0.005394; None; ]
+  [ 7; OK; 0.004879; None; ]
+  [ 8; OK; 0.004860; None; ]
+  [ 9; OK; 0.006613; None; ]
 ]
 }

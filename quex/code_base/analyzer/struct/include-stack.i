@@ -277,9 +277,10 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
         return false;
     }
 
+    this->input_name      = InputName;
+
     /* Put memento on stack AFTER user has done to it its duties.            */
     this->_parent_memento = memento;
-    this->input_name      = InputName;
 
     return true;
 }   
@@ -311,6 +312,8 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
                                                                             
     /* Copy Back of content that was stored upon inclusion.                  */
     memento = this->_parent_memento;
+
+    this->input_name                       = memento->input_name;
 
     this->_parent_memento                  = memento->_parent_memento;
     this->buffer                           = memento->buffer;
