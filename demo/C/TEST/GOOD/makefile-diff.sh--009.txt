@@ -15,9 +15,9 @@
 < stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
 ---
 > stdinlexer: stdinlexer.c tiny_lexer_st.c 
-< tiny_lexer_st.cpp:   hello.qx $(QUEX_CORE)
+< tiny_lexer_st.cpp:   hello.qx 
 ---
-> tiny_lexer_st.c: hello.qx $(QUEX_CORE)
+> tiny_lexer_st.c: hello.qx 
 > 		 --language C                        \
 < 		 --token-policy single 
 ---

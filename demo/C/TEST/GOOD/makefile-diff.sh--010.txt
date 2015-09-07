@@ -1,45 +1,45 @@
 < COMPILER = g++ -ggdb -Wall -Werror -pedantic 
 ---
 > COMPILER = gcc -ggdb -Wall -Werror -pedantic -std=c89
-< copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+< copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS)  
 ---
-> copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS) $(QUEX_CORE) 
-< copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+> copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS)  
+< copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS)  
 ---
-> copy-conversion-direct.exe: copy-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
-< fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+> copy-conversion-direct.exe: copy-conversion-direct.c $(UTF8_OBJS)  
+< fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS)  
 ---
-> fill-conversion-direct.exe: fill-conversion-direct.c $(UTF8_OBJS) $(QUEX_CORE) 
-< %.exe:                      %.cpp $(OBJS) $(QUEX_CORE) 
+> fill-conversion-direct.exe: fill-conversion-direct.c $(UTF8_OBJS)  
+< %.exe:                      %.cpp $(OBJS)  
 ---
-> %.exe:                      %.c $(OBJS) $(QUEX_CORE) 
-< point.exe:                  point.cpp $(QUEX_CORE) NON_UTF8
+> %.exe:                      %.c $(OBJS)  
+< point.exe:                  point.cpp  NON_UTF8
 < 	# All related files must be compiled with fallback_n = 0
 < 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
 <           
-< re-point.exe:               re-point.cpp $(QUEX_CORE) NON_UTF8
+< re-point.exe:               re-point.cpp  NON_UTF8
 < 	# All related files must be compiled with fallback_n = 0
 < 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
 ---
-> point.exe:                  point.c $(OBJS:.o=.c) $(QUEX_CORE) NON_UTF8
+> point.exe:                  point.c $(OBJS:.o=.c)  NON_UTF8
 > 	## All related files must be compiled with fallback_n = 0 
 > 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
 >           
-> re-point.exe:               re-point.c $(QUEX_CORE) $(OBJS:.o=.c) NON_UTF8
+> re-point.exe:               re-point.c  $(OBJS:.o=.c) NON_UTF8
 > 	## All related files must be compiled with fallback_n = 0
 > 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
-< %_utf8.o:                   %_utf8.cpp $(QUEX_CORE) UTF8
+< %_utf8.o:                   %_utf8.cpp  UTF8
 ---
-> %_utf8.o:                   %_utf8.c $(QUEX_CORE) UTF8
-< messaging-framework_utf8.o: messaging-framework.cpp $(QUEX_CORE) UTF8
+> %_utf8.o:                   %_utf8.c  UTF8
+< messaging-framework_utf8.o: messaging-framework.cpp  UTF8
 ---
-> messaging-framework_utf8.o: messaging-framework.c $(QUEX_CORE) UTF8
-< %.o:                     %.cpp $(QUEX_CORE) NON_UTF8
+> messaging-framework_utf8.o: messaging-framework.c  UTF8
+< %.o:                     %.cpp  NON_UTF8
 ---
-> %.o:                     %.c $(QUEX_CORE) NON_UTF8
-< %.E:                     %.cpp $(QUEX_CORE) NON_UTF8
+> %.o:                     %.c  NON_UTF8
+< %.E:                     %.cpp  NON_UTF8
 ---
-> %.E:                     %.c $(QUEX_CORE) NON_UTF8
+> %.E:                     %.c  NON_UTF8
 < tiny_lexer tiny_lexer.cpp:            NON_UTF8
 ---
 > tiny_lexer tiny_lexer.c:            NON_UTF8

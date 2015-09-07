@@ -10,7 +10,7 @@
 < %.E: %.cpp    
 ---
 > %.E: %.c    
-< EasyLexer.cpp: simple.qx $(QUEX_CORE)
+< EasyLexer.cpp: simple.qx 
 ---
-> EasyLexer.c: simple.qx $(QUEX_CORE)
+> EasyLexer.c: simple.qx 
 > 		 --language         C          \

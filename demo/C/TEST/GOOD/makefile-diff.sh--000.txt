@@ -7,9 +7,14 @@
 < example.o: ../example.cpp  EasyLexer.cpp
 ---
 > example.o: ../example.c  EasyLexer.c
-< EasyLexer.cpp: simple.qx $(QUEX_CORE)
+< %.E: %.cpp    
+< 	$(CC) -E $< -o $@ 
 ---
-> EasyLexer.c: simple.qx $(QUEX_CORE)
+> %.E: %.c    
+> 	$(CC) -E $< > $@ 
+< EasyLexer.cpp: simple.qx 
+---
+> EasyLexer.c: simple.qx 
 ---
 > 		 --language         C
 > 		 --language         C          \

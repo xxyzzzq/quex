@@ -20,7 +20,7 @@
 < %.E: %.cpp    
 ---
 > %.E: %.c    
-< EasyLexer.cpp: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+< EasyLexer.cpp: definitions.qx end_of_file.qx program.qx 
 ---
-> EasyLexer.c: definitions.qx end_of_file.qx program.qx $(QUEX_CORE)
+> EasyLexer.c: definitions.qx end_of_file.qx program.qx 
 > 		 --language C                  \

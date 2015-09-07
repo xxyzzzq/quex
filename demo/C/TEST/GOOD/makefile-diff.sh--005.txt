@@ -7,9 +7,9 @@
 < %.E: %.cpp    
 ---
 > %.E: %.c    
-< EasyLexer EasyLexer.cpp: simple.qx $(QUEX_CORE)
+< EasyLexer EasyLexer.cpp: simple.qx 
 ---
-> EasyLexer EasyLexer.c: simple.qx $(QUEX_CORE)
+> EasyLexer EasyLexer.c: simple.qx 
 < 		 --token-policy single
 ---
 > 		 --token-policy single           \
