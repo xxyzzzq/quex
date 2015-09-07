@@ -695,7 +695,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *           about what character index is located at what position may help
          *           to increase speed.                                                */      
 #       ifdef QUEX_OPTION_ASSERTS
-        const ptrdiff_t TargetIndex = me->tell_character_index(me) + ForwardN;
+        const QUEX_TYPE_STREAM_POSITION TargetIndex = me->tell_character_index(me) + (QUEX_TYPE_STREAM_POSITION)ForwardN;
 #       endif
 
         /* START: We are now at character index 'CharacterIndex - remaining_character_n'.
