@@ -176,7 +176,10 @@ data.
    or make sure that the terminating zero is not copied.
 
 TODO: Mention usuage of 'BufferFiller*' constructor where the filler needs
-      to be deleted manually.
+      to be deleted manually. Or, better construct with (ByteLoader*)0.
+
+TODO: When 'reset' make sure that the right token is 'swapped' into the analyzer!
+      In doubt, set to zero.
       
 In case of interrupted character streams, there is no direct way for the
 analyzer engine to determine wether a stream is terminated or not. Thus, either

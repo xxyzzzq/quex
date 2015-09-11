@@ -15,8 +15,7 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    // Zero pointer to constructor --> use raw memory
-    quex::tiny_lexer_utf8  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8");   
+    quex::tiny_lexer_utf8  qlex((ByteLoader*)0, "UTF-8");
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -24,7 +23,7 @@ main(int argc, char** argv)
     uint8_t*       rx_buffer = 0x0;   // A pointer to the receive buffer that
     //                                // the messaging framework provides.
 
-    MemoryChunk    chunk;             // Pointers to the memory positions under
+    MemoryChunk    chunk = { 0, 0 };  // Pointers to the memory positions under
     //                                // consideration.
 
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Store the start of the 
@@ -48,11 +47,11 @@ main(int argc, char** argv)
         //    content needs to be loaded.
         if( chunk.begin == chunk.end ) {
             // -- If the receive buffer has been read, it can be released.
-            if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
+            if( rx_buffer ) messaging_framework_release(rx_buffer);
             // -- Setup the pointers 
             const size_t Size  = messaging_framework_receive_whole_characters(&rx_buffer);
             chunk.begin = rx_buffer;
-            chunk.end   = chunk.begin + Size;
+            chunk.end   = &chunk.begin[Size];
         } else {
             // If chunk.begin != chunk.end, this means that there are still
             // some characters in the pipeline. Let us use them first.
@@ -64,12 +63,12 @@ main(int argc, char** argv)
         //     different from 'chunk.end'. This would indicate the there
         //     are still bytes left. The next call of '_apend(...)' will
         //     deal with it.)
-        chunk.begin = (uint8_t*)qlex.buffer_fill_region_append_conversion_direct(chunk.begin, chunk.end);
+        chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
         QUEX_TYPE_TOKEN_ID token_id = 0;
         while( 1 + 1 == 2 ) {
-            prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
+            prev_lexeme_start_p = qlex.lexeme_start_pointer_get();
             
             // Let the previous token be the current token of the previous run.
             prev_token = qlex.token_p_swap(prev_token);
@@ -95,7 +94,7 @@ main(int argc, char** argv)
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
-        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        qlex.input_pointer_set(prev_lexeme_start_p);
     }
     cout << "Consider: " << string(*prev_token) << endl;
 

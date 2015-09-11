@@ -29,7 +29,7 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; /* Store the start of the  
     *                                                 * lexeme for possible backup.  */
 
-    QUEX_NAME(from_memory)(&qlex, (QUEX_TYPE_CHARACTER*)0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, "UTF-8", false);
+    QUEX_NAME(from_ByteLoader)(&qlex, (ByteLoader*)0, "UTF-8");
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -61,12 +61,12 @@ main(int argc, char** argv)
         /*     different from 'chunk.end'. This would indicate the there */
         /*     are still bytes left. The next call of '_apend(...)' will */
         /*     deal with it.) */
-        QUEX_NAME(buffer_fill_region_append_conversion)(&qlex, chunk.begin, chunk.end);
+        qlex.buffer.filler->fill(&qlex.buffer, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
         token_id = 0;
         while( 1 + 1 == 2 ) {
-            prev_lexeme_start_p = QUEX_NAME(buffer_lexeme_start_pointer_get)(&qlex);
+            prev_lexeme_start_p = QUEX_NAME(lexeme_start_pointer_get)(&qlex);
             
             /* Let the previous token be the current token of the previous run. */
             prev_token = QUEX_NAME(token_p_swap)(&qlex, prev_token);
@@ -92,7 +92,7 @@ main(int argc, char** argv)
 
         /* -- Reset the input pointer, so that the last lexeme before TERMINATION */
         /*    enters the matching game again. */
-        QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
+        QUEX_NAME(input_pointer_set)(&qlex, prev_lexeme_start_p);
     }
     printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 

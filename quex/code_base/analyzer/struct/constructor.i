@@ -185,6 +185,8 @@ QUEX_MEMBER_FUNCTION3(from, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
+    __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
+
     QUEX_NAME(Buffer_construct)(&this->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
                                 Memory, MemorySize, EndOfFileP,
@@ -333,7 +335,8 @@ QUEX_NAME(Tokens_destruct)(QUEX_TYPE_ANALYZER* me)
 #ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
     QUEX_NAME(TokenQueue_destruct)(&me->_token_queue);
 #else
-#   ifdef __QUEX_OPTION_PLAIN_C
+#   if      defined(__QUEX_OPTION_PLAIN_C) \
+       && ! defined(QUEX_OPTION_USER_MANAGED_TOKEN_MEMORY)
         QUEX_NAME_TOKEN(destruct)(me->token);
 #   endif
 #endif

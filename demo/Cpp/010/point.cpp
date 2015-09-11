@@ -11,35 +11,25 @@ main(int argc, char** argv)
     using namespace std;
 
     quex::Token           token;           
-    quex::tiny_lexer      qlex(MESSAGING_FRAMEWORK_BUFFER, 
-                               MESSAGING_FRAMEWORK_BUFFER_SIZE,
-                               MESSAGING_FRAMEWORK_BUFFER + 1); 
+    quex::tiny_lexer*     qlex;
     size_t                receive_n = (size_t)-1;
     int                   i = 0;
-    QUEX_TYPE_CHARACTER*  begin_p = 0;
-    QUEX_TYPE_CHARACTER*  end_p = 0;
 
-    if( QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0 ) {
-        QUEX_ERROR_EXIT("This method fails if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0\n"
-                        "Consider using the method described in 're-point.c'.");
-    }
+    receive_n = messaging_framework_receive_to_internal_buffer();
+
+    __quex_assert( QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 0 );
+    qlex = new quex::tiny_lexer(MESSAGING_FRAMEWORK_BUFFER, 
+                                MESSAGING_FRAMEWORK_BUFFER_SIZE,
+                                &MESSAGING_FRAMEWORK_BUFFER[receive_n]);
 
     /* Iterate 3 times doing the same thing in order to illustrate
-     * the repeated activation of the same chunk of memory. */
+     * the repeated activation of the same chunk of memory.                  */
     for(i = 0; i < 3; ++i ) {
-        qlex.buffer.filler->fill_prepare(&qlex.buffer, (void**)begin_p, (const void**)end_p);
+        (void)qlex->token_p_swap(&token);
 
-        /* -- Call the low lever driver to fill the fill region */
-        receive_n = messaging_framework_receive_to_internal_buffer();
-
-        /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
-        qlex.buffer.filler->fill_finish(&qlex.buffer, &begin_p[receive_n-1]);
-        /* QUEX_NAME(Buffer_show_byte_content)(&qlex.buffer, 5); */
-
-        /* -- Loop until the 'termination' token arrives */
-        (void)qlex.token_p_swap(&token);
+        /* -- Loop until the 'termination' token arrives                     */
         do {
-            qlex.receive();
+            qlex->receive();
 
             if( token.type_id() != QUEX_TKN_TERMINATION )
                 printf("Consider: %s\n", string(token).c_str());
@@ -48,7 +38,13 @@ main(int argc, char** argv)
                 printf("##\n");
 
         } while( token.type_id() != QUEX_TKN_TERMINATION );
+
+        qlex->reset(MESSAGING_FRAMEWORK_BUFFER, 
+                    MESSAGING_FRAMEWORK_BUFFER_SIZE,
+                    &MESSAGING_FRAMEWORK_BUFFER[receive_n]);
     }
+
+    delete qlex;
 
     return 0;
 }

@@ -185,6 +185,8 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
  *               accordingly, it deleted it itself.                          */
 {
     QUEX_TYPE_CHARACTER* previous_buffer_memory;
+    __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
+
     QUEX_NAME(Buffer_destruct)(&this->buffer); 
     /* In case, that the memory was owned by the analyzer, the destructor did
      * not delete it and did not set 'me->buffer._memory._front' to zero.    */

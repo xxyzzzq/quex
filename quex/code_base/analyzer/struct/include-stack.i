@@ -221,6 +221,8 @@ QUEX_MEMBER_FUNCTION4(include_push, memory,
  * loader', and 'no buffer filler'.                                          */
 {
     QUEX_NAME(Buffer) new_buffer_setup;
+    __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
+
     QUEX_NAME(Buffer_construct)(&new_buffer_setup, 
                                 (QUEX_NAME(BufferFiller)*)0,
                                 Memory, MemorySize, EndOfFileP,

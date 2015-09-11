@@ -30,7 +30,7 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
 QUEX_INLINE void
 QUEX_NAME(Converter_delete)(QUEX_NAME(Converter)** me)
 {
-    if     ( ! *me )                                            {}
+    if     ( ! *me )                                            return;
     else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER ) return;
     else if( (*me)->delete_self )                               (*me)->delete_self(*me);
     *me = (QUEX_NAME(Converter)*)0;

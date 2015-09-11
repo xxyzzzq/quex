@@ -12,24 +12,16 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
-                                                                                     const ptrdiff_t     Distance_LexemeStart_to_InputP);
     QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer);
 
-    QUEX_INLINE void       QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)*,
-                                                                                  const ptrdiff_t FallBackN);
-    QUEX_INLINE void       QUEX_NAME(__BufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*, 
-                                                                            const ptrdiff_t DesiredLoadN,
-                                                                            const size_t    LoadedN,
-                                                                            const ptrdiff_t FallBackN, 
-                                                                            const ptrdiff_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE void       QUEX_NAME(__BufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)*, 
                                                                                  const ptrdiff_t BackwardDistance);
     QUEX_INLINE void       QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*, 
                                                                              const ptrdiff_t BackwardDistance);
     QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
                            
-    QUEX_INLINE size_t     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, QUEX_TYPE_CHARACTER*, 
+    QUEX_INLINE size_t     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, 
+                                                                     QUEX_TYPE_CHARACTER*, 
                                                                      const ptrdiff_t);
 
     QUEX_INLINE void*      QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)* buffer, 
@@ -106,9 +98,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void       
     QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
     { 
-        if( ! *me )                                           {}
-        if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
-        else if( (*me)->delete_self )                         (*me)->delete_self(*me);
+        if     ( ! *me )                                           return;
+        else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
+        else if( (*me)->delete_self )                              (*me)->delete_self(*me);
         (*me) = (QUEX_NAME(BufferFiller)*)0;
     }
 
@@ -166,7 +158,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         const ptrdiff_t           ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
         QUEX_TYPE_CHARACTER*      ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
         ptrdiff_t                 loaded_n;
-        QUEX_TYPE_STREAM_POSITION character_index_after_load;
 
         /* Assume: Buffer initialization happens independently               */
         __quex_assert(buffer->_input_p        == ContentFront);   
@@ -178,19 +169,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->seek_character_index(me, 0);
 
         loaded_n = (ptrdiff_t)QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, ContentSize);
-        character_index_after_load = me->tell_character_index(buffer->filler);
-
-        if( character_index_after_load != (QUEX_TYPE_STREAM_POSITION)loaded_n ) 
-        {
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
-        }
 
         buffer->_memory._end_of_file_p = (loaded_n != ContentSize) ? 
            &ContentFront[loaded_n]  /* end of file lies inside loaded region */
          : (QUEX_TYPE_CHARACTER*)0; /* end of file lies beyond               */
 
-        buffer->_content_character_index_begin = 0; 
-        buffer->_content_character_index_end   = character_index_after_load;
 
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
     } 
@@ -230,12 +213,9 @@ QUEX_NAMESPACE_MAIN_OPEN
      *_______________________________________________________________________*/
     {
         const ptrdiff_t           ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
-        QUEX_TYPE_CHARACTER*      ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
-        ptrdiff_t                 Distance_LexemeStart_to_InputP = (ptrdiff_t)-1; 
-        ptrdiff_t                 FallBackN         = (ptrdiff_t)-1;
-        ptrdiff_t                 DesiredLoadN      = (ptrdiff_t)-1;
-        QUEX_TYPE_CHARACTER*      new_content_begin = 0x0;
-        size_t                    LoadedN           = (size_t)-1;
+        ptrdiff_t                 desired_load_n;
+        size_t                    loaded_n = (size_t)-1;
+        ptrdiff_t                 move_distance;
         QUEX_NAME(BufferFiller)*  me;
 
         __quex_assert(buffer);
@@ -249,8 +229,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Catch impossible scenario: If the stretch from _input_p to
          * _lexeme_start_p spans the whole buffer content, then nothing can be
          * loaded into it.                                                   */
-        Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
-        if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
+        if( buffer->_input_p - buffer->_lexeme_start_p >= ContentSize ) { 
             QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ true);
             return 0;
         }
@@ -269,147 +248,41 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
         /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!              * (3)*/  
 
-        /*___________________________________________________________________*/
-        /* (1) Handle fallback region */
-        FallBackN    = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(buffer, 
-                                                                                 Distance_LexemeStart_to_InputP); 
-        __quex_assert(FallBackN < ContentSize);
-        DesiredLoadN = ContentSize - FallBackN;
-
-        QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(buffer, FallBackN);
+        /*___________________________________________________________________
+         * (1) Handle fallback region                                        */
+        move_distance = QUEX_NAME(Buffer_move_away_passed_content)(buffer);
+        if( ! move_distance ) {
+            return 0;
+        }
+        desired_load_n = buffer->_memory._back - buffer->_input_p;
+        __quex_assert(move_distance == desired_load_n);
 
         /*___________________________________________________________________*/
         /* (2) Load new content
          *
          * NOTE: Due to backward loading the character index might not stand 
          *       on the end of the buffer. Thus a seek is necessary.         */
-
         me->seek_character_index(me, buffer->_content_character_index_end);
-        buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
-        new_content_begin = ContentFront + FallBackN;
-        LoadedN           =  QUEX_NAME(__BufferFiller_read_characters)(buffer, 
-                                                                       new_content_begin, 
-                                                                       DesiredLoadN);
+        loaded_n = QUEX_NAME(__BufferFiller_read_characters)(buffer, 
+                                                             buffer->_input_p, 
+                                                             desired_load_n);
         
-        /*___________________________________________________________________________________*/
+        /*___________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
-        QUEX_NAME(__BufferFiller_forward_adapt_pointers)(buffer, 
-                                                         DesiredLoadN, LoadedN, FallBackN, 
-                                                         Distance_LexemeStart_to_InputP);
-
-        buffer->_content_character_index_end   =   buffer->_content_character_index_begin
-                                                 + (QUEX_NAME(Buffer_text_end)(buffer) - ContentFront);
-
-        /* If the character index in the stream is different from 'old index + LoadedN'
-         * then this indicates a 'strange stream' where the stream position increment is
-         * not proportional to the number of loaded characters.                              */
-        if( (me->tell_character_index(me) - buffer->_content_character_index_begin - FallBackN) != (ptrdiff_t)LoadedN ) 
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
+        buffer->_input_p -= 1;      /* Incremented upon state entry ...      */
+        (void)loaded_n;             /* avoid 'loaded_n' not used w/o asserts */
+        __quex_assert(   ! buffer->_memory._end_of_file_p 
+                      || ((ptrdiff_t)loaded_n + move_distance) 
+                          == buffer->_memory._end_of_file_p - buffer->_memory._front - 1);
 
         __quex_debug_buffer_load(buffer, "LOAD FORWARD(exit)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
-        /*       address offset is equal to DesiredLoadN; see function __forward_adapt_pointers().*/
-        return (size_t)DesiredLoadN; /* THUS NOT: LoadedN*/
+        /*       address offset is equal to desired_load_n; see function __forward_adapt_pointers().*/
+        return (size_t)desired_load_n; /* THUS NOT: loaded_n*/
     }
-
-    QUEX_INLINE ptrdiff_t
-    QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(QUEX_NAME(Buffer)*  buffer,
-                                                              const ptrdiff_t     Distance_LexemeStart_to_InputP)
-    {
-        ptrdiff_t FallBackN = (ptrdiff_t)-1;
-
-        (void)buffer;
-        /* (1) Fallback: A certain region of the current buffer is copied in front such that
-         *               if necessary the stream can go backwards without a backward load.
-         *
-         *                            fallback_n
-         *                               :
-         *                |11111111111111:22222222222222222222222222222222222222|
-         *                  copy of      :   new loaded content of buffer
-         *                  end of old   
-         *                  buffer      
-         *
-         *     The fallback region is related to the lexeme start pointer. The lexeme start 
-         *     pointer always needs to lie inside the buffer, because applications might read
-         *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
-         *     contained in the new buffer (precisely in the fallback region).                        */
-        /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
-         * if EOF is reached and the _memory._memory._end_of_file_p lies inside the buffer. Thus the _input_p
-         * must have reached the upper border of the buffer.                                          */
-        __quex_assert(buffer->_memory._end_of_file_p == 0x0);
-        __quex_assert(buffer->_input_p == buffer->_memory._back);
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __quex_assert(Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
-        __quex_assert(Distance_LexemeStart_to_InputP < (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer));
-
-        /* (*) Fallback region = max(default size, necessary size)*/
-        FallBackN = (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N > Distance_LexemeStart_to_InputP 
-                    ? (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N  
-                    : Distance_LexemeStart_to_InputP;
-        return FallBackN;
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(QUEX_NAME(Buffer)* buffer, const ptrdiff_t FallBackN)
-    {
-        /* (*) Copy fallback region*/
-        /*     If there is no 'overlap' from source and drain than the faster memcpy() can */
-        /*     used instead of memmove().*/
-        QUEX_TYPE_CHARACTER*  source = QUEX_NAME(Buffer_content_back)(buffer) - FallBackN + 1; /* end of content - fallback*/
-        QUEX_TYPE_CHARACTER*  drain  = QUEX_NAME(Buffer_content_front)(buffer);       
-
-        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-        if( drain + FallBackN >= source  ) {
-            __QUEX_STD_memmove((uint8_t*)drain, (uint8_t*)source, (size_t)FallBackN * sizeof(QUEX_TYPE_CHARACTER));
-        } else { 
-            __QUEX_STD_memcpy((uint8_t*)drain, (uint8_t*)source, (size_t)FallBackN * sizeof(QUEX_TYPE_CHARACTER));
-        }
-
-#       ifdef QUEX_OPTION_ASSERTS
-        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-        __QUEX_STD_memset((uint8_t*)(drain + FallBackN), (uint8_t)(0xFF), 
-                          (QUEX_NAME(Buffer_content_size)(buffer) - (size_t)FallBackN)*sizeof(QUEX_TYPE_CHARACTER)); 
-#       endif
-
-        __quex_assert((size_t)FallBackN < QUEX_NAME(Buffer_content_size)(buffer));
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(__BufferFiller_forward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
-                                                     const ptrdiff_t DesiredLoadN,
-                                                     const size_t    LoadedN,
-                                                     const ptrdiff_t FallBackN, 
-                                                     const ptrdiff_t Distance_LexemeStart_to_InputP)
-    {
-        QUEX_TYPE_CHARACTER* ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
-
-        __quex_assert(    buffer->_memory._end_of_file_p == 0x0 
-                       || (LoadedN + (size_t)FallBackN) == QUEX_NAME(Buffer_content_size)(buffer) );
-        __quex_assert( DesiredLoadN != 0 );
-
-        /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
-        if( LoadedN != (size_t)DesiredLoadN ) 
-            QUEX_NAME(Buffer_end_of_file_set)(buffer, ContentFront + FallBackN + (ptrdiff_t)LoadedN);
-        else
-            QUEX_NAME(Buffer_end_of_file_unset)(buffer);
-
-        /*___________________________________________________________________________________*/
-        /* (*) Pointer adaption*/
-        /*     Next char to be read: '_input_p + 1'*/
-        buffer->_input_p        = ContentFront + FallBackN - 1;   
-        /*     NOTE: _input_p is set to (_input_p - 1) so that the next *(++_input_p) */
-        /*           reads the _input_p.*/
-        buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
-
-        /* Asserts */
-        __quex_assert(   buffer->_memory._end_of_file_p == 0x0 
-                      || ((ptrdiff_t)LoadedN + FallBackN) == buffer->_memory._end_of_file_p - buffer->_memory._front - 1);
-
-    }
-
 
     QUEX_INLINE size_t   
     QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
@@ -419,9 +292,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*       ContentBack  = QUEX_NAME(Buffer_content_back)(buffer);
         ptrdiff_t                  BackwardDistance              = (ptrdiff_t)-1;
         QUEX_TYPE_STREAM_POSITION  NewContentCharacterIndexBegin = (ptrdiff_t)-1;
-#       if defined(QUEX_OPTION_ASSERTS)
-        size_t                     LoadedN                       = (size_t)-1;
-#       endif
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD);
@@ -476,7 +346,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
         }
-        else if( buffer->_content_character_index_begin == 0 ) { return 0; }  /* (2) */
+        else if( QUEX_NAME(Buffer_character_index_begin)(buffer) == 0 ) { return 0; }  /* (2) */
         /*                                                                     * (3) */
         /* HERE: current_p == FRONT OF THE BUFFER!   
          *_______________________________________________________________________________*/
@@ -496,36 +366,23 @@ QUEX_NAMESPACE_MAIN_OPEN
          * It is not safe to assume that the character size is fixed. Thus it is up to  
          * the input strategy to determine the input position that belongs to a character  
          * position.                                                                     */
-        NewContentCharacterIndexBegin = buffer->_content_character_index_begin - BackwardDistance;
+        NewContentCharacterIndexBegin = QUEX_NAME(Buffer_character_index_begin)(buffer) - BackwardDistance;
         __quex_assert(BackwardDistance != 0); /* if "_index_begin != 0", then backward load must be. */
         me->seek_character_index(me, NewContentCharacterIndexBegin);
 
         /*_______________________________________________________________________________
          * (3) Load content*/
-        buffer->_content_character_index_begin = NewContentCharacterIndexBegin;
         QUEX_NAME(__BufferFiller_backward_copy_backup_region)(buffer, BackwardDistance);
         
         /* -- If file content < buffer size, then the start position of the stream to which  
          *    the buffer refers is always 0 and no backward loading will ever happen.  
          * -- If the file content >= buffer size, then backward loading must always fill  
          *    the buffer. */
-#       if defined(QUEX_OPTION_ASSERTS)
-        LoadedN = QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, BackwardDistance);
-        __quex_assert(LoadedN == (size_t)BackwardDistance);
-#       else
-        (void)    QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, BackwardDistance);
-#       endif
+        (void)QUEX_NAME(__BufferFiller_read_characters)(buffer, ContentFront, BackwardDistance);
 
         /*________________________________________________________________________________
          * (4) Adapt pointers */
         QUEX_NAME(__BufferFiller_backward_adapt_pointers)(buffer, BackwardDistance);
-
-        buffer->_content_character_index_end =   buffer->_content_character_index_begin
-                                               + (QUEX_NAME(Buffer_text_end)(buffer) - ContentFront);
-        /* If the character index in the stream is different from 'old index + LoadedN'
-         * then this indicates a 'strange stream' where the stream position increment is
-         * not proportional to the number of loaded characters.                              */
-        __quex_assert( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) == LoadedN );
 
         __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -550,9 +407,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Copying backward shall **only** happen when new content is to be loaded. In back
          * ward direction, this makes only sense if the lower border was reached.         */
         __quex_assert(buffer->_input_p == buffer->_memory._front);
-        /* Also, if the lower border is the begin of file, then there is no sense in
-         * loading more in backward direction.                                            */
-        __quex_assert(buffer->_content_character_index_begin != 0);
         /* We need to make sure, that the lexeme start pointer remains inside the
          * buffer, so that we do not loose the reference. From current_p == buffer begin
          * it is safe to say that _lexeme_start_p > _input_p (the lexeme starts
@@ -583,7 +437,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Limit 2:
          *     We cannot go before the first character in the stream. 
          *         LimitBackwardDist_2 > 0, see __quex_assert(...) above. */
-        LimitBackwardDist_2 = buffer->_content_character_index_begin;
+        LimitBackwardDist_2 = QUEX_NAME(Buffer_character_index_begin)(buffer);
 
 
         /* Taking the minimum of all:*/
@@ -610,28 +464,27 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_memmove(ContentFront + BackwardDistance, ContentFront, 
                            (size_t)(ContentSize - (size_t)BackwardDistance)*sizeof(QUEX_TYPE_CHARACTER));
 
-#       ifdef QUEX_OPTION_ASSERTS
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-        __QUEX_STD_memset((uint8_t*)ContentFront, (uint8_t)(0xFF), 
-                          (size_t)BackwardDistance * sizeof(QUEX_TYPE_CHARACTER)); 
-#       endif
+        QUEX_IF_ASSERTS_poison((void*)ContentFront,
+                               (void*)&ContentFront[BackwardDistance]); 
     }
 
     QUEX_INLINE void
     QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
                                                       const ptrdiff_t     BackwardDistance)
     {
+        QUEX_TYPE_CHARACTER* end_of_file_p = (QUEX_TYPE_CHARACTER*)0;
+
         /* -- end of file / end of buffer:*/
         if( buffer->_memory._end_of_file_p ) {
-            QUEX_TYPE_CHARACTER*   NewEndOfFileP = buffer->_memory._end_of_file_p + BackwardDistance;
-            if( NewEndOfFileP <= buffer->_memory._back ) 
-                QUEX_NAME(Buffer_end_of_file_set)(buffer, NewEndOfFileP);
-            else  
-                QUEX_NAME(Buffer_end_of_file_unset)(buffer);
+            end_of_file_p = &buffer->_memory._end_of_file_p[BackwardDistance];
+            if( end_of_file_p > buffer->_memory._back ) 
+                end_of_file_p = (QUEX_TYPE_CHARACTER*)0;
         }
 
-        buffer->_input_p        += BackwardDistance + 1; 
-        buffer->_lexeme_start_p += BackwardDistance;
+        buffer->_memory._end_of_file_p   = end_of_file_p;
+        buffer->_input_p                += BackwardDistance + 1; 
+        buffer->_lexeme_start_p         += BackwardDistance;
     }
 
     QUEX_INLINE void
@@ -761,14 +614,10 @@ QUEX_NAMESPACE_MAIN_OPEN
      *          If the whole content was copied, then the return value
      *          is equal to BufferEnd.                                       */
     {
-        ptrdiff_t moved_character_n;
-
-        moved_character_n = QUEX_NAME(Buffer_move_away_passed_content)(buffer);
+        (void)QUEX_NAME(Buffer_move_away_passed_content)(buffer);
 
         /* Get the pointers for the border where to fill content.           */
         buffer->filler->derived_fill_prepare(buffer, begin_p, end_p);
-
-        buffer->_content_character_index_begin += moved_character_n;
 
         __quex_assert(*end_p >= *begin_p);
     }
@@ -827,12 +676,24 @@ QUEX_NAMESPACE_MAIN_OPEN
                                               QUEX_TYPE_CHARACTER*  memory, 
                                               const ptrdiff_t       CharacterNToRead)
     {
-        const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, memory, (size_t)CharacterNToRead);
+        QUEX_TYPE_STREAM_POSITION  character_index_before_load = buffer->filler->tell_character_index(buffer->filler);
+        size_t                     loaded_n;
+        
+        loaded_n  = buffer->filler->read_characters(buffer->filler, memory, 
+                                                    (size_t)CharacterNToRead);
+
+        buffer->_content_character_index_end = buffer->filler->tell_character_index(buffer->filler);
+
+        if(    buffer->_content_character_index_end - character_index_before_load 
+            != (QUEX_TYPE_STREAM_POSITION)loaded_n ) 
+        {
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
+        }
 
         if( buffer->filler->_byte_order_reversion_active_f ) {
-            QUEX_NAME(Buffer_reverse_byte_order)(memory, &memory[LoadedN]);
+            QUEX_NAME(Buffer_reverse_byte_order)(memory, &memory[loaded_n]);
         }
-        return LoadedN;
+        return loaded_n;
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE
