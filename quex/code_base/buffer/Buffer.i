@@ -201,32 +201,34 @@ QUEX_NAMESPACE_MAIN_OPEN
      *            [case( x < 10 ) { print; } else ]
      *
      *            |----|
-     *         fallback size                                                       */
+     *         fallback size                                                 */
     { 
-        QUEX_TYPE_CHARACTER*  content_p       = &me->_memory._front[1];
-        QUEX_TYPE_CHARACTER*  remainder_p     = me->_lexeme_start_p ? 
-                                                  QUEX_MIN(me->_input_p, me->_lexeme_start_p)
-                                                : me->_input_p; 
-        QUEX_TYPE_CHARACTER*  remainder_end_p = me->_memory._end_of_file_p ? 
-                                                  me->_memory._end_of_file_p 
-                                                : me->_memory._back;
+        const QUEX_TYPE_CHARACTER*  FrontP        = &me->_memory._front[1];
+        const QUEX_TYPE_CHARACTER*  BackP         = me->_memory._back;
+        const QUEX_TYPE_CHARACTER*  RemainderP    =   me->_lexeme_start_p ? 
+                                                      QUEX_MIN(me->_input_p, me->_lexeme_start_p)
+                                                    : me->_input_p; 
+        const QUEX_TYPE_CHARACTER*  RemainderEndP =   me->_memory._end_of_file_p ? 
+                                                      me->_memory._end_of_file_p 
+                                                    : me->_memory._back;
         QUEX_TYPE_CHARACTER*  move_begin_p;
-        ptrdiff_t             move_size;
+        size_t                move_size;
         ptrdiff_t             move_distance;
 
-        /* If the distance to content front <= the fallback size, no move possible.  */
-        if( remainder_p < &content_p[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
+        /* If distance to content front <= fallback size, no move possible.  */
+        if( RemainderP < &FrontP[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
             return (ptrdiff_t)0;
         }
 
-        move_begin_p  = &remainder_p[- (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N];
-        move_size     = (ptrdiff_t)(remainder_end_p - move_begin_p);
-        move_distance = move_begin_p - content_p;
+        move_begin_p  = &RemainderP[- (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N];
+        move_size     = (ptrdiff_t)(RemainderEndP - move_begin_p);
+        move_distance = move_begin_p - FrontP;
 
-        /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
-         * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
-        __QUEX_STD_memmove((void*)content_p, (void*)move_begin_p,
-                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
+        /* Anything before '_input_p + 1' is considered to be 'past'. However,
+         * leave a number of 'FALLBACK' to provide some pre-conditioning to
+         * work.                                                             */
+        __QUEX_STD_memmove((void*)FrontP, (void*)move_begin_p,
+                           move_size * sizeof(QUEX_TYPE_CHARACTER));
 
         me->_input_p -= move_distance;
         if( me->_memory._end_of_file_p ) {
@@ -236,7 +238,47 @@ QUEX_NAMESPACE_MAIN_OPEN
             me->_lexeme_start_p -= move_distance;
         }
 
-        QUEX_IF_ASSERTS_poison(&me->_memory._back[-move_distance], me->_memory._back);
+        QUEX_IF_ASSERTS_poison((void*)&BackP[-move_distance], (void*)BackP);
+        return move_distance;
+    }
+
+    QUEX_INLINE ptrdiff_t        
+    QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
+    {
+        const QUEX_TYPE_CHARACTER*       FrontP       = &me->_memory._front[1];
+        const ptrdiff_t                  ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+        const QUEX_TYPE_STREAM_POSITION  CharacterIndexBegin = QUEX_NAME(Buffer_character_index_begin)(me));
+        ptrdiff_t                        move_distance;
+        ptrdiff_t                        move_size;
+        ptrdiff_t                        offset_ls; 
+   
+        /* Move at least 1 byte backward: distance >= 1                      */
+        move_distance = QUEX_MAX((ptrdiff_t)(ContentSize / 3), 1); 
+        /* Cannot go before the first character in the stream.               */
+        move_distance = QUEX_MIN(move_distance, CharacterIndexBegin);
+        /* Lexeme start not beyond back => distance < lexeme_start_p - front */
+        if( me->_lexeme_start_p ) {
+            offset_ls = me->_lexeme_start_p - FrontP; 
+            __quex_assert(offset_ls < ContentSize); 
+            move_distance = QUEX_MIN(move_distance, offset_ls);
+        }
+
+        move_size     = ContentSize - move_distance;
+
+        __QUEX_STD_memmove((void*)&FrontP[move_distance], (void*)FrontP, 
+                           move_size * sizeof(QUEX_TYPE_CHARACTER));
+
+        me->_input_p += move_distance;
+        if( me->_memory._end_of_file_p ) {
+            me->_memory._end_of_file_p += move_distance;
+        }
+        if( me->_lexeme_start_p ) {
+            me->_lexeme_start_p += move_distance;
+        }
+
+        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+        QUEX_IF_ASSERTS_poison((void*)FrontP, (void*)&FrontP[move_distance]); 
+
         return move_distance;
     }
 
