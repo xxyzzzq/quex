@@ -55,9 +55,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         /*     -- character index in the stream that corresponds to the character
-         *        at the first character (see above: _front[1])                               */
-        QUEX_TYPE_STREAM_POSITION _content_character_index_begin;
-        /*     -- character index in the stream that corresponds to the character
          *        after the last character in the buffer. This is necessary, because,
          *        some weird (but popular) implementations of istream do not correlate
          *        propperly between bytes transferred into a buffer and the increment 
@@ -93,13 +90,15 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void                          QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
                                                                                 QUEX_TYPE_CHARACTER_POSITION);
     
-    QUEX_INLINE void       QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
-    QUEX_INLINE void       QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, 
                                                   const QUEX_TYPE_STREAM_POSITION CharacterIndex);
     QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
 
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
+                        QUEX_NAME(Buffer_character_index_begin)(QUEX_NAME(Buffer)* me);
     QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_set)(QUEX_NAME(Buffer)*, 
                                                           QUEX_TYPE_CHARACTER* Position);
     QUEX_INLINE void    QUEX_NAME(Buffer_end_of_file_unset)(QUEX_NAME(Buffer)*);

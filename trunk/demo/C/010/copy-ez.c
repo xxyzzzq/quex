@@ -15,7 +15,7 @@ main(int argc, char** argv)
     quex_tiny_lexer       qlex;
     quex_Token            token;           
     QUEX_TYPE_CHARACTER*  rx_buffer  = 0x0; /* receive buffer */
-    MemoryChunk           chunk;
+    MemoryChunk           chunk      = { 0, 0 };
     size_t                size       = (size_t)-1;
     size_t                BufferSize = 1024;
     char                  buffer[1024];
@@ -52,7 +52,7 @@ main(int argc, char** argv)
          *     different from 'chunk.end'. This would indicate the there   
          *     are still bytes left. The next call of '_apend(...)' will  
          *     deal with it.                                                */
-        chunk.begin = (uint8_t*)QUEX_NAME(buffer_fill_region_append)(&qlex, chunk.begin, chunk.end);
+        chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives                    */
         while( 1 + 1 == 2 ) {

@@ -155,7 +155,8 @@ messaging_framework_receive_to_internal_buffer()
     /* Simular a low level driver that iself has a hardware fixed position in memory 
      * which it fills on demand.                                                      */
 {
-    memcpy(MESSAGING_FRAMEWORK_BUFFER + 1, messaging_framework_data, 
+    memcpy(&MESSAGING_FRAMEWORK_BUFFER[1], 
+           messaging_framework_data, 
            messaging_framework_data_size() * sizeof(ELEMENT_TYPE));
     return messaging_framework_data_size();
 }

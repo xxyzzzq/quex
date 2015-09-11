@@ -1,3 +1,4 @@
+#line 1  "Buffer_move_forward-template.cpp" 
 #include <quex/code_base/buffer/TEST/Buffer_test_common.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
@@ -11,8 +12,6 @@
 
 using namespace std;
 using namespace quex;
-
-#line 10 "Buffer_move_forward-template.cpp" 
 
 int
 main(int argc, char** argv)

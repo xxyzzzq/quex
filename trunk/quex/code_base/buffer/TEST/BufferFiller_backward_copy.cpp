@@ -43,11 +43,11 @@ main(int argc, char** argv)
     buffer._input_p = buffer._memory._front;
 
     if( cl_has(argc, argv, "Normal") ) {
-        buffer._content_character_index_begin = memory_size + 1; /* load backward possible      */
         buffer._content_character_index_end   = 2 * memory_size - 1; 
+        /*     _content_character_index_begin = memory_size + 1; ** load backward possible      */
     } else {                              
-        buffer._content_character_index_begin = 0;               /* impossible, start of stream */
         buffer._content_character_index_end   = memory_size - 2; /* impossible, start of stream */
+        /*     _content_character_index_begin = 0;               ** impossible, start of stream */
     }
 
     for(buffer._lexeme_start_p = buffer._memory._front + 1; 
@@ -67,7 +67,7 @@ main(int argc, char** argv)
 
         if( buffer._lexeme_start_p - buffer._input_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
-        if( buffer._content_character_index_begin != 0 ) {
+        if( QUEX_NAME(Buffer_character_index_begin)(&buffer) != 0 ) {
             const size_t  BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(&buffer);
             QUEX_NAME(__BufferFiller_backward_copy_backup_region)(&buffer, BackwardDistance);
         }

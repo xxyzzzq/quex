@@ -24,13 +24,16 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer)    buffer;
     QUEX_TYPE_CHARACTER  content[]    = { '0', '9', '8', '7', '6', '5', '4', '3', '2', '1' }; 
     const int            memory_size  = 12;
+    QUEX_TYPE_CHARACTER  memory[memory_size];
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
     stderr = stdout;
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QUEX_TYPE_CHARACTER  memory[memory_size];
-    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, &memory[0], memory_size, 0, E_Ownership_EXTERNAL);
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                (QUEX_NAME(BufferFiller)*)0x0, 
+                                &memory[0], memory_size, 0,
+                                E_Ownership_EXTERNAL);
     QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
@@ -44,8 +47,10 @@ main(int argc, char** argv)
         buffer._lexeme_start_p != buffer._memory._front; 
         --(buffer._lexeme_start_p) ) { 
 
-        memcpy(&buffer._memory._front[1], (void*)content, 
-               (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
+        memset(&buffer._memory._front[1], (QUEX_TYPE_CHARACTER)-1, sizeof(memory)/sizeof(memory[0])-2);
+        memcpy(&buffer._memory._front[1], (void*)content, sizeof(content));
+        buffer._content_character_index_end = sizeof(content) / sizeof(content[0]);
+
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 
@@ -55,12 +60,10 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
 
-        const size_t  DistanceIL = buffer._input_p - buffer._lexeme_start_p;
         if( buffer._input_p - buffer._lexeme_start_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
 
-        const size_t  FallBackN = QUEX_NAME(__BufferFiller_forward_compute_fallback_region)(&buffer, DistanceIL);
-        QUEX_NAME(__BufferFiller_forward_copy_fallback_region)(&buffer, FallBackN);
+        QUEX_NAME(Buffer_move_away_passed_content)(&buffer);
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
     }

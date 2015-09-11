@@ -115,8 +115,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
     { 
         QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+
+        if( ! me )                                                    return;
+        else if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
+
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-        if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
 
         ByteLoader_delete(&me->base.byte_loader);
         QUEX_NAME(Converter_delete)(&me->converter); 
@@ -347,13 +350,17 @@ QUEX_NAMESPACE_MAIN_OPEN
         * The filling starts from its current position, thus the remaining bytes
         * to be translated are exactly the number of bytes in the buffer.              */
        QUEX_NAME(RawBuffer)*  buffer            = &me->raw_buffer;
-       const size_t           RemainingBytesN   = (size_t)(buffer->end - buffer->iterator);
+       size_t                 remaining_byte_n;
        uint8_t*               FillStartPosition = 0;
        size_t                 FillSize          = 0;
        size_t                 LoadedByteN       = 0;
 
+       __quex_assert(buffer->iterator <= buffer->end);
+
+       remaining_byte_n = (size_t)(buffer->end - buffer->iterator);
+
        QUEX_ASSERT_BUFFER_INFO(buffer);
-       __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
+       __quex_assert((size_t)(buffer->end - buffer->begin) >= remaining_byte_n);
 
        /* Store information about the current position's character index. 
         * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
@@ -380,15 +387,15 @@ QUEX_NAMESPACE_MAIN_OPEN
        /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
         * the buffer) where there are bytes left in the raw buffer. These need to be
         * moved to the beginning of the buffer.                                        */
-       if( RemainingBytesN ) {
+       if( remaining_byte_n ) {
            /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
             * following is safe against overlaps.                                      */
            /* Cast to uint8_t to avoid a spurious function overload                    */
-           __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
+           __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), remaining_byte_n);
        }
 
-       FillStartPosition = buffer->begin + RemainingBytesN;
-       FillSize          = (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN;
+       FillStartPosition = buffer->begin + remaining_byte_n;
+       FillSize          = (size_t)(buffer->memory_end - buffer->begin) - remaining_byte_n;
        /* We cannot load bytes, if buffer based analyzis is on.                        */
        if( me->base.byte_loader ) {
            LoadedByteN                 = me->base.byte_loader->load(me->base.byte_loader, FillStartPosition, FillSize);
@@ -397,7 +404,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
        /* In any case, we start reading from the beginning of the raw buffer. */
        buffer->iterator = buffer->begin; 
-       buffer->end      = &buffer->begin[LoadedByteN + RemainingBytesN];
+       buffer->end      = &buffer->begin[LoadedByteN + remaining_byte_n];
 
        /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
        QUEX_ASSERT_BUFFER_INFO(buffer);
@@ -414,8 +421,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)buffer->filler; 
         QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
 
-        *begin_p = (void*)me->raw_buffer.iterator; 
-        *end_p   = (void*)me->raw_buffer.end;
+        *begin_p = (void*)me->raw_buffer.end; 
+        *end_p   = (void*)me->raw_buffer.memory_end;
     }
 
     QUEX_INLINE ptrdiff_t 
@@ -431,6 +438,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*                insertion_begin_p = insertion_p;
         const uint8_t*                      EndP = (const uint8_t*)FilledEndP;
 
+        __quex_assert(me->raw_buffer.iterator <= me->raw_buffer.end);
         __quex_assert(EndP >= me->raw_buffer.iterator);
         __quex_assert(EndP <= me->raw_buffer.end);
 
@@ -451,30 +459,33 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* Service function for 'direct buffer' access to the lexical analyzer. */
     {
         QUEX_NAME(RawBuffer)*  buffer          = &me->raw_buffer;
-        const size_t           RemainingBytesN = (size_t)(buffer->end - buffer->iterator);
+        size_t                 remaining_byte_n;
+       
+        __quex_assert(buffer->iterator <= buffer->end);
+        remaining_byte_n = (size_t)(buffer->end - buffer->iterator);
 
         QUEX_ASSERT_BUFFER_INFO(buffer);
-        __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
+        __quex_assert((size_t)(buffer->end - buffer->begin) >= remaining_byte_n);
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
          * moved to the beginning of the buffer.                                        */
-        if( RemainingBytesN ) {
+        if( remaining_byte_n ) {
             /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
              * following is safe against overlaps.                                      */
             /* Cast to uint8_t to avoid a spurious function overload                    */
             __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), 
-                               RemainingBytesN);
+                               remaining_byte_n);
         }
 
         /* In any case, we start reading from the beginning of the raw buffer. */
         buffer->iterator = buffer->begin; 
-        buffer->end      = &buffer->begin[RemainingBytesN];
+        buffer->end      = &buffer->begin[remaining_byte_n];
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __quex_assert((size_t)(buffer->memory_end - buffer->begin) >= RemainingBytesN);
-        __QUEX_STD_memset((uint8_t*)(buffer->begin) + RemainingBytesN, 0xFF, 
-                          (size_t)(buffer->memory_end - buffer->begin) - RemainingBytesN);
+        __quex_assert((size_t)(buffer->memory_end - buffer->begin) >= remaining_byte_n);
+        __QUEX_STD_memset((uint8_t*)(buffer->begin) + remaining_byte_n, 0xFF, 
+                          (size_t)(buffer->memory_end - buffer->begin) - remaining_byte_n);
 #       endif
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
         QUEX_ASSERT_BUFFER_INFO(buffer);

@@ -11,8 +11,6 @@
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
@@ -47,6 +45,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me, 
                                     QUEX_TYPE_CHARACTER* EndOfFileP) 
     {
+        __quex_assert( ! EndOfFileP || (EndOfFileP > me->_memory._front && EndOfFileP <= me->_memory._back));
         /* (1) BEFORE LOAD: The pointers must be defined which restrict the 
          *                  fill region. 
          *
@@ -70,14 +69,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->filler && me->filler->byte_loader ) {
             __quex_assert(! EndOfFileP);
             QUEX_NAME(BufferFiller_initial_load)(me);   
-            /* Fills buffer and sets: _content_character_index_begin
-             *                        _content_character_index_end
+            /* Fills buffer and sets: _content_character_index_end
              *                        _memory._end_of_file_p                 */
-        } else {
-            me->_content_character_index_begin = 0; 
-            me->_content_character_index_end   = 0;
-            me->_memory._end_of_file_p         = EndOfFileP ? EndOfFileP 
-                                                 : &me->_memory._front[1];
+        } 
+        else {
+            me->_memory._end_of_file_p       =   EndOfFileP ? EndOfFileP 
+                                               : &me->_memory._front[1];
+            me->_content_character_index_end =   me->_memory._end_of_file_p 
+                                               - &me->_memory._front[1];
         }
 
         if( me->_memory._end_of_file_p ) {
@@ -104,36 +103,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
         buffer->_input_p += Offset; 
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
-    }
-
-    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION
-    QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)* buffer)
-    {
-        /* NOTE: We cannot check for general consistency here, because this function 
-         *       may be used by the range skippers, and they write possibly something on
-         *       the end of file pointer, that is different from the buffer limit code.
-         * NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer); */
-#       if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-        return QUEX_TYPE_CHARACTER_POSITION(buffer->_input_p, buffer->_content_character_index_begin);
-#       else
-        return (QUEX_TYPE_CHARACTER_POSITION)(buffer->_input_p);
-#       endif
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER_POSITION Position)
-    {
-#       if      defined(QUEX_OPTION_ASSERTS) \
-           && ! defined(__QUEX_OPTION_PLAIN_C)
-        /* Check whether the memory_position is relative to the current start position   
-         * of the stream. That means, that the tell_adr() command was called on the  
-         * same buffer setting or the positions have been adapted using the += operator.*/
-        __quex_assert(Position.buffer_start_position == (size_t)buffer->_content_character_index_begin);
-        buffer->_input_p = Position.address;
-#       else
-        buffer->_input_p = Position;
-#       endif
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER
@@ -210,127 +179,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)* buffer)
     { 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        if     ( buffer->_input_p != buffer->_memory._front )  return false;
-        else if( buffer->_content_character_index_begin != 0 ) return false;
+        if     ( buffer->_input_p != buffer->_memory._front )           return false;
+        else if( QUEX_NAME(Buffer_character_index_begin)(buffer) != 0 ) return false;
         return true;
-    }
-
-    QUEX_INLINE void  
-    QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
-    {
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-       /* Why: __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1); ? fschaef 08y11m1d> */
-
-       if( CharacterN < QUEX_NAME(Buffer_distance_input_to_text_end)(me) ) {
-           /* _input_p + CharacterN < text_end, thus no reload necessary. */
-           me->_input_p += CharacterN;
-       }
-       else {
-           /* _input_p + CharacterN >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_memory._end_of_file_p != 0x0 ) {
-               me->_input_p = QUEX_NAME(Buffer_text_end)(me);  /* No reload possible */
-           } else {
-               /* Reload until delta is reachable inside buffer. */
-               ptrdiff_t delta    = CharacterN; 
-               ptrdiff_t distance = QUEX_NAME(Buffer_distance_input_to_text_end)(me);
-               do {
-                   delta -= distance;
-
-                   me->_input_p        = me->_memory._back; /* Prepare reload forward. */
-                   me->_lexeme_start_p = me->_input_p;
-                   if( QUEX_NAME(BufferFiller_load_forward)(me) == 0 ) {
-                       me->_input_p = QUEX_NAME(Buffer_text_end)(me);  /* No reload possible */
-                       break;
-                   } 
-                   /* After loading forward, we need to increment ... the way the game is to be played. */
-                   ++(me->_input_p);
-                   distance = QUEX_NAME(Buffer_distance_input_to_text_end)(me);
-
-                   if( delta < distance ) {
-                       /* _input_p + delta < text_end, thus no further reload necessary. */
-                       me->_input_p += delta;
-                       break;
-                   }
-               } while( 1 + 1 == 2 );
-           }
-       }
-       me->_lexeme_start_p            = me->_input_p;
-       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
-#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#      endif
-
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    }
-    
-    QUEX_INLINE void  
-    QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
-    {
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-
-       /* When going backward, anyway a non-zero width distance is left ahead. */
-       if( CharacterN < (me->_input_p - QUEX_NAME(Buffer_content_front)(me)) ) {
-           /* _input_p - CharacterN < content_front, thus no reload necessary. */
-           me->_input_p -= CharacterN;
-       }
-       else {
-           /* _input_p - CharacterN < _front + 1 >= text_end, thus we need to reload. */
-           if( ! me->filler ) { 
-               me->_input_p = QUEX_NAME(Buffer_content_front)(me);
-           } else {
-               /* Reload until delta is reachable inside buffer. */
-               ptrdiff_t delta    = (ptrdiff_t)CharacterN; 
-               ptrdiff_t distance = (ptrdiff_t)(me->_input_p - QUEX_NAME(Buffer_content_front)(me));
-               do {
-                   delta -= distance;
-
-                   me->_input_p        = me->_memory._front; /* Prepare reload backward. */
-                   me->_lexeme_start_p = me->_input_p + 1;
-                   if( QUEX_NAME(BufferFiller_load_backward)(me) == 0 ) {
-                       me->_input_p = QUEX_NAME(Buffer_content_front)(me); /* No reload possible */
-                       break;
-                   } 
-                   /* After loading backwards, we need **not** to increment ... the way the game is to be played. */
-                   distance = (ptrdiff_t)(me->_input_p - QUEX_NAME(Buffer_content_front)(me));
-
-                   if( delta < distance ) {
-                       /* _input_p + delta < text_end, thus no further reload necessary. */
-                       me->_input_p -= delta;
-                       break;
-                   }
-               } while( 1 + 1 == 2 );
-           }
-       }
-       me->_lexeme_start_p                = me->_input_p;
-       me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
-#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#      endif
-
-       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    }
-
-    QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
-    QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)* me)
-    {
-        /* This function returns the character index that corresponds to the 
-         * current setting of the input pointer. Note, that the content starts
-         * at one position after the memory (buffer limitting char at _front.).         
-         */
-        const QUEX_TYPE_STREAM_POSITION DeltaToBufferBegin = me->_input_p - &me->_memory._front[1];
-        return DeltaToBufferBegin + me->_content_character_index_begin;
-    }
-
-    QUEX_INLINE void    
-    QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const QUEX_TYPE_STREAM_POSITION CharacterIndex)
-    {
-        /* This function sets the _input_p according to a character index of the
-         * input stream (if there is a stream). It is the inverse of 'tell()'.   */
-        const QUEX_TYPE_STREAM_POSITION CurrentCharacterIndex = QUEX_NAME(Buffer_tell)(me);
-        if( CharacterIndex > CurrentCharacterIndex )
-            QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)(CharacterIndex - CurrentCharacterIndex));
-        else
-            QUEX_NAME(Buffer_move_backward)(me,(ptrdiff_t)(CurrentCharacterIndex - CharacterIndex));
     }
 
     QUEX_INLINE ptrdiff_t        
@@ -352,39 +203,41 @@ QUEX_NAMESPACE_MAIN_OPEN
      *            |----|
      *         fallback size                                                       */
     { 
-        QUEX_TYPE_CHARACTER*  ContentFront   = QUEX_NAME(Buffer_content_front)(me);
-        QUEX_TYPE_CHARACTER*  RemainderBegin = me->_input_p;
-        QUEX_TYPE_CHARACTER*  RemainderEnd   = me->_memory._end_of_file_p;
-        QUEX_TYPE_CHARACTER*  MoveRegionBegin;
-        ptrdiff_t             MoveRegionSize;
-
+        QUEX_TYPE_CHARACTER*  content_p       = &me->_memory._front[1];
+        QUEX_TYPE_CHARACTER*  remainder_p     = me->_lexeme_start_p ? 
+                                                  QUEX_MIN(me->_input_p, me->_lexeme_start_p)
+                                                : me->_input_p; 
+        QUEX_TYPE_CHARACTER*  remainder_end_p = me->_memory._end_of_file_p ? 
+                                                  me->_memory._end_of_file_p 
+                                                : me->_memory._back;
+        QUEX_TYPE_CHARACTER*  move_begin_p;
+        ptrdiff_t             move_size;
+        ptrdiff_t             move_distance;
 
         /* If the distance to content front <= the fallback size, no move possible.  */
-        if( RemainderBegin < &ContentFront[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
+        if( remainder_p < &content_p[(ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N] ) {
             return (ptrdiff_t)0;
         }
 
-        MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
-        MoveRegionSize    = (ptrdiff_t)(RemainderEnd - MoveRegionBegin);
+        move_begin_p  = &remainder_p[- (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N];
+        move_size     = (ptrdiff_t)(remainder_end_p - move_begin_p);
+        move_distance = move_begin_p - content_p;
 
         /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
          * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
-        __QUEX_STD_memmove((void*)ContentFront,
-                           (void*)MoveRegionBegin,
-                           (size_t)MoveRegionSize * sizeof(QUEX_TYPE_CHARACTER));
+        __QUEX_STD_memmove((void*)content_p, (void*)move_begin_p,
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
 
-        QUEX_NAME(Buffer_end_of_file_set)(me, &ContentFront[MoveRegionSize]);
+        me->_input_p -= move_distance;
+        if( me->_memory._end_of_file_p ) {
+            me->_memory._end_of_file_p -= move_distance;
+        }
+        if( me->_lexeme_start_p ) {
+            me->_lexeme_start_p -= move_distance;
+        }
 
-        /* (*) Pointer adaption:
-         *     IMPORTANT: This function is called outside the 'engine' so the 
-         *                next char to be read is: '_input_p' not '_input_p + 1'    */
-        me->_input_p        = &ContentFront[QUEX_SETTING_BUFFER_MIN_FALLBACK_N];   
-        /* NOTE: This operation can only happen from outside the lexical analysis
-         *       process, i.e. either in a TERMINAL (pattern action) or outside the
-         *       receive function calls.                                            */
-        me->_lexeme_start_p = me->_input_p; 
-
-        return MoveRegionBegin - ContentFront; 
+        QUEX_IF_ASSERTS_poison(&me->_memory._back[-move_distance], me->_memory._back);
+        return move_distance;
     }
 
     QUEX_INLINE size_t          
@@ -482,7 +335,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
 #       endif
-        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)me->_content_character_index_begin);
+        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_character_index_begin)(me));
         __QUEX_STD_printf("   _content_character_index_end   = %i;\n", (int)me->_content_character_index_end);
         if( me->filler ) {
             __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->filler->_byte_order_reversion_active_f ? "true" : "false");
@@ -491,9 +344,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/temporary_macros_off>
-
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/Buffer_navigation.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I */
 

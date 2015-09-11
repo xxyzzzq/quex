@@ -29,10 +29,7 @@ main(int argc, char** argv)
     size_t                size = (size_t)-1;
     QUEX_TYPE_TOKEN_ID    token_id = (QUEX_TYPE_TOKEN_ID)-1;
 
-    QUEX_NAME(BufferFiller)*  filler = QUEX_NAME(BufferFiller_Plain_new)(0);
-
-    __quex_assert(filler);
-    quex_tiny_lexer_from_BufferFiller(&qlex, filler);
+    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
 
     /* -- initialize the token pointers */
     quex_Token_construct(&token_bank[0]);
@@ -102,8 +99,6 @@ main(int argc, char** argv)
     }
 
     QUEX_NAME(destruct)(&qlex);
-    filler->delete_self(filler); /* QUEX_NAME(BufferFiller_delete) deletes only
-                                  * things that belong to analyzer.              */
     QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
     QUEX_NAME_TOKEN(destruct)(&token_bank[1]);
     return 0;

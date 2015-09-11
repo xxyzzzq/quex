@@ -22,7 +22,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_character_index_begin);
+        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_character_index_begin)(buffer));
         __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
         if( buffer->_memory._end_of_file_p == 0x0 )
             __QUEX_STD_printf("_memory._memory._end_of_file_p (offset)  = <0x0>\n");
@@ -48,7 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             return (QUEX_TYPE_CHARACTER)'?'; 
         else if( buffer->_memory._end_of_file_p == C )       
             return (QUEX_TYPE_CHARACTER)']';
-        else if( buffer->_content_character_index_begin == 0 && buffer->_memory._front == C )     
+        else if( QUEX_NAME(Buffer_character_index_begin)(buffer) == 0 && buffer->_memory._front == C )     
             return (QUEX_TYPE_CHARACTER)'[';
         else
             return (QUEX_TYPE_CHARACTER)'|';

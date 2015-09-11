@@ -2,7 +2,7 @@
                                                                                
                Regression Tests and Feature Implementation Tests               
                                                                                
-                                                                     <no date>
+TEST                                                                 <no date>
 -------------------------------------------------------------------------------
 
  * alexeevm:
@@ -26,15 +26,15 @@
         bug-2001787.sh iconv .........................................[OK]
                        icu ...........................................[OK]
     2002070 Output buffer overflow
-        bug-2002070.sh iconv .........................................[OK]
-                       icu ...........................................[OK]
+        bug-2002070.sh iconv .......................................[FAIL]
+                       icu .........................................[FAIL]
     2002474 Segmentation Fault while UTF-8 Decoding
-        bug-2002474.sh codec .........................................[OK]
-                       codec_c .......................................[OK]
-                       iconv .........................................[OK]
-                       iconv_c .......................................[OK]
-                       icu ...........................................[OK]
-                       icu_c .........................................[OK]
+        bug-2002474.sh codec .......................................[FAIL]
+                       codec_c .....................................[FAIL]
+                       iconv .......................................[FAIL]
+                       iconv_c .....................................[FAIL]
+                       icu .........................................[FAIL]
+                       icu_c .......................................[FAIL]
     2004927 UTF-8 RE Extra Comma Matched
         bug-2004927.sh codec .........................................[OK]
                        iconv .........................................[OK]
@@ -110,15 +110,15 @@
     1948456 (feature) Inheritance Info
         feature-1948456.sh ...........................................[OK]
     1952133 0.24.11 Crash in Buffer Handling with tiny buffer size
-        bug-1952133.sh 127 ...........................................[OK]
-                       128 ...........................................[OK]
-                       129 ...........................................[OK]
-                       2499 ..........................................[OK]
-                       2500 ..........................................[OK]
-                       2501 ..........................................[OK]
-                       2502 ..........................................[OK]
-                       29 ............................................[OK]
-                       30 ............................................[OK]
+        bug-1952133.sh 127 .........................................[FAIL]
+                       128 .........................................[FAIL]
+                       129 .........................................[FAIL]
+                       2499 ........................................[FAIL]
+                       2500 ........................................[FAIL]
+                       2501 ........................................[FAIL]
+                       2502 ........................................[FAIL]
+                       29 ..........................................[FAIL]
+                       30 ..........................................[FAIL]
     1952747 TKN_TERMINATION
         bug-1952747.sh ...............................................[OK]
     2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP
@@ -127,22 +127,22 @@
                            GOTO ....................................[FAIL]
                            GOTO-2 ..................................[FAIL]
     2161098 0.32.1 Nested-Range Skipper Line Number Counter
-        bug-2161098-x.sh c_comments ..................................[OK]
-                         funny_comments ..............................[OK]
-                         shell_comments ..............................[OK]
+        bug-2161098-x.sh c_comments ................................[FAIL]
+                         funny_comments ............................[FAIL]
+                         shell_comments ............................[FAIL]
     2161098 0.32.1 Range Skipper Line Number Counter
-        bug-2161098.sh c_comments ....................................[OK]
-                       funny_comments ................................[OK]
-                       shell_comments ................................[OK]
+        bug-2161098.sh c_comments ..................................[FAIL]
+                       funny_comments ..............................[FAIL]
+                       shell_comments ..............................[FAIL]
     2209142 0.33.1-pre-release: RE not suited for comment elimination
         bug-2209142.sh error .........................................[OK]
                        good ..........................................[OK]
     2277660 character count pre-determination
         bug-2277660.sh ...............................................[OK]
     2349109 0.33.5 Line and Column number counts with Set skippers
-        bug-2349109.sh newline-skipper ...............................[OK]
+        bug-2349109.sh newline-skipper .........................[OVERSIZE]
                        newline-skipper-utf8 ..........................[OK]
-                       non-newline-skipper ...........................[OK]
+                       non-newline-skipper .........................[FAIL]
     2635012 0.36.4 Include Stack Disablement
         bug-2635012.sh ...............................................[OK]
     3038088 token_id = numeric value
@@ -476,15 +476,40 @@
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
     [FAIL] bug-3022603.sh
+    [FAIL] bug-2002070.sh _ iconv
+                        \__ icu
+    [FAIL] bug-2002474.sh _ codec
+                        \__ codec_c
+                        \__ iconv
+                        \__ iconv_c
+                        \__ icu
+                        \__ icu_c
     [FAIL] bug-2599228.sh _ Developper
                         \__ FilesExist
     [FAIL] feature-3495127.sh _ queue
                             \__ single
     [FAIL] patch-16.sh
+    [FAIL] bug-1952133.sh _ 127
+                        \__ 128
+                        \__ 129
+                        \__ 2499
+                        \__ 2500
+                        \__ 2501
+                        \__ 2502
+                        \__ 29
+                        \__ 30
     [FAIL] feature-2078087.sh _ GOSUB
                             \__ GOSUB-2
                             \__ GOTO
                             \__ GOTO-2
+    [FAIL] bug-2161098-x.sh _ c_comments
+                          \__ funny_comments
+                          \__ shell_comments
+    [FAIL] bug-2161098.sh _ c_comments
+                        \__ funny_comments
+                        \__ shell_comments
+    [FAIL] bug-2349109.sh _ newline-skipper
+                        \__ non-newline-skipper
     [FAIL] bug-3082041.sh
     [FAIL] bug-3157923.sh
     [FAIL] bug-3513568.sh
@@ -500,7 +525,7 @@
                                                                                
                                   Demos for C                                  
                                                                                
-                                                                     <no date>
+demo/C/TEST                                                          <no date>
 -------------------------------------------------------------------------------
  * Makefile Differences to C++ Version
         makefile-diff.sh 000 .........................................[OK]
@@ -604,7 +629,7 @@
                fill ................................................[FAIL]
                fill-conversion-direct ..............................[FAIL]
                fill-ez .............................................[FAIL]
-               point ...............................................[FAIL]
+               point .................................................[OK]
                re-point ............................................[FAIL]
 
  * demo/011:
@@ -646,7 +671,6 @@
                 \__ fill
                 \__ fill-conversion-direct
                 \__ fill-ez
-                \__ point
                 \__ re-point
     [FAIL] 011.sh _ utf16-be
     [FAIL] 011b.sh _ BE
@@ -659,7 +683,7 @@
                                                                                
                                  Demos for Cpp                                 
                                                                                
-                                                                     <no date>
+demo/Cpp/TEST                                                        <no date>
 -------------------------------------------------------------------------------
 
  * demo/000:
@@ -749,7 +773,7 @@
                fill ................................................[FAIL]
                fill-conversion-direct ..............................[FAIL]
                fill-ez .............................................[FAIL]
-               point ...............................................[FAIL]
+               point .................................................[OK]
                re-point ............................................[FAIL]
 
  * demo/011:
@@ -791,7 +815,6 @@
                 \__ fill
                 \__ fill-conversion-direct
                 \__ fill-ez
-                \__ point
                 \__ re-point
     [FAIL] 011.sh _ utf16-be
                 \__ utf16-le
@@ -805,7 +828,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/TEST                                                  <no date>
 -------------------------------------------------------------------------------
 
  * BOM Snap:
@@ -835,7 +858,7 @@
                                                                                
                                   Core Engine                                  
                                                                                
-                                                                     <no date>
+quex/engine/TEST                                                     <no date>
 -------------------------------------------------------------------------------
 
  * NumberSet:
@@ -913,7 +936,7 @@
                                                                                
                                      Input                                     
                                                                                
-                                                                     <no date>
+quex/input/TEST                                                      <no date>
 -------------------------------------------------------------------------------
  * Case Folding based on Unicode Database
         case_fold.py m_multi .........................................[OK]
@@ -997,7 +1020,7 @@
                                                                                
                               Command Line Checks                              
                                                                                
-                                                                     <no date>
+quex/TEST/command-line/TEST                                          <no date>
 -------------------------------------------------------------------------------
  * Detect lower prio-patterns outrun higher-prio patterns
         outrun.sh ....................................................[OK]
@@ -1011,7 +1034,7 @@
                                                                                
                        Check Lexical Similarity Analyzer                       
                                                                                
-                                                                     <no date>
+quex/TEST/did-you-mean/TEST                                          <no date>
 -------------------------------------------------------------------------------
  * Explicit Token Type Member Assignment
         token_type-member-name.sh ....................................[OK]
@@ -1025,7 +1048,7 @@
                                                                                
                               Errors and Warnings                              
                                                                                
-                                                                     <no date>
+quex/TEST/errors-warnings/TEST                                       <no date>
 -------------------------------------------------------------------------------
  * Token identifier definition and orthography.
         token_identifier.sh ..........................................[OK]
@@ -1037,7 +1060,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/TEST/event-handling/TEST                                        <no date>
 -------------------------------------------------------------------------------
  * Customized on_skip_range_open event.
         on_skip_range_open-customized.sh customized ..................[OK]
@@ -1064,7 +1087,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/TEST/include-stack/TEST                                         <no date>
 -------------------------------------------------------------------------------
 
  * Include Stack:
@@ -1093,10 +1116,10 @@
                                                                                
                        Indentation Counter / Birds View                        
                                                                                
-                                                                     <no date>
+quex/TEST/indentation_count/TEST                                     <no date>
 -------------------------------------------------------------------------------
  * Bad character detection.
-        bad.sh customized ............................................[OK]
+        bad.sh customized ..........................................[FAIL]
                customized-2 ..........................................[OK]
                default ...............................................[OK]
  * Commonalities of Indentation Counter vs. Patterns
@@ -1108,24 +1131,31 @@
                          5b ..........................................[OK]
                          6 ...........................................[OK]
  * Customized Event Handlers
-        handlers.sh check-eof ........................................[OK]
-                    empty-lines ......................................[OK]
-                    on_dedent ........................................[OK]
-                    on_indentation_error .............................[OK]
-                    on_n_dedent ......................................[OK]
+        handlers.sh check-eof ......................................[FAIL]
+                    empty-lines ....................................[FAIL]
+                    on_dedent ......................................[FAIL]
+                    on_indentation_error ...........................[FAIL]
+                    on_n_dedent ....................................[FAIL]
  * Indentation Counting and Range Skipper
         with-skip-range.sh nested_range ..............................[OK]
                            range .....................................[OK]
                            range-2 ...................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] bad.sh _ customized
+    [FAIL] handlers.sh _ check-eof
+                     \__ empty-lines
+                     \__ on_dedent
+                     \__ on_indentation_error
+                     \__ on_n_dedent
 ===============================================================================
                                                                                
                                Match Precedence                                
                                                                                
-                                                                     <no date>
+quex/TEST/match-precedence/TEST                                      <no date>
 -------------------------------------------------------------------------------
  * Checking DELETE marks internally.
         deletion.py 1 ................................................[OK]
@@ -1189,10 +1219,10 @@
                                                                                
                                      Misc                                      
                                                                                
-                                                                     <no date>
+quex/TEST/misc/TEST                                                  <no date>
 -------------------------------------------------------------------------------
  * Analyzer State Tracer
-        debug_show.sh ................................................[OK]
+        debug_show.sh ..........................................[TIME_OUT]
  * Customized codec files (option --codec-file)
         customized_codec.sh ..........................................[OK]
  * Inadmissible commonalities
@@ -1204,15 +1234,17 @@
                        skip_range ....................................[OK]
  * Test code comments
         comment.sh ...................................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] debug_show.sh
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/TEST/reset/TEST                                                 <no date>
 -------------------------------------------------------------------------------
  * Normal Reset
         lexer-x 0 ....................................................[OK]
@@ -1285,7 +1317,7 @@
                                                                                
                           Source Package Distribution                          
                                                                                
-                                                                     <no date>
+quex/TEST/source-package/TEST                                        <no date>
 -------------------------------------------------------------------------------
 
  * Source Packager:
@@ -1324,7 +1356,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/TEST/token-class/TEST                                           <no date>
 -------------------------------------------------------------------------------
  * With token policy 'queue'.
         simple-queue.exe .............................................[OK]
@@ -1338,7 +1370,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/TEST/token-policies/TEST                                        <no date>
 -------------------------------------------------------------------------------
 
  * Token Policy 'queue':
@@ -1362,7 +1394,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/analyzer/TEST                                         <no date>
 -------------------------------------------------------------------------------
  * Accumulator
         accumulator.exe Character ....................................[OK]
@@ -1424,7 +1456,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/buffer/TEST                                           <no date>
 -------------------------------------------------------------------------------
 
  * Backward:
@@ -1439,24 +1471,24 @@
  * Forward:
 
     Copy Fallback Region (BPC=1)
-        BufferFiller_forward_copy.exe ................................[OK]
+        BufferFiller_forward_copy.exe ..............................[FAIL]
     Copy Fallback Region (BPC=4)
-        BufferFiller_forward_copy-32.exe .............................[OK]
+        BufferFiller_forward_copy-32.exe ...........................[FAIL]
 
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward.exe 1 ...................................[OK]
-                                 2 ...................................[OK]
-                                 3 ...................................[OK]
-                                 4 ...................................[OK]
-                                 5 ...................................[OK]
+        Buffer_move_backward.exe 1 .................................[FAIL]
+                                 2 .................................[FAIL]
+                                 3 .................................[FAIL]
+                                 4 .................................[FAIL]
+                                 5 .................................[FAIL]
     Backward (BPC=4)
-        Buffer_move_backward-32.exe 1 ................................[OK]
-                                    2 ................................[OK]
-                                    3 ................................[OK]
-                                    4 ................................[OK]
-                                    5 ................................[OK]
+        Buffer_move_backward-32.exe 1 ..............................[FAIL]
+                                    2 ..............................[FAIL]
+                                    3 ..............................[FAIL]
+                                    4 ..............................[FAIL]
+                                    5 ..............................[FAIL]
     Forward (BPC=1)
         Buffer_move_forward.exe 1 ....................................[OK]
                                 2 ....................................[OK]
@@ -1476,15 +1508,28 @@
         Buffer_tell_and_seek.exe .....................................[OK]
     Bytes Per Character (BPC)=4
         Buffer_tell_and_seek-32.exe ..................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] BufferFiller_forward_copy.exe
+    [FAIL] BufferFiller_forward_copy-32.exe
+    [FAIL] Buffer_move_backward.exe _ 1
+                                  \__ 2
+                                  \__ 3
+                                  \__ 4
+                                  \__ 5
+    [FAIL] Buffer_move_backward-32.exe _ 1
+                                     \__ 2
+                                     \__ 3
+                                     \__ 4
+                                     \__ 5
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/converter_helper/TEST                                 <no date>
 -------------------------------------------------------------------------------
  * Test of complete character set on base converters (utf8, utf16, utf32)
         characters ...................................................[OK]
@@ -1508,7 +1553,7 @@
                                                                                
                                 Track Analysis                                 
                                                                                
-                                                                     <no date>
+quex/engine/analyzer/TEST                                            <no date>
 -------------------------------------------------------------------------------
  * Position Register vs. Post-Context and Last Acceptance
         test-position_register_map.py 0 ..............................[OK]
@@ -1661,7 +1706,7 @@
                                                                                
                     Miscellaneous Support Functions/Modules                    
                                                                                
-                                                                     <no date>
+quex/engine/misc/TEST                                                <no date>
 -------------------------------------------------------------------------------
  * Enums -- Functionality Test
         enum.py ......................................................[OK]
@@ -1698,7 +1743,7 @@
                                                                                
                          Operations on State Machines                          
                                                                                
-                                                                     <no date>
+quex/engine/operations/TEST                                          <no date>
 -------------------------------------------------------------------------------
  * SharedTailDB
         test-SharedTailDB.py init ....................................[OK]
@@ -1739,7 +1784,7 @@
                                                                                
                               State Machine Tests                              
                                                                                
-                                                                     <no date>
+quex/engine/state_machine/TEST                                       <no date>
 -------------------------------------------------------------------------------
 
  * DFA:
@@ -1906,7 +1951,7 @@
                                                                                
                           Regular Expression Parsing                           
                                                                                
-                                                                     <no date>
+quex/input/regular_expression/TEST                                   <no date>
 -------------------------------------------------------------------------------
  * Anti-Patterns
         anti-pattern.py ..............................................[OK]
@@ -1983,7 +2028,7 @@
                                                                                
                              Output Core Generator                             
                                                                                
-                                                                     <no date>
+quex/output/core/TEST                                                <no date>
 -------------------------------------------------------------------------------
  * Mode Changes
         test-mode-changes.py ANSI-C ..................................[OK]
@@ -2230,16 +2275,18 @@
                                          B ...........................[OK]
                                          B-UTF8 ......................[OK]
                                          C ...........................[OK]
-                                         C-UTF8 ......................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                         C-UTF8 ................[TIME_OUT]
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] test-single-state-transitions.py _ C-UTF8
 ===============================================================================
                                                                                
                                   Output Cpp                                   
                                                                                
-                                                                     <no date>
+quex/output/cpp/TEST                                                 <no date>
 -------------------------------------------------------------------------------
  * Token Class Template
         test-token_class.py ..........................................[OK]
@@ -2290,101 +2337,147 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/buffer/plain/TEST                                     <no date>
 -------------------------------------------------------------------------------
 
  * Load Backward:
 
     Character=1 Byte(s), Fallback=0
-        BufferFiller_backward_load-1.exe .............................[OK]
+        BufferFiller_backward_load-1.exe ...........................[FAIL]
     Character=2 Byte(s), Fallback=0
-        BufferFiller_backward_load-2.exe .............................[OK]
+        BufferFiller_backward_load-2.exe ...........................[FAIL]
     Character=4 Byte(s), Fallback=0
-        BufferFiller_backward_load-4.exe .............................[OK]
+        BufferFiller_backward_load-4.exe ...........................[FAIL]
 
  * Load Forward:
 
     Character=1 Byte(s), Fallback=0
-        BufferFiller_forward_load-1-fb0.exe ..........................[OK]
+        BufferFiller_forward_load-1-fb0.exe ....................[OVERSIZE]
     Character=1 Byte(s), Fallback=1
-        BufferFiller_forward_load-1-fb1.exe ..........................[OK]
+        BufferFiller_forward_load-1-fb1.exe ....................[OVERSIZE]
     Character=1 Byte(s), Fallback=5
-        BufferFiller_forward_load-1-fb5.exe ..........................[OK]
+        BufferFiller_forward_load-1-fb5.exe ....................[OVERSIZE]
     Character=2 Byte(s), Fallback=0
-        BufferFiller_forward_load-2-fb0.exe ..........................[OK]
+        BufferFiller_forward_load-2-fb0.exe ....................[OVERSIZE]
     Character=2 Byte(s), Fallback=1
-        BufferFiller_forward_load-2-fb1.exe ..........................[OK]
+        BufferFiller_forward_load-2-fb1.exe ....................[OVERSIZE]
     Character=2 Byte(s), Fallback=5
-        BufferFiller_forward_load-2-fb5.exe ..........................[OK]
+        BufferFiller_forward_load-2-fb5.exe ....................[OVERSIZE]
     Character=4 Byte(s), Fallback=0
-        BufferFiller_forward_load-4-fb0.exe ..........................[OK]
+        BufferFiller_forward_load-4-fb0.exe ....................[OVERSIZE]
     Character=4 Byte(s), Fallback=1
-        BufferFiller_forward_load-4-fb1.exe ..........................[OK]
+        BufferFiller_forward_load-4-fb1.exe ....................[OVERSIZE]
     Character=4 Byte(s), Fallback=5
-        BufferFiller_forward_load-4-fb5.exe ..........................[OK]
+        BufferFiller_forward_load-4-fb5.exe ....................[OVERSIZE]
     With Error in Stream (Character=4 Byte(s))
-        BufferFiller_forward_load-error.exe ........................[FAIL]
+        BufferFiller_forward_load-error.exe ....................[OVERSIZE]
 
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward-1-fb0.exe 1 .............................[OK]
-                                       2 .............................[OK]
-                                       3 .............................[OK]
-                                       4 .............................[OK]
-                                       5 .............................[OK]
+        Buffer_move_backward-1-fb0.exe 1 .......................[TIME_OUT]
+                                       2 .......................[TIME_OUT]
+                                       3 .......................[TIME_OUT]
+                                       4 .......................[TIME_OUT]
+                                       5 .......................[TIME_OUT]
     Backward (BPC=1)
-        Buffer_move_backward-1-fb1.exe 1 .............................[OK]
-                                       2 .............................[OK]
-                                       3 .............................[OK]
-                                       4 .............................[OK]
-                                       5 .............................[OK]
+        Buffer_move_backward-1-fb1.exe 1 .......................[TIME_OUT]
+                                       2 .......................[TIME_OUT]
+                                       3 .......................[TIME_OUT]
+                                       4 .......................[TIME_OUT]
+                                       5 .......................[TIME_OUT]
     Backward (BPC=4)
-        Buffer_move_backward-4-fb0.exe 1 .............................[OK]
-                                       2 .............................[OK]
-                                       3 .............................[OK]
-                                       4 .............................[OK]
-                                       5 .............................[OK]
+        Buffer_move_backward-4-fb0.exe 1 .......................[TIME_OUT]
+                                       2 .......................[TIME_OUT]
+                                       3 .......................[TIME_OUT]
+                                       4 .......................[TIME_OUT]
+                                       5 .......................[TIME_OUT]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb0.exe 1 ..............................[OK]
-                                      2 ..............................[OK]
-                                      3 ..............................[OK]
-                                      4 ..............................[OK]
-                                      5 ..............................[OK]
+        Buffer_move_forward-1-fb0.exe 1 .......................[NO OUTPUT]
+                                      2 .......................[NO OUTPUT]
+                                      3 .......................[NO OUTPUT]
+                                      4 ........................[OVERSIZE]
+                                      5 .......................[NO OUTPUT]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb1.exe 1 ..............................[OK]
-                                      2 ..............................[OK]
-                                      3 ..............................[OK]
-                                      4 ..............................[OK]
-                                      5 ..............................[OK]
+        Buffer_move_forward-1-fb1.exe 1 .......................[NO OUTPUT]
+                                      2 .......................[NO OUTPUT]
+                                      3 ........................[OVERSIZE]
+                                      4 .......................[NO OUTPUT]
+                                      5 .......................[NO OUTPUT]
     Forward (BPC=4)
-        Buffer_move_forward-4-fb0.exe 1 ..............................[OK]
-                                      2 ..............................[OK]
-                                      3 ..............................[OK]
-                                      4 ..............................[OK]
-                                      5 ..............................[OK]
+        Buffer_move_forward-4-fb0.exe 1 ............................[FAIL]
+                                      2 ............................[FAIL]
+                                      3 ............................[FAIL]
+                                      4 ............................[FAIL]
+                                      5 ............................[FAIL]
 
  * Tell and Seek:
 
     Bytes Per Character (BPC)=1
-        Buffer_tell_and_seek-1-fb0.exe ...............................[OK]
+        Buffer_tell_and_seek-1-fb0.exe .............................[FAIL]
     Bytes Per Character (BPC)=1
-        Buffer_tell_and_seek-1-fb1.exe ...............................[OK]
+        Buffer_tell_and_seek-1-fb1.exe .............................[FAIL]
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek-4-fb0.exe ...............................[OK]
+        Buffer_tell_and_seek-4-fb0.exe .............................[FAIL]
     wiostream
-        Buffer_tell_and_seek-wiostream.exe ...........................[OK]
+        Buffer_tell_and_seek-wiostream.exe .........................[FAIL]
                                                            ___   _    _   _    
                                                           |  _| / \  | | | |   
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
+    [FAIL] BufferFiller_backward_load-1.exe
+    [FAIL] BufferFiller_backward_load-2.exe
+    [FAIL] BufferFiller_backward_load-4.exe
+    [FAIL] BufferFiller_forward_load-1-fb0.exe
+    [FAIL] BufferFiller_forward_load-1-fb1.exe
+    [FAIL] BufferFiller_forward_load-1-fb5.exe
+    [FAIL] BufferFiller_forward_load-2-fb0.exe
+    [FAIL] BufferFiller_forward_load-2-fb1.exe
+    [FAIL] BufferFiller_forward_load-2-fb5.exe
+    [FAIL] BufferFiller_forward_load-4-fb0.exe
+    [FAIL] BufferFiller_forward_load-4-fb1.exe
+    [FAIL] BufferFiller_forward_load-4-fb5.exe
     [FAIL] BufferFiller_forward_load-error.exe
+    [FAIL] Buffer_move_backward-1-fb0.exe _ 1
+                                        \__ 2
+                                        \__ 3
+                                        \__ 4
+                                        \__ 5
+    [FAIL] Buffer_move_backward-1-fb1.exe _ 1
+                                        \__ 2
+                                        \__ 3
+                                        \__ 4
+                                        \__ 5
+    [FAIL] Buffer_move_backward-4-fb0.exe _ 1
+                                        \__ 2
+                                        \__ 3
+                                        \__ 4
+                                        \__ 5
+    [FAIL] Buffer_move_forward-1-fb0.exe _ 1
+                                       \__ 2
+                                       \__ 3
+                                       \__ 4
+                                       \__ 5
+    [FAIL] Buffer_move_forward-1-fb1.exe _ 1
+                                       \__ 2
+                                       \__ 3
+                                       \__ 4
+                                       \__ 5
+    [FAIL] Buffer_move_forward-4-fb0.exe _ 1
+                                       \__ 2
+                                       \__ 3
+                                       \__ 4
+                                       \__ 5
+    [FAIL] Buffer_tell_and_seek-1-fb0.exe
+    [FAIL] Buffer_tell_and_seek-1-fb1.exe
+    [FAIL] Buffer_tell_and_seek-4-fb0.exe
+    [FAIL] Buffer_tell_and_seek-wiostream.exe
 ===============================================================================
                                                                                
                              State Machine Algebra                             
                                                                                
-                                                                     <no date>
+quex/engine/state_machine/algebra/TEST                               <no date>
 -------------------------------------------------------------------------------
  * Algebraic Relations
         test-algebraic-relations.py binary ...........................[OK]
@@ -2467,7 +2560,7 @@
                                                                                
                        State Machine related Algorithms                        
                                                                                
-                                                                     <no date>
+quex/engine/state_machine/algorithm/TEST                             <no date>
 -------------------------------------------------------------------------------
 
  * DFA:
@@ -2496,7 +2589,7 @@
                                                                                
                              State Machine Checks                              
                                                                                
-                                                                     <no date>
+quex/engine/state_machine/check/TEST                                 <no date>
 -------------------------------------------------------------------------------
  * Commonality Checker
         test-commonality.py ..........................................[OK]
@@ -2523,7 +2616,7 @@
                                                                                
                        Indentation Counting and Skipping                       
                                                                                
-                                                                     <no date>
+quex/output/core/skipper/TEST                                        <no date>
 -------------------------------------------------------------------------------
  * Indentation Counting
         test-indentation-counter.py NonUniform .......................[OK]
@@ -2578,7 +2671,7 @@
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/buffer/converter/iconv/TEST                           <no date>
 -------------------------------------------------------------------------------
 
  * Converter:
@@ -2599,17 +2692,17 @@
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 ...................................[OK]
-                                 2 ...................................[OK]
-                                 3 ...................................[OK]
-                                 4 ...................................[OK]
-                                 5 ...................................[OK]
+        Buffer_move_backward.exe 1 .............................[TIME_OUT]
+                                 2 .............................[TIME_OUT]
+                                 3 .............................[TIME_OUT]
+                                 4 .............................[TIME_OUT]
+                                 5 .............................[TIME_OUT]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ....................................[OK]
-                                2 ....................................[OK]
-                                3 ....................................[OK]
-                                4 ....................................[OK]
-                                5 ....................................[OK]
+        Buffer_move_forward.exe 1 ..................................[FAIL]
+                                2 ..................................[FAIL]
+                                3 ..................................[FAIL]
+                                4 ..................................[FAIL]
+                                5 ..................................[FAIL]
 
  * Stream Position Seek:
 
@@ -2623,7 +2716,7 @@
  * Tell and Seek:
 
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek.exe .....................................[OK]
+        Buffer_tell_and_seek.exe ...................................[FAIL]
 
  * read_characters:
 
@@ -2642,15 +2735,27 @@
                    7 .................................................[OK]
                    8 .................................................[OK]
                    9 .................................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] Buffer_move_backward.exe _ 1
+                                  \__ 2
+                                  \__ 3
+                                  \__ 4
+                                  \__ 5
+    [FAIL] Buffer_move_forward.exe _ 1
+                                 \__ 2
+                                 \__ 3
+                                 \__ 4
+                                 \__ 5
+    [FAIL] Buffer_tell_and_seek.exe
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-                                                                     <no date>
+quex/code_base/buffer/converter/icu/TEST                             <no date>
 -------------------------------------------------------------------------------
 
  * Converter:
@@ -2671,17 +2776,17 @@
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 ...................................[OK]
-                                 2 ...................................[OK]
-                                 3 ...................................[OK]
-                                 4 ...................................[OK]
-                                 5 ...................................[OK]
+        Buffer_move_backward.exe 1 .............................[TIME_OUT]
+                                 2 .............................[TIME_OUT]
+                                 3 .............................[TIME_OUT]
+                                 4 ...................[KEYBOARD_INTERRUPT]
+                                 5 ...................[KEYBOARD_INTERRUPT]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ....................................[OK]
-                                2 ....................................[OK]
-                                3 ....................................[OK]
-                                4 ....................................[OK]
-                                5 ....................................[OK]
+        Buffer_move_forward.exe 1 ..................................[FAIL]
+                                2 ..................................[FAIL]
+                                3 ..................................[FAIL]
+                                4 ..................................[FAIL]
+                                5 ..................................[FAIL]
 
  * Stream Position Seek:
 
@@ -2695,7 +2800,7 @@
  * Tell and Seek:
 
     Bytes Per Character (BPC)=4
-        Buffer_tell_and_seek.exe .....................................[OK]
+        Buffer_tell_and_seek.exe ...................................[FAIL]
 
  * read_characters:
 
@@ -2714,15 +2819,27 @@
                    7 .................................................[OK]
                    8 .................................................[OK]
                    9 .................................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] Buffer_move_backward.exe _ 1
+                                  \__ 2
+                                  \__ 3
+                                  \__ 4
+                                  \__ 5
+    [FAIL] Buffer_move_forward.exe _ 1
+                                 \__ 2
+                                 \__ 3
+                                 \__ 4
+                                 \__ 5
+    [FAIL] Buffer_tell_and_seek.exe
 ===============================================================================
                                                                                
                          Pathwalker State Construction                         
                                                                                
-                                                                     <no date>
+quex/engine/analyzer/mega_state/path_walker/TEST                     <no date>
 -------------------------------------------------------------------------------
 
  * Paths:
@@ -2768,7 +2885,7 @@
                                                                                
                           Template State Construction                          
                                                                                
-                                                                     <no date>
+quex/engine/analyzer/mega_state/template/TEST                        <no date>
 -------------------------------------------------------------------------------
  * Combination of Two Transition Maps
         combine-maps.py 1 ............................................[OK]
@@ -2814,7 +2931,7 @@
                                                                                
                       Code Generation for Transition Map                       
                                                                                
-                                                                     <no date>
+quex/output/core/state/transition_map/TEST                           <no date>
 -------------------------------------------------------------------------------
 
  * Code generation:
@@ -2855,27 +2972,27 @@ SUMMARY:
 
     Fails: N:  Verdict: Directory:                                       
 
-       21  237   [FAIL] TEST                                             
-       18  66    [FAIL] demo/C/TEST                                      
-       19  53    [FAIL] ..../Cpp/TEST                                    
+       46  237   [FAIL] TEST                                             
+       17  66    [FAIL] demo/C/TEST                                      
+       18  53    [FAIL] ..../Cpp/TEST                                    
            2       [OK] quex/TEST/command-line/TEST                      
            2       [OK] ........./did-you-mean/TEST                      
            1       [OK] ........./errors-warnings/TEST                   
            10      [OK] ........./event-handling/TEST                    
            14      [OK] ........./include-stack/TEST                     
-           18      [OK] ........./indentation_count/TEST                 
+        6  18    [FAIL] ........./indentation_count/TEST                 
            45      [OK] ........./match-precedence/TEST                  
-           9       [OK] ........./misc/TEST                              
+        1  9     [FAIL] ........./misc/TEST                              
            55      [OK] ........./reset/TEST                             
            24      [OK] ........./source-package/TEST                    
            2       [OK] ........./token-class/TEST                       
            4       [OK] ........./token-policies/TEST                    
            10      [OK] ..../code_base/TEST                              
            42      [OK] ............../analyzer/TEST                     
-           28      [OK] ............../buffer/TEST                       
-           36      [OK] ...................../converter/iconv/TEST       
-           36      [OK] .............................../icu/TEST         
-        1  47    [FAIL] ...................../plain/TEST                 
+       12  28    [FAIL] ............../buffer/TEST                       
+       11  36    [FAIL] ...................../converter/iconv/TEST       
+       11  36    [FAIL] .............................../icu/TEST         
+       47  47    [FAIL] ...................../plain/TEST                 
            10      [OK] ............../converter_helper/TEST             
            42      [OK] ..../engine/TEST                                 
            112     [OK] .........../analyzer/TEST                        
@@ -2889,16 +3006,16 @@ SUMMARY:
            13      [OK] ........................./check/TEST             
            56      [OK] ..../input/TEST                                  
            27      [OK] ........../regular_expression/TEST               
-           196     [OK] ..../output/core/TEST                            
+        1  196   [FAIL] ..../output/core/TEST                            
            29      [OK] ................/skipper/TEST                    
            22      [OK] ................/state/transition_map/TEST       
            30      [OK] .........../cpp/TEST                             
 
 -------------------------------------------------------------------------------
-     _____     _ _          ____     ___            
-    |  ___|_ _(_) |___     | ___|   / _ \     __  __
-    | |_ / _` | | / __|    |___ \  | (_) |    \ \/ /
-    |  _| (_| | | \__ \     ___) |  \__, |     >  < 
-    |_|  \__,_|_|_|___/    |____/     /_/     /_/\_\
+     _____     _ _          _  _____   ___            
+    |  ___|_ _(_) |___     / ||___  | / _ \     __  __
+    | |_ / _` | | / __|    | |   / / | | | |    \ \/ /
+    |  _| (_| | | \__ \    | |  / /  | |_| |     >  < 
+    |_|  \__,_|_|_|___/    |_| /_/    \___/     /_/\_\
                                                                    (1509 tests)
 ===============================================================================

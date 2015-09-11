@@ -14,18 +14,16 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer)    buffer;
     size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };
     int                  memory_size   = 12;
+    QUEX_TYPE_CHARACTER  memory[memory_size];
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
-    QUEX_TYPE_CHARACTER  memory[memory_size];
-    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, &memory[0], memory_size, 0, E_Ownership_EXTERNAL);
-    QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
+    for(int i = 1; i < memory_size - 1 ; ++i) memory[i] = '0' + i % 10;
 
-    for(int i = 1; i < memory_size - 2 ; ++i) buffer._memory._front[i] = '0' + i;
-    buffer._memory._back[- 1] = '0';
-
-    buffer._input_p = &buffer._memory._front[1];
-    QUEX_NAME(Buffer_end_of_file_set)(&buffer, buffer._memory._back);
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                (QUEX_NAME(BufferFiller)*)0x0, 
+                                &memory[0], memory_size, &memory[memory_size-1], 
+                                E_Ownership_EXTERNAL);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }

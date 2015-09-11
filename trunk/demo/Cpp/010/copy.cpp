@@ -16,9 +16,7 @@ main(int argc, char** argv)
     using namespace std;
 
     /* Create a buffer filler without byte loader. */
-    quex::QUEX_NAME(BufferFiller)* filler = quex::QUEX_NAME(BufferFiller_DEFAULT)(0, 0);
-
-    quex::tiny_lexer  qlex(filler);   // No args to constructor --> raw memory 
+    quex::tiny_lexer  qlex((ByteLoader*)0);   
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -26,8 +24,8 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // A pointer to the receive buffer that
     //                                      // the messaging framework provides.
 
-    MemoryChunk           chunk;      // Pointers to the memory positions under
-    //                                // consideration.
+    MemoryChunk           chunk = { 0, 0  }; // Pointers to the memory positions under
+    //                                       // consideration.
 
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Store the start of the 
     //                                               // lexeme for possible 
@@ -99,7 +97,6 @@ main(int argc, char** argv)
         qlex.buffer._input_p = prev_lexeme_start_p;
     }
 
-    filler->delete_self(filler);
     return 0;
 }
 
