@@ -12,12 +12,6 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer);
-
-    QUEX_INLINE void       QUEX_NAME(__BufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)*, 
-                                                                                 const ptrdiff_t BackwardDistance);
-    QUEX_INLINE void       QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*, 
-                                                                             const ptrdiff_t BackwardDistance);
     QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
                            
     QUEX_INLINE size_t     QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(Buffer)*, 
@@ -359,7 +353,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*_______________________________________________________________________________
          * (1) Compute distance to go backwards */
-        BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(buffer);
+        BackwardDistance = QUEX_NAME(Buffer_move_away_upfront_content)(buffer); 
+
         /*_______________________________________________________________________________
          * (2) Compute the stream position of the 'start to read'   
          *  
@@ -369,10 +364,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         NewContentCharacterIndexBegin = QUEX_NAME(Buffer_character_index_begin)(buffer) - BackwardDistance;
         __quex_assert(BackwardDistance != 0); /* if "_index_begin != 0", then backward load must be. */
         me->seek_character_index(me, NewContentCharacterIndexBegin);
-
-        /*_______________________________________________________________________________
-         * (3) Load content*/
-        QUEX_NAME(__BufferFiller_backward_copy_backup_region)(buffer, BackwardDistance);
         
         /* -- If file content < buffer size, then the start position of the stream to which  
          *    the buffer refers is always 0 and no backward loading will ever happen.  
@@ -382,109 +373,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /*________________________________________________________________________________
          * (4) Adapt pointers */
-        QUEX_NAME(__BufferFiller_backward_adapt_pointers)(buffer, BackwardDistance);
+        buffer->_input_p += 1;
 
         __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
 
         return (size_t)BackwardDistance;
-    }
-
-
-    QUEX_INLINE ptrdiff_t
-    QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(QUEX_NAME(Buffer)* buffer)
-    {
-        const ptrdiff_t  ContentSize  = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
-        QUEX_TYPE_STREAM_POSITION  IntendedBackwardDistance = (ptrdiff_t)-1;
-        QUEX_TYPE_STREAM_POSITION  Distance_InputP_to_LexemeStart = (ptrdiff_t)-1;
-        QUEX_TYPE_STREAM_POSITION  LimitBackwardDist_1 = -1; 
-        QUEX_TYPE_STREAM_POSITION  LimitBackwardDist_2 = -1;
-        QUEX_TYPE_STREAM_POSITION  Limit_1_and_2 = -1;
-        QUEX_TYPE_STREAM_POSITION  BackwardDistance = -1;
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        /* Copying backward shall **only** happen when new content is to be loaded. In back
-         * ward direction, this makes only sense if the lower border was reached.         */
-        __quex_assert(buffer->_input_p == buffer->_memory._front);
-        /* We need to make sure, that the lexeme start pointer remains inside the
-         * buffer, so that we do not loose the reference. From current_p == buffer begin
-         * it is safe to say that _lexeme_start_p > _input_p (the lexeme starts
-         * on a letter not the buffer limit).                                             */
-        __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
-        __quex_assert((size_t)(buffer->_lexeme_start_p - buffer->_input_p) < QUEX_NAME(Buffer_content_size)(buffer));
-
-        IntendedBackwardDistance = QUEX_MAX((ptrdiff_t)(ContentSize / 3), 1); 
-        /* IntendedBackwardDistance > 0 */
-
-        /* Limit 1:
-         *
-         *     Before:    |C      L                  |
-         *
-         *     After:     |       C      L           |
-         *                 ------->
-         *                 backward distance
-         *
-         *     Lexeme start pointer L shall lie inside the buffer. Thus, it is required:
-         *
-         *               LimitBackwardDist_1 + (C - L) < size
-         *           =>            LimitBackwardDist_1 < size - (C - L)
-         *            
-         *           =>  LimitBackwardDist_1 > 0, see __quex_assert(...) above. */
-        Distance_InputP_to_LexemeStart = buffer->_lexeme_start_p - buffer->_input_p;
-        LimitBackwardDist_1            = ContentSize - Distance_InputP_to_LexemeStart; 
-
-        /* Limit 2:
-         *     We cannot go before the first character in the stream. 
-         *         LimitBackwardDist_2 > 0, see __quex_assert(...) above. */
-        LimitBackwardDist_2 = QUEX_NAME(Buffer_character_index_begin)(buffer);
-
-
-        /* Taking the minimum of all:*/
-        /*           Limit_1_and_2 = min(LimitBackwardDist_1 and _2) > 0 */
-        Limit_1_and_2    = QUEX_MIN(LimitBackwardDist_1, LimitBackwardDist_2);
-        BackwardDistance = QUEX_MIN(IntendedBackwardDistance, Limit_1_and_2);
-
-        __quex_assert(BackwardDistance > (ptrdiff_t)0);
-        return (ptrdiff_t)BackwardDistance;
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(__BufferFiller_backward_copy_backup_region)(QUEX_NAME(Buffer)*  buffer, 
-                                                          const ptrdiff_t     BackwardDistance)
-    {
-        const size_t         ContentSize      = QUEX_NAME(Buffer_content_size)(buffer);
-        QUEX_TYPE_CHARACTER* ContentFront     = QUEX_NAME(Buffer_content_front)(buffer);
-
-        __quex_assert(BackwardDistance >= (ptrdiff_t)0);
-        __quex_assert((size_t)BackwardDistance < ContentSize);
-
-        /* (*) copy content that is already there to its new position.
-         *     (copying is much faster then loading new content from file). */
-        __QUEX_STD_memmove(ContentFront + BackwardDistance, ContentFront, 
-                           (size_t)(ContentSize - (size_t)BackwardDistance)*sizeof(QUEX_TYPE_CHARACTER));
-
-        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-        QUEX_IF_ASSERTS_poison((void*)ContentFront,
-                               (void*)&ContentFront[BackwardDistance]); 
-    }
-
-    QUEX_INLINE void
-    QUEX_NAME(__BufferFiller_backward_adapt_pointers)(QUEX_NAME(Buffer)*  buffer, 
-                                                      const ptrdiff_t     BackwardDistance)
-    {
-        QUEX_TYPE_CHARACTER* end_of_file_p = (QUEX_TYPE_CHARACTER*)0;
-
-        /* -- end of file / end of buffer:*/
-        if( buffer->_memory._end_of_file_p ) {
-            end_of_file_p = &buffer->_memory._end_of_file_p[BackwardDistance];
-            if( end_of_file_p > buffer->_memory._back ) 
-                end_of_file_p = (QUEX_TYPE_CHARACTER*)0;
-        }
-
-        buffer->_memory._end_of_file_p   = end_of_file_p;
-        buffer->_input_p                += BackwardDistance + 1; 
-        buffer->_lexeme_start_p         += BackwardDistance;
     }
 
     QUEX_INLINE void
