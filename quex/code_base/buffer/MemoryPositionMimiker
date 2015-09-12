@@ -46,7 +46,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be
         //        can be initialized via a pointer, as a normal pointer does, e.g.
-        //        "QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);"
+        //        "QUEX_TYPE_CHARACTER_POSITION last_acceptance_read_position = (QUEX_TYPE_CHARACTER*)(0x00);"
         QUEX_NAME(MemoryPositionMimiker)(QUEX_TYPE_CHARACTER* Adr=0x0, QUEX_TYPE_STREAM_POSITION Pos=0) 
             : address(Adr), buffer_start_position(Pos) {}
 

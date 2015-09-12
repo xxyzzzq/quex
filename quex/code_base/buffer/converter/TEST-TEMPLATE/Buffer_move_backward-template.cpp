@@ -41,11 +41,11 @@ main(int argc, char** argv)
     assert((void*)((QUEX_NAME(BufferFiller_Converter)*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 
-    /* Read until the end of file is reached and set the _input_p to EOF */
+    /* Read until the end of file is reached and set the _read_p to EOF */
     while( 1 + 1 == 2 ) {
-        buffer._input_p        = QUEX_NAME(Buffer_text_end)(&buffer);
-        buffer._lexeme_start_p = buffer._input_p;
-        if( buffer._input_p == buffer._memory._end_of_file_p ) break;
+        buffer._read_p        = QUEX_NAME(Buffer_text_end)(&buffer);
+        buffer._lexeme_start_p = buffer._read_p;
+        if( buffer._read_p == buffer.input.end_p ) break;
         QUEX_NAME(BufferFiller_load_forward)(&buffer);
     }
     test_move_backward(&buffer, StepSize); 

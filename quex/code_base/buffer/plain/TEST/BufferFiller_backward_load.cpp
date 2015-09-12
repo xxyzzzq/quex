@@ -35,7 +35,7 @@ main(int argc, char** argv)
 
     /* Simulate, as if we started at 0, and now reached '15' */
     byte_loader->initial_position         = 0;
-    buffer._content_character_index_end   = BeginIdx + (MemorySize-2);
+    buffer.input.end_character_index   = BeginIdx + (MemorySize-2);
     //filler->_character_index            = buffer._content_character_index_begin + (MemorySize-2);
     filler->_last_stream_position         = ftell(fh);
 
@@ -46,7 +46,7 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
         if( QUEX_NAME(Buffer_character_index_begin)(&buffer) == 0 ) break;
-        buffer._input_p        = buffer._memory._front;
+        buffer._read_p        = buffer._memory._front;
         buffer._lexeme_start_p = buffer._memory._front + 1;
         /**/
         QUEX_NAME(BufferFiller_load_backward)(&buffer);

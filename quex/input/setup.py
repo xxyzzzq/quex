@@ -333,7 +333,7 @@ SETUP_INFO = {
     "XX_buffer_element_size2":           [["--bytes-per-trigger"],              -1],                  
     "XX_end_of_stream_code":             [["--end-of-stream"],                  "0x1A"],                  
     "XX_flex_engine_f":                  [["--flex-engine"],                    SetupParTypes.FLAG],      
-    "XX_input_pattern_file":             [["-p", "--pattern-file"],             ""],                      
+    "XX_read_pattern_file":             [["-p", "--pattern-file"],             ""],                      
     "XX_input_token_id_db":              [["-t", "--token-id-db"],              SetupParTypes.LIST],
     "XX_leave_temporary_files_f":        [["--leave-tmp-files"],                SetupParTypes.FLAG],      
     "XX_plain_memory_f":                 [["--plain-memory"],                   SetupParTypes.FLAG],           
@@ -394,7 +394,7 @@ class NotificationDB:
     error_ufo_on_command_line_f                      = 17
 
 DEPRECATED = { 
-  "XX_input_pattern_file": 
+  "XX_read_pattern_file": 
      ("Write a 'pattern { ... }' section inside the mode files instead.\n" + \
       "Syntax of the 'pattern { ... }' section and the previous file syntax\n" + \
       "are backward compatible.", "0.9.x"),        

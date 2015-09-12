@@ -95,7 +95,7 @@ def do_pre_context(SM, PreContextSmIdList):
 
     return txt, analyzer
 
-def do_backward_input_position_detectors(BipdDb):
+def do_backward_read_position_detectors(BipdDb):
     """RETURNS: [0] Code for BIPD analyzer
                 [1] map: acceptance_id --> DoorID of entry into BIPD
 

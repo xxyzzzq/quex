@@ -38,10 +38,10 @@ main(int argc, char** argv)
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: FallbackN = %i!\n", QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-    printf("## NOTE: When copying, it can be assumed that the _input_p stands on _memory._back\n");
-    buffer._input_p = buffer._memory._back;
+    printf("## NOTE: When copying, it can be assumed that the _read_p stands on _memory._back\n");
+    buffer._read_p = buffer._memory._back;
     printf("## NOTE: And the end of file has not been reached yet.\n");
-    buffer._memory._end_of_file_p = 0x0;
+    buffer.input.end_p = 0x0;
 
     for(buffer._lexeme_start_p = buffer._memory._back; 
         buffer._lexeme_start_p != buffer._memory._front; 
@@ -49,7 +49,7 @@ main(int argc, char** argv)
 
         memset(&buffer._memory._front[1], (QUEX_TYPE_CHARACTER)-1, sizeof(memory)/sizeof(memory[0])-2);
         memcpy(&buffer._memory._front[1], (void*)content, sizeof(content));
-        buffer._content_character_index_end = sizeof(content) / sizeof(content[0]);
+        buffer.input.end_character_index = sizeof(content) / sizeof(content[0]);
 
         /**/
         printf("------------------------------\n");
@@ -60,7 +60,7 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
 
-        if( buffer._input_p - buffer._lexeme_start_p == memory_size - 2 ) 
+        if( buffer._read_p - buffer._lexeme_start_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
 
         QUEX_NAME(Buffer_move_away_passed_content)(&buffer);

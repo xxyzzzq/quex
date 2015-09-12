@@ -46,7 +46,7 @@ tiny_lexer_PROGRAM_analyser_function(QuexAnalyzerEngine* me)
     /* me = pointer to state of the lexical analyser */
     quex::QuexMode&              PROGRAM = QUEX_LEXER_CLASS::PROGRAM;
     QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
-    QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
+    QUEX_TYPE_CHARACTER_POSITION last_acceptance_read_position = (QUEX_TYPE_CHARACTER*)(0x00);
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
     QUEX_TYPE_CHARACTER          input = (QUEX_TYPE_CHARACTER)(0x00);
 
@@ -82,7 +82,7 @@ STATE_787:
                         goto STATE_787_DROP_OUT;    /* [-oo, \0] */
                 } else {
                     if( input < 9) {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* [\1, \8] */
                     } else {
                         goto STATE_786;    /* ['\t', '\n'] */
@@ -91,17 +91,17 @@ STATE_787:
             } else {
                 if( input < 33) {
                     if( input != 32) {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* [\11, \31] */
                     } else {
                         goto STATE_786;    /* ' ' */
                     }
                 } else {
                     if( input < 42) {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* ['!', ')'] */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_112_DIRECT;    /* ['*', '+'] */
                     }
                 }
@@ -110,18 +110,18 @@ STATE_787:
             if( input < 48) {
                 if( input < 46) {
                     if( input == 44) {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* ',' */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_112_DIRECT;    /* '-' */
                     }
                 } else {
                     if( input == 46) {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* '.' */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_112_DIRECT;    /* '/' */
                     }
                 }
@@ -130,14 +130,14 @@ STATE_787:
                     if( input < 58) {
                         goto STATE_781;    /* ['0', '9'] */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* [':', '@'] */
                     }
                 } else {
                     if( input < 91) {
                         goto STATE_779;    /* ['A', 'Z'] */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* ['[', '^'] */
                     }
                 }
@@ -150,7 +150,7 @@ STATE_787:
                     if( input == 95) {
                         goto STATE_779;    /* '_' */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* '`' */
                     }
                 } else {
@@ -201,7 +201,7 @@ STATE_787:
                     if( input == 123) {
                         goto STATE_780;    /* '{' */
                     } else {
-                        QuexBuffer_input_p_increment(&me->buffer);
+                        QuexBuffer_read_p_increment(&me->buffer);
                         goto TERMINAL_134_DIRECT;    /* ['|', oo] */
                     }
                 }

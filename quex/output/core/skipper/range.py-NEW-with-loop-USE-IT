@@ -51,7 +51,7 @@ $$ENTRY$$:
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
-    /* NOTE: If _input_p == end of buffer, then it will drop out immediately out of the
+    /* NOTE: If _read_p == end of buffer, then it will drop out immediately out of the
      *       loop below and drop into the buffer reload procedure.                      */
 
     /* Loop eating characters: Break-out as soon as the First Character of the Delimiter
@@ -88,8 +88,8 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
      *
      *                Distance to text end >= Delimiter length 
      *
-     *                _input_p    end
-     *                    |        |           end - _input_p >= 3
+     *                _read_p    end
+     *                    |        |           end - _read_p >= 3
      *                [ ][R][E][M][#]          
      * 
      *         The case of reload should be seldom and is costy anyway. 
@@ -109,7 +109,7 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
         $$GOTO_RELOAD$$;
     }
     $$LC_ON_FIRST_DELIMITER$$
-    /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
+    /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_read_p + 1'
      *       if any later check fails. */
     $$INPUT_P_INCREMENT$$
     /* Example: Delimiter = '*', '/'; if we get ...[*][*][/]... then the the first "*" causes 
@@ -128,7 +128,7 @@ $$LC_COUNT_END_PROCEDURE$$
     }
 
 $$RELOAD$$:
-    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
+    QUEX_BUFFER_ASSERT_pointers_in_range(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -136,12 +136,12 @@ $$RELOAD$$:
     $$MARK_LEXEME_START$$
 
 $$LC_COUNT_BEFORE_RELOAD$$
-    /* -- According to case (2.1) is is possible that the _input_p does not point to the end
+    /* -- According to case (2.1) is is possible that the _read_p does not point to the end
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
-    me->buffer._input_p = text_end;
+    me->buffer._read_p = text_end;
     QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
-    /* Recover '_input_p' from lexeme start 
+    /* Recover '_read_p' from lexeme start 
      * (inverse of what we just did before the loading) */
 """
 

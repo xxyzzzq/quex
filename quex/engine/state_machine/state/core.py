@@ -102,12 +102,12 @@ class State:
             if not hasattr(cmd, "set_acceptance_id"): continue
             cmd.set_acceptance_id(AcceptanceID)
 
-    def set_input_position_restore_f(self, Value=True):
+    def set_read_position_restore_f(self, Value=True):
         accept_cmd = self.single_entry.find(SeAccept)
         assert accept_cmd is not None
         accept_cmd.set_restore_position_register_f()
 
-    def set_input_position_store_f(self, Value=True):
+    def set_read_position_store_f(self, Value=True):
         if Value: self.single_entry.add_Op(SeStoreInputPosition)
         else:     self.single_entry.remove_Op(SeStoreInputPosition)
 

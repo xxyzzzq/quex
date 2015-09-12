@@ -3,7 +3,7 @@ Buffer:
       + _memory
 
    -- for the analyser contains:
-      + _input_p:         pointer to the currently analysed character
+      + _read_p:         pointer to the currently analysed character
       + _lexeme_start_p:  pointer to the first character in current lexeme
       + ...
 

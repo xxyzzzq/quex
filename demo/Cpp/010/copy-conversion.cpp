@@ -88,7 +88,7 @@ main(int argc, char** argv)
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
-        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        qlex.buffer_read_pointer_set(prev_lexeme_start_p);
     }
     cout << "Consider: " << string(*prev_token) << endl;
 

@@ -115,7 +115,7 @@
 (*) 07y5m17d:
 
     check the unit test for get-backward-2, make a unit test for mark_lexeme_start
-    consider the placement of the lexeme start at buffer limits or _end_of_file_p!
+    consider the placement of the lexeme start at buffer limits or input.end_p!
 
 (*) 07y5m16:
 

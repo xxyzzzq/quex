@@ -53,7 +53,7 @@
  * so that the generated engine code is no different from the normal. For a
  * given state with index 'X' the following call is generated:
  *
- *    QUEX_NAME(statistics_state_count)(&QUEX_NAME(statistics_state_X), *me->buffer._input_p);
+ *    QUEX_NAME(statistics_state_count)(&QUEX_NAME(statistics_state_X), *me->buffer._read_p);
  * ____________________________________________________________________________
  *
  * QUEX_NAME(statistics_state_save)(Filename):

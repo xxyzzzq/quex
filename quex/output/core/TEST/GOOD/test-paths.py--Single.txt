@@ -20,13 +20,13 @@ goto _7;
 _7:
 
     __quex_debug_state(7);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     if( input == *path_iterator ) {
         ++path_iterator;
         goto _7;
     } else if( *path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
-        --(me->buffer._input_p);
+        --(me->buffer._read_p);
 
         goto _6;
         }

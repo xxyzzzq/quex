@@ -538,7 +538,7 @@ setup. The handling of the loop exit is shown below.
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
-        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        qlex.buffer_read_pointer_set(prev_lexeme_start_p);
     }
 
 .. warning::
@@ -656,7 +656,7 @@ shown below.
 
             // -- Reset the input pointer, so that the last lexeme before TERMINATION
             //    enters the matching game again.
-            qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+            qlex.buffer_read_pointer_set(prev_lexeme_start_p);
         }
 
         return 0;
@@ -752,7 +752,7 @@ filled a code fragment like
 .. code-block:: cpp
 
     qlex.buffer_fill_region_finish(receive_n);
-    qlex.buffer_input_pointer_set(BeginOfMemory + 1);
+    qlex.buffer_read_pointer_set(BeginOfMemory + 1);
 
 tells the analyzer about the number of characters that make up the content.
 Also, it resets the input position to the start of the buffer.  Now, the

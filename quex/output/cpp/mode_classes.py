@@ -214,7 +214,7 @@ on_indentation_str = """
 #   define RETURN    __QUEX_RETURN
 #   define CONTINUE  __QUEX_RETURN
 #   define Lexeme    LexemeBegin
-#   define LexemeEnd (me->buffer._input_p)
+#   define LexemeEnd (me->buffer._read_p)
 
     QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;
     QUEX_TYPE_INDENTATION*        start = 0x0;

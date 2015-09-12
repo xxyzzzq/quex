@@ -17,7 +17,7 @@ QUEX_MEMBER_FUNCTIONO(lexeme_start_pointer_get)
 
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO1(input_pointer_set, QUEX_TYPE_CHARACTER* Adr)
-{ this->buffer._input_p = Adr; }
+{ this->buffer._read_p = Adr; }
 
 QUEX_INLINE void        
 QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,

@@ -115,7 +115,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
     /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
      *       stream to a particular position given by a character index. QuexBuffer_seek(..)
-     *       sets the _input_p to a particular position.                                      */
+     *       sets the _read_p to a particular position.                                      */
     QUEX_INLINE void 
     QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                        const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 

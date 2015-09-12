@@ -51,8 +51,8 @@ _500:
     __quex_assert_no_passage();
 _1:
     __quex_debug_state(1);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
 
     if( input >= 0xA ) {
         QUEX_GOTO_STATE(template_1_target_1[template_state_key]);

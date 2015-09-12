@@ -193,9 +193,9 @@
 
 #   define __quex_debug_input(StateIdx)                                            \
            __quex_debug("input:           ");                                      \
-           __QUEX_PRINT_CHAR(*(me->buffer._input_p));                              \
+           __QUEX_PRINT_CHAR(*(me->buffer._read_p));                              \
            __quex_debug2("input position:  %i",                                    \
-                         (int)(me->buffer._input_p - me->buffer._memory._front));  \
+                         (int)(me->buffer._read_p - me->buffer._memory._front));  \
            __quex_optional_statistics((StateIdx))
 
 #   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
@@ -235,7 +235,7 @@
 
 #   define __quex_debug_buffer_info(B)                                         \
            __quex_debug2("input position:  %i",                                \
-                         (int)((B)._input_p        - (B)._memory._front + 1)); \
+                         (int)((B)._read_p        - (B)._memory._front + 1)); \
            __quex_debug2("lexeme start:    %i",                                \
                          (int)((B)._lexeme_start_p - (B)._memory._front + 1)); \
            __quex_debug2("buffer size:     %i",                                \
@@ -303,7 +303,7 @@
 #ifdef QUEX_OPTION_STATISTICS
 #    define __quex_optional_statistics(StateIdx) \
             QUEX_NAME(statistics_state_count)(QUEX_NAME(statistics_state_ ## StateIdx), \
-                                              *(me->buffer._input_p));
+                                              *(me->buffer._read_p));
 #else
 #    define __quex_optional_statistics(StateIdx) /* empty */
 #endif
@@ -386,13 +386,13 @@
 #if ! defined(QUEX_OPTION_TERMINATION_ZERO_DISABLED)
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_SET(BUFFER)        \
-        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_input_p); \
-        *((BUFFER)->_input_p) = '\0';
+        (BUFFER)->_character_at_lexeme_start = *((BUFFER)->_read_p); \
+        *((BUFFER)->_read_p) = '\0';
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
         /* only need to reset, in case that the terminating zero was set*/        \
         if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) { \
-            *((BUFFER)->_input_p) = (BUFFER)->_character_at_lexeme_start;         \
+            *((BUFFER)->_read_p) = (BUFFER)->_character_at_lexeme_start;         \
             (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     \
         }
 #else

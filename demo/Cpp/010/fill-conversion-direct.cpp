@@ -51,7 +51,7 @@ main(int argc, char** argv)
 
         if( token_id == QUEX_TKN_BYE ) break;
 
-        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        qlex.buffer_read_pointer_set(prev_lexeme_start_p);
     }
     cout << "Consider: " << string(*prev_token) << endl;
 

@@ -44,7 +44,7 @@ $$ENTRY$$:
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= Skipper$$SKIPPER_INDEX$$L );
 
-    /* NOTE: If _input_p == end of buffer, then it will drop out immediately out of the
+    /* NOTE: If _read_p == end of buffer, then it will drop out immediately out of the
      *       loop below and drop into the buffer reload procedure.                      */
 
     /* Loop eating characters: Break-out as soon as the First Character of the Delimiter
@@ -81,8 +81,8 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
      *
      *                Distance to text end >= Delimiter length 
      *
-     *                _input_p    end
-     *                    |        |           end - _input_p >= 3
+     *                _read_p    end
+     *                    |        |           end - _read_p >= 3
      *                [ ][R][E][M][#]          
      * 
      *         The case of reload should be seldom and is costy anyway. 
@@ -99,7 +99,7 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
         $$GOTO_RELOAD$$;
     }
     $$LC_ON_FIRST_DELIMITER$$
-    /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
+    /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_read_p + 1'
      *       if any later check fails. */
     $$INPUT_P_INCREMENT$$
     /* Example: Delimiter = '*', '/'; if we get ...[*][*][/]... then the the first "*" causes 
@@ -118,7 +118,7 @@ $$LC_COUNT_END_PROCEDURE$$
     }
 
 $$RELOAD$$:
-    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
+    QUEX_BUFFER_ASSERT_pointers_in_range(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -126,16 +126,16 @@ $$RELOAD$$:
     $$MARK_LEXEME_START$$
 
 $$LC_COUNT_BEFORE_RELOAD$$
-    /* -- According to case (2.1) is is possible that the _input_p does not point to the end
+    /* -- According to case (2.1) is is possible that the _read_p does not point to the end
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
-    me->buffer._input_p = text_end;
+    me->buffer._read_p = text_end;
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
-        /* Recover '_input_p' from lexeme start 
+        /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$
-        /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
+        /* After reload, we need to increment _read_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
         text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
 $$LC_COUNT_AFTER_RELOAD$$
@@ -334,11 +334,11 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 
     # Column and line number count for 'normal' character.
     tm, column_counter_per_chunk = \
-            counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p", 
+            counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._read_p", 
                                     Trafo=Setup.buffer_codec)
 
     dummy, character_count_txt, dummy = \
-            counter.get_core_step(tm, "me->buffer._input_p")
+            counter.get_core_step(tm, "me->buffer._read_p")
 
 
     txt = []
@@ -352,10 +352,10 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
     if column_counter_per_chunk:
         txt.append(i+1)
         if column_counter_per_chunk == UnicodeEndSequencePattern.count_info().column_n_increment_by_lexeme_length:
-            txt += Lng.REEFERENCE_P_COLUMN_ADD("me->buffer._input_p", 
+            txt += Lng.REEFERENCE_P_COLUMN_ADD("me->buffer._read_p", 
                                               column_counter_per_chunk) 
         else:
-            txt += Lng.REEFERENCE_P_COLUMN_ADD("(me->buffer._input_p - %i)" % EndSequenceChunkN, 
+            txt += Lng.REEFERENCE_P_COLUMN_ADD("(me->buffer._read_p - %i)" % EndSequenceChunkN, 
                                               column_counter_per_chunk) 
             txt.append(i+1)
             txt.extend(counter_txt)
@@ -366,7 +366,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
         txt.append(i)
         txt.append("%s"   % Lng.IF_INPUT("==", "0x%X" % Setup.buffer_limit_code, FirstF=False)) # Check BLC
         txt.append(i+1)
-        txt.append("%s\n" % Lng.LEXEME_START_SET("me->buffer._input_p - %i" % i))
+        txt.append("%s\n" % Lng.LEXEME_START_SET("me->buffer._read_p - %i" % i))
         txt.append(i+1)
         txt.append("%s\n" % Lng.GOTO_RELOAD(UponReloadDoneAdr, True, engine.FORWARD))  # Reload
         if i == 0: break
@@ -387,12 +387,12 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 
 #def __core(Mode, ActionDB, ReferenceP_F, UponReloadDoneAdr):
 #    tm, column_counter_per_chunk = \
-#         counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._input_p",
+#         counter.get_XXX_counter_map(Mode.counter_db, "me->buffer._read_p",
 #                                 Trafo=Setup.buffer_codec)
 #
 #    __insert_actions(tm, ReferenceP_F, column_counter_per_chunk, UponReloadDoneAdr)
 #
-#    dummy, txt, dummy = counter.get_core_step(tm, "me->buffer._input_p")
+#    dummy, txt, dummy = counter.get_core_step(tm, "me->buffer._read_p")
 #
 #    return txt
 #

@@ -247,7 +247,7 @@ class TerminalFactory:
                    '----------.
                        (goto) '---------> BIPD State Machine
                                                ...
-                                          (determine _input_p)
+                                          (determine _read_p)
                                                |
                       (label) .----------------'
                    .----------'
