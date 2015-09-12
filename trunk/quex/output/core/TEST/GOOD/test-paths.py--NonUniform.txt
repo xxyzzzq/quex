@@ -19,8 +19,8 @@
 _1:
 
     __quex_debug_state(1);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_1 + 0;
 goto _23;
 
@@ -28,8 +28,8 @@ goto _23;
 _2:
 
     __quex_debug_state(2);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_1 + 1;
 goto _23;
 
@@ -37,8 +37,8 @@ goto _23;
 _3:
 
     __quex_debug_state(3);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_1 + 2;
 goto _23;
 
@@ -46,8 +46,8 @@ goto _23;
 _4:
 
     __quex_debug_state(4);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_1 + 3;
 goto _23;
 
@@ -55,8 +55,8 @@ goto _23;
 _6:
 
     __quex_debug_state(6);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 0;
 goto _23;
 
@@ -64,8 +64,8 @@ goto _23;
 _7:
 
     __quex_debug_state(7);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 1;
 goto _23;
 
@@ -73,8 +73,8 @@ goto _23;
 _8:
 
     __quex_debug_state(8);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 2;
 goto _23;
 
@@ -82,8 +82,8 @@ goto _23;
 _9:
 
     __quex_debug_state(9);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
         path_iterator                  = path_6 + 3;
 goto _23;
 
@@ -91,8 +91,8 @@ goto _23;
 _10:
 
     __quex_debug_state(10);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 4;
 goto _23;
 
@@ -100,8 +100,8 @@ goto _23;
 _11:
 
     __quex_debug_state(11);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
         path_iterator                  = path_6 + 5;
 goto _23;
 
@@ -109,8 +109,8 @@ goto _23;
 _12:
 
     __quex_debug_state(12);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 6;
 goto _23;
 
@@ -118,8 +118,8 @@ goto _23;
 _13:
 
     __quex_debug_state(13);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
         path_iterator                  = path_6 + 7;
 goto _23;
 
@@ -127,8 +127,8 @@ goto _23;
 _14:
 
     __quex_debug_state(14);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_6 + 8;
 goto _23;
 
@@ -136,8 +136,8 @@ goto _23;
 _15:
 
     __quex_debug_state(15);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
         path_iterator                  = path_6 + 9;
 goto _23;
 
@@ -145,8 +145,8 @@ goto _23;
 _17:
 
     __quex_debug_state(17);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_17 + 0;
 goto _23;
 
@@ -154,8 +154,8 @@ goto _23;
 _18:
 
     __quex_debug_state(18);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_17 + 1;
 goto _23;
 
@@ -163,8 +163,8 @@ goto _23;
 _19:
 
     __quex_debug_state(19);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_17 + 2;
 goto _23;
 
@@ -172,8 +172,8 @@ goto _23;
 _20:
 
     __quex_debug_state(20);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_17 + 3;
 goto _23;
 
@@ -181,8 +181,8 @@ goto _23;
 _21:
 
     __quex_debug_state(21);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     path_iterator                  = path_17 + 4;
 goto _23;
 

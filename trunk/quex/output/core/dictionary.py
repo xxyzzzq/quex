@@ -108,10 +108,10 @@ class Lng_Cpp(dict):
 
     PATH_ITERATOR_INCREMENT  = "++(path_iterator);"
     def LEXEME_START_SET(self, PositionStorage=None):
-        if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._input_p;"
+        if PositionStorage is None: return "me->buffer._lexeme_start_p = me->buffer._read_p;"
         else:                       return "me->buffer._lexeme_start_p = %s;" % PositionStorage
     def LEXEME_START_P(self):                      return "me->buffer._lexeme_start_p"
-    def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._input_p - me->buffer._lexeme_start_p))"
+    def LEXEME_LENGTH(self):                       return "((size_t)(me->buffer._read_p - me->buffer._lexeme_start_p))"
 
     def LEXEME_MACRO_SETUP(self):
         return blue_print(cpp.lexeme_macro_setup, [
@@ -122,15 +122,15 @@ class Lng_Cpp(dict):
     def LEXEME_MACRO_CLEAN_UP(self):
         return cpp.lexeme_macro_clean_up
 
-    def INPUT_P(self):                             return "me->buffer._input_p"
-    def INPUT_P_INCREMENT(self):                   return "++(me->buffer._input_p);"
-    def INPUT_P_DECREMENT(self):                   return "--(me->buffer._input_p);"
-    def INPUT_P_ADD(self, Offset):                 return "QUEX_NAME(Buffer_input_p_add_offset)(&me->buffer, %i);" % Offset
-    def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._input_p = me->buffer._lexeme_start_p;"
+    def INPUT_P(self):                             return "me->buffer._read_p"
+    def INPUT_P_INCREMENT(self):                   return "++(me->buffer._read_p);"
+    def INPUT_P_DECREMENT(self):                   return "--(me->buffer._read_p);"
+    def INPUT_P_ADD(self, Offset):                 return "QUEX_NAME(Buffer_read_p_add_offset)(&me->buffer, %i);" % Offset
+    def INPUT_P_TO_LEXEME_START(self):             return "me->buffer._read_p = me->buffer._lexeme_start_p;"
     def INPUT_P_DEREFERENCE(self, Offset=0): 
-        if Offset == 0:  return "*(me->buffer._input_p)"
-        elif Offset > 0: return "*(me->buffer._input_p + %i)" % Offset
-        else:            return "*(me->buffer._input_p - %i)" % - Offset
+        if Offset == 0:  return "*(me->buffer._read_p)"
+        elif Offset > 0: return "*(me->buffer._read_p + %i)" % Offset
+        else:            return "*(me->buffer._read_p - %i)" % - Offset
     def LEXEME_TERMINATING_ZERO_SET(self, RequiredF):
         if not RequiredF: return ""
         return "QUEX_LEXEME_TERMINATING_ZERO_SET(&me->buffer);\n"
@@ -248,7 +248,7 @@ class Lng_Cpp(dict):
 
     def REGISTER_NAME(self, Register):
         return {
-            E_R.InputP:          "(me->buffer._input_p)",
+            E_R.InputP:          "(me->buffer._read_p)",
             E_R.Column:          "(me->counter._column_number_at_end)",
             E_R.Line:            "(me->counter._line_number_at_end)",
             E_R.LexemeStartP:    "(me->buffer._lexeme_start_p)",
@@ -382,10 +382,10 @@ class Lng_Cpp(dict):
             # Assume that checking for the pre-context is just overhead that 
             # does not accelerate anything.
             if Op.content.offset == 0:
-                return "    position[%i] = me->buffer._input_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
+                return "    position[%i] = me->buffer._read_p; __quex_debug(\"position[%i] = input_p;\\n\");\n" \
                        % (Op.content.position_register, Op.content.position_register)
             else:
-                return "    position[%i] = me->buffer._input_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
+                return "    position[%i] = me->buffer._read_p - %i; __quex_debug(\"position[%i] = input_p - %i;\\n\");\n" \
                        % (Op.content.position_register, Op.content.offset, Op.content.position_register, Op.content.offset)
 
         elif Op.id == E_Op.PreContextOK:
@@ -719,12 +719,12 @@ class Lng_Cpp(dict):
         Register    = X.position_register
         if   Positioning == E_TransitionN.VOID: 
             return   "    __quex_assert(position[%i] != (void*)0);\n" % Register \
-                   + "    me->buffer._input_p = position[%i];\n" % Register
-        # "_input_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
+                   + "    me->buffer._read_p = position[%i];\n" % Register
+        # "_read_p = lexeme_start_p + 1" is done by TERMINAL_FAILURE. 
         elif Positioning == E_TransitionN.LEXEME_START_PLUS_ONE: 
             return "    %s = %s + 1;\n" % (self.INPUT_P(), self.LEXEME_START_P())
         elif Positioning > 0:     
-            return "    me->buffer._input_p -= %i;\n" % Positioning
+            return "    me->buffer._read_p -= %i;\n" % Positioning
         elif Positioning == 0:    
             return ""
         else:
@@ -930,19 +930,19 @@ cpp_include_Multi_i_str = """
 
 cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
-    __quex_assert(*(me->buffer._input_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
+    __quex_assert(*(me->buffer._read_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     /* Detect whether the buffer limit code appeared at non-border.          */
-    if( me->buffer._memory._end_of_file_p ) {
-        if( me->buffer._input_p != me->buffer._memory._end_of_file_p ) {
+    if( me->buffer.input.end_p ) {
+        if( me->buffer._read_p != me->buffer.input.end_p ) {
             __quex_assert(false); /* Later: on codec error! */
         }
     }
     else {
-        if( me->buffer._input_p != me->buffer._memory._back ) {
+        if( me->buffer._read_p != me->buffer._memory._back ) {
             __quex_assert(false); /* Later: on codec error! */
         }
     }
-    if( me->buffer._memory._end_of_file_p == 0x0 ) {
+    if( me->buffer.input.end_p == 0x0 ) {
 """,
 """
         __quex_debug_reload_before();          /* Report source position. */
@@ -960,7 +960,7 @@ cpp_reload_backward_str = [
 """    __quex_debug3("RELOAD_BACKWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(input == QUEX_SETTING_BUFFER_LIMIT_CODE);
     /* Detect whether the buffer limit code appeared at non-border.          */
-    if( me->buffer._input_p != me->buffer._memory._front ) {
+    if( me->buffer._read_p != me->buffer._memory._front ) {
         __quex_assert(false); /* Later: on codec error! */
     }
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {

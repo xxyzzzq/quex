@@ -49,7 +49,7 @@ sm.add_epsilon_transition(n8, n3)
 #set_cmd_list(sm, n0, (66, 0, False), (77, 0, False), (88, 0, False))
 #set_cmd_list(sm, n4, (77, 1, False))
 #set_cmd_list(sm, n6, (88, 22, True))
-sm.states[n6].set_input_position_store_f(True)
+sm.states[n6].set_read_position_store_f(True)
 sm.states[n6].mark_acceptance_id(88)
 
 

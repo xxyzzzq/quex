@@ -236,7 +236,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                                                                                        */
         /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
          *       stream to a particular position given by a character index. QuexBuffer_seek(..)
-         *       sets the _input_p to a particular position.                                      */
+         *       sets the _read_p to a particular position.                                      */
         QUEX_NAME(BufferFiller_Converter)*  me     = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_NAME(RawBuffer)*               buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */

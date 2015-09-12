@@ -31,8 +31,8 @@ main(int argc, char** argv)
         printf("     ");
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
-        if( buffer._memory._end_of_file_p != 0x0 ) break;
-        buffer._input_p        = buffer._memory._back;
+        if( buffer.input.end_p != 0x0 ) break;
+        buffer._read_p        = buffer._memory._back;
         buffer._lexeme_start_p = buffer._memory._back;
         /**/
         QUEX_NAME(BufferFiller_load_forward)(&buffer);

@@ -20,10 +20,10 @@
 ##     * BUT, if so quit immediately after 'shift values'. */
 ##    __quex_assert(LexemeBegin <= LexemeEnd);
 ##    if(LexemeBegin == LexemeEnd) return;
-##    me->buffer._input_p = LexemeBegin;
+##    me->buffer._read_p = LexemeBegin;
 ## /* (132 from NONE) */
-##    input = *(me->buffer._input_p);
-##    me->buffer._lexeme_start_p = me->buffer._input_p;
+##    input = *(me->buffer._read_p);
+##    me->buffer._lexeme_start_p = me->buffer._read_p;
 ##
 ##_69:
 ##
@@ -119,15 +119,15 @@
 ##
 ##    __quex_assert_no_passage();
 ##_68: /* (132 from 191) */
-##    me->buffer._lexeme_start_p = me->buffer._input_p;
+##    me->buffer._lexeme_start_p = me->buffer._read_p;
 ##    goto _69;
 ##
 ##
 ##
 ##    __quex_assert_no_passage();
 ##_3: /* (133 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _71;
 ##
 ##_71:
@@ -202,8 +202,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_4: /* (134 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _73;
 ##
 ##_73:
@@ -282,8 +282,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_5: /* (135 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _74;
 ##
 ##_74:
@@ -304,8 +304,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_6: /* (136 from 145) (136 from 168) (136 from 132) (136 from 156) (136 from 134) (136 from 157) (136 from 166) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _75;
 ##
 ##_75:
@@ -316,8 +316,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_7: /* (137 from 132) (137 from 157) (137 from 134) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _78;
 ##
 ##_78:
@@ -328,8 +328,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_8: /* (138 from 132) (138 from 142) (138 from 139) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _81;
 ##
 ##_81:
@@ -350,8 +350,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_9: /* (139 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _82;
 ##
 ##_82:
@@ -430,8 +430,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_10: /* (140 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _83;
 ##
 ##_83:
@@ -452,8 +452,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_11: /* (141 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _84;
 ##
 ##_84:
@@ -500,8 +500,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_12: /* (142 from 180) (142 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _85;
 ##
 ##_85:
@@ -522,8 +522,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_13: /* (144 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _86;
 ##
 ##_86:
@@ -602,8 +602,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_14: /* (145 from 138) (145 from 132) (145 from 141) (145 from 149) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _87;
 ##
 ##_87:
@@ -624,8 +624,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_15: /* (148 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _88;
 ##
 ##_88:
@@ -636,8 +636,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_16: /* (149 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _91;
 ##
 ##_91:
@@ -716,8 +716,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_17: /* (151 from 132) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _92;
 ##
 ##_92:
@@ -728,8 +728,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_18: /* (154 from 140) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _95;
 ##
 ##_95:
@@ -750,8 +750,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_19: /* (155 from 154) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _96;
 ##
 ##_96:
@@ -772,8 +772,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_20: /* (156 from 155) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _97;
 ##
 ##_97:
@@ -794,8 +794,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_21: /* (157 from 149) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _99;
 ##
 ##_99:
@@ -874,8 +874,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_22: /* (161 from 144) (161 from 133) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _100;
 ##
 ##_100:
@@ -896,8 +896,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_23: /* (162 from 144) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _101;
 ##
 ##_101:
@@ -976,8 +976,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_24: /* (163 from 162) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _102;
 ##
 ##_102:
@@ -1056,8 +1056,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_25: /* (164 from 162) (164 from 161) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _103;
 ##
 ##_103:
@@ -1078,8 +1078,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_26: /* (165 from 164) (165 from 163) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _104;
 ##
 ##_104:
@@ -1100,8 +1100,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_27: /* (166 from 165) (166 from 167) (166 from 190) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _105;
 ##
 ##_105:
@@ -1122,8 +1122,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_28: /* (167 from 163) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _106;
 ##
 ##_106:
@@ -1202,8 +1202,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_29: /* (168 from 167) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _107;
 ##
 ##_107:
@@ -1224,8 +1224,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_30: /* (172 from 139) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _108;
 ##
 ##_108:
@@ -1246,8 +1246,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_31: /* (175 from 172) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _109;
 ##
 ##_109:
@@ -1268,8 +1268,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_32: /* (176 from 175) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _110;
 ##
 ##_110:
@@ -1280,8 +1280,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_33: /* (177 from 135) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _112;
 ##
 ##_112:
@@ -1292,8 +1292,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_34: /* (178 from 133) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _115;
 ##
 ##_115:
@@ -1314,8 +1314,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_35: /* (180 from 133) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _116;
 ##
 ##_116:
@@ -1336,8 +1336,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_36: /* (188 from 178) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _117;
 ##
 ##_117:
@@ -1358,8 +1358,8 @@
 ##
 ##    __quex_assert_no_passage();
 ##_37: /* (190 from 188) */
-##    ++(me->buffer._input_p);
-##    input = *(me->buffer._input_p);
+##    ++(me->buffer._read_p);
+##    input = *(me->buffer._read_p);
 ##    goto _118;
 ##
 ##_118:
@@ -1383,36 +1383,36 @@
 ##_80: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_LINES_ADD((size_t)1);
 ##__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_90: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_COLUMNS_SET((size_t)1);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_94: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end -= (self.counter._column_number_at_end % (4)));
 ##__QUEX_IF_COUNT_COLUMNS(self.counter._column_number_at_end += 4);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_114: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)3);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_98: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)2);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_77: __quex_debug("* TERMINAL \n");
 ##__QUEX_IF_COUNT_COLUMNS_ADD((size_t)1);
-##if( me->buffer._input_p != LexemeEnd ) goto _68;;
+##if( me->buffer._read_p != LexemeEnd ) goto _68;;
 ##goto _1;
 ##_119: __quex_debug("* TERMINAL <BEYOND>\n");
-##    me->buffer._input_p = me->buffer._lexeme_start_p;
+##    me->buffer._read_p = me->buffer._lexeme_start_p;
 ##goto _1;
 ##_72:
 ##    goto _119;
 ##_1:
-##    __quex_assert(me->buffer._input_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
+##    __quex_assert(me->buffer._read_p == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */
 ##   return;
 ###  undef self
 ##}

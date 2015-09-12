@@ -53,7 +53,7 @@ def do_core(PatternList, TerminalDb, OnAfterMatchCode=None):
 
     # (*) Backward input position detection
     #     (Seldomly present -- only for Pseudo-Ambiguous Post Contexts)
-    bipd                 = generator.do_backward_input_position_detectors(esms.bipd_sm_db)
+    bipd                 = generator.do_backward_read_position_detectors(esms.bipd_sm_db)
     # assert all_isinstance(bipd, (IfDoorIdReferencedCode, int, str, unicode))
 
     # (*) Main State Machine -- try to match core patterns

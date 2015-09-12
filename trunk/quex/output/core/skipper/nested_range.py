@@ -36,7 +36,7 @@ def do(Data, TheAnalyzer):
 #    loop_txt,            \
 #    entry_action,        \
 #    exit_action          = LoopGenerator.do(Mode.counter_db, 
-#                             IteratorName = "me->buffer._input_p",
+#                             IteratorName = "me->buffer._read_p",
 #                             OnContinue   = [ 1, "continue;" ],
 #                             OnExit       = [ 1, "goto %s;" % end_sequence_label ],
 #                             CharacterSet = character_set, 
@@ -70,7 +70,7 @@ $$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QUEX_NAME(Buffer_content_size)(&me->buffer) >= $$OPENER_LENGTH$$ );
 
-    /* NOTE: If _input_p == end of buffer, then it will drop out immediately out of the
+    /* NOTE: If _read_p == end of buffer, then it will drop out immediately out of the
      *       loop below and drop into the buffer reload procedure.                      */
 
     /* Loop eating characters: Break-out as soon as the First Character of the Delimiter
@@ -122,7 +122,7 @@ $$LC_COUNT_IN_LOOP$$
     }
 
 $$RELOAD$$:
-    QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(&me->buffer);
+    QUEX_BUFFER_ASSERT_pointers_in_range(&me->buffer);
     /* -- When loading new content it is checked that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -133,10 +133,10 @@ $$LC_COUNT_BEFORE_RELOAD$$
     if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
         QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position,
                                          PositionRegisterN);
-        /* Recover '_input_p' from lexeme start 
+        /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$
-        /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
+        /* After reload, we need to increment _read_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
         /* text_end = QUEX_NAME(Buffer_text_end)(&me->buffer); */
 $$LC_COUNT_AFTER_RELOAD$$

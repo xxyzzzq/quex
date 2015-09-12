@@ -27,7 +27,7 @@ main(int argc, char** argv)
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;
     *(buffer._memory._back - 1) = '0';
 
-    buffer._input_p = buffer._memory._back - 1;
+    buffer._read_p = buffer._memory._back - 1;
     QUEX_NAME(Buffer_end_of_file_set)(&buffer, buffer._memory._back);
 
     test_move_backward(&buffer, StepSize);

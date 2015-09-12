@@ -98,7 +98,7 @@ main(int argc, char** argv)
 
         /* -- Reset the input pointer, so that the last lexeme before TERMINATION
          *    enters the matching game again.                                    */
-        QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
+        QUEX_NAME(buffer_read_pointer_set)(&qlex, prev_lexeme_start_p);
     }
     printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 

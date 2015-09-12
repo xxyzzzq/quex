@@ -31,8 +31,8 @@ _202:
     __quex_assert_no_passage();
 _1:
     __quex_debug_state(1);
-    ++(me->buffer._input_p);
-    input = *(me->buffer._input_p);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
     if( input < 0xA) {
         switch( input ) {
             case 0x0:     QUEX_GOTO_RELOAD(__RELOAD_FORWARD, QUEX_LABEL(1), QUEX_LABEL(2));

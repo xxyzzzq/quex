@@ -149,13 +149,13 @@ def _do(the_state_machine, post_context_sm, EndOfLinePostContextF, SourceReferen
     # -- set the post context flag for all acceptance states
     for state_idx in orig_acceptance_state_id_list:
         state = the_state_machine.states[state_idx]
-        state.set_input_position_store_f(True)
+        state.set_read_position_store_f(True)
     
     # -- no acceptance state shall store the input position
     # -- set the post context flag for all acceptance states
     for state in the_state_machine.get_acceptance_state_list():
-        state.set_input_position_store_f(False)
-        state.set_input_position_restore_f(True)
+        state.set_read_position_store_f(False)
+        state.set_read_position_restore_f(True)
 
     # No input position backward search required
     return beautifier.do(the_state_machine), None

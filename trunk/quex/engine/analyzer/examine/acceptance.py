@@ -211,7 +211,7 @@ class RecipeAcceptance(Recipe):
                              and relevant operations of 'SingleEntry'.
         """
         accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
-        ip_offset_db = cls._accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry)
+        ip_offset_db = cls._accumulate_read_pointer_storage(PrevRecipe, CurrSingleEntry)
 
         # Filter out those entries in the snapshot map, where the recipe does 
         # no longer rely on stored entries.
@@ -239,7 +239,7 @@ class RecipeAcceptance(Recipe):
                                              StateIndex)
 
         # Input position storage
-        ip_offset_db = cls._interfere_input_position_storage(snapshot_set_db, 
+        ip_offset_db = cls._interfere_read_position_storage(snapshot_set_db, 
                                                              Mouth.entry_recipe_db, 
                                                              Mouth.required_variable_set, 
                                                              StateIndex)
@@ -285,7 +285,7 @@ class RecipeAcceptance(Recipe):
         return accepter
 
     @staticmethod
-    def _accumulate_input_pointer_storage(PrevRecipe, CurrSingleEntry):
+    def _accumulate_read_pointer_storage(PrevRecipe, CurrSingleEntry):
         """Storing the current input position into a register overwrites 
         previous storage operations. Previous storage operations that appear
         'n' steps before can be compensated by 'input_p -= n'. Thus, at
@@ -359,7 +359,7 @@ class RecipeAcceptance(Recipe):
         return accepter
 
     @classmethod
-    def _interfere_input_position_storage(cls, snapshot_set_db, EntryRecipeDb, 
+    def _interfere_read_position_storage(cls, snapshot_set_db, EntryRecipeDb, 
                                           RequiredVariableSet, StateIndex):
         """Each position register is considered separately. If for one register 
         the offset differs, then it can only be determined from storing it in 

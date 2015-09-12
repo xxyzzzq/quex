@@ -163,7 +163,7 @@ main_template = """
 
 typedef struct {
     struct {
-        QUEX_TYPE_CHARACTER*  _input_p;
+        QUEX_TYPE_CHARACTER*  _read_p;
         QUEX_TYPE_CHARACTER*  _lexeme_start_p;
     } buffer;
 } MiniAnalyzer;
@@ -218,7 +218,7 @@ transition(QUEX_TYPE_CHARACTER* buffer)
     MiniAnalyzer*        me = &self;
     QUEX_TYPE_CHARACTER  input = 0;
 
-    me->buffer._input_p = buffer;
+    me->buffer._read_p = buffer;
 
     $$TRANSITION$$
 }
@@ -231,7 +231,7 @@ def get_main_function(tm0, TranstionTxt, Codec):
     if Codec == "UTF8": qtc_str = "uint8_t"
     else:               qtc_str = "uint32_t"
 
-    input_preperation = get_input_preparation(codec)
+    input_preperation = get_read_preparation(codec)
 
     entry_list = [ (0 if interval.begin < 0 else interval.begin, target) for interval, target in tm0 ]
     entry_list.append((tm0[-1][0].begin, -1))
@@ -246,7 +246,7 @@ def get_main_function(tm0, TranstionTxt, Codec):
     txt = txt.replace("MATCH_FAILURE", "((int)-1)")
     return txt
 
-def get_input_preparation(Codec):
+def get_read_preparation(Codec):
     if Codec == "UTF8":
         txt = [
             "{\n"

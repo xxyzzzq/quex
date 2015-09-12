@@ -4,14 +4,14 @@ AFTER Reset:
       Memory:
       _front         =  0;
       _back          = +0xD;
-      _end_of_file_p = <void>;
+      input.end_p = <void>;
       _external_owner_f = false;
-   _input_p        = +0x1;
+   _read_p        = +0x1;
    _lexeme_start_p = +0x1;
    _character_at_lexeme_start = 0;
    _character_before_lexeme_start = A;
    _content_character_index_begin = 0;
-   _content_character_index_end   = 12;
+   input.end_character_index   = 12;
    _byte_order_reversion_active_f = true;
    Accumulator = ''
    Counter:

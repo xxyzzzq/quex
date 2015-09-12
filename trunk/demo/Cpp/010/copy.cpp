@@ -94,7 +94,7 @@ main(int argc, char** argv)
 
         // -- Reset the input pointer, so that the last lexeme before TERMINATION
         //    enters the matching game again.
-        qlex.buffer._input_p = prev_lexeme_start_p;
+        qlex.buffer._read_p = prev_lexeme_start_p;
     }
 
     return 0;

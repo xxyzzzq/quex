@@ -27,7 +27,7 @@ f:c.open
 b:f._initial_load()
 f:ih.QUEX_INPUT_POLICY_LOAD_BYTES()
 ih:m.fill stream content into buffer
-b:_input_p = content begin
+b:_read_p = content begin
 b:_lexeme_start_p = content_begin]]></source>
 <configuration>
 <property name="actorWidth" value="25"/>

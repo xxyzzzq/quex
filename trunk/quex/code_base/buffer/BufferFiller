@@ -60,7 +60,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* -- 'Seek' sets the input position for the next buffer-read-action.
          * NOTE: This differs from Buffer_seek(...) in the sense, that it only
          * sets the stream to a particular position given by a character index.
-         * Buffer_seek(..) sets the _input_p to a particular position.       */
+         * Buffer_seek(..) sets the _read_p to a particular position.       */
         void        (*seek_character_index)(struct
                                             QUEX_NAME(BufferFiller_tag)*,
                                             const QUEX_TYPE_STREAM_POSITION Index);
@@ -128,7 +128,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                   ByteLoader*  byte_loader);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
 
-    QUEX_INLINE void    QUEX_NAME(BufferFiller_initial_load)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 

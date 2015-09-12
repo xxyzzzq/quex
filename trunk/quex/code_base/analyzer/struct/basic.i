@@ -51,9 +51,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         __quex_assert(buffer);
         __quex_assert(buffer->filler);
-        __quex_assert(! buffer->_memory._end_of_file_p);
+        __quex_assert(! buffer->input.end_p);
 
-        if( buffer->_memory._end_of_file_p ) {
+        if( buffer->input.end_p ) {
             return 0;
         }
 

@@ -54,7 +54,7 @@
 
        A path entry consists of: setting the path iterator and goto the
        related path walker. Additionally, state attributes, such as 
-       'acceptance' and 'store_input_position' must be considered. 
+       'acceptance' and 'store_read_position' must be considered. 
        Example:
 
           STATE_10:

@@ -255,7 +255,7 @@ ENTRY:
     }
     /* QUEX_NAME(Counter_reset)(&me->counter); */
     me->counter._column_number_at_end = 1;
-    reference_p = me->buffer._input_p;
+    reference_p = me->buffer._read_p;
 
 /*__BEGIN_________________________________________________________________________________*/
 $$SOURCE_CODE$$
@@ -263,7 +263,7 @@ $$SOURCE_CODE$$
 
 $$REENTRY$$:
 $$REENTRY2$$:
-    /* Originally, the reentry preparation does not increment or do anything to _input_p
+    /* Originally, the reentry preparation does not increment or do anything to _read_p
      * Here, we use the chance to print the position where the skipper ended.
      * If we are at the border and there is still stuff to load, then load it so we can
      * see what the next character is coming in.                                          */
@@ -303,18 +303,18 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
     QUEX_NAME(Buffer)* buffer = &me->buffer;
 
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
-        buffer->_lexeme_start_p = buffer->_input_p;
+        buffer->_lexeme_start_p = buffer->_read_p;
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
         }
         QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
-        ++(buffer->_input_p);
+        ++(buffer->_read_p);
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
-        if( ((*buffer->_input_p) & 0x80) == 0 ) 
-            printf("next letter: <%c>", (int)(buffer->_input_p[0]));
+        if( ((*buffer->_read_p) & 0x80) == 0 ) 
+            printf("next letter: <%c>", (int)(buffer->_read_p[0]));
         else
-            printf("next letter: <0x%02X>", (int)(buffer->_input_p[0]));
+            printf("next letter: <0x%02X>", (int)(buffer->_read_p[0]));
 
 #       if $$SHOW_POSITION$$
         printf(" column_n: %i", me->counter._column_number_at_end);
@@ -334,16 +334,16 @@ skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
     (void)input;
 
     while(1 + 1 == 2) { 
-        input = *(me->buffer._input_p);
+        input = *(me->buffer._read_p);
 $$MARKER_LIST$$
         if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
-            me->buffer._lexeme_start_p = me->buffer._input_p;
+            me->buffer._lexeme_start_p = me->buffer._read_p;
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 return false;
             }
             QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
         }
-        ++(me->buffer._input_p);
+        ++(me->buffer._read_p);
     }
     return true;
 }

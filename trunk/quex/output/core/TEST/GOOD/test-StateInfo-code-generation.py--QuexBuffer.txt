@@ -1,6 +1,6 @@
 #def example_func(input):
 #    # last_acceptance = []
-#    # last_acceptance_input_position = stream.tell()
+#    # last_acceptance_read_position = stream.tell()
 #    # TODO: getting input into parser
 #    if  input >= 10 and input < 280 :
 #        if  input < 150 :

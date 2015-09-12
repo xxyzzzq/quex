@@ -11,7 +11,7 @@ Assign
    Registers:    InputP(w),  LexemeStartP(r), 
    Cost:         1
    C-code: {
-           (me->buffer._input_p) = (me->buffer._lexeme_start_p);
+           (me->buffer._read_p) = (me->buffer._lexeme_start_p);
    }
 
 AssignConstant
@@ -19,7 +19,7 @@ AssignConstant
    Registers:    InputP(w), 
    Cost:         1
    C-code: {
-           (me->buffer._input_p) = 0;
+           (me->buffer._read_p) = 0;
    }
 
 AssignConstant
@@ -126,7 +126,7 @@ GotoDoorIdIfInputPNotEqualPointer
    IsBranching: True
    Cost:         1
    C-code: {
-       if( me->buffer._input_p != character_begin_p ) goto _1;
+       if( me->buffer._read_p != character_begin_p ) goto _1;
    }
 
 IfPreContextSetPositionAndGoto
@@ -136,7 +136,7 @@ IfPreContextSetPositionAndGoto
    Cost:         1
    C-code: {
        if( pre_context_24_fulfilled_f ) {
-           me->buffer._input_p -= 1;
+           me->buffer._read_p -= 1;
        goto _6;}
    }
 
@@ -161,7 +161,7 @@ InputPDecrement
    Registers:    InputP(wr), 
    Cost:         1
    C-code: {
-           --(me->buffer._input_p);
+           --(me->buffer._read_p);
    }
 
 InputPDereference
@@ -169,7 +169,7 @@ InputPDereference
    Registers:    Input(w),  InputP(r), 
    Cost:         1
    C-code: {
-           input = *(me->buffer._input_p);
+           input = *(me->buffer._read_p);
    }
 
 InputPIncrement
@@ -177,7 +177,7 @@ InputPIncrement
    Registers:    InputP(wr), 
    Cost:         1
    C-code: {
-           ++(me->buffer._input_p);
+           ++(me->buffer._read_p);
    }
 
 LexemeResetTerminatingZero
@@ -246,7 +246,7 @@ RouterByLastAcceptance
    Cost:         1
    C-code: {
        switch( last_acceptance ) {
-           case 66:     me->buffer._input_p -= 1;
+           case 66:     me->buffer._read_p -= 1;
        goto _6;
        }
    }
@@ -269,7 +269,7 @@ StoreInputPosition
    Registers:    InputP(r),  PreContextFlags(r),  PositionRegister:7777(w), 
    Cost:         1
    C-code: {
-           position[7777] = me->buffer._input_p; __quex_debug("position[7777] = input_p;\n");
+           position[7777] = me->buffer._read_p; __quex_debug("position[7777] = input_p;\n");
    }
 
 StoreInputPosition
@@ -277,7 +277,7 @@ StoreInputPosition
    Registers:    InputP(r),  PreContextFlags(r),  PositionRegister:7777(w), 
    Cost:         1
    C-code: {
-           position[7777] = me->buffer._input_p - 1000; __quex_debug("position[7777] = input_p - 1000;\n");
+           position[7777] = me->buffer._read_p - 1000; __quex_debug("position[7777] = input_p - 1000;\n");
    }
 
 TemplateStateKeySet

@@ -255,7 +255,7 @@ def __create_token_sender_by_token_name(fh, TokenName):
 
         elif len(argument_list) == 1:
             if argument_list[0] == "Lexeme":
-                return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, self.buffer._lexeme_start_p, self.buffer._input_p);\n" \
+                return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, self.buffer._lexeme_start_p, self.buffer._read_p);\n" \
                        "self_send(%s);\n" % (TokenName)
             elif argument_list[0] == "LexemeNull":
                 return "QUEX_NAME_TOKEN(take_text)(self_write_token_p(), &self, LexemeNull, LexemeNull);\n" \

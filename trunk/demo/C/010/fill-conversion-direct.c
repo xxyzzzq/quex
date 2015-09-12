@@ -55,7 +55,7 @@ main(int argc, char** argv)
 
         if( token_id == QUEX_TKN_BYE ) break;
 
-        QUEX_NAME(buffer_input_pointer_set)(&qlex, prev_lexeme_start_p);
+        QUEX_NAME(buffer_read_pointer_set)(&qlex, prev_lexeme_start_p);
     }
     printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
 

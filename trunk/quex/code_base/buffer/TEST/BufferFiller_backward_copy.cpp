@@ -24,7 +24,7 @@ main(int argc, char** argv)
 
     using namespace quex;
 
-    QUEX_NAME(Buffer)           buffer;
+    QUEX_NAME(Buffer)    buffer;
     QUEX_TYPE_CHARACTER  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
     int                  memory_size = sizeof(content) / sizeof(QUEX_TYPE_CHARACTER) + 2;
 
@@ -38,15 +38,15 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
-    printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
+    printf("## NOTE: When copying backward, it can be assumed: _read_p = _memory._front\n");
 
-    buffer._input_p = buffer._memory._front;
+    buffer._read_p = buffer._memory._front;
 
     if( cl_has(argc, argv, "Normal") ) {
-        buffer._content_character_index_end   = 2 * memory_size - 1; 
+        buffer.input.end_character_index   = 2 * memory_size - 1; 
         /*     _content_character_index_begin = memory_size + 1; ** load backward possible      */
     } else {                              
-        buffer._content_character_index_end   = memory_size - 2; /* impossible, start of stream */
+        buffer.input.end_character_index   = memory_size - 2; /* impossible, start of stream */
         /*     _content_character_index_begin = 0;               ** impossible, start of stream */
     }
 
@@ -65,11 +65,10 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
 
-        if( buffer._lexeme_start_p - buffer._input_p == memory_size - 2 ) 
+        if( buffer._lexeme_start_p - buffer._read_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
         if( QUEX_NAME(Buffer_character_index_begin)(&buffer) != 0 ) {
-            const size_t  BackwardDistance = QUEX_NAME(__BufferFiller_backward_compute_backward_distance)(&buffer);
-            QUEX_NAME(__BufferFiller_backward_copy_backup_region)(&buffer, BackwardDistance);
+            QUEX_NAME(Buffer_move_away_upfront_content)(&buffer);
         }
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
