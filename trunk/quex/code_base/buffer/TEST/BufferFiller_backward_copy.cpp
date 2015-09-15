@@ -24,9 +24,10 @@ main(int argc, char** argv)
 
     using namespace quex;
 
-    QUEX_NAME(Buffer)    buffer;
-    QUEX_TYPE_CHARACTER  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
-    int                  memory_size = sizeof(content) / sizeof(QUEX_TYPE_CHARACTER) + 2;
+    QUEX_NAME(Buffer)          buffer;
+    QUEX_TYPE_CHARACTER        content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
+    int                        memory_size = sizeof(content) / sizeof(QUEX_TYPE_CHARACTER) + 2;
+    QUEX_TYPE_STREAM_POSITION  end_character_index;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
     /* We want to observe the standard error output in HWUT, so redirect to stdout */
@@ -35,7 +36,6 @@ main(int argc, char** argv)
     /* Filler = 0x0, otherwise, buffer would start loading content */
     QUEX_TYPE_CHARACTER  memory[memory_size];
     QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, &memory[0], memory_size, 0, E_Ownership_EXTERNAL);
-    QUEX_NAME(Buffer_end_of_file_unset)(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: When copying backward, it can be assumed: _read_p = _memory._front\n");
@@ -43,11 +43,9 @@ main(int argc, char** argv)
     buffer._read_p = buffer._memory._front;
 
     if( cl_has(argc, argv, "Normal") ) {
-        buffer.input.end_character_index   = 2 * memory_size - 1; 
-        /*     _content_character_index_begin = memory_size + 1; ** load backward possible      */
+        end_character_index = 2 * memory_size - 1; 
     } else {                              
-        buffer.input.end_character_index   = memory_size - 2; /* impossible, start of stream */
-        /*     _content_character_index_begin = 0;               ** impossible, start of stream */
+        end_character_index = memory_size - 2;    /* impossible, start of stream */
     }
 
     for(buffer._lexeme_start_p = buffer._memory._front + 1; 
@@ -55,7 +53,10 @@ main(int argc, char** argv)
         ++(buffer._lexeme_start_p) ) { 
 
         memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
-        QUEX_NAME(Buffer_end_of_file_set)(&buffer, buffer._memory._back);
+        QUEX_NAME(Buffer_input_end_set)(&buffer, 
+                                        buffer._memory._back, 
+                                        end_character_index);
+        buffer._read_p         = &buffer._memory._front[1];
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 
