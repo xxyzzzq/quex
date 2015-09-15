@@ -367,7 +367,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                    QUEX_NAME(Buffer_text_end)(buffer),
                                                                    &QUEX_NAME(Buffer_content_back)(buffer)[1], 
                                                                    FilledEndP);
-        buffer->input.end_character_index += inserted_character_n;
 
         /* Assume: content from 'input.end_p' to 'input.end_p[CharN]'
          * has been filled with data.                                        */
@@ -376,12 +375,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                  &buffer->input.end_p[inserted_character_n]);
         }
 
-        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->input.end_p, 
-                                                &buffer->input.end_p[inserted_character_n]);
         /* When lexing directly on the buffer, the end of file pointer is 
          * always set.                                                       */
-        QUEX_NAME(Buffer_end_of_file_set)(buffer, 
-                                          &buffer->input.end_p[inserted_character_n]);
+        QUEX_NAME(Buffer_input_end_set)(buffer, 
+                                        &buffer->input.end_p[inserted_character_n],
+                                        buffer->input.end_character_index + inserted_character_n);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
