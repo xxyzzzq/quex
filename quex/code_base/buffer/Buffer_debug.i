@@ -75,7 +75,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         __QUEX_STD_printf("|%c", (int)QUEX_NAME(__Buffer_get_border_char)(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
-            __QUEX_STD_printf("%c", *iterator == EmptyChar ? (int)'~' : (int)*iterator);
+            __QUEX_STD_printf("%c",   *iterator == EmptyChar                      ? (int)'~' 
+                                    : *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ? (int)'*' 
+                                    : (int)*iterator);
         }
         __QUEX_STD_printf("%c", (int)QUEX_NAME(__Buffer_get_border_char)(buffer, end_p));
         /**/
