@@ -8,13 +8,6 @@ TEST_FILES = \
 		   move_away_upfront_content-8.exe \
 		   move_away_upfront_content-16.exe \
 		   move_away_upfront_content-32.exe \
-		   \
-	       Buffer_move_forward.exe \
-	       Buffer_move_backward.exe \
-	       Buffer_move_forward-32.exe \
-	       Buffer_move_backward-32.exe \
-	       Buffer_tell_and_seek.exe \
-	       Buffer_tell_and_seek-32.exe 
 
 DEFS = \
 	   \
