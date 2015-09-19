@@ -1,5 +1,5 @@
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N 0
-#include <quex/code_base/buffer/TEST/Buffer_test_common.i>
+#include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
 #include "test-helper.h"
 
 #include <sstream>

@@ -286,14 +286,16 @@
 #   include <quex/code_base/buffer/Buffer_debug>
 #   define __quex_debug_buffer_load(BUFFER, Msg)         \
            __QUEX_STD_fprintf(stderr, Msg);              \
-           QUEX_NAME(Buffer_show_debug_content)(BUFFER); 
+           QUEX_NAME(Buffer_show_debug_content)(BUFFER); \
+           __QUEX_STD_fprintf(stderr, "\n");
 
 #elif  defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
 
 #   include <quex/code_base/buffer/Buffer_debug>
 #   define __quex_debug_buffer_load(BUFFER, Msg)         \
            __QUEX_STD_fprintf(stdout, Msg);              \
-           QUEX_NAME(Buffer_show_content)(BUFFER); 
+           QUEX_NAME(Buffer_show_content)(BUFFER);       \
+           __QUEX_STD_fprintf(stdout, "\n");
 #else
 
 #   define __quex_debug_buffer_load(BUFFER, Msg) /* empty */
