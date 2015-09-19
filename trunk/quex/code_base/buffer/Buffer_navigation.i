@@ -57,7 +57,7 @@ QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     while( delta > distance ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.    */
         delta               -= distance;
-        me->_read_p         = content_end;
+        me->_read_p          = content_end;
         me->_lexeme_start_p  = me->_read_p;
         if( ! QUEX_NAME(BufferFiller_load_forward)(me) ) {
             /* Alarm, buffer is now in some indetermined state.           */
@@ -68,7 +68,7 @@ QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
         distance    = content_end - me->_read_p;
     }
 
-    me->_read_p                      += delta;
+    me->_read_p                       += delta;
     me->_lexeme_start_p                = me->_read_p;
     me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
@@ -92,7 +92,7 @@ QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t Character
     while( delta > distance ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.    */
         delta               -= distance;
-        me->_read_p         = content_begin;
+        me->_read_p          = content_begin;
         me->_lexeme_start_p  = me->_read_p - 1;
         if( ! QUEX_NAME(BufferFiller_load_backward)(me) ) {
             /* Alarm, buffer is now in some indetermined state.           */
@@ -104,8 +104,8 @@ QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t Character
     }
 
     me->_read_p                      -= delta;
-    me->_lexeme_start_p                = me->_read_p;
-    me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
+    me->_lexeme_start_p               = me->_read_p;
+    me->_character_at_lexeme_start    = *(me->_lexeme_start_p);
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
     me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #   endif

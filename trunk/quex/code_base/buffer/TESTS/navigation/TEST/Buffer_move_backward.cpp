@@ -1,9 +1,13 @@
-#include <quex/code_base/buffer/TEST/Buffer_test_common.i>
+#include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
 #include <quex/code_base/single.i>
 
 int
 main(int argc, char** argv)
 {
+    QUEX_NAME(Buffer)    buffer;
+    int                  memory_size   = 12;
+    const size_t         StepSize      = atoi(argv[1]);
+
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("Move by Offset: Backward (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         printf("CHOICES:  1, 2, 3, 4, 5;\n");
@@ -14,16 +18,12 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QUEX_NAME(Buffer)           buffer;
-    int                  memory_size   = 12;
-    const size_t         StepSize      = atoi(argv[1]);
-
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
     QUEX_TYPE_CHARACTER  memory[memory_size];
     QUEX_NAME(Buffer_construct)(&buffer, 
                                 (QUEX_NAME(BufferFiller)*)0x0, 
-                                &memory[0], memory_size, &memory[memory_size], 
+                                &memory[0], memory_size, &memory[memory_size-1], 
                                 E_Ownership_EXTERNAL);
 
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;

@@ -1,5 +1,5 @@
 #line 1  "Buffer_move_forward-template.cpp" 
-#include <quex/code_base/buffer/TEST/Buffer_test_common.i>
+#include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/single.i>
