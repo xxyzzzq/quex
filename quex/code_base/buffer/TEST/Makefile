@@ -11,9 +11,9 @@ TEST_FILES = \
 		   \
 	       Buffer_move_forward.exe \
 	       Buffer_move_backward.exe \
-	       Buffer_tell_and_seek.exe \
 	       Buffer_move_forward-32.exe \
 	       Buffer_move_backward-32.exe \
+	       Buffer_tell_and_seek.exe \
 	       Buffer_tell_and_seek-32.exe 
 
 DEFS = \
@@ -95,7 +95,7 @@ move_away_upfront_content-32.exe: move_away_upfront_content.cpp \
 hwut_cursor.o: $(HWUT_PATH)/support/C/hwut_cursor.c 
 	$(CC) -c $< -o $@
 
-%.exe: %.cpp MOPC-gen.h
+%.exe: %.cpp 
 	g++ -DQUEX_TYPE_CHARACTER=uint32_t \
 		-Wall -Werror \
 		-ggdb -I. -I$(QUEX_PATH) -I$(HWUT_PATH)/support/C \
