@@ -59,7 +59,6 @@ using namespace    quex;
 static void self_init(QUEX_NAME(Buffer)* buffer, Gen_t* it);
 static void self_print(QUEX_NAME(Buffer)* buffer);
 static void self_prepare_memory(QUEX_NAME(Buffer)*   buffer, 
-                                size_t               memory_size,
                                 QUEX_TYPE_CHARACTER* end_p);
 
 
@@ -106,14 +105,16 @@ main(int argc, char** argv)
     }
 }
 
+static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
+ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
+static QUEX_TYPE_CHARACTER  memory[12];
+ptrdiff_t                   MemorySize = 12;
+
 static void
 self_init(QUEX_NAME(Buffer)* buffer, Gen_t* it)
 {
-    static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
-    ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
-    static QUEX_TYPE_CHARACTER  memory[8];
-    ptrdiff_t                   memory_size = 8;
-    QUEX_TYPE_CHARACTER*        end_p;
+    QUEX_TYPE_CHARACTER*   end_p;
+    ptrdiff_t              memory_size = MemorySize;
 
     if( it->eof_f ) {
         end_p       = &memory[content_size+1];
@@ -130,20 +131,20 @@ self_init(QUEX_NAME(Buffer)* buffer, Gen_t* it)
                                 &memory[0], memory_size, end_p, 
                                 E_Ownership_EXTERNAL);
 
-    self_prepare_memory(buffer, memory_size, end_p);
+    self_prepare_memory(buffer, end_p);
 
     buffer->_lexeme_start_p = &buffer->_memory._front[it->lexeme_start_i+1];
     buffer->_read_p         = &buffer->_memory._front[it->read_i+1];
 }
 
 static void
-self_prepare_memory(QUEX_NAME(Buffer)* buffer, size_t memory_size, QUEX_TYPE_CHARACTER* end_p)
+self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
 {
     static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
     ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
 
-    memset(&buffer->_memory._front[1], (QUEX_TYPE_CHARACTER)-1, 
-           (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
+    memset(&buffer->_memory._front[1], (QUEX_TYPE_CHARACTER) - 1, 
+           (buffer->_memory._back - buffer->_memory._front -1)*sizeof(QUEX_TYPE_CHARACTER));
     memcpy(&buffer->_memory._front[1], (void*)content, 
            sizeof(content));
     if( end_p ) *end_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
