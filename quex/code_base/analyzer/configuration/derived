@@ -144,12 +144,6 @@
 #   endif
 #endif
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined(__QUEX_OPTION_PLAIN_C)
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_NAME(MemoryPositionMimiker)
-#else
-#    define QUEX_TYPE_CHARACTER_POSITION     QUEX_TYPE_CHARACTER*
-#endif
-
 #if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   \
     || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) \
     || defined(QUEX_OPTION_INDENTATION_TRIGGER)       

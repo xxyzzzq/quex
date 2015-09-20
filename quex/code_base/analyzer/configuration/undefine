@@ -213,9 +213,6 @@
 #ifdef    QUEX_MEMBER 
 #   undef QUEX_MEMBER 
 #endif
-#ifdef    QUEX_TYPE_CHARACTER_POSITION 
-#   undef QUEX_TYPE_CHARACTER_POSITION 
-#endif
 #ifdef    QUEX_TYPE_TOKEN_LINE_N 
 #   undef QUEX_TYPE_TOKEN_LINE_N 
 #endif

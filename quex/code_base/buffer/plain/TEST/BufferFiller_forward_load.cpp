@@ -20,8 +20,8 @@ main(int argc, char** argv)
     ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
     QUEX_NAME(BufferFiller*)  filler      = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
     const size_t              MemorySize  = 8;
-
-    QUEX_TYPE_CHARACTER  memory[MemorySize];
+    QUEX_TYPE_CHARACTER       memory[MemorySize];
+    int                       count_n     = 0;
 
     QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
 
@@ -32,11 +32,14 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
         if( buffer.input.end_p ) break;
-        buffer._read_p        = buffer._memory._back;
+        buffer._read_p         = buffer._memory._back;
         buffer._lexeme_start_p = buffer._memory._back;
         /**/
         QUEX_NAME(BufferFiller_load_forward)(&buffer);
         printf("\n");
+        if( ++count_n > 1000 ) {
+            printf("Error: too many iterations.\n");
+        }
     } while( 1 + 1 == 2 );
 
     filler->delete_self(filler);

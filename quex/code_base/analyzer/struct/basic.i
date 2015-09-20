@@ -66,17 +66,21 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         loaded_character_n = QUEX_NAME(BufferFiller_load_forward)(buffer);
+        /* Upon state entry, _read_p is incremented, thus decrement here    
+         * => Next '*_read_p' reads first new content.                       */
+        buffer->_read_p -= 1;      
+
         return loaded_character_n;
     }
 
     QUEX_INLINE void 
     QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*            buffer, 
-                                     QUEX_TYPE_CHARACTER_POSITION* position_register,
+                                     QUEX_TYPE_CHARACTER** position_register,
                                      const size_t                  PositionRegisterN)
     {
-        QUEX_TYPE_CHARACTER_POSITION*  iterator           = 0x0;
-        QUEX_TYPE_CHARACTER_POSITION*  End                = position_register + (ptrdiff_t)PositionRegisterN;
-        size_t                         loaded_character_n = (size_t)-1;    
+        QUEX_TYPE_CHARACTER**  iterator           = 0x0;
+        QUEX_TYPE_CHARACTER**  End                = position_register + (ptrdiff_t)PositionRegisterN;
+        size_t                 loaded_character_n = (size_t)-1;    
 
         loaded_character_n = QUEX_NAME(__buffer_reload_forward_core)(buffer);
 
@@ -85,6 +89,10 @@ QUEX_NAMESPACE_MAIN_OPEN
              *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
             *iterator -= (ptrdiff_t)loaded_character_n;
         }
+        /* Upon state entry, _read_p is decremented, thus decrement here    
+         * => Next '*_read_p' reads first new content.                       */
+        buffer->_read_p += 1;      
+
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE
