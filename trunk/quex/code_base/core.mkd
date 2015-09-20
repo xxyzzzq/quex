@@ -36,7 +36,6 @@ __QUEX_CORE = \
     ./buffer/converter/iconv/special_headers.h \
     ./buffer/converter/recode/Converter_Recode.i \
     ./buffer/converter/recode/Converter_Recode \
-    ./buffer/MemoryPositionMimiker \
     ./buffer/Buffer_debug.i \
     ./buffer/plain/BufferFiller_Plain \
     ./buffer/plain/BufferFiller_Plain.i \

@@ -158,7 +158,7 @@ self_print(QUEX_NAME(Buffer)* buffer)
            (int)(buffer->_read_p - buffer->_memory._front),
            (int)(*(buffer->_read_p)),
            (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
-           (int)QUEX_NAME(Buffer_character_index_begin)(buffer),
+           (int)QUEX_NAME(Buffer_input_begin_character_index)(buffer),
            (int)buffer->input.end_character_index);
     /**/
     QUEX_NAME(Buffer_show_content_intern)(buffer);

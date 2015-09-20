@@ -5,10 +5,6 @@
 #include<quex/code_base/definitions>
 #include<quex/code_base/MemoryManager>
 
-#if defined (QUEX_OPTION_ASSERTS) && ! defined (__QUEX_OPTION_PLAIN_C)
-#   include<quex/code_base/buffer/MemoryPositionMimiker>
-#endif
-
 #include <quex/code_base/temporary_macros_on>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -89,30 +85,32 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_text_end)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)*);
 
-    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION  QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)*);
-    QUEX_INLINE void                          QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
-                                                                                QUEX_TYPE_CHARACTER_POSITION);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE void                  QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
+                                                                        QUEX_TYPE_CHARACTER*);
     
     QUEX_INLINE bool       QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
     QUEX_INLINE bool       QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, 
                                                   const QUEX_TYPE_STREAM_POSITION CharacterIndex);
-    QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
+                           QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
     QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me);
 
     QUEX_INLINE void       QUEX_NAME(Buffer_input_end_set)(QUEX_NAME(Buffer)* me,
                                                            QUEX_TYPE_CHARACTER*      EndOfInputP,
                                                            QUEX_TYPE_STREAM_POSITION EndCharacterIndex);
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
-                        QUEX_NAME(Buffer_character_index_begin)(QUEX_NAME(Buffer)* me);
-    QUEX_INLINE bool    QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
-    QUEX_INLINE bool    QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
+                           QUEX_NAME(Buffer_input_begin_character_index)(QUEX_NAME(Buffer)* me);
 
-    QUEX_INLINE void    QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
-                                                             const QUEX_TYPE_CHARACTER* End);
-
-    QUEX_INLINE void    QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
+                          
+    QUEX_INLINE void       QUEX_NAME(Buffer_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
+                                                                const QUEX_TYPE_CHARACTER* End);
+                          
+    QUEX_INLINE void       QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>

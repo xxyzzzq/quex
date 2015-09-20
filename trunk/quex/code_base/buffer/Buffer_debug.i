@@ -22,7 +22,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_character_index_begin)(buffer));
+        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_input_begin_character_index)(buffer));
         __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
         if( buffer->input.end_p == 0x0 )
             __QUEX_STD_printf("_memory.input.end_p (offset)  = <0x0>\n");
@@ -48,7 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             return (QUEX_TYPE_CHARACTER)'?'; 
         else if( buffer->input.end_p == C )       
             return (QUEX_TYPE_CHARACTER)']';
-        else if( QUEX_NAME(Buffer_character_index_begin)(buffer) == 0 && buffer->_memory._front == C )     
+        else if( QUEX_NAME(Buffer_input_begin_character_index)(buffer) == 0 && buffer->_memory._front == C )     
             return (QUEX_TYPE_CHARACTER)'[';
         else
             return (QUEX_TYPE_CHARACTER)'|';
@@ -64,9 +64,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
-        QUEX_TYPE_CHARACTER*  iterator = 0x0;
-        QUEX_TYPE_CHARACTER*  end_p    = buffer->input.end_p ? buffer->input.end_p 
-                                         :                                buffer->_memory._back;
+        QUEX_TYPE_CHARACTER*  iterator     = 0x0;
+        QUEX_TYPE_CHARACTER*  end_p        = buffer->input.end_p ? buffer->input.end_p 
+                                             :                     buffer->_memory._back;
 
         bool                  end_p_error_f = (end_p > buffer->_memory._back || end_p < buffer->_memory._front);
 
@@ -88,6 +88,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( end_p_error_f ) {
             __QUEX_STD_printf("ERROR: end_of_file_p: %p; front: %p; back %p;\n", buffer->input.end_p, buffer->_memory._front, buffer->_memory._back);
         }
+        __QUEX_STD_printf("\n");
     }
 
     QUEX_INLINE void  
@@ -331,7 +332,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
 #       endif
-        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_character_index_begin)(me));
+        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_input_begin_character_index)(me));
         __QUEX_STD_printf("   input.end_character_index   = %i;\n", (int)me->input.end_character_index);
         if( me->filler ) {
             __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->filler->_byte_order_reversion_active_f ? "true" : "false");
