@@ -12,15 +12,15 @@ main(int argc, char** argv)
     }
 
     QUEX_NAME(Buffer)         buffer;
-    FILE*                     fh = prepare_input(); /* Festgemauert ... */
+    FILE*                     fh          = prepare_input(); /* Festgemauert ... */
     ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
-    QUEX_NAME(BufferFiller*)  filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
-    const size_t              StepSize = atoi(argv[1]);
-    const size_t              MemorySize = 5;
+    QUEX_NAME(BufferFiller*)  filler      = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+    const size_t              StepSize    = atoi(argv[1]);
+    const size_t              MemorySize  = 5;
+    QUEX_TYPE_CHARACTER       memory[MemorySize];
 
-    QUEX_TYPE_CHARACTER  memory[MemorySize];
-
-    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
+    QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, 
+                                E_Ownership_EXTERNAL);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

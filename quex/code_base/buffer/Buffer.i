@@ -26,16 +26,16 @@ QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me,
                             QUEX_TYPE_CHARACTER*      EndOfFileP,
                             E_Ownership               Ownership)
 {
-    /* Ownership of InputMemory is passed to 'me->_memory'.              */
+    /* Ownership of InputMemory is passed to 'me->_memory'.                  */
     QUEX_NAME(BufferMemory_construct)(&me->_memory, memory, MemorySize, 
                                       Ownership); 
     
     me->on_buffer_content_change = (void (*)(const QUEX_TYPE_CHARACTER*, const QUEX_TYPE_CHARACTER*))0;
 
-    /* Until now, nothing is loaded into the buffer.                     */
-
-    /* By setting begin and end to zero, we indicate to the loader that
-     * this is the very first load procedure.                            */
+    /* Until now, nothing is loaded into the buffer.                         */
+                                                                             
+    /* By setting begin and end to zero, we indicate to the loader that      
+     * this is the very first load procedure.                                */
     me->filler = filler;
     QUEX_NAME(Buffer_init_analyzis)(me, EndOfFileP);
 }
@@ -60,19 +60,19 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
      *                  fill region. 
      *
      * The first state in the state machine does not increment. Thus, the
-     * input pointer is set to the first position, not before.           */
-    me->_read_p         = &me->_memory._front[1];  
-    me->_lexeme_start_p = &me->_memory._front[1];  
-
-    /* No character covered yet -> '\0'.                                 */
-    me->_character_at_lexeme_start = '\0';  
-#   ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    /* When the buffer is initialized, a line begins. Signalize that.    */
+     * input pointer is set to the first position, not before.               */
+    me->_read_p         = &me->_memory._front[1];                            
+    me->_lexeme_start_p = &me->_memory._front[1];                            
+                                                                             
+    /* No character covered yet -> '\0'.                                     */
+    me->_character_at_lexeme_start = '\0';                                   
+#   ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                 
+    /* When the buffer is initialized, a line begins. Signalize that.        */
     me->_character_before_lexeme_start = QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;
 #   endif
 
     /* (2) Load content, determine character indices of borders, determine
-     *     end of file pointer.                                          */
+     *     end of file pointer.                                              */
     if( me->filler && me->filler->byte_loader ) {
         __quex_assert(! EndOfFileP);
         end_p               = (QUEX_TYPE_CHARACTER*)0;
@@ -86,7 +86,8 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
             end_character_index = EndOfFileP - &me->_memory._front[1];
         }
         else {
-            end_p               = (QUEX_TYPE_CHARACTER*)0;
+            /* input.end_p == _memory._front  <==>  EMPTY                    */
+            end_p               = me->_memory._front;
             end_character_index = 0;
         }
         QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
