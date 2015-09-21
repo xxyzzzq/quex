@@ -75,7 +75,7 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
      *     end of file pointer.                                              */
     if( me->filler && me->filler->byte_loader ) {
         __quex_assert(! EndOfFileP);
-        end_p               = (QUEX_TYPE_CHARACTER*)0;
+        end_p               = me->_memory._front;                   /* EMPTY */
         end_character_index = 0;
         QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
         QUEX_NAME(BufferFiller_load_forward)(me);   
@@ -86,8 +86,7 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
             end_character_index = EndOfFileP - &me->_memory._front[1];
         }
         else {
-            /* input.end_p == _memory._front  <==>  EMPTY                    */
-            end_p               = me->_memory._front;
+            end_p               = me->_memory._front;               /* EMPTY */
             end_character_index = 0;
         }
         QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
@@ -117,7 +116,8 @@ QUEX_NAME(Buffer_input_end_set)(QUEX_NAME(Buffer)*        me,
 {
     if( EndOfInputP ) {
         __quex_assert(EndOfInputP <= me->_memory._back);
-        __quex_assert(EndOfInputP >  me->_memory._front);
+        /* EndOfInputP == me->_memory._front indicates 'EMPTY'               */
+        __quex_assert(EndOfInputP >=  me->_memory._front);
         *EndOfInputP = QUEX_SETTING_BUFFER_LIMIT_CODE;
         QUEX_IF_ASSERTS_poison(&EndOfInputP[1], me->_memory._back);
     }
@@ -127,6 +127,11 @@ QUEX_NAME(Buffer_input_end_set)(QUEX_NAME(Buffer)*        me,
     /* NOT: assert(QUEX_NAME(Buffer_input_begin_character_index)(me) >= 0);
      * This function may be called before content is setup/loaded propperly. */ 
 }
+
+QUEX_INLINE bool
+QUEX_NAME(Buffer_is_empty)(QUEX_NAME(Buffer)* me)
+/* Setting the input.end_p = front meanse: buffer is empty.                  */
+{ return me->input.end_p == me->_memory._front; }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
 QUEX_NAME(Buffer_input_begin_character_index)(QUEX_NAME(Buffer)* me)
