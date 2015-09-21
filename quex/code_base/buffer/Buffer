@@ -104,6 +104,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
                            QUEX_NAME(Buffer_input_begin_character_index)(QUEX_NAME(Buffer)* me);
 
+    QUEX_INLINE bool       QUEX_NAME(Buffer_is_empty)(QUEX_NAME(Buffer)* me);
     QUEX_INLINE bool       QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
     QUEX_INLINE bool       QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
                           

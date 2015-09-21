@@ -6,7 +6,6 @@
 
 #    define QUEX_BUFFER_ASSERT_pointers_in_range(B)    /* empty */
 #    define QUEX_BUFFER_ASSERT_CONSISTENCY(B)          /* empty */
-#    define QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(B)  /* empty */
 #    define QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(Begin, End) /* empty */
 
 #else
@@ -31,7 +30,7 @@ QUEX_BUFFER_ASSERT_pointers_in_range(QUEX_NAME(Buffer)* B)
     if( (*B).input.end_p == 0x0 ) {                                           
         __quex_assert((*B)._read_p         <= (*B)._memory._back);               
         __quex_assert((*B)._lexeme_start_p <= (*B)._memory._back);               
-    } else {                                                                     
+    } else if( ! QUEX_NAME(Buffer_is_empty)(B) ) {                                                                     
         __quex_assert((*B)._read_p         <= (*B).input.end_p);              
         __quex_assert((*B)._lexeme_start_p <= (*B).input.end_p);              
         /**/                                                                     
@@ -78,16 +77,6 @@ QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(const QUEX_TYPE_CHARACTER* Begin,
             QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
         }
     }
-}
-
-QUEX_INLINE void
-QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QUEX_NAME(Buffer)* buffer)
-{
-    const QUEX_TYPE_CHARACTER* End = buffer->_memory._back;
-
-    if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
-    if( buffer->input.end_p != 0x0 ) End = buffer->input.end_p;
-    QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->_memory._front + 1, End);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

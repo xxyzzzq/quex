@@ -197,17 +197,12 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
         QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ true);
         return 0;
     }
-
-    if( buffer->input.end_p == buffer->_memory._front ) { 
-        /* Buffer empty:
-         *
-         * Load the whole buffer.                                            */
+    else if( QUEX_NAME(Buffer_is_empty)(buffer) ) { 
+        /* Load the whole buffer.                                            */
         free_begin_p = &buffer->_memory._front[1];
     }
     else {
-        /* Buffer not empty:
-         *
-         * Move old content that has to remain (also, fall back region).
+        /* Move old content that has to remain (also, fall back region).
          * (Maintains '_read_p' and '_lexeme_start_p' inside the buffer)     */
         free_begin_p = QUEX_NAME(Buffer_move_away_passed_content)(buffer);
         if( ! free_begin_p ) return 0; 
@@ -269,18 +264,23 @@ QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
         QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ false);
         return 0;
     }
-
-    /* Move old content that has to remain. The analyzer soon will have to 
-     * go forward again, so some content better remains.                     */
-    free_size = QUEX_NAME(Buffer_move_away_upfront_content)(buffer); 
-    if( ! free_size ) return 0;
+    else if( QUEX_NAME(Buffer_is_empty)(buffer) ) { 
+        /* Load the whole buffer.                                            */
+        free_size = ContentBack - ContentFront + 1;
+    }
+    else {
+        /* Move old content that has to remain. The analyzer soon will have to 
+         * go forward again, so some content better remains.                 */
+        free_size = QUEX_NAME(Buffer_move_away_upfront_content)(buffer); 
+        if( ! free_size ) return 0;
+    }
 
     /* Load new content                                                  
      *
      * It is not safe to assume that the character size is fixed. Thus it
      * is up to  the input strategy to determine the input position that
      * belongs to a character  position.                                     */
-    load_begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(buffer)
+    load_begin_character_index =   QUEX_NAME(Buffer_input_begin_character_index)(buffer)
                                  - free_size;
     __quex_assert(load_begin_character_index >= 0);
     me->seek_character_index(me, load_begin_character_index);
