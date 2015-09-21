@@ -198,10 +198,20 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
         return 0;
     }
 
-    /* Move old content that has to remain (also, fall back region).
-     * (Maintains '_read_p' and '_lexeme_start_p' inside the buffer)         */
-    free_begin_p = QUEX_NAME(Buffer_move_away_passed_content)(buffer);
-    if( ! free_begin_p ) return 0; 
+    if( buffer->input.end_p == buffer->_memory._front ) { 
+        /* Buffer empty:
+         *
+         * Load the whole buffer.                                            */
+        free_begin_p = &buffer->_memory._front[1];
+    }
+    else {
+        /* Buffer not empty:
+         *
+         * Move old content that has to remain (also, fall back region).
+         * (Maintains '_read_p' and '_lexeme_start_p' inside the buffer)     */
+        free_begin_p = QUEX_NAME(Buffer_move_away_passed_content)(buffer);
+        if( ! free_begin_p ) return 0; 
+    }
     required_load_n = BackP - free_begin_p;
 
     /* Load new content                                                  
@@ -214,10 +224,12 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
     loaded_n = QUEX_NAME(__BufferFiller_read_characters)(buffer->filler, 
                                                          free_begin_p, 
                                                          required_load_n);
+    __quex_assert(loaded_n <= required_load_n);
+
     /* input.end_p, input.end_character_index
      *                                                                       */
-    end_p = (&BackP[1] - free_begin_p > loaded_n) ? &free_begin_p[loaded_n]
-                                                  : (QUEX_TYPE_CHARACTER*)0;
+    end_p = (BackP - free_begin_p == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
+                                               : &free_begin_p[loaded_n];
     end_character_index = buffer->input.end_character_index + loaded_n;
     QUEX_NAME(Buffer_input_end_set)(buffer, end_p, end_character_index);
     
