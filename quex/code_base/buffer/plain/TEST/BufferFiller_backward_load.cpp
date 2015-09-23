@@ -17,6 +17,7 @@ main(int argc, char** argv)
     }
     const size_t                    MemorySize = 12;
     const size_t                    BeginIdx   = 15;
+    const size_t                    EndIdx     = BeginIdx + (MemorySize-2);
 
     QUEX_NAME(Buffer)               buffer;
     FILE*                           fh = prepare_input(); /* Festgemauert ... */
@@ -30,14 +31,17 @@ main(int argc, char** argv)
      * as reference position. */
     byte_loader = ByteLoader_FILE_new(fh);
     filler      = (QUEX_NAME(BufferFiller_Plain)*)QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
-    QUEX_NAME(Buffer_construct)(&buffer, &filler->base, &memory[0], MemorySize, 0, 
+    QUEX_NAME(Buffer_construct)(&buffer, 
+                                &filler->base, &memory[0], MemorySize, 0, 
                                 E_Ownership_EXTERNAL);
 
-    /* Simulate, as if we started at 0, and now reached '15' */
-    byte_loader->initial_position         = 0;
-    buffer.input.end_character_index   = BeginIdx + (MemorySize-2);
-    //filler->_character_index            = buffer._content_character_index_begin + (MemorySize-2);
-    filler->_last_stream_position         = ftell(fh);
+    /* Simulate, as if we started at 0, and now reached '15'                 */
+    byte_loader->initial_position    = 0;
+
+    buffer._read_p                   = &buffer._memory._back[-1];
+    buffer._lexeme_start_p           = &buffer._memory._back[-1];
+    buffer.input.end_p               = (QUEX_TYPE_CHARACTER*)0;
+    buffer.input.end_character_index = EndIdx;
 
     do {
         printf("------------------------------------------------------------\n");
