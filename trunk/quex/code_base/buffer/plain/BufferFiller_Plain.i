@@ -74,8 +74,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                       QUEX_NAME(BufferFiller_Plain_fill_finish), 
                                       byte_loader);
 
-        me->_last_stream_position = 0;
-
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index = 0;
 #       endif
@@ -97,18 +95,19 @@ QUEX_NAMESPACE_MAIN_OPEN
         * work with the first argument being of base class type. */
        QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
 
-       __quex_assert(alter_ego != 0x0); 
-       __quex_assert(me->base.byte_loader != 0x0); 
+       __quex_assert(alter_ego); 
+       __quex_assert(me->base.byte_loader); 
+
        /* Ensure, that the stream position is only influenced by
         *    __read_characters(...) 
         *    __seek_character_index(...)                                             */
-       __quex_assert(me->_last_stream_position == me->base.byte_loader->tell(me->base.byte_loader));
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      else
        /* The stream position type is most likely >= size_t >= ptrdiff_t so let the 
         * computation happen with that type, then cast to what needs to be returned. */
-       return (QUEX_TYPE_STREAM_POSITION)(me->_last_stream_position / (QUEX_TYPE_STREAM_POSITION)sizeof(QUEX_TYPE_CHARACTER));
+       return (QUEX_TYPE_STREAM_POSITION)(  me->base.byte_loader->tell(me->base.byte_loader) 
+                                          / (QUEX_TYPE_STREAM_POSITION)sizeof(QUEX_TYPE_CHARACTER));
 #      endif
     }
 
@@ -131,7 +130,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         avoid_tmp_arg = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
 
         me->base.byte_loader->seek(me->base.byte_loader, avoid_tmp_arg);
-        me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
     }
 #   else
     /* Implementation for 'strange streams', i.e. streams where the input position increase is not
@@ -143,9 +141,9 @@ QUEX_NAMESPACE_MAIN_OPEN
     { 
         __quex_assert(alter_ego != 0x0); 
         QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-        __quex_assert(me->base.byte_loader != 0x0); 
+        __quex_assert(me->base.byte_loader); 
 
-        if     ( me->_character_index == CharacterIndex ) {
+        if( me->_character_index == CharacterIndex ) {
             return;
         }
         else if( me->_character_index < CharacterIndex ) {
@@ -153,12 +151,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
         else { /* me->_character_index > CharacterIndex */
             me->base.byte_loader->seek(me->base.byte_loader, 0);
-#           ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-            me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
-#           endif
             QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex);
         }
-        me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
     }
 #   endif
 
@@ -194,7 +188,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->_character_index += (ptrdiff_t)CharacterN;
 #       endif
 
-        me->_last_stream_position = me->base.byte_loader->tell(me->base.byte_loader);
         return CharacterN;
     }
 
@@ -225,9 +218,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Inserted number of characters = End - Begin.                      */
         return (ptrdiff_t)(EndP - insertion_p);
     }
-
-
-#   undef TEMPLATED_CLASS
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

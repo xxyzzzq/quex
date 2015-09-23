@@ -56,11 +56,11 @@ file_name: Buffer_move_backward.exe;
 hwut_info_time: 1442733203L;
 make_dependent_f: True;
 result_list: [
-  [ 1; FAIL; 0.280386; None; ]
-  [ 2; FAIL; 0.237743; None; ]
-  [ 3; FAIL; 0.238996; None; ]
-  [ 4; FAIL; 0.249998; None; ]
-  [ 5; FAIL; 0.240165; None; ]
+  [ 1; MAKE FAILED; 0.280386; None; ]
+  [ 2; MAKE FAILED; 0.237743; None; ]
+  [ 3; MAKE FAILED; 0.238996; None; ]
+  [ 4; MAKE FAILED; 0.249998; None; ]
+  [ 5; MAKE FAILED; 0.240165; None; ]
 ]
 }
 {
@@ -71,11 +71,11 @@ file_name: Buffer_move_forward.exe;
 hwut_info_time: 1442733200L;
 make_dependent_f: True;
 result_list: [
-  [ 1; FAIL; 0.240711; None; ]
-  [ 2; FAIL; 0.240511; None; ]
-  [ 3; FAIL; 0.239170; None; ]
-  [ 4; FAIL; 0.240998; None; ]
-  [ 5; FAIL; 0.240577; None; ]
+  [ 1; MAKE FAILED; 0.240711; None; ]
+  [ 2; MAKE FAILED; 0.240511; None; ]
+  [ 3; MAKE FAILED; 0.239170; None; ]
+  [ 4; MAKE FAILED; 0.240998; None; ]
+  [ 5; MAKE FAILED; 0.240577; None; ]
 ]
 }
 {
@@ -110,7 +110,7 @@ file_name: Buffer_tell_and_seek.exe;
 hwut_info_time: 1442733205L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.239978; None; ]
+  [ ; MAKE FAILED; 0.239978; None; ]
 ]
 }
 {

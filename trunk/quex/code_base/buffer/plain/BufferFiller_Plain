@@ -23,8 +23,6 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (This is the 'C' way to express derivation) */
         QUEX_NAME(BufferFiller)     base;
 
-        /* position in stream where analysis started */
-        QUEX_TYPE_STREAM_POSITION   _last_stream_position;  
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
         ptrdiff_t                   _character_index;

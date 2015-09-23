@@ -316,21 +316,23 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
+    begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    /* The begin character index should never be negative--one cannot read
+     * before the first byte of a stream. 
+     * --> move_distance      <= begin_character_index                       */
+    __quex_assert(begin_character_index >= 0);
+
     /* Determine where the region-to-be-moved ENDS, what its size is and how
      * far it is to be moved.                                                */
-    move_end_p    = &BackP[-(ptrdiff_t)(ContentSize/3)];
+    move_distance = (ptrdiff_t)(ContentSize/3);
+    move_distance = QUEX_MIN(move_distance, begin_character_index);
+
+    move_end_p    = &BackP[1] - move_distance;
     move_end_p    = QUEX_MIN(move_end_p, ContentEndP);
-                             
     move_end_p    = QUEX_MAX(move_end_p, me->_read_p + 1);
     move_end_p    = me->_lexeme_start_p ? QUEX_MAX(move_end_p, me->_lexeme_start_p + 1)
                                         : move_end_p;
     move_distance = &BackP[1] - move_end_p;
-    /* The begin character index should never be negative--one cannot read
-     * before the first byte of a stream. 
-     * --> move_distance      <= begin_character_index                       */
-    begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(me);
-    __quex_assert(begin_character_index >= 0);
-    move_distance = QUEX_MIN(move_distance, begin_character_index);
     move_size     = (ptrdiff_t)(move_end_p - FrontP);
 
     if( ! move_distance ) return 0;
