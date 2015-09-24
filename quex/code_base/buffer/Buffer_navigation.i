@@ -42,12 +42,12 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
 {
     QUEX_TYPE_CHARACTER* content_end     = QUEX_NAME(Buffer_text_end)(me);
     ptrdiff_t            max_distance    = content_end - me->_read_p;
-    ptrdiff_t            remaining_delta = CharacterN;
+    ptrdiff_t            delta_remaining = CharacterN;
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
-    while( remaining_delta > max_distance ) {
+    while( delta_remaining > max_distance ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.        */
-        remaining_delta     -= max_distance;
+        delta_remaining     -= max_distance;
         me->_read_p          = content_end;
         me->_lexeme_start_p  = me->_read_p;
         if( ! QUEX_NAME(BufferFiller_load_forward)(me) ) {
@@ -60,7 +60,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
         max_distance = content_end - me->_read_p;
     }
 
-    me->_read_p                       += remaining_delta;
+    me->_read_p                       += delta_remaining;
     me->_lexeme_start_p                = me->_read_p;
     me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
@@ -72,33 +72,39 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
 }
 
 QUEX_INLINE bool  
-QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
+QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me, 
+                                const ptrdiff_t    CharacterN)
 /* Move '_read_p' backwards by 'CharacterN'. This may involve reload in 
  * backward direction.                                                   
  * 
  * RETURNS: True -- if positioning was succesfull,
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER* content_begin   = QUEX_NAME(Buffer_content_front)(me);
-    ptrdiff_t            max_distance    = me->_read_p - content_begin;
-    ptrdiff_t            remaining_delta = CharacterN;
+    QUEX_TYPE_CHARACTER* begin_p         = &me->_memory._front[1];
+    ptrdiff_t            delta_to_begin  = me->_read_p - begin_p;
+    ptrdiff_t            delta_remaining = CharacterN;
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
-    while( remaining_delta > max_distance ) {
+    if( CharacterN >   QUEX_NAME(Buffer_input_begin_character_index)(me)
+                     + delta_to_begin ) {
+        return false;
+    }
+
+    while( delta_remaining > delta_to_begin ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.        */
-        remaining_delta     -= max_distance;                                    
-        me->_read_p          = content_begin;                               
+        delta_remaining     -= delta_to_begin;                                    
+        me->_read_p          = begin_p;                               
         me->_lexeme_start_p  = me->_read_p - 1;                             
         if( ! QUEX_NAME(BufferFiller_load_backward)(me) ) {                 
             /* Alarm, buffer is now in some indetermined state.              */
-            me->_read_p = content_begin;
+            me->_read_p = begin_p;
             return false;
         } 
-        content_begin = QUEX_NAME(Buffer_text_end)(me);
-        max_distance  = me->_read_p - content_begin;
+        begin_p        = QUEX_NAME(Buffer_text_end)(me);
+        delta_to_begin = me->_read_p - begin_p;
     }
 
-    me->_read_p                       -= remaining_delta;
+    me->_read_p                       -= delta_remaining;
     me->_lexeme_start_p                = me->_read_p;
     me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
