@@ -1,4 +1,4 @@
-#line 1  "Buffer_move_forward-template.cpp" 
+#line 1  "Buffer_seek_forward-template.cpp" 
 #include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
@@ -40,7 +40,7 @@ main(int argc, char** argv)
     assert((void*)((QUEX_NAME(BufferFiller_Converter)*)buffer.filler)->converter->convert 
            == (void*)___CONVERT___);
 
-    test_move_forward(&buffer, StepSize); 
+    test_seek_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
 }
 

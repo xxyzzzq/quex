@@ -38,7 +38,7 @@
 #include <stdint.h>
 ------------------------------------------------------------------------
     int lexeme_start_i;    int read_i;                                   int eof_f; 
-    |0:4|;                 |lexeme_start_i-1:lexeme_start_i+1| in |0:4|; [0, 1];
+    |0:5|;                 |lexeme_start_i-1:lexeme_start_i+1| in |0:5|; [0, 1];
 
 ------------------------------------------------------------------------
 */
@@ -103,10 +103,10 @@ main(int argc, char** argv)
     }
 }
 
-static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
+static QUEX_TYPE_CHARACTER  content[] = { '6', '5', '4', '3', '2', '1' }; 
 ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
-static QUEX_TYPE_CHARACTER  memory[12];
-const ptrdiff_t             MemorySize = 12;
+static QUEX_TYPE_CHARACTER  memory[11];
+const ptrdiff_t             MemorySize = 11;
 
 static void
 self_init(QUEX_NAME(Buffer)* buffer, G_t* it)
@@ -152,7 +152,7 @@ static void
 self_print(QUEX_NAME(Buffer)* buffer)
 {
     /**/
-    printf("        @%i '%c';         @%i '%c'; @%2i;   @%i        @%i;       ", 
+    printf("        @%i '%c';         @%i '%c'; @%2i;   @%2i        @%2i;       ", 
            (int)(buffer->_lexeme_start_p - buffer->_memory._front),
            (int)(*(buffer->_lexeme_start_p)),
            (int)(buffer->_read_p - buffer->_memory._front),
@@ -160,7 +160,7 @@ self_print(QUEX_NAME(Buffer)* buffer)
            (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
            (int)QUEX_NAME(Buffer_input_begin_character_index)(buffer),
            (int)buffer->input.end_character_index);
+    __quex_assert(QUEX_NAME(Buffer_input_begin_character_index)(buffer) >= 0);
     /**/
     QUEX_NAME(Buffer_show_content_intern)(buffer);
-    printf("\n");
 }

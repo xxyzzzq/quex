@@ -10,7 +10,7 @@
 #endif
 #include <quex/code_base/buffer/BufferFiller.i>
 
-#line 7 "Buffer_move_backward-template.cpp"
+#line 7 "Buffer_seek_backward-template.cpp"
 
 using namespace std;
 using namespace quex;
@@ -48,7 +48,7 @@ main(int argc, char** argv)
         if( buffer._read_p == buffer.input.end_p ) break;
         QUEX_NAME(BufferFiller_load_forward)(&buffer);
     }
-    test_move_backward(&buffer, StepSize); 
+    test_seek_backward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
 }
 

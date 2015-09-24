@@ -1478,25 +1478,25 @@ quex/code_base/buffer/TEST                                           <no date>
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward.exe 1 .................................[FAIL]
+        Buffer_seek_backward.exe 1 .................................[FAIL]
                                  2 .................................[FAIL]
                                  3 .................................[FAIL]
                                  4 .................................[FAIL]
                                  5 .................................[FAIL]
     Backward (BPC=4)
-        Buffer_move_backward-32.exe 1 ..............................[FAIL]
+        Buffer_seek_backward-32.exe 1 ..............................[FAIL]
                                     2 ..............................[FAIL]
                                     3 ..............................[FAIL]
                                     4 ..............................[FAIL]
                                     5 ..............................[FAIL]
     Forward (BPC=1)
-        Buffer_move_forward.exe 1 ....................................[OK]
+        Buffer_seek_forward.exe 1 ....................................[OK]
                                 2 ....................................[OK]
                                 3 ....................................[OK]
                                 4 ....................................[OK]
                                 5 ....................................[OK]
     Forward (BPC=4)
-        Buffer_move_forward-32.exe 1 .................................[OK]
+        Buffer_seek_forward-32.exe 1 .................................[OK]
                                    2 .................................[OK]
                                    3 .................................[OK]
                                    4 .................................[OK]
@@ -1515,12 +1515,12 @@ quex/code_base/buffer/TEST                                           <no date>
 -------------------------------------------------------------------------------
     [FAIL] BufferFiller_forward_copy.exe
     [FAIL] BufferFiller_forward_copy-32.exe
-    [FAIL] Buffer_move_backward.exe _ 1
+    [FAIL] Buffer_seek_backward.exe _ 1
                                   \__ 2
                                   \__ 3
                                   \__ 4
                                   \__ 5
-    [FAIL] Buffer_move_backward-32.exe _ 1
+    [FAIL] Buffer_seek_backward-32.exe _ 1
                                      \__ 2
                                      \__ 3
                                      \__ 4
@@ -2375,37 +2375,37 @@ quex/code_base/buffer/plain/TEST                                     <no date>
  * Move by Offset:
 
     Backward (BPC=1)
-        Buffer_move_backward-1-fb0.exe 1 .......................[TIME_OUT]
+        Buffer_seek_backward-1-fb0.exe 1 .......................[TIME_OUT]
                                        2 .......................[TIME_OUT]
                                        3 .......................[TIME_OUT]
                                        4 .......................[TIME_OUT]
                                        5 .......................[TIME_OUT]
     Backward (BPC=1)
-        Buffer_move_backward-1-fb1.exe 1 .......................[TIME_OUT]
+        Buffer_seek_backward-1-fb1.exe 1 .......................[TIME_OUT]
                                        2 .......................[TIME_OUT]
                                        3 .......................[TIME_OUT]
                                        4 .......................[TIME_OUT]
                                        5 .......................[TIME_OUT]
     Backward (BPC=4)
-        Buffer_move_backward-4-fb0.exe 1 .......................[TIME_OUT]
+        Buffer_seek_backward-4-fb0.exe 1 .......................[TIME_OUT]
                                        2 .......................[TIME_OUT]
                                        3 .......................[TIME_OUT]
                                        4 .......................[TIME_OUT]
                                        5 .......................[TIME_OUT]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb0.exe 1 .......................[NO OUTPUT]
+        Buffer_seek_forward-1-fb0.exe 1 .......................[NO OUTPUT]
                                       2 .......................[NO OUTPUT]
                                       3 .......................[NO OUTPUT]
                                       4 ........................[OVERSIZE]
                                       5 .......................[NO OUTPUT]
     Forward (BPC=1)
-        Buffer_move_forward-1-fb1.exe 1 .......................[NO OUTPUT]
+        Buffer_seek_forward-1-fb1.exe 1 .......................[NO OUTPUT]
                                       2 .......................[NO OUTPUT]
                                       3 ........................[OVERSIZE]
                                       4 .......................[NO OUTPUT]
                                       5 .......................[NO OUTPUT]
     Forward (BPC=4)
-        Buffer_move_forward-4-fb0.exe 1 ............................[FAIL]
+        Buffer_seek_forward-4-fb0.exe 1 ............................[FAIL]
                                       2 ............................[FAIL]
                                       3 ............................[FAIL]
                                       4 ............................[FAIL]
@@ -2439,32 +2439,32 @@ quex/code_base/buffer/plain/TEST                                     <no date>
     [FAIL] BufferFiller_forward_load-4-fb1.exe
     [FAIL] BufferFiller_forward_load-4-fb5.exe
     [FAIL] BufferFiller_forward_load-error.exe
-    [FAIL] Buffer_move_backward-1-fb0.exe _ 1
+    [FAIL] Buffer_seek_backward-1-fb0.exe _ 1
                                         \__ 2
                                         \__ 3
                                         \__ 4
                                         \__ 5
-    [FAIL] Buffer_move_backward-1-fb1.exe _ 1
+    [FAIL] Buffer_seek_backward-1-fb1.exe _ 1
                                         \__ 2
                                         \__ 3
                                         \__ 4
                                         \__ 5
-    [FAIL] Buffer_move_backward-4-fb0.exe _ 1
+    [FAIL] Buffer_seek_backward-4-fb0.exe _ 1
                                         \__ 2
                                         \__ 3
                                         \__ 4
                                         \__ 5
-    [FAIL] Buffer_move_forward-1-fb0.exe _ 1
+    [FAIL] Buffer_seek_forward-1-fb0.exe _ 1
                                        \__ 2
                                        \__ 3
                                        \__ 4
                                        \__ 5
-    [FAIL] Buffer_move_forward-1-fb1.exe _ 1
+    [FAIL] Buffer_seek_forward-1-fb1.exe _ 1
                                        \__ 2
                                        \__ 3
                                        \__ 4
                                        \__ 5
-    [FAIL] Buffer_move_forward-4-fb0.exe _ 1
+    [FAIL] Buffer_seek_forward-4-fb0.exe _ 1
                                        \__ 2
                                        \__ 3
                                        \__ 4
@@ -2692,13 +2692,13 @@ quex/code_base/buffer/converter/iconv/TEST                           <no date>
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 .............................[TIME_OUT]
+        Buffer_seek_backward.exe 1 .............................[TIME_OUT]
                                  2 .............................[TIME_OUT]
                                  3 .............................[TIME_OUT]
                                  4 .............................[TIME_OUT]
                                  5 .............................[TIME_OUT]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ..................................[FAIL]
+        Buffer_seek_forward.exe 1 ..................................[FAIL]
                                 2 ..................................[FAIL]
                                 3 ..................................[FAIL]
                                 4 ..................................[FAIL]
@@ -2740,12 +2740,12 @@ quex/code_base/buffer/converter/iconv/TEST                           <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] Buffer_move_backward.exe _ 1
+    [FAIL] Buffer_seek_backward.exe _ 1
                                   \__ 2
                                   \__ 3
                                   \__ 4
                                   \__ 5
-    [FAIL] Buffer_move_forward.exe _ 1
+    [FAIL] Buffer_seek_forward.exe _ 1
                                  \__ 2
                                  \__ 3
                                  \__ 4
@@ -2776,13 +2776,13 @@ quex/code_base/buffer/converter/icu/TEST                             <no date>
  * Move by Offset:
 
     Backward (BPC=4)
-        Buffer_move_backward.exe 1 .............................[TIME_OUT]
+        Buffer_seek_backward.exe 1 .............................[TIME_OUT]
                                  2 .............................[TIME_OUT]
                                  3 .............................[TIME_OUT]
                                  4 ...................[KEYBOARD_INTERRUPT]
                                  5 ...................[KEYBOARD_INTERRUPT]
     Forward (BPC=4)
-        Buffer_move_forward.exe 1 ..................................[FAIL]
+        Buffer_seek_forward.exe 1 ..................................[FAIL]
                                 2 ..................................[FAIL]
                                 3 ..................................[FAIL]
                                 4 ..................................[FAIL]
@@ -2824,12 +2824,12 @@ quex/code_base/buffer/converter/icu/TEST                             <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] Buffer_move_backward.exe _ 1
+    [FAIL] Buffer_seek_backward.exe _ 1
                                   \__ 2
                                   \__ 3
                                   \__ 4
                                   \__ 5
-    [FAIL] Buffer_move_forward.exe _ 1
+    [FAIL] Buffer_seek_forward.exe _ 1
                                  \__ 2
                                  \__ 3
                                  \__ 4

@@ -8,9 +8,9 @@ FILES = \
 		n-beat.exe                      \
 		seek_character_index.exe        \
 		seek_character_index-zikzak.exe \
-		Buffer_move_forward.exe         \
+		Buffer_seek_forward.exe         \
 		Buffer_tell_and_seek.exe        \
-		Buffer_move_backward.exe
+		Buffer_seek_backward.exe
 
 DEFS = -DQUEX_OPTION_ASSERTS \
 	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
