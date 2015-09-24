@@ -31,5 +31,5 @@ main(int argc, char** argv)
 
     buffer._read_p = buffer._memory._back - 1;
 
-    test_move_backward(&buffer, StepSize);
+    test_seek_backward(&buffer, StepSize);
 }

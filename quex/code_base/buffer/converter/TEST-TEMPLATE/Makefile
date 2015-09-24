@@ -1,7 +1,7 @@
 TEST_TEMPLATE_RESULTS := \
 				  Buffer_tell_and_seek.cpp   \
-		          Buffer_move_forward.cpp    \
-		          Buffer_move_backward.cpp   \
+		          Buffer_seek_forward.cpp    \
+		          Buffer_seek_backward.cpp   \
 				  converter.cpp              \
 				  converter-statefulness.cpp \
 				  one-beat.cpp               \

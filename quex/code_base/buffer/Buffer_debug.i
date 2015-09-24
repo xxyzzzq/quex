@@ -302,8 +302,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                             "(tried to load buffer forward). Please, compile with option\n\n"
                             "    QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE\n\n"
                             "in order to get a more informative output. Most likely, one of your patterns\n"
-                            "eats longer as you inteded it. Alternatively you might want to set the buffer\n"
-                            "size to a greate value or use skippers (<skip: [ \\n\\t]> for example).\n");
+                            "eats more than you intended. Alternatively you might want to set the buffer\n"
+                            "size to a greater value or use skippers (<skip: [ \\n\\t]> for example).\n");
 #           endif /* QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE */
         }
     }

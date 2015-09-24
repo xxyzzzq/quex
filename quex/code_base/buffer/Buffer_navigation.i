@@ -33,7 +33,7 @@ QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER
 }
 
 QUEX_INLINE bool  
-QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
+QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
 /* Move '_read_p' forwards by 'CharacterN'. This may involve reload in 
  * forward direction.                                                     
  * 
@@ -72,7 +72,7 @@ QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
 }
 
 QUEX_INLINE bool  
-QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
+QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
 /* Move '_read_p' backwards by 'CharacterN'. This may involve reload in 
  * backward direction.                                                   
  * 
@@ -128,10 +128,10 @@ QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const QUEX_TYPE_STREAM_POSITION Ch
     const QUEX_TYPE_STREAM_POSITION CurrentCharacterIndex = QUEX_NAME(Buffer_tell)(me);
 
     if( CharacterIndex > CurrentCharacterIndex ) {
-        QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)(CharacterIndex - CurrentCharacterIndex));
+        QUEX_NAME(Buffer_seek_forward)(me, (ptrdiff_t)(CharacterIndex - CurrentCharacterIndex));
     }
     else {
-        QUEX_NAME(Buffer_move_backward)(me,(ptrdiff_t)(CurrentCharacterIndex - CharacterIndex));
+        QUEX_NAME(Buffer_seek_backward)(me,(ptrdiff_t)(CurrentCharacterIndex - CharacterIndex));
     }
 }
 

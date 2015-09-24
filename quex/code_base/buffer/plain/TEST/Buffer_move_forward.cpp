@@ -22,7 +22,7 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, 
                                 E_Ownership_EXTERNAL);
 
-    test_move_forward(&buffer, StepSize); 
+    test_seek_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
 }
 

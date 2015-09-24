@@ -6,13 +6,13 @@ TEST_FILES = \
 		   \
 		   Buffer_tell_and_seek-wiostream.exe \
 		   \
-		   Buffer_move_forward-1-fb0.exe \
-		   Buffer_move_forward-1-fb1.exe \
-		   Buffer_move_forward-4-fb0.exe \
+		   Buffer_seek_forward-1-fb0.exe \
+		   Buffer_seek_forward-1-fb1.exe \
+		   Buffer_seek_forward-4-fb0.exe \
 		   \
-		   Buffer_move_backward-1-fb0.exe \
-		   Buffer_move_backward-1-fb1.exe \
-		   Buffer_move_backward-4-fb0.exe \
+		   Buffer_seek_backward-1-fb0.exe \
+		   Buffer_seek_backward-1-fb1.exe \
+		   Buffer_seek_backward-4-fb0.exe \
 		   \
 	       BufferFiller_forward_load-1-fb0.exe \
 	       BufferFiller_forward_load-2-fb0.exe \

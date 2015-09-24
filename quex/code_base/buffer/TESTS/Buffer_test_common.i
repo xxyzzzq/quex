@@ -72,27 +72,27 @@ print_this(QUEX_NAME(Buffer)* buffer)
 }
 
 inline void 
-test_move_backward(QUEX_NAME(Buffer)* buffer, const size_t StepSize)
+test_seek_backward(QUEX_NAME(Buffer)* buffer, const size_t StepSize)
 {
     print_this(buffer);
     while( buffer->_read_p != buffer->_memory._front + 1 ) {
-        QUEX_NAME(Buffer_move_backward)(buffer, StepSize);
+        QUEX_NAME(Buffer_seek_backward)(buffer, StepSize);
         print_this(buffer);
     }
-    QUEX_NAME(Buffer_move_backward)(buffer, StepSize);
+    QUEX_NAME(Buffer_seek_backward)(buffer, StepSize);
     print_this(buffer);
 }
 
 inline void 
-test_move_forward(QUEX_NAME(Buffer)* buffer, size_t StepSize)
+test_seek_forward(QUEX_NAME(Buffer)* buffer, size_t StepSize)
 {
     print_this(buffer);
     while( ! (QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 && 
               (buffer->filler == 0x0 || buffer->input.end_p != 0x0) ) ) {
-        QUEX_NAME(Buffer_move_forward)(buffer, StepSize);
+        QUEX_NAME(Buffer_seek_forward)(buffer, StepSize);
         print_this(buffer);
     }
-    QUEX_NAME(Buffer_move_forward)(buffer, StepSize);
+    QUEX_NAME(Buffer_seek_forward)(buffer, StepSize);
     print_this(buffer);
 }
 

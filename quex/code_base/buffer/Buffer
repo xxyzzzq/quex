@@ -89,8 +89,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void                  QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)*, 
                                                                         QUEX_TYPE_CHARACTER*);
     
-    QUEX_INLINE bool       QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
-    QUEX_INLINE bool       QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)*);
     QUEX_INLINE void       QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)*, 
                                                   const QUEX_TYPE_STREAM_POSITION CharacterIndex);

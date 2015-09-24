@@ -324,15 +324,14 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
 
     /* Determine where the region-to-be-moved ENDS, what its size is and how
      * far it is to be moved.                                                */
-    move_distance = (ptrdiff_t)(ContentSize/3);
+    move_distance = &BackP[1] - ContentEndP;
+    move_distance = QUEX_MAX(move_distance, (ptrdiff_t)(ContentSize/3));
     move_distance = QUEX_MIN(move_distance, begin_character_index);
-
+    move_distance = QUEX_MIN(move_distance, BackP - me->_read_p);
+    if( me->_lexeme_start_p ) {
+        move_distance = QUEX_MIN(move_distance, BackP - me->_lexeme_start_p);
+    }
     move_end_p    = &BackP[1] - move_distance;
-    move_end_p    = QUEX_MIN(move_end_p, ContentEndP);
-    move_end_p    = QUEX_MAX(move_end_p, me->_read_p + 1);
-    move_end_p    = me->_lexeme_start_p ? QUEX_MAX(move_end_p, me->_lexeme_start_p + 1)
-                                        : move_end_p;
-    move_distance = &BackP[1] - move_end_p;
     move_size     = (ptrdiff_t)(move_end_p - FrontP);
 
     if( ! move_distance ) return 0;

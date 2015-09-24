@@ -50,8 +50,8 @@ main(int argc, char** argv)
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
         if( QUEX_NAME(Buffer_input_begin_character_index)(&buffer) == 0 ) break;
-        buffer._read_p        = buffer._memory._front;
-        buffer._lexeme_start_p = buffer._memory._front + 1;
+        buffer._read_p         = buffer._memory._front;
+        buffer._lexeme_start_p = &buffer._memory._front[1];
         /**/
         QUEX_NAME(BufferFiller_load_backward)(&buffer);
         printf("\n");
