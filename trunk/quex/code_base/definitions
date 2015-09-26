@@ -102,7 +102,7 @@
  * fast but still behaves well. See Linear Congruential Generators for further
  * reading.                                                                  */
 #define QUEX_HASH_INIT_VALUE  5381
-#define QUEX_HASH_NEXT(H, C)     ((((H) << 5) + (H)) + (C))
+#define QUEX_HASH_NEXT(H, C)  ((((H) << 5) + (H)) + (C))
 
 /* Support of computed goto */
 #ifdef QUEX_OPTION_COMPUTED_GOTOS

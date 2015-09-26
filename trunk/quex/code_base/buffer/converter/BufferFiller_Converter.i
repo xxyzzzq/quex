@@ -227,8 +227,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void   
-    QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
-                                                           const QUEX_TYPE_STREAM_POSITION           Index)
+    QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
+                                                           const QUEX_TYPE_STREAM_POSITION  Index)
     { 
         /* The goal of the 'seek' is that the next filling of the user buffer starts at 
          * the specified character index 'Index'. This can be achieved by setting the 
@@ -430,9 +430,9 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                   QUEX_TYPE_CHARACTER*       insertion_p,
                                                   const QUEX_TYPE_CHARACTER* BufferEnd,
                                                   const void*                FilledEndP)
-        /* Appends the content first into a 'raw' buffer and then converts it. This
-         * is useful in cases where the 'break' may appear in between characters, or
-         * where the statefulness of the converter cannot be controlled.              */
+    /* Appends the content first into a 'raw' buffer and then converts it. This
+     * is useful in cases where the 'break' may appear in between characters, 
+     * or where the statefulness of the converter cannot be controlled.      */
     {
         QUEX_NAME(BufferFiller_Converter)*  me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
         QUEX_TYPE_CHARACTER*                insertion_begin_p = insertion_p;
@@ -442,9 +442,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(EndP >= me->raw_buffer.iterator);
         __quex_assert(EndP <= me->raw_buffer.end);
 
-        /* (2) Convert data from the 'raw' buffer into the analyzer buffer.             */
+        /* (2) Convert data from the 'raw' buffer into the analyzer buffer.  */
 
-        /*     -- Perform the conversion.                                               */
+        /*     -- Perform the conversion.                                    */
         me->converter->convert(me->converter, 
                                &me->raw_buffer.iterator, EndP,
                                &insertion_p,             BufferEnd);
@@ -456,7 +456,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void 
     QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(QUEX_NAME(BufferFiller_Converter)*  me)
-    /* Service function for 'direct buffer' access to the lexical analyzer. */
+    /* Service function for 'direct buffer' access to the lexical analyzer.  */
     {
         QUEX_NAME(RawBuffer)*  buffer          = &me->raw_buffer;
         size_t                 remaining_byte_n;

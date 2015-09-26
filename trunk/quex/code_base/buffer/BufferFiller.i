@@ -20,9 +20,10 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* bu
                                                            const void*        FilledEndP);
 QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
                        
-QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(BufferFiller)*, 
-                                                                 QUEX_TYPE_CHARACTER*, 
-                                                                 const ptrdiff_t);
+QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*, 
+                                                                      QUEX_TYPE_CHARACTER*, 
+                                                                      const ptrdiff_t,
+                                                                      QUEX_TYPE_STREAM_POSITION);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
@@ -99,12 +100,12 @@ QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
 QUEX_INLINE void    
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               QUEX_TYPE_STREAM_POSITION    
-                                           (*tell_character_index)(QUEX_NAME(BufferFiller)*),
-                              void         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
-                                                                   const QUEX_TYPE_STREAM_POSITION),
-                              size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                              QUEX_TYPE_CHARACTER*, const size_t),
-                              void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                           (*derived_input_character_tell)(QUEX_NAME(BufferFiller)*),
+                              void         (*derived_input_character_seek)(QUEX_NAME(BufferFiller)*, 
+                                                                           const QUEX_TYPE_STREAM_POSITION),
+                              size_t       (*derived_input_character_read)(QUEX_NAME(BufferFiller)*,
+                                                                           QUEX_TYPE_CHARACTER*, const size_t),
+                              void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
                                                                    void**              begin_p,
                                                                    const void**        end_p),
@@ -115,17 +116,17 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               ByteLoader*  byte_loader)
 {
     __quex_assert(me);
-    __quex_assert(tell_character_index);
-    __quex_assert(seek_character_index);
-    __quex_assert(read_characters);
-    __quex_assert(delete_self);
+    __quex_assert(derived_input_character_seek);
+    __quex_assert(derived_input_character_seek);
+    __quex_assert(derived_input_character_read);
+    __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
-    me->tell_character_index = tell_character_index;
-    me->seek_character_index = seek_character_index;
-    me->read_characters      = read_characters;
-    me->delete_self          = delete_self;
-    me->_on_overflow         = 0x0;
+    me->derived_input_character_tell = derived_input_character_tell;
+    me->derived_input_character_seek = derived_input_character_seek;
+    me->derived_input_character_read = derived_input_character_read;
+    me->delete_self                  = derived_delete_self;
+    me->_on_overflow                 = 0x0;
 
     /* Support for manual buffer filling.                                    */
     me->fill                 = QUEX_NAME(BufferFiller_fill);
@@ -210,16 +211,11 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
     }
     required_load_n = EndP - free_begin_p;
 
-    /* Load new content                                                  
-     *
-     * Due to backward loading the character index might not stand on the
-     * end of the buffer. Thus a stream-seek--not a buffer seek--becomes
-     * necessary.                                                            */
-    me->seek_character_index(me, buffer->input.end_character_index);
-
-    loaded_n = QUEX_NAME(__BufferFiller_read_characters)(buffer->filler, 
-                                                         free_begin_p, 
-                                                         required_load_n);
+    /* Load new content                                                      */
+    loaded_n = QUEX_NAME(__BufferFiller_input_character_read)(buffer->filler, 
+                                                              free_begin_p, 
+                                                              required_load_n,
+                                                              buffer->input.end_character_index);
     __quex_assert(loaded_n <= required_load_n);
 
     /* input.end_p, input.end_character_index
@@ -280,15 +276,11 @@ QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
         __quex_assert(load_begin_character_index >= 0);
     }
 
-    /* Load new content                                                  
-     *
-     * It is not safe to assume that the character size is fixed. Thus it
-     * is up to  the input strategy to determine the input position that
-     * belongs to a character  position.                                     */
-    me->seek_character_index(me, load_begin_character_index);
-    
-    (void)QUEX_NAME(__BufferFiller_read_characters)(buffer->filler, 
-                                                    BeginP, free_size); 
+    /* Load new content                                                      */
+    (void)QUEX_NAME(__BufferFiller_input_character_read)(buffer->filler, 
+                                                         BeginP, 
+                                                         free_size,
+                                                         load_begin_character_index);
 
     __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -370,20 +362,25 @@ QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
 }
 
 QUEX_INLINE ptrdiff_t       
-QUEX_NAME(__BufferFiller_read_characters)(QUEX_NAME(BufferFiller)* me, 
-                                          QUEX_TYPE_CHARACTER*     memory, 
-                                          const ptrdiff_t          RequiredLoadN)
-/* ADAPTS:  *loaded_n   number of actually loaded characters.
- * RETURNS: character index at end of loaded content.                        */
+QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me, 
+                                               QUEX_TYPE_CHARACTER*      memory, 
+                                               const ptrdiff_t           RequiredLoadN,
+                                               QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
+/* RETURNS: number of loaded characters.                                     */
 {
-    QUEX_TYPE_STREAM_POSITION  character_index_before = me->tell_character_index(me);
+    QUEX_TYPE_STREAM_POSITION  character_index_before = me->derived_input_character_tell(me);
     QUEX_TYPE_STREAM_POSITION  character_index_after;
     ptrdiff_t                  loaded_n;
-    
-    loaded_n = me->read_characters(me, memory, (size_t)RequiredLoadN);
+
+    /* It is not safe to assume that the character size is fixed. Thus it
+     * is up to  the input strategy to determine the input position that
+     * belongs to a character  position.                                     */
+    me->derived_input_character_seek(me, StartCharacterIndex);
+
+    loaded_n = me->derived_input_character_read(me, memory, (size_t)RequiredLoadN);
     __quex_assert(loaded_n <= RequiredLoadN);
 
-    character_index_after = me->tell_character_index(me);
+    character_index_after = me->derived_input_character_tell(me);
 
     if(    character_index_after - character_index_before 
         != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
