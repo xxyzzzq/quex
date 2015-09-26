@@ -165,18 +165,14 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t  ByteN      = (size_t)-1;
         size_t  CharacterN = (size_t)-1;
 
+
         __quex_assert(alter_ego); 
         __quex_assert(buffer); 
-        /* The type cast is necessary, since the function signature needs to 
-         * work with the first argument being of base class type. */
-#       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset((uint8_t*)buffer, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
-#       endif
-
         __quex_assert(me->base.byte_loader); 
+        QUEX_IF_ASSERTS_poison(buffer, &buffer[N]);
+
         ByteN = me->base.byte_loader->load(me->base.byte_loader, 
-                                           buffer, 
-                                           N * sizeof(QUEX_TYPE_CHARACTER));
+                                           buffer, N * sizeof(QUEX_TYPE_CHARACTER));
 
         if( ByteN % sizeof(QUEX_TYPE_CHARACTER) != 0 ) {
             QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");

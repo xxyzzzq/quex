@@ -1,7 +1,30 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
-/* PURPOSE: Buffer-seek, i.e. setting the '_read_p' to a specific position
- *          in the stream.
+/* PURPOSE: Buffer's seek: 
+ * 
+ *       Setting the '_read_p' to a specific position in the stream.
+ *
+ * This is the type of 'seek' used in the user interface's seek functions.
+ *
+ * NOT TO CONFUSE with two other forms of seek:
+ *
+ *    -- BufferFiller's seek sets the input position of the next 
+ *       character to be loaded into the buffer.
+ *    -- ByteLoader's seek sets the position in the low level input
+ *       stream.
+ *
+ * A 'seek' always implies that the following happens:
+ *
+ *                      _lexeme_start_p = _read_p  
+ * 
+ * The two stored characters will be assigned after seeking as
+ *
+ *       _character_at_lexeme_start     = _read_p[0]
+ *       _character_before_lexeme_start = _read_p[-1]
+ * 
+ * If the read pointer stands at the beginning of the file, then
+ *
+ *       _character_before_lexeme_start = newline
  *
  * It is crucial to understand the difference between 'stream seeking' and 
  * 'buffer seeking'. Stream seeking determines the next position in the input
@@ -12,6 +35,9 @@
  * (C) Frank-Rene Schaefer                                                   */
 
 QUEX_NAMESPACE_MAIN_OPEN
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_finish_seek_based_on_read_p)(QUEX_NAME(Buffer)* me);
 
 QUEX_INLINE QUEX_TYPE_CHARACTER*
 QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)* buffer)
@@ -37,37 +63,38 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
 /* Move '_read_p' forwards by 'CharacterN'. This may involve reload in 
  * forward direction.                                                     
  * 
- * RETURNS: True -- if positioning was succesfull,
+ * RETURNS: True -- if positioning was succesful,
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER* content_end     = QUEX_NAME(Buffer_text_end)(me);
-    ptrdiff_t            max_distance    = content_end - me->_read_p;
-    ptrdiff_t            delta_remaining = CharacterN;
+    QUEX_TYPE_CHARACTER* content_back_p = &QUEX_NAME(Buffer_text_end)(me)[-1];
+    ptrdiff_t            max_distance   = content_back_p - me->_read_p;
+    /* Seek for 'CharacterN-1' so that 'target position - 1' is in the buffer
+     * and '_read_p[-1]' can be performed. Buffer sizes < 2 content characters
+     * are caught be asserts.                                                */
+    ptrdiff_t            delta_remaining = CharacterN - 1;
+
+    if( ! CharacterN ) return true;
+    /* Border case CharacterN = 1 <--> delta_remaining = 0:
+     * => new _read_p = _read_p + 1
+     * => _read_p[-1] is always inside buffer, even if _read_p at front.     */
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
     while( delta_remaining > max_distance ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.        */
         delta_remaining     -= max_distance;
-        me->_read_p          = content_end;
+        me->_read_p          = content_back_p;
         me->_lexeme_start_p  = me->_read_p;
         if( ! QUEX_NAME(BufferFiller_load_forward)(me) ) {
             /* Alarm, buffer is now in some indetermined state.              */
-            me->_read_p         = QUEX_NAME(Buffer_text_end)(me);  
-            me->_lexeme_start_p = me->_read_p;
+            me->_read_p = QUEX_NAME(Buffer_text_end)(me);  
+            QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
             return false;
         } 
-        content_end  = QUEX_NAME(Buffer_text_end)(me);
-        max_distance = content_end - me->_read_p;
+        content_back_p = &QUEX_NAME(Buffer_text_end)(me)[-1];
+        max_distance   = content_back_p - me->_read_p;
     }
-
-    me->_read_p                       += delta_remaining;
-    me->_lexeme_start_p                = me->_read_p;
-    me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
-#   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#   endif
-
-    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    me->_read_p += delta_remaining + 1;                       /* see entry   */
+    QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
     return true;
 }
 
@@ -80,38 +107,42 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
  * RETURNS: True -- if positioning was succesfull,
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER* begin_p         = &me->_memory._front[1];
-    ptrdiff_t            delta_to_begin  = me->_read_p - begin_p;
-    ptrdiff_t            delta_remaining = CharacterN;
+    QUEX_TYPE_CHARACTER*       begin_p               = &me->_memory._front[1];
+    ptrdiff_t                  delta_to_begin        = me->_read_p - begin_p;
+    QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(me); 
+    ptrdiff_t                  delta_remaining;
+
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
-    if( CharacterN >   QUEX_NAME(Buffer_input_begin_character_index)(me)
-                     + delta_to_begin ) {
+    if( ! CharacterN ) return true;
+
+    if( CharacterN > begin_character_index + delta_to_begin ) {
+        QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
         return false;
     }
+
+    /* Seek for 'CharacterN+1' backwards so that 'target position - 1' is in
+     * the buffer and '_read_p[-1]' can be performed. Buffer sizes < 2 content
+     * characters are caught be asserts.                                     */
+    delta_remaining = CharacterN + 1;
 
     while( delta_remaining > delta_to_begin ) {
         /* _read_p + CharacterN < text_end, thus no reload necessary.        */
         delta_remaining     -= delta_to_begin;                                    
         me->_read_p          = begin_p;                               
-        me->_lexeme_start_p  = me->_read_p - 1;                             
+        me->_lexeme_start_p  = me->_read_p;                             
         if( ! QUEX_NAME(BufferFiller_load_backward)(me) ) {                 
             /* Alarm, buffer is now in some indetermined state.              */
             me->_read_p = begin_p;
+            QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
             return false;
         } 
         begin_p        = QUEX_NAME(Buffer_text_end)(me);
         delta_to_begin = me->_read_p - begin_p;
     }
 
-    me->_read_p                       -= delta_remaining;
-    me->_lexeme_start_p                = me->_read_p;
-    me->_character_at_lexeme_start     = *(me->_lexeme_start_p);
-#   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
-#   endif
-
-    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    me->_read_p -= delta_remaining - 1;                       /* see entry   */
+    QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
     return true;
 }
 
@@ -136,7 +167,7 @@ QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const QUEX_TYPE_STREAM_POSITION Ch
     if( CharacterIndex > CurrentCharacterIndex ) {
         QUEX_NAME(Buffer_seek_forward)(me, (ptrdiff_t)(CharacterIndex - CurrentCharacterIndex));
     }
-    else {
+    else if( CharacterIndex < CurrentCharacterIndex ) {
         QUEX_NAME(Buffer_seek_backward)(me,(ptrdiff_t)(CurrentCharacterIndex - CharacterIndex));
     }
 }
@@ -152,7 +183,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
  *           about what character index is located at what position may help
  *           to increase speed.                                              */      
 { 
-    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->tell_character_index(me) 
+    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->derived_input_character_tell(me) 
                                                   + (QUEX_TYPE_STREAM_POSITION)ForwardN;
     /* START: Current position: 'CharacterIndex - remaining_character_n'.
      * LOOP:  It remains to interpret 'remaining_character_n' number of 
@@ -167,18 +198,35 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
 
     /* We CANNOT assume that end the end it will hold: 
      *
-     *       __quex_assert(me->tell_character_index(me) == TargetIndex);
+     *       __quex_assert(me->derived_input_character_tell(me) == TargetIndex);
      *
      * Because, its unknown wether the stream has enough characters.         */
     for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
-        if( me->read_characters(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
-            __quex_assert(me->tell_character_index(me) <= TargetIndex);
+        if( me->derived_input_character_read(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
+            __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
             return;
         }
     if( remaining_character_n ) 
-        me->read_characters(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
+        me->derived_input_character_read(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
    
-    __quex_assert(me->tell_character_index(me) <= TargetIndex);
+    __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
+}
+
+QUEX_INLINE void
+QUEX_NAME(Buffer_finish_seek_based_on_read_p)(QUEX_NAME(Buffer)* me)
+{
+    me->_lexeme_start_p                = me->_read_p;
+    me->_character_at_lexeme_start     = me->_read_p[0];
+#   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+    /* Seek was towards 'target - 1'
+     * => Now, there must be at least one character before '_read_p'.
+     *    Or if not, then the target was on the lower limit 0 and the '_read_p'
+     *    stands on the buffer's content front.                              */
+    me->_character_before_lexeme_start = me->_read_p > &me->_memory._front[1] ?
+                                           me->_read_p[-1]
+                                         : QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;
+#   endif
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

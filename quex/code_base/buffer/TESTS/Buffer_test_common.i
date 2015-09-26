@@ -75,10 +75,10 @@ inline void
 test_seek_backward(QUEX_NAME(Buffer)* buffer, const size_t StepSize)
 {
     print_this(buffer);
-    while( buffer->_read_p != buffer->_memory._front + 1 ) {
-        QUEX_NAME(Buffer_seek_backward)(buffer, StepSize);
+    while( QUEX_NAME(Buffer_seek_backward)(buffer, StepSize) ) {
         print_this(buffer);
     }
+    /* Give in an extra, hopeless, try. */
     QUEX_NAME(Buffer_seek_backward)(buffer, StepSize);
     print_this(buffer);
 }
