@@ -368,7 +368,7 @@ QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me,
                                                QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
 /* RETURNS: number of loaded characters.                                     */
 {
-    QUEX_TYPE_STREAM_POSITION  character_index_before = me->derived_input_character_tell(me);
+    QUEX_TYPE_STREAM_POSITION  character_index_before;
     QUEX_TYPE_STREAM_POSITION  character_index_after;
     ptrdiff_t                  loaded_n;
 
@@ -376,6 +376,7 @@ QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me,
      * is up to  the input strategy to determine the input position that
      * belongs to a character  position.                                     */
     me->derived_input_character_seek(me, StartCharacterIndex);
+    character_index_before = me->derived_input_character_tell(me);
 
     loaded_n = me->derived_input_character_read(me, memory, (size_t)RequiredLoadN);
     __quex_assert(loaded_n <= RequiredLoadN);
@@ -392,6 +393,47 @@ QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me,
     }
     return loaded_n;
 }
+
+QUEX_INLINE void 
+QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
+                                                  const ptrdiff_t          ForwardN)
+/* STRATEGY: Starting from a certain point in the file we read characters
+ *           Convert one-by-one until we reach the given character index. 
+ *           This is, of course, incredibly inefficient but safe to work under
+ *           all circumstances. Fillers should only rely on this function
+ *           in case of no other alternative. Also, caching some information 
+ *           about what character index is located at what position may help
+ *           to increase speed.                                              */      
+{ 
+    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->derived_input_character_tell(me) 
+                                                  + (QUEX_TYPE_STREAM_POSITION)ForwardN;
+    /* START: Current position: 'CharacterIndex - remaining_character_n'.
+     * LOOP:  It remains to interpret 'remaining_character_n' number of 
+     *        characters. Since the interpretation is best done using a buffer, 
+     *        we do this in chunks.                                          */ 
+    size_t               remaining_character_n = (size_t)ForwardN;
+    const size_t         ChunkSize             = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+    QUEX_TYPE_CHARACTER  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+    (void)TargetIndex;
+
+    __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
+
+    /* We CANNOT assume that end the end it will hold: 
+     *
+     *       __quex_assert(me->derived_input_character_tell(me) == TargetIndex);
+     *
+     * Because, its unknown wether the stream has enough characters.         */
+    for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
+        if( me->derived_input_character_read(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
+            __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
+            return;
+        }
+    if( remaining_character_n ) 
+        me->derived_input_character_read(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
+   
+    __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
+}
+
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
