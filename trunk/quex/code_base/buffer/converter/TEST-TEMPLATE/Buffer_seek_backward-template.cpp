@@ -43,7 +43,7 @@ main(int argc, char** argv)
 
     /* Read until the end of file is reached and set the _read_p to EOF */
     while( 1 + 1 == 2 ) {
-        buffer._read_p        = QUEX_NAME(Buffer_text_end)(&buffer);
+        buffer._read_p         = QUEX_NAME(Buffer_text_end)(&buffer);
         buffer._lexeme_start_p = buffer._read_p;
         if( buffer._read_p == buffer.input.end_p ) break;
         QUEX_NAME(BufferFiller_load_forward)(&buffer);

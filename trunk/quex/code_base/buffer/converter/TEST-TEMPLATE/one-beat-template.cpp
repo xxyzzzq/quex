@@ -1,3 +1,4 @@
+#line 1 __FILE__
 #include<iostream>
 #include<fstream>
 
@@ -50,8 +51,8 @@ main(int argc, char** argv)
                                               raw_memory_size);
 
     size_t loaded_n = 0;
-    loaded_n = filler->read_characters(filler, 
-                                       (QUEX_TYPE_CHARACTER*)memory, MemorySize);
+    loaded_n = filler->derived_input_character_read(filler, 
+                                            (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
     cout << "## loaded character n = " << loaded_n << endl;
 

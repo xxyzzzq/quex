@@ -60,7 +60,7 @@ main(int argc, char** argv)
                                                source_charset, target_charset, 
                                                RawMemorySize);
     /* Fill the reference buffer */
-    size_t loaded_n = filler->read_characters(filler, reference, ReferenceSize);
+    size_t loaded_n = filler->derived_input_character_read(filler, reference, ReferenceSize);
 
     /* Print the reference buffer 
      * NOTE: The buffer filler does not know anything about buffer limit codes etc. It simply
@@ -99,9 +99,9 @@ void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)& filler, size_t Posi
     const int            MemorySize = 1; 
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 
-    filler.base.seek_character_index(&filler.base, Position);
+    filler.base.derived_input_character_seek(&filler.base, Position);
     __quex_assert((size_t)filler.raw_buffer.iterators_character_index == Position);
-    size_t loaded_n = filler.base.read_characters(&filler.base, memory, MemorySize);
+    size_t loaded_n = filler.base.derived_input_character_read(&filler.base, memory, MemorySize);
 
     if( loaded_n != 0 ) {
         /* Print first read character from position 'i' */
