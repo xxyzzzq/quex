@@ -64,42 +64,58 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
  * forward direction.                                                     
  * 
  * RETURNS: True -- if positioning was successful,
- *          False -- else.                                                   
- *_____________________________________________________________________________
- * DETAILS:
- *
- * The function tries to seek towards the 'target - 1'. But when this position
- * is reached, then '_read_p = target + 1'. This way '_read_p - 1' lies INSIDE 
- * the buffer. It is required to determine '_character_before_lexeme_start' and
- * '_character_at_lexeme_start'. 
- *
- * Does 'read_p = target + 1' lie inside the buffer? The loading function is
- * supposed to leave content in front of the target. If not even a single 
- * character is left in front, then the seeking must be considered a failure.
- * => Check upon exit of the function and error report catches border case.  
- *    (see Buffer_finish_seek_based_on_read_p())                             */
+ *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER* content_back_p = &QUEX_NAME(Buffer_text_end)(me)[-1];
-    ptrdiff_t            max_distance   = content_back_p - me->_read_p;
-    /* Seek for 'target - 1' => delta_remaining = CharacterN + 1.            */
-    ptrdiff_t            delta_remaining = CharacterN - 1;
+    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory->_front[1];
+    QUEX_TYPE_STREAM_POSITION  character_index_at_read_p = QUEX_NAME(Buffer_input_begin_character_index)(me)
+                                                           + (me->_read_p - BeginP);
+    ptrdiff_t                  target = character_index_at_read_p + CharacterN;
+    QUEX_TYPE_STREAM_POSITION  new_character_index_at_begin;
+    ptrdiff_t                  move_size;
+    ptrdiff_t                  offset;
+    QUEX_TYPE_CHARACTER*       free_begin_p;
 
-    if( ! CharacterN ) return true;
-    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-
-    while( delta_remaining > max_distance ) {
-        /* _read_p + CharacterN < text_end, thus no reload necessary.        */
-        delta_remaining     -= max_distance;
-        me->_read_p          = content_back_p;
-        me->_lexeme_start_p  = me->_read_p;
-        if( ! QUEX_NAME(BufferFiller_load_forward)(me) ) {
-            return QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
-        } 
-        content_back_p = &QUEX_NAME(Buffer_text_end)(me)[-1];
-        max_distance   = content_back_p - me->_read_p;
+    if( ! CharacterN ) {
+        return true;
+    }
+    else if( target < me->input.end_character_index ) {
+        me->_read_p += CharacterN;
+        /* => &me->_read_p[-1] inside buffer.                                */
+    }
+    else if( me->input.end_p ) {
+        me->_read_p = me->input.end_p;                              /* Error */
+    }
+    else {
+        offset = QUEX_MAX(QUEX_SETTING_BUFFER_MIN_FALLBACK_N, ContentSize >> 2);
+        new_character_index_begin = QUEX_MAX(0, target - offset);
+        if( new_character_index_begin < me->input.end_character_index ) {
+            /* Before:                     ncib                cie             
+             *                             :                   :                
+             *            | . . . . . . . .x.x.x.x.x.x.x.x.x.x| . . .
+             *                            |<--- move_size --->|
+             *
+             * After:     ncib                 cie            
+             *             :                   :                
+             *            |x.x.x.x.x.x.x.x.x.x. . . . . . . . | . . .
+             *                                |<-- distance ->|              */
+            move_size     = me->input.end_character_index 
+                            - new_character_index_begin;
+            move_distance = ContentSize - move_size;
+            __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
+                               move_size);
+            free_begin_p         = &BeginP[move_size];
+            character_index_read = new_character_index_begin + move_size;
+        }
+        else {
+            free_begin_p         = BeginP;
+            character_index_read = new_character_index_begin;
+        }
+        QUEX_NAME(BufferFiller_input_character_read)(me->filler,
+                                                     free_begin_p, EndP,
+                                                     character_index_read);
+        me->_read_p = &BeginP[offset];
     }
 
-    me->_read_p += delta_remaining + 1;                       /* see entry   */
     return QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
 }
 
@@ -109,48 +125,62 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
 /* Move '_read_p' backwards by 'CharacterN'. This may involve reload in
  * backward direction.                                                   
  * 
- * RETURNS: True -- if positioning was succesfull, 
- *          False -- else.                                                   
- *_____________________________________________________________________________
- * DETAILS:
- *
- * The function tries to seek towards the 'target - 1'. But when this position
- * is reached, then '_read_p = target + 1'. This way '_read_p - 1' lies INSIDE 
- * the buffer. It is required to determine '_character_before_lexeme_start' and
- * '_character_at_lexeme_start'. 
- *
- * Does 'read_p = target + 1' lie inside the buffer? The loading function is
- * supposed to leave content in front of the target. If not even a single 
- * character is left in front, then the seeking must be considered a failure.
- * => Check upon exit of the function and error report catches border case.  
- *    (see Buffer_finish_seek_based_on_read_p())                             */
+ * RETURNS: True -- if positioning was successful, 
+ *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER*       BeginP                 = &me->_memory._front[1];
-    ptrdiff_t                  delta_to_begin         = me->_read_p - BeginP;
-    QUEX_TYPE_STREAM_POSITION  read_p_character_index =   QUEX_NAME(Buffer_input_begin_character_index)(me)
-                                                        + delta_to_begin; 
-    ptrdiff_t                  delta_remaining;
+    QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory->_front[1];
+    QUEX_TYPE_CHARACTER*       EndP        = me->_memory->_back;
+    QUEX_TYPE_CHARACTER*       ContentSize = QUEX_NAME(Buffer_content_size)(me); 
+    QUEX_TYPE_STREAM_POSITION  character_index_at_begin  = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    QUEX_TYPE_STREAM_POSITION  character_index_at_read_p = character_index_at_begin
+                                                           + (me->_read_p - BeginP);
+    ptrdiff_t                  target = character_index_at_read_p - CharacterN;
+    QUEX_TYPE_STREAM_POSITION  new_character_index_at_begin;
+    ptrdiff_t                  move_size;
+    ptrdiff_t                  offset;
+    QUEX_TYPE_CHARACTER*       free_begin_p;
 
-    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-
-    if( ! CharacterN ) return true;
-
-    /* Seek for 'target - 1' => delta_remaining = CharacterN + 1.            */
-    delta_remaining = CharacterN < read_p_character_index ? CharacterN + 1
-                      : read_p_character_index;
-
-    while( delta_remaining > delta_to_begin ) {
-        /* _read_p + CharacterN < text_end, thus no reload necessary.        */
-        delta_remaining     -= delta_to_begin;                                    
-        me->_read_p          = BeginP;                               
-        me->_lexeme_start_p  = me->_read_p;                             
-        if( ! QUEX_NAME(BufferFiller_load_backward)(me) ) {                 
-            return QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
-        } 
-        delta_to_begin = me->_read_p - BeginP;
+    if( ! CharacterN ) {
+        return true;
+    }
+    else if( target > character_index_at_begin ) {
+        me->_read_p -= CharacterN;
+        /* => &me->_read_p[-1] inside buffer.                                */
+    }
+    else if( ! character_index_at_begin )
+        me->_read_p = BeginP;
+    }
+    else {
+        offset                  = ContentSize >> 1;
+        new_character_index_end = QUEX_MAX(ContentSize, target + offset);
+        if( new_character_index_end > character_index_at_begin ) {
+            /* Before:       cib                 ncie            
+             *               :                   :                
+             *              |x.x.x.x.x.x.x.x.x.x. . . . . . . . | . . .
+             *              |<----- size ------>|
+             *              
+             * After:                        cib                 ncie             
+             *                               :                   :                
+             *              | . . . . . . . .x.x.x.x.x.x.x.x.x.x| . . .
+             *              |<-- distance ->|                                */
+            move_size     = new_character_index_end - character_index_begin;
+            move_distance = ContentSize - move_size;
+            __QUEX_STD_memmove((void*)BeginP[move_distance], (void*)BeginP, 
+                               move_size);
+            free_end_p    = &EndP[-move_size];
+        }
+        else {
+            free_end_p    = EndP;
+        }
+        character_index_read = new_character_index_end - ContentSize;
+        __quex_assert(new_character_index_begin >= 0);
+        QUEX_NAME(BufferFiller_input_character_read)(me->filler,
+                                                     BeginP, free_end_p,
+                                                     character_index_read); 
+        me->_read_p = &EndP[-offset];
+        __quex_assert(target == 0 || me->_read_p > BeginP);
     }
 
-    me->_read_p -= delta_remaining - 1;                       /* see entry   */
     return QUEX_NAME(Buffer_finish_seek_based_on_read_p)(me);
 }
 

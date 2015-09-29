@@ -20,11 +20,6 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* bu
                                                            const void*        FilledEndP);
 QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
                        
-QUEX_INLINE ptrdiff_t  QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*, 
-                                                                      QUEX_TYPE_CHARACTER*, 
-                                                                      const ptrdiff_t,
-                                                                      QUEX_TYPE_STREAM_POSITION);
-
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
                             QUEX_NAME(Converter)* converter,
@@ -192,7 +187,9 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
      * -- _read_p = Beginning of the Buffer: Reload nonsense. Maximum 
      *    size of available content lies ahead of '_read_p'.
      * -- input.end_p != 0: Tail of file read is already in buffer.          */
-    if( ! me ) return 0;             /* Possible, if no filler specified     */    
+    if( ! me ) {
+        return 0;                        /* Possible, if no filler specified */    
+    }
     else if( buffer->_read_p - buffer->_lexeme_start_p >= ContentSize ) { 
         /* OVERFLOW: If stretch from _read_p to _lexeme_start_p 
          * spans the whole buffer, then nothing can be loaded.               */
@@ -226,7 +223,6 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
     QUEX_NAME(Buffer_input_end_set)(buffer, end_p, end_character_index);
     
     __quex_debug_buffer_load(buffer, "LOAD FORWARD(exit)\n");
-
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     return (size_t)loaded_n; 
 }
@@ -428,8 +424,9 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
             __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
             return;
         }
-    if( remaining_character_n ) 
+    if( remaining_character_n ) {
         me->derived_input_character_read(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
+    }
    
     __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
 }
