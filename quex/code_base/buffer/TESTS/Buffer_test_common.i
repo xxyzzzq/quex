@@ -33,17 +33,16 @@ cl_has(int argc, char** argv, const char* What)
 inline void
 show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos, char Appendix)
 {
-    static uint8_t  utf8_char_str[7];
-    uint8_t*        p = 0x0;
+    static uint8_t      utf8_char_str[7];
+    uint8_t*            p  = 0x0;
     QUEX_TYPE_CHARACTER UC = *Pos;
+    int                 ci = (int)(Pos - &buffer->_memory._front[1] + QUEX_NAME(Buffer_input_begin_character_index)(buffer)); 
 
     if( UC == '\0' ) { 
-        printf("%s= %i (--> '%c')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
-               (char)'\0', Appendix);
+        printf("%s: %i (--> '%c')%c", (char*)Name, ci, (char)'\0', Appendix);
 
     } else if( UC == '\n' ) { 
-        printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
-               Appendix);
+        printf("%s: %i (--> '\\n')%c", (char*)Name, ci, Appendix);
     } else {
         p = utf8_char_str;
         const QUEX_TYPE_CHARACTER* input_p = Pos;
@@ -55,10 +54,8 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         default: assert(false);
         }
         *p = '\0';
-        printf("%s= %i (--> '%s')%c", 
-               (char*)Name,
-               (int)(Pos - buffer->_memory._front - 1), 
-               (char*)utf8_char_str, 
+        printf("%s: %i (--> '%s')%c", 
+               (char*)Name, ci, (char*)utf8_char_str, 
                Appendix);
     }
 }
@@ -67,8 +64,12 @@ inline void
 print_this(QUEX_NAME(Buffer)* buffer)
 {
 
-    show_this("input_p      ",      buffer, buffer->_read_p, '\t');
-    show_this("lexeme start ", buffer, buffer->_lexeme_start_p, '\n');
+    show_this("input_p", buffer, buffer->_read_p, '\t');
+    show_this("lexeme start", buffer, buffer->_lexeme_start_p, '\t');
+    printf("ci-begin: %i; ci-end: %i; offset-end_p: %i;\n", 
+           (int)(QUEX_NAME(Buffer_input_begin_character_index)(buffer)),
+           (int)(buffer->input.end_character_index),
+           (int)(buffer->input.end_p ? buffer->input.end_p - &buffer->_memory._front[1] : -1));
 }
 
 inline void 

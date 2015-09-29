@@ -66,14 +66,21 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
  * RETURNS: True -- if positioning was successful,
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory->_front[1];
+    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*       EndP   = me->_memory._back;
+    const size_t               ContentSize = QUEX_NAME(Buffer_content_size)(me); 
     QUEX_TYPE_STREAM_POSITION  character_index_at_read_p = QUEX_NAME(Buffer_input_begin_character_index)(me)
                                                            + (me->_read_p - BeginP);
     ptrdiff_t                  target = character_index_at_read_p + CharacterN;
-    QUEX_TYPE_STREAM_POSITION  new_character_index_at_begin;
+    QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
+    QUEX_TYPE_STREAM_POSITION  character_index_load;
     ptrdiff_t                  move_size;
+    ptrdiff_t                  move_distance;
     ptrdiff_t                  offset;
     QUEX_TYPE_CHARACTER*       free_begin_p;
+    ptrdiff_t                  loaded_n;
+    QUEX_TYPE_CHARACTER*       end_p;
+    QUEX_TYPE_STREAM_POSITION  end_character_index;
 
     if( ! CharacterN ) {
         return true;
@@ -87,7 +94,8 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     }
     else {
         offset = QUEX_MAX(QUEX_SETTING_BUFFER_MIN_FALLBACK_N, ContentSize >> 2);
-        new_character_index_begin = QUEX_MAX(0, target - offset);
+        offset = QUEX_MIN(offset, target);
+        new_character_index_begin = target - offset;
         if( new_character_index_begin < me->input.end_character_index ) {
             /* Before:                     ncib                cie             
              *                             :                   :                
@@ -104,15 +112,20 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
             __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
                                move_size);
             free_begin_p         = &BeginP[move_size];
-            character_index_read = new_character_index_begin + move_size;
+            character_index_load = new_character_index_begin + move_size;
         }
         else {
             free_begin_p         = BeginP;
-            character_index_read = new_character_index_begin;
+            character_index_load = new_character_index_begin;
         }
-        QUEX_NAME(BufferFiller_input_character_read)(me->filler,
-                                                     free_begin_p, EndP,
-                                                     character_index_read);
+        loaded_n = QUEX_NAME(BufferFiller_input_character_read)(me->filler,
+                                                                free_begin_p, 
+                                                                EndP - free_begin_p,
+                                                                character_index_load);
+        end_p = (EndP - free_begin_p == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
+                                                   : &free_begin_p[loaded_n];
+        end_character_index = character_index_load + loaded_n;
+        QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
         me->_read_p = &BeginP[offset];
     }
 
@@ -128,32 +141,38 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
  * RETURNS: True -- if positioning was successful, 
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory->_front[1];
-    QUEX_TYPE_CHARACTER*       EndP        = me->_memory->_back;
-    QUEX_TYPE_CHARACTER*       ContentSize = QUEX_NAME(Buffer_content_size)(me); 
-    QUEX_TYPE_STREAM_POSITION  character_index_at_begin  = QUEX_NAME(Buffer_input_begin_character_index)(me);
-    QUEX_TYPE_STREAM_POSITION  character_index_at_read_p = character_index_at_begin
+    QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*       EndP        = me->_memory._back;
+    const size_t               ContentSize = QUEX_NAME(Buffer_content_size)(me); 
+    QUEX_TYPE_STREAM_POSITION  character_index_begin  = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    QUEX_TYPE_STREAM_POSITION  character_index_at_read_p = character_index_begin
                                                            + (me->_read_p - BeginP);
     ptrdiff_t                  target = character_index_at_read_p - CharacterN;
-    QUEX_TYPE_STREAM_POSITION  new_character_index_at_begin;
+    QUEX_TYPE_STREAM_POSITION  new_character_index_end;
+    QUEX_TYPE_STREAM_POSITION  character_index_load;
     ptrdiff_t                  move_size;
+    ptrdiff_t                  move_distance;
     ptrdiff_t                  offset;
-    QUEX_TYPE_CHARACTER*       free_begin_p;
+    QUEX_TYPE_CHARACTER*       free_end_p;
+    ptrdiff_t                  loaded_n;
+    QUEX_TYPE_CHARACTER*       end_p;
+    QUEX_TYPE_STREAM_POSITION  end_character_index;
 
     if( ! CharacterN ) {
         return true;
     }
-    else if( target > character_index_at_begin ) {
+    else if( target > character_index_begin ) {
         me->_read_p -= CharacterN;
         /* => &me->_read_p[-1] inside buffer.                                */
     }
-    else if( ! character_index_at_begin )
-        me->_read_p = BeginP;
+    else if( ! character_index_begin ) {
+        me->_read_p = &BeginP[-1]; /* error => _read_p = Begin; return false */
     }
     else {
-        offset                  = ContentSize >> 1;
-        new_character_index_end = QUEX_MAX(ContentSize, target + offset);
-        if( new_character_index_end > character_index_at_begin ) {
+        offset = ContentSize >> 1;
+        offset = QUEX_MAX(offset, (ptrdiff_t)ContentSize - (ptrdiff_t)target);
+        new_character_index_end = target + offset;
+        if( new_character_index_end > character_index_begin ) {
             /* Before:       cib                 ncie            
              *               :                   :                
              *              |x.x.x.x.x.x.x.x.x.x. . . . . . . . | . . .
@@ -165,18 +184,26 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
              *              |<-- distance ->|                                */
             move_size     = new_character_index_end - character_index_begin;
             move_distance = ContentSize - move_size;
-            __QUEX_STD_memmove((void*)BeginP[move_distance], (void*)BeginP, 
+            __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
                                move_size);
             free_end_p    = &EndP[-move_size];
         }
         else {
             free_end_p    = EndP;
         }
-        character_index_read = new_character_index_end - ContentSize;
-        __quex_assert(new_character_index_begin >= 0);
-        QUEX_NAME(BufferFiller_input_character_read)(me->filler,
-                                                     BeginP, free_end_p,
-                                                     character_index_read); 
+        character_index_load = new_character_index_end - ContentSize;
+        __quex_assert(character_index_load >= 0);
+
+        loaded_n = QUEX_NAME(BufferFiller_input_character_read)(me->filler,
+                                                                BeginP, 
+                                                                free_end_p - BeginP,
+                                                                character_index_load); 
+        end_p = (free_end_p - BeginP == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
+                                                  : &BeginP[loaded_n];
+        end_character_index = end_p ? character_index_load + (end_p - BeginP)
+                                    : character_index_load + ContentSize;
+        QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
+
         me->_read_p = &EndP[-offset];
         __quex_assert(target == 0 || me->_read_p > BeginP);
     }

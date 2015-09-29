@@ -209,10 +209,10 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
     required_load_n = EndP - free_begin_p;
 
     /* Load new content                                                      */
-    loaded_n = QUEX_NAME(__BufferFiller_input_character_read)(buffer->filler, 
-                                                              free_begin_p, 
-                                                              required_load_n,
-                                                              buffer->input.end_character_index);
+    loaded_n = QUEX_NAME(BufferFiller_input_character_read)(buffer->filler, 
+                                                            free_begin_p, 
+                                                            required_load_n,
+                                                            buffer->input.end_character_index);
     __quex_assert(loaded_n <= required_load_n);
 
     /* input.end_p, input.end_character_index
@@ -238,7 +238,10 @@ QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
     QUEX_TYPE_CHARACTER*       BeginP = &buffer->_memory._front[1];
     QUEX_TYPE_CHARACTER*       EndP   = buffer->_memory._back;
     ptrdiff_t                  free_size;
-    QUEX_TYPE_STREAM_POSITION  load_begin_character_index;
+    QUEX_TYPE_STREAM_POSITION  character_index_load;
+    ptrdiff_t                  loaded_n;
+    QUEX_TYPE_STREAM_POSITION  end_character_index;
+    QUEX_TYPE_CHARACTER*       end_p;
 
 #   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
     QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD);
@@ -260,23 +263,28 @@ QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
     else if( QUEX_NAME(Buffer_is_empty)(buffer) ) { 
         /* Load the whole buffer.                                            */
         free_size                  = EndP - BeginP;
-        load_begin_character_index = (QUEX_TYPE_STREAM_POSITION)0;
+        character_index_load = (QUEX_TYPE_STREAM_POSITION)0;
     }
     else {
         /* Move old content that has to remain. The analyzer soon will have to 
          * go forward again, so some content better remains.                 */
         free_size = QUEX_NAME(Buffer_move_away_upfront_content)(buffer); 
         if( ! free_size ) return 0;
-        load_begin_character_index =   buffer->input.end_character_index
+        character_index_load =   buffer->input.end_character_index
                                      - (QUEX_NAME(Buffer_text_end)(buffer) - BeginP);
-        __quex_assert(load_begin_character_index >= 0);
+        __quex_assert(character_index_load >= 0);
     }
 
     /* Load new content                                                      */
-    (void)QUEX_NAME(__BufferFiller_input_character_read)(buffer->filler, 
-                                                         BeginP, 
-                                                         free_size,
-                                                         load_begin_character_index);
+    loaded_n = QUEX_NAME(BufferFiller_input_character_read)(buffer->filler, 
+                                                            BeginP, 
+                                                            free_size,
+                                                            character_index_load);
+
+    end_p = (free_size == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
+                                    : &BeginP[loaded_n];
+    end_character_index = character_index_load + (end_p - BeginP);
+    QUEX_NAME(Buffer_input_end_set)(buffer, end_p, end_character_index);
 
     __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -358,10 +366,10 @@ QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
 }
 
 QUEX_INLINE ptrdiff_t       
-QUEX_NAME(__BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me, 
-                                               QUEX_TYPE_CHARACTER*      memory, 
-                                               const ptrdiff_t           RequiredLoadN,
-                                               QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
+QUEX_NAME(BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*  me, 
+                                             QUEX_TYPE_CHARACTER*      memory, 
+                                             const ptrdiff_t           RequiredLoadN,
+                                             QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
 /* RETURNS: number of loaded characters.                                     */
 {
     QUEX_TYPE_STREAM_POSITION  character_index_before;

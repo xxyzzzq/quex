@@ -7,10 +7,6 @@ input_p      = 4 (--> '5')	lexeme start = 4 (--> '5')
 input_p      = 3 (--> '4')	lexeme start = 3 (--> '4')
 input_p      = 2 (--> '3')	lexeme start = 2 (--> '3')
 input_p      = 1 (--> '2')	lexeme start = 1 (--> '2')
-BACKWARD(entry)
- '1'
-|[1234567890]|
-
 input_p      = 0 (--> '1')	lexeme start = 0 (--> '1')
 
 

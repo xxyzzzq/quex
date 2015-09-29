@@ -53,12 +53,13 @@ main(int argc, char** argv)
     size_t loaded_n = 0;
     for(ptrdiff_t i=Front; ; i += Delta) {
 
-        filler->seek_character_index(filler, i);
+        filler->derived_input_character_seek(filler, i);
 
-        assert(filler->tell_character_index(filler) == i);
+        assert(filler->derived_input_character_tell(filler) == i);
 
-        loaded_n = filler->read_characters(filler, 
-                                          (QUEX_TYPE_CHARACTER*)memory, MemorySize);
+        loaded_n = filler->derived_input_character_read(filler, 
+                                                        (QUEX_TYPE_CHARACTER*)memory, 
+                                                        MemorySize);
 
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */
