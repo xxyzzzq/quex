@@ -78,9 +78,6 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     ptrdiff_t                  move_distance;
     ptrdiff_t                  offset;
     QUEX_TYPE_CHARACTER*       free_begin_p;
-    ptrdiff_t                  loaded_n;
-    QUEX_TYPE_CHARACTER*       end_p;
-    QUEX_TYPE_STREAM_POSITION  end_character_index;
 
     if( ! CharacterN ) {
         return true;
@@ -118,14 +115,10 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
             free_begin_p         = BeginP;
             character_index_load = new_character_index_begin;
         }
-        loaded_n = QUEX_NAME(BufferFiller_input_character_read)(me->filler,
-                                                                free_begin_p, 
-                                                                EndP - free_begin_p,
-                                                                character_index_load);
-        end_p = (EndP - free_begin_p == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
-                                                   : &free_begin_p[loaded_n];
-        end_character_index = character_index_load + loaded_n;
-        QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
+        (void)QUEX_NAME(BufferFiller_region_load)(me,
+                                                  free_begin_p, 
+                                                  EndP - free_begin_p,
+                                                  character_index_load);
         me->_read_p = &BeginP[offset];
     }
 
@@ -154,9 +147,6 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
     ptrdiff_t                  move_distance;
     ptrdiff_t                  offset;
     QUEX_TYPE_CHARACTER*       free_end_p;
-    ptrdiff_t                  loaded_n;
-    QUEX_TYPE_CHARACTER*       end_p;
-    QUEX_TYPE_STREAM_POSITION  end_character_index;
 
     if( ! CharacterN ) {
         return true;
@@ -194,15 +184,9 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
         character_index_load = new_character_index_end - ContentSize;
         __quex_assert(character_index_load >= 0);
 
-        loaded_n = QUEX_NAME(BufferFiller_input_character_read)(me->filler,
-                                                                BeginP, 
-                                                                free_end_p - BeginP,
-                                                                character_index_load); 
-        end_p = (free_end_p - BeginP == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
-                                                  : &BeginP[loaded_n];
-        end_character_index = end_p ? character_index_load + (end_p - BeginP)
-                                    : character_index_load + ContentSize;
-        QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
+        (void)QUEX_NAME(BufferFiller_region_load)(me,
+                                                  BeginP, free_end_p - BeginP,
+                                                  character_index_load); 
 
         me->_read_p = &EndP[-offset];
         __quex_assert(target == 0 || me->_read_p > BeginP);

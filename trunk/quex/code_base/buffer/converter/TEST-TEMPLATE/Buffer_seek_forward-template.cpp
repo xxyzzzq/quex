@@ -22,16 +22,16 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QUEX_NAME(Buffer)  buffer;
-    const int          RawMemorySize = 6;
-    const size_t       StepSize      = atoi(argv[1]);
-    std::FILE*         fh            = fopen("___DATA_DIR___/test.txt", "r");
-    assert( fh != 0x0 );
-    ByteLoader*        byte_loader   = ByteLoader_FILE_new(fh);
+    QUEX_NAME(Buffer)        buffer;
+    const int                RawMemorySize = 6;
+    const size_t             StepSize      = atoi(argv[1]);
+    std::FILE*               fh            = fopen("___DATA_DIR___/test.txt", "r");
+    assert(fh);      
+    ByteLoader*              byte_loader   = ByteLoader_FILE_new(fh);
 
-    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_Converter_new)(
-                                                  byte_loader, ___NEW___(),
-                                                  "UTF8", 0, RawMemorySize);
+    QUEX_NAME(BufferFiller)* filler        = QUEX_NAME(BufferFiller_Converter_new)(
+                                                       byte_loader, ___NEW___(),
+                                                       "UTF8", 0, RawMemorySize);
     const size_t         MemorySize = 5;
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 

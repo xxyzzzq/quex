@@ -31,9 +31,9 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)* alter_ego,
-                                              QUEX_TYPE_CHARACTER*     start_of_buffer, 
-                                              const size_t             N);
+QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)* alter_ego,
+                                                   QUEX_TYPE_CHARACTER*     RegionBeginP, 
+                                                   const size_t             N);
 
 QUEX_INLINE void 
 QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  me,
@@ -68,7 +68,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_tell_character_index),
                                   QUEX_NAME(BufferFiller_Plain_seek_character_index), 
-                                  QUEX_NAME(BufferFiller_Plain_read_characters),
+                                  QUEX_NAME(BufferFiller_Plain_input_character_read),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
@@ -99,7 +99,7 @@ QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alte
    __quex_assert(me->base.byte_loader); 
 
    /* Ensure, that the stream position is only influenced by
-    *    __read_characters(...) 
+    *    __input_character_read(...) 
     *    __seek_character_index(...)                                             */
 #  ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
    return me->_character_index;
@@ -157,9 +157,9 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
 #endif
 
 QUEX_INLINE size_t   
-QUEX_NAME(BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
-                                              QUEX_TYPE_CHARACTER*      buffer, 
-                                              const size_t              N)  
+QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alter_ego,
+                                                   QUEX_TYPE_CHARACTER*      RegionBeginP, 
+                                                   const size_t              N)  
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
     size_t  ByteN      = (size_t)-1;
@@ -167,12 +167,13 @@ QUEX_NAME(BufferFiller_Plain_read_characters)(QUEX_NAME(BufferFiller)*  alter_eg
 
 
     __quex_assert(alter_ego); 
-    __quex_assert(buffer); 
+    __quex_assert(RegionBeginP); 
     __quex_assert(me->base.byte_loader); 
-    QUEX_IF_ASSERTS_poison(buffer, &buffer[N]);
+    QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
 
     ByteN = me->base.byte_loader->load(me->base.byte_loader, 
-                                       buffer, N * sizeof(QUEX_TYPE_CHARACTER));
+                                       RegionBeginP, 
+                                       N * sizeof(QUEX_TYPE_CHARACTER));
 
     if( ByteN % sizeof(QUEX_TYPE_CHARACTER) ) {
         QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
