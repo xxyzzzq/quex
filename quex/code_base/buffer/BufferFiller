@@ -48,7 +48,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* -- 'Read' reads N characters from a stream into a buffer 
          * (independent of their size)                                       */
-        size_t      (*derived_input_character_read)(struct QUEX_NAME(BufferFiller_tag)*,
+        size_t      (*derived_input_character_load)(struct QUEX_NAME(BufferFiller_tag)*,
                                                     QUEX_TYPE_CHARACTER* memory, const size_t N);
 
         /* -- 'Tell' returns the character index of the last character read + 1
@@ -131,10 +131,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);
     QUEX_INLINE size_t  QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)*);
 
-    QUEX_INLINE ptrdiff_t  QUEX_NAME(BufferFiller_input_character_read)(QUEX_NAME(BufferFiller)*, 
-                                                                        QUEX_TYPE_CHARACTER*, 
-                                                                        const ptrdiff_t,
-                                                                        QUEX_TYPE_STREAM_POSITION);
+    QUEX_INLINE ptrdiff_t  QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*, 
+                                                               QUEX_TYPE_CHARACTER*, 
+                                                               const ptrdiff_t,
+                                                               QUEX_TYPE_STREAM_POSITION);
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 
                                                       ByteLoader*              new_byte_loader);

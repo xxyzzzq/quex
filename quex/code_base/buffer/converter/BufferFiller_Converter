@@ -108,11 +108,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         E_Ownership               ownership;
 
         uint8_t*                  begin;
-        uint8_t*                  end;
+        uint8_t*                  fill_end_p;
         uint8_t*                  memory_end;
        
-        uint8_t*                  iterator;
-        QUEX_TYPE_STREAM_POSITION iterators_character_index;
+        uint8_t*                  next_to_convert_p;
+        QUEX_TYPE_STREAM_POSITION next_to_convert_character_index;
 
     } QUEX_NAME(RawBuffer);
 
@@ -152,16 +152,16 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                         \
-    __quex_assert( BI != 0x0 );                                \
-    __quex_assert((BI)->iterator >= (BI)->begin);              \
-    __quex_assert((BI)->iterator <= (BI)->end);                \
-    __quex_assert((BI)->end >= (BI)->begin);                   \
-    __quex_assert((BI)->end <= (BI)->memory_end);             
+    __quex_assert(BI);                                         \
+    __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
+    __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);\
+    __quex_assert((BI)->fill_end_p >= (BI)->begin);            \
+    __quex_assert((BI)->fill_end_p <= (BI)->memory_end);             
 
 #   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)                    \
-    __quex_assert( BI != 0x0 );                                \
-    __quex_assert((BI)->iterator >= (BI)->begin);              \
-    __quex_assert((BI)->iterator <= (BI)->end);                     
+    __quex_assert(BI);                                         \
+    __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
+    __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);                     
 
 #else
 #   define QUEX_ASSERT_BUFFER_INFO(BI)      /* empty */
