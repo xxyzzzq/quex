@@ -105,10 +105,6 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
                                                 E_MemoryObjectType_BUFFER_RAW);
     QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_memory, RawMemorySize);
 
-    /* Hint for relation between character index, raw buffer offset and stream 
-     * position                                                              */
-    me->hint_begin_character_index = (ptrdiff_t)-1;
-
     QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 }
 
@@ -241,22 +237,15 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
  * NOTE: In some stream implementations there is no direct correspondance
  * between character index and stream position.                              */
 { 
-    QUEX_NAME(BufferFiller_Converter)*  me     = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-    QUEX_NAME(RawBuffer)*               raw    = &me->raw_buffer;
-    /* The 'hint' always relates to the begin of the raw buffer, see [Ref 1].*/
-    const QUEX_TYPE_STREAM_POSITION     Hint_Index   = me->hint_begin_character_index;
-    uint8_t*                            Hint_Pointer = raw->begin;
-    QUEX_TYPE_STREAM_POSITION           EndIndex     = 0;
+    QUEX_NAME(BufferFiller_Converter)*  me   = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+    QUEX_NAME(RawBuffer)*               raw  = &me->raw_buffer;
     ptrdiff_t                           ContentSize  = 0;
-    uint8_t*                            new_iterator = 0;
 
     __quex_assert(alter_ego); 
     __quex_assert(me->converter);
     QUEX_ASSERT_BUFFER_INFO(raw);
-
-    if( Index == raw->next_to_convert_character_index ) { 
-        return;                                        /* Nothing to be done */
-    }
+    if( me->byte_loader )                                    return;
+    else if( Index == raw->next_to_convert_character_index ) return;
 
     /* Some converters (e.g. IBM's ICU) require to reset their state when 
      * conversion is discontinued,                                           */
@@ -268,80 +257,40 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
     if( ! me->converter->dynamic_character_size_f ) { 
         /* (1) Codec with **fixed** character widths (e.g. ASCII, UCS2, UCS4)
          *     Each character always occupies the same amount of bytes. 
-         *     => offsets CAN be **computed**. This is FAST.           */
+         *     => offsets CAN be **computed**. This is FAST.                 */
         ContentSize = raw->fill_end_p - raw->begin;
-        EndIndex    = Hint_Index + (ContentSize / (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER));
-        /* NOTE: the hint index must be valid (i.e. != -1)                   */
-        if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (ptrdiff_t)-1 ) {
-            new_iterator  = raw->begin + (Index - Hint_Index) * (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER);
-            raw->next_to_convert_p               = new_iterator;
-            raw->next_to_convert_character_index = Index;
+
+        QUEX_TYPE_STREAM_POSITION new_start_position =
+            (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER));
+        /* Seek stream position cannot be handled when buffer based 
+         * analyzis is on.                                                   */
+        if( me->base.byte_loader ) {
+            me->base.byte_loader->seek(me->base.byte_loader, new_start_position);
+            __quex_assert(new_start_position == me->base.byte_loader->tell(me->base.byte_loader));
         }
-        else  /* Index not in [BeginIndex:EndIndex) */ {
-            QUEX_TYPE_STREAM_POSITION new_start_position =
-                (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER));
-            /* Seek stream position cannot be handled when buffer based 
-             * analyzis is on.                                               */
-            if( me->base.byte_loader ) {
-                me->base.byte_loader->seek(me->base.byte_loader, new_start_position);
-                __quex_assert(new_start_position == me->base.byte_loader->tell(me->base.byte_loader));
-            }
-            /* next_to_convert_p == fill_end_p => trigger reload             */
-            raw->next_to_convert_p               = raw->fill_end_p;
-            raw->next_to_convert_character_index = Index;
-        }
+        /* next_to_convert_p == fill_end_p => trigger reload                 */
+        raw->next_to_convert_p               = raw->fill_end_p;
+        raw->next_to_convert_character_index = Index;
     } 
     else  { 
         /* (2) Codec with **dynamic** character width (e.g. UTF-8). 
          *     Character may occupy different amount of bytes. 
          *     => offsets CANNOT be computed. 
          *
-         * Instead, the conversion must start from a given 'known' position 
-         * until one reaches the specified character index.                                                            
-         *
-         * Setting the next_to_convert_p to the begin of the raw_buffer
-         * initiates a conversion start from this point.                     */
+         * The conversion must start from a given 'known' position until one
+         * reaches the specified character index. Currently, the
+         * seeks starts from the initial position which may cause a huge
+         * performance impact.                                               */
+                                                                             
+        me->base.byte_loader->seek(me->base.byte_loader, 
+                                   me->base.byte_loader->initial_position);             
 
-        /* hint index must be valid (i.e. != -1)                             */
-        if( Index == Hint_Index && Hint_Index != (ptrdiff_t)-1 ) { 
-            /* The 'input_character_load()' function works on the content of the
-             * bytes in the raw_buffer. The only thing that has to happen is to
-             * reset the raw buffer's position pointer to '0'.               */
-            raw->next_to_convert_character_index = Hint_Index;
-            raw->next_to_convert_p               = Hint_Pointer;
-        }
-        else if( Index > Hint_Index && Hint_Index != (ptrdiff_t)-1 ) { 
-            /* The searched index lies in the current raw_buffer or behind.
-             * Simply start conversion from the current position until it is
-             * reached--but use the stuff currently inside the buffer.       */
-            raw->next_to_convert_character_index = Hint_Index;
-            raw->next_to_convert_p               = Hint_Pointer;
-            QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, 
-                                                              (ptrdiff_t)(Index - Hint_Index));
-            /* assert on index position, see 'step_forward_n_characters(...)'*/
-        }
-        else  /* Index < BeginIndex */ {
-            /* No idea where to start --> start from the beginning. In some
-             * cases this might mean a huge performance penalty. But note, that
-             * this only occurs at pre-conditions that are very very long and
-             * happen right at the beginning of the raw buffer.              */
-
-            /* Seek stream position cannot be handled when buffer based
-             * analyzis is on.                                               */
-            if( me->base.byte_loader ) {
-                me->base.byte_loader->seek(me->base.byte_loader, 0);
-            }
-            /* trigger reload, not only conversion                           */
-            raw->fill_end_p                      = raw->begin;
-            /* next_to_convert_p == fill_end_p => trigger reload             */
-            raw->next_to_convert_p               = raw->fill_end_p;
-            raw->next_to_convert_character_index = 0;
-            QUEX_NAME(BufferFiller_step_forward_n_characters)((QUEX_NAME(BufferFiller)*)me, 
-                                                              (ptrdiff_t)Index);
-            /* We can assume, that the index is reachable, since the current 
-             * index is higher.                                              */
-            __quex_assert(raw->next_to_convert_character_index == Index);
-        } 
+        raw->fill_end_p                      = raw->begin;                   
+        /* next_to_convert_p == fill_end_p => trigger reload                 */
+        raw->next_to_convert_p               = raw->fill_end_p;
+        raw->next_to_convert_character_index = 0;
+        QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
+                                                          (ptrdiff_t)Index);
     }
     QUEX_ASSERT_BUFFER_INFO(raw);
 }
@@ -352,50 +301,27 @@ QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(QUEX_NAME(BufferFiller_Conve
  * filling starts from its current position, thus the remaining bytes to be
  * translated are exactly the number of bytes in the buffer.                 */
 {
-   QUEX_NAME(RawBuffer)*  raw = &me->raw_buffer;
-   uint8_t*               fill_begin_p;
-   size_t                 fill_size;
-   size_t                 loaded_n;
+    QUEX_NAME(RawBuffer)*  raw = &me->raw_buffer;
+    uint8_t*               fill_begin_p;
+    size_t                 fill_size;
+    size_t                 loaded_n;
 
-   __quex_assert(raw->next_to_convert_p <= raw->fill_end_p);
-   QUEX_ASSERT_BUFFER_INFO(raw);
+    __quex_assert(raw->next_to_convert_p <= raw->fill_end_p);
+    QUEX_ASSERT_BUFFER_INFO(raw);
 
-   /* Store information about the current position's character index.  [Ref 1]
-    *
-    * -- 'fill_end_p' may point point into the middle of an (not yet converted)
-    *    character.  
-    * -- 'next_to_convert_p' points always to the first byte after the last 
-    *    interpreted  char.  
-    * -- The stretch from 'next_to_convert_p' to 'fill_end_p - 1' contains
-    *    the fragment of the uninterpreted character.  
-    * -- The stretch of the uninterpreted character fragment is to be copied 
-    *    to the  beginning of the buffer. 
-    *  
-    * ==> The character index of the next_to_convert_p relates always to the
-    *     begin of the buffer.                                               */
-
-   /* Move content that has not yet been converted to the buffer's begin.    */
+    /* Move content that has not yet been converted to the buffer's begin.   */
     QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
+    /* HERE: .next_to_convert_p = .begin                                     */
 
-   fill_begin_p = &raw->fill_end_p;
-   fill_size    = (size_t)(raw->memory_end - fill_begin_p);
+    fill_begin_p    = &raw->fill_end_p;
+    fill_size       = (size_t)(raw->memory_end - fill_begin_p);
 
-   loaded_n     = me->base.byte_loader->load(me->base.byte_loader, 
-                                             fill_begin_p, fill_size);
-                                                                             
-   /* ASSUMPTION: If a converter is so weird so that its state must be reset
-    *             with 'on_conversion_discontinuity()', then no good hints can
-    *             be made on character index positions.                      */
-   if( ! me->converter->on_conversion_discontinuity ) {
-       me->hint_begin_character_index = raw->next_to_convert_character_index;
-   }
-   /* In any case, we start reading from the beginning of the raw buffer.    */
-   raw->next_to_convert_p = raw->begin; 
-   raw->fill_end_p        = &raw->begin[loaded_n];
+    loaded_n        = me->base.byte_loader->load(me->base.byte_loader, 
+                                                 fill_begin_p, fill_size);
+    raw->fill_end_p = &fill_begin_p[loaded_n];
 
-   QUEX_ASSERT_BUFFER_INFO(raw);
-
-   return loaded_n;
+    QUEX_ASSERT_BUFFER_INFO(raw);
+    return loaded_n;
 }
 
 

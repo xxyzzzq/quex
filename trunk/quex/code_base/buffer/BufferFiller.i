@@ -424,8 +424,8 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
      * LOOP:  It remains to interpret 'remaining_character_n' number of 
      *        characters. Since the interpretation is best done using a buffer, 
      *        we do this in chunks.                                          */ 
-    size_t               remaining_character_n = (size_t)ForwardN;
-    const size_t         ChunkSize             = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+    size_t               remaining_character_n;
+    const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
     QUEX_TYPE_CHARACTER  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
     (void)TargetIndex;
 
@@ -436,11 +436,13 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
      *       __quex_assert(me->derived_input_character_tell(me) == TargetIndex);
      *
      * Because, its unknown wether the stream has enough characters.         */
-    for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
+    for(remaining_character_n = (size_t)ForwardN; remaining_character_n > ChunkSize; 
+        remaining_character_n -= ChunkSize ) {
         if( me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
             __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
             return;
         }
+    }
     if( remaining_character_n ) {
         me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
     }
