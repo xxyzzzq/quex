@@ -69,7 +69,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me);
 
         /* Default: assume input encoding to have dynamic character sizes.   */
-        me->base.dynamic_character_size_f = true;
         if(    __QUEX_STD_strcmp(FromCoding, "UTF-32") == 0 
             || __QUEX_STD_strcmp(FromCoding, "UTF32") == 0 )
         {
@@ -86,6 +85,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         if( ! U_SUCCESS(me->status) ) 
             QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
+
+        /* ByteN / Character:                                               */
+        me->byte_n_per_character = (! ucnv_isFixedWidth(me->from_handle) ? -1
+                                   : ucnv_getMaxCharSize(me->from_handle);
 
         if( ! ToCoding ) {
              /* From the ICU Documentation: "ICU does not use UCS-2. UCS-2 is a
@@ -104,7 +107,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         me->to_handle = ucnv_open(ToCoding, &me->status);
 
-        /* Setup the pivot buffer */
+        /* Setup the pivot buffer                                            */
         me->pivot_iterator_begin = me->pivot_buffer;
         me->pivot_iterator_end   = me->pivot_buffer;
     }

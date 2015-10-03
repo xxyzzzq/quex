@@ -75,7 +75,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                   byte_loader);
 
 #   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-    me->_character_index = 0;
+    me->next_to_load_character_index = 0;
 #   endif
 }
 
@@ -101,60 +101,43 @@ QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alte
    /* Ensure, that the stream position is only influenced by
     *    __input_character_read(...) 
     *    __seek_character_index(...)                                             */
-#  ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-   return me->_character_index;
-#  else
-   /* The stream position type is most likely >= size_t >= ptrdiff_t so let the 
-    * computation happen with that type, then cast to what needs to be returned. */
-   return (QUEX_TYPE_STREAM_POSITION)(  me->base.byte_loader->tell(me->base.byte_loader) 
-                                      / (QUEX_TYPE_STREAM_POSITION)sizeof(QUEX_TYPE_CHARACTER));
-#  endif
+   return me->next_to_load_character_index;
 }
 
-#if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
-/* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
- *       stream to a particular position given by a character index. QuexBuffer_seek(..)
- *       sets the _read_p to a particular position.                                      */
 QUEX_INLINE void 
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    long                           avoid_tmp_arg = -1;
+    QUEX_TYPE_STREAM_POSITION      target;
 
-    __quex_assert(alter_ego != 0x0); 
-    /* The type cast is necessary, since the function signature needs to 
-     * work with the first argument being of base class type. */
-    __quex_assert(me->base.byte_loader != 0x0); 
-
-    avoid_tmp_arg = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
-
-    me->base.byte_loader->seek(me->base.byte_loader, avoid_tmp_arg);
-}
-#else
-/* Implementation for 'strange streams', i.e. streams where the input position increase is not
- * necessarily proportional to the amount of read-in characters. Note, that the seek function is
- * the only function that is significantly different for this case.                           */
-QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*        alter_ego, 
-                                                   const QUEX_TYPE_STREAM_POSITION CharacterIndex) 
-{ 
-    __quex_assert(alter_ego != 0x0); 
-    QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
+    __quex_assert(alter_ego); 
     __quex_assert(me->base.byte_loader); 
 
-    if( me->_character_index == CharacterIndex ) {
-        return;
+    if( me->next_to_load_character_index == CharacterIndex ) {
+        return true;
     }
-    else if( me->_character_index < CharacterIndex ) {
-        QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex - me->_character_index);
+    else if( me->base.byte_loader->binary_mode_f ) {
+        target = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
+
+        me->base.byte_loader->seek(me->base.byte_loader, target);
+        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+            return false;
+        }
+        me->next_to_load_character_index = target;
+        return true;
     }
-    else { /* me->_character_index > CharacterIndex */
-        me->base.byte_loader->seek(me->base.byte_loader, 0);
-        QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego, CharacterIndex);
+    else {
+        /* Start at known position; step until 'CharacterIndex' is reached.  */
+        me->base.byte_loader->seek(me->base.byte_loader, me->base.byte_loader->initial_position);
+        if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
+                                                                (ptrdiff_t)CharacterIndex) ) {
+            return false;
+        }
+        me->next_to_load_character_index = target;
+        return true;
     }
 }
-#endif
 
 QUEX_INLINE size_t   
 QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alter_ego,
@@ -162,28 +145,22 @@ QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alt
                                                    const size_t              N)  
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    size_t  ByteN      = (size_t)-1;
-    size_t  CharacterN = (size_t)-1;
-
+    size_t  loaded_byte_n      = (size_t)-1;
 
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
     __quex_assert(me->base.byte_loader); 
     QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
 
-    ByteN = me->base.byte_loader->load(me->base.byte_loader, 
-                                       RegionBeginP, 
-                                       N * sizeof(QUEX_TYPE_CHARACTER));
+    loaded_byte_n = me->base.byte_loader->load(me->base.byte_loader, 
+                                               RegionBeginP, 
+                                               N * sizeof(QUEX_TYPE_CHARACTER));
 
     if( ByteN % sizeof(QUEX_TYPE_CHARACTER) ) {
         QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
     }
 
-    CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
-
-#   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-    me->_character_index += (ptrdiff_t)CharacterN;
-#   endif
+    me->next_to_load_character_index += loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 
     return CharacterN;
 }
@@ -211,7 +188,6 @@ QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
     __quex_assert(EndP <= BufferEnd);
 
     /* Copying of content is done, already, by caller.                       */
-                                                                             
     /* Inserted number of characters = End - Begin.                          */
     return (ptrdiff_t)(EndP - insertion_p);
 }

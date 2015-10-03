@@ -71,7 +71,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Closes the conversion handle produced with open(...).      
          * Deletes the object of the derived class.                                       */
 
-        bool    dynamic_character_size_f;
+        bool    byte_n_per_character;
         /* Some encodings (such as UTF-8) occupy different number of bytes for different
          * characters. Others, such as ASCII or UCS-4 use the same number of bytes for
          * all characters of the character set. Using the flag, the buffer filler can

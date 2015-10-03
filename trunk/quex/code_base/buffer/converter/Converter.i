@@ -24,7 +24,7 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
     me->delete_self                 = delete_self;
 
     me->virginity_f                 = true;
-    me->dynamic_character_size_f    = true;
+    me->byte_n_per_character        = -1;   /* I.e. no fixed ratio 'byte_n/character' */
     me->ownership                   = E_Ownership_EXTERNAL;
 }
 QUEX_INLINE void

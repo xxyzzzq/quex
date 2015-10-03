@@ -71,10 +71,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         const bool little_endian_f = QUEXED(system_is_little_endian)();
 #       endif
 
-        /* Default: assume input encoding to have dynamic character sizes. */
-        me->base.dynamic_character_size_f = true;
-        me->base.virginity_f              = true;
-
         /* Setup conversion handle */
         if( ! ToCoding ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
@@ -85,6 +81,20 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
         } 
         me->handle = iconv_open(ToCoding, FromCoding);
+        
+        /* ByteN / Character:
+         * IConv does not provide something like 'isFixedWidth()'. So, the 
+         * safe assumption "byte_n/character != const" is made, except for some
+         * well-known examples.                                              */
+        me->base.byte_n_per_character = -1;
+        if(    __QUEX_STD_strcmp(FromCoding, "UCS32") 
+            || __QUEX_STD_strcmp(FromCoding, "UCS-32") ) {
+            me->base.byte_n_per_character = 4;
+        }
+        else if(   __QUEX_STD_strcmp(FromCoding, "UCS16") 
+                || __QUEX_STD_strcmp(FromCoding, "UCS-16") ) {
+            me->base.byte_n_per_character = 2;
+        }
 
         if( me->handle == (iconv_t)-1 ) {
             /* __QUEX_STD_fprintf(stderr, "Source coding: '%s'\n", FromCoding);

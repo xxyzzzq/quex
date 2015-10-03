@@ -255,7 +255,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
 
     if( ! move_distance ) return (QUEX_TYPE_CHARACTER*)0;
 
-    if( move_size ) {
+    else if( move_size ) {
         /* Move.                                                             */
         __QUEX_STD_memmove((void*)FrontP, (void*)move_begin_p,
                            move_size * sizeof(QUEX_TYPE_CHARACTER));
