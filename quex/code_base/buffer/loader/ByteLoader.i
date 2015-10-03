@@ -24,10 +24,12 @@ ByteLoader_construct(ByteLoader* me,
     me->delete_self    = delete_self;
     me->compare_handle = compare_handle;
 
-    me->handle_ownership = E_Ownership_EXTERNAL; /* Default */
-    me->ownership        = E_Ownership_EXTERNAL; /* Default */
+    me->handle_ownership = E_Ownership_EXTERNAL; /* Default                  */
+    me->ownership        = E_Ownership_EXTERNAL; /* Default                  */
 
     me->initial_position = tell(me);
+
+    me->binary_mode_f    = false;                /* Default: 'false' is SAFE */
 }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION

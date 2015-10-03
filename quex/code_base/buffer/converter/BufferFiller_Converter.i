@@ -215,9 +215,9 @@ QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* 
     return me->raw_buffer.next_to_convert_character_index; 
 }
 
-QUEX_INLINE void   
+QUEX_INLINE bool   
 QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
-                                                       const QUEX_TYPE_STREAM_POSITION  Index)
+                                                       const QUEX_TYPE_STREAM_POSITION  CharacterIndex)
 
 /* BufferFiller's seek sets the input position for the next character read in
  * the stream. That is, it adapts:
@@ -237,15 +237,16 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
  * NOTE: In some stream implementations there is no direct correspondance
  * between character index and stream position.                              */
 { 
-    QUEX_NAME(BufferFiller_Converter)*  me   = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-    QUEX_NAME(RawBuffer)*               raw  = &me->raw_buffer;
+    QUEX_NAME(BufferFiller_Converter)*  me  = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+    QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
     ptrdiff_t                           ContentSize  = 0;
 
     __quex_assert(alter_ego); 
     __quex_assert(me->converter);
     QUEX_ASSERT_BUFFER_INFO(raw);
-    if( me->byte_loader )                                    return;
-    else if( Index == raw->next_to_convert_character_index ) return;
+
+    if( me->byte_loader )                                    return false;
+    else if( Index == raw->next_to_convert_character_index ) return true;
 
     /* Some converters (e.g. IBM's ICU) require to reset their state when 
      * conversion is discontinued,                                           */
@@ -254,34 +255,29 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
     }
 
     /* Codec => fixed or dynamic character width => two methods of seeking.  */
-    if( ! me->converter->dynamic_character_size_f ) { 
-        /* (1) Codec with **fixed** character widths (e.g. ASCII, UCS2, UCS4)
-         *     Each character always occupies the same amount of bytes. 
-         *     => offsets CAN be **computed**. This is FAST.                 */
-        ContentSize = raw->fill_end_p - raw->begin;
+    if(    me->converter->byte_n_per_character != -1 
+        && me->byte_loader->binary_mode_f ) { 
+        /* Each character always occupies the same amount of bytes. 
+         * => Offsets CAN be **computed**. This is FAST.                     */
+        target =   byte_loader->initial_position 
+                 + me->converter->byte_n_per_character * CharacterIndex;
 
-        QUEX_TYPE_STREAM_POSITION new_start_position =
-            (QUEX_TYPE_STREAM_POSITION)((size_t)Index * sizeof(QUEX_TYPE_CHARACTER));
-        /* Seek stream position cannot be handled when buffer based 
-         * analyzis is on.                                                   */
-        if( me->base.byte_loader ) {
-            me->base.byte_loader->seek(me->base.byte_loader, new_start_position);
-            __quex_assert(new_start_position == me->base.byte_loader->tell(me->base.byte_loader));
+        me->base.byte_loader->seek(me->base.byte_loader, target);
+        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+            return false;
         }
+        
         /* next_to_convert_p == fill_end_p => trigger reload                 */
         raw->next_to_convert_p               = raw->fill_end_p;
         raw->next_to_convert_character_index = Index;
     } 
     else  { 
-        /* (2) Codec with **dynamic** character width (e.g. UTF-8). 
-         *     Character may occupy different amount of bytes. 
-         *     => offsets CANNOT be computed. 
+        /* Characters may occupy different amount of bytes. 
+         * => offsets CANNOT be computed. 
          *
-         * The conversion must start from a given 'known' position until one
-         * reaches the specified character index. Currently, the
-         * seeks starts from the initial position which may cause a huge
-         * performance impact.                                               */
-                                                                             
+         * Conversion starts from a known position until 'CharacterIndex' is 
+         * reached. Only known position: initial position. (TODO: may be add
+         * a 'cache' of known previous positions)                            */
         me->base.byte_loader->seek(me->base.byte_loader, 
                                    me->base.byte_loader->initial_position);             
 
@@ -290,9 +286,10 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
         raw->next_to_convert_p               = raw->fill_end_p;
         raw->next_to_convert_character_index = 0;
         QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
-                                                          (ptrdiff_t)Index);
+                                                          (ptrdiff_t)CharacterIndex);
     }
     QUEX_ASSERT_BUFFER_INFO(raw);
+    return true;
 }
 
 QUEX_INLINE size_t 
@@ -385,8 +382,7 @@ QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(QUEX_NAME(BufferFille
     move_distance = raw->next_to_convert_p - raw->begin;
 
     if( ! move_distance ) return;
-
-    if( move_size ) {
+    else if( move_size ) {
         __QUEX_STD_memmove((void*)raw->begin, (void*)move_begin_p, move_size);
     }
 
