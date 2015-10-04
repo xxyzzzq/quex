@@ -2,6 +2,9 @@
 #ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER
 
+#include <quex/code_base/definitions>
+#include <quex/code_base/MemoryManager>
+
 typedef struct ByteLoader_tag {
     QUEX_TYPE_STREAM_POSITION (*tell)(struct ByteLoader_tag* me);
     void                      (*seek)(struct ByteLoader_tag* me, QUEX_TYPE_STREAM_POSITION Pos);

@@ -1,6 +1,7 @@
 #ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
 
+#include <quex/code_base/buffer/loader/ByteLoader>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8,6 +9,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
 
 typedef struct { 
     ByteLoader     base;
