@@ -43,7 +43,7 @@ static void
 test(ByteLoader* me, int LoadN)
 {
     int  i;
-    QUEX_TYPE_STREAM_POSITION position;
+    QUEX_TYPE_STREAM_POSITION position = 0;
 
     me->seek(me, 0);
     hwut_verify(TEST_FILE_SIZE == me->load(me, reference, TEST_FILE_SIZE));
@@ -52,7 +52,8 @@ test(ByteLoader* me, int LoadN)
         /* Choose a position from 0 to size + 3. Choose a position beyond the
          * possible maximum, so that the error handling check is included.   */
         position = ((position + i) * 997) % (TEST_FILE_SIZE + 3);
-        printf("%i\n", (int)position);
+        /* printf("%i\n", (int)position); 
+         * --> tmp.dat and use 'historgram.gnuplot'                          */
 
         /* SEEK */
         me->seek(me, position);
