@@ -9,12 +9,12 @@
 #endif
 #include <quex/code_base/buffer/Buffer.i>
 #ifdef QUEX_OPTION_CONVERTER_ICONV
-#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#   include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
 #endif
 #ifdef QUEX_OPTION_CONVERTER_ICU
-#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#   include <quex/code_base/buffer/filler/converter/icu/Converter_ICU.i>
 #endif
-#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/filler/BufferFiller.i>
 #include <quex/code_base/converter_helper/from-utf8.i>
 #include <quex/code_base/converter_helper/from-utf16.i>
 #include <quex/code_base/converter_helper/from-utf32.i>

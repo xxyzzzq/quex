@@ -5,7 +5,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/buffer/Buffer_debug>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -96,7 +96,7 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               QUEX_TYPE_STREAM_POSITION    
                                            (*derived_input_character_tell)(QUEX_NAME(BufferFiller)*),
-                              void         (*derived_input_character_seek)(QUEX_NAME(BufferFiller)*, 
+                              bool         (*derived_input_character_seek)(QUEX_NAME(BufferFiller)*, 
                                                                            const QUEX_TYPE_STREAM_POSITION),
                               size_t       (*derived_input_character_load)(QUEX_NAME(BufferFiller)*,
                                                                            QUEX_TYPE_CHARACTER*, const size_t),
@@ -374,7 +374,9 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     new_begin_character_index = StartCharacterIndex - (RegionBeginP - BeginP);
 
     /* Seek to the position where loading shall start.                       */
-    me->derived_input_character_seek(me, StartCharacterIndex);
+    if( ! me->derived_input_character_seek(me, StartCharacterIndex) ) {
+        return 0;
+    }
     input_character_index_before = me->derived_input_character_tell(me);
     if( input_character_index_before != StartCharacterIndex) {
         return 0;
@@ -455,7 +457,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/loader/ByteLoader.i>
-#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/filler/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER_I */

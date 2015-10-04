@@ -11,7 +11,7 @@
 #endif
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
@@ -27,7 +27,7 @@ QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
 QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
 
-QUEX_INLINE void   
+QUEX_INLINE bool   
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
 QUEX_INLINE size_t 
@@ -104,9 +104,17 @@ QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alte
    return me->next_to_load_character_index;
 }
 
-QUEX_INLINE void 
+QUEX_INLINE bool 
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 
+/* BufferFiller's seek sets the input position for the next character load in
+ * the stream. That is, it adapts:
+ *
+ *     'next_to_convert_character_index = CharacterIndex' 
+ *
+ * and the byte loader is brought into a position so that this will happen.  
+ *
+ * RETURNS: true upon success, false else.                                   */
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
     QUEX_TYPE_STREAM_POSITION      target;
@@ -129,7 +137,11 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
     }
     else {
         /* Start at known position; step until 'CharacterIndex' is reached.  */
-        me->base.byte_loader->seek(me->base.byte_loader, me->base.byte_loader->initial_position);
+        target = me->base.byte_loader->initial_position;
+        me->base.byte_loader->seek(me->base.byte_loader, target);
+        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+            return false;
+        }
         if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
                                                                 (ptrdiff_t)CharacterIndex) ) {
             return false;
@@ -196,6 +208,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/filler/BufferFiller.i>
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN_I__ */

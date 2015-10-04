@@ -6,8 +6,8 @@
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/MemoryManager>
 
 QUEX_NAMESPACE_MAIN_OPEN
