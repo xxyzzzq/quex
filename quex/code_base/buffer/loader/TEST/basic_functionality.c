@@ -21,7 +21,6 @@
 #include <hwut_unit.h>
 #include <assert.h>
 
-static long  pseudo_random_next(long i);
 static void  verify_load(ByteLoader* me, int Offset, int N);
 static void  test(ByteLoader* me, int LoadN);
 
@@ -43,7 +42,6 @@ verify_basic_functionality(ByteLoader* me)
 static void
 test(ByteLoader* me, int LoadN)
 {
-    long seed = 0;
     int  i;
     QUEX_TYPE_STREAM_POSITION position;
 
@@ -53,7 +51,8 @@ test(ByteLoader* me, int LoadN)
     for(i=0; i < 65536 ; ++i) {
         /* Choose a position from 0 to size + 3. Choose a position beyond the
          * possible maximum, so that the error handling check is included.   */
-        position = seed % (TEST_FILE_SIZE + 3);
+        position = ((position + i) * 997) % (TEST_FILE_SIZE + 3);
+        printf("%i\n", (int)position);
 
         /* SEEK */
         me->seek(me, position);
@@ -61,14 +60,13 @@ test(ByteLoader* me, int LoadN)
         if( position > TEST_FILE_SIZE ) continue;
 
         /* TELL */
-        me->seek(me, seed % 100);
         hwut_verify(position == me->tell(me));
 
         /* LOAD */
         verify_load(me, position, LoadN);
-
-        seed = pseudo_random_next(seed);
     }
+    printf("# <terminated: load_n: %i; sub-tests: 65536; checksum: %i;>\n",
+           (int)LoadN, (int)position);
 }
 
 static void
@@ -82,8 +80,17 @@ verify_load(ByteLoader* me, int Offset, int N)
     assert(N < 4096);
 
     /* Set borders to detect overwrite.                                  */
-    memset(&buffer[0], 0x5A, 4);
-    memset(&buffer[N], 0x5A, 4);
+    memset(&content[-4], 0x5A, 4);
+    memset(&content[N], 0x5A, 4);
+
+    hwut_verify(content[-4] == 0x5A);
+    hwut_verify(content[-3] == 0x5A);
+    hwut_verify(content[-2] == 0x5A);
+    hwut_verify(content[-1] == 0x5A);
+    hwut_verify(content[N+0] == 0x5A);
+    hwut_verify(content[N+1] == 0x5A);
+    hwut_verify(content[N+2] == 0x5A);
+    hwut_verify(content[N+3] == 0x5A);
 
     loaded_n = me->load(me, content, N);
 
@@ -93,19 +100,16 @@ verify_load(ByteLoader* me, int Offset, int N)
     }
 
     /* Make sure that the content corresponds to the reference data.     */
-    hwut_verify(memcmp((void*)&reference[Offset], (void*)content, (size_t)loaded_n));
+    hwut_verify(memcmp((void*)&reference[Offset], (void*)content, (size_t)loaded_n) == 0);
 
     /* Make sure nothing has been written beyond borders.                */
-    hwut_verify(buffer[0] == 0x5A);
-    hwut_verify(buffer[1] == 0x5A);
-    hwut_verify(buffer[2] == 0x5A);
-    hwut_verify(buffer[3] == 0x5A);
-    hwut_verify(buffer[N+0] == 0x5A);
-    hwut_verify(buffer[N+1] == 0x5A);
-    hwut_verify(buffer[N+2] == 0x5A);
-    hwut_verify(buffer[N+3] == 0x5A);
+    hwut_verify(content[-4] == 0x5A);
+    hwut_verify(content[-3] == 0x5A);
+    hwut_verify(content[-2] == 0x5A);
+    hwut_verify(content[-1] == 0x5A);
+    hwut_verify(content[N+0] == 0x5A);
+    hwut_verify(content[N+1] == 0x5A);
+    hwut_verify(content[N+2] == 0x5A);
+    hwut_verify(content[N+3] == 0x5A);
 }
 
-static long 
-pseudo_random_next(long i)
-{ return (i * 7 << 5); }
