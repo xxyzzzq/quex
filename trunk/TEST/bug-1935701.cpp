@@ -4,7 +4,7 @@
 #include<cstring>
 
 #include<quex/code_base/test_environment/TestAnalyzer-configuration>
-#include<quex/code_base/buffer/BufferFiller>
+#include<quex/code_base/buffer/filler/BufferFiller>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #include<quex/code_base/single.i>

@@ -40,8 +40,11 @@ typedef struct ByteLoader_tag {
      * binary mode or not. If not, then character/byte number is not const. */
     bool                      binary_mode_f;      /* In doubt, say 'false'. */
 
-    QUEX_TYPE_STREAM_POSITION (*derived_tell)(struct ByteLoader_tag* me);
-    void                      (*derived_seek)(struct ByteLoader_tag* me, QUEX_TYPE_STREAM_POSITION Pos);
+    struct {
+        QUEX_TYPE_STREAM_POSITION (*tell)(struct ByteLoader_tag* me);
+        void                      (*seek)(struct ByteLoader_tag* me, 
+                                          QUEX_TYPE_STREAM_POSITION Pos);
+    } derived;
 } ByteLoader;
 
 QUEX_INLINE void  ByteLoader_construct(ByteLoader* me, 

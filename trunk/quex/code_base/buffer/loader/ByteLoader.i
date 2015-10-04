@@ -18,8 +18,8 @@ ByteLoader_construct(ByteLoader* me,
 {
     me->tell           = ByteLoader_tell;
     me->seek           = ByteLoader_seek;
-    me->derived_tell   = tell;
-    me->derived_seek   = seek;
+    me->derived.tell   = tell;
+    me->derived.seek   = seek;
     me->load           = load;
     me->delete_self    = delete_self;
     me->compare_handle = compare_handle;
@@ -35,13 +35,13 @@ ByteLoader_construct(ByteLoader* me,
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION
 ByteLoader_tell(ByteLoader* me)
 {
-    return me->derived_tell(me) - me->initial_position;
+    return me->derived.tell(me) - me->initial_position;
 }
 
 QUEX_INLINE void
 ByteLoader_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Position)
 {
-    me->derived_seek(me, Position + me->initial_position);
+    me->derived.seek(me, Position + me->initial_position);
 }
 
 QUEX_INLINE bool

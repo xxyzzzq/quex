@@ -4,7 +4,7 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER_I
 
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/converter/Converter>
+#include <quex/code_base/buffer/filler/converter/Converter>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

@@ -114,6 +114,8 @@ ByteLoader_stream_load(ByteLoader* alter_ego, void* buffer, const size_t ByteN)
 
 template <class StreamType> QUEX_INLINE bool  
 ByteLoader_stream_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B) 
+/* RETURNS: true  -- if A and B point to the same StreamType object.
+ *          false -- else.                                                   */
 { 
     const ByteLoader_stream<StreamType>* A = (ByteLoader_stream<StreamType>*)(alter_ego_A);
     const ByteLoader_stream<StreamType>* B = (ByteLoader_stream<StreamType>*)(alter_ego_B);

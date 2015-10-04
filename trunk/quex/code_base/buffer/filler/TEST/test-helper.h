@@ -1,6 +1,6 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H
 #define __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H
-#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include <quex/code_base/buffer/filler/BufferFiller_Plain.i>
 #include <cstdio>
 #include <iostream>
 

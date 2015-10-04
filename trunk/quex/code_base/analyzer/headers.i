@@ -25,10 +25,10 @@
 #include    <quex/code_base/analyzer/Mode.i>
 
 #include    <quex/code_base/buffer/Buffer.i>
-#include    <quex/code_base/buffer/BufferFiller.i>
+#include    <quex/code_base/buffer/filler/BufferFiller.i>
 
 #if defined(__QUEX_OPTION_CONVERTER)
-#   include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#   include <quex/code_base/buffer/filler/converter/BufferFiller_Converter.i>
 #endif
 
 #ifdef      __QUEX_OPTION_COUNTER

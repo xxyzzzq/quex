@@ -5,7 +5,7 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
 
 #include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/filler/BufferFiller.i>
 #include <quex/code_base/analyzer/struct/include-stack>
 
 #include <quex/code_base/temporary_macros_on>

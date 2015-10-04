@@ -127,8 +127,8 @@ token_default_C = "/token/CDefault.qx"
 token_default_Cpp = "/token/CppDefault.qx"
 
 buffer_filler = """
-/buffer/BufferFiller
-/buffer/BufferFiller.i
+/buffer/filler/BufferFiller
+/buffer/filler/BufferFiller.i
 """
 
 buffer_filler_plain = """
@@ -137,22 +137,22 @@ buffer_filler_plain = """
 """
 
 buffer_filler_converter = """
-/buffer/converter/BufferFiller_Converter
-/buffer/converter/BufferFiller_Converter.i
-/buffer/converter/Converter
-/buffer/converter/Converter.i
+/buffer/filler/converter/BufferFiller_Converter
+/buffer/filler/converter/BufferFiller_Converter.i
+/buffer/filler/converter/Converter
+/buffer/filler/converter/Converter.i
 """
 
 buffer_filler_iconv = """
-/buffer/converter/iconv/Converter_IConv
-/buffer/converter/iconv/Converter_IConv.i
-/buffer/converter/iconv/special_headers.h
+/buffer/filler/converter/iconv/Converter_IConv
+/buffer/filler/converter/iconv/Converter_IConv.i
+/buffer/filler/converter/iconv/special_headers.h
 """
 
 buffer_filler_icu = """
-/buffer/converter/icu/Converter_ICU
-/buffer/converter/icu/Converter_ICU.i
-/buffer/converter/icu/special_headers.h
+/buffer/filler/converter/icu/Converter_ICU
+/buffer/filler/converter/icu/Converter_ICU.i
+/buffer/filler/converter/icu/special_headers.h
 """
 
 converter_helper = """
