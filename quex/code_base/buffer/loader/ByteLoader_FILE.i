@@ -81,6 +81,8 @@ ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN)
 
 QUEX_INLINE bool  
 ByteLoader_FILE_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B) 
+/* RETURNS: true  -- if A and B point to the same FILE object.
+ *          false -- else.                                                   */
 { 
     const ByteLoader_FILE* A = (ByteLoader_FILE*)(alter_ego_A);
     const ByteLoader_FILE* B = (ByteLoader_FILE*)(alter_ego_B);

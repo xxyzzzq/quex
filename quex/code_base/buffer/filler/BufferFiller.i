@@ -409,7 +409,7 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     return loaded_n;
 }
 
-QUEX_INLINE void 
+QUEX_INLINE bool 
 QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
                                                   const ptrdiff_t          ForwardN)
 /* STRATEGY: Starting from a certain point in the file we read characters
@@ -442,7 +442,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
         remaining_character_n -= ChunkSize ) {
         if( me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
             __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
-            return;
+            return false;
         }
     }
     if( remaining_character_n ) {
@@ -450,6 +450,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
     }
    
     __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
+    return true;
 }
 
 
@@ -457,8 +458,8 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/loader/ByteLoader.i>
-#include <quex/code_base/buffer/filler/converter/BufferFiller_Converter.i>
-#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include <quex/code_base/buffer/filler/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/filler/BufferFiller_Plain.i>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFERFILLER_I */
 

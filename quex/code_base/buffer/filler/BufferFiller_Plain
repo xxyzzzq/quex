@@ -23,10 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * (This is the 'C' way to express derivation) */
         QUEX_NAME(BufferFiller)     base;
 
-#       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-        /* Index of the character where the next read will start */
-        ptrdiff_t                   _character_index;
-#       endif
+        ptrdiff_t                   next_to_load_character_index;
     } QUEX_NAME(BufferFiller_Plain);
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*

@@ -5,7 +5,7 @@
 
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/filler/BufferFiller>
-#include <quex/code_base/buffer/filler/converter/BufferFiller_Converter>
+#include <quex/code_base/buffer/filler/BufferFiller_Converter>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
 
@@ -67,7 +67,7 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     me = (QUEX_NAME(BufferFiller_Converter)*) \
           QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(BufferFiller_Converter)),
                                          E_MemoryObjectType_BUFFER_FILLER);
-    if( ! me) return me;
+    if( ! me) return (QUEX_NAME(BufferFiller)*)0;
 
     QUEX_NAME(BufferFiller_Converter_construct)(me, byte_loader, converter, FromCoding, ToCoding, RawMemorySize);
 
@@ -214,15 +214,16 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
  * RETURNS: true upon success, false else.                                   */
 { 
     QUEX_NAME(BufferFiller_Converter)*  me  = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+    ByteLoader*                         byte_loader = me->base.byte_loader;
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
-    ptrdiff_t                           ContentSize  = 0;
+    QUEX_TYPE_STREAM_POSITION           target;
 
     __quex_assert(alter_ego); 
     __quex_assert(me->converter);
     QUEX_ASSERT_BUFFER_INFO(raw);
 
-    if( me->byte_loader )                                    return false;
-    else if( Index == raw->next_to_convert_character_index ) return true;
+    if( me->byte_loader )                                             return false;
+    else if( CharacterIndex == raw->next_to_convert_character_index ) return true;
 
     /* Some converters (e.g. IBM's ICU) require to reset their state when 
      * conversion is discontinued,                                           */
@@ -232,20 +233,20 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
 
     /* Codec => fixed or dynamic character width => two methods of seeking.  */
     if(    me->converter->byte_n_per_character != -1 
-        && me->byte_loader->binary_mode_f ) { 
+        && byte_loader->binary_mode_f ) { 
         /* Each character always occupies the same amount of bytes. 
          * => Offsets CAN be **computed**. This is FAST.                     */
         target =   byte_loader->initial_position 
                  + me->converter->byte_n_per_character * CharacterIndex;
 
-        me->base.byte_loader->seek(me->base.byte_loader, target);
-        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+        byte_loader->seek(me->base.byte_loader, target);
+        if( byte_loader->tell(me->base.byte_loader) != target ) {
             return false;
         }
         
         /* next_to_convert_p == fill_end_p => trigger reload                 */
         raw->next_to_convert_p               = raw->fill_end_p;
-        raw->next_to_convert_character_index = Index;
+        raw->next_to_convert_character_index = CharacterIndex;
     } 
     else  { 
         /* Characters may occupy different amount of bytes. 
@@ -254,15 +255,16 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
          * Conversion starts from a known position until 'CharacterIndex' is 
          * reached. Only known position: initial position. (TODO: may be add
          * a 'cache' of known previous positions)                            */
-        me->base.byte_loader->seek(me->base.byte_loader, 
-                                   me->base.byte_loader->initial_position);             
+        byte_loader->seek(byte_loader, byte_loader->initial_position);             
 
         raw->fill_end_p                      = raw->begin;                   
         /* next_to_convert_p == fill_end_p => trigger reload                 */
         raw->next_to_convert_p               = raw->fill_end_p;
         raw->next_to_convert_character_index = 0;
-        QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
-                                                          (ptrdiff_t)CharacterIndex);
+        if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
+                                                                (ptrdiff_t)CharacterIndex) ) {
+            return false;
+        }
     }
     QUEX_ASSERT_BUFFER_INFO(raw);
     return true;
@@ -286,7 +288,7 @@ QUEX_NAME(__BufferFiller_Converter_fill_raw_buffer)(QUEX_NAME(BufferFiller_Conve
     QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(me);
     /* HERE: .next_to_convert_p = .begin                                     */
 
-    fill_begin_p    = &raw->fill_end_p;
+    fill_begin_p    = raw->fill_end_p;
     fill_size       = (size_t)(raw->memory_end - fill_begin_p);
 
     loaded_n        = me->base.byte_loader->load(me->base.byte_loader, 
@@ -312,7 +314,7 @@ QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
-                                              QUEX_TYPE_CHARACTER*       RegionBeginP,,
+                                              QUEX_TYPE_CHARACTER*       RegionBeginP,
                                               const QUEX_TYPE_CHARACTER* BufferEnd,
                                               const void*                FilledEndP)
 /* Converts what has been filled into the 'raw_buffer' until 'FilledEndP
@@ -322,7 +324,7 @@ QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_e
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
     QUEX_TYPE_CHARACTER*                insertion_p = RegionBeginP;
 
-    raw->fill_end_p = FilledEndP;   
+    raw->fill_end_p = (uint8_t*)FilledEndP;   
     QUEX_ASSERT_BUFFER_INFO(raw);
 
     me->converter->convert(me->converter, 
@@ -365,7 +367,7 @@ QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(QUEX_NAME(BufferFille
     raw->next_to_convert_p  = raw->begin; 
     raw->fill_end_p        -= move_distance;
 
-    QUEX_IF_ASSERTS_poison(&raw->begin[remaining_byte_n], raw->memory_end);
+    QUEX_IF_ASSERTS_poison(raw->fill_end_p, raw->memory_end);
     QUEX_ASSERT_BUFFER_INFO(raw);
 }
 
