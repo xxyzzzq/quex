@@ -1,11 +1,11 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
- * (C) 2007-2008 Frank-Rene Schaefer  */
+ * (C) 2007-2015 Frank-Rene Schaefer  */
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#include <quex/code_base/buffer/filler/BufferFiller>
+#include <quex/code_base/buffer/filler/converter/BufferFiller_Converter>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
 
@@ -27,7 +27,7 @@ QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
 QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
 
-QUEX_INLINE void   
+QUEX_INLINE bool   
 QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                        const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
 QUEX_INLINE size_t 
@@ -67,7 +67,7 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     me = (QUEX_NAME(BufferFiller_Converter)*) \
           QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(BufferFiller_Converter)),
                                          E_MemoryObjectType_BUFFER_FILLER);
-    __quex_assert(me);
+    if( ! me) return me;
 
     QUEX_NAME(BufferFiller_Converter_construct)(me, byte_loader, converter, FromCoding, ToCoding, RawMemorySize);
 
@@ -131,29 +131,9 @@ QUEX_INLINE size_t
 QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                        QUEX_TYPE_CHARACTER*      RegionBeginP, 
                                                        const size_t              N)
-/* TWO CASES: 
- *
- * (1) There are still some bytes in the raw buffer from the last load.  in
- * this case, first translate them and then maybe load the raw buffer again.
- * (next_to_convert_p != fill_end_p)
- *
- * (2) The raw buffer is empty. Then it must be loaded in order to get some
- * basis for conversion. For 'stateless' converters the condition
- *
- *                next_to_convert_p == fill_end_p
- *
- * would be sufficient. However, there are converters that store some source
- * data even if they report that 'next_to_convert_p==fill_end_p'. The final decision is left to
- * the converter in its first call to 'convert()'.  The assumption 'next_to_convert_p ==
- * fill_end_p => reload required' does not hold here for the general case.                                                              
- *                   
- * If we wanted to do a pre-load here, this would increase complexity.  Because
- * one would need to communicate with the converter, whether there are some
- * hidden bytes in the pipe. The task to determine this might also not be
- * trivial for one or the other converter to be plugged in here.
- *
- * THUS: No pre-load before the first conversion, even if the first conversion
- * runs on zero bytes!                                                       */
+/* Loads content into the raw buffer, convert it and write it to the engine's
+ * buffer. The region where to write into the engine's buffer expands from
+ * 'RegionBeginP' to 'N' characters after it.                                */
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
@@ -168,10 +148,12 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     QUEX_ASSERT_BUFFER_INFO(raw);
     QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
 
+    /* Some converters keep some content internally. So, it is a more general
+     * solution to convert first and reload new bytes upon need.             */
     while( 1 + 1 == 2 ) {
         /* NOT: if( next_to_convert_p != fill_end_p ) ...
-         * Because, some converters may leave some content in their stomach
-         * and spit it out later (e.g. ICU).                                 */
+         * Because, converters may leave some content in their stomach and spit
+         * it out later (e.g. ICU).                                          */
         if( me->converter->convert(me->converter, 
                                    &raw->next_to_convert_p, raw->fill_end_p,
                                    &buffer_insertion_p,     BufferEnd) ) {
@@ -222,20 +204,14 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
 /* BufferFiller's seek sets the input position for the next character read in
  * the stream. That is, it adapts:
  *
- *     'next_to_convert_p' 
- *     'next_to_convert_character_index' 
+ *     'next_to_convert_character_index = CharacterIndex' 
  *
- * so that 'next_to_convert_p' point to the byte in the stream where the
- * character begins with index 'next_to_convert_character_index'. In other
- * words, it sets up the buffer so that the 'next_to_convert_character_index'
- * is the index of the next buffer that will come out of the converter.
- *       
- * This 'seek' is different from the Buffer's seek that sets the _read_p at a
- * specific character position. Also, the ByteLoader's seek sets the stream to
- * a stream position, not a character position.           
+ * The raw buffer and the byte loader are prepared in a way so that the next 
+ * loading will start with 'CharacterIndex'. This task is not trivial, because
+ * in general there is no linear relationship between the stream position of 
+ * the byte loader and the index of the character to which it points.
  *
- * NOTE: In some stream implementations there is no direct correspondance
- * between character index and stream position.                              */
+ * RETURNS: true upon success, false else.                                   */
 { 
     QUEX_NAME(BufferFiller_Converter)*  me  = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
@@ -411,15 +387,15 @@ QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/filler/BufferFiller.i>
 
-#include <quex/code_base/buffer/converter/Converter.i>
+#include <quex/code_base/buffer/filler/converter/Converter.i>
 
 #ifdef QUEX_OPTION_CONVERTER_ICONV
-#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#   include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
 #endif
 #ifdef QUEX_OPTION_CONVERTER_ICU
-#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#   include <quex/code_base/buffer/filler/converter/icu/Converter_ICU.i>
 #endif
 
 
