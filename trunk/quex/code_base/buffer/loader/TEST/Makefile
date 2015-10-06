@@ -1,4 +1,5 @@
 TESTS := test-FILE.exe \
+	     test-POSIX.exe \
 	     test-fstream.exe \
 	     test-stringstream.exe
 
