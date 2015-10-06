@@ -1,8 +1,9 @@
-TESTS := test-FILE.exe
+TESTS := test-FILE.exe \
+	     test-fstream.exe \
+	     test-stringstream.exe
 
-CC    := gcc -ggdb -Wall -Werror \
+FLAGS    :=  -ggdb -Wall -Werror \
    	         -DTEST_FILE_SIZE=100 \
-			 -D__QUEX_OPTION_PLAIN_C \
 			 -I$(HWUT_PATH)/support/C \
 			 -I$(QUEX_PATH) \
 			 -I.
@@ -13,4 +14,10 @@ hwut-info:
 	@echo $(TESTS)
 
 test-%.exe: test-%.c basic_functionality.c
-	$(CC) $^ -o $@
+	gcc $(FLAGS) -D__QUEX_OPTION_PLAIN_C $^ -o $@
+
+test-%.exe: test-%.cpp basic_functionality.c
+	g++ $(FLAGS) $^ -o $@
+
+clean:
+	rm -f *.exe

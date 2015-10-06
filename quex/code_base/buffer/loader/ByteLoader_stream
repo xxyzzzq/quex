@@ -2,14 +2,21 @@
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM
 #ifdef __cplusplus
 
+#include <quex/code_base/buffer/loader/ByteLoader>
+#
 template <class StreamType>
-struct ByteLoader_stream { 
+class ByteLoader_stream { 
+public:
     ByteLoader     base;
     StreamType*    input_handle;
 };
 
+template <class StreamType> QUEX_INLINE void
+ByteLoader_stream_construct(ByteLoader_stream<StreamType>* me, StreamType* sh);
 template <class StreamType> QUEX_INLINE ByteLoader*
 ByteLoader_stream_new(StreamType* sh);
+QUEX_INLINE ByteLoader*    
+ByteLoader_stream_new_from_file_name(const char* FileName);
 
 #endif /* __cplusplus                           */
 #endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM */

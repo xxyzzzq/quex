@@ -3,6 +3,9 @@
 
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 
+#include <fstream>
+#include <sstream>
+
 template <class StreamType> QUEX_INLINE QUEX_TYPE_STREAM_POSITION  ByteLoader_stream_tell(ByteLoader* me);
 template <class StreamType> QUEX_INLINE void                       ByteLoader_stream_seek(ByteLoader* me, 
                                                                                           QUEX_TYPE_STREAM_POSITION Pos);
@@ -19,12 +22,12 @@ ByteLoader_stream_new(StreamType* sh)
     return &me->base;
 }
 
-template <class StreamType> QUEX_INLINE ByteLoader*    
+QUEX_INLINE ByteLoader*    
 ByteLoader_stream_new_from_file_name(const char* FileName)
 {
-    StreamType*  sh = new StreamType(FileName, std::ios_base::binary);
-    ByteLoader*  alter_ego;
-    if( ! sh ) {
+    std::ifstream*  sh = new std::ifstream(FileName, std::ios_base::binary | std::ios::in);
+    ByteLoader*     alter_ego;
+    if( ! sh || ! *sh ) {
         return (ByteLoader*)0;
     }
     alter_ego = ByteLoader_stream_new(sh);
@@ -53,7 +56,7 @@ ByteLoader_stream_construct(ByteLoader_stream<StreamType>* me, StreamType* sh)
 template <class StreamType> QUEX_INLINE void
 ByteLoader_stream_delete_self(ByteLoader* alter_ego)
 {
-    ByteLoader_stream<StreamType>* me = (ByteLoader_stream<StreamType>*)(alter_ego);
+    ByteLoader_stream<StreamType>* me = (ByteLoader_stream<StreamType>*)alter_ego;
 
     if( me->input_handle && me->base.handle_ownership == E_Ownership_LEXICAL_ANALYZER ) {
         delete me->input_handle;
@@ -65,29 +68,38 @@ ByteLoader_stream_delete_self(ByteLoader* alter_ego)
  * read from the stream. It is unrelated to QUEX_TYPE_CHARACTER which
  * determines the size of a buffer element.                                  */
 template <class StreamType> QUEX_INLINE QUEX_TYPE_STREAM_POSITION    
-ByteLoader_stream_tell(ByteLoader* me)            
+ByteLoader_stream_tell(ByteLoader* alter_ego)            
 { 
+    ByteLoader_stream<StreamType>*       me = (ByteLoader_stream<StreamType>*)alter_ego;
     const QUEX_TYPE_STREAM_POSITION      CharSize = \
          (QUEX_TYPE_STREAM_POSITION)sizeof(typename StreamType::char_type);
-    return (QUEX_TYPE_STREAM_POSITION)(((ByteLoader_stream<StreamType>*)me)->input_handle->tellg() * CharSize); 
+    std::streampos                       Position = me->input_handle->tellg();
+
+    return (QUEX_TYPE_STREAM_POSITION)(Position * CharSize); 
 }
 
 template <class StreamType> QUEX_INLINE void    
-ByteLoader_stream_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos) 
+ByteLoader_stream_seek(ByteLoader* alter_ego, QUEX_TYPE_STREAM_POSITION Pos) 
 { 
+    ByteLoader_stream<StreamType>*       me = (ByteLoader_stream<StreamType>*)alter_ego;
     const QUEX_TYPE_STREAM_POSITION      CharSize = \
          (QUEX_TYPE_STREAM_POSITION)sizeof(typename StreamType::char_type);
-    ((ByteLoader_stream<StreamType>*)me)->input_handle->seekg((std::streampos)(Pos / CharSize)); 
+    std::streampos                       Target   = (std::streampos)(Pos / CharSize);
+
+    me->input_handle->clear();                    /* Clear any iostate flag. */
+    me->input_handle->seekg(Target); 
 }
 
 template <class StreamType> QUEX_INLINE size_t  
 ByteLoader_stream_load(ByteLoader* alter_ego, void* buffer, const size_t ByteN) 
 { 
+    ByteLoader_stream<StreamType>*       me = (ByteLoader_stream<StreamType>*)alter_ego;
     const QUEX_TYPE_STREAM_POSITION      CharSize = \
          (QUEX_TYPE_STREAM_POSITION)sizeof(typename StreamType::char_type);
 
-    ByteLoader_stream<StreamType>*       me = (ByteLoader_stream<StreamType>*)alter_ego;
     const typename StreamType::pos_type  position_before = me->input_handle->tellg();
+
+    if( ! ByteN ) return (size_t)0;
 
     me->input_handle->read((typename StreamType::char_type*)buffer, 
                            (std::streamsize)(ByteN / CharSize)); 

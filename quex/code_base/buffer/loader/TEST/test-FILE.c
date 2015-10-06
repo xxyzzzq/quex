@@ -1,3 +1,4 @@
+/* PURPOSE: See comment in file 'basic_functionality.c'                      */
 #include <quex/code_base/buffer/loader/ByteLoader_FILE>
 #include <quex/code_base/buffer/loader/ByteLoader_FILE.i>
 #include <quex/code_base/buffer/loader/ByteLoader.i>
