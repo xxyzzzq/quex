@@ -10,12 +10,14 @@ int
 main(int argc, char** argv)
 {
     ByteLoader*  me;
-    hwut_info("ByteLoader_FILE: basic functionality;\n");
+    hwut_info("ByteLoader: FILE;\n"
+              "CHOICES: basic, init-pos;");
 
     hwut_verify(ByteLoader_FILE_new_from_file_name("not-existing-file.txt") == (ByteLoader*)0);
     me = ByteLoader_FILE_new_from_file_name("test.txt");
 
-    verify_basic_functionality(me);
+    hwut_if_choice("basic")    verify_basic_functionality(me);
+    hwut_if_choice("init-pos") initial_position(me);
 
     me->delete_self(me);
 

@@ -14,7 +14,8 @@ main(int argc, char** argv)
     char               tmp_buffer[1024];
     std::ifstream      fstr("test.txt", std::ios::in);
 
-    hwut_info("ByteLoader_stream: std::stringstream -- basic functionality;\n");
+    hwut_info("ByteLoader: std::stringstring;\n"
+              "CHOICES: basic, init-pos;");
 
     fstr.read(&tmp_buffer[0], TEST_FILE_SIZE);
     tmp_buffer[TEST_FILE_SIZE] = '\0';
@@ -23,7 +24,8 @@ main(int argc, char** argv)
     std::istringstream  sstr(sbuffer);
     ByteLoader*         me = ByteLoader_stream_new(&sstr);
 
-    verify_basic_functionality(me);
+    hwut_if_choice("basic")    verify_basic_functionality(me);
+    hwut_if_choice("init-pos") initial_position(me);
 
     me->delete_self(me);
 
