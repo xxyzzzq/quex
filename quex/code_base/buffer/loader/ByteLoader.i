@@ -35,13 +35,14 @@ ByteLoader_construct(ByteLoader* me,
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION
 ByteLoader_tell(ByteLoader* me)
 {
-    return me->derived.tell(me) - me->initial_position;
+    return me->derived.tell(me);
 }
 
 QUEX_INLINE void
 ByteLoader_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Position)
 {
-    me->derived.seek(me, Position + me->initial_position);
+    if( Position < me->initial_position ) return;
+    me->derived.seek(me, Position);
 }
 
 QUEX_INLINE bool
@@ -72,8 +73,10 @@ ByteLoader_delete(ByteLoader** me)
 
 #include <quex/code_base/buffer/loader/ByteLoader_FILE.i>
 #include <quex/code_base/buffer/loader/ByteLoader_stream.i>
-#if 0
+#ifdef QUEX_OPTION_POSIX
 #   include <quex/buffer/loader/ByteLoader_POSIX.i>    /* (tm) */
+#endif
+#if 0
 #   include <quex/buffer/loader/ByteLoader_FreeRTOS.i> /* (tm) */
 #   include <quex/buffer/loader/ByteLoader_PalmOS.i>   /* (tm) */
 #endif

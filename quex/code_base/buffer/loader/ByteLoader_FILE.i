@@ -73,7 +73,9 @@ ByteLoader_FILE_tell(ByteLoader* me)
 
 QUEX_INLINE void    
 ByteLoader_FILE_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos) 
-{ fseek(((ByteLoader_FILE*)me)->input_handle, (long)Pos, SEEK_SET); }
+{ 
+    fseek(((ByteLoader_FILE*)me)->input_handle, (long)Pos, SEEK_SET); 
+}
 
 QUEX_INLINE size_t  
 ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN) 
