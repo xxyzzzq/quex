@@ -370,7 +370,7 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     __quex_assert(RegionBeginP >= BeginP);
     __quex_assert(RegionBeginP < EndP);
     __quex_assert(RegionBeginP + RequiredLoadN <= EndP);
-    __quex_assert(RegionBeginP - BeginP >= StartCharacterIndex);
+    __quex_assert(RegionBeginP - BeginP <= StartCharacterIndex);
     new_begin_character_index = StartCharacterIndex - (RegionBeginP - BeginP);
 
     /* Seek to the position where loading shall start.                       */
@@ -395,8 +395,15 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     }
 
     /* Adapt 'end_p' and 'end_character_index'.                              */
+    /* If buffer was empty "end_p = front_p" => it is no longer empty now!                   
+     * => "end_p = front" becomes "end_p = 0" (buffer filled up completely). */
+    if( QUEX_NAME(Buffer_is_empty)(buffer) ){
+        buffer->input.end_p = (QUEX_TYPE_CHARACTER*)0;
+    }
+
     end_p = (RequiredLoadN == loaded_n) ? buffer->input.end_p
                                         : &RegionBeginP[loaded_n];
+
     end_character_index = end_p ? new_begin_character_index + (end_p - BeginP)
                                 : new_begin_character_index + ContentSize;
     QUEX_NAME(Buffer_input_end_set)(buffer, end_p, end_character_index);
