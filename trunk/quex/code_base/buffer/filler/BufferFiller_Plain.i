@@ -117,7 +117,7 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
  * RETURNS: true upon success, false else.                                   */
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    QUEX_TYPE_STREAM_POSITION      target;
+    QUEX_TYPE_STREAM_POSITION      target_byte_pos;
 
     __quex_assert(alter_ego); 
     __quex_assert(me->base.byte_loader); 
@@ -126,27 +126,29 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
         return true;
     }
     else if( me->base.byte_loader->binary_mode_f ) {
-        target = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
+        target_byte_pos = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
 
-        me->base.byte_loader->seek(me->base.byte_loader, target);
-        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+        me->base.byte_loader->seek(me->base.byte_loader, target_byte_pos);
+        if( me->base.byte_loader->tell(me->base.byte_loader) != target_byte_pos ) {
             return false;
         }
-        me->next_to_load_character_index = target;
+        me->next_to_load_character_index = target_byte_pos;
         return true;
     }
     else {
         /* Start at known position; step until 'CharacterIndex' is reached.  */
-        target = me->base.byte_loader->initial_position;
-        me->base.byte_loader->seek(me->base.byte_loader, target);
-        if( me->base.byte_loader->tell(me->base.byte_loader) != target ) {
+        target_byte_pos = me->base.byte_loader->initial_position;
+        me->base.byte_loader->seek(me->base.byte_loader, target_byte_pos);
+        if( me->base.byte_loader->tell(me->base.byte_loader) != target_byte_pos ) {
             return false;
         }
+        me->next_to_load_character_index = 0;
+        /* 'step_forward' calls 'BufferFiller_Plain_input_character_read()' 
+         * which increments 'next_to_load_character_index'.                  */
         if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
                                                                 (ptrdiff_t)CharacterIndex) ) {
             return false;
         }
-        me->next_to_load_character_index = target;
         return true;
     }
 }
@@ -157,7 +159,7 @@ QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alt
                                                    const size_t              N)  
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    size_t  loaded_byte_n      = (size_t)-1;
+    size_t                         loaded_byte_n = (size_t)-1;
 
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
