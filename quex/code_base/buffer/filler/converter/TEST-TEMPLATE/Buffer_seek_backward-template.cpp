@@ -1,5 +1,5 @@
 #include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
-#include <quex/code_base/buffer/filler/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/filler/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/single.i>
 #ifdef QUEX_OPTION_CONVERTER_ICONV

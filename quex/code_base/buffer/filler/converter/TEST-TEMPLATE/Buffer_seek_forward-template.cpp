@@ -1,13 +1,13 @@
 #line 1  "Buffer_seek_forward-template.cpp" 
 #include <quex/code_base/buffer/TESTS/Buffer_test_common.i>
-#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/filler/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/single.i>
 #ifdef QUEX_OPTION_CONVERTER_ICONV
-#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
+#   include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
 #endif
 #ifdef QUEX_OPTION_CONVERTER_ICU
-#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
+#   include <quex/code_base/buffer/filler/converter/icu/Converter_ICU.i>
 #endif
 
 using namespace std;
