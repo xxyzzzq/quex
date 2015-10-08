@@ -13,7 +13,7 @@ extern "C" {
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
 
 #if ! defined(QUEX_OPTION_CONVERTER_ICONV)
 #    error "This header has been included without setting the compile option QUEX_OPTION_CONVERTER_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."

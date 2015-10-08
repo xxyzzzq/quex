@@ -160,6 +160,7 @@ QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alt
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
     size_t                         loaded_byte_n = (size_t)-1;
+    size_t                         loaded_n;
 
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
@@ -173,10 +174,11 @@ QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alt
     if( loaded_byte_n % sizeof(QUEX_TYPE_CHARACTER) ) {
         QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
     }
+    loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 
-    me->next_to_load_character_index += loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
+    me->next_to_load_character_index += loaded_n;
 
-    return loaded_byte_n;
+    return loaded_n;
 }
 
 QUEX_INLINE void 

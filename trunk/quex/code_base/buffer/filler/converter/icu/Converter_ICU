@@ -5,8 +5,8 @@
 #define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/converter/Converter>
-#include <quex/code_base/buffer/converter/icu/special_headers.h>
+#include <quex/code_base/buffer/filler/converter/Converter>
+#include <quex/code_base/buffer/filler/converter/icu/special_headers.h>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
