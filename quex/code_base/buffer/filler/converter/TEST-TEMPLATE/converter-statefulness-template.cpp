@@ -97,10 +97,10 @@ get_input(const char* Choice, uint8_t* buffer, size_t BufferSize)
      * Depending on the particular behavior, the BOM may have to be provided.
      * Thus, each directory provides its own example2.* files.               */
     if     ( strcmp("UTF-8",  Choice) == 0 ) {
-        filename = "___DATA_DIR___/example2.utf8";
+        filename = "___DATA_DIR___/examples/small.utf8";
     }
     else if( strcmp("UTF-16", Choice) == 0 )  {
-        filename = "___DATA_DIR___/example2.utf16";
+        filename = "___DATA_DIR___/examples/small.utf16";
     }
     else {
         printf("Coding %s not supported, use --hwut-info;\n", Choice);

@@ -15,12 +15,12 @@ QUEX_INLINE bool                       ByteLoader_POSIX_compare_handle(const Byt
 QUEX_INLINE ByteLoader*    
 ByteLoader_POSIX_new(int fd)
 {
-    ByteLoader_POSIX* me = (ByteLoader_POSIX*)QUEXED(MemoryManager_allocate)(
-                                                     sizeof(ByteLoader_POSIX),
-                                                     E_MemoryObjectType_BYTE_LOADER);
-    if( ! me ) {
-        return (ByteLoader*)0;
-    }
+    ByteLoader_POSIX* me;
+
+    if( fd == -1 ) return (ByteLoader*)0;
+    me = (ByteLoader_POSIX*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_POSIX),
+                                                           E_MemoryObjectType_BYTE_LOADER);
+    if( ! me ) return (ByteLoader*)0;
     ByteLoader_POSIX_construct(me, fd);
     return &me->base;
 }

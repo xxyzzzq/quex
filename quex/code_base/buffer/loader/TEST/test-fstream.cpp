@@ -15,6 +15,7 @@ main(int argc, char** argv)
               "CHOICES: basic, init-pos;");
 
     hwut_verify(ByteLoader_stream_new_from_file_name("not-existing-file.txt") == (ByteLoader*)0);
+    hwut_verify(ByteLoader_stream_new((ByteLoader_stream<std:ifstream>*)0) == (ByteLoader*)0);
     me = ByteLoader_stream_new_from_file_name("test.txt");
 
     hwut_if_choice("basic")    verify_basic_functionality(me);

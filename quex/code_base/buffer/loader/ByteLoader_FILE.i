@@ -14,12 +14,14 @@ QUEX_INLINE bool                       ByteLoader_FILE_compare_handle(const Byte
 QUEX_INLINE ByteLoader*    
 ByteLoader_FILE_new(FILE* fh)
 {
-    ByteLoader_FILE* me = (ByteLoader_FILE*)QUEXED(MemoryManager_allocate)(
-                                                   sizeof(ByteLoader_FILE),
-                                                   E_MemoryObjectType_BYTE_LOADER);
-    if( ! me ) {
-        return (ByteLoader*)0;
-    }
+    ByteLoader_FILE* me;
+   
+    if( ! fh ) return (ByteLoader*)0;
+
+    me = (ByteLoader_FILE*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_FILE),
+                                                          E_MemoryObjectType_BYTE_LOADER);
+    if( ! me ) return (ByteLoader*)0;
+
     ByteLoader_FILE_construct(me, fh);
     return &me->base;
 }
