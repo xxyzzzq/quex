@@ -97,6 +97,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_TYPE_CHARACTER*
                            QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
     QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)* me, 
+                                                                    QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin);
+    QUEX_INLINE bool       QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)* me, 
+                                                                   QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin);
 
     QUEX_INLINE void       QUEX_NAME(Buffer_input_end_set)(QUEX_NAME(Buffer)* me,
                                                            QUEX_TYPE_CHARACTER*      EndOfInputP,
@@ -115,5 +119,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
+#include <quex/code_base/buffer/filler/BufferFiller>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER */

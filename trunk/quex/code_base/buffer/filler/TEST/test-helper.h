@@ -24,15 +24,15 @@ prepare_input()
     uint8_t*            character_begin = 0x0;
 
     /* Let's cast using 'real' types, thus ensure that byte-allignment
-     * in writing and reading is the same. */
+     * in writing and reading is the same.                                   */
     for(char* p = (char*)test_string; p != (char*)End; ++p) {
-        /* Copy the letter into the character according to its alignment */
+        /* Copy the letter into the character according to its alignment     */
         character       = (QUEX_TYPE_CHARACTER)*p;
-        /* Now, write down the bytes of the character in whatever aligment it was. */
+        /* Write the bytes of the character in whatever aligment it was.     */
         character_begin = (uint8_t*)&character;
         fwrite(character_begin, sizeof(QUEX_TYPE_CHARACTER), 1, fh);
     }
-    fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
+    fseek(fh, 0, SEEK_SET);              /* start reading from the beginning */
 
     return fh;
 }

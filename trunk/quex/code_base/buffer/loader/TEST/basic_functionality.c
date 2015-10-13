@@ -19,7 +19,6 @@
  * (C) Frank-Rene Schaefer                                                   */
 #include <quex/code_base/buffer/loader/ByteLoader>
 #include <hwut_unit.h>
-#include <assert.h>
 
 static bool  verify_load(ByteLoader* me, int Offset, int N);
 static bool  test(ByteLoader* me, int LoadN);
@@ -45,16 +44,18 @@ test(ByteLoader* me, int LoadN)
 {
     int  i;
     QUEX_TYPE_STREAM_POSITION position = 0;
+    QUEX_TYPE_STREAM_POSITION position_limit;
     QUEX_TYPE_STREAM_POSITION previous;
 
     me->seek(me, 0);
     hwut_verify(TEST_FILE_SIZE == me->load(me, reference, TEST_FILE_SIZE));
+    position_limit = TEST_FILE_SIZE;
 
     for(i=0; i < 65536 ; ++i) {
         /* Choose a position from 0 to size + 3. Choose a position beyond the
          * possible maximum, so that the error handling check is included.   */
         previous = position;
-        position = ((position + i) * 997) % (TEST_FILE_SIZE + 3);
+        position = ((position + i) * 997) % (position_limit + 3);
 
         /* printf("%i %i\n", (int)position, (int)(position - previous));     */
         /* Investigate with gnuplot:
@@ -67,7 +68,7 @@ test(ByteLoader* me, int LoadN)
         /* SEEK */
         me->seek(me, position);
 
-        if( position > TEST_FILE_SIZE ) continue;
+        if( position > position_limit ) continue;
 
         /* TELL */
         hwut_verify(position == me->tell(me));
@@ -75,20 +76,20 @@ test(ByteLoader* me, int LoadN)
         /* LOAD */
         if( ! verify_load(me, position, LoadN) ) return false;
     }
-    printf("# <terminated: load_n: %i; sub-tests: 65536; checksum: %i;>\n",
-           (int)LoadN, (int)position);
+    printf("# <terminated: load_n: %i; sub-tests: %i; checksum: %i;>\n",
+           (int)LoadN, (int)i, (int)position);
     return true;
 }
 
 static bool
-verify_load(ByteLoader* me, int Offset, int N)
+verify_load(ByteLoader* me, int Offset, int N, QUEX_TYPE_STREAM_POSITION position_limit)
 /* Loads 'N' bytes and compares the loaded content with what is stored 
  * in the reference storage.                                             */
 {
     uint8_t                   buffer[4096];
     uint8_t*                  content = &buffer[4];
     ptrdiff_t                 loaded_n;
-    assert(N < 4096);
+    hwut_verify(N < 4096);
 
     /* Set borders to detect overwrite.                                  */
     memset(&content[-4], 0x5A, 4);
@@ -105,14 +106,14 @@ verify_load(ByteLoader* me, int Offset, int N)
 
     loaded_n = me->load(me, content, N);
 
-    hwut_verify(loaded_n <= QUEX_MIN(TEST_FILE_SIZE, N));
+    hwut_verify(loaded_n <= QUEX_MIN(position_limit, N));
     if( me->binary_mode_f ) {
         hwut_verify(Offset + loaded_n == me->tell(me));
     }
 
     /* Make sure that the content corresponds to the reference data.     */
     if( memcmp((void*)&reference[Offset], (void*)content, (size_t)loaded_n) != 0) {
-        print_difference(content, Offset, loaded_n);
+        print_difference(content, Offset, loaded_n, position_limit);
         return false;
     }
 
@@ -129,7 +130,7 @@ verify_load(ByteLoader* me, int Offset, int N)
 }
 
 static void
-print_difference(const uint8_t* content, int Offset, int loaded_n)
+print_difference(const uint8_t* content, int Offset, int loaded_n, QUEX_TYPE_STREAM_POSITION position_limit)
 {
     int i=0;
     printf("offset: %-3i; loaded_n: %-2i; ", Offset, loaded_n);
@@ -139,7 +140,7 @@ print_difference(const uint8_t* content, int Offset, int loaded_n)
     for(i=0; i <loaded_n; ++i) printf("%02X.", reference[Offset+i]);
     printf("\n");
     printf("complete reference:\n");
-    for(i=0; i <= TEST_FILE_SIZE; ++i) {
+    for(i=0; i <= position_limit; ++i) {
         printf("%02X.", reference[i]);
         if( i % 10 == 9 ) printf("\n");
     }

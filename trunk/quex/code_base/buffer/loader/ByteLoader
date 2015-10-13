@@ -50,7 +50,7 @@ typedef struct ByteLoader_tag {
     } derived;
 } ByteLoader;
 
-QUEX_INLINE void  ByteLoader_construct(ByteLoader* me, 
+QUEX_INLINE void  ByteLoader_construct(ByteLoader*                me, 
                                        QUEX_TYPE_STREAM_POSITION  (*tell)(ByteLoader* me),
                                        void                       (*seek)(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos),
                                        size_t                     (*load)(ByteLoader*, void*, const size_t),

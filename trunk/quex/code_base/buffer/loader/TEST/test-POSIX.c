@@ -14,6 +14,7 @@ main(int argc, char** argv)
               "CHOICES: basic, init-pos;");
 
     hwut_verify(ByteLoader_POSIX_new_from_file_name("not-existing-file.txt") == (ByteLoader*)0);
+    hwut_verify(ByteLoader_POSIX_new(-1) == (ByteLoader*)0);
     me = ByteLoader_POSIX_new_from_file_name("test.txt");
 
     hwut_if_choice("basic")    verify_basic_functionality(me);

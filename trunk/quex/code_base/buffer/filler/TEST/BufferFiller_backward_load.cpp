@@ -53,7 +53,7 @@ main(int argc, char** argv)
         buffer._read_p         = buffer._memory._front;
         buffer._lexeme_start_p = &buffer._memory._front[1];
         /**/
-        QUEX_NAME(BufferFiller_load_backward)(&buffer);
+        (void)QUEX_NAME(BufferFiller_load_backward)(&buffer);
         printf("\n");
     } while( 1 + 1 == 2 );
 

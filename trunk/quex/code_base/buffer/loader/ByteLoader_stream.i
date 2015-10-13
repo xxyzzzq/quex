@@ -16,8 +16,15 @@ template <class StreamType> QUEX_INLINE bool                       ByteLoader_st
 template <class StreamType> QUEX_INLINE ByteLoader*
 ByteLoader_stream_new(StreamType* sh)
 {
-    ByteLoader_stream<StreamType>* me = (ByteLoader_stream<StreamType>*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_stream<StreamType>),
-                                                                               E_MemoryObjectType_BYTE_LOADER);
+    ByteLoader_stream<StreamType>* me;
+
+    if( ! sh ) return (ByteLoader_stream<StreamType>*)0;
+
+    me = (ByteLoader_stream<StreamType>*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_stream<StreamType>),
+                                                                        E_MemoryObjectType_BYTE_LOADER);
+
+    if( ! me ) return (ByteLoader_stream<StreamType>*)0;
+
     ByteLoader_stream_construct(me, sh);
     return &me->base;
 }

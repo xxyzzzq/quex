@@ -31,68 +31,55 @@ QUEX_NAMESPACE_MAIN_OPEN
                                              QUEX_NAME(Buffer_text_end)(buffer));
         }
 
-        (void)QUEX_NAME(BufferFiller_load_backward)(buffer);
+        QUEX_NAME(BufferFiller_load_backward)(buffer);
         
-        /* Backward lexing happens in two cases:
+        /* NO ADAPTIONS OF POST-CONTEXT POSITIONS !
          *
-         *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
-         *      is involved. No acceptance positions are considered.
-         *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
-         *      post conditions. Then, no acceptance positions are involved, because
-         *      the start of the lexeme shall not drop before the begin of the buffer 
-         *      and the end of the core pattern, is of course, after the start of the 
-         *      lexeme. => there will be no reload backwards.                            */
+         * Backward lexing happens in two cases:
+         *
+         *  (1) When checking for a pre-condition. In this case, no dedicated
+         *  acceptance is involved. No acceptance positions are considered.
+         *
+         *  (2) When tracing back to get the end of a core pattern in
+         *  pseudo-ambigous post conditions. Then, no acceptance positions are
+         *  involved, because the start of the lexeme shall not drop before the
+         *  begin of the buffer and the end of the core pattern, is of course,
+         *  after the start of the lexeme. => there will be no reload
+         *  backwards.                                                       */
     }
 
-    QUEX_INLINE size_t 
-    QUEX_NAME(__buffer_reload_forward_core)(QUEX_NAME(Buffer)*  buffer) 
+    QUEX_INLINE void 
+    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*    buffer, 
+                                     QUEX_TYPE_CHARACTER** position_register,
+                                     const size_t          PositionRegisterN)
     {
-        size_t loaded_character_n = (size_t)-1;
-
-        __quex_assert(buffer);
-        __quex_assert(buffer->filler);
-        __quex_assert(! buffer->input.end_p);
+        QUEX_TYPE_CHARACTER**     iterator           = 0x0;
+        QUEX_TYPE_CHARACTER**     End                = position_register + (ptrdiff_t)PositionRegisterN;
+        size_t                    loaded_character_n = (size_t)-1;    
+        QUEX_TYPE_STREAM_POSITION previous_character_index_begin;
+        ptrdiff_t                 offset;
 
         if( buffer->input.end_p ) {
-            return 0;
+            return;
         }
-
         if( buffer->on_buffer_content_change ) {
-            /* If the end of file pointer is set, the reload will not be initiated,
-             * and the buffer remains as is. No reload happens, see above. 
-             * => HERE: end of content = end of buffer.                             */
+            /* If the end of file pointer is set, the reload will not be
+             * initiated, and the buffer remains as is. No reload happens,
+             * see above.  => HERE: end of content = end of buffer.          */
             buffer->on_buffer_content_change(buffer->_memory._front, 
                                              buffer->_memory._back);
         }
 
-        loaded_character_n = QUEX_NAME(BufferFiller_load_forward)(buffer);
-        /* Upon state entry, _read_p is incremented, thus decrement here    
-         * => Next '*_read_p' reads first new content.                       */
-        buffer->_read_p -= 1;      
+        previous_character_index_begin = QUEX_NAME(Buffer_input_begin_character_index)(buffer);
 
-        return loaded_character_n;
-    }
+        QUEX_NAME(BufferFiller_load_forward)(buffer);
 
-    QUEX_INLINE void 
-    QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*            buffer, 
-                                     QUEX_TYPE_CHARACTER** position_register,
-                                     const size_t                  PositionRegisterN)
-    {
-        QUEX_TYPE_CHARACTER**  iterator           = 0x0;
-        QUEX_TYPE_CHARACTER**  End                = position_register + (ptrdiff_t)PositionRegisterN;
-        size_t                 loaded_character_n = (size_t)-1;    
-
-        loaded_character_n = QUEX_NAME(__buffer_reload_forward_core)(buffer);
+        offset =   QUEX_NAME(Buffer_input_begin_character_index)(buffer) 
+                 - previous_character_index_begin;
 
         for(iterator = position_register; iterator != End; ++iterator) {
-            /* NOTE: When the post_context_start_position is still undefined the following operation may
-             *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
-            *iterator -= (ptrdiff_t)loaded_character_n;
+            *iterator = *iterator >= offset ? *iterator - offset : 0;
         }
-        /* Upon state entry, _read_p is decremented, thus decrement here    
-         * => Next '*_read_p' reads first new content.                       */
-        buffer->_read_p += 1;      
-
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE

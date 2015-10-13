@@ -80,12 +80,12 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 {
     const char* filename = 0x0;
     if ( strcmp("UTF-8",  Choice) == 0 ) {
-        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/example-32.utf8";
-        else                                   filename = "___DATA_DIR___/example-16.utf8";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/examples/languages-stretched-32.utf8";
+        else                                   filename = "___DATA_DIR___/examples/languages.utf8";
     }
     else if( strcmp("UTF-16", Choice) == 0 ) {
-        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/example-32.utf16";
-        else                                   filename = "___DATA_DIR___/example-16.utf16";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "___DATA_DIR___/examples/languages-stretched-32.utf16";
+        else                                   filename = "___DATA_DIR___/examples/languages.utf16";
     }
     else {
         printf("Coding %s not supported, use --hwut-info;\n", Choice);
