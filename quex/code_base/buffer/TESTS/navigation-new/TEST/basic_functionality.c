@@ -26,8 +26,9 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
 {
     int  i;
     QUEX_TYPE_STREAM_POSITION position = 0;
+    QUEX_TYPE_STREAM_POSITION previous = 0;
     QUEX_TYPE_STREAM_POSITION position_limit;
-    QUEX_TYPE_STREAM_POSITION previous;
+    QUEX_TYPE_STREAM_POSITION random_value = 1234567890;
 
     __quex_assert( ! QUEX_NAME(Buffer_is_empty)(me));
 
@@ -42,16 +43,20 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
 
     for(i=0; i < 65536 ; ++i) {
         /* Choose a position from 0 to size + 3. Choose a position beyond the
-         * possible maximum, so that the error handling check is included.   */
-        previous = position;
-        position = ((position + i) * 997) % (position_limit + 3);
+         * possible maximum, so that the error handling check is included.   
+         * 13  = largest prime < 2**4;
+         * 251 = largest prime < 2**8; 65521 = largest prime < 2**32;        */
+        random_value = hwut_random_next(random_value);
+        previous     = position;
+        position     = random_value % (position_limit + 3);
+        (void)previous;
 
 #       if 1
-        printf("%i %i\n", (int)position, (int)(position - previous));     
+        printf("%i %i # stats\n", (int)position, (int)(position - previous));     
 #       endif
         /* Investigate with gnuplot:
          * > hist(x,width)=width*floor(x/width)
-         * > gnuplot> plot "tmp.dat" u (hist($2,1)):(1.0) smooth freq w boxes
+         * > plot "tmp.dat" u (hist($2,1)):(1.0) smooth freq w boxes
          *   $1: histogram of position; 
          *   $2: historgram of differences.                                  */
         (void)previous;
@@ -60,7 +65,11 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
         QUEX_NAME(Buffer_seek)(me, position);
 
         /* TELL */
-        if( position <= position_limit ) {
+        if( position < position_limit ) {
+#           if 0
+            printf("position: %i/%i; tell: %i;\n",
+                   (int)position, (int)position_limit, (int)QUEX_NAME(Buffer_tell)(me));
+#           endif
             hwut_verify(position == QUEX_NAME(Buffer_tell)(me));
         }
 
@@ -90,7 +99,9 @@ verify_content(QUEX_NAME(Buffer)* me,
         hwut_verify(*me->_read_p == reference[Position]);
     }
     else if( ! ContentSize) {
-        hwut_verify(Position == PositionLimit);
+        hwut_verify(Position >= PositionLimit);
+        /* printf("ContentSize: 0; Position: %i; PositionLimit: %i;\n",
+         *      (int)Position, (int)PositionLimit);                      */
         return true;
     }
 
@@ -132,31 +143,36 @@ print_difference(QUEX_NAME(Buffer)* me)
             break;
         }
     }
+
+    printf("ci_begin: %i; ci_end: %i; ci_diff: %i;\n",
+           (int)ci_begin, (int)ci_end, (int)ci_diff);
     if( ci_diff == (QUEX_TYPE_STREAM_POSITION)-1 ) {
-        printf("ci_begin: %i; ci_end: %i; ci_diff: %i;\n",
-               (int)ci_begin, (int)ci_end, (int)ci_diff);
         printf("memcmp reported difference but not difference was found.\n");
         hwut_verify(false);
     }
 
     /* Determine range to be printed.                                        */
     ci_print_begin = QUEX_MAX(ci_begin, ci_diff - 10);
-    ci_print_end   = QUEX_MIN(ci_end,   ci_diff + 10);
+    ci_print_end   = QUEX_MIN(ci_end,   ci_diff + 11);
 
     /* Print.                                                                */
+    printf("ci:         ");
+    FOR_RANGE(ci, ci_print_begin, ci_print_end) {
+        printf("%4i.", (int)ci);
+    }
+    printf("\n");
+    printf("difference: ");
     FOR_RANGE(ci, ci_print_begin, ci_print_end) {
         if( difference(me, ci) ) printf("!!!!!");
         else                     printf("     ");
     }
     printf("\n");
-    FOR_RANGE(ci, ci_print_begin, ci_print_end) {
-        printf("%4i.", (int)ci);
-    }
-    printf("\n");
+    printf("buffer:     ");
     FOR_RANGE(ci, ci_print_begin, ci_print_end) {
         printf("%4x.", (int)me->_memory._front[1 + ci - ci_begin]);
     }
     printf("\n");
+    printf("reference:  ");
     FOR_RANGE(ci, ci_print_begin, ci_print_end) {
         printf("%4x.", (int)reference[ci]);
     }
@@ -193,6 +209,7 @@ reference_load(const char* FileName)
  * so that it may be used to compare against actually loaded results.        */
 {
     FILE*      fh;
+    size_t     loaded_n;
 
     fh = fopen(FileName, "rb");
    
@@ -202,7 +219,9 @@ reference_load(const char* FileName)
         return false;
     }
 
-    return fread(&reference[0], 1, sizeof(reference), fh);
+    loaded_n = fread(&reference[0], 1, sizeof(reference), fh);
+    fclose(fh);
+    return loaded_n;
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

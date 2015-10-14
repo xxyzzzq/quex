@@ -165,7 +165,8 @@ QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alt
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
     __quex_assert(me->base.byte_loader); 
-    QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
+    /* NOT: QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
+     * The buffer must remain intact, in case that not all is loaded.        */
 
     loaded_byte_n = me->base.byte_loader->load(me->base.byte_loader, 
                                                RegionBeginP, 

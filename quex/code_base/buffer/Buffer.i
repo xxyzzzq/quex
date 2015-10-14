@@ -479,13 +479,13 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     /* Move existing content in the buffer to appropriate position.          */
     move_distance = NewCharacterIndexBegin - character_index_begin;
     if( move_distance < ContentSize ) {
-        move_size = TextEndP - &BeginP[move_distance];
-        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], move_size);
+        move_size            = TextEndP - &BeginP[move_distance];
         load_character_index = NewCharacterIndexBegin + move_size;
         load_request_n       = ContentSize - move_size;  /* Try to load max. */
         load_p               = &BeginP[move_size];
     }
     else {
+        move_size            = 0;
         load_character_index = NewCharacterIndexBegin;
         load_request_n       = ContentSize;              /* Try to load max. */
         load_p               = BeginP;
@@ -493,6 +493,13 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
 
     loaded_n = QUEX_NAME(BufferFiller_region_load)(me, load_p, load_request_n,
                                                    load_character_index);
+    if( ! loaded_n ) return false;
+
+    if( move_size ) {
+        /* Only move content, if actually new content is loaded. Else, moving 
+         * is meaningless and leaves a completely empty buffer.              */
+        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], move_size);
+    }
 
     /* Adapt 'end_p' and 'end_character_index'.
      * Allrequested character loaded => buffer filled to the limit.          */

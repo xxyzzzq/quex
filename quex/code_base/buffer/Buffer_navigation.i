@@ -86,7 +86,11 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     else {
         /* Character index at read_p = character index at begin + offset     */
         new_character_index_begin = QUEX_MAX(0, target - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-        QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin);
+        if( ! QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin) ) {
+            /* _read_p remains same.                                         */
+            me->_lexeme_start_p = me->_read_p;
+            return false;
+        }
 
         me->_read_p = &BeginP[target - new_character_index_begin];
     }
