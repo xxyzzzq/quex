@@ -146,7 +146,8 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
     QUEX_ASSERT_BUFFER_INFO(raw);
-    QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
+    /* NOT: QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
+     * The buffer must remain intact, in case that not all is loaded.        */
 
     /* Some converters keep some content internally. So, it is a more general
      * solution to convert first and reload new bytes upon need.             */

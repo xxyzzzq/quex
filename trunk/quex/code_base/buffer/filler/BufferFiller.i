@@ -207,8 +207,10 @@ QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)* buffer)
         new_character_index_begin = QUEX_MIN(character_index_read_p, character_index_lexeme_p);
         new_character_index_begin = QUEX_MAX(0, new_character_index_begin - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
     }
-    if( ! QUEX_NAME(Buffer_move_and_fill_forward)(buffer, new_character_index_begin) )
+    if( ! QUEX_NAME(Buffer_move_and_fill_forward)(buffer, new_character_index_begin) ) {
+        /* Whole buffer state remains the same.                              */
         return false;
+    }
 
     buffer->_read_p         = &BeginP[character_index_read_p   - new_character_index_begin];
     buffer->_lexeme_start_p = &BeginP[character_index_lexeme_p - new_character_index_begin];
@@ -361,22 +363,16 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     QUEX_NAME(BufferFiller)*   me     = buffer->filler;
     QUEX_TYPE_CHARACTER*       BeginP = &buffer->_memory._front[1];
     QUEX_TYPE_CHARACTER*       EndP   = buffer->_memory._back;
-    ptrdiff_t                  ContentSize = QUEX_NAME(Buffer_content_size)(buffer);
     ptrdiff_t                  loaded_n;
     /* Character index of the begin of the next load.                        */
     QUEX_TYPE_STREAM_POSITION  input_character_index_before;
     QUEX_TYPE_STREAM_POSITION  input_character_index_after;
-    QUEX_TYPE_CHARACTER*       end_p;
-    /* Character indices at the begin and end of the buffer's content.       */
-    QUEX_TYPE_STREAM_POSITION  end_character_index;
-    QUEX_TYPE_STREAM_POSITION  new_begin_character_index;
 
     (void)EndP;
     __quex_assert(RegionBeginP >= BeginP);
     __quex_assert(RegionBeginP < EndP);
     __quex_assert(RegionBeginP + RequiredLoadN <= EndP);
     __quex_assert(RegionBeginP - BeginP <= StartCharacterIndex);
-    new_begin_character_index = StartCharacterIndex - (RegionBeginP - BeginP);
 
     /* Seek to the position where loading shall start.                       */
     if( ! me->derived_input_character_seek(me, StartCharacterIndex) ) {
