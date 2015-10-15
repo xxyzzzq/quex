@@ -45,7 +45,7 @@ test_file(const char* FileStem)
     FILE*                     fh          = fopen(file_name, "rb"); 
     ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
     QUEX_NAME(BufferFiller)*  filler      = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
-    const size_t              MemorySize  = 5;
+    const size_t              MemorySize  = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
 
     if( ! fh ) {
