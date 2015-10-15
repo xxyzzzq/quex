@@ -483,6 +483,8 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         load_character_index = NewCharacterIndexBegin + move_size;
         load_request_n       = ContentSize - move_size;  /* Try to load max. */
         load_p               = &BeginP[move_size];
+        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
+                           move_size * sizeof(QUEX_TYPE_CHARACTER));
     }
     else {
         move_size            = 0;
@@ -493,13 +495,21 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
 
     loaded_n = QUEX_NAME(BufferFiller_region_load)(me, load_p, load_request_n,
                                                    load_character_index);
-    if( ! loaded_n ) return false;
-
-    if( move_size ) {
-        /* Only move content, if actually new content is loaded. Else, moving 
-         * is meaningless and leaves a completely empty buffer.              */
-        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], move_size);
+    if( ! loaded_n ) {
+        if( move_size ) {
+            /* Nothing has been loaded => Buffer must be setup as before.    */
+            __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
+                               move_size * sizeof(QUEX_TYPE_CHARACTER));
+            loaded_n = QUEX_NAME(BufferFiller_region_load)(me, BeginP, move_size,
+                                                           character_index_begin);
+            if( loaded_n != move_size ) {
+                QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
+                return false;
+            }
+        }
+        return false;
     }
+
 
     /* Adapt 'end_p' and 'end_character_index'.
      * Allrequested character loaded => buffer filled to the limit.          */
@@ -549,7 +559,8 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
     move_distance = character_index_begin - NewCharacterIndexBegin;
     if( move_distance < ContentSize ) {
         move_size = QUEX_MAX(0, QUEX_MIN(TextEndP - BeginP, ContentSize - move_distance));
-        __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, move_size);
+        __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
+                           move_size * sizeof(QUEX_TYPE_CHARACTER));
         load_request_n = move_distance;
     }
     else {
@@ -560,6 +571,7 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
                                                    NewCharacterIndexBegin);
     if( loaded_n != load_request_n ) {
         QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
+        return false;
     }
 
     /* Adapt 'end_p' and 'end_character_index'.                          */

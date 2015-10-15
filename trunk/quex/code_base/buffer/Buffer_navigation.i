@@ -61,7 +61,10 @@ QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER
 QUEX_INLINE bool  
 QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN)
 /* Move '_read_p' forwards by 'CharacterN'. This may involve reload in 
- * forward direction.                                                     
+ * forward direction. 
+ *
+ * Seeking error => Buffer is completely left as is. In particular no change
+ *                  to '_read_p' or '_lexeme_start_p'. 
  * 
  * RETURNS: True -- if positioning was successful,
  *          False -- else.                                                   */
@@ -81,14 +84,12 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
         /* => &me->_read_p[-1] inside buffer.                                */
     }
     else if( me->input.end_p ) {
-        me->_read_p = me->input.end_p;                              /* Error */
+        return false;
     }
     else {
         /* Character index at read_p = character index at begin + offset     */
         new_character_index_begin = QUEX_MAX(0, target - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         if( ! QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin) ) {
-            /* _read_p remains same.                                         */
-            me->_lexeme_start_p = me->_read_p;
             return false;
         }
 
@@ -104,6 +105,9 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
                                 const ptrdiff_t    CharacterN)
 /* Move '_read_p' backwards by 'CharacterN'. This may involve reload in
  * backward direction.                                                   
+ *
+ * Seeking error => Buffer is completely left as is. In particular no change
+ *                  to '_read_p' or '_lexeme_start_p'. 
  * 
  * RETURNS: True -- if positioning was successful, 
  *          False -- else.                                                   */

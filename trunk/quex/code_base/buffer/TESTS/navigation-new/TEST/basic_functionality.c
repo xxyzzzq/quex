@@ -31,6 +31,15 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
     QUEX_TYPE_STREAM_POSITION random_value = 1234567890;
 
     __quex_assert( ! QUEX_NAME(Buffer_is_empty)(me));
+    printf("##  Investigate statistics with gnuplot:\n"
+           "##  In 'basic_functionality.c'; change line '#if 0' --> '#if 1'\n"
+           "##  => redirect to file, e.g. 'tmp.dat'\n"
+           "##  => gnuplot\n"
+           "##     > hist(x,width)=width*floor(x/width)\n"
+           "##     > set boxwith 1\n"
+           "##     > plot \"tmp.dat\" u (hist($2,1)):(1.0) smooth freq w boxes\n"
+           "##     use: $1: histogram of position; \n"
+           "##     use: $2: historgram of differences.\n");
 
     /* position_limit = number of characters in the file, i.e. the number of
      * raw unicode characters in the reference file.                         */
@@ -49,16 +58,10 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
         random_value = hwut_random_next(random_value);
         previous     = position;
         position     = random_value % (position_limit + 3);
-        (void)previous;
 
-#       if 1
+#       if 0
         printf("%i %i # stats\n", (int)position, (int)(position - previous));     
 #       endif
-        /* Investigate with gnuplot:
-         * > hist(x,width)=width*floor(x/width)
-         * > plot "tmp.dat" u (hist($2,1)):(1.0) smooth freq w boxes
-         *   $1: histogram of position; 
-         *   $2: historgram of differences.                                  */
         (void)previous;
 
         /* SEEK */
@@ -76,8 +79,8 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
         /* LOAD */
         if( ! verify_content(me, position, position_limit) ) return false;
     }
-    printf("# <terminated: sub-tests: %i; checksum: %i; position_limit: %i>\n",
-           (int)i, (int)position, (int)position_limit);
+    printf("# <terminated: reference-file: %s; sub-tests: %i; checksum: %i; position_limit: %i>\n",
+           ReferenceFileName, (int)i, (int)position, (int)position_limit);
     return true;
 }
 
@@ -96,7 +99,16 @@ verify_content(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(me);
 
     if( Position < PositionLimit ) {
-        hwut_verify(*me->_read_p == reference[Position]);
+        if( *me->_read_p != reference[Position] ) {
+            printf("ERROR: read_p: %p; begin: %p; end: %p;\n"
+                   "ERROR: position: %i; position_limit: %i;\n"
+                   "ERROR: *_read_p: %04X; *reference[Position]: %04X;\n",
+                   me->_read_p, &me->_memory._front[1], me->_memory._back, 
+                   (int)Position, (int)PositionLimit,
+                   (int)*(me->_read_p), (int)reference[Position]);
+            print_difference(me);
+            hwut_verify(false);
+        }
     }
     else if( ! ContentSize) {
         hwut_verify(Position >= PositionLimit);
@@ -209,7 +221,7 @@ reference_load(const char* FileName)
  * so that it may be used to compare against actually loaded results.        */
 {
     FILE*      fh;
-    size_t     loaded_n;
+    size_t     loaded_byte_n;
 
     fh = fopen(FileName, "rb");
    
@@ -219,9 +231,9 @@ reference_load(const char* FileName)
         return false;
     }
 
-    loaded_n = fread(&reference[0], 1, sizeof(reference), fh);
+    loaded_byte_n = fread(&reference[0], 1, sizeof(reference), fh);
     fclose(fh);
-    return loaded_n;
+    return loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

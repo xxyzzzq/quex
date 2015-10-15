@@ -31,7 +31,7 @@ QUEX_INLINE bool
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)* alter_ego,
+QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)* alter_ego,
                                                    QUEX_TYPE_CHARACTER*     RegionBeginP, 
                                                    const size_t             N);
 
@@ -68,7 +68,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_tell_character_index),
                                   QUEX_NAME(BufferFiller_Plain_seek_character_index), 
-                                  QUEX_NAME(BufferFiller_Plain_input_character_read),
+                                  QUEX_NAME(BufferFiller_Plain_input_character_load),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
@@ -117,46 +117,61 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
  * RETURNS: true upon success, false else.                                   */
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
+    QUEX_TYPE_STREAM_POSITION      backup_byte_pos;
     QUEX_TYPE_STREAM_POSITION      target_byte_pos;
+    QUEX_TYPE_STREAM_POSITION      backup_next_to_load_character_index;
 
-    __quex_assert(alter_ego); 
-    __quex_assert(me->base.byte_loader); 
+    if( me->next_to_load_character_index == CharacterIndex ) return true;
 
-    if( me->next_to_load_character_index == CharacterIndex ) {
-        return true;
-    }
-    else if( me->base.byte_loader->binary_mode_f ) {
-        target_byte_pos = (long)( ((size_t)CharacterIndex) * sizeof(QUEX_TYPE_CHARACTER));
+    backup_byte_pos = me->base.byte_loader->tell(me->base.byte_loader);
+    
+    if( me->base.byte_loader->binary_mode_f ) {
+        target_byte_pos =   CharacterIndex * sizeof(QUEX_TYPE_CHARACTER)
+                          + me->base.byte_loader->initial_position;
 
         me->base.byte_loader->seek(me->base.byte_loader, target_byte_pos);
         if( me->base.byte_loader->tell(me->base.byte_loader) != target_byte_pos ) {
+            me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
             return false;
         }
-        me->next_to_load_character_index = target_byte_pos;
+        me->next_to_load_character_index =   (target_byte_pos - me->base.byte_loader->initial_position)
+                                           / sizeof(QUEX_TYPE_CHARACTER);
         return true;
     }
-    else {
-        /* Start at known position; step until 'CharacterIndex' is reached.  */
-        target_byte_pos = me->base.byte_loader->initial_position;
-        me->base.byte_loader->seek(me->base.byte_loader, target_byte_pos);
-        if( me->base.byte_loader->tell(me->base.byte_loader) != target_byte_pos ) {
-            return false;
-        }
-        me->next_to_load_character_index = 0;
-        /* 'step_forward' calls 'BufferFiller_Plain_input_character_read()' 
-         * which increments 'next_to_load_character_index'.                  */
-        if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
-                                                                (ptrdiff_t)CharacterIndex) ) {
-            return false;
-        }
-        return true;
+
+    /* Start at known position; step until 'CharacterIndex' is reached.  */
+    me->base.byte_loader->seek(me->base.byte_loader, 
+                               me->base.byte_loader->initial_position);
+    if(    me->base.byte_loader->tell(me->base.byte_loader) 
+        != me->base.byte_loader->initial_position ) {
+        me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
+        return false;
     }
+
+    backup_next_to_load_character_index = me->next_to_load_character_index;
+    me->next_to_load_character_index    = 0;
+    /* 'step_forward' calls 'BufferFiller_Plain_input_character_load()' 
+     * which increments 'next_to_load_character_index'.                  */
+    if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
+                                                            (ptrdiff_t)CharacterIndex) ) {
+        me->next_to_load_character_index = backup_next_to_load_character_index;
+        me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
+        return false;
+    }
+    return true;
 }
 
 QUEX_INLINE size_t   
-QUEX_NAME(BufferFiller_Plain_input_character_read)(QUEX_NAME(BufferFiller)*  alter_ego,
+QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                    QUEX_TYPE_CHARACTER*      RegionBeginP, 
                                                    const size_t              N)  
+/* Loads content into a region of memory. Does NOT effect any of the buffer's
+ * variables. 
+ *
+ * AFFECTS: 'filler->next_to_load_character_index'. 
+ *          => may be used to seek through non-linear input streams.
+ *
+ * RETURNS: Number of loaded characters into the given region.               */
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
     size_t                         loaded_byte_n = (size_t)-1;

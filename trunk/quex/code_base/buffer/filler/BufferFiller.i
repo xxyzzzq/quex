@@ -435,12 +435,13 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
     for(remaining_character_n = (size_t)ForwardN; remaining_character_n > ChunkSize; 
         remaining_character_n -= ChunkSize ) {
         if( me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
-            __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
             return false;
         }
     }
     if( remaining_character_n ) {
-        me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
+        if( remaining_character_n > me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n) ) {
+            return false;
+        }
     }
    
     __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
