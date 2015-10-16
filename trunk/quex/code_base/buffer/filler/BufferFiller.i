@@ -10,6 +10,9 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
+                       QUEX_NAME(BufferFiller_character_index_tell)(QUEX_NAME(BufferFiller)* me);
+
 QUEX_INLINE void*      QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)* buffer, 
                                                     const void*        ContentBegin, 
                                                     const void*        ContentEnd);
@@ -94,8 +97,6 @@ QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
 
 QUEX_INLINE void    
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
-                              QUEX_TYPE_STREAM_POSITION    
-                                           (*derived_input_character_tell)(QUEX_NAME(BufferFiller)*),
                               bool         (*derived_input_character_seek)(QUEX_NAME(BufferFiller)*, 
                                                                            const QUEX_TYPE_STREAM_POSITION),
                               size_t       (*derived_input_character_load)(QUEX_NAME(BufferFiller)*,
@@ -112,12 +113,11 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
 {
     __quex_assert(me);
     __quex_assert(derived_input_character_seek);
-    __quex_assert(derived_input_character_seek);
     __quex_assert(derived_input_character_load);
     __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
-    me->derived_input_character_tell = derived_input_character_tell;
+    me->input_character_tell         = QUEX_NAME(BufferFiller_character_index_tell);
     me->derived_input_character_seek = derived_input_character_seek;
     me->derived_input_character_load = derived_input_character_load;
     me->delete_self                  = derived_delete_self;
@@ -134,6 +134,8 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->byte_loader          = byte_loader;
 
     me->_byte_order_reversion_active_f = false;
+
+    me->character_index_next_to_fill = 0;
 
     /* Default: External ownership                                           */
     me->ownership = E_Ownership_EXTERNAL;
@@ -279,6 +281,12 @@ QUEX_NAME(BufferFiller_load_backward)(QUEX_NAME(Buffer)* buffer)
     return true;
 }
 
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
+QUEX_NAME(BufferFiller_character_index_tell)(QUEX_NAME(BufferFiller)* me)
+{
+    return me->character_index_next_to_fill;
+}
+
 QUEX_INLINE void*
 QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)*  buffer, 
                              const void*         ContentBegin,
@@ -378,7 +386,7 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     if( ! me->derived_input_character_seek(me, StartCharacterIndex) ) {
         return 0;
     }
-    input_character_index_before = me->derived_input_character_tell(me);
+    input_character_index_before = me->input_character_tell(me);
     if( input_character_index_before != StartCharacterIndex) {
         return 0;
     }
@@ -388,7 +396,7 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
                                                 (size_t)RequiredLoadN);
     __quex_assert(loaded_n <= RequiredLoadN);
 
-    input_character_index_after = me->derived_input_character_tell(me);
+    input_character_index_after = me->input_character_tell(me);
 
     if(    input_character_index_after - input_character_index_before 
         != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
@@ -414,7 +422,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
  *           about what character index is located at what position may help
  *           to increase speed.                                              */      
 { 
-    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->derived_input_character_tell(me) 
+    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->input_character_tell(me) 
                                                   + (QUEX_TYPE_STREAM_POSITION)ForwardN;
     /* START: Current position: 'CharacterIndex - remaining_character_n'.
      * LOOP:  It remains to interpret 'remaining_character_n' number of 
@@ -429,7 +437,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
 
     /* We CANNOT assume that end the end it will hold: 
      *
-     *       __quex_assert(me->derived_input_character_tell(me) == TargetIndex);
+     *       __quex_assert(me->input_character_tell(me) == TargetIndex);
      *
      * Because, its unknown wether the stream has enough characters.         */
     for(remaining_character_n = (size_t)ForwardN; remaining_character_n > ChunkSize; 
@@ -444,7 +452,7 @@ QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
         }
     }
    
-    __quex_assert(me->derived_input_character_tell(me) <= TargetIndex);
+    __quex_assert(me->input_character_tell(me) <= TargetIndex);
     return true;
 }
 

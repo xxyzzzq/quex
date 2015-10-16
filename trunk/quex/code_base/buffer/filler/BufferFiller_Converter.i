@@ -24,9 +24,6 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
-QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
-
 QUEX_INLINE bool   
 QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                        const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
@@ -86,7 +83,6 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
     uint8_t* raw_memory;
 
     QUEX_NAME(BufferFiller_setup)(&me->base,
-                                  QUEX_NAME(BufferFiller_Converter_tell_character_index),
                                   QUEX_NAME(BufferFiller_Converter_seek_character_index), 
                                   QUEX_NAME(BufferFiller_Converter_input_character_load),
                                   QUEX_NAME(BufferFiller_Converter_delete_self),
@@ -139,7 +135,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
     QUEX_TYPE_CHARACTER*               buffer_insertion_p    = RegionBeginP;
     const QUEX_TYPE_CHARACTER*         BufferEnd             = &RegionBeginP[N];
-    const QUEX_TYPE_STREAM_POSITION    begin_character_index = raw->next_to_convert_character_index;
+    const QUEX_TYPE_STREAM_POSITION    begin_character_index = alter_ego->character_index_next_to_fill;
     ptrdiff_t                          converted_character_n;
 
     __quex_assert(me->converter);
@@ -179,7 +175,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     converted_character_n = buffer_insertion_p - RegionBeginP;
     /* 'raw->next_to_convert_p' was updated by 'convert()'; and points behind
      * the last byte that was converted.                                     */ 
-    raw->next_to_convert_character_index =  begin_character_index 
+    alter_ego->character_index_next_to_fill =  begin_character_index 
                                           + converted_character_n;
 
     if( converted_character_n != (ptrdiff_t)N ) {
@@ -188,14 +184,6 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
         QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferEnd);
     }
     return (size_t)converted_character_n;
-}
-
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
-QUEX_NAME(BufferFiller_Converter_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego)
-{ 
-    QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-
-    return me->raw_buffer.next_to_convert_character_index; 
 }
 
 QUEX_INLINE bool   
@@ -224,7 +212,7 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
     QUEX_ASSERT_BUFFER_INFO(raw);
 
     if( me->byte_loader )                                             return false;
-    else if( CharacterIndex == raw->next_to_convert_character_index ) return true;
+    else if( CharacterIndex == alter_ego->character_index_next_to_fill ) return true;
 
     /* Some converters (e.g. IBM's ICU) require to reset their state when 
      * conversion is discontinued,                                           */
@@ -247,7 +235,7 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
         
         /* next_to_convert_p == fill_end_p => trigger reload                 */
         raw->next_to_convert_p               = raw->fill_end_p;
-        raw->next_to_convert_character_index = CharacterIndex;
+        alter_ego->character_index_next_to_fill = CharacterIndex;
     } 
     else  { 
         /* Characters may occupy different amount of bytes. 
@@ -261,7 +249,7 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
         raw->fill_end_p                      = raw->begin;                   
         /* next_to_convert_p == fill_end_p => trigger reload                 */
         raw->next_to_convert_p               = raw->fill_end_p;
-        raw->next_to_convert_character_index = 0;
+        alter_ego->character_index_next_to_fill = 0;
         if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
                                                                 (ptrdiff_t)CharacterIndex) ) {
             return false;
@@ -381,7 +369,6 @@ QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me,
     me->memory_end                      = &Begin[(ptrdiff_t)SizeInBytes];
     /* next_to_convert_p == fill_end_p --> trigger reload                    */
     me->next_to_convert_p               = me->fill_end_p;
-    me->next_to_convert_character_index = 0;
 
     QUEX_IF_ASSERTS_poison(me->begin, me->memory_end);
 }

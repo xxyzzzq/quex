@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)QUEX_NAME(Buffer_input_begin_character_index)(buffer));
-        __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->derived_input_character_tell(me));
+        __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->input_character_tell(me));
         if( buffer->input.end_p == 0x0 )
             __QUEX_STD_printf("_memory.input.end_p (offset)  = <0x0>\n");
         else

@@ -24,9 +24,6 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)*, ByteLoad
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
-QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego);
-
 QUEX_INLINE bool   
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
@@ -66,7 +63,6 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                         ByteLoader*                    byte_loader)
 {
     QUEX_NAME(BufferFiller_setup)(&me->base,
-                                  QUEX_NAME(BufferFiller_Plain_tell_character_index),
                                   QUEX_NAME(BufferFiller_Plain_seek_character_index), 
                                   QUEX_NAME(BufferFiller_Plain_input_character_load),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
@@ -75,7 +71,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                   byte_loader);
 
 #   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-    me->next_to_load_character_index = 0;
+    me->base.character_index_next_to_fill = 0;
 #   endif
 }
 
@@ -88,29 +84,13 @@ QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
 
 }
 
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
-QUEX_NAME(BufferFiller_Plain_tell_character_index)(QUEX_NAME(BufferFiller)* alter_ego) 
-{ 
-   /* The type cast is necessary, since the function signature needs to 
-    * work with the first argument being of base class type. */
-   QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-
-   __quex_assert(alter_ego); 
-   __quex_assert(me->base.byte_loader); 
-
-   /* Ensure, that the stream position is only influenced by
-    *    __input_character_read(...) 
-    *    __seek_character_index(...)                                             */
-   return me->next_to_load_character_index;
-}
-
 QUEX_INLINE bool 
 QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*         alter_ego, 
                                                    const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 
 /* BufferFiller's seek sets the input position for the next character load in
  * the stream. That is, it adapts:
  *
- *     'next_to_convert_character_index = CharacterIndex' 
+ *     'character_index_next_to_fill = CharacterIndex' 
  *
  * and the byte loader is brought into a position so that this will happen.  
  *
@@ -119,9 +99,9 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
     QUEX_TYPE_STREAM_POSITION      backup_byte_pos;
     QUEX_TYPE_STREAM_POSITION      target_byte_pos;
-    QUEX_TYPE_STREAM_POSITION      backup_next_to_load_character_index;
+    QUEX_TYPE_STREAM_POSITION      backup_character_index_next_to_fill;
 
-    if( me->next_to_load_character_index == CharacterIndex ) return true;
+    if( me->base.character_index_next_to_fill == CharacterIndex ) return true;
 
     backup_byte_pos = me->base.byte_loader->tell(me->base.byte_loader);
     
@@ -134,30 +114,31 @@ QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*     
             me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
             return false;
         }
-        me->next_to_load_character_index =   (target_byte_pos - me->base.byte_loader->initial_position)
-                                           / sizeof(QUEX_TYPE_CHARACTER);
-        return true;
+        me->base.character_index_next_to_fill =   (target_byte_pos - me->base.byte_loader->initial_position)
+                                                / sizeof(QUEX_TYPE_CHARACTER);
     }
+    else {
+        /* Start at known position; step until 'CharacterIndex' is reached.  */
+        me->base.byte_loader->seek(me->base.byte_loader, 
+                                   me->base.byte_loader->initial_position);
+        if(    me->base.byte_loader->tell(me->base.byte_loader) 
+               != me->base.byte_loader->initial_position ) {
+            me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
+            return false;
+        }
 
-    /* Start at known position; step until 'CharacterIndex' is reached.  */
-    me->base.byte_loader->seek(me->base.byte_loader, 
-                               me->base.byte_loader->initial_position);
-    if(    me->base.byte_loader->tell(me->base.byte_loader) 
-        != me->base.byte_loader->initial_position ) {
-        me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
-        return false;
+        backup_character_index_next_to_fill = me->base.character_index_next_to_fill;
+        me->base.character_index_next_to_fill    = 0;
+        /* 'step_forward' calls 'BufferFiller_Plain_input_character_load()' 
+         * which increments 'base.character_index_next_to_fill'.                  */
+        if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
+                                                                (ptrdiff_t)CharacterIndex) ) {
+            me->base.character_index_next_to_fill = backup_character_index_next_to_fill;
+            me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
+            return false;
+        }
     }
-
-    backup_next_to_load_character_index = me->next_to_load_character_index;
-    me->next_to_load_character_index    = 0;
-    /* 'step_forward' calls 'BufferFiller_Plain_input_character_load()' 
-     * which increments 'next_to_load_character_index'.                  */
-    if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(alter_ego,
-                                                            (ptrdiff_t)CharacterIndex) ) {
-        me->next_to_load_character_index = backup_next_to_load_character_index;
-        me->base.byte_loader->seek(me->base.byte_loader, backup_byte_pos);
-        return false;
-    }
+    __quex_assert(me->base.character_index_next_to_fill == CharacterIndex);
     return true;
 }
 
@@ -168,7 +149,7 @@ QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alt
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
  * variables. 
  *
- * AFFECTS: 'filler->next_to_load_character_index'. 
+ * AFFECTS: 'filler->base.character_index_next_to_fill'. 
  *          => may be used to seek through non-linear input streams.
  *
  * RETURNS: Number of loaded characters into the given region.               */
@@ -192,7 +173,7 @@ QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alt
     }
     loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 
-    me->next_to_load_character_index += loaded_n;
+    me->base.character_index_next_to_fill += loaded_n;
 
     return loaded_n;
 }

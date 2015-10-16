@@ -55,7 +55,7 @@ main(int argc, char** argv)
 
         filler->derived_input_character_seek(filler, i);
 
-        assert(filler->derived_input_character_tell(filler) == i);
+        assert(filler->input_character_tell(filler) == i);
 
         loaded_n = filler->derived_input_character_load(filler, 
                                                         (QUEX_TYPE_CHARACTER*)memory, 
