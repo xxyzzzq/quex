@@ -112,7 +112,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         uint8_t*                  memory_end;
        
         uint8_t*                  next_to_convert_p;
-        QUEX_TYPE_STREAM_POSITION next_to_convert_character_index;
 
     } QUEX_NAME(RawBuffer);
 

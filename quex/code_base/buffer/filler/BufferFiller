@@ -55,7 +55,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          * This corresponds   to the character index of the last character that
          * is currently in the buffer.                                       */
         QUEX_TYPE_STREAM_POSITION   
-                    (*derived_input_character_tell)(struct QUEX_NAME(BufferFiller_tag)*);
+                    (*input_character_tell)(struct QUEX_NAME(BufferFiller_tag)*);
 
         /* -- 'Seek' sets the input position for the next buffer-read-action.
          * NOTE: This differs from Buffer_seek(...) in the sense, that it only
@@ -99,6 +99,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *        disable the reversion of byte order.                       */
         bool      _byte_order_reversion_active_f;
 
+        QUEX_TYPE_STREAM_POSITION character_index_next_to_fill;
     } QUEX_NAME(BufferFiller);
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
@@ -111,8 +112,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                         const char*   CharacterEncodingName);
     QUEX_INLINE void    
     QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
-                                  QUEX_TYPE_STREAM_POSITION    
-                                               (*tell_character_index)(QUEX_NAME(BufferFiller)*),
                                   bool         (*seek_character_index)(QUEX_NAME(BufferFiller)*, 
                                                                        const QUEX_TYPE_STREAM_POSITION),
                                   size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
