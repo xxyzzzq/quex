@@ -4,8 +4,8 @@
 #include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
-static void test(size_t BPC);
-static void test_file(const char* FileStem);
+static void test(bool BinaryF, size_t BPC);
+static void test_file(bool BinaryF, const char* FileStem);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 int
@@ -15,28 +15,31 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer Tell&Seek: BufferFiller_Plain (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+        printf("CHOICES: binary, stepping;\n"
+               "SAME;\n");
         return 0;
     }
-    test(BPC);
+    hwut_if_choice("binary")   test(true, BPC);
+    hwut_if_choice("stepping") test(false, BPC);
 
     return 0;
 }
 
 QUEX_NAMESPACE_MAIN_OPEN
 static void
-test(size_t BPC)
+test(bool BinaryF, size_t BPC)
 {
     switch( BPC ) {
-    case 4:  test_file("examples/languages");      /* only with UCS4         */
-    case 2:  test_file("examples/small");          /* only with UCS4, UCS2   */
-    case 1:  test_file("examples/festgemauert");   /* with UCS4, UCS2, ASCII */
+    case 4:  test_file(BinaryF, "examples/languages");      /* only with UCS4         */
+    case 2:  test_file(BinaryF, "examples/small");          /* only with UCS4, UCS2   */
+    case 1:  test_file(BinaryF, "examples/festgemauert");   /* with UCS4, UCS2, ASCII */
              break;
     default: hwut_verify(false);
     }
 }
 
 static void
-test_file(const char* FileStem)
+test_file(bool BinaryF, const char* FileStem)
 {
     QUEX_NAME(Buffer)         buffer;
     /* With 'BufferFiller_Plain()' no conversion takes place. Thus, the file
@@ -44,7 +47,7 @@ test_file(const char* FileStem)
     const char*               file_name   = find_reference(FileStem); 
     FILE*                     fh          = fopen(file_name, "rb"); 
     ByteLoader*               byte_loader = ByteLoader_FILE_new(fh);
-    QUEX_NAME(BufferFiller)*  filler      = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+    QUEX_NAME(BufferFiller)*  filler;
     const size_t              MemorySize  = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
 
@@ -53,6 +56,9 @@ test_file(const char* FileStem)
         hwut_verify(false);
     }
 
+    byte_loader->binary_mode_f = BinaryF;
+    filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+
     QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);
 
     /* REFERENCE file and INPUT file are the SAME.                           */
@@ -60,4 +66,5 @@ test_file(const char* FileStem)
 
     filler->delete_self(filler);
 }
+
 QUEX_NAMESPACE_MAIN_CLOSE
