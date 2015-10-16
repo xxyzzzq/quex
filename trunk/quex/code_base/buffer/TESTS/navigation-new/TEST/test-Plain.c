@@ -15,11 +15,11 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer Tell&Seek: BufferFiller_Plain (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-        printf("CHOICES: binary, stepping;\n"
+        printf("CHOICES: linear, stepping;\n"
                "SAME;\n");
         return 0;
     }
-    hwut_if_choice("binary")   test(true, BPC);
+    hwut_if_choice("linear")   test(true, BPC);
     hwut_if_choice("stepping") test(false, BPC);
 
     return 0;
