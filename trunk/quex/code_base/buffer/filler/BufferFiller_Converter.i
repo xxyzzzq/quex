@@ -83,7 +83,6 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
     uint8_t* raw_memory;
 
     QUEX_NAME(BufferFiller_setup)(&me->base,
-                                  QUEX_NAME(BufferFiller_Converter_seek_character_index), 
                                   QUEX_NAME(BufferFiller_Converter_input_character_load),
                                   QUEX_NAME(BufferFiller_Converter_delete_self),
                                   QUEX_NAME(BufferFiller_Converter_fill_prepare),

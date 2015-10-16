@@ -53,7 +53,7 @@ main(int argc, char** argv)
     size_t loaded_n = 0;
     for(ptrdiff_t i=Front; ; i += Delta) {
 
-        filler->derived_input_character_seek(filler, i);
+        filler->input_character_seek(filler, i);
 
         assert(filler->input_character_tell(filler) == i);
 

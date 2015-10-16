@@ -99,7 +99,7 @@ void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)& filler, size_t Posi
     const int            MemorySize = 1; 
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 
-    filler.base.derived_input_character_seek(&filler.base, Position);
+    filler.base.input_character_seek(&filler.base, Position);
     __quex_assert((size_t)filler.raw_buffer.next_to_convert_character_index == Position);
     size_t loaded_n = filler.base.derived_input_character_load(&filler.base, memory, MemorySize);
 
