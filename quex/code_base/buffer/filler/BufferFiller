@@ -68,6 +68,10 @@ QUEX_NAMESPACE_MAIN_OPEN
          * from lexeme start  to lexeme end exceeds the buffer size.         */
         bool        (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
+        /* -- 'Clear' Undo any internal state-dependency. Conversion or what-
+         * soever starts from a clean page.                                  */
+        void        (*input_clear)(struct QUEX_NAME(BufferFiller_tag)*);
+
         /* -- 'Destructor' -- There are derived 'classes' from this one. The
          * user only stores a pointer to BufferFiller, and requires a way to
          * delete the whole object.                                          */ 
@@ -99,6 +103,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         bool      _byte_order_reversion_active_f;
 
         QUEX_TYPE_STREAM_POSITION character_index_next_to_fill;
+        ptrdiff_t    byte_n_per_character;
     } QUEX_NAME(BufferFiller);
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
@@ -113,6 +118,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                   size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                   QUEX_TYPE_CHARACTER*, const size_t),
+                                  void         (*input_clear)(QUEX_NAME(BufferFiller)*),
                                   void         (*delete_self)(QUEX_NAME(BufferFiller)*),
                                   void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
                                                                        void**              begin_p,
@@ -121,7 +127,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                                       QUEX_TYPE_CHARACTER*       BeginP,
                                                                       const QUEX_TYPE_CHARACTER* EndP,
                                                                       const void*                FilledEndP),
-                                  ByteLoader*  byte_loader);
+                                  ByteLoader*  byte_loader, 
+                                  ptrdiff_t    ByteNPerCharacter);
     QUEX_INLINE void    QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
 
     QUEX_INLINE bool    QUEX_NAME(BufferFiller_load_forward)(QUEX_NAME(Buffer)*);

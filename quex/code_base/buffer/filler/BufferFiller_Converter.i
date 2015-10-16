@@ -22,6 +22,9 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
                                             size_t                 RawMemorySize);
 
 QUEX_INLINE void   
+QUEX_NAME(BufferFiller_Converter_input_clear)(QUEX_NAME(BufferFiller)* alter_ego);
+
+QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE bool   
@@ -80,14 +83,23 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
                                             const char*            ToCoding,
                                             size_t                 RawMemorySize)
 {
-    uint8_t* raw_memory;
+    /* A linear relationship between stream position and character index 
+     * requires that: (1) The input stream is in 'binary mode'. That is, the 
+     * stream position is proportional to the number of bytes that lie 
+     * behind. (2) The input codec is of fixed size, i.e. 
+     * converter->byte_n_per_character != -1.                                */ 
+    ptrdiff_t   byte_n_per_character = byte_loader->binary_mode_f ? 
+                                       converter->byte_n_per_character : -1;
+    uint8_t*    raw_memory;
 
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Converter_input_character_load),
+                                  QUEX_NAME(BufferFiller_Converter_input_clear),
                                   QUEX_NAME(BufferFiller_Converter_delete_self),
                                   QUEX_NAME(BufferFiller_Converter_fill_prepare),
                                   QUEX_NAME(BufferFiller_Converter_fill_finish),
-                                  byte_loader);
+                                  byte_loader,
+                                  byte_n_per_character);
 
     /* Initialize the conversion operations                                  */
     me->converter = converter;
@@ -101,6 +113,14 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
     QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_memory, RawMemorySize);
 
     QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+}
+
+QUEX_INLINE void   
+QUEX_NAME(BufferFiller_Converter_input_clear)(QUEX_NAME(BufferFiller)* alter_ego)
+{
+    QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+
+    if( me->converter->input_clear ) me->converter->input_clear(me->converter);
 }
 
 QUEX_INLINE void   
@@ -174,8 +194,8 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     converted_character_n = buffer_insertion_p - RegionBeginP;
     /* 'raw->next_to_convert_p' was updated by 'convert()'; and points behind
      * the last byte that was converted.                                     */ 
-    alter_ego->character_index_next_to_fill =  begin_character_index 
-                                          + converted_character_n;
+    alter_ego->character_index_next_to_fill =   begin_character_index 
+                                              + converted_character_n;
 
     if( converted_character_n != (ptrdiff_t)N ) {
         /* Buffer not filled completely; I.e. END OF FILE has been reached.  */
@@ -215,9 +235,7 @@ QUEX_NAME(BufferFiller_Converter_seek_character_index)(QUEX_NAME(BufferFiller)* 
 
     /* Some converters (e.g. IBM's ICU) require to reset their state when 
      * conversion is discontinued,                                           */
-    if( me->converter->on_conversion_discontinuity ) {
-        me->converter->on_conversion_discontinuity(me->converter);
-    }
+    if( me->converter->input_clear ) me->converter->input_clear(me->converter);
 
     /* Codec => fixed or dynamic character width => two methods of seeking.  */
     if(    me->converter->byte_n_per_character != -1 

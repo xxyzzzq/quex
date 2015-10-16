@@ -21,6 +21,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)*, ByteLoader* byte_loader);
 
+QUEX_INLINE void 
+QUEX_NAME(BufferFiller_Plain_input_clear)(QUEX_NAME(BufferFiller)* alter_ego);
+
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
@@ -62,16 +65,26 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me, 
                                         ByteLoader*                    byte_loader)
 {
+    /* A linear relationship between stream position and character index 
+     * requires that the input stream is in 'binary mode'. That is, the 
+     * stream position is proportional to the number of bytes that lie 
+     * behind.                                                               */
+    ptrdiff_t   byte_n_per_character = byte_loader->binary_mode_f ? 
+                                       sizeof(QUEX_TYPE_CHARACTER) : -1;
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_input_character_load),
+                                  QUEX_NAME(BufferFiller_Plain_input_clear),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
-                                  byte_loader);
+                                  byte_loader,
+                                  byte_n_per_character);
+}
 
-#   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-    me->base.character_index_next_to_fill = 0;
-#   endif
+QUEX_INLINE void 
+QUEX_NAME(BufferFiller_Plain_input_clear)(QUEX_NAME(BufferFiller)* alter_ego) 
+{
+    (void)alter_ego;
 }
 
 QUEX_INLINE void 

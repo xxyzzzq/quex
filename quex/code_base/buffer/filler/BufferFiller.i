@@ -101,6 +101,7 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               size_t       (*derived_input_character_load)(QUEX_NAME(BufferFiller)*,
                                                                            QUEX_TYPE_CHARACTER*, const size_t),
+                              void         (*input_clear)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
                                                                    void**              begin_p,
@@ -109,15 +110,17 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                                                   QUEX_TYPE_CHARACTER*       BeginP,
                                                                   const QUEX_TYPE_CHARACTER* EndP,
                                                                   const void*                FilledEndP),
-                              ByteLoader*  byte_loader)
+                              ByteLoader*  byte_loader,
+                              ptrdiff_t    ByteNPerCharacter)
 {
     __quex_assert(me);
     __quex_assert(derived_input_character_load);
     __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
+    me->input_clear                  = input_clear;
     me->input_character_tell         = QUEX_NAME(BufferFiller_character_index_tell);
-    me->input_character_seek = QUEX_NAME(BufferFiller_character_index_seek);
+    me->input_character_seek         = QUEX_NAME(BufferFiller_character_index_seek);
     me->derived_input_character_load = derived_input_character_load;
     me->delete_self                  = derived_delete_self;
     me->_on_overflow                 = 0x0;
@@ -135,6 +138,8 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->_byte_order_reversion_active_f = false;
 
     me->character_index_next_to_fill = 0;
+    me->byte_n_per_character = ByteNPerCharacter;
+
 
     /* Default: External ownership                                           */
     me->ownership = E_Ownership_EXTERNAL;
@@ -306,9 +311,11 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
     if( me->character_index_next_to_fill == CharacterIndex ) return true;
 
     backup_byte_pos = me->byte_loader->tell(me->byte_loader);
+
+    me->input_clear(me);
     
-    if( me->byte_loader->binary_mode_f ) {
-        target_byte_pos =   CharacterIndex * sizeof(QUEX_TYPE_CHARACTER)
+    if( me->byte_n_per_character != -1 ) {
+        target_byte_pos =   CharacterIndex * me->byte_n_per_character
                           + me->byte_loader->initial_position;
 
         me->byte_loader->seek(me->byte_loader, target_byte_pos);
@@ -316,15 +323,12 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
             me->byte_loader->seek(me->byte_loader, backup_byte_pos);
             return false;
         }
-        me->character_index_next_to_fill =   (target_byte_pos - me->byte_loader->initial_position)
-                                           / sizeof(QUEX_TYPE_CHARACTER);
+        me->character_index_next_to_fill = CharacterIndex;
     }
     else {
         /* Start at known position; step until 'CharacterIndex' is reached.  */
-        me->byte_loader->seek(me->byte_loader, 
-                                   me->byte_loader->initial_position);
-        if(    me->byte_loader->tell(me->byte_loader) 
-               != me->byte_loader->initial_position ) {
+        me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
+        if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
             me->byte_loader->seek(me->byte_loader, backup_byte_pos);
             return false;
         }

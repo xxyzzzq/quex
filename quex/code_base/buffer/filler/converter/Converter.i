@@ -16,12 +16,12 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                                        uint8_t**             source, const uint8_t*             SourceEnd, 
                                        QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
                     void    (*delete_self)(struct QUEX_NAME(Converter_tag)*),
-                    void    (*on_conversion_discontinuity)(struct QUEX_NAME(Converter_tag)*))
+                    void    (*input_clear)(struct QUEX_NAME(Converter_tag)*))
 {
-    me->open                        = open;
-    me->convert                     = convert;
-    me->on_conversion_discontinuity = on_conversion_discontinuity;
-    me->delete_self                 = delete_self;
+    me->open                  = open;
+    me->convert               = convert;
+    me->delete_self           = delete_self;
+    me->input_clear           = input_clear;
 
     me->virginity_f                 = true;
     me->byte_n_per_character        = -1;   /* I.e. no fixed ratio 'byte_n/character' */
