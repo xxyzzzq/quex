@@ -108,8 +108,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->to_handle = ucnv_open(ToCoding, &me->status);
 
         /* Setup the pivot buffer                                            */
-        me->pivot_iterator_begin = me->pivot_buffer;
-        me->pivot_iterator_end   = me->pivot_buffer;
+        me->pivot_iterator_begin = &me->pivot_buffer[0];
+        me->pivot_iterator_end   = &me->pivot_buffer[0];
     }
 
     QUEX_INLINE bool
@@ -119,7 +119,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      QUEX_TYPE_CHARACTER**       drain,  
                                      const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
-        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+        QUEX_NAME(Converter_ICU)* me          = (QUEX_NAME(Converter_ICU)*)alter_ego;
         QUEX_TYPE_CHARACTER*      drain_begin = *drain;
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and 
@@ -142,6 +142,10 @@ QUEX_NAMESPACE_MAIN_OPEN
                        /* reset = */FALSE, 
                        /* flush = */FALSE,
                        &me->status);
+
+        /* Gentle reminder to consider the FAILURE on _seek'  */
+        printf("Bytes stuck inside: %i;\n", 
+               (int)(me->pivot_iterator_end - me->pivot_iterator_begin));
 
         if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
             if( ! me->base.virginity_f ) {
@@ -177,11 +181,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
 
         ucnv_reset(me->from_handle);
-        if( me->to_handle != 0x0 ) ucnv_reset(me->to_handle);
+        if( me->to_handle ) ucnv_reset(me->to_handle);
 
         /* Reset the pivot buffer iterators */
-        me->pivot_iterator_begin = me->pivot_buffer;
-        me->pivot_iterator_end   = me->pivot_buffer;
+        me->pivot_iterator_begin = &me->pivot_buffer[0];
+        me->pivot_iterator_end   = &me->pivot_buffer[0];
 
         me->status = U_ZERO_ERROR;
     }

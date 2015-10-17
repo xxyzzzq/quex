@@ -142,10 +142,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void    QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 
                                                       ByteLoader*              new_byte_loader);
 
-    /* Helper function for buffer fillers trying to deal with strange streams or 
-     * dynamic length character encodings.                                             */
-    QUEX_INLINE bool    QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)*  me,
-                                                                          const ptrdiff_t           ForwardN);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

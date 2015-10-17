@@ -27,9 +27,6 @@ QUEX_NAME(BufferFiller_Plain_input_clear)(QUEX_NAME(BufferFiller)* alter_ego);
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
-QUEX_INLINE bool   
-QUEX_NAME(BufferFiller_Plain_seek_character_index)(QUEX_NAME(BufferFiller)*  alter_ego, 
-                                                   const QUEX_TYPE_STREAM_POSITION  CharacterIndex); 
 QUEX_INLINE size_t 
 QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)* alter_ego,
                                                    QUEX_TYPE_CHARACTER*     RegionBeginP, 
