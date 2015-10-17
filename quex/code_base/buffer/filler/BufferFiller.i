@@ -24,6 +24,9 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_prepare)(QUEX_NAME(Buffer)*  
 QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
                                                            const void*        FilledEndP);
 QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
+
+QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
+                                                                       const QUEX_TYPE_STREAM_POSITION TargetCI);
                        
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
@@ -310,11 +313,14 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
 
     if( me->character_index_next_to_fill == CharacterIndex ) return true;
 
-    backup_byte_pos = me->byte_loader->tell(me->byte_loader);
+    backup_byte_pos                     = me->byte_loader->tell(me->byte_loader);
+    backup_character_index_next_to_fill = me->character_index_next_to_fill;
+    // printf("#backup: [ %i; %i; ]\n", (int)backup_byte_pos, (int)backup_character_index_next_to_fill);
 
-    me->input_clear(me);
     
     if( me->byte_n_per_character != -1 ) {
+        /* LINEAR RELATION between character index and stream position       
+         * (It is not safe to assume that it can be computed)                */
         target_byte_pos =   CharacterIndex * me->byte_n_per_character
                           + me->byte_loader->initial_position;
 
@@ -324,24 +330,29 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
             return false;
         }
         me->character_index_next_to_fill = CharacterIndex;
+        me->input_clear(me);
+        return true;
     }
-    else {
-        /* Start at known position; step until 'CharacterIndex' is reached.  */
+
+    /* STEPPING (WITHOUT COMPUTING) to the input position.                   */
+    if( CharacterIndex < me->character_index_next_to_fill ) {
+        /* Character index lies backward, so stepping needs to start from 
+         * the initial position.                                             */
         me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
         if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
-            me->byte_loader->seek(me->byte_loader, backup_byte_pos);
+            QUEX_ERROR_EXIT("ByteLoader failed to seek to initial position.\n");
             return false;
         }
+        me->character_index_next_to_fill = 0;
+        me->input_clear(me);
+    }
 
-        backup_character_index_next_to_fill = me->character_index_next_to_fill;
-        me->character_index_next_to_fill    = 0;
-        /* 'step_forward' calls 'BufferFiller_Plain_input_character_load()' 
-         * which increments 'base.character_index_next_to_fill'.                  */
-        if( ! QUEX_NAME(BufferFiller_step_forward_n_characters)(me, (ptrdiff_t)CharacterIndex) ) {
-            me->character_index_next_to_fill = backup_character_index_next_to_fill;
-            me->byte_loader->seek(me->byte_loader, backup_byte_pos);
-            return false;
-        }
+    /* step_forward_n_characters() calls derived_input_character_load() 
+     * which increments 'character_index_next_to_fill'.                      */
+    if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
+        me->character_index_next_to_fill = backup_character_index_next_to_fill;
+        me->byte_loader->seek(me->byte_loader, backup_byte_pos);
+        return false;
     }
     __quex_assert(me->character_index_next_to_fill == CharacterIndex);
     return true;
@@ -432,9 +443,6 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     QUEX_TYPE_CHARACTER*       BeginP = &buffer->_memory._front[1];
     QUEX_TYPE_CHARACTER*       EndP   = buffer->_memory._back;
     ptrdiff_t                  loaded_n;
-    /* Character index of the begin of the next load.                        */
-    QUEX_TYPE_STREAM_POSITION  input_character_index_before;
-    QUEX_TYPE_STREAM_POSITION  input_character_index_after;
 
     (void)EndP;
     __quex_assert(RegionBeginP >= BeginP);
@@ -446,19 +454,14 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     if( ! me->input_character_seek(me, StartCharacterIndex) ) {
         return 0;
     }
-    input_character_index_before = me->input_character_tell(me);
-    if( input_character_index_before != StartCharacterIndex) {
-        return 0;
-    }
+    __quex_assert(me->character_index_next_to_fill == StartCharacterIndex);
 
     /* Load content into the given region.                                   */
     loaded_n = me->derived_input_character_load(me, RegionBeginP, 
                                                 (size_t)RequiredLoadN);
     __quex_assert(loaded_n <= RequiredLoadN);
 
-    input_character_index_after = me->input_character_tell(me);
-
-    if(    input_character_index_after - input_character_index_before 
+    if(    me->character_index_next_to_fill - StartCharacterIndex 
         != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
         QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
     }
@@ -472,47 +475,36 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
 }
 
 QUEX_INLINE bool 
-QUEX_NAME(BufferFiller_step_forward_n_characters)(QUEX_NAME(BufferFiller)* me,
-                                                  const ptrdiff_t          ForwardN)
-/* STRATEGY: Starting from a certain point in the file we read characters
- *           Convert one-by-one until we reach the given character index. 
- *           This is, of course, incredibly inefficient but safe to work under
- *           all circumstances. Fillers should only rely on this function
- *           in case of no other alternative. Also, caching some information 
- *           about what character index is located at what position may help
- *           to increase speed.                                              */      
+QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
+                                                const QUEX_TYPE_STREAM_POSITION TargetCI)
+/* From the given 'character_index_next_to_fill' (i.e. the return value of 
+ * 'input_character_tell()') step forward to character index 'TargetCI'. This 
+ * function is used to reach a target input position in cases where computing 
+ * is impossible.
+ *
+ * THIS FUNCTION DOES NOT BACKUP OR RE-INIT ANYTHING.
+ * => Must be done upon failure in the caller's function.
+ *
+ * RETURNS: true - success; false - else.                                    */
 { 
-    const QUEX_TYPE_STREAM_POSITION TargetIndex =   me->input_character_tell(me) 
-                                                  + (QUEX_TYPE_STREAM_POSITION)ForwardN;
-    /* START: Current position: 'CharacterIndex - remaining_character_n'.
-     * LOOP:  It remains to interpret 'remaining_character_n' number of 
-     *        characters. Since the interpretation is best done using a buffer, 
-     *        we do this in chunks.                                          */ 
-    size_t               remaining_character_n;
-    const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-    QUEX_TYPE_CHARACTER  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
-    (void)TargetIndex;
+    const size_t        ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+    QUEX_TYPE_CHARACTER chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+    size_t              remaining_n = TargetCI - me->character_index_next_to_fill;
 
     __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
 
-    /* We CANNOT assume that end the end it will hold: 
-     *
-     *       __quex_assert(me->input_character_tell(me) == TargetIndex);
-     *
-     * Because, its unknown wether the stream has enough characters.         */
-    for(remaining_character_n = (size_t)ForwardN; remaining_character_n > ChunkSize; 
-        remaining_character_n -= ChunkSize ) {
-        if( me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
+    for(; remaining_n > ChunkSize; remaining_n -= ChunkSize ) {
+        if( ChunkSize > me->derived_input_character_load(me, &chunk[0], ChunkSize) ) {
             return false;
         }
     }
-    if( remaining_character_n ) {
-        if( remaining_character_n > me->derived_input_character_load(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n) ) {
+    if( remaining_n ) {
+        if( remaining_n > me->derived_input_character_load(me, &chunk[0], remaining_n) ) {
             return false;
         }
     }
    
-    __quex_assert(me->input_character_tell(me) <= TargetIndex);
+    __quex_assert(me->character_index_next_to_fill == TargetCI);
     return true;
 }
 
