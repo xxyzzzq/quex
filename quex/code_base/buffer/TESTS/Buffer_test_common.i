@@ -68,7 +68,7 @@ print_this(QUEX_NAME(Buffer)* buffer)
     show_this("lexeme start", buffer, buffer->_lexeme_start_p, '\t');
     printf("ci-begin: %i; ci-end: %i; offset-end_p: %i;\n", 
            (int)(QUEX_NAME(Buffer_input_begin_character_index)(buffer)),
-           (int)(buffer->input.end_character_index),
+           (int)(QUEX_NAME(Buffer_input_character_index_end)(buffer)),
            (int)(buffer->input.end_p ? buffer->input.end_p - &buffer->_memory._front[1] : -1));
 }
 

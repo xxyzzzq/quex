@@ -141,7 +141,7 @@ static void
 print_difference(QUEX_NAME(Buffer)* me)
 {
     const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_begin_character_index)(me);
-    const QUEX_TYPE_STREAM_POSITION ci_end   = me->input.end_character_index;
+    const QUEX_TYPE_STREAM_POSITION ci_end   = QUEX_NAME(Buffer_input_character_index_end)(me);
     QUEX_TYPE_STREAM_POSITION       ci;
     QUEX_TYPE_STREAM_POSITION       ci_diff;
     QUEX_TYPE_STREAM_POSITION       ci_print_begin;

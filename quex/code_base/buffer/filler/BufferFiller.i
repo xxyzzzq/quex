@@ -315,7 +315,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
 
     backup_byte_pos                     = me->byte_loader->tell(me->byte_loader);
     backup_character_index_next_to_fill = me->character_index_next_to_fill;
-    // printf("#backup: [ %i; %i; ]\n", (int)backup_byte_pos, (int)backup_character_index_next_to_fill);
+    /* printf("#backup: [ %i; %i; ]\n", (int)backup_byte_pos, (int)backup_character_index_next_to_fill); */
 
     
     if( me->byte_n_per_character != -1 ) {
@@ -352,6 +352,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
     if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
         me->character_index_next_to_fill = backup_character_index_next_to_fill;
         me->byte_loader->seek(me->byte_loader, backup_byte_pos);
+        me->input_clear(me);
         return false;
     }
     __quex_assert(me->character_index_next_to_fill == CharacterIndex);
@@ -427,7 +428,8 @@ QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
      * always set.                                                           */
     QUEX_NAME(Buffer_input_end_set)(buffer, 
                                     &buffer->input.end_p[inserted_character_n],
-                                    buffer->input.end_character_index + inserted_character_n);
+                                      QUEX_NAME(Buffer_input_character_index_end)(buffer) 
+                                    + inserted_character_n);
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 }

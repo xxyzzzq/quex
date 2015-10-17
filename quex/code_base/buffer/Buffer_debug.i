@@ -333,7 +333,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
 #       endif
         __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)QUEX_NAME(Buffer_input_begin_character_index)(me));
-        __QUEX_STD_printf("   input.end_character_index   = %i;\n", (int)me->input.end_character_index);
+        __QUEX_STD_printf("   input.end_character_index   = %i;\n", (int)QUEX_NAME(Buffer_input_character_index_end)(me));
         if( me->filler ) {
             __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->filler->_byte_order_reversion_active_f ? "true" : "false");
         }

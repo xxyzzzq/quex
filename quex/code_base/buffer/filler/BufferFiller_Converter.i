@@ -188,17 +188,17 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
         }
     }
     me->converter->virginity_f = false;
+    printf("# next_to_convert_p: %p; fill_end_p: %p;\n",
+           me->raw_buffer.next_to_convert_p, me->raw_buffer.fill_end_p);
 
     /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
      * last byte that was converted.                                         */ 
     converted_character_n = buffer_insertion_p - RegionBeginP;
     me->base.character_index_next_to_fill += converted_character_n;
 
-    if( converted_character_n != (ptrdiff_t)N ) {
-        /* Buffer not filled completely; I.e. END OF FILE has been reached.  */
-        __quex_assert(BufferEnd >= buffer_insertion_p);
-        QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferEnd);
-    }
+    /* NOT: QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferEnd);
+     *      Buffer MUST be left as is, in case of ERROR!                     */
+    __quex_assert(BufferEnd >= buffer_insertion_p);
     return (size_t)converted_character_n;
 }
 
@@ -248,8 +248,8 @@ QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me,
         me->begin      = Begin;
         me->memory_end = &Begin[(ptrdiff_t)SizeInBytes];
     }
-    me->fill_end_p        = me->begin;
-    me->next_to_convert_p = me->begin;                /* --> trigger reload. */
+    me->fill_end_p        = &me->begin[0];
+    me->next_to_convert_p = &me->begin[0];            /* --> trigger reload. */
 
     QUEX_IF_ASSERTS_poison(me->begin, me->memory_end);
 }
@@ -266,9 +266,9 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
  * The relation of '.next_to_convert_p' and '.next_to_convert_character_index' 
  * remains unaffected. The pointer still points to the same character index. */
 {
-    uint8_t*               move_begin_p;
-    ptrdiff_t              move_size;
-    ptrdiff_t              move_distance;
+    uint8_t*   move_begin_p;
+    ptrdiff_t  move_size;
+    ptrdiff_t  move_distance;
    
     __quex_assert(me->next_to_convert_p <= me->fill_end_p);
     QUEX_ASSERT_BUFFER_INFO(me);
@@ -309,6 +309,8 @@ QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
     fill_size       = (size_t)(me->memory_end - fill_begin_p);
     loaded_byte_n   = byte_loader->load(byte_loader, fill_begin_p, fill_size);
     me->fill_end_p  = &fill_begin_p[loaded_byte_n];
+
+    printf("#loaded_byte_n: %i;\n", (int)loaded_byte_n);
 
     QUEX_ASSERT_BUFFER_INFO(me);
     return loaded_byte_n;

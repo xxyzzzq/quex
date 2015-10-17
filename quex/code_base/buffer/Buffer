@@ -106,6 +106,8 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                            QUEX_TYPE_CHARACTER*      EndOfInputP,
                                                            QUEX_TYPE_STREAM_POSITION EndCharacterIndex);
     QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
+                           QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me);
+    QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
                            QUEX_NAME(Buffer_input_begin_character_index)(QUEX_NAME(Buffer)* me);
 
     QUEX_INLINE bool       QUEX_NAME(Buffer_is_empty)(QUEX_NAME(Buffer)* me);

@@ -134,12 +134,18 @@ QUEX_NAME(Buffer_is_empty)(QUEX_NAME(Buffer)* me)
 { return me->input.end_p == me->_memory._front; }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
+QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me)
+{
+    return me->input.end_character_index;
+}
+
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
 QUEX_NAME(Buffer_input_begin_character_index)(QUEX_NAME(Buffer)* me)
 /* Determine character index of first character in the buffer.               */
 {
     const ptrdiff_t            fill_level =   QUEX_NAME(Buffer_text_end)(me) 
                                             - &me->_memory._front[1];
-    QUEX_TYPE_STREAM_POSITION  result     =   me->input.end_character_index 
+    QUEX_TYPE_STREAM_POSITION  result     =   QUEX_NAME(Buffer_input_character_index_end)(me) 
                                             - fill_level;
     /* NOT: assert(result >= 0); 
      * This function may be called before content is setup/loaded propperly. */ 
@@ -280,7 +286,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
         end_p = &me->input.end_p[- move_distance];
     }
 
-    QUEX_NAME(Buffer_input_end_set)(me, end_p, me->input.end_character_index);
+    QUEX_NAME(Buffer_input_end_set)(me, end_p, QUEX_NAME(Buffer_input_character_index_end)(me));
 
     /*_______________________________________________________________________*/
     QUEX_IF_ASSERTS_poison(&BackP[- move_distance + 1], &BackP[1]);
@@ -351,17 +357,18 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
     /* input.end_p/end_character_index: End character index may CHANGE, since 
      * some of the loaded content is thrown away.                            */
     if( ! me->input.end_p ) {
-        end_character_index = me->input.end_character_index - move_distance;
+        end_character_index =   QUEX_NAME(Buffer_input_character_index_end)(me) 
+                              - move_distance;
         end_p               = (QUEX_TYPE_CHARACTER*)0;
     }
     else if( &me->input.end_p[move_distance] > &BackP[1] ) {
-        end_character_index = me->input.end_character_index 
+        end_character_index =   QUEX_NAME(Buffer_input_character_index_end)(me) 
                               - (&me->input.end_p[move_distance] - &BackP[1]);
         end_p               = (QUEX_TYPE_CHARACTER*)0;
     }
     else {
         end_p               = &me->input.end_p[move_distance];
-        end_character_index = me->input.end_character_index;
+        end_character_index = QUEX_NAME(Buffer_input_character_index_end)(me);
     }
 
     QUEX_NAME(Buffer_input_end_set)(me, end_p, end_character_index);
