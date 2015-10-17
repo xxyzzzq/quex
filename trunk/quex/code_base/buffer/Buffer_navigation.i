@@ -79,7 +79,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     if( ! CharacterN ) {
         return true;
     }
-    else if( target < me->input.end_character_index ) {
+    else if( target < QUEX_NAME(Buffer_input_character_index_end)(me) ) {
         me->_read_p += CharacterN;
         /* => &me->_read_p[-1] inside buffer.                                */
     }
