@@ -31,6 +31,7 @@ ByteLoader_FILE_new_from_file_name(const char* FileName)
 {
     __QUEX_STD_FILE* fh = fopen(FileName, "rb");
     ByteLoader*      alter_ego;
+
     if( ! fh ) {
         return (ByteLoader*)0;
     }
@@ -39,6 +40,7 @@ ByteLoader_FILE_new_from_file_name(const char* FileName)
         return (ByteLoader*)0;
     }
     alter_ego->handle_ownership = E_Ownership_LEXICAL_ANALYZER;
+    alter_ego->binary_mode_f    = true;                   /* See "rb" above. */
     return alter_ego;
 }
 

@@ -21,8 +21,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)*, ByteLoader* byte_loader);
 
+QUEX_INLINE ptrdiff_t 
+QUEX_NAME(BufferFiller_Plain_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego);
+
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_input_clear)(QUEX_NAME(BufferFiller)* alter_ego);
+QUEX_NAME(BufferFiller_Plain_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
@@ -70,7 +73,8 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                        sizeof(QUEX_TYPE_CHARACTER) : -1;
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_input_character_load),
-                                  QUEX_NAME(BufferFiller_Plain_input_clear),
+                                  QUEX_NAME(BufferFiller_Plain_stomach_byte_n),
+                                  QUEX_NAME(BufferFiller_Plain_stomach_clear),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
@@ -78,8 +82,15 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                   byte_n_per_character);
 }
 
+QUEX_INLINE ptrdiff_t 
+QUEX_NAME(BufferFiller_Plain_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego) 
+{
+    (void)alter_ego;
+    return (ptrdiff_t)0;
+}
+
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_input_clear)(QUEX_NAME(BufferFiller)* alter_ego) 
+QUEX_NAME(BufferFiller_Plain_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego) 
 {
     (void)alter_ego;
 }

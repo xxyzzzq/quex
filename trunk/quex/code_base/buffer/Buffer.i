@@ -500,6 +500,7 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         load_p               = BeginP;
     }
 
+    __quex_assert(load_character_index == NewCharacterIndexBegin + (load_p - BeginP));
     loaded_n = QUEX_NAME(BufferFiller_region_load)(me, load_p, load_request_n,
                                                    load_character_index);
     if( ! loaded_n ) {
@@ -517,9 +518,8 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         return false;
     }
 
-
     /* Adapt 'end_p' and 'end_character_index'.
-     * Allrequested character loaded => buffer filled to the limit.          */
+     * All requested character loaded => buffer filled to the limit.         */
     end_p = (load_request_n == loaded_n) ? (QUEX_TYPE_CHARACTER*)0
                                          : &load_p[loaded_n];
     end_character_index = end_p ? NewCharacterIndexBegin + (end_p - BeginP)

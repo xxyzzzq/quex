@@ -68,7 +68,7 @@ main(int argc, char** argv)
         uint8_t*                in_end       = &in[i];
         QUEX_TYPE_CHARACTER*    out_iterator = &out[0];
 
-        if( converter->input_clear ) converter->input_clear(converter);
+        if( converter->stomach_clear ) converter->stomach_clear(converter);
 
         bool   Result = converter->convert(converter, 
                                            &in_iterator,  in_end, 

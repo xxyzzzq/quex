@@ -104,7 +104,8 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               size_t       (*derived_input_character_load)(QUEX_NAME(BufferFiller)*,
                                                                            QUEX_TYPE_CHARACTER*, const size_t),
-                              void         (*input_clear)(QUEX_NAME(BufferFiller)*),
+                              ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
+                              void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
                                                                    void**              begin_p,
@@ -121,7 +122,8 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
-    me->input_clear                  = input_clear;
+    me->stomach_byte_n               = stomach_byte_n;
+    me->stomach_clear                = stomach_clear;
     me->input_character_tell         = QUEX_NAME(BufferFiller_character_index_tell);
     me->input_character_seek         = QUEX_NAME(BufferFiller_character_index_seek);
     me->derived_input_character_load = derived_input_character_load;
@@ -313,9 +315,9 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
 
     if( me->character_index_next_to_fill == CharacterIndex ) return true;
 
-    backup_byte_pos                     = me->byte_loader->tell(me->byte_loader);
+    backup_byte_pos                     =   me->byte_loader->tell(me->byte_loader) 
+                                          - me->stomach_byte_n(me);
     backup_character_index_next_to_fill = me->character_index_next_to_fill;
-    /* printf("#backup: [ %i; %i; ]\n", (int)backup_byte_pos, (int)backup_character_index_next_to_fill); */
 
     
     if( me->byte_n_per_character != -1 ) {
@@ -330,7 +332,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
             return false;
         }
         me->character_index_next_to_fill = CharacterIndex;
-        me->input_clear(me);
+        me->stomach_clear(me);
         return true;
     }
 
@@ -344,7 +346,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
             return false;
         }
         me->character_index_next_to_fill = 0;
-        me->input_clear(me);
+        me->stomach_clear(me);
     }
 
     /* step_forward_n_characters() calls derived_input_character_load() 
@@ -352,7 +354,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
     if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
         me->character_index_next_to_fill = backup_character_index_next_to_fill;
         me->byte_loader->seek(me->byte_loader, backup_byte_pos);
-        me->input_clear(me);
+        me->stomach_clear(me);
         return false;
     }
     __quex_assert(me->character_index_next_to_fill == CharacterIndex);
