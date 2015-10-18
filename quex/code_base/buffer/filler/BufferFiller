@@ -68,9 +68,13 @@ QUEX_NAMESPACE_MAIN_OPEN
          * from lexeme start  to lexeme end exceeds the buffer size.         */
         bool        (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
+        /* -- 'Stomach Byte Number' is the number of bytes that have been read
+         * from the stream but not yet converted.                            */
+        ptrdiff_t   (*stomach_byte_n)(struct QUEX_NAME(BufferFiller_tag)*);
+
         /* -- 'Clear' Undo any internal state-dependency. Conversion or what-
          * soever starts from a clean page.                                  */
-        void        (*input_clear)(struct QUEX_NAME(BufferFiller_tag)*);
+        void        (*stomach_clear)(struct QUEX_NAME(BufferFiller_tag)*);
 
         /* -- 'Destructor' -- There are derived 'classes' from this one. The
          * user only stores a pointer to BufferFiller, and requires a way to
@@ -118,7 +122,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                   size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
                                                                   QUEX_TYPE_CHARACTER*, const size_t),
-                                  void         (*input_clear)(QUEX_NAME(BufferFiller)*),
+                                  ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
+                                  void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                                   void         (*delete_self)(QUEX_NAME(BufferFiller)*),
                                   void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
                                                                        void**              begin_p,

@@ -3,6 +3,9 @@
 Conversion
 ==========
 
+TODO: Mention: input stream MUST be in 'binary mode', i.e. stream position = 
+number of bytes!
+
 Quex provides support for character encodings by means of converters which are
 plugged into buffer fillers. The converters currently provided directly by quex
 are IBM's ICU library and the GNU IConv library. The latter is present by

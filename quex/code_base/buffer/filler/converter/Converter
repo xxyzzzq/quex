@@ -53,7 +53,7 @@ QUEX_NAMESPACE_MAIN_OPEN
          *                     characters.
          *           false --> More source bytes are needed to fill the drain buffer.     */
 
-        void    (*input_clear)(struct QUEX_NAME(Converter_tag)*);
+        void    (*stomach_clear)(struct QUEX_NAME(Converter_tag)*);
         /*  [OPTIONAL] can be set to '0x0'. 
          * 
          *  This function is called whenever a conversion discontinuity appears.
@@ -92,7 +92,7 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                                        uint8_t**             source, const uint8_t*             SourceEnd, 
                                        QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
                     void    (*delete_self)(struct QUEX_NAME(Converter_tag)*),
-                    void    (*input_clear)(struct QUEX_NAME(Converter_tag)*));
+                    void    (*stomach_clear)(struct QUEX_NAME(Converter_tag)*));
 
 QUEX_INLINE void
 QUEX_NAME(Converter_delete)(QUEX_NAME(Converter)** me);

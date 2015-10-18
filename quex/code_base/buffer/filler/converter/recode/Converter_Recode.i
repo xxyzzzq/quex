@@ -116,7 +116,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
     QUEX_INLINE void 
-    QuexConverter_ICU_input_clear(QuexConverter* alter_ego)
+    QuexConverter_ICU_stomach_clear(QuexConverter* alter_ego)
     {
         QuexConverter_ICU* me = (QuexConverter_ICU*)alter_ego;
 
@@ -154,7 +154,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->base.open        = QuexConverter_ICU_open;
         me->base.convert     = QuexConverter_ICU_convert;
         me->base.delete_self = QuexConverter_ICU_delete_self;
-        me->base.input_clear = QuexConverter_ICU_input_clear;
+        me->base.stomach_clear = QuexConverter_ICU_stomach_clear;
 
         me->to_handle   = 0x0;
         me->from_handle = 0x0;
