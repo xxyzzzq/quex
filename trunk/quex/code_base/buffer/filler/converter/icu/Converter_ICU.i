@@ -87,8 +87,12 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
 
         /* ByteN / Character:                                               */
-        me->byte_n_per_character = (! ucnv_isFixedWidth(me->from_handle) ? -1
-                                   : ucnv_getMaxCharSize(me->from_handle);
+        if( ucnv_isFixedWidth(me->from_handle, &me->status) && U_SUCCESS(me->status) ) {
+            me->base.byte_n_per_character = ucnv_getMaxCharSize(me->from_handle);
+        }
+        else {
+            me->base.byte_n_per_character = -1;
+        }
 
         if( ! ToCoding ) {
              /* From the ICU Documentation: "ICU does not use UCS-2. UCS-2 is a
