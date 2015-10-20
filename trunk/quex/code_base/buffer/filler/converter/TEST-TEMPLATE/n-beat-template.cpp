@@ -43,9 +43,8 @@ main(int argc, char** argv)
 
     QUEX_NAME(BufferFiller)* filler = \
         QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
-                                              ___NEW___(), 
-                                              ___UCS_UTF8___, 
-                                              ___UCS_4_BYTE_BE___, RawMemorySize);
+                                              ___NEW___(___UCS_UTF8___, ___UCS_4_BYTE_BE___), 
+                                              RawMemorySize);
 
     size_t loaded_n = 0;
     do {

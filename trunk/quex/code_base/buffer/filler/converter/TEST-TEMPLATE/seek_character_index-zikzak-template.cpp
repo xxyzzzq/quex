@@ -52,12 +52,10 @@ main(int argc, char** argv)
         printf("Input file not found.\n");
         exit(-1);
     }
-    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh);
-
-    QUEX_NAME(BufferFiller)* filler = \
+    ByteLoader*              byte_loader = ByteLoader_FILE_new(fh);
+    QUEX_NAME(BufferFiller)* filler      = \
          QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
-                                               ___NEW___(), 
-                                               source_charset, target_charset, 
+                                               ___NEW___(source_charset, target_charset), 
                                                RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler->derived_input_character_load(filler, reference, ReferenceSize);

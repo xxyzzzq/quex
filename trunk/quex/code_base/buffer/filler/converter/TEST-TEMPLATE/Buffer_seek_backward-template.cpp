@@ -31,8 +31,8 @@ main(int argc, char** argv)
     assert( fh != 0x0 );
     ByteLoader*              byte_loader = ByteLoader_FILE_new(fh);
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_Converter_new)(
-                                                byte_loader, ___NEW___(),
-                                                "UTF8", 0, RawMemorySize);
+                                                byte_loader, ___NEW___("UTF-8", 0),
+                                                RawMemorySize);
     const size_t         MemorySize = 5;
     QUEX_TYPE_CHARACTER  memory[MemorySize];
 

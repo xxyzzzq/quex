@@ -29,17 +29,22 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
     QUEX_TYPE_STREAM_POSITION previous = 0;
     QUEX_TYPE_STREAM_POSITION position_limit;
     QUEX_TYPE_STREAM_POSITION random_value = 1234567890;
+    static bool               virginity_f = true;
+
+    if( virginity_f ) {
+        virginity_f = false;
+        printf("##  Investigate statistics with gnuplot:\n"
+               "##  In 'basic_functionality.c'; change line '#if 0' --> '#if 1'\n"
+               "##  => redirect to file, e.g. 'tmp.dat'\n"
+               "##  => gnuplot\n"
+               "##     > hist(x,width)=width*floor(x/width)\n"
+               "##     > set boxwith 1\n"
+               "##     > plot \"tmp.dat\" u (hist($2,1)):(1.0) smooth freq w boxes\n"
+               "##     use: $1: histogram of position; \n"
+               "##     use: $2: historgram of differences.\n");
+    }
 
     __quex_assert( ! QUEX_NAME(Buffer_is_empty)(me));
-    printf("##  Investigate statistics with gnuplot:\n"
-           "##  In 'basic_functionality.c'; change line '#if 0' --> '#if 1'\n"
-           "##  => redirect to file, e.g. 'tmp.dat'\n"
-           "##  => gnuplot\n"
-           "##     > hist(x,width)=width*floor(x/width)\n"
-           "##     > set boxwith 1\n"
-           "##     > plot \"tmp.dat\" u (hist($2,1)):(1.0) smooth freq w boxes\n"
-           "##     use: $1: histogram of position; \n"
-           "##     use: $2: historgram of differences.\n");
 
     /* position_limit = number of characters in the file, i.e. the number of
      * raw unicode characters in the reference file.                         */

@@ -48,16 +48,13 @@ main(int argc, char** argv)
     }
 
     const char*            input_codec = argv[1];
-    QUEX_NAME(Converter)*  converter   = ___NEW___();
+    QUEX_NAME(Converter)*  converter   = ___NEW___(input_codec, 0x0);
 
     /* Load file content corresponding the input coding                      */
     const size_t  Size = 16384;
     uint8_t       in[Size];
     const size_t  ContentSize = get_input(input_codec, in, Size);
     if( ! ContentSize ) return -1;
-
-    /* (1) opening the converter with DEFAULT internal character format      */
-    converter->open(converter, input_codec, 0x0);
 
     QUEX_TYPE_CHARACTER         out[Size];
     const QUEX_TYPE_CHARACTER*  out_end = &out[Size];

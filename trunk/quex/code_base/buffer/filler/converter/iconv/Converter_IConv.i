@@ -23,7 +23,7 @@ extern "C" {
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void 
+    QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_open)(QUEX_NAME(Converter)* me,
                                     const char* FromCoding, const char* ToCoding);
     QUEX_INLINE bool 
@@ -36,7 +36,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Converter_IConv_delete_self)(QUEX_NAME(Converter)* me);
 
     QUEX_INLINE QUEX_NAME(Converter)*
-    QUEX_NAME(Converter_IConv_new)()
+    QUEX_NAME(Converter_IConv_new)(const char* FromCodec, const char* ToCodec)
     {
         QUEX_NAME(Converter_IConv)*  me = \
            (QUEX_NAME(Converter_IConv)*)
@@ -46,21 +46,24 @@ QUEX_NAMESPACE_MAIN_OPEN
             return (QUEX_NAME(Converter)*)0;
         }
 
-        QUEX_NAME(Converter_construct)(&me->base,
-                                       QUEX_NAME(Converter_IConv_open),
-                                       QUEX_NAME(Converter_IConv_convert),
-                                       QUEX_NAME(Converter_IConv_delete_self),
-                                       (void (*)(struct QUEX_NAME(Converter_tag)*))0);
-
         me->handle = (iconv_t)-1;
+        if( ! QUEX_NAME(Converter_construct)(&me->base,
+                                             FromCodec, ToCodec,
+                                             QUEX_NAME(Converter_IConv_open),
+                                             QUEX_NAME(Converter_IConv_convert),
+                                             QUEX_NAME(Converter_IConv_delete_self),
+                                             (void (*)(struct QUEX_NAME(Converter_tag)*))0) ) {
+            QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_CONVERTER);
+            return (QUEX_NAME(Converter)*)0;
+        }
 
         return &me->base;
     }
 
-    QUEX_INLINE void 
+    QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_open)(QUEX_NAME(Converter)* alter_ego,
-                                    const char*           FromCoding, 
-                                    const char*           ToCoding)
+                                    const char*           FromCodec, 
+                                    const char*           ToCodec)
     {
         QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
 #       if   defined(__QUEX_OPTION_LITTLE_ENDIAN)
@@ -71,64 +74,66 @@ QUEX_NAMESPACE_MAIN_OPEN
         const bool little_endian_f = QUEXED(system_is_little_endian)();
 #       endif
 
+
         /* Setup conversion handle */
-        if( ! ToCoding ) {
+        if( ! ToCodec ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-            case 4:  ToCoding = little_endian_f ? "UCS-4LE" : "UCS-4BE"; break;
-            case 2:  ToCoding = little_endian_f ? "UCS-2LE" : "UCS-2BE"; break;
-            case 1:  ToCoding = "ASCII"; break;
-            default:  __quex_assert(false); return;
+            case 4:  ToCodec = little_endian_f ? "UCS-4LE" : "UCS-4BE"; break;
+            case 2:  ToCodec = little_endian_f ? "UCS-2LE" : "UCS-2BE"; break;
+            case 1:  ToCodec = "ASCII"; break;
+            default:  __quex_assert(false); return false;
             }
         } 
-        me->handle = iconv_open(ToCoding, FromCoding);
+        me->handle = iconv_open(ToCodec, FromCodec);
+        if( me->handle == (iconv_t)-1 ) return false;
         
         /* ByteN / Character:
          * IConv does not provide something like 'isFixedWidth()'. So, the 
          * safe assumption "byte_n/character != const" is made, except for some
          * well-known examples.                                              */
         me->base.byte_n_per_character = -1;
-        if(    __QUEX_STD_strcmp(FromCoding, "UCS32") 
-            || __QUEX_STD_strcmp(FromCoding, "UCS-32") ) {
+        if(    __QUEX_STD_strcmp(FromCodec, "UCS-4LE") == 0 
+            || __QUEX_STD_strcmp(FromCodec, "UCS-4BE")  == 0) {
             me->base.byte_n_per_character = 4;
         }
-        else if(   __QUEX_STD_strcmp(FromCoding, "UCS16") 
-                || __QUEX_STD_strcmp(FromCoding, "UCS-16") ) {
+        else if(   __QUEX_STD_strcmp(FromCodec, "UCS-2LE") == 0 
+                || __QUEX_STD_strcmp(FromCodec, "UCS-2BE")  == 0) {
             me->base.byte_n_per_character = 2;
         }
 
-        if( me->handle == (iconv_t)-1 ) {
-            /* __QUEX_STD_fprintf(stderr, "Source coding: '%s'\n", FromCoding);
-             * __QUEX_STD_fprintf(stderr, "Target coding: '%s'\n", ToCoding);  */
-            QUEX_ERROR_EXIT("<<IConv conversion: source or target character encoding name unknown.>>");
-        }
+        return true;
     }
 
     QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*  alter_ego, 
                                        uint8_t**              source, const uint8_t*              SourceEnd,
                                        QUEX_TYPE_CHARACTER**  drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
+    /* RETURNS:  true  --> User buffer is filled as much as possible with 
+     *                     converted characters.
+     *           false --> More raw bytes are needed to fill the user buffer.           
+     *
+     *  IF YOU GET A COMPILE ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
+     *
+     *      quex/code_base/compatibility/iconv-argument-types.h
+     * 
+     *  'iconv' is defined on different systems with different
+     *  types of the second argument. There are two variants 'const char**'
+     *  and 'char **'.  If you get an error here, consider defining 
+     *
+     *            -DQUEX_SETTING_ICONV_2ND_ARG_CONST_CHARPP
+     *
+     *  as a compile option. If you know of an elegant solution to solve the 
+     *  problem for plain 'C', then please, let me know 
+     *  <fschaef@users.sourceforge.net>.                                     */
     {
         QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
         QUEX_TYPE_CHARACTER*        drain_begin = *drain;
-        /* RETURNS:  true  --> User buffer is filled as much as possible with converted 
-         *                     characters.
-         *           false --> More raw bytes are needed to fill the user buffer.           
-         *
-         *  IF YOU GET A COMPILE ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
-         *
-         *      quex/code_base/compatibility/iconv-argument-types.h
-         * 
-         *  The issue is, that 'iconv' is defined on different systems with different
-         *  types of the second argument. There are two variants 'const char**'
-         *  and 'char **'.  If you get an error here, consider defining 
-         *
-         *            -DQUEX_SETTING_ICONV_2ND_ARG_CONST_CHARPP
-         *
-         *  as a compile option. If you have an elegant solution to solve the problem for 
-         *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
         size_t  source_bytes_left_n = (size_t)(SourceEnd - *source);
         size_t  drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
         size_t  report;
+        
+        /* Avoid strange error reports from 'iconv' in case that the source 
+         * buffer is empty.                                                  */
 
         __quex_assert(me);
         __quex_assert(SourceEnd >= *source);

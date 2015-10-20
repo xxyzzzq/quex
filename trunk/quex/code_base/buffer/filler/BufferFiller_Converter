@@ -132,8 +132,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE QUEX_NAME(BufferFiller)*
     QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
                                           QUEX_NAME(Converter)*  converter,
-                                          const char*            FromCoding,
-                                          const char*            ToCoding,
                                           size_t                 RawBufferSize);
 
     QUEX_INLINE void    QUEX_NAME(BufferFiller_Converter_move_away_passed_content)(QUEX_NAME(BufferFiller_Converter)*);
