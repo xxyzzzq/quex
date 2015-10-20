@@ -41,7 +41,7 @@ test(E_ConverterTestType CTT, bool LinearF, size_t BPC)
     const char*   file_4 = LinearF ? "examples/languages.ucs4-be"    : "examples/languages.utf8";
     const char*   file_2 = LinearF ? "examples/small.ucs4-be"        : "examples/small.utf8";
     const char*   file_1 = LinearF ? "examples/festgemauert.ucs4-be" : "examples/festgemauert.dat";
-    const char*   codec  = LinearF ? "UCS-4BE"                       : "UTF-8";
+    const char*   codec  = LinearF ? (CTT == TEST_ICONV ? "UCS-4BE" : "UTF-32-BE") : "UTF-8";
 
     switch( CTT ) {
     case TEST_ICU:   converter = QUEX_NAME(Converter_ICU_new)(codec, 0); break;

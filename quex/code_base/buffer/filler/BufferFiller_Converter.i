@@ -59,8 +59,11 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     QUEX_NAME(BufferFiller_Converter)*  me;
     __quex_assert(RawMemorySize >= 6);  /* UTF-8 char can be 6 bytes long    */
 
-    if( byte_loader && ! byte_loader->binary_mode_f ) {
-        /* Binary mode is absolutely required for converters, otherwise the 
+    if( ! converter ) {
+        return (QUEX_NAME(BufferFiller)*)0;
+    }
+    else if( byte_loader && ! byte_loader->binary_mode_f ) {
+        /* Binary mode is ABSOLUTELY REQUIRED for converters, otherwise the 
          * positioning with respect to the raw buffer becomes unreliable.    */
         return (QUEX_NAME(BufferFiller)*)0;
     }
