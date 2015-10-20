@@ -8,15 +8,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     typedef struct QUEX_NAME(Converter_tag) {
         E_Ownership   ownership;
 
-        void    (*open)(struct QUEX_NAME(Converter_tag)*, 
-                        const char* FromCodingName, const char* ToCodingName);  
-        /* Opens internally a conversion handle for the conversion from 'FromCodingName'
-         * to 'ToCodingName'. Pass '0x0' as 'ToCodingName' in order to indicate a conversion
-         * to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
-         *
-         * It is the task of the particular implementation to provide the 'to coding'
-         * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.   */
-
         bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 
                            uint8_t**             source, const uint8_t*             SourceEnd, 
                            QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd);
@@ -84,9 +75,10 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* Facilitate the task of converting to apropriate function pointers from derived 
      * member functions.                                                                  */
 
-QUEX_INLINE void
+QUEX_INLINE bool
 QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
-                    void    (*open)(struct QUEX_NAME(Converter_tag)*, 
+                               const char* FromCodec, const char* ToCodec,
+                    bool    (*open)(struct QUEX_NAME(Converter_tag)*, 
                                     const char* FromCodingName, const char* ToCodingName),  
                     bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 
                                        uint8_t**             source, const uint8_t*             SourceEnd, 

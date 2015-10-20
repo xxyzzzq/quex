@@ -40,14 +40,11 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QUEX_NAME(Converter)*  converter   = ___NEW___();
     const char*            input_codec = argv[1];
-    /* (1) opening the converter
-     *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
-    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
-    case 4: converter->open(converter, input_codec, ___UCS_4_BYTE_LE___); break;
-    case 2: converter->open(converter, input_codec, ___UCS_2_BYTE_LE___); break;
-    }
+    QUEX_NAME(Converter)*  converter   = ___NEW___(input_codec, 
+                                           sizeof(QUEX_TYPE_CHARACTER) == 4 ? ___UCS_4_BYTE_LE___ 
+                                         : sizeof(QUEX_TYPE_CHARACTER) == 2 ? ___UCS_2_BYTE_LE___
+                                         :                                    0);
 
     /* (2.1) Load file content corresponding the input coding */
     const size_t          Size = 16384;

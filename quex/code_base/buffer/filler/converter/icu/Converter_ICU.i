@@ -16,7 +16,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    QUEX_INLINE void
+    QUEX_INLINE bool
     QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* me, 
                                   const char*           FromCoding, 
                                   const char*           ToCoding);
@@ -33,26 +33,30 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter)* me);
 
     QUEX_INLINE QUEX_NAME(Converter)*
-    QUEX_NAME(Converter_ICU_new)()
+    QUEX_NAME(Converter_ICU_new)(const char* FromCoding, const char* ToCoding)
     {
         QUEX_NAME(Converter_ICU)*  me = \
              (QUEX_NAME(Converter_ICU)*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(Converter_ICU)),
                                                                        E_MemoryObjectType_CONVERTER);
 
-        QUEX_NAME(Converter_construct)(&me->base,
-                                       QUEX_NAME(Converter_ICU_open),
-                                       QUEX_NAME(Converter_ICU_convert),
-                                       QUEX_NAME(Converter_ICU_delete_self),
-                                       QUEX_NAME(Converter_ICU_on_conversion_discontinuity));
-
         me->to_handle   = 0x0;
         me->from_handle = 0x0;
         me->status      = U_ZERO_ERROR;
 
+        if( ! QUEX_NAME(Converter_construct)(&me->base,
+                                             FromCoding, ToCoding,
+                                             QUEX_NAME(Converter_ICU_open),
+                                             QUEX_NAME(Converter_ICU_convert),
+                                             QUEX_NAME(Converter_ICU_delete_self),
+                                             QUEX_NAME(Converter_ICU_on_conversion_discontinuity)) ) {
+            QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_CONVERTER);
+            return (QUEX_NAME(Converter)*)0;
+        }
+
         return &me->base;
     }
 
-    QUEX_INLINE void
+    QUEX_INLINE bool
     QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego, 
                                   const char*           FromCoding, 
                                   const char*           ToCoding)
@@ -83,8 +87,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Open conversion handles                                           */
         me->from_handle = ucnv_open(FromCoding, &me->status);
 
-        if( ! U_SUCCESS(me->status) ) 
-            QUEX_ERROR_EXIT("Input Coding not supported by ICU converter.");
+        if( ! U_SUCCESS(me->status) ) {
+            return false;
+        }
 
         /* ByteN / Character:                                               */
         if( ucnv_isFixedWidth(me->from_handle, &me->status) && U_SUCCESS(me->status) ) {
@@ -105,15 +110,18 @@ QUEX_NAMESPACE_MAIN_OPEN
             case 4:  ToCoding = little_endian_f ? "UTF32-LE" : "UTF32-LE"; break;
             case 2:  ToCoding = little_endian_f ? "UTF16-LE" : "UTF16-LE"; break;
             case 1:  ToCoding = "ISO-8859-1"; break;
-            default:  __quex_assert(false); return;
+            default:  __quex_assert(false); return false;
             }
         } 
 
         me->to_handle = ucnv_open(ToCoding, &me->status);
+        if( me->to_handle == NULL || ! U_SUCCESS(me->status) ) return false;
 
         /* Setup the pivot buffer                                            */
         me->pivot_iterator_begin = &me->pivot_buffer[0];
         me->pivot_iterator_end   = &me->pivot_buffer[0];
+
+        return true;
     }
 
     QUEX_INLINE bool

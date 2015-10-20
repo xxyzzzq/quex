@@ -23,7 +23,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     } QUEX_NAME(Converter_ICU);
 
-    QUEX_INLINE QUEX_NAME(Converter)* QUEX_NAME(Converter_ICU_new)();
+    QUEX_INLINE QUEX_NAME(Converter)* QUEX_NAME(Converter_ICU_new)(const char* FromCodec, 
+                                                                   const char* ToCodec);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

@@ -17,8 +17,6 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* me, 
                                             ByteLoader*            byte_loader,
                                             QUEX_NAME(Converter)*  converter,
-                                            const char*            FromCoding,
-                                            const char*            ToCoding,
                                             size_t                 RawMemorySize);
 
 QUEX_INLINE void   
@@ -56,8 +54,6 @@ QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me, ByteLoader* byte_loader);
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
                                       QUEX_NAME(Converter)*  converter,
-                                      const char*            FromCoding,
-                                      const char*            ToCoding,
                                       size_t                 RawMemorySize)
 { 
     QUEX_NAME(BufferFiller_Converter)*  me;
@@ -76,7 +72,7 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
                                          E_MemoryObjectType_BUFFER_FILLER);
     if( ! me) return (QUEX_NAME(BufferFiller)*)0;
 
-    QUEX_NAME(BufferFiller_Converter_construct)(me, byte_loader, converter, FromCoding, ToCoding, RawMemorySize);
+    QUEX_NAME(BufferFiller_Converter_construct)(me, byte_loader, converter, RawMemorySize);
 
     return &me->base;
 
@@ -86,8 +82,6 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* me, 
                                             ByteLoader*            byte_loader,
                                             QUEX_NAME(Converter)*  converter,
-                                            const char*            FromCoding,
-                                            const char*            ToCoding,
                                             size_t                 RawMemorySize)
 {
     /* A linear relationship between stream position and character index 
@@ -115,7 +109,6 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
 
     /* Initialize the conversion operations                                  */
     me->converter = converter;
-    me->converter->open(me->converter, FromCoding, ToCoding);
     me->converter->virginity_f = true;
 
     /* Initialize the raw buffer that holds the plain bytes of the input file

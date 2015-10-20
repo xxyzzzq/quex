@@ -31,7 +31,6 @@ QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
                             QUEX_NAME(Converter)* converter,
-                            const char*           CharacterEncodingName,
                             const size_t          TranslationBufferMemorySize)
 /* CharacterEncoding == 0x0: Impossible; Converter requires codec name 
  *                           --> filler = 0x0
@@ -41,28 +40,10 @@ QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader,
     QUEX_NAME(BufferFiller)* filler;
     (void)TranslationBufferMemorySize;
 
-#   if    defined(QUEX_OPTION_CONVERTER_ICONV) \
-       || defined(QUEX_OPTION_CONVERTER_ICU) 
-    if( ! CharacterEncodingName ) {
-#   ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
-        __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
-                          "Warning: analyzer was generated for use with a converter.\n" \
-                          "Warning: Please, consult the documentation about the constructor\n" \
-                          "Warning: or the reset function. If it is desired to do a plain\n" \
-                          "Warning: buffer filler with this setup, you might want to disable\n" \
-                          "Warning: this warning with the macro:\n" \
-                          "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
-#   endif
-        return (QUEX_NAME(BufferFiller*))0x0;
-    } 
-#   endif
-
     /* byte_loader = 0; possible if memory is filled manually.               */
     if( converter ) {
         filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
                                                        converter, 
-                                                       CharacterEncodingName, 
-                                                       /* Default Codec */0x0,
                                                        TranslationBufferMemorySize);
     }
     else {
@@ -74,20 +55,32 @@ QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader,
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
 QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
-                                const char*   CharacterEncodingName) 
+                                const char*   InputCodecName) 
 {
 #   if   defined(QUEX_OPTION_CONVERTER_ICU)
-    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)();
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)(InputCodecName, 0);
 #   elif defined(QUEX_OPTION_CONVERTER_ICONV)
-    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)();
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(InputCodecName, 0);
 #   else
     QUEX_NAME(Converter)* converter = (QUEX_NAME(Converter)*)0;
 #   endif
     if( converter ) {
         converter->ownership = E_Ownership_LEXICAL_ANALYZER;
     }
+    else if( ! InputCodecName ) {
+#       ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
+        __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
+                          "Warning: analyzer was generated for use with a converter.\n" \
+                          "Warning: Please, consult the documentation about the constructor\n" \
+                          "Warning: or the reset function. If it is desired to do a plain\n" \
+                          "Warning: buffer filler with this setup, you might want to disable\n" \
+                          "Warning: this warning with the macro:\n" \
+                          "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
+#       endif
+        return (QUEX_NAME(BufferFiller)*)0x0;
+    } 
+
     return QUEX_NAME(BufferFiller_new)(byte_loader, converter,
-                                       CharacterEncodingName, 
                                        QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 }
 
@@ -319,7 +312,6 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
                                           - me->stomach_byte_n(me);
     backup_character_index_next_to_fill = me->character_index_next_to_fill;
 
-    
     if( me->byte_n_per_character != -1 ) {
         /* LINEAR RELATION between character index and stream position       
          * (It is not safe to assume that it can be computed)                */
