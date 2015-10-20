@@ -73,19 +73,17 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me);
 
         /* Default: assume input encoding to have dynamic character sizes.   */
-        if(    __QUEX_STD_strcmp(FromCoding, "UTF-32") == 0 
-            || __QUEX_STD_strcmp(FromCoding, "UTF32") == 0 )
-        {
+        if( ucnv_compareNames(FromCoding, "UTF32") == 0 ) {
             FromCoding = "UTF32_PlatformEndian";
         }
-        else if(    __QUEX_STD_strcmp(FromCoding, "UTF-16") == 0 
-                 || __QUEX_STD_strcmp(FromCoding, "UTF16") == 0 )
-        {
+        else if( ucnv_compareNames(FromCoding, "UTF16") == 0 ) {
             FromCoding = "UTF16_PlatformEndian";
         }
 
         /* Open conversion handles                                           */
+        me->status = U_ZERO_ERROR;
         me->from_handle = ucnv_open(FromCoding, &me->status);
+        if( me->from_handle == NULL || ! U_SUCCESS(me->status) ) return false;
 
         if( ! U_SUCCESS(me->status) ) {
             return false;
@@ -114,6 +112,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             }
         } 
 
+        me->status = U_ZERO_ERROR;
         me->to_handle = ucnv_open(ToCoding, &me->status);
         if( me->to_handle == NULL || ! U_SUCCESS(me->status) ) return false;
 
