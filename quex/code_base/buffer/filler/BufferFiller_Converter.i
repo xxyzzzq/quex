@@ -124,20 +124,26 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
 }
 
 QUEX_INLINE ptrdiff_t   
-QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego)
+QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)*  alter_ego)
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+    ptrdiff_t  byte_n;
 
-    return me->raw_buffer.fill_end_p - me->raw_buffer.next_to_convert_p;
+    byte_n = me->raw_buffer.fill_end_p - me->raw_buffer.next_to_convert_p;
+
+    if( me->converter->stomach_byte_n ) {
+        byte_n += me->converter->stomach_byte_n(me->converter);
+    }
+
+    return byte_n;
 }
 
 QUEX_INLINE void   
 QUEX_NAME(BufferFiller_Converter_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego)
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-
-    if( me->converter->stomach_clear ) me->converter->stomach_clear(me->converter);
     QUEX_NAME(RawBuffer_init)(&me->raw_buffer, 0, 0);
+    if( me->converter->stomach_clear ) me->converter->stomach_clear(me->converter);
 }
 
 QUEX_INLINE void   
