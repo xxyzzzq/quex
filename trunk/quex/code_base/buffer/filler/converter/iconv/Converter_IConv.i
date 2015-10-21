@@ -52,6 +52,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                                              QUEX_NAME(Converter_IConv_open),
                                              QUEX_NAME(Converter_IConv_convert),
                                              QUEX_NAME(Converter_IConv_delete_self),
+                                             (ptrdiff_t (*)(struct QUEX_NAME(Converter_tag)*))0,
                                              (void (*)(struct QUEX_NAME(Converter_tag)*))0) ) {
             QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_CONVERTER);
             return (QUEX_NAME(Converter)*)0;
@@ -126,26 +127,20 @@ QUEX_NAMESPACE_MAIN_OPEN
      *  problem for plain 'C', then please, let me know 
      *  <fschaef@users.sourceforge.net>.                                     */
     {
-        QUEX_NAME(Converter_IConv)* me = (QUEX_NAME(Converter_IConv)*)alter_ego;
+        QUEX_NAME(Converter_IConv)* me          = (QUEX_NAME(Converter_IConv)*)alter_ego;
         QUEX_TYPE_CHARACTER*        drain_begin = *drain;
-        size_t  source_bytes_left_n = (size_t)(SourceEnd - *source);
-        size_t  drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
-        size_t  report;
+        size_t                      source_bytes_left_n = (size_t)(SourceEnd - *source);
+        size_t                      drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
+        size_t                      report;
         
         /* Avoid strange error reports from 'iconv' in case that the source 
          * buffer is empty.                                                  */
-
-        __quex_assert(me);
-        __quex_assert(SourceEnd >= *source);
-        __quex_assert(DrainEnd >= *drain);
-
         report = iconv(me->handle, 
                        __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
                        (char**)drain,                        &drain_bytes_left_n);
 
         /* Check for BOM and, if necessary move it away (safety measure).    */
-        if( *drain != drain_begin && drain_begin[0] == 0xfeff )
-        {
+        if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
             if( ! me->base.virginity_f ) {
                 QUEX_ERROR_EXIT("Converter 'IConv' produced BOM upon not-first call to 'convert'\n"
                                 "Better make sure that converter NEVER produces BOM.\n"
@@ -157,30 +152,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         }
 
         if( report != (size_t)-1 ) { 
-            __quex_assert(source_bytes_left_n == 0);
-            /* The input sequence (raw buffer content) has been converted 
-             * completely. But, is the user buffer filled to its limits?     */
-            if( drain_bytes_left_n == 0 ) {
-                __quex_assert(*drain == DrainEnd);
-                return true; 
-            }
-            else if( *source != SourceEnd ) {
-                /* If the buffer was not filled completely, then was it because
-                 * we reached EOF?  NOTE: Here, 'source->iterator' points to
-                 * the position after the last byte that has been converted. If
-                 * this is the end of the buffer, then it means that the raw
-                 * buffer was read. If not, it means that the buffer has not
-                 * been filled to its border which happens only if End of File
-                 * occured.                                                  */
-                return true;
-            }
-            else {
-
-                /* Else: The user buffer is still hungry, thus the raw buffer
-                 * needs more bytes. *source == SourceEnd anyway, so 'refill'
-                 * is triggered at any time.                                 */
-                return false; 
-            }
+            /* No Error => Raw buffer COMPLETELY converted.                  */
+            __quex_assert(! source_bytes_left_n);
+            return drain_bytes_left_n ? false : true;
         }
 
         switch( errno ) {
@@ -191,17 +165,15 @@ QUEX_NAMESPACE_MAIN_OPEN
             QUEX_ERROR_EXIT("Invalid byte sequence encountered for given character coding.");
 
         case EINVAL:
-            /* Incomplete byte sequence for character conversion
-             * ('raw_buffer.iterator' points to the beginning of the incomplete sequence.)
-             * Please, refill the buffer (consider copying the bytes from raw_buffer.iterator 
-             * to the end of the buffer in front of the new buffer).                               
-             * If it happens, that we just finished filling the drain buffer before this happend
-             * than the 'read_characters()' function does not need to reload.                    */
+            /* Incomplete byte sequence for character conversion.
+             * => '*source' points to the beginning of the incomplete sequence.
+             * => If drain is not filled, then new source content must be 
+             *    provided.                                                  */
             return *drain == DrainEnd ? true : false;
 
         case E2BIG:
-            /* The input buffer was not able to hold the number of converted characters.
-             * (in other words we're filled up to the limit and that's what we actually wanted.) */
+            /* The input buffer was not able to hold the number of converted 
+             * characters. => Drain is filled to the limit.                 */
             return true;
         }
     }

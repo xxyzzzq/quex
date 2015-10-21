@@ -17,9 +17,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         UConverter*  to_handle;
         UErrorCode   status;
 
-        UChar        pivot_buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE];
-        UChar*       pivot_iterator_begin;
-        UChar*       pivot_iterator_end;
+        struct {
+            UChar    buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE];
+            UChar*   source;
+            UChar*   target;
+        } pivot;
 
     } QUEX_NAME(Converter_ICU);
 

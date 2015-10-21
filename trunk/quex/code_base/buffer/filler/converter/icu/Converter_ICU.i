@@ -29,8 +29,11 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter)* me);
 
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* me);
+
     QUEX_INLINE void 
-    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter)* me);
+    QUEX_NAME(Converter_ICU_stomach_clear)(QUEX_NAME(Converter)* me);
 
     QUEX_INLINE QUEX_NAME(Converter)*
     QUEX_NAME(Converter_ICU_new)(const char* FromCoding, const char* ToCoding)
@@ -42,13 +45,17 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->to_handle   = 0x0;
         me->from_handle = 0x0;
         me->status      = U_ZERO_ERROR;
+        /* Setup the pivot buffer                                            */
+        me->pivot.source = &me->pivot.buffer[0];
+        me->pivot.target = &me->pivot.buffer[0];
 
         if( ! QUEX_NAME(Converter_construct)(&me->base,
                                              FromCoding, ToCoding,
                                              QUEX_NAME(Converter_ICU_open),
                                              QUEX_NAME(Converter_ICU_convert),
                                              QUEX_NAME(Converter_ICU_delete_self),
-                                             QUEX_NAME(Converter_ICU_on_conversion_discontinuity)) ) {
+                                             QUEX_NAME(Converter_ICU_stomach_byte_n),
+                                             QUEX_NAME(Converter_ICU_stomach_clear)) ) {
             QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_CONVERTER);
             return (QUEX_NAME(Converter)*)0;
         }
@@ -117,8 +124,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( me->to_handle == NULL || ! U_SUCCESS(me->status) ) return false;
 
         /* Setup the pivot buffer                                            */
-        me->pivot_iterator_begin = &me->pivot_buffer[0];
-        me->pivot_iterator_end   = &me->pivot_buffer[0];
+        me->pivot.source = &me->pivot.buffer[0];
+        me->pivot.target = &me->pivot.buffer[0];
 
         return true;
     }
@@ -140,23 +147,21 @@ QUEX_NAMESPACE_MAIN_OPEN
         __quex_assert(me->from_handle);
         __quex_assert(SourceEnd >= *source);
         __quex_assert(DrainEnd >= *drain);
+        __quex_assert(&me->pivot.buffer[0] <= me->pivot.source);
+        __quex_assert(me->pivot.source     <= me->pivot.target);
+        __quex_assert(me->pivot.target     <= &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE]);
 
         me->status = U_ZERO_ERROR;
 
         ucnv_convertEx(me->to_handle, me->from_handle,
                        (char**)drain,        (const char*)DrainEnd,
                        (const char**)source, (const char*)SourceEnd,
-                       me->pivot_buffer, 
-                       &me->pivot_iterator_begin, 
-                       &me->pivot_iterator_end, 
-                       &me->pivot_buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE],
+                       &me->pivot.buffer[0], 
+                       &me->pivot.source, &me->pivot.target, 
+                       &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE],
                        /* reset = */FALSE, 
                        /* flush = */FALSE,
                        &me->status);
-
-        /* Gentle reminder to consider the FAILURE on _seek'  */
-        printf("Bytes stuck inside: %i;\n", 
-               (int)(me->pivot_iterator_end - me->pivot_iterator_begin));
 
         if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
             if( ! me->base.virginity_f ) {
@@ -186,17 +191,29 @@ QUEX_NAMESPACE_MAIN_OPEN
         */
     }
 
+    QUEX_INLINE ptrdiff_t 
+    QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* alter_ego)
+    {
+        QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
+#       if 0
+        printf("#pivot: begin: %p; source: %p; target: %p; end: %p;\n",
+               &me->pivot.buffer[0], me->pivot.source, me->pivot.target,
+               &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE]);
+#       endif
+        return me->pivot.source - &me->pivot.buffer[0];
+    }
+
     QUEX_INLINE void 
-    QUEX_NAME(Converter_ICU_on_conversion_discontinuity)(QUEX_NAME(Converter)* alter_ego)
+    QUEX_NAME(Converter_ICU_stomach_clear)(QUEX_NAME(Converter)* alter_ego)
     {
         QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
 
-        ucnv_reset(me->from_handle);
-        if( me->to_handle ) ucnv_reset(me->to_handle);
+        if( me->from_handle ) ucnv_reset(me->from_handle);
+        if( me->to_handle )   ucnv_reset(me->to_handle);
 
         /* Reset the pivot buffer iterators */
-        me->pivot_iterator_begin = &me->pivot_buffer[0];
-        me->pivot_iterator_end   = &me->pivot_buffer[0];
+        me->pivot.source = &me->pivot.buffer[0];
+        me->pivot.target = &me->pivot.buffer[0];
 
         me->status = U_ZERO_ERROR;
     }
