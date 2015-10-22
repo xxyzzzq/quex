@@ -28,7 +28,7 @@
 #include    <quex/code_base/buffer/filler/BufferFiller.i>
 
 #if defined(__QUEX_OPTION_CONVERTER)
-#   include <quex/code_base/buffer/filler/converter/BufferFiller_Converter.i>
+#   include <quex/code_base/buffer/filler/BufferFiller_Converter.i>
 #endif
 
 #ifdef      __QUEX_OPTION_COUNTER

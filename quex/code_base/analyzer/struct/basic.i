@@ -78,7 +78,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                  - previous_character_index_begin;
 
         for(iterator = position_register; iterator != End; ++iterator) {
-            *iterator = *iterator >= offset ? *iterator - offset : 0;
+            *iterator = (*iterator - &buffer->_memory._front[1]) >= offset ? *iterator - offset : 0;
         }
     }
 

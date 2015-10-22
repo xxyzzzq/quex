@@ -25,10 +25,10 @@ candidate_db = {
 "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_LABEL_VOID",        False],
 "last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                          False],
 "PositionRegisterN":              ["const size_t",                  None,                          False],
-"position":                       ["QUEX_TYPE_CHARACTER_POSITION",  None,                          False],
+"position":                       ["QUEX_TYPE_CHARACTER*",  None,                          False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                           False], 
 "counter":                        ["size_t",                        "0",                           False],
-"end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER_POSITION",  "((QUEX_TYPE_CHARACTER*)0x0)", False],
+"end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER*",  "((QUEX_TYPE_CHARACTER*)0x0)", False],
 #                                 
 # (*) Path Compression
 "path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
@@ -45,8 +45,8 @@ candidate_db = {
 "template_%i_map_state_key_to_recursive_entry": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
 #
 # (*) Skipper etc.
-"reference_p":                    ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
-"character_begin_p":              ["QUEX_TYPE_CHARACTER_POSITION", "(QUEX_TYPE_CHARACTER_POSITION)0x0", False],
+"reference_p":                    ["QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0", False],
+"character_begin_p":              ["QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0", False],
 "text_end":                       ["QUEX_TYPE_CHARACTER*",         "(QUEX_TYPE_CHARACTER*)0x0",         False],
 #     Character Set Skipper:
 "Skipper%i":                      ["const QUEX_TYPE_CHARACTER",    None,                                False],

@@ -136,12 +136,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                      const uint8_t*              SourceEnd, 
                                      QUEX_TYPE_CHARACTER**       drain,  
                                      const QUEX_TYPE_CHARACTER*  DrainEnd)
+    /* RETURNS: 'true'  if the drain was completely filled.
+     *          'false' if the drain could not be filled completely and 
+     *                  more source bytes are required.                      */
     {
         QUEX_NAME(Converter_ICU)* me          = (QUEX_NAME(Converter_ICU)*)alter_ego;
-        QUEX_TYPE_CHARACTER*      drain_begin = *drain;
-        /* RETURNS: 'true'  if the drain was completely filled.
-         *          'false' if the drain could not be filled completely and 
-         *                  more source bytes are required.                  */
         __quex_assert(me);
         __quex_assert(me->to_handle);
         __quex_assert(me->from_handle);
@@ -163,32 +162,7 @@ QUEX_NAMESPACE_MAIN_OPEN
                        /* flush = */FALSE,
                        &me->status);
 
-        if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
-            if( ! me->base.virginity_f ) {
-                QUEX_ERROR_EXIT("Converter 'ICU' produced BOM upon not-first call to 'convert'\n"
-                                "Better make sure that converter NEVER produces BOM.\n"
-                                "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
-            }
-            __QUEX_STD_memmove(&drain_begin[0], &drain_begin[1], 
-                               (*drain - &drain_begin[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
-            *drain = &(*drain)[-1];
-        }
-
         return *drain == DrainEnd ? true : false;
-
-        /*
-        if( me->status == U_BUFFER_OVERFLOW_ERROR) {
-            return false;
-        }
-        else {
-            if( ! U_SUCCESS(me->status) ) {
-                QUEX_ERROR_EXIT(u_errorName(me->status));
-            }
-            / * Are more source bytes needed to fill the drain buffer? If so we return 'false' * /
-            if( *drain != DrainEnd && *source == SourceEnd ) return false;
-            else                                             return true;
-        }
-        */
     }
 
     QUEX_INLINE ptrdiff_t 

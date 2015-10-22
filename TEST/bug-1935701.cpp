@@ -5,8 +5,8 @@
 
 #include<quex/code_base/test_environment/TestAnalyzer-configuration>
 #include<quex/code_base/buffer/filler/BufferFiller>
-#include<quex/code_base/buffer/plain/BufferFiller_Plain>
-#include<quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include<quex/code_base/buffer/filler/BufferFiller_Plain>
+#include<quex/code_base/buffer/filler/BufferFiller_Plain.i>
 #include<quex/code_base/single.i>
 
 using namespace std;
@@ -41,7 +41,7 @@ main(int argc, char** argv)
         ByteLoader*                byte_loader = ByteLoader_FILE_new(fh);
         QUEX_NAME(BufferFiller)*   is = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
 
-        loaded_character_n = is->read_characters(is, buffer, BufferSize);
+        loaded_character_n = is->derived_input_character_load(is, buffer, BufferSize);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
 
@@ -56,7 +56,7 @@ main(int argc, char** argv)
         
         ByteLoader*              byte_loader = ByteLoader_stream_new(&fh);
         QUEX_NAME(BufferFiller)* is          = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
-        loaded_character_n = is->read_characters(is, buffer, BufferSize);
+        loaded_character_n = is->derived_input_character_load(is, buffer, BufferSize);
         
         fh.close();
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
