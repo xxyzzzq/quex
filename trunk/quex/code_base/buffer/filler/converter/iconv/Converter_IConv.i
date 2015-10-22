@@ -128,7 +128,6 @@ QUEX_NAMESPACE_MAIN_OPEN
      *  <fschaef@users.sourceforge.net>.                                     */
     {
         QUEX_NAME(Converter_IConv)* me          = (QUEX_NAME(Converter_IConv)*)alter_ego;
-        QUEX_TYPE_CHARACTER*        drain_begin = *drain;
         size_t                      source_bytes_left_n = (size_t)(SourceEnd - *source);
         size_t                      drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
         size_t                      report;
@@ -138,18 +137,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         report = iconv(me->handle, 
                        __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
                        (char**)drain,                        &drain_bytes_left_n);
-
-        /* Check for BOM and, if necessary move it away (safety measure).    */
-        if( *drain != drain_begin && drain_begin[0] == 0xfeff ) {
-            if( ! me->base.virginity_f ) {
-                QUEX_ERROR_EXIT("Converter 'IConv' produced BOM upon not-first call to 'convert'\n"
-                                "Better make sure that converter NEVER produces BOM.\n"
-                                "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
-            }
-            __QUEX_STD_memmove(&drain_begin[0], &drain_begin[1], 
-                               ((size_t)(*drain - &drain_begin[1])) * sizeof(QUEX_TYPE_CHARACTER)); 
-            *drain = &(*drain)[-1];
-        }
 
         if( report != (size_t)-1 ) { 
             /* No Error => Raw buffer COMPLETELY converted.                  */

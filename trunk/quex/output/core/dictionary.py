@@ -946,7 +946,7 @@ cpp_reload_forward_str = [
 """,
 """
         __quex_debug_reload_before();          /* Report source position. */
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
+        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN);
 """,
 """
         __quex_debug_reload_after();

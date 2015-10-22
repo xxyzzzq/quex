@@ -18,12 +18,12 @@ ByteLoader_stream_new(StreamType* sh)
 {
     ByteLoader_stream<StreamType>* me;
 
-    if( ! sh ) return (ByteLoader_stream<StreamType>*)0;
+    if( ! sh ) return (ByteLoader*)0;
 
     me = (ByteLoader_stream<StreamType>*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_stream<StreamType>),
                                                                         E_MemoryObjectType_BYTE_LOADER);
 
-    if( ! me ) return (ByteLoader_stream<StreamType>*)0;
+    if( ! me ) return (ByteLoader*)0;
 
     ByteLoader_stream_construct(me, sh);
     return &me->base;

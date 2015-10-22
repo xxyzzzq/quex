@@ -117,7 +117,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   CharacterIndexAtBegin
                                                        + (me->_read_p - BeginP);
     ptrdiff_t                  target = CharacterIndexAtReadP - CharacterN;
-    const size_t               ContentSize = QUEX_NAME(Buffer_content_size)(me); 
+    const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me); 
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
     ptrdiff_t                  offset;
 

@@ -244,9 +244,6 @@ QUEX_NAME(Mr_analyzer_function)(QUEX_TYPE_ANALYZER* me)
 #   define  engine (me)
 #   define  self   (*me)
 #   define QUEX_LABEL_STATE_ROUTER $$QUEX_LABEL_STATE_ROUTER$$ 
-#   ifndef QUEX_TYPE_CHARACTER_POSITION
-#      define QUEX_TYPE_CHARACTER_POSITION (QUEX_TYPE_CHARACTER*)
-#   endif
 $$LOCAL_VARIABLES$$
 $$LEXEME_MACRO_SETUP$$
 ENTRY:
@@ -307,7 +304,7 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
         }
-        QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
+        QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
         ++(buffer->_read_p);
     }
     if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
@@ -341,7 +338,7 @@ $$MARKER_LIST$$
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 return false;
             }
-            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)0x0, 0);
+            QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
         }
         ++(me->buffer._read_p);
     }
