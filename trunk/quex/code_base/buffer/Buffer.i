@@ -332,7 +332,7 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
      * far it is to be moved.                                                */
     move_distance = &BackP[1] - ContentEndP;
     move_distance = QUEX_MAX(move_distance, (ptrdiff_t)(ContentSize/3));
-    move_distance = QUEX_MIN(move_distance, begin_character_index);
+    move_distance = (ptrdiff_t)QUEX_MIN((QUEX_TYPE_STREAM_POSITION)move_distance, begin_character_index);
     move_distance = QUEX_MIN(move_distance, BackP - me->_read_p);
     if( me->_lexeme_start_p ) {
         move_distance = QUEX_MIN(move_distance, BackP - me->_lexeme_start_p);
@@ -427,7 +427,7 @@ QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me,
     __quex_assert(Memory);
     /* "Memory size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2" is reqired.
      * Maybe, define '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0' for 
-     * compilation (assumed no pre-contexts.)                            */
+     * compilation (assumed no pre-contexts.)                                */
     __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
 
     me->_front    = Memory;
@@ -440,12 +440,12 @@ QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me,
 QUEX_INLINE void 
 QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me) 
 /* Does not set 'me->_front' to zero, if it is not deleted. Thus, the user
- * may detect wether it needs to be deleted or not.                      */
+ * may detect wether it needs to be deleted or not.                          */
 {
     if( me->_front && me->ownership == E_Ownership_LEXICAL_ANALYZER ) {
         QUEXED(MemoryManager_free)((void*)me->_front, 
                                    E_MemoryObjectType_BUFFER_MEMORY);
-        /* Protect against double-destruction.                           */
+        /* Protect against double-destruction.                               */
         me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
     }
 }
@@ -584,6 +584,10 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
     /* Adapt 'end_p' and 'end_character_index'.                          */
     end_p = me->input.end_p;
     if( end_p ) {
+        /* 'EndP' and 'end_p' both lie inside the buffer.
+         * => EndP - end_p < ContentSize
+         * => from:    EndP - end_p > move_distance 
+         *          => ContentSize  > move_distance                      */
         end_p = (EndP - end_p > move_distance) ? &end_p[move_distance]
                                                : (QUEX_TYPE_CHARACTER*)0;
     }
