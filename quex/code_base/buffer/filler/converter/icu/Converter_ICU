@@ -17,6 +17,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         UConverter*  to_handle;
         UErrorCode   status;
 
+        UBool        reset_upon_next_conversion_f;
+
         struct {
             UChar    buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE];
             UChar*   source;
