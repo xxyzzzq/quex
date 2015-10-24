@@ -88,12 +88,9 @@ ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN)
 #   if 0
     int    i;
     printf("#load @%i:         [", (int)ftell(((ByteLoader_FILE*)me)->input_handle));
-    for(i=0; i<loaded_byte_n; ++i) {
-        printf("%02X.", ((uint8_t*)buffer)[i]);
-    }
+    for(i=0; i<loaded_byte_n; ++i) printf("%02X.", ((uint8_t*)buffer)[i]);
     printf("]\n");
 #   endif
-    
     return loaded_byte_n;
 }
 
