@@ -62,9 +62,9 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, const char* 
      * containing the REFERENCE data and the INPUT file are the SAME.        */
     const char*               ref_file_name = find_reference(FileStem); 
     ByteLoader*               byte_loader   = ByteLoader_FILE_new_from_file_name(FileName);
-    QUEX_NAME(BufferFiller)*  filler;  
-    const size_t              MemorySize    = false ? 5 : 16;
+    const size_t              MemorySize    = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
+    QUEX_NAME(BufferFiller)*  filler;  
 
     switch( CTT ) {
     case TEST_ICU:   converter = QUEX_NAME(Converter_ICU_new)(Codec, 0); break;

@@ -143,11 +143,11 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
  *                  more source bytes are required.                      */
 {
     QUEX_NAME(Converter_ICU)* me          = (QUEX_NAME(Converter_ICU)*)alter_ego;
-
+    uint8_t*                  SourceBegin = *source;
+    (void)SourceBegin;
 #   if 0
-    uint8_t*             DEBUG_SourceBegin = *source;
-    QUEX_TYPE_CHARACTER* DEBUG_DrainBegin  = *drain;
-    int                  i = 0;
+    QUEX_TYPE_CHARACTER*      DEBUG_DrainBegin  = *drain;
+    int                       i = 0;
 #   endif
 
     __quex_assert(me);
@@ -163,9 +163,9 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
 
 #   if 0
     {
-        printf("#source: [");
-        for(i=0; i<(SourceEnd  - DEBUG_SourceBegin); ++i) {
-            printf("%02X.", (int)DEBUG_SourceBegin[i]);
+        printf("#source:          [");
+        for(i=0; i<(SourceEnd  - SourceBegin); ++i) {
+            printf("%02X.", (int)SourceBegin[i]);
         }
         printf("]\n");
         printf("#reset_f: %s;\n", me->reset_upon_next_conversion_f ? "TRUE" : "FALSE");
@@ -174,57 +174,94 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     ucnv_convertEx(me->to_handle, me->from_handle,
                    (char**)drain,        (const char*)DrainEnd,
                    (const char**)source, (const char*)SourceEnd,
-                   &me->pivot.buffer[0], 
-                   &me->pivot.source, &me->pivot.target, 
-                   &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE],
-                   /* reset = */me->reset_upon_next_conversion_f, 
+                   &me->pivot.buffer[0], &me->pivot.source, &me->pivot.target, &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE],
+                   /* reset = */me->reset_upon_next_conversion_f ? TRUE : FALSE, 
                    /* flush = */FALSE,
                    &me->status);
     me->reset_upon_next_conversion_f = FALSE;
 
+    me->status = U_ZERO_ERROR;
 #   if 0
     {
-        printf("#status: %i;\n", me->status);
+        printf("#pending to:source:   %i;\n", (int)ucnv_toUCountPending(me->from_handle, &me->status));
+        printf("#pending from:source: %i;\n", (int)ucnv_fromUCountPending(me->from_handle, &me->status));
+        printf("#pending to:drain:    %i;\n", (int)ucnv_toUCountPending(me->to_handle, &me->status));
+        printf("#pending from:drain:  %i;\n", (int)ucnv_fromUCountPending(me->to_handle, &me->status));
+        printf("#status:          %i;\n", me->status);
         me->status = U_ZERO_ERROR;
-        printf("#pending: %i;\n", (int)ucnv_toUCountPending(me->from_handle, &me->status));
+        printf("#pending from:    %i;\n", (int)ucnv_toUCountPending(me->from_handle, &me->status));
+        me->status = U_ZERO_ERROR;
+        printf("#pending to:      %i;\n", (int)ucnv_toUCountPending(me->to_handle, &me->status));
         printf("#source consumed: %i/%i; p.source: @%i; p.target @%i;\n",
-               (int)(*source - DEBUG_SourceBegin), (int)(SourceEnd - DEBUG_SourceBegin),
+               (int)(*source - SourceBegin), (int)(SourceEnd - SourceBegin),
                (int)(me->pivot.source - &me->pivot.buffer[0]), 
                (int)(me->pivot.target - &me->pivot.buffer[0])); 
         printf("#consumed source: [");
-        for(i=0; i<(*source  - DEBUG_SourceBegin); ++i) {
-            printf("%02X.", (int)DEBUG_SourceBegin[i]);
+        for(i=0; i<(*source  - SourceBegin); ++i) {
+            printf("%02X.", (int)SourceBegin[i]);
         }
+#   endif
+#   if 0
         printf("]\n");
-        printf("#pivot: [");
+        printf("#pivot:           [");
         for(i=0; i<8; ++i) {
             if( me->pivot.source - &me->pivot.buffer[0] == i ) printf("s!");
             if( me->pivot.target - &me->pivot.buffer[0] == i ) printf("t!");
             printf("%02X.", (int)me->pivot.buffer[i]);
         }
+#   endif
+#   if 0
         printf("]\n");
-        printf("#drain: [");
+        printf("#drain:           [");
         for(i=0; i<(*drain  - DEBUG_DrainBegin); ++i) {
             printf("%02X.", (int)DEBUG_DrainBegin[i]);
         }
         printf("]\n");
     }
 #   endif
+    // *source -= ucnv_toUCountPending(me->from_handle, &me->status);
+    // *source -= ucnv_fromUCountPending(me->to_handle, &me->status);
+    __quex_assert(*source >= SourceBegin);
 
     return *drain == DrainEnd ? true : false;
 }
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* alter_ego)
+/* To compute the source bytes which have not been converted during the last
+ * conversion the 3-buffer setup must be considered. First, ICU converts the
+ * source data into a pivot buffer encoded in UTF16. The the content of the
+ * pivot buffer is converted into the user's drain. 
+ * 
+ *  source buffer  [x.x.x|y.y|z|a.a.a|b.b.b|c.c. ]    'c's are not complete
+ *  (e.g. UTF8)    :   .-'   : '---. '-.   '---.      => pending = 2
+ *                 :   :     '-.   :   '---.   :      
+ *  pivot buffer   [X.X|Y.Y|Y.Y|Z.Z|A.A|A.A|B.B| ...  pivot.source--> 'A's
+ *  (fix UTF16)    :   :   .---'   :                  pivot.target--> after 'B's
+ *                 :   :   :   .---'                  
+ *  drain buffer   [ X | Y | Z ]                      Drain filled to limit
+ *  (some UCS)                                        'A' and 'B' cannot be 
+ *                                                    converted.
+ * 
+ * => Source bytes NOT translated in the last conversion:
+ * 
+ *    (1) The 'c's that where incomplete: 'ucnv_toUCountPending()'
+ *    (2) Source bytes that produced the 'A's and 'B's in the pivot buffer.  
+ *
+ * However, what if the conversion contained a 0xFFFD, i.e. a conversion error.
+ * At the current time, I know of no reliable way to get the stomach byte
+ * number <fschaef 2015y10m24d>                                              */
 {
+#   if 0
     QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
-#       if 0
-    printf("#pivot: begin: %p; source: %p; target: %p; end: %p;\n",
-           &me->pivot.buffer[0], me->pivot.source, me->pivot.target,
-           &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE]);
-#       endif
-    me->status = U_ZERO_ERROR;
-    return ucnv_toUCountPending(me->from_handle, &me->status);
+    ptrdiff_t  incomplete_sequence_byte_n = \
+                   ucnv_toUCountPending(me->from_handle, &me->status);
+    ptrdiff_t  no_drain_byte_n = \
+                   QUEX_NAME(Converter_ICU_source_byte_n_related_to_pending_pivot)(me);
+
+    return incomplete_sequence_byte_n + pending_pivot_byte_n;
+#   endif
+    return (ptrdiff_t)-1;                          /* Unable to tell. Sorry. */
 }
 
 QUEX_INLINE void 
@@ -232,8 +269,8 @@ QUEX_NAME(Converter_ICU_stomach_clear)(QUEX_NAME(Converter)* alter_ego)
 {
     QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
 
-    if( me->from_handle ) ucnv_reset(me->from_handle);
-    if( me->to_handle )   ucnv_reset(me->to_handle);
+    // if( me->from_handle ) ucnv_reset(me->from_handle);
+    //  if( me->to_handle )   ucnv_reset(me->to_handle);
 
     /* Reset the pivot buffer iterators */
     //me->pivot.source = &me->pivot.buffer[0];

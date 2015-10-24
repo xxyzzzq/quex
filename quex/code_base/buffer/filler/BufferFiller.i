@@ -14,6 +14,13 @@ QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(Bu
                                                                     const QUEX_TYPE_STREAM_POSITION  CharacterIndex);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
                        QUEX_NAME(BufferFiller_character_index_tell)(QUEX_NAME(BufferFiller)* me);
+QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
+                                                                       const QUEX_TYPE_STREAM_POSITION TargetCI);
+QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me);
+QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX_NAME(BufferFiller)* me, 
+                                                          QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
+                                                          ptrdiff_t                 BackupStomachByteN, 
+                                                          QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition);
 
 QUEX_INLINE void*      QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)* buffer, 
                                                     const void*        ContentBegin, 
@@ -25,8 +32,6 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* bu
                                                            const void*        FilledEndP);
 QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
-QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
-                                                                       const QUEX_TYPE_STREAM_POSITION TargetCI);
                        
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
@@ -302,14 +307,19 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
  *
  * RETURNS: true upon success, false else.                                   */
 { 
-    QUEX_TYPE_STREAM_POSITION      backup_byte_pos;
-    QUEX_TYPE_STREAM_POSITION      target_byte_pos;
+    ptrdiff_t                      backup_stomach_byte_n; 
+    QUEX_TYPE_STREAM_POSITION      backup_byte_loader_position; 
     QUEX_TYPE_STREAM_POSITION      backup_character_index_next_to_fill;
+    QUEX_TYPE_STREAM_POSITION      target_byte_pos;
 
     if( me->character_index_next_to_fill == CharacterIndex ) return true;
 
-    backup_byte_pos                     =   me->byte_loader->tell(me->byte_loader) 
-                                          - me->stomach_byte_n(me);
+    /* Converter reports '-1' => unable to determine the number of bytes in
+     *                           the stomach. 
+     * => When backup position is to setup, start stepping from beginning.
+     * (This is currently only an issue with ICU; IConv behaves well)        */
+    backup_stomach_byte_n               = me->stomach_byte_n(me);
+    backup_byte_loader_position         = me->byte_loader->tell(me->byte_loader);
     backup_character_index_next_to_fill = me->character_index_next_to_fill;
 
     if( me->byte_n_per_character != -1 ) {
@@ -320,7 +330,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
 
         me->byte_loader->seek(me->byte_loader, target_byte_pos);
         if( me->byte_loader->tell(me->byte_loader) != target_byte_pos ) {
-            me->byte_loader->seek(me->byte_loader, backup_byte_pos);
+            me->byte_loader->seek(me->byte_loader, backup_byte_loader_position);
             return false;
         }
         me->character_index_next_to_fill = CharacterIndex;
@@ -332,21 +342,16 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
     if( CharacterIndex < me->character_index_next_to_fill ) {
         /* Character index lies backward, so stepping needs to start from 
          * the initial position.                                             */
-        me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
-        if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
-            QUEX_ERROR_EXIT("ByteLoader failed to seek to initial position.\n");
-            return false;
-        }
-        me->character_index_next_to_fill = 0;
-        me->stomach_clear(me);
+        QUEX_NAME(BufferFiller_character_index_reset)(me);
     }
 
     /* step_forward_n_characters() calls derived_input_character_load() 
      * which increments 'character_index_next_to_fill'.                      */
     if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
-        me->character_index_next_to_fill = backup_character_index_next_to_fill;
-        me->byte_loader->seek(me->byte_loader, backup_byte_pos);
-        me->stomach_clear(me);
+        QUEX_NAME(BufferFiller_character_index_reset_backup)(me, 
+                                                             backup_character_index_next_to_fill, 
+                                                             backup_stomach_byte_n, 
+                                                             backup_byte_loader_position);
         return false;
     }
     __quex_assert(me->character_index_next_to_fill == CharacterIndex);
@@ -468,6 +473,46 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     }
 
     return loaded_n;
+}
+
+QUEX_INLINE void
+QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me)
+/* Set the character index position to '0' and the byte loader to the initial
+ * position. The 'stomach' of derived buffer fillers is cleared, so that 
+ * filling may start from the beginning.                                     */
+{
+    me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
+    if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
+        QUEX_ERROR_EXIT("ByteLoader failed to seek to initial position.\n");
+    }
+    me->character_index_next_to_fill = 0;
+    me->stomach_clear(me);
+}
+
+QUEX_INLINE void
+QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX_NAME(BufferFiller)* me, 
+                                                     QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
+                                                     ptrdiff_t                 BackupStomachByteN, 
+                                                     QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition)
+/* Reset a previous state of the BufferFiller and its ByteLoader.            */
+{
+    QUEX_TYPE_STREAM_POSITION backup_byte_pos;
+
+    if( BackupStomachByteN == -1 ) {
+        /* Since it was not possible to determine the number of bytes in
+         * the converter's stomach, the backup position must be reached 
+         * by starting from the begining.                                    */
+        QUEX_NAME(BufferFiller_character_index_reset)(me);
+        if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)Backup_character_index_next_to_fill) ) {
+            QUEX_ERROR_EXIT("BufferFiller failed to seek previously reached character.\n");
+        }
+        return;
+    }
+
+    backup_byte_pos = BackupByteLoaderPosition - BackupStomachByteN;
+    me->byte_loader->seek(me->byte_loader, backup_byte_pos);
+    me->stomach_clear(me);
+    me->character_index_next_to_fill = Backup_character_index_next_to_fill;
 }
 
 QUEX_INLINE bool 

@@ -49,11 +49,7 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
     /* position_limit = number of characters in the file, i.e. the number of
      * raw unicode characters in the reference file.                         */
     position_limit = reference_load(ReferenceFileName);
-    if( ! position_limit ) {
-        printf("Empty reference file '%s'.\n", ReferenceFileName);
-        hwut_verify(false);
-        return false;
-    }
+    hwut_verify(position_limit);
 
     for(i=0; i < 65536 ; ++i) {
         /* Choose a position from 0 to size + 3. Choose a position beyond the
@@ -84,6 +80,7 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
         /* LOAD */
         if( ! verify_content(me, position, position_limit) ) return false;
     }
+
     printf("# <terminated: reference-file: %s; sub-tests: %i; checksum: %i; position_limit: %i>\n",
            ReferenceFileName, (int)i, (int)position, (int)position_limit);
     return true;
@@ -231,9 +228,8 @@ reference_load(const char* FileName)
     fh = fopen(FileName, "rb");
    
     if( !fh ) {
-        printf("Could not load '%s'\n", FileName);
-        hwut_verify(false);
-        return false;
+        printf("Could not load '%s'.\n", FileName);
+        return 0;
     }
 
     loaded_byte_n = fread(&reference[0], 1, sizeof(reference), fh);
