@@ -476,7 +476,7 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     ptrdiff_t                  load_request_n;
     QUEX_TYPE_CHARACTER*       load_p;
     ptrdiff_t                  loaded_n;
-    ptrdiff_t                  move_distance;
+    intmax_t                   move_distance;
     ptrdiff_t                  move_size;
     QUEX_TYPE_CHARACTER*       end_p;
     QUEX_TYPE_STREAM_POSITION  end_character_index;
@@ -555,7 +555,7 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
     QUEX_TYPE_STREAM_POSITION  character_index_begin = QUEX_NAME(Buffer_input_begin_character_index)(me);
     ptrdiff_t                  load_request_n;
     ptrdiff_t                  loaded_n;
-    ptrdiff_t                  move_distance;
+    intmax_t                   move_distance;
     ptrdiff_t                  move_size;
     QUEX_TYPE_STREAM_POSITION  end_character_index;
     QUEX_TYPE_CHARACTER*       end_p;
@@ -565,10 +565,11 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
 
     move_distance = character_index_begin - NewCharacterIndexBegin;
     if( move_distance < ContentSize ) {
-        move_size = QUEX_MAX(0, QUEX_MIN(TextEndP - BeginP, ContentSize - move_distance));
+        move_size = QUEX_MAX(0, QUEX_MIN(TextEndP - BeginP, 
+                                         (ptrdiff_t)(ContentSize - move_distance)));
         __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
                            move_size * sizeof(QUEX_TYPE_CHARACTER));
-        load_request_n = move_distance;
+        load_request_n = (ptrdiff_t)move_distance;
     }
     else {
         load_request_n = ContentSize;

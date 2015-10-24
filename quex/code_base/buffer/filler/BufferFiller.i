@@ -528,9 +528,9 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
  *
  * RETURNS: true - success; false - else.                                    */
 { 
-    const size_t        ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-    QUEX_TYPE_CHARACTER chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
-    size_t              remaining_n = TargetCI - me->character_index_next_to_fill;
+    const QUEX_TYPE_STREAM_POSITION ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+    QUEX_TYPE_CHARACTER             chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+    QUEX_TYPE_STREAM_POSITION       remaining_n = TargetCI - me->character_index_next_to_fill;
 
     __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
 
@@ -540,7 +540,7 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
         }
     }
     if( remaining_n ) {
-        if( remaining_n > me->derived_input_character_load(me, &chunk[0], remaining_n) ) {
+        if( remaining_n > me->derived_input_character_load(me, &chunk[0], (size_t)remaining_n) ) {
             return false;
         }
     }
