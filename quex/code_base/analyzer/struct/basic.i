@@ -55,7 +55,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_TYPE_CHARACTER**     iterator           = 0x0;
         QUEX_TYPE_CHARACTER**     End                = position_register + (ptrdiff_t)PositionRegisterN;
-        size_t                    loaded_character_n = (size_t)-1;    
         QUEX_TYPE_STREAM_POSITION previous_character_index_begin;
         ptrdiff_t                 offset;
 

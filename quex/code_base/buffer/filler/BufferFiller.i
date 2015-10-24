@@ -71,18 +71,18 @@ QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader,
 #   endif
     if( converter ) {
         converter->ownership = E_Ownership_LEXICAL_ANALYZER;
-    }
-    else if( ! InputCodecName ) {
-#       ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
-        __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
-                          "Warning: analyzer was generated for use with a converter.\n" \
-                          "Warning: Please, consult the documentation about the constructor\n" \
-                          "Warning: or the reset function. If it is desired to do a plain\n" \
-                          "Warning: buffer filler with this setup, you might want to disable\n" \
-                          "Warning: this warning with the macro:\n" \
-                          "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
-#       endif
-        return (QUEX_NAME(BufferFiller)*)0x0;
+        if( ! InputCodecName ) {
+#           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
+            __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
+                              "Warning: analyzer was generated for use with a converter.\n" \
+                              "Warning: Please, consult the documentation about the constructor\n" \
+                              "Warning: or the reset function. If it is desired to do a plain\n" \
+                              "Warning: buffer filler with this setup, you might want to disable\n" \
+                              "Warning: this warning with the macro:\n" \
+                              "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
+#           endif
+            return (QUEX_NAME(BufferFiller)*)0x0;
+        }
     } 
 
     return QUEX_NAME(BufferFiller_new)(byte_loader, converter,
