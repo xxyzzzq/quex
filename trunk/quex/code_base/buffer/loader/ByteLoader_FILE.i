@@ -83,7 +83,19 @@ ByteLoader_FILE_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos)
 
 QUEX_INLINE size_t  
 ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN) 
-{ return fread(buffer, 1, ByteN, ((ByteLoader_FILE*)me)->input_handle); }
+{ 
+    size_t loaded_byte_n = fread(buffer, 1, ByteN, ((ByteLoader_FILE*)me)->input_handle); 
+#   if 0
+    int    i;
+    printf("#load @%i:         [", (int)ftell(((ByteLoader_FILE*)me)->input_handle));
+    for(i=0; i<loaded_byte_n; ++i) {
+        printf("%02X.", ((uint8_t*)buffer)[i]);
+    }
+    printf("]\n");
+#   endif
+    
+    return loaded_byte_n;
+}
 
 QUEX_INLINE bool  
 ByteLoader_FILE_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B) 

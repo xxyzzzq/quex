@@ -179,6 +179,10 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     const QUEX_TYPE_CHARACTER*         BufferRegionEnd    = &RegionBeginP[N];
     ptrdiff_t                          converted_character_n;
     bool                               drain_filled_f;
+#   if 0
+    int                                i;
+    QUEX_TYPE_CHARACTER*               buffer_insertion_begin_p;
+#   endif
 
     __quex_assert(me->converter);
     __quex_assert(alter_ego); 
@@ -193,9 +197,30 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
         /* NOT: if( next_to_convert_p != fill_end_p ) ...
          * Because, converters may leave some content in their stomach and spit
          * it out later (e.g. ICU).                                          */
+#       if 0
+        printf("#source            [");
+        for(i=0; i<(raw->fill_end_p  - raw->next_to_convert_p); ++i) 
+            printf("%02X.", (int)raw->next_to_convert_p[i]);
+        printf("]\n");
+        buffer_insertion_begin_p     = buffer_insertion_p;
+#       endif
+
         drain_filled_f = me->converter->convert(me->converter, 
                                                 &raw->next_to_convert_p, raw->fill_end_p,
                                                 &buffer_insertion_p,     BufferRegionEnd);
+#       if 0
+        {
+            printf("#drain full: %s;\n", drain_filled_f ? "true":"false");
+            printf("#remaining source: [");
+            for(i=0; i<(raw->fill_end_p  - raw->next_to_convert_p); ++i) 
+                printf("%02X.", (int)raw->next_to_convert_p[i]);
+            printf("]\n");
+            printf("#converted drain:  [");
+            for(i=0; i<(buffer_insertion_p - buffer_insertion_begin_p); ++i) 
+                printf("%04X.", (int)buffer_insertion_begin_p[i]);
+            printf("]\n");
+        }
+#       endif
 
         if( buffer_insertion_p != RegionBeginP && RegionBeginP[0] == 0xfeff ) {
             if( ! me->converter->virginity_f ) {
