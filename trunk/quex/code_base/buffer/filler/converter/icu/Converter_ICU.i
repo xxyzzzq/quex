@@ -250,18 +250,15 @@ QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* alter_ego)
  *
  * However, what if the conversion contained a 0xFFFD, i.e. a conversion error.
  * At the current time, I know of no reliable way to get the stomach byte
- * number <fschaef 2015y10m24d>                                              */
+ * number <fschaef 2015y10m24d>
+ * => Only report, if nothing left in pivot buffer.                          */
 {
-#   if 0
     QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
-    ptrdiff_t  incomplete_sequence_byte_n = \
-                   ucnv_toUCountPending(me->from_handle, &me->status);
-    ptrdiff_t  no_drain_byte_n = \
-                   QUEX_NAME(Converter_ICU_source_byte_n_related_to_pending_pivot)(me);
 
-    return incomplete_sequence_byte_n + pending_pivot_byte_n;
-#   endif
-    return (ptrdiff_t)-1;                          /* Unable to tell. Sorry. */
+    if( me->pivot.source != me->pivot.target ) {
+        return (ptrdiff_t)-1;                      /* Unable to tell. Sorry. */
+    }
+    return ucnv_toUCountPending(me->from_handle, &me->status);
 }
 
 QUEX_INLINE void 
