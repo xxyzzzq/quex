@@ -73,7 +73,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtBegin = QUEX_NAME(Buffer_input_begin_character_index)(me);
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   CharacterIndexAtBegin
                                                        + (me->_read_p - BeginP);
-    ptrdiff_t                  target = CharacterIndexAtReadP + CharacterN;
+    QUEX_TYPE_STREAM_POSITION  target = CharacterIndexAtReadP + CharacterN;
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
 
     if( ! CharacterN ) {
@@ -116,7 +116,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtBegin = QUEX_NAME(Buffer_input_begin_character_index)(me);
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   CharacterIndexAtBegin
                                                        + (me->_read_p - BeginP);
-    ptrdiff_t                  target = CharacterIndexAtReadP - CharacterN;
+    QUEX_TYPE_STREAM_POSITION  target = CharacterIndexAtReadP - CharacterN;
     const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me); 
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
     ptrdiff_t                  offset;
@@ -130,7 +130,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
     }
     else {
         /* offset = desired distance from begin to 'read_p'.                 */
-        offset                    = QUEX_MIN((ContentSize >> 1), target);
+        offset                    = (ptrdiff_t)QUEX_MIN((QUEX_TYPE_STREAM_POSITION)(ContentSize >> 1), target);
         new_character_index_begin = target - offset;
 
         if( ! QUEX_NAME(Buffer_move_and_fill_backward)(me, new_character_index_begin) ) 

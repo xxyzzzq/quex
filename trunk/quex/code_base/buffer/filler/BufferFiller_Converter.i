@@ -190,6 +190,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     const QUEX_TYPE_CHARACTER*         BufferRegionEnd    = &RegionBeginP[N];
     ptrdiff_t                          converted_character_n;
     bool                               drain_filled_f;
+    uint32_t                           first_character;
 #   if 0
     int                                i;
     QUEX_TYPE_CHARACTER*               buffer_insertion_begin_p;
@@ -212,15 +213,18 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
                                                 &raw->next_to_convert_p, raw->fill_end_p,
                                                 &buffer_insertion_p,     BufferRegionEnd);
 
-        if( buffer_insertion_p != RegionBeginP && RegionBeginP[0] == 0xFEFF ) {
-            if( ! me->converter->virginity_f ) {
-                QUEX_ERROR_EXIT("Converter produced BOM upon not-first call to 'convert'\n"
-                                "Better make sure that converter NEVER produces BOM.\n"
-                                "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
+        if( buffer_insertion_p != RegionBeginP ) {
+            first_character = (uint32_t)RegionBeginP[0];    /* avoid warning */
+            if( first_character == 0xFEFF ) {
+                if( ! me->converter->virginity_f ) {
+                    QUEX_ERROR_EXIT("Converter produced BOM upon not-first call to 'convert'\n"
+                                    "Better make sure that converter NEVER produces BOM.\n"
+                                    "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
+                }
+                __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
+                                   (buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+                buffer_insertion_p = &buffer_insertion_p[-1];
             }
-            __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
-                               (buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
-            buffer_insertion_p = &buffer_insertion_p[-1];
         }
 
         if( drain_filled_f ) break;

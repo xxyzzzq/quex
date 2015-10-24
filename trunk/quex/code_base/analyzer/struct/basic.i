@@ -73,8 +73,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         QUEX_NAME(BufferFiller_load_forward)(buffer);
 
-        offset =   QUEX_NAME(Buffer_input_begin_character_index)(buffer) 
-                 - previous_character_index_begin;
+        offset = (ptrdiff_t)(  QUEX_NAME(Buffer_input_begin_character_index)(buffer) 
+                             - previous_character_index_begin);
 
         for(iterator = position_register; iterator != End; ++iterator) {
             *iterator = (*iterator - &buffer->_memory._front[1]) >= offset ? *iterator - offset : 0;
