@@ -1,14 +1,14 @@
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.1161439418792725;
+build_time: 1.1816761493682861;
 file_name: test-Converter-1-0.exe;
-hwut_info_time: 1445676888L;
+hwut_info_time: 1445678480L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.359746; 0; ]
-  [ ICU-stepping; FAIL; 0.012271; 0; ]
+  [ ICU-stepping; OK; 0.369031; 0; ]
   [ IConv-linear; OK; 0.449007; 0; ]
   [ IConv-stepping; OK; 0.417380; 0; ]
 ]
@@ -16,14 +16,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.1173229217529297;
+build_time: 1.1063339710235596;
 file_name: test-Converter-1-1.exe;
-hwut_info_time: 1445676896L;
+hwut_info_time: 1445678485L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.360572; 0; ]
-  [ ICU-stepping; FAIL; 0.041384; 0; ]
+  [ ICU-stepping; OK; 0.372713; 0; ]
   [ IConv-linear; OK; 0.360465; 0; ]
   [ IConv-stepping; OK; 0.384098; 0; ]
 ]
@@ -31,14 +31,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.1165590286254883;
+build_time: 1.191533088684082;
 file_name: test-Converter-1-2.exe;
-hwut_info_time: 1445676887L;
+hwut_info_time: 1445678478L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.340184; 0; ]
-  [ ICU-stepping; OK; 0.355159; 0; ]
+  [ ICU-stepping; OK; 0.351561; 0; ]
   [ IConv-linear; OK; 0.338842; 0; ]
   [ IConv-stepping; OK; 0.337959; 0; ]
 ]
@@ -46,14 +46,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.1380550861358643;
+build_time: 1.3181660175323486;
 file_name: test-Converter-2-0.exe;
-hwut_info_time: 1445676889L;
+hwut_info_time: 1445678482L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.734774; 0; ]
-  [ ICU-stepping; OK; 1.118352; 0; ]
+  [ ICU-stepping; OK; 1.069224; 0; ]
   [ IConv-linear; OK; 0.700826; 0; ]
   [ IConv-stepping; OK; 0.924532; 0; ]
 ]
@@ -61,14 +61,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 0.012038946151733398;
+build_time: 1.2106940746307373;
 file_name: test-Converter-2-1.exe;
-hwut_info_time: 1445676845L;
+hwut_info_time: 1445678479L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.729990; 0; ]
-  [ ICU-stepping; OK; 1.053054; 0; ]
+  [ ICU-stepping; OK; 1.047347; 0; ]
   [ IConv-linear; OK; 0.699303; 0; ]
   [ IConv-stepping; OK; 0.920353; 0; ]
 ]
@@ -76,14 +76,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.1228878498077393;
+build_time: 1.131639003753662;
 file_name: test-Converter-2-2.exe;
-hwut_info_time: 1445676881L;
+hwut_info_time: 1445678476L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 0.701203; 0; ]
-  [ ICU-stepping; OK; 0.994588; 0; ]
+  [ ICU-stepping; OK; 1.001957; 0; ]
   [ IConv-linear; OK; 0.676329; 0; ]
   [ IConv-stepping; OK; 0.880972; 0; ]
 ]
@@ -91,14 +91,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.1241569519042969;
+build_time: 1.1350691318511963;
 file_name: test-Converter-4-0.exe;
-hwut_info_time: 1445676886L;
+hwut_info_time: 1445678477L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 1.290335; 0; ]
-  [ ICU-stepping; OK; 17.758409; 0; ]
+  [ ICU-stepping; OK; 17.974609; 0; ]
   [ IConv-linear; OK; 1.124400; 0; ]
   [ IConv-stepping; OK; 16.099554; 0; ]
 ]
@@ -106,14 +106,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.1430251598358154;
+build_time: 1.1411871910095215;
 file_name: test-Converter-4-1.exe;
-hwut_info_time: 1445676891L;
+hwut_info_time: 1445678483L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 1.131019; 0; ]
-  [ ICU-stepping; OK; 17.595543; 0; ]
+  [ ICU-stepping; OK; 17.694890; 0; ]
   [ IConv-linear; OK; 1.091290; 0; ]
   [ IConv-stepping; OK; 15.890071; 0; ]
 ]
@@ -121,14 +121,14 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 0.013010978698730469;
+build_time: 1.1313819885253906;
 file_name: test-Converter-4-2.exe;
-hwut_info_time: 1445676863L;
+hwut_info_time: 1445678484L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 1.263475; 0; ]
-  [ ICU-stepping; OK; 17.606541; 0; ]
+  [ ICU-stepping; OK; 17.595843; 0; ]
   [ IConv-linear; OK; 1.075090; 0; ]
   [ IConv-stepping; OK; 15.897410; 0; ]
 ]
