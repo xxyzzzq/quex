@@ -1,3 +1,34 @@
+/* PURPOSE: Testing Buffer-Seeking with BufferFiller_Converter.
+ *
+ * Buffer-Seeking tries to set the 'read_p' to a specific character given by a
+ * character index. For this, new content may be loaded into the buffer.  The
+ * tests of these files do a 'wild tell&seek' on positions in a stream.  All
+ * tests are based on the file:
+ *
+ *                        basic_functionality.c
+ *
+ * located in this directory. For each file to be treated, there is a reference
+ * file which is loaded into a reference buffer. At any point in time, the
+ * content of the buffer is checked against the references. 
+ *
+ * Of course, all asserts are active during the test. So, the slightest
+ * misbehavior is detected. If a histogram of seek positions or seek position
+ * differences is desired, consider 'basic_functionality.c' which tells how
+ * to output and print statistics with gnuplot.
+ *
+ * CHOICES: Choices consist of multiple tokens as they are 
+ *          ICU/IConv       -- The converter to be used 
+ *          linear/stepping -- linear => compute byte stream positions for input.
+ *                             stepping => step to position from some reference.
+ *          cls             -- 'clueless stomach'. If specified the converter
+ *                             does not have a clue about how many bytes are in
+ *                             its stomach.
+ *
+ * The stepping is imposed by opening a file of a dynamic character length 
+ * codec, namely 'UTF8'. Then, no linear relationship can be assumed between 
+ * input byte position and stream position.
+ *
+ * (C) Frank-Rene Schaefer                                                   */
 #include <hwut_unit.h>
 #include <basic_functionality.h>
 #include <quex/code_base/buffer/Buffer.i>

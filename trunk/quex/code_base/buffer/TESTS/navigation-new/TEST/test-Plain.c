@@ -1,3 +1,32 @@
+/* PURPOSE: Testing Buffer-Seeking with BufferFiller_Plain.
+ *
+ * Buffer-Seeking tries to set the 'read_p' to a specific character given by a
+ * character index. For this, new content may be loaded into the buffer.  The
+ * tests of these files do a 'wild tell&seek' on positions in a stream.  All
+ * tests are based on the file:
+ *
+ *                        basic_functionality.c
+ *
+ * located in this directory. For each file to be treated, there is a reference
+ * file which is loaded into a reference buffer. At any point in time, the
+ * content of the buffer is checked against the references. 
+ *
+ * Of course, all asserts are active during the test. So, the slightest
+ * misbehavior is detected. If a histogram of seek positions or seek position
+ * differences is desired, consider 'basic_functionality.c' which tells how
+ * to output and print statistics with gnuplot.
+ *
+ * CHOICES: linear -- Lets the seeker compute byte stream positions for input.
+ *          stepping -- Requires the seeker to 'step' to the character 
+ *                      position. This is more time consuming and involves
+ *                      more operations.
+ *
+ * The stepping is imposed by opening a file in not in 'binary_mode_f'. Then,
+ * no linear relationship can be assumed between input byte position and stream
+ * position.
+ *
+ * (C) Frank-Rene Schaefer                                                   */
+
 #include <hwut_unit.h>
 #include <basic_functionality.h>
 #include <quex/code_base/buffer/Buffer.i>
