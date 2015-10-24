@@ -8,8 +8,10 @@
 QUEX_NAMESPACE_MAIN_OPEN
 typedef enum { TEST_ICU, TEST_ICONV } E_ConverterTestType;
 
-static void test(E_ConverterTestType CTT, bool LinearF, size_t BPC);
-static void test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, const char* FileName, const char* FileStem);
+static void      test(E_ConverterTestType CTT, bool LinearF, bool ClueLessStomachF, size_t BPC);
+static void      test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLessStomachF, const char* FileName, const char* FileStem);
+static ptrdiff_t clueless_stomach_byte_n(QUEX_NAME(Converter)* me);
+
 QUEX_NAMESPACE_MAIN_CLOSE
 
 int
@@ -20,15 +22,22 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer Tell&Seek: BufferFiller_Converter_IConv (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-        printf("CHOICES: ICU-linear, ICU-stepping, IConv-linear, IConv-stepping;\n"
+        printf("CHOICES: ICU-linear, ICU-stepping,\n"
+               "         IConv-linear, IConv-stepping,\n"
+               "         IConv-stepping-cls, ICU-stepping-cls;\n"
                "SAME;\n");
         return 0;
     }
 
-    hwut_if_choice("ICU-linear")     test(TEST_ICU,   true, BPC);
-    hwut_if_choice("ICU-stepping")   test(TEST_ICU,   false, BPC);
-    hwut_if_choice("IConv-linear")   test(TEST_ICONV, true, BPC);
-    hwut_if_choice("IConv-stepping") test(TEST_ICONV, false, BPC);
+    hwut_if_choice("ICU-linear")     test(TEST_ICU,   true, false, BPC);
+    hwut_if_choice("ICU-stepping")   test(TEST_ICU,   false, false, BPC);
+    hwut_if_choice("IConv-linear")   test(TEST_ICONV, true, false, BPC);
+    hwut_if_choice("IConv-stepping") test(TEST_ICONV, false, false, BPC);
+
+    /* Clueless stomach: The converter has no clue how many bytes are left
+     * in its stomach. This is an extra challenge for the 'seeker'.          */
+    hwut_if_choice("ICU-stepping-cls")   test(TEST_ICU,   false, true, BPC);
+    hwut_if_choice("IConv-stepping-cls") test(TEST_ICONV, false, true, BPC);
 
     return 0;
 }
@@ -36,7 +45,7 @@ main(int argc, char** argv)
 QUEX_NAMESPACE_MAIN_OPEN
 
 static void
-test(E_ConverterTestType CTT, bool LinearF, size_t BPC)
+test(E_ConverterTestType CTT, bool LinearF, bool ClueLessStomachF, size_t BPC)
 {
     const char*   file_4 = LinearF ? "examples/languages.ucs4-be"    : "examples/languages.utf8";
     const char*   file_2 = LinearF ? "examples/small.ucs4-be"        : "examples/small.utf8";
@@ -45,16 +54,16 @@ test(E_ConverterTestType CTT, bool LinearF, size_t BPC)
 
     /* Need a new converter for each test. */
     switch( BPC ) {
-    case 4:  test_file(CTT, codec, LinearF, file_4, "examples/languages");   /* only with UCS4         */
-    case 2:  test_file(CTT, codec, LinearF, file_2, "examples/small");       /* only with UCS4, UCS2   */
-    case 1:  test_file(CTT, codec, LinearF, file_1, "examples/festgemauert");/* with UCS4, UCS2, ASCII */
+    case 4:  test_file(CTT, codec, LinearF, ClueLessStomachF, file_4, "examples/languages");   /* only with UCS4         */
+    case 2:  test_file(CTT, codec, LinearF, ClueLessStomachF, file_2, "examples/small");       /* only with UCS4, UCS2   */
+    case 1:  test_file(CTT, codec, LinearF, ClueLessStomachF, file_1, "examples/festgemauert");/* with UCS4, UCS2, ASCII */
              break;
     default: hwut_verify(false);
     }
 }
 
 static void
-test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, const char* FileName, const char* FileStem)
+test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLessStomachF, const char* FileName, const char* FileStem)
 {
     QUEX_NAME(Buffer)         buffer;
     QUEX_NAME(Converter)*     converter;
@@ -72,6 +81,10 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, const char* 
     default:         __quex_assert(false); 
     }
     __quex_assert(converter);
+
+    if( ClueLessStomachF ) {
+        converter->stomach_byte_n = clueless_stomach_byte_n;
+    }
 
     if( ! byte_loader ) {
         printf("Failed to open '%s'.", FileName);
@@ -99,5 +112,13 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, const char* 
     filler->delete_self(filler);
     byte_loader->delete_self(byte_loader);
     converter->delete_self(converter);
+}
+
+static ptrdiff_t
+clueless_stomach_byte_n(QUEX_NAME(Converter)* me)
+{ 
+    /* A '-1' tells the caller that the converter has no clue about the number
+     * of bytes in its stomach.                                              */
+    return (ptrdiff_t)-1;
 }
 QUEX_NAMESPACE_MAIN_CLOSE

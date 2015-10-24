@@ -125,14 +125,25 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
 
 QUEX_INLINE ptrdiff_t   
 QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)*  alter_ego)
+/* RETURNS: Number of bytes that were read from the input stream, but remained
+ *                 inside the 'stomach' without being filled into the drain.
+ *          '-1'   reports that the BufferFiller cannot tell how many bytes are
+ *                 in the stomach.                                           */
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     ptrdiff_t  byte_n;
+    ptrdiff_t  converter_byte_n;
 
     byte_n = me->raw_buffer.fill_end_p - me->raw_buffer.next_to_convert_p;
 
+    /* me->converter->stomach_byte_n   == 0   => converter does NOT keep any 
+     *                                           bytes in stomach.
+     * me->converter->stomach_byte_n() == -1  => converter CANNOT tell how 
+     *                                           many bytes in stomach.      */
     if( me->converter->stomach_byte_n ) {
-        byte_n += me->converter->stomach_byte_n(me->converter);
+        converter_byte_n = me->converter->stomach_byte_n(me->converter);
+        if( converter_byte_n == - 1) return (ptrdiff_t)-1;
+        byte_n += converter_byte_n;
     }
 
     return byte_n;
