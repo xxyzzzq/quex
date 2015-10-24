@@ -255,6 +255,8 @@ QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* alter_ego)
 {
     QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
 
+    return (ptrdiff_t)-1;
+
     if( me->pivot.source != me->pivot.target ) {
         return (ptrdiff_t)-1;                      /* Unable to tell. Sorry. */
     }
