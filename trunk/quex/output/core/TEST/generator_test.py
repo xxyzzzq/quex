@@ -622,7 +622,7 @@ test_program_db = {
 
     "ANSI-C": """
     #include <stdio.h>
-    /* #include <quex/code_base/buffer/plain/BufferFiller_Plain> */
+    /* #include <quex/code_base/buffer/filler/BufferFiller_Plain> */
 
     int main(int argc, char** argv)
     {
@@ -645,7 +645,7 @@ test_program_db = {
     "Cpp": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+    #include <quex/code_base/buffer/filler/BufferFiller_Plain>
 
     int main(int argc, char** argv)
     {
@@ -663,7 +663,7 @@ test_program_db = {
     "Cpp_StrangeStream": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+    #include <quex/code_base/buffer/filler/BufferFiller_Plain>
     #include <quex/code_base/test_environment/StrangeStream>
 
 

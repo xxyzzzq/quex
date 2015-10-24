@@ -149,7 +149,6 @@ QUEX_MEMBER_FUNCTION2(from, ByteLoader,
         filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     }
 
-    filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     QUEX_MEMBER_FUNCTION_CALL1(from, BufferFiller, filler);
 }
 
