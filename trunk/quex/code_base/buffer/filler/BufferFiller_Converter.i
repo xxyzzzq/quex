@@ -212,7 +212,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
                                                 &raw->next_to_convert_p, raw->fill_end_p,
                                                 &buffer_insertion_p,     BufferRegionEnd);
 
-        if( buffer_insertion_p != RegionBeginP && RegionBeginP[0] == 0xfeff ) {
+        if( buffer_insertion_p != RegionBeginP && RegionBeginP[0] == 0xFEFF ) {
             if( ! me->converter->virginity_f ) {
                 QUEX_ERROR_EXIT("Converter produced BOM upon not-first call to 'convert'\n"
                                 "Better make sure that converter NEVER produces BOM.\n"

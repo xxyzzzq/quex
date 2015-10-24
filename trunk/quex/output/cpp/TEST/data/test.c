@@ -10,7 +10,7 @@ QUEX_NAME(TEST_MODE_counter)(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* Lexeme
     QUEX_TYPE_CHARACTER            input                          = (QUEX_TYPE_CHARACTER)(0x00);
     QUEX_TYPE_GOTO_LABEL           target_state_else_index        = QUEX_GOTO_LABEL_VOID;
     QUEX_TYPE_GOTO_LABEL           target_state_index             = QUEX_GOTO_LABEL_VOID;
-    QUEX_TYPE_CHARACTER_POSITION   character_begin_p              = (QUEX_TYPE_CHARACTER_POSITION)0x0;
+    QUEX_TYPE_CHARACTER*           character_begin_p              = (QUEX_TYPE_CHARACTER*)0x0;
     (void)me;
     __QUEX_IF_COUNT_SHIFT_VALUES();
     /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)
