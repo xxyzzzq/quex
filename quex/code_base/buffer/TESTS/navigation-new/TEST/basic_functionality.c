@@ -70,10 +70,6 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
 
         /* TELL */
         if( position < position_limit ) {
-#           if 0
-            printf("position: %i/%i; tell: %i;\n",
-                   (int)position, (int)position_limit, (int)QUEX_NAME(Buffer_tell)(me));
-#           endif
             hwut_verify(position == QUEX_NAME(Buffer_tell)(me));
         }
 
@@ -114,8 +110,6 @@ verify_content(QUEX_NAME(Buffer)* me,
     }
     else if( ! ContentSize) {
         hwut_verify(Position >= PositionLimit);
-        /* printf("ContentSize: 0; Position: %i; PositionLimit: %i;\n",
-         *      (int)Position, (int)PositionLimit);                      */
         return true;
     }
 
