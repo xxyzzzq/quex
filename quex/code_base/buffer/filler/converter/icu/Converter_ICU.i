@@ -160,17 +160,6 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     __quex_assert(me->pivot.target     <= &me->pivot.buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE]);
 
     me->status = U_ZERO_ERROR;
-
-#   if 0
-    {
-        printf("#source:          [");
-        for(i=0; i<(SourceEnd  - SourceBegin); ++i) {
-            printf("%02X.", (int)SourceBegin[i]);
-        }
-        printf("]\n");
-        printf("#reset_f: %s;\n", me->reset_upon_next_conversion_f ? "TRUE" : "FALSE");
-    }
-#   endif
     ucnv_convertEx(me->to_handle, me->from_handle,
                    (char**)drain,        (const char*)DrainEnd,
                    (const char**)source, (const char*)SourceEnd,
@@ -181,46 +170,6 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     me->reset_upon_next_conversion_f = FALSE;
 
     me->status = U_ZERO_ERROR;
-#   if 0
-    {
-        printf("#pending to:source:   %i;\n", (int)ucnv_toUCountPending(me->from_handle, &me->status));
-        printf("#pending from:source: %i;\n", (int)ucnv_fromUCountPending(me->from_handle, &me->status));
-        printf("#pending to:drain:    %i;\n", (int)ucnv_toUCountPending(me->to_handle, &me->status));
-        printf("#pending from:drain:  %i;\n", (int)ucnv_fromUCountPending(me->to_handle, &me->status));
-        printf("#status:          %i;\n", me->status);
-        me->status = U_ZERO_ERROR;
-        printf("#pending from:    %i;\n", (int)ucnv_toUCountPending(me->from_handle, &me->status));
-        me->status = U_ZERO_ERROR;
-        printf("#pending to:      %i;\n", (int)ucnv_toUCountPending(me->to_handle, &me->status));
-        printf("#source consumed: %i/%i; p.source: @%i; p.target @%i;\n",
-               (int)(*source - SourceBegin), (int)(SourceEnd - SourceBegin),
-               (int)(me->pivot.source - &me->pivot.buffer[0]), 
-               (int)(me->pivot.target - &me->pivot.buffer[0])); 
-        printf("#consumed source: [");
-        for(i=0; i<(*source  - SourceBegin); ++i) {
-            printf("%02X.", (int)SourceBegin[i]);
-        }
-#   endif
-#   if 0
-        printf("]\n");
-        printf("#pivot:           [");
-        for(i=0; i<8; ++i) {
-            if( me->pivot.source - &me->pivot.buffer[0] == i ) printf("s!");
-            if( me->pivot.target - &me->pivot.buffer[0] == i ) printf("t!");
-            printf("%02X.", (int)me->pivot.buffer[i]);
-        }
-#   endif
-#   if 0
-        printf("]\n");
-        printf("#drain:           [");
-        for(i=0; i<(*drain  - DEBUG_DrainBegin); ++i) {
-            printf("%02X.", (int)DEBUG_DrainBegin[i]);
-        }
-        printf("]\n");
-    }
-#   endif
-    // *source -= ucnv_toUCountPending(me->from_handle, &me->status);
-    // *source -= ucnv_fromUCountPending(me->to_handle, &me->status);
     __quex_assert(*source >= SourceBegin);
 
     return *drain == DrainEnd ? true : false;
