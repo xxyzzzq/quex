@@ -27,16 +27,11 @@ QUEX_BUFFER_ASSERT_pointers_in_range(QUEX_NAME(Buffer)* B)
     __quex_assert((*B)._read_p             >= (*B)._memory._front);                
     __quex_assert((*B)._lexeme_start_p     >= (*B)._memory._front);                
 
-    if( (*B).input.end_p == 0x0 ) {                                           
-        __quex_assert((*B)._read_p         <= (*B)._memory._back);               
-        __quex_assert((*B)._lexeme_start_p <= (*B)._memory._back);               
-    } else if( ! QUEX_NAME(Buffer_is_empty)(B) ) {                                                                     
-        __quex_assert((*B)._read_p         <= (*B).input.end_p);              
-        __quex_assert((*B)._lexeme_start_p <= (*B).input.end_p);              
-        /**/                                                                     
-        __quex_assert((*B).input.end_p     >= (*B)._memory._front + 1);          
-        __quex_assert((*B).input.end_p     <= (*B)._memory._back);               
-    }                                                                            
+    __quex_assert((*B).input.end_p     >= (*B)._memory._front + 1);          
+    __quex_assert((*B).input.end_p     <= (*B)._memory._back);               
+
+    __quex_assert((*B)._read_p         <= (*B).input.end_p);              
+    __quex_assert((*B)._lexeme_start_p <= (*B).input.end_p);              
 }
 
 QUEX_INLINE void
@@ -56,6 +51,9 @@ QUEX_INLINE void
 QUEX_BUFFER_ASSERT_CONSISTENCY(QUEX_NAME(Buffer)* B)                                            
 {                                                                                    
     if( ! B ) return;
+    __quex_assert(B->input.character_index_begin >= 0);
+    __quex_assert(   B->input.character_index_end_of_stream == -1 
+                  || B->input.character_index_end_of_stream >= B->input.character_index_begin);
     QUEX_BUFFER_ASSERT_pointers_in_range(B);                                              
     QUEX_BUFFER_ASSERT_limit_codes_in_place(B);
 }

@@ -36,7 +36,7 @@ main(int argc, char** argv)
         buffer._read_p         = buffer._memory._back;
         buffer._lexeme_start_p = buffer._memory._back;
         /**/
-        QUEX_NAME(BufferFiller_load_forward)(&buffer);
+        QUEX_NAME(Buffer_load_forward)(&buffer);
         printf("\n");
         if( ++count_n > 1000 ) {
             printf("Error: too many iterations.\n");

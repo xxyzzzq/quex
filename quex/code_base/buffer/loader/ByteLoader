@@ -56,7 +56,7 @@ QUEX_INLINE void  ByteLoader_construct(ByteLoader*                me,
                                        size_t                     (*load)(ByteLoader*, void*, const size_t),
                                        void                       (*delete_self)(ByteLoader*),
                                        bool                       (*compare_handle)(const ByteLoader*, const ByteLoader*));
-QUEX_INLINE bool  ByteLoader_compare(const ByteLoader* A, const ByteLoader* B);
+QUEX_INLINE bool  ByteLoader_is_equivalent(const ByteLoader* A, const ByteLoader* B);
 QUEX_INLINE void  ByteLoader_delete(ByteLoader** me);
 
 #include <quex/code_base/buffer/loader/ByteLoader_FILE>

@@ -70,8 +70,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
  *          False -- else.                                                   */
 {
     QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
-    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtBegin = QUEX_NAME(Buffer_input_begin_character_index)(me);
-    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   CharacterIndexAtBegin
+    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   me->input.character_index_begin
                                                        + (me->_read_p - BeginP);
     QUEX_TYPE_STREAM_POSITION  target = CharacterIndexAtReadP + CharacterN;
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
@@ -83,7 +82,8 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
         me->_read_p += CharacterN;
         /* => &me->_read_p[-1] inside buffer.                                */
     }
-    else if( me->input.end_p ) {
+    else if(    me->input.character_index_end_of_stream != -1 
+             && target > me->input.character_index_end_of_stream ) {
         return false;
     }
     else {
@@ -113,10 +113,9 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
  *          False -- else.                                                   */
 {
     QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
-    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtBegin = QUEX_NAME(Buffer_input_begin_character_index)(me);
-    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   CharacterIndexAtBegin
+    QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   me->input.character_index_begin
                                                        + (me->_read_p - BeginP);
-    QUEX_TYPE_STREAM_POSITION  target = CharacterIndexAtReadP - CharacterN;
+    QUEX_TYPE_STREAM_POSITION  target      = CharacterIndexAtReadP - CharacterN;
     const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me); 
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
     ptrdiff_t                  offset;
@@ -124,7 +123,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
     if( ! CharacterN ) {
         return true;
     }
-    else if( target > CharacterIndexAtBegin ) {
+    else if( target > me->input.character_index_begin ) {
         /* => &me->_read_p[-1] inside buffer.                                */
         me->_read_p -= CharacterN;
     }
@@ -149,7 +148,7 @@ QUEX_NAME(Buffer_tell)(QUEX_NAME(Buffer)* me)
     const QUEX_TYPE_STREAM_POSITION DeltaToBufferBegin = me->_read_p - &me->_memory._front[1];
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
-    return DeltaToBufferBegin + QUEX_NAME(Buffer_input_begin_character_index)(me);
+    return DeltaToBufferBegin + QUEX_NAME(Buffer_input_character_index_begin)(me);
 }
 
 QUEX_INLINE void    
@@ -173,8 +172,8 @@ QUEX_NAME(Buffer_finish_seek_based_on_read_p)(QUEX_NAME(Buffer)* me)
     QUEX_TYPE_CHARACTER* BeginP    = &me->_memory._front[1];
     bool                 verdict_f = true;
 
-    if( me->_read_p >= QUEX_NAME(Buffer_text_end)(me) ) {
-        me->_read_p = QUEX_NAME(Buffer_text_end)(me);
+    if( me->_read_p >= me->input.end_p ) {
+        me->_read_p = me->input.end_p;
         verdict_f = false;
     }
     else if( me->_read_p < BeginP ) {
