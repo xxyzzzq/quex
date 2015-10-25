@@ -36,7 +36,7 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
     static uint8_t      utf8_char_str[7];
     uint8_t*            p  = 0x0;
     QUEX_TYPE_CHARACTER UC = *Pos;
-    int                 ci = (int)(Pos - &buffer->_memory._front[1] + QUEX_NAME(Buffer_input_begin_character_index)(buffer)); 
+    int                 ci = (int)(Pos - &buffer->_memory._front[1] + QUEX_NAME(Buffer_input_character_index_begin)(buffer)); 
 
     if( UC == '\0' ) { 
         printf("%s: %i (--> '%c')%c", (char*)Name, ci, (char)'\0', Appendix);
@@ -67,7 +67,7 @@ print_this(QUEX_NAME(Buffer)* buffer)
     show_this("input_p", buffer, buffer->_read_p, '\t');
     show_this("lexeme start", buffer, buffer->_lexeme_start_p, '\t');
     printf("ci-begin: %i; ci-end: %i; offset-end_p: %i;\n", 
-           (int)(QUEX_NAME(Buffer_input_begin_character_index)(buffer)),
+           (int)(QUEX_NAME(Buffer_input_character_index_begin)(buffer)),
            (int)(QUEX_NAME(Buffer_input_character_index_end)(buffer)),
            (int)(buffer->input.end_p ? buffer->input.end_p - &buffer->_memory._front[1] : -1));
 }
