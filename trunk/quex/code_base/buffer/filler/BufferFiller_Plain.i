@@ -146,8 +146,8 @@ QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
                                            const void**        end_p)
 {
     /* Move-away of passed content in engine's buffer is done by caller. */
-    *begin_p = (void*)QUEX_NAME(Buffer_text_end)(buffer);
-    *end_p   = (void*)&QUEX_NAME(Buffer_content_back)(buffer)[1];
+    *begin_p = (void*)buffer->input.end_p;
+    *end_p   = (void*)buffer->_memory._back;
 }
 
 QUEX_INLINE ptrdiff_t 

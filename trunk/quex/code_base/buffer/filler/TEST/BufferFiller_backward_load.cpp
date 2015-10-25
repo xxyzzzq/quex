@@ -49,11 +49,11 @@ main(int argc, char** argv)
         printf("     ");
         QUEX_NAME(Buffer_show_content_intern)(&buffer);
         printf("\n");
-        if( QUEX_NAME(Buffer_input_begin_character_index)(&buffer) == 0 ) break;
+        if( QUEX_NAME(Buffer_input_character_index_begin)(&buffer) == 0 ) break;
         buffer._read_p         = buffer._memory._front;
         buffer._lexeme_start_p = &buffer._memory._front[1];
         /**/
-        (void)QUEX_NAME(BufferFiller_load_backward)(&buffer);
+        (void)QUEX_NAME(Buffer_load_backward)(&buffer);
         printf("\n");
     } while( 1 + 1 == 2 );
 

@@ -26,12 +26,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         if( buffer->on_buffer_content_change ) {
             /* In contrast to 'reload forward', a reload backward is very well 
-             * conceivable, even if end of file pointer != 0x0.                          */
+             * conceivable, even if end of file pointer != 0x0.              */
             buffer->on_buffer_content_change(buffer->_memory._front, 
-                                             QUEX_NAME(Buffer_text_end)(buffer));
+                                             buffer->_input.end_p);
         }
 
-        QUEX_NAME(BufferFiller_load_backward)(buffer);
+        QUEX_NAME(Buffer_load_backward)(buffer);
         
         /* NO ADAPTIONS OF POST-CONTEXT POSITIONS !
          *
@@ -69,11 +69,11 @@ QUEX_NAMESPACE_MAIN_OPEN
                                              buffer->_memory._back);
         }
 
-        previous_character_index_begin = QUEX_NAME(Buffer_input_begin_character_index)(buffer);
+        previous_character_index_begin = QUEX_NAME(Buffer_input_character_index_begin)(buffer);
 
-        QUEX_NAME(BufferFiller_load_forward)(buffer);
+        QUEX_NAME(Buffer_load_forward)(buffer);
 
-        offset = (ptrdiff_t)(  QUEX_NAME(Buffer_input_begin_character_index)(buffer) 
+        offset = (ptrdiff_t)(  QUEX_NAME(Buffer_input_character_index_begin)(buffer) 
                              - previous_character_index_begin);
 
         for(iterator = position_register; iterator != End; ++iterator) {

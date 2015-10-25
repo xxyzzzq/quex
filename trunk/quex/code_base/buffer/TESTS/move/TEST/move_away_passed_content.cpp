@@ -121,7 +121,7 @@ self_init(QUEX_NAME(Buffer)* buffer, Gen_t* it)
         *end_p      = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
     else {
-        end_p       = (QUEX_TYPE_CHARACTER*)0;
+        end_p       = &memory[MemorySize-1];
         memory_size = content_size + 2;
     }
 
@@ -147,12 +147,11 @@ self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
            (buffer->_memory._back - buffer->_memory._front -1)*sizeof(QUEX_TYPE_CHARACTER));
     memcpy(&buffer->_memory._front[1], (void*)content, 
            sizeof(content));
-    if( end_p ) *end_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
-    QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 
     QUEX_NAME(Buffer_input_register)(buffer, end_p, 
-                                     content_size - (end_p - &buffer->_memory._front[1])
+                                     content_size - (end_p - &buffer->_memory._front[1]),
                                      false);
+    QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 }
 
 static void

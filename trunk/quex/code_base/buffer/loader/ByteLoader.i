@@ -46,7 +46,9 @@ ByteLoader_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Position)
 }
 
 QUEX_INLINE bool
-ByteLoader_compare(const ByteLoader* A, const ByteLoader* B)
+ByteLoader_is_equivalent(const ByteLoader* A, const ByteLoader* B)
+/* RETURNS: true -- if A and B are equivalent.
+ *          false -- else.                                                   */
 {
     /* If two ByteLoader classes use the same 'load()' function, then they 
      * should not be different. For example, it does not make sense to have

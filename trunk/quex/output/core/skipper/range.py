@@ -37,7 +37,7 @@ def do(Data, TheAnalyzer):
 
 template_str = """
     $$DELIMITER_COMMENT$$
-    text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+    text_end = me->buffe.input.end_p; 
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$:
@@ -137,7 +137,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         $$INPUT_P_TO_LEXEME_START$$
         /* After reload, we need to increment _read_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
-        text_end = QUEX_NAME(Buffer_text_end)(&me->buffer);
+        text_end = me->buffe.input.end_p; 
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$

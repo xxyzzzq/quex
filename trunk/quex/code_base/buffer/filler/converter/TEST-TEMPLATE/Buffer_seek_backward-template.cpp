@@ -43,10 +43,10 @@ main(int argc, char** argv)
 
     /* Read until the end of file is reached and set the _read_p to EOF */
     while( 1 + 1 == 2 ) {
-        buffer._read_p         = QUEX_NAME(Buffer_text_end)(&buffer);
+        buffer._read_p         = me->input.end_p;
         buffer._lexeme_start_p = buffer._read_p;
         if( buffer._read_p == buffer.input.end_p ) break;
-        QUEX_NAME(BufferFiller_load_forward)(&buffer);
+        QUEX_NAME(Buffer_load_forward)(&buffer);
     }
     test_seek_backward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
