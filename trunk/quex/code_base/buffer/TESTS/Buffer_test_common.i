@@ -88,8 +88,8 @@ inline void
 test_seek_forward(QUEX_NAME(Buffer)* buffer, size_t StepSize)
 {
     print_this(buffer);
-    while( ! (QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 && 
-              (buffer->filler == 0x0 || buffer->input.end_p != 0x0) ) ) {
+    while(    me->buffer.input.end_p != me->buffer._read_p 
+           && (buffer->filler == 0x0 || buffer->input.end_p != 0x0) ) ) {
         QUEX_NAME(Buffer_seek_forward)(buffer, StepSize);
         print_this(buffer);
     }

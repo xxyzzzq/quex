@@ -8,7 +8,7 @@ make_dependent_f: True;
 same_f: True;
 result_list: [
   [ UTF-8; OK; 0.010060; None; ]
-  [ UTF-16; FAIL; 0.011775; None; ]
+  [ UTF-16; MAKE FAILED; 0.011775; None; ]
 ]
 }
 {
@@ -21,7 +21,7 @@ make_dependent_f: True;
 same_f: True;
 result_list: [
   [ UTF-8; OK; 0.010343; None; ]
-  [ UTF-16; FAIL; 0.009433; None; ]
+  [ UTF-16; MAKE FAILED; 0.009433; None; ]
 ]
 }
 {
@@ -86,8 +86,8 @@ file_name: seek_character_index.exe;
 hwut_info_time: 1445811511L;
 make_dependent_f: True;
 result_list: [
-  [ Forward; NO OUTPUT; 0.230772; None; ]
-  [ Backward; NO OUTPUT; 0.242707; None; ]
+  [ Forward; MAKE FAILED; 0.230772; None; ]
+  [ Backward; MAKE FAILED; 0.242707; None; ]
 ]
 }
 {
@@ -122,10 +122,10 @@ hwut_info_time: 1445811508L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 6; NO OUTPUT; 0.236268; None; ]
-  [ 7; NO OUTPUT; 0.234587; None; ]
-  [ 8; NO OUTPUT; 0.241742; None; ]
-  [ 9; NO OUTPUT; 0.229620; None; ]
+  [ 6; MAKE FAILED; 0.236268; None; ]
+  [ 7; MAKE FAILED; 0.234587; None; ]
+  [ 8; MAKE FAILED; 0.241742; None; ]
+  [ 9; MAKE FAILED; 0.229620; None; ]
 ]
 }
 {
@@ -137,14 +137,14 @@ hwut_info_time: 1445811510L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 1; NO OUTPUT; 0.234156; None; ]
-  [ 2; NO OUTPUT; 0.228453; None; ]
-  [ 3; NO OUTPUT; 0.241497; None; ]
-  [ 4; NO OUTPUT; 0.237021; None; ]
-  [ 5; NO OUTPUT; 0.231488; None; ]
-  [ 6; NO OUTPUT; 0.231982; None; ]
-  [ 7; NO OUTPUT; 0.227770; None; ]
-  [ 8; NO OUTPUT; 0.235534; None; ]
-  [ 9; NO OUTPUT; 0.233059; None; ]
+  [ 1; MAKE FAILED; 0.234156; None; ]
+  [ 2; MAKE FAILED; 0.228453; None; ]
+  [ 3; MAKE FAILED; 0.241497; None; ]
+  [ 4; MAKE FAILED; 0.237021; None; ]
+  [ 5; MAKE FAILED; 0.231488; None; ]
+  [ 6; MAKE FAILED; 0.231982; None; ]
+  [ 7; MAKE FAILED; 0.227770; None; ]
+  [ 8; MAKE FAILED; 0.235534; None; ]
+  [ 9; MAKE FAILED; 0.233059; None; ]
 ]
 }
