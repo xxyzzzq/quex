@@ -299,7 +299,7 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
 {
     QUEX_NAME(Buffer)* buffer = &me->buffer;
 
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) == 0 ) {
+    if( me->buffer._read_p == me->buffer.input.end_p ) {
         buffer->_lexeme_start_p = buffer->_read_p;
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
@@ -307,7 +307,7 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
         QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
         ++(buffer->_read_p);
     }
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(buffer) != 0 ) {
+    if( me->buffer._read_p != me->buffer.input.end_p ) {
         if( ((*buffer->_read_p) & 0x80) == 0 ) 
             printf("next letter: <%c>", (int)(buffer->_read_p[0]));
         else
@@ -333,7 +333,7 @@ skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
     while(1 + 1 == 2) { 
         input = *(me->buffer._read_p);
 $$MARKER_LIST$$
-        if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) == 0 ) {
+        if( me->buffer._read_p == me->buffer.input.end_p ) {
             me->buffer._lexeme_start_p = me->buffer._read_p;
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 return false;

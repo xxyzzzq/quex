@@ -28,7 +28,7 @@ QUEX_NAMESPACE_MAIN_OPEN
             /* In contrast to 'reload forward', a reload backward is very well 
              * conceivable, even if end of file pointer != 0x0.              */
             buffer->on_buffer_content_change(buffer->_memory._front, 
-                                             buffer->_input.end_p);
+                                             buffer->input.end_p);
         }
 
         QUEX_NAME(Buffer_load_backward)(buffer);

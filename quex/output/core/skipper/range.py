@@ -37,7 +37,7 @@ def do(Data, TheAnalyzer):
 
 template_str = """
     $$DELIMITER_COMMENT$$
-    text_end = me->buffe.input.end_p; 
+    text_end = me->buffer.input.end_p; 
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$:
@@ -94,7 +94,7 @@ _$$SKIPPER_INDEX$$_LOOP_EXIT:
      *         (2.2) Start detection of tail of delimiter
      *
      */
-    if( QUEX_NAME(Buffer_distance_input_to_text_end)(&me->buffer) < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
+    if( me->buffer.input.end_p - me->buffer._read_p < (ptrdiff_t)Skipper$$SKIPPER_INDEX$$L ) {
         /* (2.1) Reload required. */
         $$GOTO_RELOAD$$;
     }
@@ -137,7 +137,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
         $$INPUT_P_TO_LEXEME_START$$
         /* After reload, we need to increment _read_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
-        text_end = me->buffe.input.end_p; 
+        text_end = me->buffer.input.end_p; 
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$
