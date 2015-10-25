@@ -93,8 +93,8 @@ verify_content(QUEX_NAME(Buffer)* me,
  */ 
 {
     QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
-    ptrdiff_t                  ContentSize = QUEX_NAME(Buffer_text_end)(me) - BeginP;
-    QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    ptrdiff_t                  ContentSize = me->input.end_p - BeginP;
+    QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_character_index_begin)(me);
 
     if( Position < PositionLimit ) {
         if( *me->_read_p != reference[Position] ) {
@@ -125,7 +125,7 @@ verify_content(QUEX_NAME(Buffer)* me,
 static bool
 difference(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION CI)
 {
-    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
 
     return me->_memory._front[1 + CI - ci_begin] != reference[CI];
 }
@@ -136,7 +136,7 @@ difference(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION CI)
 static void
 print_difference(QUEX_NAME(Buffer)* me)
 {
-    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_begin_character_index)(me);
+    const QUEX_TYPE_STREAM_POSITION ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
     const QUEX_TYPE_STREAM_POSITION ci_end   = QUEX_NAME(Buffer_input_character_index_end)(me);
     QUEX_TYPE_STREAM_POSITION       ci;
     QUEX_TYPE_STREAM_POSITION       ci_diff;

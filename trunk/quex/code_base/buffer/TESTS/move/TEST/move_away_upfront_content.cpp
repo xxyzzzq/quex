@@ -145,7 +145,9 @@ self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
     if( end_p ) *end_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
     QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 
-    QUEX_NAME(Buffer_input_end_set)(buffer, end_p, content_size + 3);
+    QUEX_NAME(Buffer_input_register)(buffer, end_p, 
+                                     content_size + 3 - (end_p - &buffer->_memory._front[1])
+                                     false);
 }
 
 static void
@@ -158,9 +160,9 @@ self_print(QUEX_NAME(Buffer)* buffer)
            (int)(buffer->_read_p - buffer->_memory._front),
            (int)(*(buffer->_read_p)),
            (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
-           (int)QUEX_NAME(Buffer_input_begin_character_index)(buffer),
+           (int)QUEX_NAME(Buffer_input_character_index_begin)(buffer),
            (int)QUEX_NAME(Buffer_input_character_index_end)(buffer));
-    __quex_assert(QUEX_NAME(Buffer_input_begin_character_index)(buffer) >= 0);
+    __quex_assert(QUEX_NAME(Buffer_input_character_index_begin)(buffer) >= 0);
     /**/
     QUEX_NAME(Buffer_show_content_intern)(buffer);
 }

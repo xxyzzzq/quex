@@ -150,7 +150,9 @@ self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
     if( end_p ) *end_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
     QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 
-    QUEX_NAME(Buffer_input_end_set)(buffer, end_p, content_size);
+    QUEX_NAME(Buffer_input_register)(buffer, end_p, 
+                                     content_size - (end_p - &buffer->_memory._front[1])
+                                     false);
 }
 
 static void
