@@ -70,7 +70,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
      * stream position is proportional to the number of bytes that lie 
      * behind.                                                               */
     ptrdiff_t   byte_n_per_character = byte_loader->binary_mode_f ? 
-                                       sizeof(QUEX_TYPE_CHARACTER) : -1;
+                                       (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER) : -1;
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_input_character_load),
                                   QUEX_NAME(BufferFiller_Plain_stomach_byte_n),
