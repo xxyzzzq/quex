@@ -224,7 +224,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
     QUEX_TYPE_CHARACTER*        BeginP = &me->_memory._front[1];
     const QUEX_TYPE_CHARACTER*  EndP   = me->_memory._back;
     QUEX_TYPE_CHARACTER*        move_begin_p;
-    size_t                      move_size;
+    ptrdiff_t                   move_size;
     ptrdiff_t                   move_distance;
     const ptrdiff_t             FallBackN   = (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
 
@@ -247,7 +247,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
     else if( move_size ) {
         /* Move.                                                             */
         __QUEX_STD_memmove((void*)BeginP, (void*)move_begin_p,
-                           move_size * sizeof(QUEX_TYPE_CHARACTER));
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
     }
 
     /* Pointer Adaption: _read_p, _lexeme_start_p, 
@@ -269,6 +269,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
     /*_______________________________________________________________________*/
     QUEX_IF_ASSERTS_poison(&EndP[- move_distance], EndP);
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    (void)EndP;
 
     return &move_begin_p[move_size - move_distance];
 }
@@ -311,14 +312,14 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
         move_distance = QUEX_MIN(move_distance, &EndP[-1] - me->_lexeme_start_p);
     }
     move_end_p    = EndP - move_distance;
-    move_size     = (ptrdiff_t)(move_end_p - BeginP);
+    move_size     = move_end_p - BeginP;
 
     if( ! move_distance ) return 0;
 
     if( move_size ) {
         /* Move.                                                             */
         __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
-                           move_size * sizeof(QUEX_TYPE_CHARACTER));
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
     }
 
     /* Pointer Adaption: _read_p, _lexeme_start_p.                           */
@@ -450,7 +451,7 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         load_request_n       = ContentSize - move_size;  /* Try to load max. */
         load_p               = &BeginP[move_size];
         __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
-                           move_size * sizeof(QUEX_TYPE_CHARACTER));
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
     }
     else {
         move_size            = 0;
@@ -466,7 +467,7 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         if( move_size ) {
             /* Nothing has been loaded => Buffer must be setup as before.    */
             __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
-                               move_size * sizeof(QUEX_TYPE_CHARACTER));
+                               (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
             loaded_n = QUEX_NAME(BufferFiller_region_load)(me, BeginP, move_size,
                                                            me->input.character_index_begin);
             if( loaded_n != move_size ) {
@@ -521,7 +522,7 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
         move_size = QUEX_MAX(0, QUEX_MIN(me->input.end_p - BeginP, 
                                          (ptrdiff_t)(ContentSize - move_distance)));
         __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
-                           move_size * sizeof(QUEX_TYPE_CHARACTER));
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
         load_request_n = (ptrdiff_t)move_distance;
     }
     else {

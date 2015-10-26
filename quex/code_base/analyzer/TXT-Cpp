@@ -117,15 +117,16 @@ public:
 #   if defined(__QUEX_OPTION_WCHAR_T)
     void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
 #   endif
-#   if defined(__QUEX_OPTION_UNIT_TEST)
-    template <class UnderlyingStreamT>
-    from(quex::StrangeStream<UnderlyingStreamT>*  istream_p, const char* CodecName = 0x0);
-#   endif
     void    from(ByteLoader* byte_loader, const char*  CodecName = 0x0);
     void    from(QUEX_NAME(BufferFiller)* filler);
     void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                  size_t               BufferMemorySize,
                  QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
+#   if defined(__QUEX_OPTION_UNIT_TEST)
+    template <class UnderlyingStreamT> 
+    void    from_StrangeStream(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                               const char*                              CodecName = 0x0);
+#   endif
 
     /* Level (1) ______________________________________________________________
      *                                                                       */
@@ -148,7 +149,7 @@ public:
     template <class UnderlyingStreamT>
     $$LEXER_CLASS_NAME$$(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
     $$___SPACE___$$const char*                              CodecName = 0x0)
-    $$___SPACE___$${ from(istream_p, CodecName); }
+    $$___SPACE___$${ from_StrangeStream(istream_p, CodecName); }
 #   endif
 
     /* Level (3) ______________________________________________________________
@@ -192,8 +193,8 @@ public:
 #   endif
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
-    void    reset(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
-                  const char*                              CodecName = 0x0);
+    void    reset_StrangeStream(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
+                                const char*                              CodecName = 0x0);
 #   endif
 
     /* Level (3) ______________________________________________________________

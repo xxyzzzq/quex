@@ -51,7 +51,6 @@ base_buffer = """
 /buffer/Buffer_debug
 /buffer/Buffer_debug.i
 /buffer/Buffer.i
-/buffer/MemoryPositionMimiker
 /buffer/loader/ByteLoader
 /buffer/loader/ByteLoader.i
 /buffer/loader/ByteLoader_FILE

@@ -112,7 +112,7 @@ QUEX_MEMBER_FUNCTION2(from, wistream,
 #if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_OPTION_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */
 template<class UnderlyingStreamT> QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(from, strange_stream, 
+QUEX_MEMBER_FUNCTION2(from_StrangeStream, strange_stream, 
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {

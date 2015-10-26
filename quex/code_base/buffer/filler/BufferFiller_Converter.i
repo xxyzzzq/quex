@@ -222,7 +222,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
                                     "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
                 }
                 __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
-                                   (buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+                                   (size_t)(buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
                 buffer_insertion_p = &buffer_insertion_p[-1];
             }
         }
@@ -331,7 +331,7 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
 
     if( ! move_distance ) return;
     else if( move_size ) {
-        __QUEX_STD_memmove((void*)me->begin, (void*)move_begin_p, move_size);
+        __QUEX_STD_memmove((void*)me->begin, (void*)move_begin_p, (size_t)move_size);
     }
 
     me->next_to_convert_p  = me->begin; 

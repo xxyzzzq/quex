@@ -86,7 +86,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         __QUEX_STD_printf("|");
         if( end_p_error_f ) {
-            __QUEX_STD_printf("ERROR: end_of_file_p: %p; front: %p; back %p;\n", buffer->input.end_p, buffer->_memory._front, buffer->_memory._back);
+            __QUEX_STD_printf("ERROR: end_of_file_p: %p; front: %p; back %p;\n", 
+                              (void*)buffer->input.end_p, (void*)buffer->_memory._front, 
+                              (void*)buffer->_memory._back);
         }
         __QUEX_STD_printf("\n");
     }

@@ -322,11 +322,11 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     QUEX_TYPE_CHARACTER*       EndP   = buffer->_memory._back;
     ptrdiff_t                  loaded_n;
 
-    (void)EndP;
     __quex_assert(RegionBeginP >= BeginP);
     __quex_assert(RegionBeginP < EndP);
     __quex_assert(RegionBeginP + RequiredLoadN <= EndP);
     __quex_assert(RegionBeginP - BeginP <= StartCharacterIndex);
+    (void)EndP; (void)BeginP;
 
     /* Seek to the position where loading shall start.                       */
     if( ! me->input_character_seek(me, StartCharacterIndex) ) {
@@ -335,8 +335,8 @@ QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer,
     __quex_assert(me->character_index_next_to_fill == StartCharacterIndex);
 
     /* Load content into the given region.                                   */
-    loaded_n = me->derived_input_character_load(me, RegionBeginP, 
-                                                (size_t)RequiredLoadN);
+    loaded_n = (ptrdiff_t)me->derived_input_character_load(me, RegionBeginP, 
+                                                           (size_t)RequiredLoadN);
     __quex_assert(loaded_n <= RequiredLoadN);
 
     if(    me->character_index_next_to_fill - StartCharacterIndex 
@@ -414,7 +414,7 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
     __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
 
     for(; remaining_n > ChunkSize; remaining_n -= ChunkSize ) {
-        if( ChunkSize > me->derived_input_character_load(me, &chunk[0], ChunkSize) ) {
+        if( ChunkSize > me->derived_input_character_load(me, &chunk[0], (size_t)ChunkSize) ) {
             return false;
         }
     }
