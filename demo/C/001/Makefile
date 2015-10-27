@@ -18,15 +18,15 @@ endif
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = gcc # -ggdb 
+COMPILER = gcc -ggdb 
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Werror -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
+     -DQUEX_OPTION_DEBUG_SHOW
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-     # -DQUEX_OPTION_DEBUG_SHOW
    
 LD = $(COMPILER) 
 

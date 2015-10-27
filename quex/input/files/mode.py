@@ -215,6 +215,11 @@ class Mode:
         options_db   = OptionDB.from_BaseModeSequence(base_mode_sequence)
         incidence_db = IncidenceDB.from_BaseModeSequence(base_mode_sequence)
 
+        if (    E_IncidenceIDs.INDENTATION_DEDENT   in incidence_db \
+            and E_IncidenceIDs.INDENTATION_N_DEDENT in incidence_db):
+             error.log("After deriving from base mode, mode '%s' contains 'on_dedent'\n" % self.name
+                       + "and 'on_n_dedent' handler. Both are mutually exclusive.", self.sr)
+
         # Determine Line/Column Counter Database
         counter_db   = options_db.value("counter")
 
