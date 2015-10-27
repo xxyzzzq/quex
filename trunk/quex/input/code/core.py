@@ -30,7 +30,7 @@ class CodeTerminal(CodeFragment):
     def __init__(self, Code, SourceReference=SourceRef_VOID, 
                  LexemeRelevanceF=False, LexemeTerminatingZeroF=False, LexemeBeginF=False,
                  PureCode=None):
-        CodeFragment.__init__(self, Code)
+        CodeFragment.__init__(self, Code, SourceReference)
         if LexemeRelevanceF:
             self.__requires_lexeme_terminating_zero_f = None
             self.__requires_lexeme_begin_f            = None
@@ -42,14 +42,16 @@ class CodeTerminal(CodeFragment):
         else:                    self.__pure_code = Code
 
     def requires_lexeme_begin_f(self):            
-        if self.__requires_lexeme_begin_f is None:
-            self.__requires_lexeme_begin_f =    self.requires_lexeme_terminating_zero_f() \
-                                             or self.contains_string(Lng.Match_LexemeBegin)
+        # NOT: if self.__requires_lexeme_begin_f is None: ...
+        #      The construction is too dynamic.
+        self.__requires_lexeme_begin_f =    self.requires_lexeme_terminating_zero_f() \
+                                         or self.contains_string(Lng.Match_LexemeBegin)
         return self.__requires_lexeme_begin_f
 
     def requires_lexeme_terminating_zero_f(self): 
-        if self.__requires_lexeme_terminating_zero_f is None:
-            self.__requires_lexeme_terminating_zero_f = self.contains_string(Lng.Match_Lexeme) 
+        # NOT: if self.__requires_lexeme_terminating_zero_f is None: ...
+        #      The construction is too dynamic.
+        self.__requires_lexeme_terminating_zero_f = self.contains_string(Lng.Match_Lexeme) 
         return self.__requires_lexeme_terminating_zero_f
 
     def get_pure_code(self):
@@ -62,7 +64,7 @@ class CodeTerminalOnMatch(CodeTerminal):
     def __init__(self, CodeFrag):
         code           = CodeFrag.get_code() 
         self.mode_name = CodeFrag.sr.mode_name
-        CodeTerminal.__init__(self, code, LexemeRelevanceF=True)
+        CodeTerminal.__init__(self, code, CodeFrag.sr, LexemeRelevanceF=True)
 
 class CodeGenerated(CodeFragment):
     def __init__(self, Function, Data, Name):

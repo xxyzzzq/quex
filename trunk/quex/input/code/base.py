@@ -32,7 +32,9 @@ class SourceRef(namedtuple("SourceRef_tuple", ("file_name", "line_n", "mode_name
         return SourceRef(file_name, line_n, ModeName)
 
     def is_void(self):
-        return (self.file_name == "<default>") and (self.line_n == 0) and len(self.mode_name) == 0
+        return     (self.file_name == "<default>") \
+               and not self.line_n                 \
+               and not self.mode_name
 
 SourceRef_VOID    = SourceRef("<default>", 0)
 SourceRef_DEFAULT = SourceRef("<default>", 0)
