@@ -90,6 +90,12 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
         /* Character index at read_p = character index at begin + offset     */
         new_character_index_begin = QUEX_MAX(0, target - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         if( ! QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin) ) {
+            QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+            return false;
+        }
+        else if( (ptrdiff_t)(target - new_character_index_begin) > me->input.end_p - BeginP ) {
+            QUEX_NAME(Buffer_seek)(me, CharacterIndexAtReadP);
+            QUEX_BUFFER_ASSERT_CONSISTENCY(me);
             return false;
         }
 
@@ -132,8 +138,10 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
         offset                    = (ptrdiff_t)QUEX_MIN((QUEX_TYPE_STREAM_POSITION)(ContentSize >> 1), target);
         new_character_index_begin = target - offset;
 
-        if( ! QUEX_NAME(Buffer_move_and_fill_backward)(me, new_character_index_begin) ) 
+        if( ! QUEX_NAME(Buffer_move_and_fill_backward)(me, new_character_index_begin) ) {
+            /* QUEX_ERROR_EXIT() initiated inside above function.            */
             return false;
+        }
         me->_read_p = &BeginP[offset];
     }
 
