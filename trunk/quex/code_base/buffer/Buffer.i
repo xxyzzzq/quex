@@ -118,7 +118,7 @@ QUEX_NAME(Buffer_input_register)(QUEX_NAME(Buffer)*        me,
         *(me->input.end_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
-    if( CharacterIndexBegin != -1 ) {
+    if( CharacterIndexBegin != (QUEX_TYPE_STREAM_POSITION)-1 ) {
         me->input.character_index_begin = CharacterIndexBegin;
     }
 
@@ -442,6 +442,12 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     ptrdiff_t                  move_size;
 
     __quex_assert(me->input.character_index_begin  <= NewCharacterIndexBegin);
+    if(    me->input.character_index_end_of_stream != -1
+        && me->input.character_index_end_of_stream - me->input.character_index_begin <= ContentSize) {
+        /* If the end of the stream is INSIDE the buffer already, then there
+         * is no need, no chance, of loading more content.                   */
+        return false;
+    }
 
     /* Move existing content in the buffer to appropriate position.          */
     move_distance = NewCharacterIndexBegin - me->input.character_index_begin;
@@ -475,14 +481,19 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
                 return false;
             }
         }
+        /* No change in '.end_p' and '.character_index_begin', but end-of-
+         * stream has been detected.                                         */
+        QUEX_NAME(Buffer_input_register)(me, (QUEX_TYPE_CHARACTER*)0, 
+                                         (QUEX_TYPE_STREAM_POSITION)-1, true); 
         return false;
     }
-
-    /* 'load_request_n != loaded_n' => End of stream detected.               */
-    QUEX_NAME(Buffer_input_register)(me, &load_p[loaded_n], 
-                                     NewCharacterIndexBegin, 
-                                     load_request_n != loaded_n);
-    return true;
+    else {
+        /* 'load_request_n != loaded_n' => End of stream detected.           */
+        QUEX_NAME(Buffer_input_register)(me, &load_p[loaded_n], 
+                                         NewCharacterIndexBegin, 
+                                         load_request_n != loaded_n);
+        return true;
+    }
 }
 
 QUEX_INLINE bool

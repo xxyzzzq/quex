@@ -1,5 +1,27 @@
-/* This file is directly derived from 'basic_functionality.c' for the test
- * of ByteLoader implementations. 
+/* PURPOSE: This tests checks on the basic member functions of a Buffer 
+ *          to seek, i.e. SETTING the 'read_p' to a specific character index.
+ *
+ * FUNCTIONS:
+ *                  Buffer_tell()
+ *                  Buffer_seek()
+ *                  Buffer_seek_forward()
+ *                  Buffer_seek_backward()
+ *
+ * MASSIVE seeking of a random position puts heave charge on all of the
+ * mentioned functions. The histogram of seek positions and seek position 
+ * differences has been checked to cover all positions of a file multiple
+ * times. If can be verified using 'gnuplot' as mentioned below in the 
+ * comment of 'basic_functionality()'.
+ *
+ * Before massive random seeking is applied a 'single step' seek forward
+ * and single step backward is done until the border is reached, and then
+ * one more time. 
+ *
+ * Correctness of the buffer's consistency is probed by all active asserts
+ * plus some 'hwut_verify' macros.
+ *
+ * The functions of this file serve as a basis to setup Buffer seek and tell
+ * tests. Examples of such setups are 'test-Plain.c' and 'test-Converter.c'.
  *
  * (C) Frank-Rene Schaefer                                                   */
 #include <basic_functionality.h>
@@ -14,6 +36,10 @@ static bool                      verify_content(QUEX_NAME(Buffer)* me,
                                                 QUEX_TYPE_STREAM_POSITION Position, 
                                                 QUEX_TYPE_STREAM_POSITION position_limit);
 static void                      print_difference(QUEX_NAME(Buffer)* me);
+static bool                      seek_forward(QUEX_NAME(Buffer)*        me,
+                                              QUEX_TYPE_STREAM_POSITION PositionLimit);
+static bool                      seek_backward(QUEX_NAME(Buffer)*        me,
+                                               QUEX_TYPE_STREAM_POSITION PositionLimit);
 
 bool
 basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
@@ -51,6 +77,11 @@ basic_functionality(QUEX_NAME(Buffer)* me, const char* ReferenceFileName)
     position_limit = reference_load(ReferenceFileName);
     hwut_verify(position_limit);
 
+    /* Before all, go in both directions in 1 character steps until limit.   */
+    hwut_verify(seek_forward(me, position_limit));
+    hwut_verify(seek_backward(me, position_limit));
+
+    /* MASSIVE random positioning tests.                                     */
     for(i=0; i < 65536 ; ++i) {
         /* Choose a position from 0 to size + 3. Choose a position beyond the
          * possible maximum, so that the error handling check is included.   
@@ -229,6 +260,49 @@ reference_load(const char* FileName)
     loaded_byte_n = fread(&reference[0], 1, sizeof(reference), fh);
     fclose(fh);
     return loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
+}
+
+static bool 
+seek_forward(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION PositionLimit)
+/* Seek in steps of 1 backward until 0 is reached and try again.             */
+{
+    ptrdiff_t count_n;
+    for(count_n = 0; count_n != PositionLimit; ++count_n ) {
+        if( count_n < PositionLimit ) {
+            hwut_verify(count_n == QUEX_NAME(Buffer_tell(me)));
+        }
+        if( ! verify_content(me, QUEX_NAME(Buffer_tell)(me), PositionLimit) ) {
+            return false;
+        }
+        QUEX_NAME(Buffer_seek_forward)(me, 1);
+    }
+
+    QUEX_NAME(Buffer_seek_forward)(me, 1);
+    hwut_verify(me->input.character_index_end_of_stream != -1);
+
+    hwut_verify(QUEX_NAME(Buffer_tell)(me) == PositionLimit - 1);
+    return true;
+}
+
+static bool 
+seek_backward(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION PositionLimit)
+/* Seek in steps of 1 backward until 0 is reached and try again.             */
+{
+    ptrdiff_t count_n;
+    for(count_n = 0; count_n != PositionLimit; ++count_n ) {
+        if( count_n < PositionLimit ) {
+            hwut_verify(PositionLimit - count_n - 1 == QUEX_NAME(Buffer_tell)(me));
+        }
+        if( ! verify_content(me, QUEX_NAME(Buffer_tell)(me), PositionLimit) ) {
+            return false;
+        }
+        QUEX_NAME(Buffer_seek_backward)(me, 1);
+    }
+
+    /* Give in an extra, hopeless, try. */
+    QUEX_NAME(Buffer_seek_backward)(me, 1);
+    hwut_verify(QUEX_NAME(Buffer_tell)(me) == 0);
+    return true;
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
