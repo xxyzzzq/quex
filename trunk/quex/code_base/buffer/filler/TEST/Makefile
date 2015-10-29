@@ -1,37 +1,7 @@
 
 TEST_FILES = \
-		   Buffer_tell_and_seek-1-fb0.exe \
-		   Buffer_tell_and_seek-1-fb1.exe \
-		   Buffer_tell_and_seek-4-fb0.exe \
-		   \
 		   Buffer_tell_and_seek-wiostream.exe \
-		   \
-		   Buffer_seek_forward-1-fb0.exe \
-		   Buffer_seek_forward-1-fb1.exe \
-		   Buffer_seek_forward-4-fb0.exe \
-		   \
-		   Buffer_seek_backward-1-fb0.exe \
-		   Buffer_seek_backward-1-fb1.exe \
-		   Buffer_seek_backward-4-fb0.exe \
-		   \
-	       BufferFiller_forward_load-1-fb0.exe \
-	       BufferFiller_forward_load-2-fb0.exe \
-	       BufferFiller_forward_load-4-fb0.exe \
-		   \
-	       BufferFiller_forward_load-1-fb1.exe \
-	       BufferFiller_forward_load-2-fb1.exe \
-	       BufferFiller_forward_load-4-fb1.exe \
-		   \
-	       BufferFiller_forward_load-1-fb5.exe \
-	       BufferFiller_forward_load-2-fb5.exe \
-	       BufferFiller_forward_load-4-fb5.exe \
-		   \
 	       BufferFiller_forward_load-error.exe \
-		   \
-	       BufferFiller_backward_load-1.exe \
-	       BufferFiller_backward_load-2.exe \
-	       BufferFiller_backward_load-4.exe \
-	       #BufferFiller_backward_load.exe
 
 HEADERS =  \
 		    \
