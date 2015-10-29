@@ -117,11 +117,13 @@ QUEX_INLINE bool       QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)*);
 QUEX_INLINE bool       QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)* me, 
                                                                 QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin);
 QUEX_INLINE bool       QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)* me, 
-                                                               QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin);
-QUEX_INLINE void       QUEX_NAME(Buffer_input_register)(QUEX_NAME(Buffer)* me,
-                                                        QUEX_TYPE_CHARACTER*      EndOfInputP,
-                                                        QUEX_TYPE_STREAM_POSITION CharacterIndexBegin,
-                                                        bool                      EndOfStreamFoundF);
+                                                               QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin,
+                                                               QUEX_TYPE_STREAM_POSITION MinCharacterIndexInBuffer);
+QUEX_INLINE void       QUEX_NAME(Buffer_register_content)(QUEX_NAME(Buffer)* me,
+                                                          QUEX_TYPE_CHARACTER*      EndOfInputP,
+                                                          QUEX_TYPE_STREAM_POSITION CharacterIndexBegin);
+QUEX_INLINE void       QUEX_NAME(Buffer_register_eos)(QUEX_NAME(Buffer)* me,
+                                                      QUEX_TYPE_STREAM_POSITION CharacterIndexEndOfStream);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
                        QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  

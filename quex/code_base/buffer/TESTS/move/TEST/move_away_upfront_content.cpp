@@ -143,9 +143,8 @@ self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
     memcpy(&buffer->_memory._front[1], (void*)content, 
            sizeof(content));
 
-    QUEX_NAME(Buffer_input_register)(buffer, end_p, 
-                                     content_size + 3 - (end_p - &buffer->_memory._front[1]),
-                                     false);
+    QUEX_NAME(Buffer_register_content)(buffer, end_p, 
+                                       content_size + 3 - (end_p - &buffer->_memory._front[1]));
     QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 }
 

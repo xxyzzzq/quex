@@ -302,10 +302,9 @@ QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
 
     /* When lexing directly on the buffer, the end of file pointer is 
      * always set.                                                           */
-    QUEX_NAME(Buffer_input_register)(buffer, 
-                                    &buffer->input.end_p[inserted_character_n],
-                                    buffer->input.character_index_begin + inserted_character_n, 
-                                    false); 
+    QUEX_NAME(Buffer_register_content)(buffer, 
+                                       &buffer->input.end_p[inserted_character_n],
+                                       buffer->input.character_index_begin + inserted_character_n); 
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 }

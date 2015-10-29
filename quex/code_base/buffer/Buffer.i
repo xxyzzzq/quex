@@ -37,9 +37,6 @@ QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me,
     /* By setting begin and end to zero, we indicate to the loader that      
      * this is the very first load procedure.                                */
     me->filler = filler;
-    me->input.end_p                         = &me->_memory._front[1];
-    me->input.character_index_begin         = 0;
-    me->input.character_index_end_of_stream = -1;
     QUEX_NAME(Buffer_init_analyzis)(me, EndOfFileP);
 }
 
@@ -74,27 +71,27 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
 
     /* (2) Load content, determine character indices of borders, determine
      *     end of file pointer.                                              */
+    QUEX_NAME(Buffer_register_eos)(me, (QUEX_TYPE_STREAM_POSITION)-1);
+
     if( me->filler && me->filler->byte_loader ) {
         __quex_assert(! EndOfFileP);
-        QUEX_NAME(Buffer_input_register)(me, BeginP, 0, false);     /* EMPTY */
+        QUEX_NAME(Buffer_register_content)(me, BeginP, 0);          /* EMPTY */
         QUEX_NAME(Buffer_load_forward)(me);   
     } 
     else {
         __quex_assert(! EndOfFileP || (EndOfFileP >= BeginP && EndOfFileP <= EndP));
         (void)EndP;
 
-        QUEX_NAME(Buffer_input_register)(me, EndOfFileP ? EndOfFileP : BeginP, 
-                                         0, false);
+        QUEX_NAME(Buffer_register_content)(me, EndOfFileP ? EndOfFileP : BeginP, 0);
     }
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 }
 
 QUEX_INLINE void
-QUEX_NAME(Buffer_input_register)(QUEX_NAME(Buffer)*        me,
-                                 QUEX_TYPE_CHARACTER*      EndOfInputP,
-                                 QUEX_TYPE_STREAM_POSITION CharacterIndexBegin,
-                                 bool                      EndOfStreamFoundF)
+QUEX_NAME(Buffer_register_content)(QUEX_NAME(Buffer)*        me,
+                                   QUEX_TYPE_CHARACTER*      EndOfInputP,
+                                   QUEX_TYPE_STREAM_POSITION CharacterIndexBegin)
 /* Registers information about the stream that fills the buffer and its
  * relation to the buffer. 
  *  
@@ -104,11 +101,7 @@ QUEX_NAME(Buffer_input_register)(QUEX_NAME(Buffer)*        me,
  *  
  *  CharacterIndexBegin --> Character index of the first character in the 
  *                          buffer.
- *                 '-1' --> No change.
- *  
- *  EndOfStreamFoundF --> True, of the end of stream has been reached.
- *                        False, else.
- *                                                                           */
+ *                 '-1' --> No change.                                       */
 {
     if( EndOfInputP ) {
         __quex_assert(EndOfInputP <= me->_memory._back);
@@ -122,14 +115,16 @@ QUEX_NAME(Buffer_input_register)(QUEX_NAME(Buffer)*        me,
         me->input.character_index_begin = CharacterIndexBegin;
     }
 
-    if( EndOfStreamFoundF ) {
-        me->input.character_index_end_of_stream = \
-                CharacterIndexBegin + (EndOfInputP - &me->_memory._front[1]);
-    }
-
     QUEX_IF_ASSERTS_poison(&me->input.end_p[1], me->_memory._back);
     /* NOT: assert(QUEX_NAME(Buffer_input_character_index_begin)(me) >= 0);
      * This function may be called before content is setup/loaded propperly. */ 
+}
+
+QUEX_INLINE void       
+QUEX_NAME(Buffer_register_eos)(QUEX_NAME(Buffer)*        me,
+                               QUEX_TYPE_STREAM_POSITION CharacterIndexEndOfStream)
+{
+    me->input.character_index_end_of_stream = CharacterIndexEndOfStream;
 }
 
 QUEX_INLINE bool
@@ -261,10 +256,8 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
      * since no new content has been loaded into the buffer.                 */
     __quex_assert(me->input.end_p - BeginP >= move_distance);
 
-    QUEX_NAME(Buffer_input_register)(me, 
-                                     &me->input.end_p[- move_distance], 
-                                     me->input.character_index_begin + move_distance,
-                                     false);
+    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[- move_distance], 
+                                       me->input.character_index_begin + move_distance);
 
     /*_______________________________________________________________________*/
     QUEX_IF_ASSERTS_poison(&EndP[- move_distance], EndP);
@@ -333,9 +326,8 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
     end_p = EndP - me->input.end_p < move_distance ? EndP
                                                    : &me->input.end_p[move_distance];
 
-    QUEX_NAME(Buffer_input_register)(me, end_p, 
-                                     me->input.character_index_begin - move_distance,
-                                     false);
+    QUEX_NAME(Buffer_register_content)(me, end_p, 
+                                       me->input.character_index_begin - move_distance);
 
     /*_______________________________________________________________________*/
     QUEX_IF_ASSERTS_poison(BeginP, &BeginP[move_distance]); 
@@ -416,21 +408,30 @@ QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me)
 
 QUEX_INLINE bool
 QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me, 
-                                        QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin)
-/*
+                                        QUEX_TYPE_STREAM_POSITION NewCharacterIndexBegin,
+                                        QUEX_TYPE_STREAM_POSITION MinCharacterIndexInBuffer)
+/* RETURNS:  true -- if the the buffer could be filled start from 
+ *                   NewCharacterIndexBegin.
+ *           false, else.
+ *
+ * In case, that the loading fails, the buffer is setup as it was BEFORE the call
+ * to this function.
+ *
+ * EXPLANATION:
+ *
  * Before:    .-------------------------------------- prev character_index_begin             
  *            :                 
  *            | . . . . . . . . .x.x.x.x.x.x.x.x.x.x.x| 
- *                              |<---- move size ---->|
+*                               |<---- move size ---->|
  * After:     |<- move distance |
  *            .-------------------------------------- new character_index_begin
  *            :                     .---------------- prev character index begin
  *            :                     :  
- *            |x.x.x.x.x.x.x.x.x.x.x|N.N.N.N.N.N.N.N.N| 
+ *            |x.x.x.x.x.x.x.x.x.x.x|N.N.N.N.N.N.N. . | 
+ *            |- move_size -------->|- loaded_n ->|
  *                                                             
  * Moves the region of size 'Size' from the end of the buffer to the beginning
- * of the buffer and tries to load as many characters as possible behind it.
- */
+ * of the buffer and tries to load as many characters as possible behind it. */
 {
     QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory._front[1];
     const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
@@ -441,9 +442,13 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     intmax_t                   move_distance;
     ptrdiff_t                  move_size;
 
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     __quex_assert(me->input.character_index_begin  <= NewCharacterIndexBegin);
+    __quex_assert(NewCharacterIndexBegin <= MinCharacterIndexInBuffer);
+    __quex_assert(NewCharacterIndexBegin + ContentSize >= MinCharacterIndexInBuffer );
+
     if(    me->input.character_index_end_of_stream != -1
-        && me->input.character_index_end_of_stream - me->input.character_index_begin <= ContentSize) {
+        && MinCharacterIndexInBuffer >= me->input.character_index_end_of_stream ) {
         /* If the end of the stream is INSIDE the buffer already, then there
          * is no need, no chance, of loading more content.                   */
         return false;
@@ -469,31 +474,39 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     __quex_assert(load_character_index == NewCharacterIndexBegin + (load_p - BeginP));
     loaded_n = QUEX_NAME(BufferFiller_region_load)(me, load_p, load_request_n,
                                                    load_character_index);
-    if( ! loaded_n ) {
+    __quex_assert(loaded_n <= load_request_n);
+
+
+    if( loaded_n != load_request_n ) {
+        /* End of stream has been detected.                                  */
+        QUEX_NAME(Buffer_register_eos)(me, load_character_index + loaded_n);
+    }
+
+    if( MinCharacterIndexInBuffer >= load_character_index + loaded_n ) {
+        /* Character with character index 'MinCharacterIndexInBuffer' has
+         * not been loaded. => Buffer must be setup as before.               */
         if( move_size ) {
-            /* Nothing has been loaded => Buffer must be setup as before.    */
             __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
                                (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-            loaded_n = QUEX_NAME(BufferFiller_region_load)(me, BeginP, move_size,
-                                                           me->input.character_index_begin);
-            if( loaded_n != move_size ) {
-                QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
-                return false;
-            }
+            load_request_n = move_distance;
         }
-        /* No change in '.end_p' and '.character_index_begin', but end-of-
-         * stream has been detected.                                         */
-        QUEX_NAME(Buffer_input_register)(me, (QUEX_TYPE_CHARACTER*)0, 
-                                         (QUEX_TYPE_STREAM_POSITION)-1, true); 
+        else {
+            load_request_n = ContentSize;
+        }
+        loaded_n = QUEX_NAME(BufferFiller_region_load)(me, BeginP, load_request_n,
+                                                       me->input.character_index_begin);
+        if( loaded_n != load_request_n ) {
+            QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");
+            return false;
+        }
+        /* Ensure, that the buffer limit code is restored.               */
+        *(me->input.end_p) = (QUEX_TYPE_CHARACTER)QUEX_SETTING_BUFFER_LIMIT_CODE;
         return false;
     }
-    else {
-        /* 'load_request_n != loaded_n' => End of stream detected.           */
-        QUEX_NAME(Buffer_input_register)(me, &load_p[loaded_n], 
-                                         NewCharacterIndexBegin, 
-                                         load_request_n != loaded_n);
-        return true;
-    }
+
+    /* 'load_request_n != loaded_n' => End of stream detected.           */
+    QUEX_NAME(Buffer_register_content)(me, &load_p[loaded_n], NewCharacterIndexBegin);
+    return true;
 }
 
 QUEX_INLINE bool
@@ -550,12 +563,12 @@ QUEX_NAME(Buffer_move_and_fill_backward)(QUEX_NAME(Buffer)*        me,
     /* Adapt 'end_p' and 'end_character_index'.                          */
     end_p = EndP - me->input.end_p < move_distance ? EndP
                                                    : &me->input.end_p[move_distance];
-    QUEX_NAME(Buffer_input_register)(me, end_p, NewCharacterIndexBegin, false);
+    QUEX_NAME(Buffer_register_content)(me, end_p, NewCharacterIndexBegin);
     return true;
 }
    
 QUEX_INLINE bool
-QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* buffer)
+QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
 /* Load as much new content into the buffer as possible--from what lies
  * ahead in the input stream. The '_read_p' and the '_lexeme_start_p' 
  * MUST be maintained inside the buffer. The 'input.end_p' pointer
@@ -564,63 +577,60 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* buffer)
  *
  * RETURNS: Number of loaded buffer elements of type QUEX_TYPE_CHARACTER     */
 {
-    QUEX_TYPE_CHARACTER*        BeginP      = &buffer->_memory._front[1];
-    const ptrdiff_t             ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
+    QUEX_TYPE_CHARACTER*        BeginP      = &me->_memory._front[1];
+    const ptrdiff_t             ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
     QUEX_TYPE_STREAM_POSITION   new_character_index_begin;
-    QUEX_TYPE_STREAM_POSITION   character_index_begin = QUEX_NAME(Buffer_input_character_index_begin)(buffer);
+    QUEX_TYPE_STREAM_POSITION   character_index_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
     QUEX_TYPE_STREAM_POSITION   character_index_of_read_p;
     QUEX_TYPE_STREAM_POSITION   character_index_of_lexeme_p;
-    QUEX_NAME(BufferFiller)*    me;
 
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    __quex_debug_buffer_load(me, "FORWARD(entry)\n");
 
-    __quex_debug_buffer_load(buffer, "FORWARD(entry)\n");
-
-    me = buffer->filler;
     /* REFUSE (return 0 indicating 'nothing loaded, but ok (>=0) !') if:
      * -- _read_p = Beginning of the Buffer: Reload nonsense. Maximum 
      *    size of available content lies ahead of '_read_p'.
      * -- input.end_p != 0: Tail of file read is already in buffer.          */
-    if( ! me ) {
+    if( ! me->filler ) {
         return 0;                        /* Possible, if no filler specified */    
     }
-    else if( buffer->_read_p - buffer->_lexeme_start_p >= ContentSize ) { 
+    else if( me->_read_p - me->_lexeme_start_p >= ContentSize ) { 
         /* OVERFLOW: If stretch from _read_p to _lexeme_start_p 
          * spans the whole buffer, then nothing can be loaded.               */
-        QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ true);
+        QUEX_NAME(__BufferFiller_on_overflow)(me, /* Forward */ true);
         return false;
     }
 
-    character_index_of_read_p    = character_index_begin + (buffer->_read_p - BeginP);
-    character_index_of_lexeme_p  = character_index_begin + (buffer->_lexeme_start_p - BeginP);
+    character_index_of_read_p    = character_index_begin + (me->_read_p - BeginP);
+    character_index_of_lexeme_p  = character_index_begin + (me->_lexeme_start_p - BeginP);
     new_character_index_begin = QUEX_MIN(character_index_of_read_p, character_index_of_lexeme_p);
     new_character_index_begin = QUEX_MAX(0, new_character_index_begin - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
 
-    if( ! QUEX_NAME(Buffer_move_and_fill_forward)(buffer, new_character_index_begin) ) {
+    if( ! QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin, new_character_index_begin) ) {
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         /* No change to _read_p, _lexeme_start_p.                            */
         return false;
     }
 
-    buffer->_read_p         = &BeginP[character_index_of_read_p   - new_character_index_begin];
-    buffer->_lexeme_start_p = &BeginP[character_index_of_lexeme_p - new_character_index_begin];
+    me->_read_p         = &BeginP[character_index_of_read_p   - new_character_index_begin];
+    me->_lexeme_start_p = &BeginP[character_index_of_lexeme_p - new_character_index_begin];
 
-    __quex_debug_buffer_load(buffer, "LOAD FORWARD(exit)\n");
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+    __quex_debug_buffer_load(me, "LOAD FORWARD(exit)\n");
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     return true;
 }
 
 QUEX_INLINE bool   
-QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* buffer)
+QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
 /* Load *previous* content into the buffer so that the analyzer can 
  * continue seeminglessly (in backward direction).
  *
  * RETURNS: Number of loaded buffer elements of type QUEX_TYPE_CHARACTER     */
 {
-    QUEX_NAME(BufferFiller)*   me       = buffer->filler;
-    QUEX_TYPE_CHARACTER*       BeginP   = &buffer->_memory._front[1];
-    QUEX_TYPE_CHARACTER*       EndP     = buffer->_memory._back;
-    const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(buffer);
-    QUEX_TYPE_STREAM_POSITION  character_index_begin = QUEX_NAME(Buffer_input_character_index_begin)(buffer);
+    QUEX_TYPE_CHARACTER*       BeginP   = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*       EndP     = me->_memory._back;
+    const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_STREAM_POSITION  character_index_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
     QUEX_TYPE_STREAM_POSITION  new_character_index_begin;
     QUEX_TYPE_STREAM_POSITION  character_index_of_read_p;
     QUEX_TYPE_STREAM_POSITION  character_index_of_lexeme_p;
@@ -628,23 +638,23 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* buffer)
 #   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
     QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD);
 #   endif
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
-    __quex_debug_buffer_load(buffer, "BACKWARD(entry)\n");
+    __quex_debug_buffer_load(me, "BACKWARD(entry)\n");
 
     /* REFUSE (return 0 indicating 'nothing loaded, but ok (>=0) !') if:
      * -- _read_p = End of the Buffer: Reload nonsense. Maximum size of
      *    available content lies before of '_read_p' for backward lexing..
      * -- input.end_character_index == 0: Stading at begin, already.         */
-    if( ! me ) return false;         /* Possible, if no filler specified     */    
-    else if( buffer->_lexeme_start_p >= &EndP[-1] ) { 
+    if( ! me->filler ) return false; /* Possible, if no filler specified */    
+    else if( me->_lexeme_start_p >= &EndP[-1] ) { 
         /* If _lexeme_start_p at back, then no new content can be loaded.    */
-        QUEX_NAME(__BufferFiller_on_overflow)(buffer, /* Forward */ false);
+        QUEX_NAME(__BufferFiller_on_overflow)(me, /* Forward */ false);
         return false;
     }
 
-    character_index_of_read_p   = character_index_begin + (buffer->_read_p - BeginP);
-    character_index_of_lexeme_p = character_index_begin + (buffer->_lexeme_start_p - BeginP);
+    character_index_of_read_p   = character_index_begin + (me->_read_p - BeginP);
+    character_index_of_lexeme_p = character_index_begin + (me->_lexeme_start_p - BeginP);
     new_character_index_begin   = character_index_begin - (ContentSize >> 1);
     new_character_index_begin   = QUEX_MAX(character_index_of_read_p, 
                                            character_index_of_lexeme_p);
@@ -652,14 +662,16 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* buffer)
                                     new_character_index_begin - QUEX_SETTING_BUFFER_MIN_FALLBACK_N
                                   : 0;
 
-    if( ! QUEX_NAME(Buffer_move_and_fill_backward)(buffer, new_character_index_begin) )
+    if( ! QUEX_NAME(Buffer_move_and_fill_backward)(me, new_character_index_begin) ) {
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         return false;
+    }
 
-    buffer->_read_p         = &BeginP[character_index_of_read_p   - new_character_index_begin];
-    buffer->_lexeme_start_p = &BeginP[character_index_of_lexeme_p - new_character_index_begin];
+    me->_read_p         = &BeginP[character_index_of_read_p   - new_character_index_begin];
+    me->_lexeme_start_p = &BeginP[character_index_of_lexeme_p - new_character_index_begin];
 
-    __quex_debug_buffer_load(buffer, "BACKWARD(exit)\n");
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+    __quex_debug_buffer_load(me, "BACKWARD(exit)\n");
+    QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     return true;
 }
 
