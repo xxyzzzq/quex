@@ -459,7 +459,7 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
     if( move_distance < ContentSize ) {
         move_size            = me->input.end_p - &BeginP[move_distance];
         load_character_index = NewCharacterIndexBegin + move_size;
-        load_request_n       = ContentSize - move_size;  /* Try to load max. */
+        load_request_n       = (ptrdiff_t)(ContentSize - move_size); 
         load_p               = &BeginP[move_size];
         __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
                            (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
@@ -488,10 +488,10 @@ QUEX_NAME(Buffer_move_and_fill_forward)(QUEX_NAME(Buffer)*        me,
         if( move_size ) {
             __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
                                (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-            load_request_n = move_distance;
+            load_request_n = (ptrdiff_t)move_distance;
         }
         else {
-            load_request_n = ContentSize;
+            load_request_n = (ptrdiff_t)ContentSize;
         }
         loaded_n = QUEX_NAME(BufferFiller_region_load)(me, BeginP, load_request_n,
                                                        me->input.character_index_begin);
