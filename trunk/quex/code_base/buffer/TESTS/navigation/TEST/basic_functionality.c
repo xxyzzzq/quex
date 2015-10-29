@@ -267,17 +267,18 @@ seek_forward(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION PositionLimit)
 /* Seek in steps of 1 backward until 0 is reached and try again.             */
 {
     ptrdiff_t count_n;
-    for(count_n = 0; count_n != PositionLimit; ++count_n ) {
+    for(count_n = 0; count_n != PositionLimit-1; ++count_n ) {
         if( count_n < PositionLimit ) {
             hwut_verify(count_n == QUEX_NAME(Buffer_tell(me)));
         }
         if( ! verify_content(me, QUEX_NAME(Buffer_tell)(me), PositionLimit) ) {
             return false;
         }
-        QUEX_NAME(Buffer_seek_forward)(me, 1);
+        hwut_verify(QUEX_NAME(Buffer_seek_forward)(me, 1));
     }
+    hwut_verify(QUEX_NAME(Buffer_tell)(me) == PositionLimit - 1);
 
-    QUEX_NAME(Buffer_seek_forward)(me, 1);
+    hwut_verify(! QUEX_NAME(Buffer_seek_forward)(me, 1));
     hwut_verify(me->input.character_index_end_of_stream != -1);
 
     hwut_verify(QUEX_NAME(Buffer_tell)(me) == PositionLimit - 1);
@@ -289,18 +290,19 @@ seek_backward(QUEX_NAME(Buffer)* me, QUEX_TYPE_STREAM_POSITION PositionLimit)
 /* Seek in steps of 1 backward until 0 is reached and try again.             */
 {
     ptrdiff_t count_n;
-    for(count_n = 0; count_n != PositionLimit; ++count_n ) {
+    for(count_n = 0; count_n != PositionLimit-1; ++count_n ) {
         if( count_n < PositionLimit ) {
             hwut_verify(PositionLimit - count_n - 1 == QUEX_NAME(Buffer_tell)(me));
         }
         if( ! verify_content(me, QUEX_NAME(Buffer_tell)(me), PositionLimit) ) {
             return false;
         }
-        QUEX_NAME(Buffer_seek_backward)(me, 1);
+        hwut_verify(QUEX_NAME(Buffer_seek_backward)(me, 1));
     }
+    hwut_verify(QUEX_NAME(Buffer_tell)(me) == 0);
 
     /* Give in an extra, hopeless, try. */
-    QUEX_NAME(Buffer_seek_backward)(me, 1);
+    hwut_verify(! QUEX_NAME(Buffer_seek_backward)(me, 1));
     hwut_verify(QUEX_NAME(Buffer_tell)(me) == 0);
     return true;
 }
