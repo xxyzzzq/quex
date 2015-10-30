@@ -36,6 +36,7 @@ INCLUDES   := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH)
 SIZE_1     := -DQUEX_TYPE_CHARACTER=uint8_t
 SIZE_2     := -DQUEX_TYPE_CHARACTER=uint16_t
 SIZE_4     := -DQUEX_TYPE_CHARACTER=uint32_t
+SIZE_WC    := -DQUEX_TYPE_CHARACTER=wchar_t
 FALLBACK_0 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 
 FALLBACK_1 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=1 
 FALLBACK_2 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=2
@@ -71,11 +72,11 @@ hwut-end: clean
 	$(CC) $(SIZE_2) $(FALLBACK_2) $< $(XLIBS) -o $@
 
 %-2-0.exe: %.cpp basic_functionality.c
-	$(CCP) $(SIZE_2) $(FALLBACK_0) $< $(XLIBS) -o $@
+	$(CCP) $(SIZE_WC) $(FALLBACK_0) $< $(XLIBS) -o $@
 %-2-1.exe: %.cpp basic_functionality.c
-	$(CCP) $(SIZE_2) $(FALLBACK_1) $< $(XLIBS) -o $@
+	$(CCP) $(SIZE_WC) $(FALLBACK_1) $< $(XLIBS) -o $@
 %-2-2.exe: %.cpp basic_functionality.c
-	$(CCP) $(SIZE_2) $(FALLBACK_2) $< $(XLIBS) -o $@
+	$(CCP) $(SIZE_WC) $(FALLBACK_2) $< $(XLIBS) -o $@
 
 %-1-0.exe: %.c basic_functionality.c
 	$(CC) $(SIZE_1) $(FALLBACK_0) $< $(XLIBS) -o $@

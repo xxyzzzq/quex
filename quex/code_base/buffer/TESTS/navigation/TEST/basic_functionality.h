@@ -6,6 +6,9 @@
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/MemoryManager>
 #include <hwut_unit.h>
+#ifdef __cplusplus
+#   include <quex/code_base/buffer/Buffer.i>
+#endif
 
 QUEX_NAMESPACE_MAIN_OPEN
 
