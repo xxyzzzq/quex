@@ -136,7 +136,7 @@ verify_content(QUEX_NAME(Buffer)* me,
                    (int)Position, (int)PositionLimit,
                    (int)*(me->_read_p), (int)reference[Position]);
             print_difference(me);
-            hwut_verify(false);
+            return false;
         }
     }
     else if( ! ContentSize) {
