@@ -61,7 +61,7 @@ utf16-lexer: utf16-lexer.cpp
 		$<                      \
 		$(CCFLAG_ASSERTS)       \
 		UTF16Lex.cpp            \
-		-o $@
+		-o $@ -ggdb
 
 utf16-lexer-other: utf16-lexer-other.cpp 
 	quex -i             greek-other.qx  \

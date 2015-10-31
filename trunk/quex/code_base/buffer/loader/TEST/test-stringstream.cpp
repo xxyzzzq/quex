@@ -24,7 +24,7 @@ main(int argc, char** argv)
     std::istringstream  sstr(sbuffer);
     ByteLoader*         me = ByteLoader_stream_new(&sstr);
 
-    hwut_verify(ByteLoader_stream_new((ByteLoader_stream<std:stringstream>*)0) == (ByteLoader*)0);
+    hwut_verify(ByteLoader_stream_new((std::stringstream*)0) == (ByteLoader*)0);
 
     hwut_if_choice("basic")    verify_basic_functionality(me);
     hwut_if_choice("init-pos") initial_position(me);

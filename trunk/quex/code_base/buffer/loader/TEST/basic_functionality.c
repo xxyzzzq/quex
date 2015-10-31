@@ -20,9 +20,11 @@
 #include <quex/code_base/buffer/loader/ByteLoader>
 #include <hwut_unit.h>
 
-static bool  verify_load(ByteLoader* me, int Offset, int N);
+static bool  verify_load(ByteLoader* me, int Offset, int N, 
+                         QUEX_TYPE_STREAM_POSITION position_limit);
 static bool  test(ByteLoader* me, int LoadN);
-static void  print_difference(const uint8_t* content, int Offset, int loaded_n);
+static void  print_difference(const uint8_t* content, int Offset, int N, 
+                              QUEX_TYPE_STREAM_POSITION position_limit);
 
 /* Maintain the content of the file, so that it may be compared whether the 
  * content that is loaded is always the same.                                */
@@ -74,7 +76,7 @@ test(ByteLoader* me, int LoadN)
         hwut_verify(position == me->tell(me));
 
         /* LOAD */
-        if( ! verify_load(me, position, LoadN) ) return false;
+        if( ! verify_load(me, position, LoadN, position_limit) ) return false;
     }
     printf("# <terminated: load_n: %i; sub-tests: %i; checksum: %i;>\n",
            (int)LoadN, (int)i, (int)position);
