@@ -129,6 +129,9 @@ prepare(const char* CodecName)
 
     /* Backup the source, so it s checked that source is not altered. */
     memcpy(&source_backup[0], &source[0], source_byte_n);
+
+
+    /* Open the converter. */
 }
 
 const char* 
@@ -216,9 +219,9 @@ verify_call_to_convert(QUEX_NAME(Converter)* converter,
                        QUEX_TYPE_CHARACTER** drain_pp,  const QUEX_TYPE_CHARACTER* DrainEndP,
                        bool                  DrainFilledF)
 {
-    uint8_t* s_p_before = *source_pp;
-    uint8_t* d_p_before = *drain_pp;
-    bool     filled_f;
+    uint8_t*             s_p_before = *source_pp;
+    QUEX_TYPE_CHARACTER* d_p_before = *drain_pp;
+    bool                 filled_f;
 
     filled_f = converter->convert(converter, source_pp, SourceEndP, 
                                   drain_pp, DrainEndP); 
