@@ -37,18 +37,22 @@
  * 
  * (C) Frank-Rene Schaefer                                                   */
 
+#include <basic_functionality.h>
+#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
+#include <quex/code_base/buffer/filler/converter/Converter.i>
+#include <hwut_unit.h>
 #define STR(X) #X
-void
-test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter, const char* CodecName);
 
 int
 main(int argc, char** argv)
 {
+    using namespace quex;
+
     hwut_info("Converter_IConv: Convert all in one beat (" STR(QUEX_TYPE_CHARACTER) ");"
               "CHOICES: ASCII, UTF8, UTF16, UCS4-BE;")
+    if( ! argc ) abort();
 
-    QUEX_INLINE QUEX_NAME(Converter)* converter = 
-                QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
     
     test_conversion_stepwise_drain(converter, argv[1]);
 }

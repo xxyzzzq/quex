@@ -41,5 +41,5 @@ hwut-end: clean
 
 clean:
 	rm -f $(FILES)
-	rm -t *.o
-	rm -t *~
+	rm -f *.o
+	rm -f *~

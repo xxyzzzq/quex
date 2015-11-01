@@ -51,6 +51,7 @@ main(int argc, char** argv)
 
     hwut_info("Converter_IConv: Convert all in one beat (" STR(QUEX_TYPE_CHARACTER) ");"
               "CHOICES: ASCII, UTF8, UTF16, UCS4-BE;")
+    if( ! argc ) abort();
 
     QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
     
