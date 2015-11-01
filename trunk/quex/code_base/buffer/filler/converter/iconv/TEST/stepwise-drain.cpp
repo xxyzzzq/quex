@@ -39,7 +39,7 @@
 
 #define STR(X) #X
 void
-test_conversion_in_one_beat(QUEX_NAME(Converter)* converter, const char* CodecName);
+test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter, const char* CodecName);
 
 int
 main(int argc, char** argv)
@@ -50,6 +50,6 @@ main(int argc, char** argv)
     QUEX_INLINE QUEX_NAME(Converter)* converter = 
                 QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
     
-    test(converter, argv[1]);
+    test_conversion_stepwise_drain(converter, argv[1]);
 }
 

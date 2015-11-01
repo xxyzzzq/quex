@@ -30,7 +30,7 @@
  *
  *   (4) The input buffer is NOT to be touched!
  *
- * The test is repeated trice call '.stomach_clear()' to ensure it does nothing
+ * The test is repeated trice. Call '.stomach_clear()' to ensure it does nothing
  * bad.
  *
  * This is compiled for four different setting QUEX_TYPE_CHARACTER:
@@ -38,19 +38,24 @@
  * 
  * (C) Frank-Rene Schaefer                                                   */
 
+#include <basic_functionality.h>
+#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
+#include <quex/code_base/buffer/filler/converter/Converter.i>
+#include <hwut_unit.h>
 #define STR(X) #X
-void
-test_conversion_in_one_beat(QUEX_NAME(Converter)* converter, const char* CodecName);
 
 int
 main(int argc, char** argv)
 {
+    using namespace quex;
+
     hwut_info("Converter_IConv: Convert all in one beat (" STR(QUEX_TYPE_CHARACTER) ");"
               "CHOICES: ASCII, UTF8, UTF16, UCS4-BE;")
 
-    QUEX_INLINE QUEX_NAME(Converter)* converter = 
-                QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
     
-    test(converter, argv[1]);
+    test_conversion_in_one_beat(converter, argv[1]);
+
+    printf("<terminated>\n");
 }
 
