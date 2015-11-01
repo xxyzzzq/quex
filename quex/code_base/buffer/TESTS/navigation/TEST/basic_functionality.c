@@ -27,6 +27,7 @@
 #include <basic_functionality.h>
 #include <hwut_unit.h>
 
+#include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
 

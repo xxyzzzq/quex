@@ -1,24 +1,17 @@
 
-FILES = \
-		converter-16.exe                \
-		converter-32.exe                \
-		converter-statefulness-16.exe   \
-		converter-statefulness-32.exe   \
-		one-beat.exe                    \
-		n-beat.exe                      \
-		seek_character_index.exe        \
-		seek_character_index-zikzak.exe \
-		Buffer_seek_forward.exe         \
-		Buffer_tell_and_seek.exe        \
-		Buffer_seek_backward.exe
+FILES := $(foreach S, 1 2 4 WC, one-beat-$(S).exe)       \
+	     $(foreach S, 1 2 4 WC, stepwise-drain-$(S).exe) \
+	     $(foreach S, 1 2 4 WC, stepwise-source-$(S).exe) 
 
-DEFS = -DQUEX_OPTION_ASSERTS \
-	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
-       -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
-	   -DQUEX_OPTION_CONVERTER_ICONV 
+DEFS := -DQUEX_OPTION_ASSERTS \
+	    -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
+        -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
+	    -DQUEX_OPTION_CONVERTER_ICONV 
+
+INCLUDES := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH)
 
 CC = \
-	g++ -I$(QUEX_PATH) $(DEFS) \
+	g++ $(INCLUDES) $(DEFS) \
 		-ggdb  \
 		-Wall -Werror \
         -Werror-implicit-function-declaration 
@@ -31,34 +24,22 @@ hwut-info:
 hwut-end: clean
 	@echo Bye
 
-HEADER            := \<quex\/code_base\/buffer\/converter\/iconv\/Converter_IConv\.i\>
-CONVERTER         := QUEX_NAME(Converter_IConv_convert)
-NEW_OPERATOR      := QUEX_NAME(Converter_IConv_new)
-FILLER_TYPE       := QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV
-UCS_4_BYTE_BE     := "UCS-4BE"
-UCS_4_BYTE_LE     := "UCS-4LE"
-UCS_2_BYTE_LE     := "UCS-2LE"
-UCS_UTF8          := "UTF8"
-TEST_TEMPLATE_DIR := ../../TEST-TEMPLATE/#
+%-1.exe: %.cpp basic_functionality.c
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
 
-include $(TEST_TEMPLATE_DIR)/Makefile
+%-2.exe: %.cpp basic_functionality.c
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
 
-%.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t 
+%-4.exe: %.cpp basic_functionality.c
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
 
-%-16.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint16_t 
+%-WC.exe: %.cpp basic_functionality.c
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
 
-%-32.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t 
-
-seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp 
-	$(CC) $< -o $@ \
-		-DQUEX_TYPE_CHARACTER=uint16_t 
+%.E: %.cpp
+	g++ $(DEFS) $(INCLUDES) -E $< -o $@
 
 clean:
 	rm -f $(FILES)
-	rm -f $(TEST_TEMPLATE_RESULTS)
+	rm -t *.o
+	rm -t *~
