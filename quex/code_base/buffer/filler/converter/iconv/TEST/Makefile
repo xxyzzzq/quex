@@ -3,6 +3,9 @@ FILES := $(foreach S, 1 2 4 WC, one-beat-$(S).exe)       \
 	     $(foreach S, 1 2 4 WC, stepwise-drain-$(S).exe) \
 	     $(foreach S, 1 2 4 WC, stepwise-source-$(S).exe) 
 
+BASIC_SOURCES := basic_functionality.c \
+	             basic_functionality-iconv.c
+
 DEFS := -DQUEX_OPTION_ASSERTS \
 	    -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
         -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
@@ -24,16 +27,16 @@ hwut-info:
 hwut-end: clean
 	@echo Bye
 
-%-1.exe: %.cpp basic_functionality.c
+%-1.exe: %.cpp $(BASIC_SOURCES)
 	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
 
-%-2.exe: %.cpp basic_functionality.c
+%-2.exe: %.cpp $(BASIC_SOURCES)
 	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
 
-%-4.exe: %.cpp basic_functionality.c
+%-4.exe: %.cpp $(BASIC_SOURCES)
 	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
 
-%-WC.exe: %.cpp basic_functionality.c
+%-WC.exe: %.cpp $(BASIC_SOURCES)
 	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
 
 %.E: %.cpp

@@ -4,6 +4,8 @@
 
 QUEX_NAMESPACE_QUEX_OPEN
 
+extern void test_with_available_codecs(void (*test)(QUEX_NAME(Converter)*, const char*));
+
 extern void test_conversion_in_one_beat(QUEX_NAME(Converter)* converter, 
                                         const char*           CodecName);
 
@@ -12,5 +14,6 @@ extern void test_conversion_stepwise_source(QUEX_NAME(Converter)* converter,
 
 extern void test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter, 
                                            const char*           CodecName);
+extern void print_result(const char*);
 
 QUEX_NAMESPACE_QUEX_CLOSE
