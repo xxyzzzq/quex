@@ -10,7 +10,7 @@
 #include <basic_functionality.h>
 #include <quex/code_base/buffer/filler/converter/icu/Converter_ICU.i>
 #include <quex/code_base/buffer/filler/converter/Converter.i>
-#include <quex/code_base/MemoryManager.i>
+/* #include <quex/code_base/MemoryManager.i> */
 
 QUEX_NAMESPACE_MAIN_OPEN
 

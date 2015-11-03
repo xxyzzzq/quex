@@ -34,7 +34,7 @@
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
-#include <quex/code_base/MemoryManager.i>
+// #include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
 typedef enum { TEST_ICU, TEST_ICONV } E_ConverterTestType;
