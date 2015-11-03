@@ -39,11 +39,11 @@ QUEXED_DEF(MemoryManager_free)(void*              alter_ego,
 size_t
 QUEXED_DEF(MemoryManager_insert)(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
                                  uint8_t* source_begin_p, uint8_t* source_end_p)
-    /* Inserts as many bytes as possible into the array from 'drain_begin_p'
-     * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
-     * ends at 'source_end_p'.
-     *
-     * RETURNS: Number of bytes that have been copied.                       */
+/* Inserts as many bytes as possible into the array from 'drain_begin_p'
+ * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
+ * ends at 'source_end_p'.
+ *
+ * RETURNS: Number of bytes that have been copied.                           */
 {
     /* Determine the insertion size.                                         */
     const size_t DrainSize = (size_t)(drain_end_p  - drain_begin_p);

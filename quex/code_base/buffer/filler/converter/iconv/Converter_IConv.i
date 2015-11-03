@@ -13,7 +13,6 @@ extern "C" {
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
 
 #if ! defined(QUEX_OPTION_CONVERTER_ICONV)

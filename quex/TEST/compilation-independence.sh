@@ -9,7 +9,7 @@ here=`pwd`
 
 cd $QUEX_PATH/quex/code_base
 
-for file in `find -path "*.svn*" -or -path "*TEST*" -or -name tags -or -name "TXT*" -or -name "*.txt" -or -name "*.sw?" -or -name core.mkd  -or -path "*DESIGN*" -or -name "*.7z" -or -name "*.qx" -or -name "*ignore" -or -name "*DELETED*" -or -name . -or -name "*_body" -or -name "*.g*" -or -name "[1-9]" -or -name "°" -or -name "*.o" -or -name "*.exe" -prune -or -type f -print | sort`; do
+for file in `find -path "*.svn*" -or -path "*TEST*" -or -name tags -or -name "TXT*" -or -name "*.txt" -or -name "*.sw?" -or -path "*DESIGN*" -or -name "*.7z" -or -name "*.qx" -or -name "*ignore" -or -name "*DELETED*" -or -name . -or -name "*_body" -or -name "*.g*" -or -name "[1-9]" -or -name "°" -or -name "*.o" -or -name "*.exe" -prune -or -type f -print | sort`; do
 
     case $file in
 

@@ -204,7 +204,11 @@ QUEX_NAME(Converter_ICU_stomach_byte_n)(QUEX_NAME(Converter)* alter_ego)
 {
     QUEX_NAME(Converter_ICU)* me = (QUEX_NAME(Converter_ICU)*)alter_ego;
 
+#   if 0
+    /* If things go really bad; set the above to '#if 1'; Then the ICU never
+     * claims to know how many bytes are in the stomach.                     */
     return (ptrdiff_t)-1;
+#   endif 
 
     if( me->pivot.source != me->pivot.target ) {
         return (ptrdiff_t)-1;                      /* Unable to tell. Sorry. */

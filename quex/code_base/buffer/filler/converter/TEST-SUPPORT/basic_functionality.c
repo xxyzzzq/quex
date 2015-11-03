@@ -1,4 +1,5 @@
 #include <basic_functionality.h>
+#include <quex/code_base/MemoryManager.i>
 #include <hwut_unit.h>
 #define REFERENCE_DIR    "../../../../TESTS/navigation/TEST/examples/"
 #define ARRAY_ELEMENT_N  65536
@@ -268,7 +269,9 @@ verify_completion(QUEX_NAME(Converter)* converter,
     /* Nothing shall be left in stomach. */
     hwut_verify(source_p - &source[0] == source_byte_n);
     if( converter->stomach_byte_n ) {
-        hwut_verify(converter->stomach_byte_n(converter) == 0);
+        if( converter->stomach_byte_n(converter) != -1 ) {
+            hwut_verify(converter->stomach_byte_n(converter) == 0);
+        }
     }
 
     /* All is converted. */
@@ -316,7 +319,10 @@ verify_call_to_convert(QUEX_NAME(Converter)* converter,
     hwut_verify(s_p_before <= *source_pp && *source_pp <= SourceEndP);
     hwut_verify(d_p_before <= *drain_pp  && *drain_pp  <= DrainEndP); 
     if( converter->stomach_byte_n ) {
-        hwut_verify(*source_pp + converter->stomach_byte_n(converter) < SourceEndP);
+        if( converter->stomach_byte_n(converter) != -1 ) {
+            hwut_verify(*source_pp - converter->stomach_byte_n(converter) <= SourceEndP);
+            hwut_verify(*source_pp - converter->stomach_byte_n(converter) >= &source[0]);
+        }
     }
 
     /* Converted content must be correct! */
