@@ -91,6 +91,7 @@ test_conversion_in_one_beat(QUEX_NAME(Converter)* converter, const char* CodecNa
     QUEX_TYPE_CHARACTER*  d_p;
     int                   i;
 
+    printf("function: %s;\n", __func__);
     prepare(CodecName);
 
     for(i = 0; i < 3; ++i) {
@@ -117,6 +118,7 @@ test_conversion_stepwise_source(QUEX_NAME(Converter)* converter,
     QUEX_TYPE_CHARACTER*  d_p;
     int                   i;
 
+    printf("function: %s;\n", __func__);
     prepare(CodecName);
 
     for(i = 0; i < 3; ++i) {
@@ -129,7 +131,7 @@ test_conversion_stepwise_source(QUEX_NAME(Converter)* converter,
              * can never be full.                                            */
             verify_call_to_convert(converter, &s_p, &source[i+1], 
                                    &d_p, &drain[drain_character_n], 
-                                   (i == source_byte_n) ? true : false);
+                                   (i == source_byte_n-1) ? true : false);
         }
         verify_completion(converter, s_p, d_p);
     }
@@ -143,6 +145,7 @@ test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter,
     QUEX_TYPE_CHARACTER*  d_p;
     int                   i;
 
+    printf("function: %s;\n", __func__);
     prepare(CodecName);
 
     for(i = 0; i < 3; ++i) {
@@ -208,7 +211,7 @@ file_get_input(const char* Codec)
     if     ( strcmp(Codec, "ASCII") == 0 )   snprintf(&file_name[0], 1023, "%s.dat", file_stem); 
     else if( strcmp(Codec, "UTF8") == 0 )    snprintf(&file_name[0], 1023, "%s.utf8", file_stem);
     else if( strcmp(Codec, "UTF16BE") == 0 ) snprintf(&file_name[0], 1023, "%s.utf16-be", file_stem); 
-    else if( strcmp(Codec, "UCS-4BE") == 0 )  snprintf(&file_name[0], 1023, "%s.ucs4-be", file_stem);
+    else if( strcmp(Codec, "UCS-4BE") == 0 ) snprintf(&file_name[0], 1023, "%s.ucs4-be", file_stem);
     else                                     return "";
 
     return &file_name[0];

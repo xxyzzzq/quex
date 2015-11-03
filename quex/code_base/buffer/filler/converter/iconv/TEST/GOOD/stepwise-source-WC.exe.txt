@@ -1,15 +1,17 @@
+function: test_conversion_stepwise_source;
 {
     codec:              ASCII;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert-32-le.dat;
     character_n:        27;
-    sub-tests (3 runs): 3;
-    checksum:           696;
+    sub-tests (3 runs): 27;
+    checksum:           760;
 }
+function: test_conversion_stepwise_source;
 {
     codec:              UTF16BE;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/small-32-le.dat;
     character_n:        36;
-    sub-tests (3 runs): 3;
-    checksum:           864;
+    sub-tests (3 runs): 72;
+    checksum:           939;
 }
 <terminated>

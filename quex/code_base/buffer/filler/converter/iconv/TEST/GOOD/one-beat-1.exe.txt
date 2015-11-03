@@ -1,3 +1,4 @@
+function: test_conversion_in_one_beat;
 {
     codec:              ASCII;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert.dat;
