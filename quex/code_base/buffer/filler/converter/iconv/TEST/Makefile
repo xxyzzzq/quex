@@ -22,7 +22,9 @@ FILES := $(foreach S, 1 2 4 WC, one-beat-$(S).exe)       \
 	     $(foreach S, 1 2 4 WC, stepwise-drain-$(S).exe) \
 	     $(foreach S, 1 2 4 WC, stepwise-source-$(S).exe) 
 
-BASIC_SOURCES := basic_functionality.c \
+TEST_SUPPORT_DIR := ../../TEST-SUPPORT#
+
+BASIC_SOURCES := $(TEST_SUPPORT_DIR)/basic_functionality.c \
 	             basic_functionality-iconv.c
 
 DEFS := -DQUEX_OPTION_ASSERTS \
@@ -30,10 +32,9 @@ DEFS := -DQUEX_OPTION_ASSERTS \
         -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
 	    -DQUEX_OPTION_CONVERTER_ICONV 
 
-INCLUDES := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH)
+INCLUDES := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH) -I$(TEST_SUPPORT_DIR)
 
-CC = \
-	g++ $(INCLUDES) $(DEFS) \
+CC := g++ $(INCLUDES) $(DEFS) \
 		-ggdb  \
 		-Wall -Werror \
         -Werror-implicit-function-declaration 
@@ -63,7 +64,6 @@ hwut-end: clean
 
 %.E: %.c
 	g++ $(DEFS) $(INCLUDES) -E $< -o $@
-
 
 clean:
 	rm -f $(FILES)

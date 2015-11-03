@@ -1,31 +1,40 @@
-.SECONDARY: $(GENERATED_FILES)
+# Testing the implementation of the 'Converter' interface for the IConv
+# library.
+#
+# There are three tests: 
+#
+#     'one-beat': The complete source is converted completely into
+#                 the drain (source and drain a fully available).
+#
+#     'stepwise-source': The source is fed into the converter byte-
+#                        by byte. So the converter must eventually
+#                        wait until a character representation is
+#                        complete.
+#
+#     'stepwise-drain': It is left only place for one character to
+#                       be converted, so the converter must stop
+#                       at the right source positions.
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 
+FILES := $(foreach S, 1 2 4 WC, one-beat-$(S).exe)       \
+	     $(foreach S, 1 2 4 WC, stepwise-drain-$(S).exe) \
+	     $(foreach S, 1 2 4 WC, stepwise-source-$(S).exe) 
 
-FILES = \
-		converter-16.exe                \
-		converter-32.exe                \
-		converter-statefulness-16.exe   \
-		converter-statefulness-32.exe   \
-		one-beat.exe                    \
-		n-beat.exe                      \
-		seek_character_index.exe        \
-		seek_character_index-zikzak.exe \
-		Buffer_seek_forward.exe         \
-		Buffer_tell_and_seek.exe        \
-		Buffer_seek_backward.exe
+TEST_SUPPORT_DIR := ../../TEST-SUPPORT#
 
-DEFS = -DQUEX_OPTION_ASSERTS \
-	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
-       -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
-	   -DQUEX_OPTION_CONVERTER_ICU 
+BASIC_SOURCES := $(TEST_SUPPORT_DIR)/basic_functionality.c \
+	             basic_functionality-icu.c
 
-# Use 'icu-config --ldflags' in order to get the linker flags
-ICU_FLAGS := $(shell icu-config --ldflags --cppflags) 
+DEFS := -DQUEX_OPTION_ASSERTS \
+	    -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
+        -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
+	    -DQUEX_OPTION_CONVERTER_ICU 
 
-all: $(FILES)
+INCLUDES := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH) -I$(TEST_SUPPORT_DIR)
 
-CC = \
-	g++ -I$(QUEX_PATH) $(DEFS) \
+CC := g++ $(INCLUDES) $(DEFS) \
 		-ggdb  \
 		-Wall -Werror \
         -Werror-implicit-function-declaration 
@@ -38,38 +47,26 @@ hwut-info:
 hwut-end: clean
 	@echo Bye
 
-HEADER            := \<quex\/code_base\/buffer\/converter\/icu\/Converter_ICU\.i\>
-CONVERTER         := QUEX_NAME(Converter_ICU_convert)
-NEW_OPERATOR      := QUEX_NAME(Converter_ICU_new)
-FILLER_TYPE       := QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
-UCS_4_BYTE_BE     := "UTF32-BE"
-UCS_4_BYTE_LE     := "UTF32-LE"
-UCS_2_BYTE_LE     := "UTF16-LE"
-UCS_UTF8          := "UTF-8"
-TEST_TEMPLATE_DIR := ../../TEST-TEMPLATE/#
+%-1.exe: %.cpp $(BASIC_SOURCES)
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
 
-include $(TEST_TEMPLATE_DIR)/Makefile
+%-2.exe: %.cpp $(BASIC_SOURCES)
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
 
-%.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t \
-		$(ICU_FLAGS) 
+%-4.exe: %.cpp $(BASIC_SOURCES)
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
 
-%-16.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint16_t \
-		$(ICU_FLAGS) 
+%-WC.exe: %.cpp $(BASIC_SOURCES)
+	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
 
-%-32.exe: %.cpp 
-	$(CC) $< -o $@ \
-        -DQUEX_TYPE_CHARACTER=uint32_t \
-		$(ICU_FLAGS) 
+%.E: %.cpp
+	g++ $(DEFS) $(INCLUDES) -E $< -o $@
 
-seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp 
-	$(CC) $< -o $@ \
-		-DQUEX_TYPE_CHARACTER=uint16_t \
-		$(ICU_FLAGS) 
+%.E: %.c
+	g++ $(DEFS) $(INCLUDES) -E $< -o $@
 
 clean:
 	rm -f $(FILES)
-	rm -f $(TEST_TEMPLATE_RESULTS)
+	rm -f *.o
+	rm -f *.E
+	rm -f *~
