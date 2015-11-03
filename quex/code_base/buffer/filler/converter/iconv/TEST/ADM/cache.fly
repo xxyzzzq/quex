@@ -1,150 +1,132 @@
 {
-title: Plain 16 bit;
-title_group: Converter;
-build_time: 0.8376758098602295;
-file_name: converter-16.exe;
-hwut_info_time: 1446248108L;
+title: uint16_t;
+title_group: Convert all in one beat;
+build_time: 0.8247048854827881;
+file_name: one-beat-2.exe;
+hwut_info_time: 1446535477L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009602; None; ]
-  [ UTF-16; OK; 0.009908; None; ]
+  [ ; OK; 0.004799; 1004210828; ]
 ]
 }
 {
-title: Plain 32 bit;
-title_group: Converter;
-build_time: 0.8566160202026367;
-file_name: converter-32.exe;
-hwut_info_time: 1446248104L;
+title: uint32_t;
+title_group: Convert all in one beat;
+build_time: 0.8202168941497803;
+file_name: one-beat-4.exe;
+hwut_info_time: 1446535470L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.010344; None; ]
-  [ UTF-16; OK; 0.011979; None; ]
+  [ ; OK; 0.005469; -552350006; ]
 ]
 }
 {
-title: Possible 'statefulness' has been ruled out (16 bit);
-title_group: Converter;
-build_time: 0.8916339874267578;
-file_name: converter-statefulness-16.exe;
-hwut_info_time: 1446248106L;
+title: uint8_t;
+title_group: Convert all in one beat;
+build_time: 0.8152360916137695;
+file_name: one-beat-1.exe;
+hwut_info_time: 1446535470L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009373; None; ]
-  [ UTF-16; OK; 0.015257; None; ]
+  [ ; OK; 0.005550; 908577929; ]
 ]
 }
 {
-title: Possible 'statefulness' has been ruled out (32 bit);
-title_group: Converter;
-build_time: 0.9495079517364502;
-file_name: converter-statefulness-32.exe;
-hwut_info_time: 1446248111L;
+title: wchar_t;
+title_group: Convert all in one beat;
+build_time: 0.8286349773406982;
+file_name: one-beat-WC.exe;
+hwut_info_time: 1446535478L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.005518; None; ]
-  [ UTF-16; OK; 0.006115; None; ]
+  [ ; OK; 0.006635; 132292465; ]
 ]
 }
 {
-title: Backward (BPC=4);
-title_group: Move by Offset;
-build_time: 0.6165430545806885;
-file_name: Buffer_seek_backward.exe;
-hwut_info_time: 1445702856L;
+title: uint16_t;
+title_group: Convert drain character by drain character;
+build_time: 0.8211920261383057;
+file_name: stepwise-drain-2.exe;
+hwut_info_time: 1446535475L;
 make_dependent_f: True;
 result_list: [
-  [ 1; MAKE FAILED; 0.230961; None; ]
-  [ 2; MAKE FAILED; 0.235922; None; ]
-  [ 3; MAKE FAILED; 0.229233; None; ]
-  [ 4; MAKE FAILED; 0.234043; None; ]
-  [ 5; MAKE FAILED; 0.231234; None; ]
+  [ ; OK; 0.006351; -526030693; ]
 ]
 }
 {
-title: Forward (BPC=4);
-title_group: Move by Offset;
-build_time: 0.5982189178466797;
-file_name: Buffer_seek_forward.exe;
-hwut_info_time: 1445702857L;
+title: uint32_t;
+title_group: Convert drain character by drain character;
+build_time: 0.8251669406890869;
+file_name: stepwise-drain-4.exe;
+hwut_info_time: 1446535473L;
 make_dependent_f: True;
 result_list: [
-  [ 1; MAKE FAILED; 0.245876; None; ]
-  [ 2; MAKE FAILED; 0.237278; None; ]
-  [ 3; MAKE FAILED; 0.227708; None; ]
-  [ 4; MAKE FAILED; 0.231683; None; ]
-  [ 5; MAKE FAILED; 0.246218; None; ]
+  [ ; OK; 0.049902; 1544123102; ]
 ]
 }
 {
-title: Plain search;
-title_group: Stream Position Seek;
-build_time: 0.9743428230285645;
-file_name: seek_character_index.exe;
-hwut_info_time: 1446248110L;
+title: uint8_t;
+title_group: Convert drain character by drain character;
+build_time: 0.8356590270996094;
+file_name: stepwise-drain-1.exe;
+hwut_info_time: 1446535474L;
 make_dependent_f: True;
 result_list: [
-  [ Forward; NO OUTPUT; 0.296393; None; ]
-  [ Backward; NO OUTPUT; 0.293024; None; ]
+  [ ; OK; 0.005090; 544118808; ]
 ]
 }
 {
-title: Total Zik-Zak;
-title_group: Stream Position Seek;
-build_time: 0.35707807540893555;
-file_name: seek_character_index-zikzak.exe;
-hwut_info_time: 1444287100L;
+title: wchar_t;
+title_group: Convert drain character by drain character;
+build_time: 0.8194150924682617;
+file_name: stepwise-drain-WC.exe;
+hwut_info_time: 1446535469L;
 make_dependent_f: True;
 result_list: [
-  [ Fixed; MAKE FAILED; 0.225575; None; ]
-  [ Dynamic; MAKE FAILED; 0.224617; None; ]
+  [ ; OK; 0.005596; -751458198; ]
 ]
 }
 {
-title: Bytes Per Character (BPC)=4;
-title_group: Tell and Seek;
-build_time: 0.9096050262451172;
-file_name: Buffer_tell_and_seek.exe;
-hwut_info_time: 1445702863L;
+title: uint16_t;
+title_group: Convert source byte by source byte;
+build_time: 0.8276169300079346;
+file_name: stepwise-source-2.exe;
+hwut_info_time: 1446535476L;
 make_dependent_f: True;
 result_list: [
-  [ ; MAKE FAILED; 0.226577; None; ]
+  [ ; OK; 0.005693; 1004210828; ]
 ]
 }
 {
-title: Raw buffer size varries (UTF-8);
-title_group: read_characters;
-build_time: 0.9867551326751709;
-file_name: one-beat.exe;
-hwut_info_time: 1446248107L;
+title: uint32_t;
+title_group: Convert source byte by source byte;
+build_time: 0.8261020183563232;
+file_name: stepwise-source-4.exe;
+hwut_info_time: 1446535471L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ 6; NO OUTPUT; 0.314232; None; ]
-  [ 7; NO OUTPUT; 0.247317; None; ]
-  [ 8; NO OUTPUT; 0.249865; None; ]
-  [ 9; NO OUTPUT; 0.254541; None; ]
+  [ ; OK; 0.006731; -552350006; ]
 ]
 }
 {
-title: User buffer size varries (UTF-8);
-title_group: read_characters;
-build_time: 0.848473072052002;
-file_name: n-beat.exe;
-hwut_info_time: 1446248109L;
+title: uint8_t;
+title_group: Convert source byte by source byte;
+build_time: 0.8301990032196045;
+file_name: stepwise-source-1.exe;
+hwut_info_time: 1446535475L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ 1; NO OUTPUT; 0.296718; None; ]
-  [ 2; NO OUTPUT; 0.299020; None; ]
-  [ 3; NO OUTPUT; 0.290063; None; ]
-  [ 4; NO OUTPUT; 0.296981; None; ]
-  [ 5; NO OUTPUT; 0.258696; None; ]
-  [ 6; NO OUTPUT; 0.287553; None; ]
-  [ 7; NO OUTPUT; 0.269667; None; ]
-  [ 8; NO OUTPUT; 0.256256; None; ]
-  [ 9; NO OUTPUT; 0.289887; None; ]
+  [ ; OK; 0.005537; 908577929; ]
+]
+}
+{
+title: wchar_t;
+title_group: Convert source byte by source byte;
+build_time: 0.8236520290374756;
+file_name: stepwise-source-WC.exe;
+hwut_info_time: 1446535472L;
+make_dependent_f: True;
+result_list: [
+  [ ; OK; 0.006836; 132292465; ]
 ]
 }

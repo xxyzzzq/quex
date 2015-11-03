@@ -1,0 +1,8 @@
+{
+    codec:              ASCII;
+    reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert.dat;
+    character_n:        27;
+    sub-tests (3 runs): 27;
+    checksum:           760;
+}
+<terminated>

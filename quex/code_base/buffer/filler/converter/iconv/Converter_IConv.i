@@ -13,6 +13,7 @@ extern "C" {
 #include <quex/code_base/definitions>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 #include <quex/code_base/MemoryManager>
+#include <quex/code_base/MemoryManager.i>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
 
 #if ! defined(QUEX_OPTION_CONVERTER_ICONV)
@@ -25,7 +26,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_open)(QUEX_NAME(Converter)* me,
-                                    const char* FromCoding, const char* ToCoding);
+                                    const char* FromCodec, const char* ToCodec);
     QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*       me, 
                                        uint8_t**                   source, 
@@ -127,7 +128,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      *  problem for plain 'C', then please, let me know 
      *  <fschaef@users.sourceforge.net>.                                     */
     {
-        QUEX_NAME(Converter_IConv)* me          = (QUEX_NAME(Converter_IConv)*)alter_ego;
+        QUEX_NAME(Converter_IConv)* me                  = (QUEX_NAME(Converter_IConv)*)alter_ego;
         size_t                      source_bytes_left_n = (size_t)(SourceEnd - *source);
         size_t                      drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
         size_t                      report;
