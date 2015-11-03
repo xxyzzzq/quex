@@ -1,3 +1,22 @@
+# Testing the implementation of the 'Converter' interface for the IConv
+# library.
+#
+# There are three tests: 
+#
+#     'one-beat': The complete source is converted completely into
+#                 the drain (source and drain a fully available).
+#
+#     'stepwise-source': The source is fed into the converter byte-
+#                        by byte. So the converter must eventually
+#                        wait until a character representation is
+#                        complete.
+#
+#     'stepwise-drain': It is left only place for one character to
+#                       be converted, so the converter must stop
+#                       at the right source positions.
+#
+# (C) Frank-Rene Schaefer
+#______________________________________________________________________________
 
 FILES := $(foreach S, 1 2 4 WC, one-beat-$(S).exe)       \
 	     $(foreach S, 1 2 4 WC, stepwise-drain-$(S).exe) \
@@ -42,7 +61,12 @@ hwut-end: clean
 %.E: %.cpp
 	g++ $(DEFS) $(INCLUDES) -E $< -o $@
 
+%.E: %.c
+	g++ $(DEFS) $(INCLUDES) -E $< -o $@
+
+
 clean:
 	rm -f $(FILES)
 	rm -f *.o
+	rm -f *.E
 	rm -f *~

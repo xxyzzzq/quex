@@ -38,22 +38,15 @@
  * (C) Frank-Rene Schaefer                                                   */
 
 #include <basic_functionality.h>
-#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
-#include <quex/code_base/buffer/filler/converter/Converter.i>
 #include <hwut_unit.h>
-#define STR(X) #X
 
 int
 main(int argc, char** argv)
 {
     using namespace quex;
 
-    hwut_info("Converter_IConv: Convert all in one beat (" STR(QUEX_TYPE_CHARACTER) ");"
-              "CHOICES: ASCII, UTF8, UTF16, UCS4-BE;")
-    if( ! argc ) abort();
+    hwut_info("Convert drain character by drain character: " STR(QUEX_TYPE_CHARACTER) ";");
 
-    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(argv[1], (const char*)0);
-    
-    test_conversion_stepwise_drain(converter, argv[1]);
+    test_with_available_codecs(test_conversion_stepwise_drain);
 }
 

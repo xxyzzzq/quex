@@ -17,6 +17,9 @@ void
 test_this(const char* Codec, void (*test)(QUEX_NAME(Converter)*, const char*))
 {
     QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(Codec, (const char*)0);
+    if( ! converter ) {
+        printf("No converter allocated for codec: '%s'.\n", Codec);
+    }
     test(converter, Codec);   
     print_result(Codec);
     converter->delete_self(converter);

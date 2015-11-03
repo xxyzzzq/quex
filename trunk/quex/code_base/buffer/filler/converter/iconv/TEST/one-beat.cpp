@@ -40,15 +40,13 @@
 
 #include <basic_functionality.h>
 #include <hwut_unit.h>
-#define STR(X) #X
 
 int
 main(int argc, char** argv)
 {
     using namespace quex;
 
-    hwut_info("Converter_IConv: Convert all in one beat (" STR(QUEX_TYPE_CHARACTER) ");");
-    if( ! argc ) abort();
+    hwut_info("Convert all in one beat: " STR(QUEX_TYPE_CHARACTER) ";");
 
     test_with_available_codecs(test_conversion_in_one_beat);
 }

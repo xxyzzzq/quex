@@ -12,7 +12,7 @@ QUEX_INLINE bool
 QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                                const char* FromCodec, const char* ToCodec,
                                bool        (*open)(struct QUEX_NAME(Converter_tag)*, 
-                                                   const char* FromCodingName, const char* ToCodingName),  
+                                                   const char* FromCodec, const char* ToCodec),  
                                bool        (*convert)(struct QUEX_NAME(Converter_tag)*, 
                                                       uint8_t**             source, const uint8_t*             SourceEnd, 
                                                       QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
@@ -31,14 +31,14 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
     me->byte_n_per_character  = -1;     /* No fixed ratio 'byte_n/character' */
     me->ownership             = E_Ownership_EXTERNAL;
 
-    /* Opens internally a conversion handle for the conversion from
-     * 'FromCodingName' to 'ToCodingName'. Pass '0x0' as 'ToCodingName' in
-     * order to indicate a conversion to unicode of size
-     * sizeof(QUEX_TYPE_CHARACTER). 
+    /* Opens internally a conversion handle for the conversion from 'FromCodec'
+     * to 'ToCodec'. Pass '0x0' as 'ToCodec' in order to indicate a conversion
+     * to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
      *
-     * It is the task of the particular implementation to provide the 'to
-     * coding' which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e.
-     * ASCII, UCS2, UCS4.                                                    */
+     * It is the task of the particular implementation to provide the 'ToCodec'
+     * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e.  ASCII, UCS2,
+     * UCS4.                                                                 */
+
     return open(me, FromCodec, ToCodec);
 }
 

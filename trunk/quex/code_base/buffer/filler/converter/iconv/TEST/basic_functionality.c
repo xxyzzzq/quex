@@ -50,22 +50,21 @@ test_this(const char* Codec, void (*test)(QUEX_NAME(Converter)*, const char*));
 void 
 test_with_available_codecs(void (*test)(QUEX_NAME(Converter)*, const char*))
 {
-#   if    QUEX_TYPE_CHARACTER == uint8_t  \
-       || QUEX_TYPE_CHARACTER == uint16_t \
-       || QUEX_TYPE_CHARACTER == uint32_t \
-       || QUEX_TYPE_CHARACTER == wchar_t  
-    test_this("ASCII", test);
-
-#   elif    QUEX_TYPE_CHARACTER == uint16_t \
-         || QUEX_TYPE_CHARACTER == uint32_t \
-         || QUEX_TYPE_CHARACTER == wchar_t  
-    test_this("UTF16", test);
-   
-#   elif    QUEX_TYPE_CHARACTER == uint32_t 
-    test_this("UTF8", test);
-    test_this("UCS4-BE", test);
-
-#   endif
+    if(    strcmp(STR(QUEX_TYPE_CHARACTER), "uint8_t")  == 0 
+        || strcmp(STR(QUEX_TYPE_CHARACTER), "uint16_t") == 0 
+        || strcmp(STR(QUEX_TYPE_CHARACTER), "uint32_t") == 0 
+        || strcmp(STR(QUEX_TYPE_CHARACTER), "wchar_t")  == 0  ) {
+        test_this("ASCII", test);
+    }
+    if(    strcmp(STR(QUEX_TYPE_CHARACTER), "uint16_t") == 0 
+        || strcmp(STR(QUEX_TYPE_CHARACTER), "uint32_t") == 0 
+        || strcmp(STR(QUEX_TYPE_CHARACTER), "wchar_t")  == 0  ) {
+        test_this("UTF16BE", test);
+    }
+    if(   strcmp(STR(QUEX_TYPE_CHARACTER), "uint32_t") == 0 ) {
+        test_this("UTF8", test);
+        test_this("UCS-4BE", test);
+    }
 
     printf("<terminated>\n");
 }
@@ -193,10 +192,11 @@ prepare(const char* CodecName)
 static const char* 
 file_get_name_stem(const char* Codec)
 {
-    if     ( strcmp(Codec, "ASCII") == 0 ) return REFERENCE_DIR "festgemauert";
-    else if( strcmp(Codec, "UTF8") == 0 )  return REFERENCE_DIR "languages";
-    else if( strcmp(Codec, "UTF16") == 0 ) return REFERENCE_DIR "small";
-    else                                   return "";
+    if     ( strcmp(Codec, "ASCII") == 0 )   return REFERENCE_DIR "festgemauert";
+    else if( strcmp(Codec, "UTF8") == 0 )    return REFERENCE_DIR "languages";
+    else if( strcmp(Codec, "UTF16BE") == 0 ) return REFERENCE_DIR "small";
+    else if( strcmp(Codec, "UCS-4BE") == 0 ) return REFERENCE_DIR "languages";
+    else                                     return "";
 }
 
 static const char* 
@@ -205,7 +205,11 @@ file_get_input(const char* Codec)
     static char  file_name[1024];
     const char*  file_stem = file_get_name_stem(Codec);
 
-    snprintf(&file_name[0], 1023, "%s.dat", file_stem);
+    if     ( strcmp(Codec, "ASCII") == 0 )   snprintf(&file_name[0], 1023, "%s.dat", file_stem); 
+    else if( strcmp(Codec, "UTF8") == 0 )    snprintf(&file_name[0], 1023, "%s.utf8", file_stem);
+    else if( strcmp(Codec, "UTF16BE") == 0 ) snprintf(&file_name[0], 1023, "%s.utf16-be", file_stem); 
+    else if( strcmp(Codec, "UCS-4BE") == 0 )  snprintf(&file_name[0], 1023, "%s.ucs4-be", file_stem);
+    else                                     return "";
 
     return &file_name[0];
 }

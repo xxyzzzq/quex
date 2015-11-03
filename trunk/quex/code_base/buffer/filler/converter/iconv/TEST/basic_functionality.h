@@ -16,4 +16,7 @@ extern void test_conversion_stepwise_drain(QUEX_NAME(Converter)* converter,
                                            const char*           CodecName);
 extern void print_result(const char*);
 
+#define STR_CORE(X) #X
+#define STR(X) STR_CORE(X)
+
 QUEX_NAMESPACE_QUEX_CLOSE
