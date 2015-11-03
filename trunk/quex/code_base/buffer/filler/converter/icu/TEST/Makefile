@@ -34,10 +34,12 @@ DEFS := -DQUEX_OPTION_ASSERTS \
 
 INCLUDES := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH) -I$(TEST_SUPPORT_DIR)
 
+ICU_LIBS := $(shell icu-config --ldflags) 
+
 CC := g++ $(INCLUDES) $(DEFS) \
 		-ggdb  \
 		-Wall -Werror \
-        -Werror-implicit-function-declaration 
+        -Werror-implicit-function-declaration
 
 all: $(FILES)
 
@@ -48,16 +50,16 @@ hwut-end: clean
 	@echo Bye
 
 %-1.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
 
 %-2.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
 
 %-4.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
 
 %-WC.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
 
 %.E: %.cpp
 	g++ $(DEFS) $(INCLUDES) -E $< -o $@
