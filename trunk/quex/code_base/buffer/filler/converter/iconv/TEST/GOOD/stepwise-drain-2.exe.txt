@@ -1,3 +1,4 @@
+function: test_conversion_stepwise_drain;
 {
     codec:              ASCII;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert-16-le.dat;
@@ -5,6 +6,7 @@
     sub-tests (3 runs): 27;
     checksum:           760;
 }
+function: test_conversion_stepwise_drain;
 {
     codec:              UTF16BE;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/small-16-le.dat;

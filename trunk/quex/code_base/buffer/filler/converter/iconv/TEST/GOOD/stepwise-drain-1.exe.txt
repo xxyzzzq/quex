@@ -1,3 +1,4 @@
+function: test_conversion_stepwise_drain;
 {
     codec:              ASCII;
     reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert.dat;
