@@ -1,0 +1,33 @@
+function: test_conversion_stepwise_drain;
+{
+    codec:              ASCII;
+    reference_file:     ../../../../TESTS/navigation/TEST/examples/festgemauert-32-le.dat;
+    character_n:        27;
+    sub-tests (3 runs): 27;
+    checksum:           760;
+}
+function: test_conversion_stepwise_drain;
+{
+    codec:              UTF16BE;
+    reference_file:     ../../../../TESTS/navigation/TEST/examples/small-32-le.dat;
+    character_n:        36;
+    sub-tests (3 runs): 36;
+    checksum:           939;
+}
+function: test_conversion_stepwise_drain;
+{
+    codec:              UTF8;
+    reference_file:     ../../../../TESTS/navigation/TEST/examples/languages-32-le.dat;
+    character_n:        2455;
+    sub-tests (3 runs): 2455;
+    checksum:           990;
+}
+function: test_conversion_stepwise_drain;
+{
+    codec:              UCS-4BE;
+    reference_file:     ../../../../TESTS/navigation/TEST/examples/languages-32-le.dat;
+    character_n:        2455;
+    sub-tests (3 runs): 2455;
+    checksum:           883;
+}
+<terminated>

@@ -1,150 +1,132 @@
 {
-title: Plain 16 bit;
-title_group: Converter;
-build_time: 1.2364070415496826;
-file_name: converter-16.exe;
-hwut_info_time: 1446248123L;
+title: uint16_t;
+title_group: Convert all in one beat;
+build_time: 0.956183910369873;
+file_name: one-beat-2.exe;
+hwut_info_time: 1446582861L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009932; None; ]
-  [ UTF-16; FAIL; 0.010926; None; ]
+  [ ; OK; 0.006439; 0; ]
 ]
 }
 {
-title: Plain 32 bit;
-title_group: Converter;
-build_time: 1.013819932937622;
-file_name: converter-32.exe;
-hwut_info_time: 1446248117L;
+title: uint32_t;
+title_group: Convert all in one beat;
+build_time: 0.9475769996643066;
+file_name: one-beat-4.exe;
+hwut_info_time: 1446582853L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ UTF-8; OK; 0.009595; None; ]
-  [ UTF-16; FAIL; 0.010746; None; ]
+  [ ; OK; 0.010125; 0; ]
 ]
 }
 {
-title: Possible 'statefulness' has been ruled out (16 bit);
-title_group: Converter;
-build_time: 1.1863000392913818;
-file_name: converter-statefulness-16.exe;
-hwut_info_time: 1446248120L;
+title: uint8_t;
+title_group: Convert all in one beat;
+build_time: 0.9432809352874756;
+file_name: one-beat-1.exe;
+hwut_info_time: 1446582854L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.006196; None; ]
-  [ UTF-16; OK; 0.005653; None; ]
+  [ ; OK; 0.004676; 0; ]
 ]
 }
 {
-title: Possible 'statefulness' has been ruled out (32 bit);
-title_group: Converter;
-build_time: 0.9927411079406738;
-file_name: converter-statefulness-32.exe;
-hwut_info_time: 1446248127L;
+title: wchar_t;
+title_group: Convert all in one beat;
+build_time: 0.9548850059509277;
+file_name: one-beat-WC.exe;
+hwut_info_time: 1446582862L;
 make_dependent_f: True;
 result_list: [
-  [ UTF-8; OK; 0.006293; None; ]
-  [ UTF-16; OK; 0.005822; None; ]
+  [ ; OK; 0.004763; 0; ]
 ]
 }
 {
-title: Backward (BPC=4);
-title_group: Move by Offset;
-build_time: 0.7215518951416016;
-file_name: Buffer_seek_backward.exe;
-hwut_info_time: 1445702871L;
+title: uint16_t;
+title_group: Convert drain character by drain character;
+build_time: 0.9462440013885498;
+file_name: stepwise-drain-2.exe;
+hwut_info_time: 1446582858L;
 make_dependent_f: True;
 result_list: [
-  [ 1; MAKE FAILED; 0.227975; None; ]
-  [ 2; MAKE FAILED; 0.222781; None; ]
-  [ 3; MAKE FAILED; 0.240899; None; ]
-  [ 4; MAKE FAILED; 0.230375; None; ]
-  [ 5; MAKE FAILED; 0.225723; None; ]
+  [ ; OK; 0.007333; 0; ]
 ]
 }
 {
-title: Forward (BPC=4);
-title_group: Move by Offset;
-build_time: 0.884760856628418;
-file_name: Buffer_seek_forward.exe;
-hwut_info_time: 1445702873L;
+title: uint32_t;
+title_group: Convert drain character by drain character;
+build_time: 0.9371800422668457;
+file_name: stepwise-drain-4.exe;
+hwut_info_time: 1446582856L;
 make_dependent_f: True;
 result_list: [
-  [ 1; MAKE FAILED; 0.230626; None; ]
-  [ 2; MAKE FAILED; 0.235403; None; ]
-  [ 3; MAKE FAILED; 0.226024; None; ]
-  [ 4; MAKE FAILED; 0.225418; None; ]
-  [ 5; MAKE FAILED; 0.224024; None; ]
+  [ ; OK; 0.008990; 0; ]
 ]
 }
 {
-title: Plain search;
-title_group: Stream Position Seek;
-build_time: 1.1128640174865723;
-file_name: seek_character_index.exe;
-hwut_info_time: 1446248126L;
+title: uint8_t;
+title_group: Convert drain character by drain character;
+build_time: 0.9466061592102051;
+file_name: stepwise-drain-1.exe;
+hwut_info_time: 1446582857L;
 make_dependent_f: True;
 result_list: [
-  [ Forward; NO OUTPUT; 0.359548; None; ]
-  [ Backward; NO OUTPUT; 0.286364; None; ]
+  [ ; OK; 0.004687; 0; ]
 ]
 }
 {
-title: Total Zik-Zak;
-title_group: Stream Position Seek;
-build_time: 0.5592658519744873;
-file_name: seek_character_index-zikzak.exe;
-hwut_info_time: 1443562197L;
+title: wchar_t;
+title_group: Convert drain character by drain character;
+build_time: 0.9449279308319092;
+file_name: stepwise-drain-WC.exe;
+hwut_info_time: 1446582852L;
 make_dependent_f: True;
 result_list: [
-  [ Fixed; MAKE FAILED; 0.011480; None; ]
-  [ Dynamic; MAKE FAILED; 0.007510; None; ]
+  [ ; OK; 0.006020; 0; ]
 ]
 }
 {
-title: Bytes Per Character (BPC)=4;
-title_group: Tell and Seek;
-build_time: 0.861840009689331;
-file_name: Buffer_tell_and_seek.exe;
-hwut_info_time: 1445702880L;
+title: uint16_t;
+title_group: Convert source byte by source byte;
+build_time: 0.9404380321502686;
+file_name: stepwise-source-2.exe;
+hwut_info_time: 1446582860L;
 make_dependent_f: True;
 result_list: [
-  [ ; MAKE FAILED; 0.227818; None; ]
+  [ ; OK; 0.006622; 0; ]
 ]
 }
 {
-title: Raw buffer size varries (UTF-8);
-title_group: read_characters;
-build_time: 1.1294529438018799;
-file_name: one-beat.exe;
-hwut_info_time: 1446248121L;
+title: uint32_t;
+title_group: Convert source byte by source byte;
+build_time: 0.9523510932922363;
+file_name: stepwise-source-4.exe;
+hwut_info_time: 1446582855L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ 6; NO OUTPUT; 0.360896; None; ]
-  [ 7; NO OUTPUT; 0.314588; None; ]
-  [ 8; NO OUTPUT; 0.249676; None; ]
-  [ 9; NO OUTPUT; 0.283788; None; ]
+  [ ; OK; 0.012335; 0; ]
 ]
 }
 {
-title: User buffer size varries (UTF-8);
-title_group: read_characters;
-build_time: 1.1738228797912598;
-file_name: n-beat.exe;
-hwut_info_time: 1446248124L;
+title: uint8_t;
+title_group: Convert source byte by source byte;
+build_time: 0.9429841041564941;
+file_name: stepwise-source-1.exe;
+hwut_info_time: 1446582859L;
 make_dependent_f: True;
-same_f: True;
 result_list: [
-  [ 1; NO OUTPUT; 0.262699; None; ]
-  [ 2; NO OUTPUT; 0.252055; None; ]
-  [ 3; NO OUTPUT; 0.250186; None; ]
-  [ 4; NO OUTPUT; 0.249857; None; ]
-  [ 5; NO OUTPUT; 0.306185; None; ]
-  [ 6; NO OUTPUT; 0.300967; None; ]
-  [ 7; NO OUTPUT; 0.301701; None; ]
-  [ 8; NO OUTPUT; 0.293138; None; ]
-  [ 9; NO OUTPUT; 0.336422; None; ]
+  [ ; OK; 0.004881; 0; ]
+]
+}
+{
+title: wchar_t;
+title_group: Convert source byte by source byte;
+build_time: 0.938931941986084;
+file_name: stepwise-source-WC.exe;
+hwut_info_time: 1446582855L;
+make_dependent_f: True;
+result_list: [
+  [ ; OK; 0.005973; 0; ]
 ]
 }

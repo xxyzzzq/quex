@@ -10,15 +10,17 @@
 #include <basic_functionality.h>
 #include <quex/code_base/buffer/filler/converter/icu/Converter_ICU.i>
 #include <quex/code_base/buffer/filler/converter/Converter.i>
+#include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
 
 void 
 test_this(const char* Codec, void (*test)(QUEX_NAME(Converter)*, const char*))
 {
-    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)(Codec, (const char*)0);
+    const char* codec = (strcmp(Codec, "UCS-4BE") == 0) ? "UTF32-BE" : Codec;
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)(codec, (const char*)0);
     if( ! converter ) {
-        printf("No converter allocated for codec: '%s'.\n", Codec);
+        printf("No converter allocated for codec: '%s'.\n", codec);
     }
     test(converter, Codec);   
     print_result(Codec);

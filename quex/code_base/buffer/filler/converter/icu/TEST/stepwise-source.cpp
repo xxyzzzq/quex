@@ -47,6 +47,6 @@ main(int argc, char** argv)
 
     hwut_info("Convert source byte by source byte: " STR(QUEX_TYPE_CHARACTER) ";");
 
-    test_with_available_codecs(test_conversion_in_one_beat);
+    test_with_available_codecs(test_conversion_stepwise_source);
 }
 
