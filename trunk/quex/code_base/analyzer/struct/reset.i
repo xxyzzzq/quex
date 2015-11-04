@@ -140,7 +140,7 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
         QUEX_NAME(BufferFiller_reset)(filler, byte_loader);
     }
     else {
-        filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+        filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
         /* NOT: Abort/return if filler == 0 !!
          *      Incomplete construction => propper destruction IMPOSSIBLE!   */
         if( filler ) {
