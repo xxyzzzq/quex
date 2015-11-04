@@ -129,6 +129,7 @@ token_default_Cpp = "/token/CppDefault.qx"
 buffer_filler = """
 /buffer/filler/BufferFiller
 /buffer/filler/BufferFiller.i
+/buffer/filler/BufferFiller_navigation.i
 """
 
 buffer_filler_plain = """

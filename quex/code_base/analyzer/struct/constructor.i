@@ -21,9 +21,6 @@ QUEX_INLINE void   QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_destruct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me);
-QUEX_INLINE QUEX_NAME(BufferFiller)* 
-                   QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
-                                                   const char*   CharacterEncodingName);
 
 
 /* Level (1) __________________________________________________________________
@@ -142,7 +139,7 @@ QUEX_MEMBER_FUNCTION2(from, ByteLoader,
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
     /* NOT: Abort/return if filler == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( filler ) {

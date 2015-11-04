@@ -37,18 +37,13 @@ QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
                             QUEX_NAME(Converter)* converter,
                             const size_t          TranslationBufferMemorySize)
-/* CharacterEncoding == 0x0: Impossible; Converter requires codec name 
- *                           --> filler = 0x0
- * input_handle      == 0x0: Possible; Converter might be applied on buffer. 
- *                           (User writes into translation buffer).          */
 {
     QUEX_NAME(BufferFiller)* filler;
     (void)TranslationBufferMemorySize;
 
     /* byte_loader = 0; possible if memory is filled manually.               */
     if( converter ) {
-        filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader,
-                                                       converter, 
+        filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader, converter, 
                                                        TranslationBufferMemorySize);
     }
     else {
@@ -59,16 +54,17 @@ QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader,
 }
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
-QUEX_NAME(BufferFiller_DEFAULT)(ByteLoader*   byte_loader, 
-                                const char*   InputCodecName) 
+QUEX_NAME(BufferFiller_new_DEFAULT)(ByteLoader*   byte_loader, 
+                                    const char*   InputCodecName) 
 {
-#   if   defined(QUEX_OPTION_CONVERTER_ICU)
-    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)(InputCodecName, 0);
-#   elif defined(QUEX_OPTION_CONVERTER_ICONV)
+#   if   defined(QUEX_OPTION_CONVERTER_ICONV)
     QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(InputCodecName, 0);
+#   elif defined(QUEX_OPTION_CONVERTER_ICU)
+    QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_ICU_new)(InputCodecName, 0);
 #   else
     QUEX_NAME(Converter)* converter = (QUEX_NAME(Converter)*)0;
 #   endif
+
     if( converter ) {
         converter->ownership = E_Ownership_LEXICAL_ANALYZER;
         if( ! InputCodecName ) {
@@ -136,13 +132,11 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->derived_fill_prepare = derived_fill_prepare;
     me->derived_fill_finish  = derived_fill_finish;
 
-    me->byte_loader          = byte_loader;
+    me->byte_loader                    = byte_loader;
 
     me->_byte_order_reversion_active_f = false;
-
-    me->character_index_next_to_fill = 0;
-    me->byte_n_per_character = ByteNPerCharacter;
-
+    me->character_index_next_to_fill   = 0;
+    me->byte_n_per_character           = ByteNPerCharacter;
 
     /* Default: External ownership                                           */
     me->ownership = E_Ownership_EXTERNAL;
@@ -150,6 +144,7 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
 
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, ByteLoader* new_byte_loader)
+/* Resets the BufferFiller with a new ByteLoader.                            */
 {
     __quex_assert(new_byte_loader);
 
@@ -165,74 +160,42 @@ QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, ByteLoader* new_byte_
     QUEX_NAME(BufferFiller_character_index_reset)(me);
 }
 
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION 
-QUEX_NAME(BufferFiller_character_index_tell)(QUEX_NAME(BufferFiller)* me)
+QUEX_INLINE ptrdiff_t       
+QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me, 
+                             QUEX_TYPE_CHARACTER*      LoadP, 
+                             const ptrdiff_t           LoadN,
+                             QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
+/* Seeks the input position StartCharacterIndex and loads 'LoadN' 
+ * characters into the engine's buffer starting from 'LoadP'.
+ *
+ * RETURNS: Number of loaded characters.                                     */
 {
-    return me->character_index_next_to_fill;
-}
+    ptrdiff_t   loaded_n;
 
+    /* (1) Seek to the position where loading shall start.                       
+     *                                                                       */
+    if( ! me->input_character_seek(me, StartCharacterIndex) ) {
+        return 0;
+    }
+    __quex_assert(me->character_index_next_to_fill == StartCharacterIndex);
 
-QUEX_INLINE bool 
-QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me, 
-                                             const QUEX_TYPE_STREAM_POSITION  CharacterIndex) 
-/* BufferFiller's seek sets the input position for the next character load in
- * the stream. That is, it adapts:
- *
- *     'character_index_next_to_fill = CharacterIndex' 
- *
- * and the byte loader is brought into a position so that this will happen.  
- *
- * RETURNS: true upon success, false else.                                   */
-{ 
-    ptrdiff_t                      backup_stomach_byte_n; 
-    QUEX_TYPE_STREAM_POSITION      backup_byte_loader_position; 
-    QUEX_TYPE_STREAM_POSITION      backup_character_index_next_to_fill;
-    QUEX_TYPE_STREAM_POSITION      target_byte_pos;
+    /* (2) Load content into the given region.                                   
+     *                                                                       */
+    loaded_n = (ptrdiff_t)me->derived_input_character_load(me, LoadP, (size_t)LoadN);
+    __quex_assert(loaded_n <= LoadN);
 
-    if( me->character_index_next_to_fill == CharacterIndex ) return true;
-
-    /* Converter reports '-1' => unable to determine the number of bytes in
-     *                           the stomach. 
-     * => When backup position is to setup, start stepping from beginning.
-     * (This is currently only an issue with ICU; IConv behaves well)        */
-    backup_stomach_byte_n               = me->stomach_byte_n(me);
-    backup_byte_loader_position         = me->byte_loader->tell(me->byte_loader);
-    backup_character_index_next_to_fill = me->character_index_next_to_fill;
-
-    if( me->byte_n_per_character != -1 ) {
-        /* LINEAR RELATION between character index and stream position       
-         * (It is not safe to assume that it can be computed)                */
-        target_byte_pos =   CharacterIndex * me->byte_n_per_character
-                          + me->byte_loader->initial_position;
-
-        me->byte_loader->seek(me->byte_loader, target_byte_pos);
-        if( me->byte_loader->tell(me->byte_loader) != target_byte_pos ) {
-            me->byte_loader->seek(me->byte_loader, backup_byte_loader_position);
-            return false;
-        }
-        me->character_index_next_to_fill = CharacterIndex;
-        me->stomach_clear(me);
-        return true;
+    if(    me->character_index_next_to_fill - StartCharacterIndex 
+        != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
+        QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
     }
 
-    /* STEPPING (WITHOUT COMPUTING) to the input position.                   */
-    if( CharacterIndex < me->character_index_next_to_fill ) {
-        /* Character index lies backward, so stepping needs to start from 
-         * the initial position.                                             */
-        QUEX_NAME(BufferFiller_character_index_reset)(me);
+    /* (3) Optionally reverse the byte order.                                    
+     *                                                                       */
+    if( me->_byte_order_reversion_active_f ) {
+        QUEX_NAME(Buffer_reverse_byte_order)(LoadP, &LoadP[loaded_n]);
     }
 
-    /* step_forward_n_characters() calls derived_input_character_load() 
-     * which increments 'character_index_next_to_fill'.                      */
-    if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
-        QUEX_NAME(BufferFiller_character_index_reset_backup)(me, 
-                                                             backup_character_index_next_to_fill, 
-                                                             backup_stomach_byte_n, 
-                                                             backup_byte_loader_position);
-        return false;
-    }
-    __quex_assert(me->character_index_next_to_fill == CharacterIndex);
-    return true;
+    return loaded_n;
 }
 
 QUEX_INLINE void*
@@ -249,7 +212,8 @@ QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)*  buffer,
     buffer->filler->fill_prepare(buffer, &begin_p, &end_p);
 
     /* Copy as much as possible of the new content into the designated
-     * region in memory.                                                     */
+     * region in memory. This may be the engine's buffer or a 'raw' buffer
+     * whose content still needs to be converted.                            */
     copy_n = (ptrdiff_t)QUEXED(MemoryManager_insert)((uint8_t*)begin_p,  
                                                      (uint8_t*)end_p,
                                                      (uint8_t*)ContentBegin, 
@@ -268,10 +232,11 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_fill_prepare)(QUEX_NAME(Buffer)*  buffer, 
                                      void**              begin_p, 
                                      const void**        end_p)
-/* RETURNS: The position of the first character that could not be copied
- *          into the fill region, because it did not have enough space.
- *          If the whole content was copied, then the return value
- *          is equal to BufferEnd.                                           */
+/* SETS: *begin_p: position where the next content needs to be filled. 
+ *       *end_p:   address directly behind the last byte that can be filled.
+ *
+ * The content may be filled into the engine's buffer or an intermediate 
+ * 'raw' buffer which still needs to be converted.                          */
 {
     (void)QUEX_NAME(Buffer_move_away_passed_content)(buffer);
 
@@ -309,129 +274,11 @@ QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 }
 
-QUEX_INLINE ptrdiff_t       
-QUEX_NAME(BufferFiller_region_load)(QUEX_NAME(Buffer)*        buffer, 
-                                    QUEX_TYPE_CHARACTER*      RegionBeginP, 
-                                    const ptrdiff_t           RequiredLoadN,
-                                    QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
-/* RETURNS: number of loaded characters.                                     */
-{
-    QUEX_NAME(BufferFiller)*   me     = buffer->filler;
-    QUEX_TYPE_CHARACTER*       BeginP = &buffer->_memory._front[1];
-    QUEX_TYPE_CHARACTER*       EndP   = buffer->_memory._back;
-    ptrdiff_t                  loaded_n;
-
-    __quex_assert(RegionBeginP >= BeginP);
-    __quex_assert(RegionBeginP < EndP);
-    __quex_assert(RegionBeginP + RequiredLoadN <= EndP);
-    __quex_assert(RegionBeginP - BeginP <= StartCharacterIndex);
-    (void)EndP; (void)BeginP;
-
-    /* Seek to the position where loading shall start.                       */
-    if( ! me->input_character_seek(me, StartCharacterIndex) ) {
-        return 0;
-    }
-    __quex_assert(me->character_index_next_to_fill == StartCharacterIndex);
-
-    /* Load content into the given region.                                   */
-    loaded_n = (ptrdiff_t)me->derived_input_character_load(me, RegionBeginP, 
-                                                           (size_t)RequiredLoadN);
-    __quex_assert(loaded_n <= RequiredLoadN);
-
-    if(    me->character_index_next_to_fill - StartCharacterIndex 
-        != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
-        QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
-    }
-
-    /* Optionally reverse the byte order.                                    */
-    if( me->_byte_order_reversion_active_f ) {
-        QUEX_NAME(Buffer_reverse_byte_order)(RegionBeginP, &RegionBeginP[loaded_n]);
-    }
-
-    return loaded_n;
-}
-
-QUEX_INLINE void
-QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me)
-/* Set the character index position to '0' and the byte loader to the initial
- * position. The 'stomach' of derived buffer fillers is cleared, so that 
- * filling may start from the beginning.                                     */
-{
-    if( me->byte_loader ) {
-        me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
-        if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
-            QUEX_ERROR_EXIT("ByteLoader failed to seek to initial position.\n");
-        }
-    }
-    me->character_index_next_to_fill = 0;
-    me->stomach_clear(me);
-}
-
-QUEX_INLINE void
-QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX_NAME(BufferFiller)* me, 
-                                                     QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
-                                                     ptrdiff_t                 BackupStomachByteN, 
-                                                     QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition)
-/* Reset a previous state of the BufferFiller and its ByteLoader.            */
-{
-    QUEX_TYPE_STREAM_POSITION backup_byte_pos;
-
-    if( BackupStomachByteN == -1 ) {
-        /* Since it was not possible to determine the number of bytes in
-         * the converter's stomach, the backup position must be reached 
-         * by starting from the begining.                                    */
-        QUEX_NAME(BufferFiller_character_index_reset)(me);
-        if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)Backup_character_index_next_to_fill) ) {
-            QUEX_ERROR_EXIT("BufferFiller failed to seek previously reached character.\n");
-        }
-        return;
-    }
-
-    backup_byte_pos = BackupByteLoaderPosition - BackupStomachByteN;
-    me->byte_loader->seek(me->byte_loader, backup_byte_pos);
-    me->stomach_clear(me);
-    me->character_index_next_to_fill = Backup_character_index_next_to_fill;
-}
-
-QUEX_INLINE bool 
-QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
-                                                const QUEX_TYPE_STREAM_POSITION TargetCI)
-/* From the given 'character_index_next_to_fill' (i.e. the return value of 
- * 'input_character_tell()') step forward to character index 'TargetCI'. This 
- * function is used to reach a target input position in cases where computing 
- * is impossible.
- *
- * THIS FUNCTION DOES NOT BACKUP OR RE-INIT ANYTHING.
- * => Must be done upon failure in the caller's function.
- *
- * RETURNS: true - success; false - else.                                    */
-{ 
-    const QUEX_TYPE_STREAM_POSITION ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-    QUEX_TYPE_CHARACTER             chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
-    QUEX_TYPE_STREAM_POSITION       remaining_n = TargetCI - me->character_index_next_to_fill;
-
-    __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
-
-    for(; remaining_n > ChunkSize; remaining_n -= ChunkSize ) {
-        if( ChunkSize > me->derived_input_character_load(me, &chunk[0], (size_t)ChunkSize) ) {
-            return false;
-        }
-    }
-    if( remaining_n ) {
-        if( remaining_n > me->derived_input_character_load(me, &chunk[0], (size_t)remaining_n) ) {
-            return false;
-        }
-    }
-   
-    __quex_assert(me->character_index_next_to_fill == TargetCI);
-    return true;
-}
-
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/loader/ByteLoader.i>
+#include <quex/code_base/buffer/filler/BufferFiller_navigation.i>
 #include <quex/code_base/buffer/filler/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/filler/BufferFiller_Plain.i>
 

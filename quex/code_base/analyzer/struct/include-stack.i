@@ -164,7 +164,7 @@ QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    filler = QUEX_NAME(BufferFiller_DEFAULT)(byte_loader, CodecName);
+    filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
     /* NOT: Abort/return if filler == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( filler ) {

@@ -1,8 +1,10 @@
 #ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
 #define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
 /* PURPOSE: Buffer's seek: 
- * 
- *       Setting the '_read_p' to a specific position in the stream.
+ *  
+ *    .---------------------------------------------------------------.
+ *    |  Setting the '_read_p' to a specific position in the stream.  |
+ *    '---------------------------------------------------------------'
  *
  * This is the type of 'seek' used in the user interface's seek functions.
  *
@@ -56,6 +58,14 @@ QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER
 {
     buffer->_read_p = Position;
     QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+}
+
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
+QUEX_NAME(Buffer_input_character_index_begin)(QUEX_NAME(Buffer)* me)
+/* Determine character index of first character in the buffer.               */
+{
+    __quex_assert(me->input.character_index_begin >= 0);
+    return me->input.character_index_begin;
 }
 
 QUEX_INLINE bool  
