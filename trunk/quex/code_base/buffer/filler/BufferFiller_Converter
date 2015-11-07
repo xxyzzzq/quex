@@ -141,21 +141,21 @@ QUEX_NAMESPACE_MAIN_OPEN
                                                   uint8_t* Begin, size_t SizeInBytes);
 
 #ifdef QUEX_OPTION_ASSERTS
-#   define QUEX_ASSERT_BUFFER_INFO(BI)                         \
+#   define QUEX_ASSERT_RAW_BUFFER(BI)                         \
     __quex_assert(BI);                                         \
     __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
     __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);\
     __quex_assert((BI)->fill_end_p >= (BI)->begin);            \
     __quex_assert((BI)->fill_end_p <= (BI)->memory_end);             
 
-#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)                    \
+#   define QUEX_ASSERT_RAW_BUFFER_EASY(BI)                    \
     __quex_assert(BI);                                         \
     __quex_assert((BI)->next_to_convert_p >= (BI)->begin);     \
     __quex_assert((BI)->next_to_convert_p <= (BI)->fill_end_p);                     
 
 #else
-#   define QUEX_ASSERT_BUFFER_INFO(BI)      /* empty */
-#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI) /* empty */
+#   define QUEX_ASSERT_RAW_BUFFER(BI)      /* empty */
+#   define QUEX_ASSERT_RAW_BUFFER_EASY(BI) /* empty */
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE

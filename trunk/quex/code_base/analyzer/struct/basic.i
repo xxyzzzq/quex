@@ -58,10 +58,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_STREAM_POSITION previous_character_index_begin;
         ptrdiff_t                 offset;
 
-        if( buffer->input.end_p ) {
+        if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return;
         }
-        if( buffer->on_buffer_content_change ) {
+        else if( buffer->on_buffer_content_change ) {
             /* If the end of file pointer is set, the reload will not be
              * initiated, and the buffer remains as is. No reload happens,
              * see above.  => HERE: end of content = end of buffer.          */

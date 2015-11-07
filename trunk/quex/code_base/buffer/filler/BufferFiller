@@ -82,24 +82,17 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
                                                                              
                                                                              
     /* ACTIVE: User fills the buffer manually                                
-     *                                                                       */
-    void*       (*fill)(QUEX_NAME(Buffer)*,
-                        const void* Memory, 
-                        const void* MemoryEnd);
-    void        (*fill_prepare)(QUEX_NAME(Buffer)*  buffer, 
-                                void**              begin_p, 
-                                const void**        end_p);
-    void        (*fill_finish)(QUEX_NAME(Buffer)* buffer,
-                               const void*        FilledEndP);
-
-    /* To be implemented by the derived class ...                            */
-    void        (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                        void**              begin_p,
-                                        const void**        end_p);
-    ptrdiff_t   (*derived_fill_finish)(struct QUEX_NAME(BufferFiller_tag)*   me,
-                                       QUEX_TYPE_CHARACTER*                  BeginP,
-                                       const QUEX_TYPE_CHARACTER*            EndP,
-                                       const void*                           FilledEndP);
+     *
+     * To be implemented by the derived class ...                            */
+    void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*  me,
+                                QUEX_TYPE_CHARACTER*                 RegionBeginP,
+                                QUEX_TYPE_CHARACTER*                 RegionEndP,
+                                void**                               begin_p,
+                                const void**                         end_p);
+    ptrdiff_t   (*fill_finish)(struct QUEX_NAME(BufferFiller_tag)* me,
+                               QUEX_TYPE_CHARACTER*                BeginP,
+                               const QUEX_TYPE_CHARACTER*          EndP,
+                               const void*                         FilledEndP);
 
     /* -- byte order (i.e little- vs. big-endian) reversion: enable/disable
      *    the reversion of byte order.    
@@ -130,9 +123,11 @@ QUEX_INLINE void
                                   ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                                   void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                                   void         (*delete_self)(QUEX_NAME(BufferFiller)*),
-                                  void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                                                       void**              begin_p,
-                                                                       const void**        end_p),
+                                  void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
+                                                                       QUEX_TYPE_CHARACTER*      RegionBeginP,
+                                                                       QUEX_TYPE_CHARACTER*      RegionEndP,
+                                                                       void**                    begin_p,
+                                                                       const void**              end_p),
                                   ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
                                                                       QUEX_TYPE_CHARACTER*       BeginP,
                                                                       const QUEX_TYPE_CHARACTER* EndP,

@@ -109,7 +109,7 @@ data.
    it copies only converted contend. The filler takes care of trailing bytes
    etc. An exemplary call in C++ or C looks like:
 
-        lexer.buffer->filler->fill(&lexer.buffer, Begin, End);
+        lexer.buffer.fill(&lexer.buffer, Begin, End);
 
    Where ``Begin`` points to the beginning of the data to be copied and ``End``
    points to the first address behind the content to be copied. Both pointers

@@ -41,25 +41,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE bool
 QUEX_NAME(Buffer_finish_seek_based_on_read_p)(QUEX_NAME(Buffer)* me);
 
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(Buffer_tell_memory_adr)(QUEX_NAME(Buffer)* buffer)
-{
-
-    /* NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);                          
-     *
-     * This function is used by the range skippers, and they write possibly
-     * something on the end of file pointer, that is different from the buffer
-     * limit code.                                                           */
-    return (QUEX_TYPE_CHARACTER*)(buffer->_read_p);
-}
-
-QUEX_INLINE void
-QUEX_NAME(Buffer_seek_memory_adr)(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Position)
-{
-    buffer->_read_p = Position;
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-}
-
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
 QUEX_NAME(Buffer_input_character_index_begin)(QUEX_NAME(Buffer)* me)
 /* Determine character index of first character in the buffer.               */
@@ -99,7 +80,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
     else {
         /* Character index at read_p = character index at begin + offset     */
         new_character_index_begin = QUEX_MAX(0, target - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-        if( ! QUEX_NAME(Buffer_move_and_fill_forward)(me, new_character_index_begin, target) ) {
+        if( ! QUEX_NAME(Buffer_move_and_load_forward)(me, new_character_index_begin, target) ) {
             QUEX_BUFFER_ASSERT_CONSISTENCY(me);
             return false;
         }
@@ -143,7 +124,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
         offset                    = (ptrdiff_t)QUEX_MIN((QUEX_TYPE_STREAM_POSITION)(ContentSize >> 1), target);
         new_character_index_begin = target - offset;
 
-        if( ! QUEX_NAME(Buffer_move_and_fill_backward)(me, new_character_index_begin) ) {
+        if( ! QUEX_NAME(Buffer_move_and_load_backward)(me, new_character_index_begin) ) {
             /* QUEX_ERROR_EXIT() initiated inside above function.            */
             return false;
         }
