@@ -138,7 +138,7 @@ class AnalyzerState(Processor):
         #
         after_cl = []
         if TheAnalyzer.engine_type.is_FORWARD(): pass # after_cl.append(Op.InputPIncrement())
-        else:                                    after_cl.append(Op.InputPDecrement())
+        else:                                    pass # after_cl.append(Op.InputPDecrement())
         after_cl.append(Op.InputPDereference())
         if AfterReloadOpList is not None:
             after_cl.extend(AfterReloadOpList)

@@ -136,8 +136,6 @@ $$LC_COUNT_BEFORE_RELOAD$$
         /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$
-        /* After reload, we need to increment _read_p. That's how the game is supposed to be played. 
-         * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
         /* text_end                           = me->buffer.input.end_p; */
 $$LC_COUNT_AFTER_RELOAD$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
