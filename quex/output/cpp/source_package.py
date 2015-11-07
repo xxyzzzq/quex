@@ -51,11 +51,15 @@ base_buffer = """
 /buffer/Buffer_debug
 /buffer/Buffer_debug.i
 /buffer/Buffer.i
+/buffer/BufferMemory.i
 /buffer/Buffer_navigation.i
+/buffer/Buffer_fill.i
 /buffer/loader/ByteLoader
 /buffer/loader/ByteLoader.i
 /buffer/loader/ByteLoader_FILE
 /buffer/loader/ByteLoader_FILE.i
+/buffer/loader/ByteLoader_POSIX
+/buffer/loader/ByteLoader_POSIX.i
 /buffer/loader/ByteLoader_stream
 /buffer/loader/ByteLoader_stream.i
 """
@@ -140,6 +144,7 @@ buffer_filler_plain = """
 buffer_filler_converter = """
 /buffer/filler/BufferFiller_Converter
 /buffer/filler/BufferFiller_Converter.i
+/buffer/filler/BufferFiller_Converter_RawBuffer.i
 /buffer/filler/converter/Converter
 /buffer/filler/converter/Converter.i
 """

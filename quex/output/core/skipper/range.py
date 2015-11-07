@@ -273,8 +273,7 @@ def __lc_counting_replacements(code_str, EndSequence):
             # -- no newlines in delimiter => line and column number 
             #                                must be counted.
             in_loop       = line_column_counter_in_loop()
-            end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                            "                                    - reference_p));\n" 
+            end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD(me->buffer._read_p - reference_p);\n" 
             reference_p_required_f = True
         else:
             # -- newline inside delimiter => line number must be counted
@@ -295,10 +294,9 @@ def __lc_counting_replacements(code_str, EndSequence):
 
         
     if reference_p_required_f:
-        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
-        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                          "                                - reference_p));\n" 
-        after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
+        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
+        after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
 
     if len(EndSequence) > 1:
         end_procedure = "%s\n%s" % (Lng.INPUT_P_ADD(len(EndSequence)-1), end_procedure)

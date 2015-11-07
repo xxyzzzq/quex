@@ -171,17 +171,15 @@ def get_skipper(OpenerSequence, CloserSequence, CloserPattern, ModeName, OnSkipR
     variable_db.require("Skipper%i_CloserEnd", "Skipper%i_Closer + (ptrdiff_t)%i" % (skipper_index, closer_length), Index = skipper_index) 
     variable_db.require("Skipper%i_Closer_it", "0x0", Index = skipper_index) 
 
-    reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
-    before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                      "                                - reference_p));\n" 
-    after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+    reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
+    before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
+    after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);\n"
 
     if CloserSequence[-1] == ord('\n'):
         end_procedure  = "       __QUEX_IF_COUNT_LINES_ADD((size_t)1);\n"
         end_procedure += "       __QUEX_IF_COUNT_COLUMNS_SET((size_t)1);\n"
     else:
-        end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
-                        "                                    - reference_p));\n" 
+        end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
 
     reload_door_id     = dial_db.new_door_id()
     on_skip_range_open = get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=True)

@@ -67,7 +67,7 @@ main(int argc, char** argv)
         /*     different from 'chunk.end'. This would indicate the there    */
         /*     are still bytes left. The next call of '_apend(...)' will    */
         /*     deal with it.)                                               */
-        chunk.begin = (uint8_t*)qlex.buffer.filler->fill(&qlex.buffer, chunk.begin, chunk.end);
+        chunk.begin = (uint8_t*)qlex.buffer.fill(&qlex.buffer, chunk.begin, chunk.end);
 
         /* -- Loop until the 'termination' token arrives */
         token_id = (QUEX_TYPE_TOKEN_ID)-1;

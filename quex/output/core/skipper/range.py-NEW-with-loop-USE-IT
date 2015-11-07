@@ -352,10 +352,10 @@ def __lc_counting_replacements(code_str, ClosingSequence):
 
         
     if reference_p_required_f:
-        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
-        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer)\n" + \
+        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME((QUEX_TYPE_CHARACTER*)(buffer->_read_p));\n"
+        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((QUEX_TYPE_CHARACTER*)(buffer->_read_p)(&me->buffer)\n" + \
                           "                                - reference_p));\n" 
-        after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));\n"
+        after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer->_read_p);\n"
 
     if len(ClosingSequence) > 1:
         end_procedure = "%s\n%s" % (Lng.INPUT_P_ADD(len(ClosingSequence)-1), end_procedure)

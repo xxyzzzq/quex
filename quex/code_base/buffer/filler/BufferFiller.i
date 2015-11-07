@@ -21,15 +21,9 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX
                                                           QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
                                                           ptrdiff_t                 BackupStomachByteN, 
                                                           QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition);
+QUEX_INLINE void       QUEX_NAME(BufferFiller_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
+                                                                  const QUEX_TYPE_CHARACTER* End);
 
-QUEX_INLINE void*      QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)* buffer, 
-                                                    const void*        ContentBegin, 
-                                                    const void*        ContentEnd);
-QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_prepare)(QUEX_NAME(Buffer)*  buffer, 
-                                                            void**              begin_p, 
-                                                            const void**        end_p);
-QUEX_INLINE void       QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
-                                                           const void*        FilledEndP);
 QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
 
                        
@@ -101,9 +95,11 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                               void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
-                              void         (*derived_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                                                   void**              begin_p,
-                                                                   const void**        end_p),
+                              void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
+                                                                   QUEX_TYPE_CHARACTER*      RegionBeginP,
+                                                                   QUEX_TYPE_CHARACTER*      RegionEndP,
+                                                                   void**                    begin_p,
+                                                                   const void**              end_p),
                               ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
                                                                   QUEX_TYPE_CHARACTER*       BeginP,
                                                                   const QUEX_TYPE_CHARACTER* EndP,
@@ -125,12 +121,8 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->_on_overflow                 = 0x0;
 
     /* Support for manual buffer filling.                                    */
-    me->fill                 = QUEX_NAME(BufferFiller_fill);
-
-    me->fill_prepare         = QUEX_NAME(BufferFiller_fill_prepare);
-    me->fill_finish          = QUEX_NAME(BufferFiller_fill_finish);
-    me->derived_fill_prepare = derived_fill_prepare;
-    me->derived_fill_finish  = derived_fill_finish;
+    me->fill_prepare = derived_fill_prepare;
+    me->fill_finish  = derived_fill_finish;
 
     me->byte_loader                    = byte_loader;
 
@@ -192,86 +184,45 @@ QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me,
     /* (3) Optionally reverse the byte order.                                    
      *                                                                       */
     if( me->_byte_order_reversion_active_f ) {
-        QUEX_NAME(Buffer_reverse_byte_order)(LoadP, &LoadP[loaded_n]);
+        QUEX_NAME(BufferFiller_reverse_byte_order)(LoadP, &LoadP[loaded_n]);
     }
 
     return loaded_n;
 }
 
-QUEX_INLINE void*
-QUEX_NAME(BufferFiller_fill)(QUEX_NAME(Buffer)*  buffer, 
-                             const void*         ContentBegin,
-                             const void*         ContentEnd)
-{
-    ptrdiff_t      copy_n;
-    void*          begin_p;
-    const void*    end_p;
-
-    /* Prepare the buffer for the reception of new input an acquire the
-     * border pointers of where new content can be filled.                   */
-    buffer->filler->fill_prepare(buffer, &begin_p, &end_p);
-
-    /* Copy as much as possible of the new content into the designated
-     * region in memory. This may be the engine's buffer or a 'raw' buffer
-     * whose content still needs to be converted.                            */
-    copy_n = (ptrdiff_t)QUEXED(MemoryManager_insert)((uint8_t*)begin_p,  
-                                                     (uint8_t*)end_p,
-                                                     (uint8_t*)ContentBegin, 
-                                                     (uint8_t*)ContentEnd);
-
-    /* Flush into buffer what has been filled from &begin[0] to 
-     * &begin[inserted_byte_n].                                              */
-    buffer->filler->fill_finish(buffer, &((uint8_t*)begin_p)[copy_n]);
-
-    /* Report a pointer to the first content element that has not yet 
-     * been treated (== ContentEnd if all complete).                         */
-    return (void*)&((uint8_t*)ContentBegin)[copy_n];
-}
 
 QUEX_INLINE void
-QUEX_NAME(BufferFiller_fill_prepare)(QUEX_NAME(Buffer)*  buffer, 
-                                     void**              begin_p, 
-                                     const void**        end_p)
-/* SETS: *begin_p: position where the next content needs to be filled. 
- *       *end_p:   address directly behind the last byte that can be filled.
- *
- * The content may be filled into the engine's buffer or an intermediate 
- * 'raw' buffer which still needs to be converted.                          */
+QUEX_NAME(BufferFiller_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
+                                           const QUEX_TYPE_CHARACTER* End)
 {
-    (void)QUEX_NAME(Buffer_move_away_passed_content)(buffer);
+    uint8_t              tmp = 0xFF;
+    QUEX_TYPE_CHARACTER* iterator = 0x0;
 
-    /* Get the pointers for the border where to fill content.               */
-    buffer->filler->derived_fill_prepare(buffer, begin_p, end_p);
-
-    __quex_assert(*end_p >= *begin_p);
-}
-
-QUEX_INLINE void
-QUEX_NAME(BufferFiller_fill_finish)(QUEX_NAME(Buffer)* buffer,
-                                    const void*        FilledEndP)
-{
-    ptrdiff_t  inserted_character_n;
-
-    /* Place new content in the engine's buffer.                             */
-    inserted_character_n = buffer->filler->derived_fill_finish(buffer->filler, 
-                                                               buffer->input.end_p,
-                                                               buffer->_memory._back, 
-                                                               FilledEndP);
-
-    /* Assume: content from 'input.end_p' to 'input.end_p[CharN]'
-     * has been filled with data.                                            */
-    if( buffer->filler->_byte_order_reversion_active_f ) {
-        QUEX_NAME(Buffer_reverse_byte_order)(buffer->input.end_p, 
-                                             &buffer->input.end_p[inserted_character_n]);
+    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+    default:
+        __quex_assert(false);
+        break;
+    case 1:
+        /* Nothing to be done */
+        break;
+    case 2:
+        for(iterator=Begin; iterator != End; ++iterator) {
+            tmp = *(((uint8_t*)iterator) + 0);
+            *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 1);
+            *(((uint8_t*)iterator) + 1) = tmp;
+        }
+        break;
+    case 4:
+        for(iterator=Begin; iterator != End; ++iterator) {
+            tmp = *(((uint8_t*)iterator) + 0);
+            *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 3);
+            *(((uint8_t*)iterator) + 3) = tmp;
+            tmp = *(((uint8_t*)iterator) + 1);
+            *(((uint8_t*)iterator) + 1) = *(((uint8_t*)iterator) + 2);
+            *(((uint8_t*)iterator) + 2) = tmp;
+        }
+        break;
     }
-
-    /* When lexing directly on the buffer, the end of file pointer is 
-     * always set.                                                           */
-    QUEX_NAME(Buffer_register_content)(buffer, 
-                                       &buffer->input.end_p[inserted_character_n],
-                                       buffer->input.character_index_begin + inserted_character_n); 
-
-    QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

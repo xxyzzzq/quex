@@ -33,9 +33,11 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
                                                        QUEX_TYPE_CHARACTER*     RegionBeginP, 
                                                        const size_t             N);
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                               void**              begin_p,
-                                               const void**        end_p);
+QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
+                                               QUEX_TYPE_CHARACTER*       RegionEndP,
+                                               void**                     begin_p,
+                                               const void**               end_p);
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
@@ -48,6 +50,7 @@ QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me,
                           uint8_t* Begin, size_t SizeInBytes);
 QUEX_INLINE void 
 QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me);
+
 QUEX_INLINE size_t 
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me, ByteLoader* byte_loader);
 
@@ -120,7 +123,7 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
                                                 E_MemoryObjectType_BUFFER_RAW);
     QUEX_NAME(RawBuffer_init)(&me->raw_buffer, raw_memory, RawMemorySize);
 
-    QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+    QUEX_ASSERT_RAW_BUFFER(&me->raw_buffer);
 }
 
 QUEX_INLINE ptrdiff_t   
@@ -165,7 +168,7 @@ QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego
     if( ! me )                                                    return;
     else if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
 
-    QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+    QUEX_ASSERT_RAW_BUFFER(&me->raw_buffer);
 
     ByteLoader_delete(&me->base.byte_loader);
     QUEX_NAME(Converter_delete)(&me->converter); 
@@ -199,7 +202,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
     __quex_assert(me->converter);
     __quex_assert(alter_ego); 
     __quex_assert(RegionBeginP); 
-    QUEX_ASSERT_BUFFER_INFO(raw);
+    QUEX_ASSERT_RAW_BUFFER(raw);
     /* NOT: QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
      * The buffer must remain intact, in case that not all is loaded.        */
 
@@ -230,7 +233,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
         if( drain_filled_f ) break;
 
         __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' means break  */
-        QUEX_ASSERT_BUFFER_INFO(raw); 
+        QUEX_ASSERT_RAW_BUFFER(raw); 
 
         if( ! QUEX_NAME(RawBuffer_load)(&me->raw_buffer, me->base.byte_loader) ) {
             /* No bytes have been loaded.                                    */
@@ -255,12 +258,15 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
 }
 
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
-                                               void**              begin_p,
-                                               const void**        end_p)
+QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
+                                               QUEX_TYPE_CHARACTER*       RegionEndP,
+                                               void**                     begin_p,
+                                               const void**               end_p)
 {
-    QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)buffer->filler; 
+    QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer_move_away_passed_content)(&me->raw_buffer);
+    (void)RegionBeginP; (void)RegionEndP;
 
     *begin_p = (void*)me->raw_buffer.fill_end_p; 
     *end_p   = (void*)me->raw_buffer.memory_end;
@@ -269,7 +275,7 @@ QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                              const QUEX_TYPE_CHARACTER* BufferEnd,
+                                              const QUEX_TYPE_CHARACTER* RegionEndP,
                                               const void*                FilledEndP)
 /* Converts what has been filled into the 'raw_buffer' until 'FilledEndP
  * and stores it into the buffer.                                            */
@@ -279,99 +285,21 @@ QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_e
     QUEX_TYPE_CHARACTER*                insertion_p = RegionBeginP;
 
     raw->fill_end_p = (uint8_t*)FilledEndP;   
-    QUEX_ASSERT_BUFFER_INFO(raw);
+    QUEX_ASSERT_RAW_BUFFER(raw);
 
     me->converter->convert(me->converter, 
                            &raw->next_to_convert_p, raw->fill_end_p,
-                           &insertion_p,            BufferEnd);
+                           &insertion_p,            RegionEndP);
     
-    QUEX_ASSERT_BUFFER_INFO(raw);
+    QUEX_ASSERT_RAW_BUFFER(raw);
     return insertion_p - RegionBeginP;
-}
-
-QUEX_INLINE void   
-QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me, 
-                          uint8_t* Begin, size_t SizeInBytes)
-/* Initialize raw buffer. 
- * (1) Begin != 0 => Assign memory. 
- * (2) Begin == 0 => Only reset pointers, so buffer is 'empty'.              */
-{
-    if( Begin ) {
-        me->begin      = Begin;
-        me->memory_end = &Begin[(ptrdiff_t)SizeInBytes];
-    }
-    me->fill_end_p        = &me->begin[0];
-    me->next_to_convert_p = &me->begin[0];            /* --> trigger reload. */
-
-    QUEX_IF_ASSERTS_poison(me->begin, me->memory_end);
-}
-
-QUEX_INLINE void 
-QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
-/* Consider any content in the raw buffer from begin to 'next_to_convert_p' as
- * passed and useless. Thus, move what comes behind to the beginning of the 
- * buffer. Adapt:
- *
- *     -- '.fill_end_p'
- *     -- '.next_to_convert_p'
- *
- * The relation of '.next_to_convert_p' and '.next_to_convert_character_index' 
- * remains unaffected. The pointer still points to the same character index. */
-{
-    uint8_t*   move_begin_p;
-    ptrdiff_t  move_size;
-    ptrdiff_t  move_distance;
-   
-    __quex_assert(me->next_to_convert_p <= me->fill_end_p);
-    QUEX_ASSERT_BUFFER_INFO(me);
-
-    move_begin_p  = me->next_to_convert_p;
-    move_size     = me->fill_end_p - me->next_to_convert_p;
-    move_distance = me->next_to_convert_p - me->begin;
-
-    if( ! move_distance ) return;
-    else if( move_size ) {
-        __QUEX_STD_memmove((void*)me->begin, (void*)move_begin_p, (size_t)move_size);
-    }
-
-    me->next_to_convert_p  = me->begin; 
-    me->fill_end_p        -= move_distance;
-
-    QUEX_IF_ASSERTS_poison(me->fill_end_p, me->memory_end);
-    QUEX_ASSERT_BUFFER_INFO(me);
-}
-
-QUEX_INLINE size_t 
-QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
-                          ByteLoader*            byte_loader) 
-/* Try to fill the me buffer to its limits with data from the file.  The
- * filling starts from its current position, thus the remaining bytes to be
- * translated are exactly the number of bytes in the buffer.                 */
-{
-    uint8_t*  fill_begin_p;
-    size_t    fill_size;
-    size_t    loaded_byte_n;
-
-    QUEX_ASSERT_BUFFER_INFO(me);
-
-    /* Move content that has not yet been converted to the buffer's begin.   */
-    QUEX_NAME(RawBuffer_move_away_passed_content)(me);
-
-    fill_begin_p    = me->fill_end_p;
-    fill_size       = (size_t)(me->memory_end - fill_begin_p);
-    loaded_byte_n   = byte_loader->load(byte_loader, fill_begin_p, fill_size);
-    me->fill_end_p  = &fill_begin_p[loaded_byte_n];
-
-    QUEX_ASSERT_BUFFER_INFO(me);
-    return loaded_byte_n;
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
-
 #include <quex/code_base/buffer/filler/BufferFiller.i>
-
+#include <quex/code_base/buffer/filler/BufferFiller_Converter_RawBuffer.i>
 #include <quex/code_base/buffer/filler/converter/Converter.i>
 
 #ifdef QUEX_OPTION_CONVERTER_ICONV

@@ -36,9 +36,11 @@ QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)* alte
                                                    const size_t             N);
 
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  me,
-                                           void**              begin_p,
-                                           const void**        end_p);
+QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                           QUEX_TYPE_CHARACTER*       RegionBeginP,
+                                           QUEX_TYPE_CHARACTER*       RegionEndP,
+                                           void**                     begin_p,
+                                           const void**               end_p);
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
@@ -141,13 +143,17 @@ QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alt
 }
 
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(Buffer)*  buffer,
-                                           void**              begin_p,
-                                           const void**        end_p)
+QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
+                                           QUEX_TYPE_CHARACTER*       RegionBeginP,
+                                           QUEX_TYPE_CHARACTER*       RegionEndP,
+                                           void**                     begin_p,
+                                           const void**               end_p)
 {
+    (void)alter_ego;
+
     /* Move-away of passed content in engine's buffer is done by caller. */
-    *begin_p = (void*)buffer->input.end_p;
-    *end_p   = (void*)buffer->_memory._back;
+    *begin_p = (void*)RegionBeginP;
+    *end_p   = (void*)RegionEndP; 
 }
 
 QUEX_INLINE ptrdiff_t 

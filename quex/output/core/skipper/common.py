@@ -22,7 +22,7 @@ __line_column_counter_in_loop = """
     __QUEX_IF_COUNT_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 
         __QUEX_IF_COUNT_LINES_ADD((size_t)1);
         __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
-        __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME(Buffer_tell_memory_adr)(&me->buffer));
+        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);
     }
 """
 
