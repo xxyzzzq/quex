@@ -305,7 +305,6 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
             return false;
         }
         QUEX_NAME(buffer_reload_forward)(buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
-        ++(buffer->_read_p);
     }
     if( me->buffer._read_p != me->buffer.input.end_p ) {
         if( ((*buffer->_read_p) & 0x80) == 0 ) 
@@ -340,7 +339,6 @@ $$MARKER_LIST$$
             }
             QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
         }
-        ++(me->buffer._read_p);
     }
     return true;
 }
