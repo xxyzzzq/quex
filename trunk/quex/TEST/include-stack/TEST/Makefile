@@ -3,7 +3,7 @@ TESTS = \
 		queue.exe \
 		users_token.exe \
 
-ENGINE = ISLexer.cpp
+ENGINE = Simple.cpp
 
 all: $(TESTS)
 
@@ -20,17 +20,17 @@ hwut-info:
 	@echo $(TESTS)
 
 queue.exe:       lexer.cpp simple.qx 
-	quex -i simple.qx -o ISLexer --token-policy queue
+	quex -i simple.qx -o Simple --token-policy queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -lefence -o $@
 
 users_token.exe: lexer.cpp simple.qx 
-	quex -i simple.qx -o ISLexer --token-policy single
+	quex -i simple.qx -o Simple --token-policy single
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 ## User's queue has been deprecated
 ##
 ## users_queue.exe: lexer.cpp simple.qx 
-##	quex -i simple.qx -o ISLexer --token-policy users_queue
+##	quex -i simple.qx -o Simple --token-policy users_queue
 ##	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
 %.E: %.cpp
@@ -39,6 +39,6 @@ users_token.exe: lexer.cpp simple.qx
 %.o: %.cpp
 
 clean:
-	rm -rf ISLexer*
+	rm -rf Simple*
 	rm -rf $(TESTS)
 	rm -rf *.o

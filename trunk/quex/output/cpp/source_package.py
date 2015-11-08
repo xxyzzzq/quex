@@ -77,8 +77,6 @@ base_analyzer = """
 /analyzer/headers.i
 /analyzer/EngineMemento_body
 /analyzer/Engine_body
-/analyzer/member/buffer-access
-/analyzer/member/buffer-access.i
 /analyzer/struct/basic
 /analyzer/struct/basic.i
 /analyzer/struct/constructor

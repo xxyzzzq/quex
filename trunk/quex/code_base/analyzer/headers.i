@@ -15,7 +15,6 @@
 /* Token sending happens only via macros, for flexibility. */
 #include    <quex/code_base/analyzer/member/token-receiving.i>
 #include    <quex/code_base/analyzer/member/mode-handling.i>
-#include    <quex/code_base/analyzer/member/buffer-access.i>
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/navigation.i>
 #include    <quex/code_base/analyzer/struct/constructor.i>

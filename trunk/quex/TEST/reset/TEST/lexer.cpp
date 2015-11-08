@@ -11,14 +11,14 @@ main(int argc, char** argv)
 {        
     quex::Token*   token_p = 0x0;
 #   if   defined (__QUEX_SETTING_TEST_UTF8)
-    FILE*          fh = fopen("example-hindi.utf8", "r");
+    const char*    file_name = "example-hindi.utf8";
 #   else
-    FILE*          fh = fopen("example.txt", "r");
+    const char*    file_name = "example.txt";
 #   endif
 #   ifdef __QUEX_OPTION_CONVERTER
-    quex::Simple   qlex(fh, "UTF8");
+    quex::Simple   qlex(file_name, "UTF8");
 #   else
-    quex::Simple   qlex(fh);
+    quex::Simple   qlex(file_name);
 #   endif
 
     if( argc < 2 ) {
@@ -44,14 +44,17 @@ main(int argc, char** argv)
     /* Read 'N' tokens before doing the reset. */
     token_p = qlex.token_p();
     for(int i=0; i < N; ++i) {
+        assert(qlex.buffer.filler);
         (void)qlex.receive();
     } 
 
+    assert(qlex.buffer.filler);
     qlex.reset();
 
     printf("## repeated: %i\n", N);
 
     do {
+        assert(qlex.buffer.filler);
         (void)qlex.receive();
 
 #       if defined (__QUEX_OPTION_CONVERTER)
