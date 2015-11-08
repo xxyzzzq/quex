@@ -13,7 +13,7 @@ main(int argc, char** argv)
                            buffer, BufferSize, buffer + 1); 
 
     printf("Buffer Size: %i\n",
-           (int)QUEX_NAME(buffer_fill_region_size)(&qlex));
+           (int)(qlex.buffer.input.end_p - qlex.buffer._memory._front[1])); 
 
 
     QUEX_NAME(destruct)(&qlex);

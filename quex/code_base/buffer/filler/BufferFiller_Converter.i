@@ -68,6 +68,8 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     else if( byte_loader && ! byte_loader->binary_mode_f ) {
         /* Binary mode is ABSOLUTELY REQUIRED for converters, otherwise the 
          * positioning with respect to the raw buffer becomes unreliable.    */
+        __QUEX_STD_printf("BufferFiller_Converter_new: ByteLoader is not in binary mode.\n");
+        __QUEX_STD_printf("Has file been opened in binary mode?\n");
         return (QUEX_NAME(BufferFiller)*)0;
     }
 

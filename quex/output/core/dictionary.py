@@ -932,15 +932,10 @@ cpp_reload_forward_str = [
 """    __quex_debug3("RELOAD_FORWARD: success->%i; failure->%i", (int)target_state_index, (int)target_state_else_index);
     __quex_assert(*(me->buffer._read_p) == QUEX_SETTING_BUFFER_LIMIT_CODE);
     /* Detect whether the buffer limit code appeared at non-border.          */
-    if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-        if( me->buffer._read_p != me->buffer.input.end_p ) {
-            __quex_assert(false); /* Later: on codec error! */
-        }
+    if( me->buffer._read_p != me->buffer.input.end_p ) {
+        __quex_assert(false); /* Later: on codec error! */
     }
-    else {
-        if( me->buffer._read_p != me->buffer._memory._back ) {
-            __quex_assert(false); /* Later: on codec error! */
-        }
+    if( ! QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
 """,
 """
         __quex_debug_reload_before();          /* Report source position. */

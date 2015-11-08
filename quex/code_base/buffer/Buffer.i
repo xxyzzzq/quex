@@ -391,11 +391,9 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
 
     /* (1) Move existing content in the buffer to appropriate position.      */
     move_distance = NewCharacterIndexBegin - me->input.character_index_begin;
-    move_size     = QUEX_NAME(Buffer_move_forward)(me, move_distance);
-
-    /* (2) Load new content into free positions.                             */
+    move_size            = QUEX_NAME(Buffer_move_forward)(me, move_distance);
     load_character_index = NewCharacterIndexBegin + move_size;
-    load_request_n       = (ptrdiff_t)(ContentSize - move_size); 
+    load_request_n       = ContentSize - move_size; 
     load_p               = &BeginP[move_size];
 
     __quex_assert(load_character_index == NewCharacterIndexBegin + (load_p - BeginP));
@@ -491,7 +489,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
     QUEX_TYPE_STREAM_POSITION   character_index_of_lexeme_p;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-    __quex_debug_buffer_load(me, "FORWARD(entry)\n");
+
 
     /* REFUSE (return 0 indicating 'nothing loaded, but ok (>=0) !') if:
      * -- _read_p = Beginning of the Buffer: Reload nonsense. Maximum 
@@ -510,7 +508,10 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
     character_index_of_read_p   = character_index_begin + (me->_read_p - BeginP);
     character_index_of_lexeme_p = character_index_begin + (me->_lexeme_start_p - BeginP);
     new_character_index_begin   = QUEX_MIN(character_index_of_read_p, character_index_of_lexeme_p);
-    new_character_index_begin   = QUEX_MAX(0, new_character_index_begin - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+    /* If the fallback region cannot be established, then forget about it.   */
+    if( new_character_index_begin - character_index_begin > QUEX_SETTING_BUFFER_MIN_FALLBACK_N ) {
+        new_character_index_begin = QUEX_MAX(0, new_character_index_begin - QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+    }
 
     if( ! QUEX_NAME(Buffer_move_and_load_forward)(me, new_character_index_begin, new_character_index_begin) ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -586,19 +587,18 @@ QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me,
                                intmax_t           move_distance)
 /* RETURNS: Size of the moved region.                                        */
 {
-    QUEX_TYPE_CHARACTER* BeginP   = &me->_memory._front[1];
-    const ptrdiff_t      ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    QUEX_TYPE_CHARACTER* BeginP     = &me->_memory._front[1];
+    const ptrdiff_t      FilledSize = me->input.end_p - BeginP;
     ptrdiff_t            move_size;
 
-    if( move_distance < ContentSize ) {
-        move_size = me->input.end_p - &BeginP[move_distance];
+    if( move_distance >= FilledSize ) return 0;
+
+    move_size = me->input.end_p - &BeginP[move_distance];
+    if( move_distance ) {
         __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
                            (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-        return move_size;
     }
-    else {
-        return 0;
-    }
+    return move_size;
 }
 
 QUEX_INLINE void

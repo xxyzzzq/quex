@@ -4,7 +4,7 @@ AFTER Reset:
       Memory:
       _front         =  0;
       _back          = +0xD;
-      input.end_p = <void>;
+      input.end_p = +0xD;
       _external_owner_f = false;
    _read_p        = +0x1;
    _lexeme_start_p = +0x1;

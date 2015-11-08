@@ -56,7 +56,6 @@ __QUEX_CORE = \
     ./analyzer/struct/basic.i \
     ./analyzer/asserts \
     ./analyzer/member/mode-handling.i \
-    ./analyzer/member/buffer-access.i \
     ./analyzer/member/token-receiving.i \
     ./analyzer/struct/include-stack.i \
     ./analyzer/struct/reset.i \

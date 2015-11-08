@@ -2,19 +2,19 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include "ISLexer"
-#include "ISLexer-token_ids"
+#include "Simple"
+#include "Simple-token_ids"
 
 using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
-void    print(quex::ISLexer& qlex, quex::Token& Token, bool TextF = false);
-void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
+void    print(quex::Simple& qlex, quex::Token& Token, bool TextF = false);
+void    print(quex::Simple& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
 #if 0 && QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
 //     Policy 'users_queue' has been deprecated.
-//     void get_token_from_users_queue(quex::ISLexer&, quex::Token&);
+//     void get_token_from_users_queue(quex::Simple&, quex::Token&);
 //#    define RECEIVE(Token)   get_token_from_users_queue(qlex, Token)
 #endif
 #ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -48,7 +48,7 @@ self_test(const char* CharFilename)
     string         Directory("example/");
     string         Filename(CharFilename);
     ifstream       istr((Directory + Filename + ".txt").c_str());
-    quex::ISLexer  qlex(&istr);
+    quex::Simple  qlex(&istr);
 
 #   ifdef  QUEX_OPTION_TOKEN_POLICY_QUEUE
     quex::Token*  token_p = 0x0;
@@ -73,7 +73,7 @@ self_test(const char* CharFilename)
 string  space(int N)
 { string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
 
-void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
+void  print(quex::Simple& qlex, quex::Token& Token, bool TextF /* = false */)
 { 
     cout << space(qlex.include_depth) << Token.line_number() << ": (" << Token.column_number() << ")";
     cout << Token.type_id_name();
@@ -81,7 +81,7 @@ void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
     cout << endl;
 }
 
-void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
+void print(quex::Simple& qlex, const char* Str1, const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
     cout << space(qlex.include_depth) << Str1;
     if( Str2 != 0x0 ) cout << Str2;
@@ -91,7 +91,7 @@ void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, 
 
 #if 0 && QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
 // Policy 'users_queue' deprecated.
-void get_token_from_users_queue(quex::ISLexer& qlex, quex::Token& Token)
+void get_token_from_users_queue(quex::Simple& qlex, quex::Token& Token)
 {
     static quex::Token   Begin[3];
     static quex::Token*  End  = Begin + 3;
