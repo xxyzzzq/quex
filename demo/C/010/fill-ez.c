@@ -15,21 +15,23 @@ main(int argc, char** argv)
     size_t           BufferSize = 1024;
     char             buffer[1024];
     bool             out_f = false;
+    QUEX_TYPE_CHARACTER* begin_p;
+    QUEX_TYPE_CHARACTER* end_p;
 
-    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
     QUEX_NAME_TOKEN(construct)(&token);
 
     (void)QUEX_NAME(token_p_swap)(&qlex, &token);
     while( 1 + 1 == 2 ) {
         /* -- Initialize the filling of the fill region         */
-        QUEX_NAME(buffer_fill_region_prepare)(&qlex);
+        qlex.buffer.fill_prepare(&qlex.buffer, (void**)&begin_p, (const void**)&end_p);
 
         /* -- Call the low lever driver to fill the fill region */
-        receive_n = messaging_framework_receive_into_buffer_syntax_chunk(QUEX_NAME(buffer_fill_region_begin)(&qlex), 
-                                                                         QUEX_NAME(buffer_fill_region_size)(&qlex));
+        receive_n = messaging_framework_receive_into_buffer_syntax_chunk(begin_p, 
+                                                                         (end_p - begin_p)*sizeof(QUEX_TYPE_CHARACTER)); 
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
-        QUEX_NAME(buffer_fill_region_finish)(&qlex, receive_n);
+        qlex.buffer.fill_finish(&qlex.buffer, &begin_p[receive_n]);
 
         /* -- Loop until the 'termination' token arrives */
         while( 1 + 1 == 2 ) {

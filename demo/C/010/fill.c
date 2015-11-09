@@ -18,7 +18,7 @@ main(int argc, char** argv)
     const QUEX_TYPE_CHARACTER* end_p = 0x0;
     size_t                receive_n = (size_t)-1;
     QUEX_TYPE_TOKEN_ID    token_id  = 0;
-    QUEX_NAME(from_memory)(&qlex, 0x0, 0x0, 0);
+    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
 
     /* -- initialize the token pointers */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
@@ -31,13 +31,13 @@ main(int argc, char** argv)
 
     while( 1 + 1 == 2 ) {
         /* -- Initialize the filling of the fill region                                    */
-        qlex.buffer.filler->fill_prepare(&qlex.buffer, (void**)&begin_p, (const void**)&end_p);
+        qlex.buffer.fill_prepare(&qlex.buffer, (void**)&begin_p, (const void**)&end_p);
 
         /* -- Call the low level driver to fill the fill region                            */
         receive_n = messaging_framework_receive_into_buffer(begin_p, end_p - begin_p); 
 
         /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
-        qlex.buffer.filler->fill_finish(&qlex.buffer, &begin_p[receive_n]);
+        qlex.buffer.fill_finish(&qlex.buffer, &begin_p[receive_n]);
 
         /* -- Loop until the 'termination' token arrives                                   */
         token_id = 0;

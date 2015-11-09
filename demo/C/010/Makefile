@@ -73,9 +73,9 @@ messaging-framework_utf8.o: messaging-framework.c  UTF8
 %.E:                     %.c  NON_UTF8
 	$(CC)      -E $< -o $@  
           
-tiny_lexer tiny_lexer.c:            NON_UTF8
+tiny_lexer.h tiny_lexer.c:            NON_UTF8
 
-tiny_lexer_utf8 tiny_lexer_utf8.c:	UTF8
+tiny_lexer_utf8.h tiny_lexer_utf8.c:	UTF8
 
 NON_UTF8: simple.qx 
 	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
