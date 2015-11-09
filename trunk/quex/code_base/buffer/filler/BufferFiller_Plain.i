@@ -71,7 +71,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
      * requires that the input stream is in 'binary mode'. That is, the 
      * stream position is proportional to the number of bytes that lie 
      * behind.                                                               */
-    ptrdiff_t   byte_n_per_character = byte_loader->binary_mode_f ? 
+    ptrdiff_t   byte_n_per_character = byte_loader && byte_loader->binary_mode_f ? 
                                        (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER) : -1;
     QUEX_NAME(BufferFiller_setup)(&me->base,
                                   QUEX_NAME(BufferFiller_Plain_input_character_load),

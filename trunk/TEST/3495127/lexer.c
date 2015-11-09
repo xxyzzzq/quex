@@ -18,7 +18,7 @@ main(int argc, char** argv)
     QUEX_TYPE_TOKEN_ID token_id = (QUEX_TYPE_TOKEN_ID)0x0;
 #   endif
     const char*        file_name = argc > 1 ? argv[1] : "example.txt";
-    QUEX_NAME(from_file_name)(&qlex, file_name, CHARACTER_ENCODING_NAME, false);
+    QUEX_NAME(from_file_name)(&qlex, file_name, CHARACTER_ENCODING_NAME);
 
     printf(",------------------------------------------------------------------------------------\n");
     printf("| [START]\n");

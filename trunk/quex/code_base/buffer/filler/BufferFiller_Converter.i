@@ -97,7 +97,7 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
      * stream position is proportional to the number of bytes that lie 
      * behind. (2) The input codec is of fixed size, i.e. 
      * converter->byte_n_per_character != -1.                                */ 
-    ptrdiff_t   byte_n_per_character = byte_loader->binary_mode_f ? 
+    ptrdiff_t   byte_n_per_character = byte_loader && byte_loader->binary_mode_f ? 
                                        converter->byte_n_per_character : -1;
     uint8_t*    raw_memory;
 

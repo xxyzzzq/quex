@@ -15,7 +15,7 @@ QUEX_NAME(Buffer_fill)(QUEX_NAME(Buffer)*  me,
 
     /* Prepare the buffer for the reception of new input an acquire the
      * border pointers of where new content can be filled.                   */
-    QUEX_NAME(Buffer_fill_prepare)>fill_prepare(me, &begin_p, &end_p);
+    me->fill_prepare(me, &begin_p, &end_p);
 
     /* Copy as much as possible of the new content into the designated
      * region in memory. This may be the engine's buffer or a 'raw' buffer
@@ -27,7 +27,7 @@ QUEX_NAME(Buffer_fill)(QUEX_NAME(Buffer)*  me,
 
     /* Flush into buffer what has been filled from &begin[0] to 
      * &begin[inserted_byte_n].                                              */
-    me->filler->fill_finish(me, &((uint8_t*)begin_p)[copy_n]);
+    me->fill_finish(me, &((uint8_t*)begin_p)[copy_n]);
 
     /* Report a pointer to the first content element that has not yet 
      * been treated (== ContentEnd if all complete).                         */
@@ -57,14 +57,19 @@ QUEX_NAME(Buffer_fill_prepare)(QUEX_NAME(Buffer)*  me,
 QUEX_INLINE void
 QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
                               const void*        FilledEndP)
+/* Uses the content that has been inserted until 'FilledEndP' to fill the
+ * engine's character buffer (if it is not already done). A fille of type
+ * 'BufferFiller_Converter' takes the content of the raw buffer and converts
+ * it into the engine's buffer from 'me->input.end_p' to 'me->_memory._back'.
+ *                                                                           */
 {
-    ptrdiff_t  inserted_character_n;
+    QUEX_TYPE_CHARACTER*   BeginP = &me->_memory._front[1];
 
     /* Place new content in the engine's buffer.                             */
-    inserted_character_n = me->filler->fill_finish(me->filler, 
-                                                   me->input.end_p,
-                                                   me->_memory._back, 
-                                                   FilledEndP);
+    ptrdiff_t inserted_character_n = me->filler->fill_finish(me->filler, 
+                                                             me->input.end_p,
+                                                             me->_memory._back, 
+                                                             FilledEndP);
 
     /* Assume: content from 'input.end_p' to 'input.end_p[CharN]'
      * has been filled with data.                                            */
@@ -73,11 +78,16 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
                                                    &me->input.end_p[inserted_character_n]);
     }
 
-    /* When lexing directly on the buffer, the end of file pointer is 
-     * always set.                                                           */
-    QUEX_NAME(Buffer_register_content)(me, 
-                                       &me->input.end_p[inserted_character_n],
-                                       me->input.character_index_begin + inserted_character_n); 
+    /* -- Manual buffer filling requires the end-of-stream pointer always
+     *    to be set. 
+     * -- The 'character_index_begin' has been set in 'fill_prepare()'.
+     *    '-1' => no change.
+     * -- The 'character_index_end_of_stream' can now be set, since it is
+     *    known how many characters have been inserted.
+     *                                                                       */
+    QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[inserted_character_n], -1);
+    QUEX_NAME(Buffer_register_eos)(me,   me->input.character_index_begin
+                                       + (me->input.end_p - BeginP));
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 }

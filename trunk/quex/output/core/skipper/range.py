@@ -273,7 +273,7 @@ def __lc_counting_replacements(code_str, EndSequence):
             # -- no newlines in delimiter => line and column number 
             #                                must be counted.
             in_loop       = line_column_counter_in_loop()
-            end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD(me->buffer._read_p - reference_p);\n" 
+            end_procedure = "        __QUEX_IF_COUNT_COLUMNS_ADD((size_t)(me->buffer._read_p - reference_p));\n" 
             reference_p_required_f = True
         else:
             # -- newline inside delimiter => line number must be counted

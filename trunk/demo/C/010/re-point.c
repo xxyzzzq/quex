@@ -12,17 +12,17 @@ main(int argc, char** argv)
     quex_tiny_lexer      qlex;
     QUEX_TYPE_CHARACTER* remainder = 0x0;
 
-    QUEX_NAME(from_memory)(&qlex, 0x0, 0, (QUEX_TYPE_CHARACTER*)0x0, 0x0, false);
+    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
 
     /* In this example we do the same as in 'point.cpp'
      * -- only that the use different buffers for each run.
-     *    This requires a 'reset_buffer' call, as shown below. */
+     *    This requires a 'reset_memory' call, as shown below. */
     test(&qlex);
     test(&qlex);
     test(&qlex);
 
     /* Delete remaining memory buffer that is still inside the analyzer */
-    remainder = QUEX_NAME(reset_buffer)(&qlex, 0x0, 0, 0x0, 0x0);
+    remainder = QUEX_NAME(reset_memory)(&qlex, 0x0, 0, 0x0);
     if( remainder != 0x0 ) free(remainder);
 
     QUEX_NAME(destruct)(&qlex);
@@ -60,8 +60,8 @@ test(quex_tiny_lexer* qlex)
     /* Setup the memory to be analyzed (this is the 're-point' operation). 
      * (buffer is one character larger than the content, so that it can contain the
      *  buffer limit code at the end.)                                              */
-    prev_memory = QUEX_NAME(reset_buffer)(qlex, buffer, buffer_size, 
-                                          /* End of Content */ buffer + buffer_size - 1, 0x0); 
+    prev_memory = QUEX_NAME(reset_memory)(qlex, buffer, buffer_size, 
+                                          /* End of Content */ buffer + buffer_size - 1); 
     /* If there was some old memory, than delete it. */
     if( prev_memory != 0x0 ) free(prev_memory);
 

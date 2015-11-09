@@ -51,7 +51,7 @@ main(int argc, char** argv)
         /*    content needs to be loaded.                                  */
         if( chunk.begin == chunk.end ) {
             /* -- If the receive buffer has been read, it can be released. */
-            if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
+            if( ! rx_buffer ) messaging_framework_release(rx_buffer);
             /* -- Setup the pointers  */
             size        = messaging_framework_receive(&rx_buffer);
             chunk.begin = rx_buffer;

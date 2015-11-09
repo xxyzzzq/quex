@@ -30,7 +30,7 @@ QUEX_INLINE void    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  
                                                       E_Ownership               Ownership);
 QUEX_INLINE void    QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
-typedef struct { 
+typedef struct QUEX_NAME(Buffer_tag) { 
 /* Buffer of characters on which the analyzer runs. 
  *
  * Character Stream:
@@ -80,6 +80,15 @@ typedef struct {
 #   endif
 
     struct    QUEX_NAME(BufferFiller_tag)*  filler;
+
+    void*     (*fill)(struct QUEX_NAME(Buffer_tag)*  me, 
+                      const void*                    ContentBegin,
+                      const void*                    ContentEnd);
+    void      (*fill_prepare)(struct QUEX_NAME(Buffer_tag)*  me, 
+                              void**                         begin_p, 
+                              const void**                   end_p);
+    void      (*fill_finish)(struct QUEX_NAME(Buffer_tag)* me,
+                             const void*                   FilledEndP);
 
     void      (*on_buffer_content_change)(const QUEX_TYPE_CHARACTER*  BeginOfContent,
                                           const QUEX_TYPE_CHARACTER*  EndOfContent);
