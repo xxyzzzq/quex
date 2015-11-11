@@ -3,11 +3,6 @@
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
 
-typedef struct {
-    QUEX_TYPE_CHARACTER* begin;
-    QUEX_TYPE_CHARACTER* end;
-} MemoryChunk;
-
 int 
 main(int argc, char** argv) 
 {        
