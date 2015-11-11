@@ -10,6 +10,11 @@
 #   define ELEMENT_TYPE uint8_t
 #endif
 
+typedef struct {
+    QUEX_TYPE_CHARACTER* begin_p;
+    QUEX_TYPE_CHARACTER* end_p;
+} MemoryChunk;
+
 /* Assume that some low level driver communicates the place where 
  * input is placed via macros.                                     */
 #define  MESSAGING_FRAMEWORK_BUFFER_SIZE  ((size_t)(512))

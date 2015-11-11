@@ -1,61 +1,52 @@
 #include <stdio.h>
 
 #include "tiny_lexer.h"
+#include "messaging-framework.h"
 
-size_t 
-messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER*, size_t);
+static quex_Token* init(quex_tiny_lexer*  lexer, quex_Token* token_bank);
+static void        print_token(quex_Token*  token);
+static void        copy(quex_tiny_lexer* lexer, MemoryChunk* chunk);
 
 int 
 main(int argc, char** argv) 
 {        
-    QUEX_TYPE_TOKEN       token_bank[2];
-    QUEX_TYPE_TOKEN*      prev_token;
     quex_tiny_lexer       qlex;
-    size_t                BufferSize = 1024;
-    char                  buffer[1024];
-    QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
-    QUEX_TYPE_CHARACTER*       begin_p = 0x0;
-    const QUEX_TYPE_CHARACTER* end_p = 0x0;
-    size_t                receive_n = (size_t)-1;
-    QUEX_TYPE_TOKEN_ID    token_id  = 0;
-    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
+    quex_Token            token_bank[2];    /* 2 for current & look ahead.   */
+    quex_Token*           prev_token;       /* Used  or swapping tokens.     */
 
-    /* -- initialize the token pointers */
-    QUEX_NAME_TOKEN(construct)(&token_bank[0]);
-    QUEX_NAME_TOKEN(construct)(&token_bank[1]);
-    token_bank[0]._id = QUEX_TKN_TERMINATION;
+    MemoryChunk           current_chunk = { 0, 0 }; 
 
-    prev_token = &(token_bank[1]);
+    QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; /* backup start of the
+    *                                                 * lexeme.              */    
+    QUEX_TYPE_TOKEN_ID    token_id   = (QUEX_TYPE_TOKEN_ID)-1;
 
-    QUEX_NAME(token_p_swap)(&qlex, &token_bank[0]);
+    /* Call constructors for analyzer and token bank.                        */
+    prev_token = init(&qlex, &token_bank[0]);
 
+    /* LOOP until 'BYE' token arrives, followed by 'TERMINATION'             */
     while( 1 + 1 == 2 ) {
-        /* -- Initialize the filling of the fill region                                    */
-        qlex.buffer.fill_prepare(&qlex.buffer, (void**)&begin_p, (const void**)&end_p);
+        copy(&qlex, &current_chunk);
 
-        /* -- Call the low level driver to fill the fill region                            */
-        receive_n = messaging_framework_receive_into_buffer(begin_p, end_p - begin_p); 
-
-        /* -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES! */
-        qlex.buffer.fill_finish(&qlex.buffer, &begin_p[receive_n]);
-
-        /* -- Loop until the 'termination' token arrives                                   */
-        token_id = 0;
+        /* Loop until 'TERMINATION' or 'BYE' is received.                   
+         *   TERMINATION => possible reload                               
+         *   BYE         => end of game                                      */
+        token_id = (QUEX_TYPE_TOKEN_ID)-1;
         while( 1 + 1 == 2 ) {
             prev_lexeme_start_p = QUEX_NAME(lexeme_start_pointer_get)(&qlex);
             
-            /* Let the previous token be the current token of the previous run.            */
+            /* Current token becomes previous token of next run.             */
             prev_token = QUEX_NAME(token_p_swap)(&qlex, prev_token);
 
             token_id = QUEX_NAME(receive)(&qlex);
             if( token_id == QUEX_TKN_TERMINATION || token_id == QUEX_TKN_BYE )
                 break;
             if( prev_token->_id != QUEX_TKN_TERMINATION ) 
-                printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(prev_token, buffer, BufferSize));
+                print_token(prev_token);
         }
 
-        if( token_id == QUEX_TKN_BYE ) break;
+        if( token_id == QUEX_TKN_BYE ) break; /* End of sequence of chunks.  */
 
+        /* Reset the 'read_p' to restart the interrupted match cycle.        */
         QUEX_NAME(input_pointer_set)(&qlex, prev_lexeme_start_p);
     }
 
@@ -65,3 +56,50 @@ main(int argc, char** argv)
     return 0;
 }
 
+static void
+print_token(quex_Token*  token)
+{
+    size_t PrintBufferSize = 1024;
+    char   print_buffer[1024];
+
+    printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(token, 
+                                                         print_buffer, 
+                                                         PrintBufferSize));
+}
+
+static quex_Token*
+init(quex_tiny_lexer*  lexer, quex_Token* token_bank)
+{
+    quex_Token* prev_token;
+
+    /* Initialize analyzer.                                                  */
+    quex_tiny_lexer_from_ByteLoader(lexer, (ByteLoader*)0, 0);
+
+    /* initialize token objects.                                             */
+    quex_Token_construct(&token_bank[0]);
+    quex_Token_construct(&token_bank[1]);
+    token_bank[0]._id = QUEX_TKN_TERMINATION;
+
+    /* Give the analyzer a token to prepare.                                 */
+    prev_token = &(token_bank[1]);
+    QUEX_NAME(token_p_swap)(lexer, &token_bank[0]);
+
+    return prev_token;
+}
+
+static void
+copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
+{
+    size_t received_n = (size_t)-1;
+
+    /* Initialize the filling of the fill region                         */
+    lexer->buffer.fill_prepare(&lexer->buffer, 
+                               (void**)&chunk->begin_p, (const void**)&chunk->end_p);
+
+    /* Call the low level driver to fill the fill region                 */
+    received_n = messaging_framework_receive_into_buffer(chunk->begin_p, 
+                                                         chunk->end_p - chunk->begin_p); 
+
+    /* Current token becomes previous token of next run.                 */
+    lexer->buffer.fill_finish(&lexer->buffer, &chunk->begin_p[received_n]);
+}
