@@ -36,7 +36,7 @@ get_new_memory_to_analyze(QUEX_TYPE_CHARACTER** buffer, size_t* buffer_size)
     QUEX_TYPE_CHARACTER*  new_memory = (QUEX_TYPE_CHARACTER*)malloc(sizeof(QUEX_TYPE_CHARACTER)*MESSAGING_FRAMEWORK_BUFFER_SIZE);
 
     /* Call the low lever driver to fill the fill region */
-    *buffer_size = messaging_framework_receive_to_internal_buffer() + 1;
+    *buffer_size = receiver_fill_to_internal_buffer() + 1;
 
     /* Copy the content from the messaging buffer to the provided memory
      * so that the analyzer has something to chew on.                    */

@@ -22,7 +22,7 @@ main(int argc, char** argv)
 
     QUEX_NAME_TOKEN(construct)(&token);
 
-    receive_n = messaging_framework_receive_to_internal_buffer();
+    receive_n = receiver_fill_to_internal_buffer();
 
     QUEX_NAME(from_memory)(&qlex, 
                            MESSAGING_FRAMEWORK_BUFFER, 

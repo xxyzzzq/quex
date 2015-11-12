@@ -1,19 +1,23 @@
 #include <stdio.h>
 
-#include "tiny_lexer.h"
+#ifdef QUEX_EXAMPLE_WITH_CONVERTER
+#   include "tiny_lexer_utf8.h"
+#else
+#   include "tiny_lexer.h"
+#endif
 #include "messaging_framework.h"
 
 /* Input chunks: at syntactic boarders.
  *                                                                           */
 static quex_Token* construct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token, const char* CodecName);
 static void        destruct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token);
-static bool        receive_loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token);
+static bool        loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token);
 
 /* Input chunks: arbitrary.
  *                                                                           */
 static quex_Token* construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
 static void        destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank);
-static bool        receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
+static bool        loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
 
 /* Content by 'copying' or 'filling'.
  *                                                                           */
@@ -21,20 +25,31 @@ static void        content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk);
 static void        content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk);
 
 
-/* Configuration: The analysis process is configured by a set of function 
+typedef struct {
+/* Configuration: 
+ *
+ * The analysis process is configured by a set of function 
  * pointers to specify construction, destruction, the receive loop, and the
  * way how content is filled into the engine's buffer. If a codec name is
- * given, a converter is used for filling.                                   */
-typedef struct {
+ * given, a converter is used for filling.                                   
+ *                                                                           */
     quex_Token* (*construct)(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
     void        (*destruct)(quex_tiny_lexer* lexer, quex_Token* token_bank);
-    bool        (*receive_loop)(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
+    bool        (*loop)(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
     void        (*provide_content)(quex_tiny_lexer* lexer, MemoryChunk* chunk);
+    size_t      (*receiver_copy)(ELEMENT_TYPE* BufferBegin, 
+                                 size_t        BufferSize);
+    size_t      (*receiver_fill)(ELEMENT_TYPE** buffer);
+
     const char* codec_name;
 } Configuration;
 
 static bool  Configuration_from_command_line(Configuration* p, int argc, char** argv);
 static void  print_token(quex_Token*  token);
+
+Configuration     cfg;
+
+#define PRINT_FUNCTION() printf("called: %s;\n", __func__);
 
 int 
 main(int argc, char** argv) 
@@ -47,10 +62,7 @@ main(int argc, char** argv)
  *
  * [2] "fill"      --> content is provided by user filling as dedicated region.
  *     "copy"      --> user provides content to be copied into its 'place'.
- *
- * [3] "converter" --> the input is fed into a converter before it reaches 
- *                     the engine's buffer.
- *     "direct"    --> the input directly reaches the engines buffer.        */
+ *                                                                           */
 {        
     quex_tiny_lexer   qlex;
     MemoryChunk       chunk = { 0, 0 };
@@ -58,7 +70,6 @@ main(int argc, char** argv)
     *                                  * is redundant.                       */
     quex_Token*       prev_token;     /* For 'syntactic', the previous token
     *                                  * is meaningless.                     */
-    Configuration     cfg;
 
     if( ! Configuration_from_command_line(&cfg, argc, argv) ) {
         printf("Error, not enough command line arguments.\n");
@@ -71,7 +82,7 @@ main(int argc, char** argv)
         while( 1 + 1 == 2 ) {
             cfg.provide_content(&qlex, &chunk);
 
-            if( ! cfg.receive_loop(&qlex, &prev_token) ) break;
+            if( ! cfg.loop(&qlex, &prev_token) ) break;
         }
 
         cfg.destruct(&qlex, &token[0]);
@@ -89,19 +100,32 @@ Configuration_from_command_line(Configuration* p, int argc, char** argv)
  *          false, else.
  *                                                                           */
 {
-    if(argc < 4) return false;
+    if(argc < 3) {
+        printf("[1] --> 'syntactic' or 'arbitrary'\n");
+        printf("[2] --> 'fill' or 'copy'\n");
+        return false;
+    }
 
     if( strcmp(argv[1], "syntactic") == 0 ) {
-        p->construct    = construct_with_single_token;
-        p->destruct     = destruct_with_single_token;
-        p->receive_loop = receive_loop_syntactic_chunks;
+        p->construct     = construct_with_single_token;
+        p->destruct      = destruct_with_single_token;
+        p->loop          = loop_syntactic_chunks;
+        p->receiver_copy = receiver_copy_syntax_chunk;
+        p->receiver_fill = receiver_fill_syntax_chunk;
     } else {
-        p->construct    = construct_with_token_bank;
-        p->destruct     = destruct_with_token_bank;
-        p->receive_loop = receive_loop_arbitrary_chunks;
+        p->construct     = construct_with_token_bank;
+        p->destruct      = destruct_with_token_bank;
+        p->loop          = loop_arbitrary_chunks;
+        p->receiver_copy = receiver_copy;
+        p->receiver_fill = receiver_fill;
     }
     p->provide_content = (strcmp(argv[2], "copy") == 0) ? content_copy : content_fill;
-    p->codec_name      = (strcmp(argv[3], "converter") == 0) ? "UTF8" : (const char*)0;
+
+#   ifdef QUEX_EXAMPLE_WITH_CONVERTER
+    p->codec_name      = "UTF8";
+#   else
+    p->codec_name      = (const char*)0;
+#   endif
 
     return true;
 }
@@ -172,9 +196,10 @@ content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
  *
  * This process involves some extra copying of data compared to to 'filling'.*/
 {
-    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  /* A pointer to the receive buffer 
+    uint8_t*   rx_buffer = 0x0;             /* A pointer to the receive buffer 
     *                                        * of the messaging framework.   */
-    size_t                received_n = (size_t)-1;
+    size_t     received_n = (size_t)-1;
+    PRINT_FUNCTION();
 
     /* NOTE: 'chunk' is initialized to '{ 0, 0 }'.
      *       => safe to assume that 'begin_p == end_p' upon first run.       */
@@ -182,11 +207,10 @@ content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
     /* Receive content from some messaging framework.                        */
     if( chunk->begin_p == chunk->end_p ) {                                   
         /* If the receive buffer has been read, it can be released.          */
-        if( ! rx_buffer ) messaging_framework_release(rx_buffer);            
         /* Receive and set 'begin' and 'end' of incoming chunk.              */
-        received_n  = messaging_framework_receive(&rx_buffer);               
-        chunk->begin_p     = rx_buffer;                                      
-        chunk->end_p       = chunk->begin_p + received_n;                    
+        received_n     = cfg.receiver_fill(&rx_buffer);               
+        chunk->begin_p = rx_buffer;                                      
+        chunk->end_p   = chunk->begin_p + received_n;                    
     } else {                                                                 
         /* If begin_p != end_p => first digest remainder.                    */
     }
@@ -211,21 +235,21 @@ content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk)
  * Filling involves less copying of data than 'copying'.                     */
 {
     size_t received_n = (size_t)-1;
+    PRINT_FUNCTION();
 
     /* Initialize the filling of the fill region                             */
     lexer->buffer.fill_prepare(&lexer->buffer, 
                                (void**)&chunk->begin_p, (const void**)&chunk->end_p);
 
     /* Call the low level driver to fill the fill region                     */
-    received_n = messaging_framework_receive_into_buffer(chunk->begin_p, 
-                                                         chunk->end_p - chunk->begin_p); 
+    received_n = cfg.receiver_copy(chunk->begin_p, chunk->end_p - chunk->begin_p); 
 
     /* Current token becomes previous token of next run.                     */
     lexer->buffer.fill_finish(&lexer->buffer, &chunk->begin_p[received_n]);
 }
 
 static bool
-receive_loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
+loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
 /* Loop until the 'TERMINATION' token arrives. Here, considering input which 
  * is 'chunked' at syntax boarders, the 'prev_token' is not considered.
  *                                                                      
@@ -234,6 +258,7 @@ receive_loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
 {
     QUEX_TYPE_TOKEN_ID    token_id;
     (void)prev_token; 
+    PRINT_FUNCTION();
 
     while( 1 + 1 == 2 ) {
         token_id = QUEX_NAME(receive)(lexer);
@@ -250,7 +275,7 @@ receive_loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
 }
 
 static bool
-receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
+loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
 /* Loop over received tokens until 'TERMINATION' or 'BYE' occurs. The previous
  * token must be tracked to identify a 'BYE, TERMINATION' sequence. The 
  * start of the lexeme must be tracked, so that after re-filling the inter-
@@ -259,9 +284,9 @@ receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
  * RETURNS: true, if analysis may continue; BYE has not been received.
  *          false, if analysis may NOT continue; BYE has been received.      */
 {
-    quex_Token*           prev_token;       /* Used  or swapping tokens.     */
     QUEX_TYPE_TOKEN_ID    token_id;
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p;
+    PRINT_FUNCTION();
 
     /* Loop until 'TERMINATION' or 'BYE' is received.                   
      *   TERMINATION => possible reload                               
@@ -271,13 +296,13 @@ receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
         prev_lexeme_start_p = QUEX_NAME(lexeme_start_pointer_get)(lexer);
 
         /* Current token becomes previous token of next run.                 */
-        prev_token = QUEX_NAME(token_p_swap)(lexer, prev_token);
+        *prev_token_p = QUEX_NAME(token_p_swap)(lexer, *prev_token_p);
 
         token_id = QUEX_NAME(receive)(lexer);
         if( token_id == QUEX_TKN_TERMINATION || token_id == QUEX_TKN_BYE )
             break;
-        if( prev_token->_id != QUEX_TKN_TERMINATION ) 
-            print_token(prev_token);
+        if( (*prev_token_p)->_id != QUEX_TKN_TERMINATION ) 
+            print_token(*prev_token_p);
     }
 
     if( token_id == QUEX_TKN_BYE ) return false;
@@ -293,8 +318,7 @@ print_token(quex_Token*  token)
     size_t PrintBufferSize = 1024;
     char   print_buffer[1024];
 
-    printf("Consider: %s\n", QUEX_NAME_TOKEN(get_string)(token, 
-                                                         print_buffer, 
+    printf("   Token: %s\n", QUEX_NAME_TOKEN(get_string)(token, print_buffer, 
                                                          PrintBufferSize));
 }
 

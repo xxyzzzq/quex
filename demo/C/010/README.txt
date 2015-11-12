@@ -8,7 +8,7 @@ end has been reached. In some circumstances, there is not even a file system
 where the analyzer runs, so the buffer must be filled manually. The examples
 in this directory demonstrate how this is done. 
 
-The example program can be controlled by three command line arguments:
+The example program can be controlled by the command line arguments:
 
   [1] "syntactic" --> receive loop handles chunks which are expected not to 
                       cut in between matching lexemes.
@@ -17,9 +17,23 @@ The example program can be controlled by three command line arguments:
   [2] "fill"      --> content is provided by user filling as dedicated region.
       "copy"      --> user provides content to be copied into its 'place'.
  
-  [3] "converter" --> the input is fed into a converter before it reaches 
-                      the engine's buffer.
-      "direct"    --> the input directly reaches the engines buffer.       
+The examples for without and with BufferFiller_Converter are 'compile-time'
+controlled by the macro '-DQUEX_EXAMPLE_WITH_CONVERTER'. If it is present
+a converter-based buffer filler is compiled, otherwise, a plain buffer filler
+is compiled.
+
+         .---- without -DQUEX_EXAMPLE_WITH_CONVERTER ----> lexer.exe
+        /
+   lexer.c  
+        \
+         '---- with -DQUEX_EXAMPLE_WITH_CONVERTER -------> lexer_utf8.exe
+
+Files required for the converter end with '_utf8' in their filestem, others
+do not.
+
+There is another example, which falls appart: Pointing. Here the user points
+to place in memory where the lexer has to analyze. The corresponding file
+is 'point.c' which compiles to 'point.exe'.
 
 Syntactic Chunks vs. Arbitrary Chunks
 =====================================
