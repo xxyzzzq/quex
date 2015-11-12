@@ -1,21 +1,25 @@
 #include <stdio.h>
 
 #include "tiny_lexer.h"
-#include "messaging-framework.h"
+#include "messaging_framework.h"
 
-/* Input chunks: at syntactic boarders.                                      */
-static quex_Token* construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
-static void        destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank);
-static bool        receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
-/* Input chunks: arbitrary.                                                  */
+/* Input chunks: at syntactic boarders.
+ *                                                                           */
 static quex_Token* construct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token, const char* CodecName);
 static void        destruct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token);
 static bool        receive_loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token);
-/* Content provision by 'copying' or 'filling'.                              */
+
+/* Input chunks: arbitrary.
+ *                                                                           */
+static quex_Token* construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
+static void        destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank);
+static bool        receive_loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
+
+/* Content by 'copying' or 'filling'.
+ *                                                                           */
 static void        content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk);
 static void        content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk);
 
-static void        print_token(quex_Token*  token);
 
 /* Configuration: The analysis process is configured by a set of function 
  * pointers to specify construction, destruction, the receive loop, and the
@@ -30,6 +34,7 @@ typedef struct {
 } Configuration;
 
 static bool  Configuration_from_command_line(Configuration* p, int argc, char** argv);
+static void  print_token(quex_Token*  token);
 
 int 
 main(int argc, char** argv) 
@@ -77,7 +82,11 @@ main(int argc, char** argv)
 
 static bool
 Configuration_from_command_line(Configuration* p, int argc, char** argv)
-/* Interpret command line to configure the analysis process 
+/* Interpret command line to configure the analysis process. The process'
+ * behavior is controlled by a set of function pointers which are set here.
+ *
+ * RETURNS: true, configuration ok.
+ *          false, else.
  *                                                                           */
 {
     if(argc < 4) return false;
@@ -99,6 +108,10 @@ Configuration_from_command_line(Configuration* p, int argc, char** argv)
 
 static quex_Token*
 construct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token, const char* CodecName)
+/* Construct the lexical analyzer with one token object to chew on. With the
+ * CodecName != 0, a converter is activated. 
+ *
+ * RETURNS: A meaningless 0.                                                 */
 {
     quex_Token_construct(token);
     quex_tiny_lexer_from_ByteLoader(lexer, (ByteLoader*)0, CodecName);
@@ -118,6 +131,10 @@ destruct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token)
 
 static quex_Token*
 construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName)
+/* Construct the lexical analyzer to chew on two swapping tokens from a token
+ * bank. CodecName != 0, a converter is activated. 
+ *
+ * RETURNS: A pointer to the 'previous token'.                               */
 {
     quex_Token*           prev_token;
 
@@ -146,6 +163,14 @@ destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank)
 
 static void
 content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
+/* Fill the analyzer's buffer by copying data into it, that is the function
+ *
+ *                            '.fill(...)' 
+ *
+ * of the buffer is called directly. Data is received from an examplary 
+ * 'messaging framework' which fills data into an 'rx_buffer'.     
+ *
+ * This process involves some extra copying of data compared to to 'filling'.*/
 {
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  /* A pointer to the receive buffer 
     *                                        * of the messaging framework.   */
@@ -174,6 +199,16 @@ content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
 
 static void
 content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk)
+/* Filling the analyzer's buffer by 'filling'. That is the buffer provides the
+ * user with two pointers that boarder the region where content needs to be 
+ * filled. Then an examplary messaging framework fills the content directly
+ * into it. Then, the buffer needs to 'finish' the filled data. This process
+ * evolves around the two functions.
+ *
+ *   .fill_prepare(...) ---> providing 'begin_p' and 'end_p' where to fill.
+ *   .fill_finish(...) ---> post processing the content.
+ *
+ * Filling involves less copying of data than 'copying'.                     */
 {
     size_t received_n = (size_t)-1;
 

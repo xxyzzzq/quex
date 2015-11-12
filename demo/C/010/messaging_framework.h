@@ -2,7 +2,7 @@
 #define __INCLUDE_GUARD__MESSAGING_FRAMEWORK__
 
 
-#ifndef __QUEX_OPTION_MESSAGE_UTF8
+#if ! defined( __QUEX_OPTION_MESSAGE_UTF8)
 #   include "tiny_lexer.h"
 #   define ELEMENT_TYPE QUEX_TYPE_CHARACTER
 #else
