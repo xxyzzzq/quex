@@ -1,20 +1,20 @@
-# PURPOSE: Makefile Demo Application of Quex
+# PURPOSE: Makefile building example applications for manual buffer filling.
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 .PHONY: clean UTF8 NON_UTF8
 
-FILES = copy.exe    fill.exe    point.exe \
-		copy-ez.exe fill-ez.exe re-point.exe
+FILES := lexer.exe \
+         lexer-converter.exe \
+         re-point.exe
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-
 # (*) SETUP ____________________________________________________________________
-OBJS      = tiny_lexer.o      messaging-framework.o
-UTF8_OBJS = tiny_lexer_utf8.o messaging-framework_utf8.o
+OBJS      := tiny_lexer.o      messaging_framework.o
+UTF8_OBJS := tiny_lexer_utf8.o messaging_framework_utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -25,72 +25,57 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-COMPILER = gcc -ggdb -Wall -Werror -pedantic -std=c89
+COMPILER := gcc -ggdb -Wall -Werror -pedantic -std=c89
 
-CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
-     # -DQUEX_OPTION_DEBUG_SHOW    
-     # -DQUEX_OPTION_ASSERTS_DISABLED
-	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+CC       := $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+            # -DQUEX_OPTION_DEBUG_SHOW    
+            # -DQUEX_OPTION_ASSERTS_DISABLED
+   	        # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
-CC_UTF8 = $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \
-		        -DQUEX_TYPE_CHARACTER=wchar_t \
-		        -DQUEX_OPTION_CONVERTER_ICONV 
+CC_UTF8  := $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \
+                  -DQUEX_TYPE_CHARACTER=wchar_t 
 
 # (*) RULES ____________________________________________________________________
 all: $(FILES)
 
-# -- char application
+lexer.exe:           lexer.o $(OBJS)  
+	$(CC) -o $@ $< $(OBJS) 
           
-copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS)  
-	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
-          
-copy-conversion-direct.exe: copy-conversion-direct.c $(UTF8_OBJS)  
+lexer_utf8.exe: lexer_utf8.o $(UTF8_OBJS)  
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
 
-fill-conversion-direct.exe: fill-conversion-direct.c $(UTF8_OBJS)  
-	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
-
-%.exe:                      %.c $(OBJS)  
-	$(CC)      -o $@ $< $(OBJS) 
-
-point.exe:                  point.c $(OBJS:.o=.c)  NON_UTF8
+point.exe:           point.c $(OBJS:.o=.c)  NON_UTF8
 	## All related files must be compiled with fallback_n = 0 
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
           
-re-point.exe:               re-point.c  $(OBJS:.o=.c) NON_UTF8
+re-point.exe:        re-point.c  $(OBJS:.o=.c) NON_UTF8
 	## All related files must be compiled with fallback_n = 0
 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
           
-%_utf8.o:                   %_utf8.c  UTF8
-	$(CC_UTF8) -c $< -o $@ 
-
-messaging-framework_utf8.o: messaging-framework.c  UTF8
+%_utf8.o:            %.c  UTF8
 	$(CC_UTF8) -c $< -o $@ 
           
-%.o:                     %.c  NON_UTF8
+%.o:                 %.c  NON_UTF8
 	$(CC)      -c $< -o $@  
           
-%.E:                     %.c  NON_UTF8
+%.E:                 %.c  NON_UTF8
 	$(CC)      -E $< -o $@  
           
 tiny_lexer.h tiny_lexer.c:            NON_UTF8
 
-tiny_lexer_utf8.h tiny_lexer_utf8.c:	UTF8
+tiny_lexer_utf8.h tiny_lexer_utf8.c:  UTF8
 
 NON_UTF8: simple.qx 
-	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
-	# does all what is required.
 	quex -i             simple.qx          \
-		 -o       tiny_lexer         \
+		 -o             tiny_lexer         \
 		 --token-policy single             \
 		 --language     C                  \
 		 --token-memory-management-by-user 
 
 UTF8: simple_utf8.qx 
-	# Don't need to set '--iconv'. The flag 'QUEX_OPTION_CONVERTER_ICONV'
-	# does all what is required.
 	quex -i                    simple_utf8.qx   \
-		 -o              tiny_lexer_utf8  \
+		 -o                    tiny_lexer_utf8  \
+		 --iconv                                \
 		 --token-policy        single           \
 		 --language            C                \
 		 --buffer-element-type wchar_t          \

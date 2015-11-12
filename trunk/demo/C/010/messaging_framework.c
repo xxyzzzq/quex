@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "messaging-framework.h"
+#include "messaging_framework.h"
 
 #ifndef __QUEX_OPTION_MESSAGE_UTF8
     static QUEX_TYPE_CHARACTER   messaging_framework_data[] = 
