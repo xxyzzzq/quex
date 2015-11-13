@@ -177,9 +177,10 @@ QUEX_MEMBER_FUNCTION3(from, memory,
                       QUEX_TYPE_CHARACTER*    Memory,
                       const size_t            MemorySize,
                       QUEX_TYPE_CHARACTER*    EndOfFileP)
-/* When memory is provided from extern, the 'external entity' is
- * responsible for filling it. There is no 'file/stream handle', no 'byte
- * loader', and 'no buffer filler'.                                          */
+
+/* When memory is provided from extern, the 'external entity' is responsible
+ * for filling it. There is no 'file/stream handle', no 'byte loader', and 'no
+ * buffer filler'.                                                           */
 {
     __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
 

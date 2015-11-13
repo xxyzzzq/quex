@@ -4,7 +4,11 @@
 #include "tiny_lexer.h"
 #include "messaging-framework.h"
 
-void test(quex_tiny_lexer* qlex);
+void test(quex_tiny_lexer* qlex, QUEX_TYPE_CHARACTER* memory);
+
+QUEX_TYPE_CHARACTER memory_a[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
+QUEX_TYPE_CHARACTER memory_b[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
+QUEX_TYPE_CHARACTER memory_c[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
 
 int 
 main(int argc, char** argv) 
@@ -12,14 +16,20 @@ main(int argc, char** argv)
     quex_tiny_lexer      qlex;
     QUEX_TYPE_CHARACTER* remainder = 0x0;
 
-    quex_tiny_lexer_from_ByteLoader(&qlex, (ByteLoader*)0, 0);
+    /* Fill at position 'memory + 1'. 'memory + 0' holds buffer limit code.  */
+    receiver_copy_here(&memory_a[1], MESSAGING_FRAMEWORK_BUFFER);
+
+    quex_tiny_lexer_from_memory(&qlex, 
+                                &memory_a[0], 
+                                &memory_a[MESSAGING_FRAMEWORK_BUFFER_SIZE+2], 
+                                &memory_a[MESSAGING_FRAMEWORK_BUFFER_SIZE+2]);
 
     /* In this example we do the same as in 'point.cpp'
      * -- only that the use different buffers for each run.
      *    This requires a 'reset_memory' call, as shown below. */
-    test(&qlex);
-    test(&qlex);
-    test(&qlex);
+    test(&qlex, NULL);
+    test(&qlex, memory_b);
+    test(&qlex, memory_c);
 
     /* Delete remaining memory buffer that is still inside the analyzer */
     remainder = QUEX_NAME(reset_memory)(&qlex, 0x0, 0, 0x0);
@@ -29,24 +39,8 @@ main(int argc, char** argv)
     return 0;
 }
 
-void
-get_new_memory_to_analyze(QUEX_TYPE_CHARACTER** buffer, size_t* buffer_size)
-{
-    /* Get some chunk of memory */
-    QUEX_TYPE_CHARACTER*  new_memory = (QUEX_TYPE_CHARACTER*)malloc(sizeof(QUEX_TYPE_CHARACTER)*MESSAGING_FRAMEWORK_BUFFER_SIZE);
-
-    /* Call the low lever driver to fill the fill region */
-    *buffer_size = receiver_fill_to_internal_buffer() + 1;
-
-    /* Copy the content from the messaging buffer to the provided memory
-     * so that the analyzer has something to chew on.                    */
-    memcpy(new_memory, MESSAGING_FRAMEWORK_BUFFER, (*buffer_size) * sizeof(QUEX_TYPE_CHARACTER));
-
-    *buffer = new_memory;
-}
-
 void 
-test(quex_tiny_lexer* qlex)
+void test(quex_tiny_lexer* qlex, QUEX_TYPE_CHARACTER* memory);
 {
     QUEX_TYPE_TOKEN       token;           
     QUEX_TYPE_CHARACTER*  buffer      = 0x0;
@@ -55,19 +49,18 @@ test(quex_tiny_lexer* qlex)
     char                  utf8_buffer[1024];
     QUEX_TYPE_CHARACTER*  prev_memory = 0x0;
 
-    get_new_memory_to_analyze(&buffer, &buffer_size);
+    if( memory ) {
+        /* Fill at position 'memory + 1'. 'memory + 0' holds buffer limit 
+         * code.                                                             */
+        receiver_copy_here(&memory[1], MESSAGING_FRAMEWORK_BUFFER);
 
-    /* Setup the memory to be analyzed (this is the 're-point' operation). 
-     * (buffer is one character larger than the content, so that it can contain the
-     *  buffer limit code at the end.)                                              */
-    prev_memory = QUEX_NAME(reset_memory)(qlex, buffer, buffer_size, 
-                                          /* End of Content */ buffer + buffer_size - 1); 
-    /* If there was some old memory, than delete it. */
-    if( prev_memory != 0x0 ) free(prev_memory);
+        quex_tiny_lexer_reset_memory(&qlex, 
+                                     &memory[0], 
+                                     &memory[MESSAGING_FRAMEWORK_BUFFER_SIZE+2], 
+                                     &memory[MESSAGING_FRAMEWORK_BUFFER_SIZE+2]);
+    }
 
-    /* QUEX_NAME(Buffer_show_byte_content)(&qlex->buffer, 5); */
-
-    /* -- Loop until the 'termination' token arrives */
+    /* Loop until the 'termination' token arrives                            */
     QUEX_NAME(token_p_swap)(qlex, &token);
     do {
         QUEX_NAME(receive)(qlex);

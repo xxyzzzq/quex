@@ -20,9 +20,9 @@ static size_t                messaging_framework_data_size()
 
 size_t 
 receiver_fill(ELEMENT_TYPE** rx_buffer)
-    /* Simulate the reception into a place that is defined by the low 
-     * level driver. The low level driver reports the address of that place
-     * and the size.                                                         */
+/* Simulate the reception into a place that is defined by the low level driver.
+ * The low level driver reports the address of that place and the size.
+ *                                                                           */
 {
     static ELEMENT_TYPE*  iterator = messaging_framework_data;
     const size_t          remainder_size =   messaging_framework_data_size() - 1 
@@ -139,14 +139,16 @@ receiver_copy_syntax_chunk(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
 ELEMENT_TYPE   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 size_t
-receiver_fill_to_internal_buffer()
+receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN)
 /* Simulate a low level driver that iself has a hardware fixed position in
  * memory which it fills on demand.
  *                                                                           */
 {
-    memcpy(&MESSAGING_FRAMEWORK_BUFFER[1], 
-           messaging_framework_data, 
-           messaging_framework_data_size() * sizeof(ELEMENT_TYPE));
-    return messaging_framework_data_size();
+    const size_t ElementN = sizeof(messaging_framework_data) / sizeof(messaging_framework_data[0]);
+    assert(MaxN <= ElementN);
+
+    memcpy((void*)place, (void*)&messaging_framework_data[0], 
+           sizeof(messaging_framework_data);
+    return ElementN;
 }
 

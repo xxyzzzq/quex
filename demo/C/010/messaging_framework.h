@@ -23,6 +23,7 @@ extern size_t receiver_fill(ELEMENT_TYPE** buffer);
 extern size_t receiver_fill_syntax_chunk(ELEMENT_TYPE** buffer);
 extern size_t receiver_fill_whole_characters(ELEMENT_TYPE** rx_buffer);
 extern size_t receiver_fill_to_internal_buffer();
+extern size_t receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN);
 extern size_t receiver_copy(ELEMENT_TYPE*, size_t);
 extern size_t receiver_copy_syntax_chunk(ELEMENT_TYPE* BufferBegin, 
                                          size_t        BufferSize);
