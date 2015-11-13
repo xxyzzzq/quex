@@ -1,61 +1,77 @@
-#include <stdio.h>
+#include<stdio.h>    
+#include<string.h> 
 
-#include "tiny_lexer.h"
-#include "messaging-framework.h"
+#include "lexPlain.h"
+#include "messaging_framework.h"
 
-/* #include <quex/code_base/buffer/Buffer_debug> */
+static void  test(QUEX_TYPE_ANALYZER* qlex, QUEX_TYPE_CHARACTER* memory);
+static void  print_token(quex_Token*  token);
+
+QUEX_TYPE_CHARACTER   memory_a[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
+QUEX_TYPE_CHARACTER   memory_b[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
+QUEX_TYPE_CHARACTER   memory_c[MESSAGING_FRAMEWORK_BUFFER_SIZE+2];
 
 int 
 main(int argc, char** argv) 
+/* In this example, the lexical analyzer's buffer is given from an external
+ * source. The first memory chunk 'memory_a' is passed upon construction of the
+ * lexical analyzer. The next two runs with 'memory_b' and 'memory'b' are
+ * initiated by passing the memory with the 'reset' function.                */
 {        
-    QUEX_TYPE_TOKEN    token;
-    quex_tiny_lexer    qlex;
-    size_t             BufferSize = 1024;
-    char               buffer[1024];
-    size_t             receive_n = (size_t)-1;
-    int                i = 0;
+    quex_lexPlain        qlex; 
 
-    if( QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0 ) {
-        QUEX_ERROR_EXIT("This method fails if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0\n"
-                        "Consider using the method described in 're-point.c'.");
-    }
+    /* Fill at position 'memory + 1'. 'memory + 0' holds buffer limit code.  */
+    receiver_copy_here(&memory_a[1], MESSAGING_FRAMEWORK_BUFFER_SIZE);
 
-    QUEX_NAME_TOKEN(construct)(&token);
+    quex_lexPlain_from_memory(&qlex, 
+                              &memory_a[0], 
+                              MESSAGING_FRAMEWORK_BUFFER_SIZE+2, 
+                              &memory_a[MESSAGING_FRAMEWORK_BUFFER_SIZE+2]);
 
-    receive_n = receiver_fill_to_internal_buffer();
+    test(&qlex, NULL);            /* treat memory given during construction. */
+    test(&qlex, memory_b);        /* pass 'memory_b' upon reset, then run.   */
+    test(&qlex, memory_c);        /* pass 'memory_c' upon reset, then run.   */
 
-    QUEX_NAME(from_memory)(&qlex, 
-                           MESSAGING_FRAMEWORK_BUFFER, 
-                           MESSAGING_FRAMEWORK_BUFFER_SIZE,
-                           &MESSAGING_FRAMEWORK_BUFFER[receive_n]);
-
-    /* Iterate 3 times doing the same thing in order to illustrate
-     * the repeated activation of the same chunk of memory. */
-    for(i = 0; i < 3; ++i ) {
-        /* -- Loop until the 'termination' token arrives */
-        QUEX_NAME(token_p_swap)(&qlex, &token); 
-
-        do {
-            QUEX_NAME(receive)(&qlex);
-            
-
-            if( token._id != QUEX_TKN_TERMINATION )
-                printf("Consider: %s \n", QUEX_NAME_TOKEN(get_string)(&token, buffer, BufferSize));
-
-            if( token._id == QUEX_TKN_BYE ) 
-                printf("##\n");
-
-        } while( token._id != QUEX_TKN_TERMINATION );
-
-        QUEX_NAME(reset_memory)(&qlex,
-                                MESSAGING_FRAMEWORK_BUFFER, 
-                                MESSAGING_FRAMEWORK_BUFFER_SIZE,
-                                &MESSAGING_FRAMEWORK_BUFFER[receive_n]);
-    }
-
-    QUEX_NAME(token_p_swap)(&qlex, (QUEX_TYPE_TOKEN*)0); /* Avoid destruction of my token. */
     QUEX_NAME(destruct)(&qlex);
-    QUEX_NAME_TOKEN(destruct)(&token);
     return 0;
 }
 
+static void 
+test(quex_lexPlain* qlex, QUEX_TYPE_CHARACTER* memory)
+{
+    QUEX_TYPE_TOKEN       token;           
+
+    if( memory ) {
+        /* Fill at position 'memory + 1'. 'memory + 0' holds buffer limit 
+         * code.                                                             */
+        receiver_copy_here(&memory[1], MESSAGING_FRAMEWORK_BUFFER_SIZE);
+
+        quex_lexPlain_reset_memory(qlex, 
+                                   &memory[0], 
+                                   MESSAGING_FRAMEWORK_BUFFER_SIZE+2, 
+                                   &memory[MESSAGING_FRAMEWORK_BUFFER_SIZE+2]);
+    }
+
+    /* Loop until the 'termination' token arrives                            */
+    QUEX_NAME(token_p_swap)(qlex, &token);
+    do {
+        QUEX_NAME(receive)(qlex);
+
+        print_token(&token);
+        
+    } while( token._id != QUEX_TKN_TERMINATION );
+
+    QUEX_NAME_TOKEN(destruct)(&token);
+
+    printf("<terminated>\n");
+}
+
+static void
+print_token(quex_Token*  token)
+{
+    size_t PrintBufferSize = 1024;
+    char   print_buffer[1024];
+
+    printf("   Token: %s\n", QUEX_NAME_TOKEN(get_string)(token, print_buffer, 
+                                                         PrintBufferSize));
+}

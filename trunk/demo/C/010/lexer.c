@@ -1,28 +1,32 @@
 #include <stdio.h>
 
 #ifdef QUEX_EXAMPLE_WITH_CONVERTER
-#   include "tiny_lexer_utf8.h"
+#   include "lexUTF8.h"
 #else
-#   include "tiny_lexer.h"
+#   include "lexPlain.h"
 #endif
+typedef QUEX_TYPE_ANALYZER CLexer;
+typedef QUEX_TYPE_TOKEN    CToken;
 #include "messaging_framework.h"
 
 /* Input chunks: at syntactic boarders.
  *                                                                           */
-static quex_Token* construct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token, const char* CodecName);
-static void        destruct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token);
-static bool        loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token);
+static CToken*     construct_with_single_token(CLexer* lexer, CToken* token, 
+                                               const char* CodecName);
+static void        destruct_with_single_token(CLexer* lexer, CToken* token);
+static bool        loop_syntactic_chunks(CLexer* lexer, CToken** prev_token);
 
 /* Input chunks: arbitrary.
  *                                                                           */
-static quex_Token* construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
-static void        destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank);
-static bool        loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
+static CToken*     construct_with_token_bank(CLexer*  lexer, CToken* token_bank, 
+                                             const char* CodecName);
+static void        destruct_with_token_bank(CLexer* lexer, CToken* token_bank);
+static bool        loop_arbitrary_chunks(CLexer* lexer, CToken** prev_token_p);
 
 /* Content by 'copying' or 'filling'.
  *                                                                           */
-static void        content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk);
-static void        content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk);
+static void        content_copy(CLexer* lexer, MemoryChunk* chunk);
+static void        content_fill(CLexer* lexer, MemoryChunk* chunk);
 
 
 typedef struct {
@@ -33,10 +37,10 @@ typedef struct {
  * way how content is filled into the engine's buffer. If a codec name is
  * given, a converter is used for filling.                                   
  *                                                                           */
-    quex_Token* (*construct)(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName);
-    void        (*destruct)(quex_tiny_lexer* lexer, quex_Token* token_bank);
-    bool        (*loop)(quex_tiny_lexer* lexer, quex_Token** prev_token_p);
-    void        (*provide_content)(quex_tiny_lexer* lexer, MemoryChunk* chunk);
+    CToken* (*construct)(CLexer*  lexer, CToken* token_bank, const char* CodecName);
+    void        (*destruct)(CLexer* lexer, CToken* token_bank);
+    bool        (*loop)(CLexer* lexer, CToken** prev_token_p);
+    void        (*provide_content)(CLexer* lexer, MemoryChunk* chunk);
     size_t      (*receiver_copy)(ELEMENT_TYPE* BufferBegin, 
                                  size_t        BufferSize);
     size_t      (*receiver_fill)(ELEMENT_TYPE** buffer);
@@ -45,7 +49,7 @@ typedef struct {
 } Configuration;
 
 static bool  Configuration_from_command_line(Configuration* p, int argc, char** argv);
-static void  print_token(quex_Token*  token);
+static void  print_token(CToken*  token);
 
 Configuration     cfg;
 
@@ -64,11 +68,11 @@ main(int argc, char** argv)
  *     "copy"      --> user provides content to be copied into its 'place'.
  *                                                                           */
 {        
-    quex_tiny_lexer   qlex;
+    CLexer   qlex;
     MemoryChunk       chunk = { 0, 0 };
-    quex_Token        token[2];       /* For 'syntactic', the second token
+    CToken        token[2];       /* For 'syntactic', the second token
     *                                  * is redundant.                       */
-    quex_Token*       prev_token;     /* For 'syntactic', the previous token
+    CToken*       prev_token;     /* For 'syntactic', the previous token
     *                                  * is meaningless.                     */
 
     if( ! Configuration_from_command_line(&cfg, argc, argv) ) {
@@ -130,44 +134,44 @@ Configuration_from_command_line(Configuration* p, int argc, char** argv)
     return true;
 }
 
-static quex_Token*
-construct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token, const char* CodecName)
+static CToken*
+construct_with_single_token(CLexer* lexer, CToken* token, const char* CodecName)
 /* Construct the lexical analyzer with one token object to chew on. With the
  * CodecName != 0, a converter is activated. 
  *
  * RETURNS: A meaningless 0.                                                 */
 {
-    quex_Token_construct(token);
-    quex_tiny_lexer_from_ByteLoader(lexer, (ByteLoader*)0, CodecName);
+    QUEX_NAME_TOKEN(construct)(token);
+    QUEX_NAME(from_ByteLoader)(lexer, (ByteLoader*)0, CodecName);
 
     /* -- LOOP until 'bye' token arrives */
     (void)QUEX_NAME(token_p_swap)(lexer, token);
 
-    return (quex_Token*)0;
+    return (CToken*)0;
 }
 
 static void
-destruct_with_single_token(quex_tiny_lexer* lexer, quex_Token* token)
+destruct_with_single_token(CLexer* lexer, CToken* token)
 {
     QUEX_NAME(destruct)(lexer);
     QUEX_NAME_TOKEN(destruct)(token);
 }
 
-static quex_Token*
-construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const char* CodecName)
+static CToken*
+construct_with_token_bank(CLexer*  lexer, CToken* token_bank, const char* CodecName)
 /* Construct the lexical analyzer to chew on two swapping tokens from a token
  * bank. CodecName != 0, a converter is activated. 
  *
  * RETURNS: A pointer to the 'previous token'.                               */
 {
-    quex_Token*           prev_token;
+    CToken*           prev_token;
 
     /* Initialize analyzer.                                                  */
-    quex_tiny_lexer_from_ByteLoader(lexer, (ByteLoader*)0, CodecName);
+    QUEX_NAME(from_ByteLoader)(lexer, (ByteLoader*)0, CodecName);
 
     /* initialize token objects.                                             */
-    quex_Token_construct(&token_bank[0]);
-    quex_Token_construct(&token_bank[1]);
+    QUEX_NAME_TOKEN(construct)(&token_bank[0]);
+    QUEX_NAME_TOKEN(construct)(&token_bank[1]);
     token_bank[0]._id = QUEX_TKN_TERMINATION;
 
     /* Give the analyzer a token to prepare.                                 */
@@ -178,7 +182,7 @@ construct_with_token_bank(quex_tiny_lexer*  lexer, quex_Token* token_bank, const
 }
 
 static void
-destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank)
+destruct_with_token_bank(CLexer* lexer, CToken* token_bank)
 {
     QUEX_NAME(destruct)(lexer);
     QUEX_NAME_TOKEN(destruct)(&token_bank[0]);
@@ -186,7 +190,7 @@ destruct_with_token_bank(quex_tiny_lexer* lexer, quex_Token* token_bank)
 }
 
 static void
-content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
+content_copy(CLexer* lexer, MemoryChunk* chunk)
 /* Fill the analyzer's buffer by copying data into it, that is the function
  *
  *                            '.fill(...)' 
@@ -222,7 +226,7 @@ content_copy(quex_tiny_lexer* lexer, MemoryChunk* chunk)
 }
 
 static void
-content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk)
+content_fill(CLexer* lexer, MemoryChunk* chunk)
 /* Filling the analyzer's buffer by 'filling'. That is the buffer provides the
  * user with two pointers that boarder the region where content needs to be 
  * filled. Then an examplary messaging framework fills the content directly
@@ -249,7 +253,7 @@ content_fill(quex_tiny_lexer* lexer, MemoryChunk* chunk)
 }
 
 static bool
-loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
+loop_syntactic_chunks(CLexer* lexer, CToken** prev_token)
 /* Loop until the 'TERMINATION' token arrives. Here, considering input which 
  * is 'chunked' at syntax boarders, the 'prev_token' is not considered.
  *                                                                      
@@ -275,7 +279,7 @@ loop_syntactic_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token)
 }
 
 static bool
-loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
+loop_arbitrary_chunks(CLexer* lexer, CToken** prev_token_p)
 /* Loop over received tokens until 'TERMINATION' or 'BYE' occurs. The previous
  * token must be tracked to identify a 'BYE, TERMINATION' sequence. The 
  * start of the lexeme must be tracked, so that after re-filling the inter-
@@ -313,7 +317,7 @@ loop_arbitrary_chunks(quex_tiny_lexer* lexer, quex_Token** prev_token_p)
 }
 
 static void
-print_token(quex_Token*  token)
+print_token(CToken*  token)
 {
     size_t PrintBufferSize = 1024;
     char   print_buffer[1024];

@@ -148,7 +148,7 @@ receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN)
     assert(MaxN <= ElementN);
 
     memcpy((void*)place, (void*)&messaging_framework_data[0], 
-           sizeof(messaging_framework_data);
+           sizeof(messaging_framework_data));
     return ElementN;
 }
 
