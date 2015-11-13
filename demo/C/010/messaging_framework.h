@@ -3,10 +3,10 @@
 
 #ifdef QUEX_EXAMPLE_WITH_CONVERTER 
 #   define ELEMENT_TYPE uint8_t
-#   include "tiny_lexer_utf8.h"
+#   include "lexUTF8.h"
 #else
 #   define ELEMENT_TYPE QUEX_TYPE_CHARACTER
-#   include "tiny_lexer.h"
+#   include "lexPlain.h"
 #endif
 
 typedef struct {
