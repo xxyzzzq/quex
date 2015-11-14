@@ -7,7 +7,7 @@
 #endif
 typedef QUEX_TYPE_ANALYZER CLexer;
 typedef QUEX_TYPE_TOKEN    CToken;
-#include "messaging_framework.h"
+#include "receiver.h"
 
 /* Input chunks: at syntactic boarders.
  *                                                                           */
@@ -37,7 +37,8 @@ typedef struct {
  * way how content is filled into the engine's buffer. If a codec name is
  * given, a converter is used for filling.                                   
  *                                                                           */
-    CToken* (*construct)(CLexer*  lexer, CToken* token_bank, const char* CodecName);
+    CToken*     (*construct)(CLexer* lexer, CToken* token_bank, 
+                             const char* CodecName);
     void        (*destruct)(CLexer* lexer, CToken* token_bank);
     bool        (*loop)(CLexer* lexer, CToken** prev_token_p);
     void        (*provide_content)(CLexer* lexer, MemoryChunk* chunk);
@@ -57,7 +58,7 @@ Configuration     cfg;
 
 int 
 main(int argc, char** argv) 
-/* Running a lexical analysis process. It works with an examplary 'messaging
+/* Running a lexical analysis process. It works with an examplary 'receiver
  * framework'. The precise analysis process is configured by the command line.
  *
  * [1] "syntactic" --> receive loop handles chunks which are expected not to 
@@ -196,7 +197,7 @@ content_copy(CLexer* lexer, MemoryChunk* chunk)
  *                            '.fill(...)' 
  *
  * of the buffer is called directly. Data is received from an examplary 
- * 'messaging framework' which fills data into an 'rx_buffer'.     
+ * 'receiver framework' which fills data into an 'rx_buffer'.     
  *
  * This process involves some extra copying of data compared to to 'filling'.*/
 {

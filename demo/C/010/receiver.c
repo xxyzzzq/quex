@@ -1,21 +1,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "messaging_framework.h"
+#include "receiver.h"
 
 #ifdef QUEX_EXAMPLE_WITH_CONVERTER
-    static ELEMENT_TYPE messaging_framework_data[] = 
+    static ELEMENT_TYPE receiver_data[] = 
        "Ελληνικά • Euskara • فارسی • Frysk • Galego • 한국어 • हिन्दी bye";
 #else
-    static QUEX_TYPE_CHARACTER   messaging_framework_data[] = 
+    static QUEX_TYPE_CHARACTER   receiver_data[] = 
        "hello 4711 bonjour 0815 world 7777 le 31451 monde le monde 00 welt 1234567890 hallo 1212 hello bye";
 #endif
 
-static size_t                messaging_framework_data_size()
+static size_t                receiver_data_size()
 { 
-    ELEMENT_TYPE* iterator = messaging_framework_data;
+    ELEMENT_TYPE* iterator = receiver_data;
     for(; *iterator != 0; ++iterator);
-    return (iterator - messaging_framework_data + 1) * sizeof(ELEMENT_TYPE);
+    return (iterator - receiver_data + 1) * sizeof(ELEMENT_TYPE);
 }
 
 size_t 
@@ -24,9 +24,9 @@ receiver_fill(ELEMENT_TYPE** rx_buffer)
  * The low level driver reports the address of that place and the size.
  *                                                                           */
 {
-    static ELEMENT_TYPE*  iterator = messaging_framework_data;
-    const size_t          remainder_size =   messaging_framework_data_size() - 1 
-                                           - (iterator - messaging_framework_data);
+    static ELEMENT_TYPE*  iterator = receiver_data;
+    const size_t          remainder_size =   receiver_data_size() - 1 
+                                           - (iterator - receiver_data);
     size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 10.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
@@ -35,9 +35,9 @@ receiver_fill(ELEMENT_TYPE** rx_buffer)
     iterator += size;
 
     if( size != 0 ) {
-        __quex_assert(iterator < messaging_framework_data + messaging_framework_data_size());
+        __quex_assert(iterator < receiver_data + receiver_data_size());
     } else {
-        __quex_assert(iterator == messaging_framework_data + messaging_framework_data_size());
+        __quex_assert(iterator == receiver_data + receiver_data_size());
     }
 
     return size;
@@ -49,9 +49,9 @@ receiver_fill_whole_characters(ELEMENT_TYPE** rx_buffer)
      * level driver. The low level driver reports the address of that place
      * and the size.                                                         */
 {
-    static ELEMENT_TYPE*  iterator = messaging_framework_data;
-    const size_t          remainder_size =   messaging_framework_data_size() - 1 
-                                           - (iterator - messaging_framework_data);
+    static ELEMENT_TYPE*  iterator = receiver_data;
+    const size_t          remainder_size =   receiver_data_size() - 1 
+                                           - (iterator - receiver_data);
     size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
@@ -70,9 +70,9 @@ receiver_fill_whole_characters(ELEMENT_TYPE** rx_buffer)
     size = iterator - *rx_buffer;
 
     if( size != 0 ) {
-        __quex_assert(iterator < messaging_framework_data + messaging_framework_data_size());
+        __quex_assert(iterator < receiver_data + receiver_data_size());
     } else {
-        __quex_assert(iterator == messaging_framework_data + messaging_framework_data_size());
+        __quex_assert(iterator == receiver_data + receiver_data_size());
     }
 
     return size;
@@ -87,11 +87,11 @@ receiver_fill_syntax_chunk(ELEMENT_TYPE** rx_buffer)
     static ptrdiff_t  cursor = 0;
     ptrdiff_t         cursor_before = cursor;
 
-    *rx_buffer = &messaging_framework_data[cursor]; 
+    *rx_buffer = &receiver_data[cursor]; 
 
     do {
         ++cursor;
-    } while( messaging_framework_data[cursor] && messaging_framework_data[cursor] != ' ' );
+    } while( receiver_data[cursor] && receiver_data[cursor] != ' ' );
 
     return cursor - cursor_before;
 }
@@ -101,12 +101,12 @@ receiver_copy(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
 /* Simulate a low lever driver that is able to fill a specified position in 
  * memory.                                                                   */
 {
-    static ELEMENT_TYPE*  iterator = messaging_framework_data;
+    static ELEMENT_TYPE*  iterator = receiver_data;
     size_t                size = (size_t)((float)(rand()) / (float)(RAND_MAX) * 5.0) + 1;
 
-    assert(iterator < messaging_framework_data + messaging_framework_data_size());
-    if( iterator + size >= messaging_framework_data + messaging_framework_data_size() - 1 ) 
-        size = messaging_framework_data_size() - (iterator - messaging_framework_data) - 1; 
+    assert(iterator < receiver_data + receiver_data_size());
+    if( iterator + size >= receiver_data + receiver_data_size() - 1 ) 
+        size = receiver_data_size() - (iterator - receiver_data) - 1; 
     if( size > BufferSize )    
         size = BufferSize;
 
@@ -126,11 +126,11 @@ receiver_copy_syntax_chunk(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
 
     do {
         ++cursor;
-    } while( messaging_framework_data[cursor] && messaging_framework_data[cursor] != ' ' );
+    } while( receiver_data[cursor] && receiver_data[cursor] != ' ' );
 
     /* If the target buffer cannot carry it, we drop it.                     */
     memcpy(BufferBegin, 
-           &messaging_framework_data[cursor_before],
+           &receiver_data[cursor_before],
            cursor - cursor_before); 
 
     return cursor - cursor_before;
@@ -144,11 +144,12 @@ receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN)
  * memory which it fills on demand.
  *                                                                           */
 {
-    const size_t ElementN = sizeof(messaging_framework_data) / sizeof(messaging_framework_data[0]);
-    assert(MaxN <= ElementN);
+    const size_t ElementN = sizeof(receiver_data) / sizeof(receiver_data[0]);
+    const size_t LetterN  = ElementN - 1;
+    assert(MaxN >= ElementN);
 
-    memcpy((void*)place, (void*)&messaging_framework_data[0], 
-           sizeof(messaging_framework_data));
-    return ElementN;
+    memcpy((void*)place, (void*)&receiver_data[0], 
+           LetterN * sizeof(QUEX_TYPE_CHARACTER));
+    return LetterN;
 }
 
