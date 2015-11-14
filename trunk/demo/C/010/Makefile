@@ -13,8 +13,8 @@ ifndef QUEX_PATH
 endif
 
 # (*) SETUP ____________________________________________________________________
-OBJS      := lexPlain.o messaging_framework.o
-UTF8_OBJS := lexUTF8.o  messaging_framework_utf8.o
+OBJS      := lexPlain.o receiver.o
+UTF8_OBJS := lexUTF8.o  receiver_utf8.o
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
