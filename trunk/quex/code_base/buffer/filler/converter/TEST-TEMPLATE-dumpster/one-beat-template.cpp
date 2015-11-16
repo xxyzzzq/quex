@@ -33,7 +33,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "r");
+    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "rb");
     size_t               raw_memory_size = 3;
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
@@ -41,7 +41,7 @@ main(int argc, char** argv)
 
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
-    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh, true);
 
     QUEX_NAME(BufferFiller)* filler = \
         QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
@@ -49,7 +49,7 @@ main(int argc, char** argv)
                                               raw_memory_size);
 
     size_t loaded_n = 0;
-    loaded_n = filler->derived_input_character_load(filler, 
+    loaded_n = filler->derived_load_characters(filler, 
                                             (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
     cout << "## loaded character n = " << loaded_n << endl;

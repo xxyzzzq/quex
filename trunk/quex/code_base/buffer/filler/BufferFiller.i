@@ -90,7 +90,7 @@ QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
 
 QUEX_INLINE void    
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
-                              size_t       (*derived_input_character_load)(QUEX_NAME(BufferFiller)*,
+                              size_t       (*derived_load_characters)(QUEX_NAME(BufferFiller)*,
                                                                            QUEX_TYPE_CHARACTER*, const size_t),
                               ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                               void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
@@ -108,7 +108,7 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               ptrdiff_t    ByteNPerCharacter)
 {
     __quex_assert(me);
-    __quex_assert(derived_input_character_load);
+    __quex_assert(derived_load_characters);
     __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
@@ -116,7 +116,7 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->stomach_clear                = stomach_clear;
     me->input_character_tell         = QUEX_NAME(BufferFiller_character_index_tell);
     me->input_character_seek         = QUEX_NAME(BufferFiller_character_index_seek);
-    me->derived_input_character_load = derived_input_character_load;
+    me->derived_load_characters = derived_load_characters;
     me->delete_self                  = derived_delete_self;
     me->_on_overflow                 = 0x0;
 
@@ -173,7 +173,7 @@ QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me,
 
     /* (2) Load content into the given region.                                   
      *                                                                       */
-    loaded_n = (ptrdiff_t)me->derived_input_character_load(me, LoadP, (size_t)LoadN);
+    loaded_n = (ptrdiff_t)me->derived_load_characters(me, LoadP, (size_t)LoadN);
     __quex_assert(loaded_n <= LoadN);
 
     if(    me->character_index_next_to_fill - StartCharacterIndex 

@@ -24,6 +24,7 @@ QUEX_MEMBER_FUNCTION2(include_push, file_name,
                       const char* FileName, 
                       const char* CodecName /* = 0x0 */) 
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
     ByteLoader*   byte_loader;
 
@@ -42,11 +43,13 @@ QUEX_MEMBER_FUNCTION2(include_push, file_name,
 /* Level (2) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE bool
-QUEX_MEMBER_FUNCTION3(include_push, FILE,
+QUEX_MEMBER_FUNCTION4(include_push, FILE,
                       const char*       InputName,
                       __QUEX_STD_FILE*  fh, 
-                      const char*       CodecName /* = 0x0   */)
+                      const char*       CodecName /* = 0x0   */,
+                      bool              BinaryModeF)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
     ByteLoader*   byte_loader;
     __quex_assert( fh );
@@ -57,7 +60,7 @@ QUEX_MEMBER_FUNCTION3(include_push, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    byte_loader = ByteLoader_FILE_new(fh);
+    byte_loader = ByteLoader_FILE_new(fh, BinaryModeF);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( ! byte_loader ) {
@@ -78,6 +81,7 @@ QUEX_MEMBER_FUNCTION3(include_push, istream,
                       std::istream*  istream_p, 
                       const char*    CodecName /* = 0x0   */)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
@@ -105,6 +109,7 @@ QUEX_MEMBER_FUNCTION3(include_push, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
@@ -132,6 +137,7 @@ QUEX_MEMBER_FUNCTION3(include_push, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
     ByteLoader*   byte_loader;
     __quex_assert( istream_p );
@@ -160,6 +166,7 @@ QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
                       ByteLoader*   byte_loader,
                       const char*   CodecName) 
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool                     verdict_f;
     QUEX_NAME(BufferFiller)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
@@ -184,6 +191,7 @@ QUEX_MEMBER_FUNCTION2(include_push, BufferFiller,
                       const char*              InputName,
                       QUEX_NAME(BufferFiller)* filler)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool                 verdict_f;
     QUEX_TYPE_CHARACTER* memory;
     QUEX_NAME(Buffer)    new_buffer_setup;
@@ -220,6 +228,7 @@ QUEX_MEMBER_FUNCTION4(include_push, memory,
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(Buffer) new_buffer_setup;
     __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
 
@@ -238,6 +247,7 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
                        const char*        InputName,
                        QUEX_NAME(Buffer)* new_buffer_setup)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(Memento)* memento = (QUEX_NAME(Memento)*)QUEXED(MemoryManager_allocate)(
                                      sizeof(QUEX_NAME(Memento)), E_MemoryObjectType_MEMENTO);
     if( ! memento ) {
@@ -248,27 +258,27 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
      * Necessary in C++: Call to constructor for user defined members.       */
     new ((void*)memento) QUEX_NAME(Memento);
 #   endif
-    if( this->buffer.filler )
+    if( me->buffer.filler )
     {
         /* By default overtake the byte order reversion behavior of the 
          * including buffer.                                                 */
         new_buffer_setup->filler->_byte_order_reversion_active_f = \
-                          this->buffer.filler->_byte_order_reversion_active_f;
+                          me->buffer.filler->_byte_order_reversion_active_f;
     }
 
-    memento->input_name                       = this->input_name;
-    memento->_parent_memento                  = this->_parent_memento;
-    memento->buffer                           = this->buffer;
-    memento->__current_mode_p                 = this->__current_mode_p; 
-    memento->current_analyzer_function        = this->current_analyzer_function;
+    memento->input_name                       = me->input_name;
+    memento->_parent_memento                  = me->_parent_memento;
+    memento->buffer                           = me->buffer;
+    memento->__current_mode_p                 = me->__current_mode_p; 
+    memento->current_analyzer_function        = me->current_analyzer_function;
 #   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
        || defined(QUEX_OPTION_ASSERTS)
-    memento->DEBUG_analyzer_function_at_entry = this->DEBUG_analyzer_function_at_entry;
+    memento->DEBUG_analyzer_function_at_entry = me->DEBUG_analyzer_function_at_entry;
 #   endif
-    __QUEX_IF_COUNT(memento->counter          = this->counter);
+    __QUEX_IF_COUNT(memento->counter          = me->counter);
 
-    this->buffer                              = *new_buffer_setup;
-    __QUEX_IF_COUNT(QUEX_NAME(Counter_construct)(&this->counter); )
+    me->buffer                              = *new_buffer_setup;
+    __QUEX_IF_COUNT(QUEX_NAME(Counter_construct)(&me->counter); )
 
     /* Deriberately not subject to include handling:
      *    -- Mode stack.
@@ -279,10 +289,10 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
         return false;
     }
 
-    this->input_name      = InputName;
+    me->input_name      = InputName;
 
     /* Put memento on stack AFTER user has done to it its duties.            */
-    this->_parent_memento = memento;
+    me->_parent_memento = memento;
 
     return true;
 }   
@@ -290,13 +300,14 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
 QUEX_INLINE bool
 QUEX_MEMBER_FUNCTIONO(include_pop) 
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(Memento)* memento;
     /* Not included? return 'false' to indicate we're on the top level       */
-    if( ! this->_parent_memento ) return false;                             
+    if( ! me->_parent_memento ) return false;                             
                                                                             
     /* Buffer_destruct() takes care of propper destructor calls for byte-
      * loaders, buffer fillers, and converters.                              */
-    QUEX_NAME(Buffer_destruct)(&this->buffer);                              
+    QUEX_NAME(Buffer_destruct)(&me->buffer);                              
 
     /* memento_unpack():                                                    
      *    => Current mode                                                   
@@ -313,19 +324,19 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
      *    -- File handle by constructor                                      */
                                                                             
     /* Copy Back of content that was stored upon inclusion.                  */
-    memento = this->_parent_memento;
+    memento = me->_parent_memento;
 
-    this->input_name                       = memento->input_name;
+    me->input_name                       = memento->input_name;
 
-    this->_parent_memento                  = memento->_parent_memento;
-    this->buffer                           = memento->buffer;
-    this->__current_mode_p                 = memento->__current_mode_p; 
-    this->current_analyzer_function        = memento->current_analyzer_function;
+    me->_parent_memento                  = memento->_parent_memento;
+    me->buffer                           = memento->buffer;
+    me->__current_mode_p                 = memento->__current_mode_p; 
+    me->current_analyzer_function        = memento->current_analyzer_function;
 #   if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
        || defined(QUEX_OPTION_ASSERTS)
-    this->DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
+    me->DEBUG_analyzer_function_at_entry = memento->DEBUG_analyzer_function_at_entry;
 #   endif
-    __QUEX_IF_COUNT(this->counter          = memento->counter);
+    __QUEX_IF_COUNT(me->counter          = memento->counter);
 
     QUEX_MEMBER_FUNCTION_CALLO1(user_memento_unpack,memento);
 
@@ -344,7 +355,8 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(include_stack_delete)
 {
-    while( this->_parent_memento ) {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
+    while( me->_parent_memento ) {
         if( ! QUEX_MEMBER_FUNCTION_CALLO(include_pop) ) {
             QUEX_ERROR_EXIT("Error during deletion of include stack.");
         }
@@ -355,8 +367,9 @@ QUEX_INLINE bool
 QUEX_MEMBER_FUNCTIONO1(include_detect_recursion,
                        const char* InputName)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(Memento)* iterator;
-    for(iterator = this->_parent_memento; iterator ; 
+    for(iterator = me->_parent_memento; iterator ; 
         iterator = iterator->_parent_memento ) {
         if( __QUEX_STD_strcmp(iterator->input_name, InputName) == 0 ) {
             return true;

@@ -4,6 +4,8 @@
 
 #include <quex/code_base/buffer/Buffer>
 
+QUEX_NAMESPACE_MAIN_OPEN
+
 QUEX_INLINE void*
 QUEX_NAME(Buffer_fill)(QUEX_NAME(Buffer)*  me, 
                        const void*         ContentBegin,
@@ -91,5 +93,7 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 }
+
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER_FILL_I */

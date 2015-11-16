@@ -9,12 +9,12 @@ main(int argc, char** argv)
     size_t               received_n = (size_t)-1;
     size_t               BufferSize = 1024;
     char                 buffer[1024];
-    char*   qlex_buffer      = 0x0;
-    size_t  qlex_buffer_size = 0;
+    char*                qlex_buffer      = 0x0;
+    size_t               qlex_buffer_size = 0;
 
     QUEX_NAME_TOKEN(construct)(&token);
     /* Zero pointer to constructor --> use raw memory */
-    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0, 0x0, false);
+    QUEX_NAME(from_memory)(&qlex, 0x0, 0, 0x0);
 
     printf("Please, type an arbitrary sequence of the following:\n");
     printf("-- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.\n");

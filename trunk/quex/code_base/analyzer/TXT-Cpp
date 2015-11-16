@@ -112,7 +112,7 @@ public:
      * 'from' functions are provided so that explicit constructor calls 
      * can be done without placement ::new or sophisticated C++11 features.  */
     void    from(const char*  Filename, const char*  CodecName = 0x0);
-    void    from(std::FILE* fh, const char*  CodecName = 0x0);
+    void    from(std::FILE* fh, const char*  CodecName = 0x0, bool BinaryModeF=false);
     void    from(std::istream* istream_p, const char*  CodecName = 0x0);
 #   if defined(__QUEX_OPTION_WCHAR_T)
     void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
@@ -137,8 +137,8 @@ public:
 
     /* Level (2) ______________________________________________________________
      *                                                                       */
-    $$LEXER_CLASS_NAME$$(std::FILE*     fh, const char*  CodecName = 0x0)
-    $$___SPACE___$${ from(fh, CodecName); }
+    $$LEXER_CLASS_NAME$$(std::FILE*     fh, const char*  CodecName = 0x0, bool BinaryModeF=false)
+    $$___SPACE___$${ from(fh, CodecName, BinaryModeF); }
     $$LEXER_CLASS_NAME$$(std::istream*  istream_p, const char*  CodecName = 0x0)
     $$___SPACE___$${ from(istream_p, CodecName); }
 #   if defined(__QUEX_OPTION_WCHAR_T)
@@ -186,7 +186,7 @@ public:
 
     /* Level (2) ______________________________________________________________
      *                                                                       */
-    void    reset(__QUEX_STD_FILE*  fh, const char*  CodecName = 0x0);
+    void    reset(__QUEX_STD_FILE*  fh, const char*  CodecName = 0x0, bool BinaryModeF=false);
     void    reset(std::istream*     istream_p, const char*  CodecName = 0x0);
 #   if defined(__QUEX_OPTION_WCHAR_T)
     void    reset(std::wistream*    istream_p, const char*  CodecName = 0x0);
@@ -226,7 +226,8 @@ public:
      *                                                                       */
     bool    include_push(const char*       InputName, 
                          __QUEX_STD_FILE*  fh, 
-                         const char*       CodecName = 0x0);
+                         const char*       CodecName = 0x0,
+                         bool              BinaryModeF = false);
     bool    include_push(const char*       InputName,
                          std::istream*     istream_p, 
                          const char*       CodecName = 0x0);

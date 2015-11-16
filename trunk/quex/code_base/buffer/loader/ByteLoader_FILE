@@ -15,7 +15,7 @@ typedef struct {
     FILE*          input_handle;
 } ByteLoader_FILE;
 
-QUEX_INLINE ByteLoader*    ByteLoader_FILE_new(FILE* fh);
+QUEX_INLINE ByteLoader*    ByteLoader_FILE_new(FILE* fh, bool BinaryModeF);
 QUEX_INLINE ByteLoader*    ByteLoader_FILE_new_from_file_name(const char*);
 
 

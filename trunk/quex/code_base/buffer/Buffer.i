@@ -512,7 +512,10 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
      *    size of available content lies ahead of '_read_p'.
      * -- input.end_p != 0: Tail of file read is already in buffer.          */
     if( ! me->filler || ! me->filler->byte_loader ) {
-        return 0;                        /* Buffer based analysis.           */
+        QUEX_NAME(Buffer_register_eos)(me, 
+                                         me->input.character_index_begin 
+                                       + (me->input.end_p - BeginP));
+        return false;                    /* Buffer based analysis.           */
     }
     else if( me->_read_p - me->_lexeme_start_p >= ContentSize ) { 
         /* OVERFLOW: If stretch from _read_p to _lexeme_start_p 

@@ -75,7 +75,6 @@ lexUTF8.h lexUTF8.c: lexUTF8.qx
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch simple.qx
 	rm -f lexPlain.[ch] lexPlain-configuration.h lexPlain-token.h lexPlain-token_ids.h
 	rm -f lexUTF8.[ch]  lexUTF8-configuration.h  lexUTF8-token.h  lexUTF8-token_ids.h
 	rm -f $(FILES)

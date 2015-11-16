@@ -52,13 +52,13 @@ main(int argc, char** argv)
         printf("Input file not found.\n");
         exit(-1);
     }
-    ByteLoader*              byte_loader = ByteLoader_FILE_new(fh);
+    ByteLoader*              byte_loader = ByteLoader_FILE_new(fh, true);
     QUEX_NAME(BufferFiller)* filler      = \
          QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 
                                                ___NEW___(source_charset, target_charset), 
                                                RawMemorySize);
     /* Fill the reference buffer */
-    size_t loaded_n = filler->derived_input_character_load(filler, reference, ReferenceSize);
+    size_t loaded_n = filler->derived_load_characters(filler, reference, ReferenceSize);
 
     /* Print the reference buffer 
      * NOTE: The buffer filler does not know anything about buffer limit codes etc. It simply
@@ -99,7 +99,7 @@ void seek_and_print(quex::QUEX_NAME(BufferFiller_Converter)& filler, size_t Posi
 
     filler.base.input_character_seek(&filler.base, Position);
     __quex_assert((size_t)filler.raw_buffer.next_to_convert_character_index == Position);
-    size_t loaded_n = filler.base.derived_input_character_load(&filler.base, memory, MemorySize);
+    size_t loaded_n = filler.base.derived_load_characters(&filler.base, memory, MemorySize);
 
     if( loaded_n != 0 ) {
         /* Print first read character from position 'i' */

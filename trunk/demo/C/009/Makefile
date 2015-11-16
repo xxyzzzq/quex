@@ -16,6 +16,7 @@ SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
 WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
 		   tiny_wlexer-token.h tiny_wlexer-token.c \
 		   tiny_wlexer-configuration.h
+
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)

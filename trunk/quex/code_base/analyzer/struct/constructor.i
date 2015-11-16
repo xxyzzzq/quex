@@ -44,20 +44,23 @@ QUEX_MEMBER_FUNCTION2(from, file_name,
 /* Level (2) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION2(from, FILE,
-                      __QUEX_STD_FILE*    fh, 
-                      const char*         CodecName /* = 0x0   */)
+QUEX_MEMBER_FUNCTION3(from, FILE,
+                      __QUEX_STD_FILE*  fh, 
+                      const char*       CodecName /* = 0x0   */,
+                      bool              BinaryModeF)
+/* 'BinaryModeF' tells whether the file has been opened in 'binary mode'.    */
 {
     ByteLoader*   byte_loader;
     __quex_assert( fh );
 
-    /* At the time of this writing 'stdin' as located in the C++ global namespace. 
-     * This seemed suspicous to the author. To avoid compilation errors in the future
-     * the test for the standard input is only active in 'C'. It is only about
-     * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
+    /* At the time of this writing 'stdin' as located in the C++ global
+     * namespace.  This seemed suspicous to the author. To avoid compilation
+     * errors in the future the test for the standard input is only active in
+     * 'C'. It is only about user information anyway. So better no risks taken.
+     * <fschaef 2010y02m06d>                                                 */
     setbuf(fh, 0);   /* turn off system based buffering! 
-    **               ** this is essential to profit from the quex buffer! */
-    byte_loader = ByteLoader_FILE_new(fh);
+    **               ** this is essential to profit from the quex buffer!    */
+    byte_loader = ByteLoader_FILE_new(fh, BinaryModeF);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -155,6 +158,7 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTION1(from, BufferFiller,
                       QUEX_NAME(BufferFiller)* filler)
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_TYPE_CHARACTER* memory;
 
     memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
@@ -163,7 +167,7 @@ QUEX_MEMBER_FUNCTION1(from, BufferFiller,
     /* NOT: Abort/return if memory == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
 
-    QUEX_NAME(Buffer_construct)(&this->buffer, filler,
+    QUEX_NAME(Buffer_construct)(&me->buffer, filler,
                                 memory, QUEX_SETTING_BUFFER_SIZE, 
                                 (QUEX_TYPE_CHARACTER*)0,
                                 E_Ownership_LEXICAL_ANALYZER);
@@ -182,9 +186,10 @@ QUEX_MEMBER_FUNCTION3(from, memory,
  * for filling it. There is no 'file/stream handle', no 'byte loader', and 'no
  * buffer filler'.                                                           */
 {
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
 
-    QUEX_NAME(Buffer_construct)(&this->buffer, 
+    QUEX_NAME(Buffer_construct)(&me->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,
                                 Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
@@ -194,14 +199,15 @@ QUEX_MEMBER_FUNCTION3(from, memory,
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(basic_constructor)
 {
-    QUEX_NAME(Tokens_construct)(this);
-    QUEX_NAME(ModeStack_construct)(this);
-    __QUEX_IF_INCLUDE_STACK(     this->_parent_memento = (QUEX_NAME(Memento)*)0);
-    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&this->accumulator, this));
-    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&this->post_categorizer));
-    __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&this->counter); )
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
+    QUEX_NAME(Tokens_construct)(me);
+    QUEX_NAME(ModeStack_construct)(me);
+    __QUEX_IF_INCLUDE_STACK(     me->_parent_memento = (QUEX_NAME(Memento)*)0);
+    __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, me));
+    __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
+    __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&me->counter); )
 
-    QUEX_NAME(set_mode_brutally_by_id)(this, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+    QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
     QUEX_MEMBER_FUNCTION_CALLO(user_constructor);
 }
@@ -209,16 +215,17 @@ QUEX_MEMBER_FUNCTIONO(basic_constructor)
 QUEX_INLINE 
 QUEX_DESTRUCTOR() 
 {
-    QUEX_NAME(Tokens_destruct)(this);
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
+    QUEX_NAME(Tokens_destruct)(me);
 
     __QUEX_IF_INCLUDE_STACK(QUEX_MEMBER_FUNCTION_CALLO(include_stack_delete));
     /* IMPORTANT: THE ACCUMULATOR CAN ONLY BE DESTRUCTED AFTER THE INCLUDE 
      *            STACK HAS BEEN DELETED. OTHERWISE, THERE MIGHT BE LEAKS. 
      * TODO: Why? I cannot see a reason <fschaef 15y08m03d>                  */
-    __QUEX_IF_STRING_ACCUMULATOR( QUEX_NAME(Accumulator_destruct)(&this->accumulator));
-    __QUEX_IF_POST_CATEGORIZER(   QUEX_NAME(PostCategorizer_destruct)(&this->post_categorizer));
+    __QUEX_IF_STRING_ACCUMULATOR( QUEX_NAME(Accumulator_destruct)(&me->accumulator));
+    __QUEX_IF_POST_CATEGORIZER(   QUEX_NAME(PostCategorizer_destruct)(&me->post_categorizer));
 
-    QUEX_NAME(Buffer_destruct)(&this->buffer);
+    QUEX_NAME(Buffer_destruct)(&me->buffer);
 }
 
 QUEX_INLINE void
