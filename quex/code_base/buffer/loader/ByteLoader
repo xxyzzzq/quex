@@ -27,11 +27,24 @@ typedef struct ByteLoader_tag {
      *
      * ByteLoader_FILE, ByteLoader_stream, and ByteLoader_POSIX implement the
      * function propperly.                                                   */
-    bool                      (*compare_handle)(const struct ByteLoader_tag* A, 
-                                                const struct ByteLoader_tag* B);
+    bool  (*compare_handle)(const struct ByteLoader_tag* A, 
+                            const struct ByteLoader_tag* B);
 
-    E_Ownership               handle_ownership;
-    E_Ownership               ownership;
+    /* .on_nothing(...)
+     * 
+     * When '.load' cannot provide anymore data, customized actions may be 
+     * performed. 
+     *
+     * -- If '.on_nothing' is not defined, '.load' returns zero and the
+     *    caller must assume that the stream terminated. 
+     * -- Else, the user defined '.no_nothing()' function is called. If it
+     *    returns 'true', '.load' tries again to load data. Else, '.load()'
+     *    returns with zero. Then, the caller, again, must assume that the
+     *    end of stream has been reached.                                    */
+    bool  (*on_nothing)(struct ByteLoader_tag*, size_t TryN, size_t RequestN);
+
+    E_Ownership  handle_ownership;
+    E_Ownership  ownership;
 
     /* Upon construction, the stream handle may be setup to a particular 
      * position in the stream. This is going to be the reference position.   
@@ -47,6 +60,7 @@ typedef struct ByteLoader_tag {
         QUEX_TYPE_STREAM_POSITION (*tell)(struct ByteLoader_tag* me);
         void                      (*seek)(struct ByteLoader_tag* me, 
                                           QUEX_TYPE_STREAM_POSITION Pos);
+        size_t                    (*load)(struct ByteLoader_tag*, void*, const size_t);
     } derived;
 } ByteLoader;
 

@@ -5,10 +5,12 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(user_constructor)
 {
-    (void)this;
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER) 
+    (void)me;
+
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's constructor extensions _______________________________________*/
 $$CONSTRUCTOR_EXTENSTION$$
 /* END: _______________________________________________________________________*/
@@ -18,8 +20,10 @@ $$CONSTRUCTOR_EXTENSTION$$
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(user_reset) 
 {
-    (void)this;
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
+    (void)me;
+
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's 'reset' ______________________________________________________*/
 $$RESET_EXTENSIONS$$
 /* END: _______________________________________________________________________*/
@@ -33,9 +37,10 @@ QUEX_MEMBER_FUNCTIONO2(user_memento_pack,
                        const char*         InputName, 
                        QUEX_NAME(Memento)* memento) 
 {
-    (void)this; (void)memento; (void)InputName;
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER) 
+    (void)me; (void)memento; (void)InputName;
 
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's memento 'pack' _______________________________________________*/
 $$MEMENTO_EXTENSIONS_PACK$$
 /* END: _______________________________________________________________________*/
@@ -46,9 +51,10 @@ $$MEMENTO_EXTENSIONS_PACK$$
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO1(user_memento_unpack, QUEX_NAME(Memento)*  memento)
 {
-    (void)this; (void)memento;
+    QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER) 
+    (void)me; (void)memento;
 
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's memento 'unpack' _____________________________________________*/
 $$MEMENTO_EXTENSIONS_UNPACK$$
 /* END: _______________________________________________________________________*/

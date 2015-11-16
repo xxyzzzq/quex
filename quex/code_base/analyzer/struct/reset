@@ -28,8 +28,9 @@ QUEX_INLINE void QUEX_NAME(reset_file_name)(QUEX_TYPE_ANALYZER* me,
 /* Level (2) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(reset_FILE)(QUEX_TYPE_ANALYZER* me,
-                                       __QUEX_STD_FILE*  fh, 
-                                       const char*       CodecName /* = 0x0 */);
+                                       __QUEX_STD_FILE*    fh, 
+                                       const char*         CodecName   /* = 0x0   */,
+                                       bool                BinaryModeF /* = false */);
 
 #if defined(QUEX_OPTION_POSIX)
 QUEX_INLINE void QUEX_NAME(reset_POSIX)(QUEX_TYPE_ANALYZER* me,

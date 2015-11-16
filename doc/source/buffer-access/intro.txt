@@ -3,25 +3,38 @@
 Input Policies
 ==============
 
-A major goal of Quex is to provide a maximum flexibility of input design. That
+Besides memory management (see section :ref:`memory-management`), the only
+external dependency of a quex generated lexical analyzer is the policy of
+how input is provided. The environment may restrict the way how data is
+delivered or how the lexical analyzer is invoqued. This chapter describes how
+input may be provided in the best possible way depending on given
+circumstances. In a first section basic concepts are discussed to describe a
+input policy situation. The remaining sections explain how to implement
+aspects of input policies that deviate from the default handling.
+
+
+Basic Concepts of Input Policies
+################################
+
+A major goal of quex is to provide a maximum flexibility of how input is fed. That
 is, the user shall be enabled to provide the input character stream in the most
 efficient and most appropriate way as possible in his particular application.
 Before features and APIs can be discussed a few fundamental concepts must be
 explained. First of all there are two timing schemes for the delivery of 
 data: 
 
-#. *File-based* is a setup when the entire data is available at all time. 
-   The time to access new data is small. Eventually, an 'end-of-stream'
-   can be detected when no more data is available.
+#. *Complete* is an input stream that is present in its entirety at the time 
+   of analysis. The typical case is file based input, where the file is completely
+   stored on a storage device before it is lexically analyzed.  The 'end-of-stream' 
+   is determined by the no more data being available. 
 
-#. *Pipe-based* is a setup when the data is not necessarily available in
-   its entirety from the beginning. The time to access new data and the
-   amount of available data is undetermined. An 'end-of-stream' event
-   may have to be sent explicitly from the other end where the pipe is
-   fed with data. 
+#. *Segmented* is an input stream that is received in segments. When the
+   analysis starts, not necessarily the whole content is present. Instead, it
+   may happen that the analyzer needs to wait for new content.  An
+   'end-of-stream' event may have to be specified explicitly inside the stream.
 
-In case of pipe based input there are three levels of 'sementic granularity' by
-which the input chunks can be delivered.
+In case of segmented there are three levels of 'granularity' by which the input
+chunks can be delivered.
 
 #. *Syntactical* chunks never break inside a lexeme.
 
@@ -30,8 +43,8 @@ which the input chunks can be delivered.
 #. *Arbitrarily* chunked data may break inside a lexeme or even inside a
    character representing byte sequence. 
 
-Lexical analysis runs on some type of linear storage: the engine's buffer.
-It can be filled in two manners.
+Lexical analysis runs on some a linear storage: the engine's buffer.  It can be
+filled in two manners.
 
 #. *Automatic* filling means that the engine's buffer is automatically filled
    as soon as more data is required to continue analysis. No user interaction
@@ -40,8 +53,15 @@ It can be filled in two manners.
 #. *Manual* means that the engine's buffer is filled manually by a user's calls
    to an API for buffer access.
 
-Input may actually be preprocessed so that the following two scenarios for
-filling need to be considered.
+For manual filling, the analyzer does not need to know how to load new data.
+For automatic filling a 'ByteLoader' object provides the interface to the
+underlying operating system's file input/output API. The current version of
+quex provides classes for Standard C ``FILE`` objects, Standard C++
+``std::stream`` objects, a POSIX layer, and an RTOS layer. Section ``xxx``
+explains how to derive a customized interface.
+
+Independently of manual or automatic filling, the input may be processed
+before being filled into the engines buffer, or not. 
 
 #. *Direct* filling means that data is directly used as the data on which the
    engine runs. In this case, the engine's buffer is the only buffer that is
@@ -101,7 +121,7 @@ data.
    The framework provides its data in chunks and specifies itself the data's
    memory location. The location is possibly different for each received frame.
 
-   **Example**: ``demo/010/copy.cpp``.
+   **Example**: ``demo/010/lexer.cpp``.
 
    Copying content into the engine's buffer happens by means of the buffer
    filler's member function ``fill()``. If the buffer filler is 'plain' it
@@ -122,7 +142,7 @@ data.
    The framework writes its data in chunks into a memory location which is
    specified by the user.
 
-   **Example**: ``demo/010/fill.cpp``.
+   **Example**: ``demo/010/lexer.cpp``.
 
    In this case, the buffer needs to be prepared calling ``fill_prepare()``.
    During preparation, quex determines the begin and end pointers of the region
@@ -149,20 +169,6 @@ data.
    pre-defined address space which is the same for each received frame.
 
    **Example**: ``demo/010/point.cpp``.
-
-.. note:: 
-
-   NOTE: Conversion on 'Copy' not implement in current version of quex.
-
-   With the methods *Copy* implicit character code converter may be applied.
-   For *Immediate Fill* or *Pointing* the converters have to be called
-   them explicitly. A so called 'buffer filler' can be created ouside the quex
-   engine.
-
-   In that case, the analyzers constructor is pointed to memory and the
-   analyzer soley runs on that. Once, it is finished the analyzer's object
-   has done its task and can be deleted. If there is more to be done,
-   the buffer might be 'reset' by
 
 .. note::
 

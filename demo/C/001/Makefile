@@ -8,7 +8,6 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
 else 
@@ -21,10 +20,10 @@ endif
 COMPILER = gcc -ggdb 
 
 CC = $(COMPILER) -c \
-	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Werror -Wconversion -pedantic                    \
-	 $(CCFLAG_ASSERTS)                               \
-     -DQUEX_OPTION_DEBUG_SHOW
+	 -I./ -I$(QUEX_PATH)                  \
+	 -Wall -Werror -Wconversion -pedantic \
+	 $(CCFLAG_ASSERTS)                               
+     # -DQUEX_OPTION_DEBUG_SHOW
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
    

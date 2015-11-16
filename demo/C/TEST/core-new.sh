@@ -2,10 +2,10 @@ test_dir=../$1
 first_f=$2
 last_f=$3
 
-if [[ $2 != "FIRST" && $2 != "NOT-FIRST" ]]; then
+if [[ "$2" != "FIRST" && "$2" != "NOT-FIRST" ]]; then
     echo "Warning: \$2 is not FIRST or NOT-FIRST as HWUT would ask"
 fi
-if [[ $3 != "LAST" && $3 != "NOT-LAST" ]]; then
+if [[ "$3" != "LAST" && "$3" != "NOT-LAST" ]]; then
     echo "Warning: \$3 is not FIRST or NOT-FIRST as HWUT would ask"
 fi
 
@@ -15,7 +15,7 @@ current_dir=`pwd`
 
 cd $test_dir
 
-if [[ $first_f == "FIRST" ]]; then
+if [[ "$first_f" == "FIRST" ]]; then
     make clean >& /dev/null
 fi
 # In any case delete existing object files, and executables
@@ -23,7 +23,7 @@ rm -f *.o *.exe
 
 # Make the test program _______________________________________________________
 echo "## make lexer $4 $5 $6 $7"
-if [[ $args_to_make != "" ]]; then
+if [[ "$args_to_make" != "" ]]; then
     make $args_to_make >& tmp-make0.txt
 else
     make lexer $4 $5 $6 $7 >& tmp-make0.txt
@@ -31,7 +31,7 @@ fi
 
 # Run the test ________________________________________________________________
 # (including the check for memory leaks)
-if [[ $lexer_name == "" ]]; then
+if [[ "$lexer_name" == "" ]]; then
     lexer_name="./lexer"
 fi
 valgrind $lexer_name $args_to_lexer > tmp-stdout0.txt 2> tmp-stderr0.txt

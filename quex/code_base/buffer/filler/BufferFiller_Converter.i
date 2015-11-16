@@ -29,7 +29,7 @@ QUEX_INLINE ptrdiff_t
 QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* alter_ego,
+QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                        QUEX_TYPE_CHARACTER*     RegionBeginP, 
                                                        const size_t             N);
 QUEX_INLINE void 
@@ -68,8 +68,8 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     else if( byte_loader && ! byte_loader->binary_mode_f ) {
         /* Binary mode is ABSOLUTELY REQUIRED for converters, otherwise the 
          * positioning with respect to the raw buffer becomes unreliable.    */
-        __QUEX_STD_printf("BufferFiller_Converter_new: ByteLoader is not in binary mode.\n");
-        __QUEX_STD_printf("Has file been opened in binary mode?\n");
+        __QUEX_STD_printf("! BufferFiller_Converter_new: ByteLoader is not in binary mode. !\n");
+        __QUEX_STD_printf("! Has file been opened in binary mode?                          !\n");
         return (QUEX_NAME(BufferFiller)*)0;
     }
 
@@ -106,7 +106,7 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
     __quex_assert( ! byte_loader || byte_loader->binary_mode_f );
 
     QUEX_NAME(BufferFiller_setup)(&me->base,
-                                  QUEX_NAME(BufferFiller_Converter_input_character_load),
+                                  QUEX_NAME(BufferFiller_Converter_load_characters),
                                   QUEX_NAME(BufferFiller_Converter_stomach_byte_n),
                                   QUEX_NAME(BufferFiller_Converter_stomach_clear),
                                   QUEX_NAME(BufferFiller_Converter_delete_self),
@@ -182,7 +182,7 @@ QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego
 }
 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)*  alter_ego,
+QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                        QUEX_TYPE_CHARACTER*      RegionBeginP, 
                                                        const size_t              N)
 /* Loads content into the raw buffer, convert it and write it to the engine's
@@ -242,7 +242,7 @@ QUEX_NAME(BufferFiller_Converter_input_character_load)(QUEX_NAME(BufferFiller)* 
             if( raw->fill_end_p != raw->begin ) {
                 /* There are still bytes, but they were not converted by the 
                  * converter.                                                */
-                QUEX_ERROR_EXIT("Error. At end of file, byte sequence not interpreted as character.");
+                __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
             }
             break;
         }

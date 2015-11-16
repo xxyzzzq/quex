@@ -91,7 +91,7 @@ QUEX_NAME(BufferFiller_character_index_seek)(QUEX_NAME(BufferFiller)*         me
         QUEX_NAME(BufferFiller_character_index_reset)(me);
     }
 
-    /* step_forward_n_characters() calls derived_input_character_load() 
+    /* step_forward_n_characters() calls derived_load_characters() 
      * which increments 'character_index_next_to_fill'.                      */
     if( ! QUEX_NAME(BufferFiller_character_index_step_to)(me, (ptrdiff_t)CharacterIndex) ) {
         QUEX_NAME(BufferFiller_character_index_reset_backup)(me, 
@@ -166,12 +166,12 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
     __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
 
     for(; remaining_n > ChunkSize; remaining_n -= ChunkSize ) {
-        if( ChunkSize > me->derived_input_character_load(me, &chunk[0], (size_t)ChunkSize) ) {
+        if( ChunkSize > me->derived_load_characters(me, &chunk[0], (size_t)ChunkSize) ) {
             return false;
         }
     }
     if( remaining_n ) {
-        if( remaining_n > me->derived_input_character_load(me, &chunk[0], (size_t)remaining_n) ) {
+        if( remaining_n > me->derived_load_characters(me, &chunk[0], (size_t)remaining_n) ) {
             return false;
         }
     }

@@ -12,7 +12,7 @@ QUEX_INLINE bool                       ByteLoader_FILE_compare_handle(const Byte
                                                                       const ByteLoader* alter_ego_B);
 
 QUEX_INLINE ByteLoader*    
-ByteLoader_FILE_new(FILE* fh)
+ByteLoader_FILE_new(FILE* fh, bool BinaryModeF)
 {
     ByteLoader_FILE* me;
    
@@ -23,6 +23,8 @@ ByteLoader_FILE_new(FILE* fh)
     if( ! me ) return (ByteLoader*)0;
 
     ByteLoader_FILE_construct(me, fh);
+    me->base.binary_mode_f = BinaryModeF;
+
     return &me->base;
 }
 
@@ -35,12 +37,11 @@ ByteLoader_FILE_new_from_file_name(const char* FileName)
     if( ! fh ) {
         return (ByteLoader*)0;
     }
-    alter_ego = ByteLoader_FILE_new(fh);
+    alter_ego = ByteLoader_FILE_new(fh, true);
     if( ! alter_ego ) {
         return (ByteLoader*)0;
     }
     alter_ego->handle_ownership = E_Ownership_LEXICAL_ANALYZER;
-    alter_ego->binary_mode_f    = true;                   /* See "rb" above. */
     return alter_ego;
 }
 

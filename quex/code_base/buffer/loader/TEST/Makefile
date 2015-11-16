@@ -1,7 +1,8 @@
 TESTS := test-FILE.exe \
 	     test-POSIX.exe \
 	     test-fstream.exe \
-	     test-stringstream.exe
+	     test-stringstream.exe \
+		 segmented-input.exe
 
 FLAGS    :=  -ggdb -Wall -Werror \
    	         -DTEST_FILE_SIZE=100 \
@@ -20,5 +21,9 @@ test-%.exe: test-%.c basic_functionality.c initial_position.c
 test-%.exe: test-%.cpp basic_functionality.c initial_position.c
 	g++ $(FLAGS) $^ -o $@
 
+segmented-input.exe: segmented-input.c
+	gcc $(FLAGS) -D__QUEX_OPTION_PLAIN_C $^ -o $@
+
 clean:
 	rm -f *.exe
+	rm -f tmp.*

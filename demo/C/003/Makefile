@@ -37,7 +37,7 @@ COMPILER = gcc -ggdb
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Werror -W -Wconversion -pedantic                 \
+	 -Wall -Werror -W -Wconversion -pedantic         \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         
@@ -76,8 +76,8 @@ endif
 lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o $(LIB_CONV) 
           
-bom-lexer:      example-bom.o EasyLexer.o
-	$(LD) -o $@ example-bom.o EasyLexer.o $(LIB_CONV) 
+lexer-with-bom: lexer-with-bom.o EasyLexer.o
+	$(LD) -o $@ lexer-with-bom.o EasyLexer.o $(LIB_CONV) 
           
 # Object files:
 EasyLexer.o: EasyLexer.c 
@@ -86,7 +86,7 @@ EasyLexer.o: EasyLexer.c
 example.o: ../example.c  EasyLexer.c
 	$(CC) $< -o $@ 
 
-example-bom.o: example-bom.c EasyLexer.c
+lexer-with-bom.o: lexer-with-bom.c EasyLexer.c
 	$(CC) $< -o $@ 
 
 # Macro expansions (only for debugging):
@@ -94,11 +94,11 @@ example-bom.o: example-bom.c EasyLexer.c
 	$(CC) -E $< -o $@ 
 
 EasyLexer.c: definitions.qx end_of_file.qx program.qx 
-	quex -i                 definitions.qx end_of_file.qx program.qx \
-	     -o           EasyLexer  \
-		 --token-id-offset     0x1000     \
-	     -b $(BYTES_PER_CHARACTER)     \
-		 --language C                  \
+	quex -i                definitions.qx end_of_file.qx program.qx \
+	     -o                EasyLexer              \
+		 --token-id-offset 0x1000                 \
+	     -b                $(BYTES_PER_CHARACTER) \
+		 --language        C                      \
 		 $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________
@@ -107,5 +107,4 @@ clean:
 	rm -f *.o
 	rm -f *.bak
 	rm -f *.E
-	rm -f lexer
-	rm -f bom-lexer
+	rm -f lexer lexer-with-bom

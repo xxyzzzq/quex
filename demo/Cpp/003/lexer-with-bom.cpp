@@ -28,7 +28,7 @@ main(int argc, char** argv)
     }
 
     /* The lexer **must** be constructed after the BOM-cut */
-    quex::EasyLexer       qlex(fh, "UTF8");
+    quex::EasyLexer       qlex(fh, "UTF8", true);
 
 
     cout << ",-----------------------------------------------------------------\n";

@@ -31,11 +31,11 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "r");
+    std::FILE*           fh = fopen("___DATA_DIR___/test.txt", "rb");
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
-    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh);
+    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh, true);
     /**/
     ptrdiff_t    Delta = 0;
     ptrdiff_t    Front = 0;
@@ -55,7 +55,7 @@ main(int argc, char** argv)
 
         assert(filler->input_character_tell(filler) == i);
 
-        loaded_n = filler->derived_input_character_load(filler, 
+        loaded_n = filler->derived_load_characters(filler, 
                                                         (QUEX_TYPE_CHARACTER*)memory, 
                                                         MemorySize);
 

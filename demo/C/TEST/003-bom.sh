@@ -9,8 +9,8 @@ fi
 
 case $1 in
 "Without" )     export args_to_lexer="example.txt";;
-"UTF8-BOM" )    export args_to_lexer="example-bom.txt";;
-"UTF16BE-BOM" ) export args_to_lexer="error-bom-utf16be.txt";;
+"UTF8-BOM" )    export args_to_lexer="example-bom-utf8.txt";;
+"UTF16BE-BOM" ) export args_to_lexer="example-bom-utf16be.txt";;
 esac
 
 # HWUT provides:
@@ -20,8 +20,8 @@ esac
 # $3 == LAST  if it is the last choice.
 #
 # $args_to_lexer are inherited to lexer call
-export args_to_make="CONVERTER=ICU bom-lexer"
-export lexer_name="./bom-lexer"
+export args_to_make="CONVERTER=ICU lexer-with-bom"
+export lexer_name="./lexer-with-bom"
 source core-new.sh 003 $2 $3 
 
 

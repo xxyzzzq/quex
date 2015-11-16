@@ -31,7 +31,7 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)* alter_ego,
+QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                    QUEX_TYPE_CHARACTER*     RegionBeginP, 
                                                    const size_t             N);
 
@@ -74,7 +74,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
     ptrdiff_t   byte_n_per_character = byte_loader && byte_loader->binary_mode_f ? 
                                        (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER) : -1;
     QUEX_NAME(BufferFiller_setup)(&me->base,
-                                  QUEX_NAME(BufferFiller_Plain_input_character_load),
+                                  QUEX_NAME(BufferFiller_Plain_load_characters),
                                   QUEX_NAME(BufferFiller_Plain_stomach_byte_n),
                                   QUEX_NAME(BufferFiller_Plain_stomach_clear),
                                   QUEX_NAME(BufferFiller_Plain_delete_self), 
@@ -107,7 +107,7 @@ QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
 }
 
 QUEX_INLINE size_t   
-QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alter_ego,
+QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
                                                    QUEX_TYPE_CHARACTER*      RegionBeginP, 
                                                    const size_t              N)  
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
@@ -133,7 +133,7 @@ QUEX_NAME(BufferFiller_Plain_input_character_load)(QUEX_NAME(BufferFiller)*  alt
                                                N * sizeof(QUEX_TYPE_CHARACTER));
 
     if( loaded_byte_n % sizeof(QUEX_TYPE_CHARACTER) ) {
-        QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
+        __QUEX_STD_printf("Error: End of file cuts in the middle a multi-byte character.");
     }
     loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 
