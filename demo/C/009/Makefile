@@ -8,14 +8,8 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-
-# (*) SETUP ____________________________________________________________________
-SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
-		   tiny_lexer-token.h tiny_lexer-token.c \
-		   tiny_lexer-configuration.h
-WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
-		   tiny_wlexer-token.h tiny_wlexer-token.c \
-		   tiny_wlexer-configuration.h
+ALL_ENGINES := LexAscii.c LexUtf8WChar.c LexUtf8Uint32.c
+FILES       := lexer-char lexer-wchar lexer-stdin lexer-stdin-utf8
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -25,6 +19,7 @@ ifdef ASSERTS_ENABLED_F
 else 
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
+
 COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
      # -DQUEX_OPTION_DEBUG_SHOW
@@ -34,49 +29,45 @@ CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
-all: lexer wlexer
+all: $(FILES)
 
 # -- char application
-lexer: lexer.o tiny_lexer.o 
-	$(LD) -o $@  lexer.o tiny_lexer.o 
-          
-stdinlexer: stdinlexer.c tiny_lexer_st.c 
-	$(CC) -o $@  $^
-          
-tiny_lexer_st.c: hello.qx 
-	quex -i hello.qx -o tiny_lexer_st \
-		 --language C                        \
-		 --token-memory-management-by-user   \
-		 --token-policy single
-		 # CERTAINLY NOT: "--bet wchar_t" 
-	
-$(SOURCES): simple.qx 
-	quex -i simple.qx -o tiny_lexer \
-		 --language C                     \
-		 # CERTAINLY NOT: "--bet wchar_t" 
+lexer-char:       lexer-char.o       LexAscii.o 
+	$(LD) -o $@  $^                  
+                                     
+lexer-wchar:      lexer-wchar.o      LexUtf8WChar.o 
+	$(LD) -o $@  $^                  
+                                     
+lexer-stdin:      lexer-stdin.o      LexAscii.o
+	$(LD) -o $@  $^
 
-# -- wchar_t application
-wlexer: wlexer.o tiny_wlexer.o 
-	$(LD) -o $@  wlexer.o tiny_wlexer.o 
+lexer-stdin-utf8: lexer-stdin-utf8.o LexUtf8Uint32.o
+	$(LD) -o $@  $^
           
-$(WSOURCES): simple.qx 
-	quex -i simple.qx -o tiny_wlexer \
-		 --language C                      \
-	  	 --bet wchar_t 
-
-# -- The general way to get .o from .c
-%.o: %.c $(SOURCES) $(WSOURCES)
+%.o: %.c $(ALL_ENGINES)
 	$(CC) -c $< -o $@ 
+
+LexUtf8WChar.c: utf8.qx 
+	quex -i             utf8.qx      \
+	     -o             LexUtf8WChar \
+		 --language     C            \
+		 --bet          wchar_t      \
+		 --token-policy single       
+	
+LexUtf8Uint32.c: utf8.qx 
+	quex -i             utf8.qx       \
+	     -o             LexUtf8Uint32 \
+		 --language     C             \
+		 --bet          uint32_t      \
+		 --token-policy single       
+	
+LexAscii.c: ascii.qx 
+	quex -i ascii.qx -o LexAscii --language C 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch simple.qx
-	rm -f wchar_t-example.txt # created by wlexer.c
-	rm -f tiny_lexer_st*
-	rm -f $(SOURCES)
-	rm -f $(WSOURCES)
+	rm -f Lex*
+	rm -f $(FILES)
 	rm -f *.o
-	rm -f lexer stdinlexer wlexer
-	rm -f lexer-token stdinlexer-token wlexer-token
-	rm -f tiny_lexer-token tiny_wlexer-token
 	rm -f *.bak
+	rm -f *~

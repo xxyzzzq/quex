@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "tiny_lexer.h"
+#include "LexAscii.h"
 
 int 
 main(int argc, char** argv) 
 {        
     quex_Token*       token_p = 0x0;
-    quex_tiny_lexer   qlex;
+    quex_LexAscii     qlex;
     /**/
     int               number_of_tokens = 0;
     /**/

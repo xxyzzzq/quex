@@ -1,16 +1,15 @@
 #include <stdio.h>
-#include<assert.h>
+#include <assert.h>
 
-#include "tiny_wlexer.h"
+#include "LexUtf8WChar.h"
 
 void
-get_wfile_input(quex_tiny_wlexer* qlex);
+get_wfile_input(quex_LexUtf8WChar* qlex);
 
 int 
 main(int argc, char** argv) 
 {        
-    quex_Token*       token_p = 0x0;
-    quex_tiny_wlexer  qlex;
+    quex_LexUtf8WChar qlex;
     int               number_of_tokens = 0;
     const size_t      BufferSize = 1024;
     char              buffer[1024];
@@ -21,12 +20,12 @@ main(int argc, char** argv)
     printf("| [START]\n");
 
     do {
-        QUEX_NAME(receive)(&qlex, &token_p);
+        QUEX_NAME(receive)(&qlex);
         /* print out token information */
-        printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
+        printf("%s \n", QUEX_NAME_TOKEN(get_string)(qlex.token, buffer, BufferSize));
  
         ++number_of_tokens;
-    } while( token_p->_id != QUEX_TKN_TERMINATION );
+    } while( qlex.token->_id != QUEX_TKN_TERMINATION );
 
     printf("| [END] number of token = %i\n", number_of_tokens);
     printf("`-----------------------------------------------------------------\n");
@@ -37,7 +36,7 @@ main(int argc, char** argv)
 }
 
 void
-get_wfile_input(quex_tiny_wlexer* qlex)
+get_wfile_input(quex_LexUtf8WChar* qlex)
 {
     /* We write the file ourselves so that there is never an issue about alignment */
     wchar_t    original[] = L"bonjour le monde hello world hallo welt";
