@@ -9,7 +9,11 @@ ifndef QUEX_PATH
 endif
 
 ALL_ENGINES := LexAscii.c LexUtf8WChar.c LexUtf8Uint32.c
-FILES       := lexer-char lexer-wchar lexer-stdin lexer-stdin-utf8
+FILES       := lexer-command-line \
+	           lexer-stdin  lexer-stdin-utf8  \
+	           lexer-socket lexer-socket-utf8 \
+	           lexer-pipe   lexer-pipe-utf8   \
+			   feed-socket
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
@@ -22,9 +26,12 @@ endif
 
 COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-     # -DQUEX_OPTION_DEBUG_SHOW
-	 # -DQUEX_OPTION_ASSERTS_DISABLED
-	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+	 -DQUEX_OPTION_POSIX
+
+# Debugging Options:
+#   -DQUEX_OPTION_DEBUG_SHOW
+#   -DQUEX_OPTION_ASSERTS_DISABLED
+#   -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 		 
 LD = $(COMPILER) 
 
@@ -32,10 +39,10 @@ LD = $(COMPILER)
 all: $(FILES)
 
 # -- char application
-lexer-char:       lexer-char.o       LexAscii.o 
+lexer-socket:     lexer-socket.o     LexAscii.o 
 	$(LD) -o $@  $^                  
-                                     
-lexer-wchar:      lexer-wchar.o      LexUtf8WChar.o 
+
+feed-socket:      feed-socket.o
 	$(LD) -o $@  $^                  
                                      
 lexer-stdin:      lexer-stdin.o      LexAscii.o
