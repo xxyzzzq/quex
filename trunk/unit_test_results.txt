@@ -4,6 +4,8 @@
                                                                                
 TEST                                                                 <no date>
 -------------------------------------------------------------------------------
+ * 
+        bug-1935701.exe ....................................[NO GOOD FILE]
 
  * alexeevm:
 
@@ -377,9 +379,6 @@ TEST                                                                 <no date>
         bug-1908092.sh ...............................................[OK]
     1908436 0.23.6 rule precedence reversed for identical patterns
         bug-1908436.sh ...............................................[OK]
-    1935701 - 0.24.7 buffer handling size mismatch
-        bug-1935701.exe FILE .........................................[OK]
-                        fstream ......................................[OK]
     1936707 0.24.10 --plot flag doesnt seem to work
         bug-1936707.sh ...............................................[OK]
     1969629 0.25.4 token list with just TERMINATION treated empty
@@ -475,6 +474,7 @@ TEST                                                                 <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
+    [FAIL] bug-1935701.exe
     [FAIL] bug-3022603.sh
     [FAIL] bug-2599228.sh _ Developper
                         \__ FilesExist
@@ -504,13 +504,13 @@ demo/C/TEST                                                          <no date>
         makefile-diff.sh 000 .........................................[OK]
                          001 .......................................[FAIL]
                          002 .........................................[OK]
-                         003 .........................................[OK]
+                         003 .......................................[FAIL]
                          005 .........................................[OK]
                          006 .........................................[OK]
                          007 .........................................[OK]
                          008 .........................................[OK]
-                         009 .........................................[OK]
-                         010 .........................................[OK]
+                         009 .......................................[FAIL]
+                         010 .......................................[FAIL]
                          011 .......................................[FAIL]
                          012 .........................................[OK]
                          012b ........................................[OK]
@@ -524,8 +524,8 @@ demo/C/TEST                                                          <no date>
  * demo/001:
 
     Multiple Modes, Mode Transitions
-        001.sh DEBUG ...............................................[FAIL]
-               NDEBUG ..............................................[FAIL]
+        001.sh DEBUG .................................................[OK]
+               NDEBUG ................................................[OK]
 
  * demo/002:
 
@@ -537,8 +537,8 @@ demo/C/TEST                                                          <no date>
 
     Byte Order Mark (BOM) Cutting
         003-bom.sh UTF16BE-BOM .......................................[OK]
-                   UTF8-BOM ....................................[TIME_OUT]
-                   Without .....................................[TIME_OUT]
+                   UTF8-BOM ..........................................[OK]
+                   Without ...........................................[OK]
     Unicode Based Lexical Analyzis (Using GNU's Lib IConv)
         003.sh BPC=2 .................................................[OK]
                BPC=2_NDEBUG ..........................................[OK]
@@ -589,21 +589,23 @@ demo/C/TEST                                                          <no date>
     Standard Input (stdin/cin)
         009b.sh ....................................................[FAIL]
     Strings of 'char' and 'wchar_t'
-        009.sh lexer .................................................[OK]
-               wlexer ................................................[OK]
+        009.sh lexer ...............................................[FAIL]
+               wlexer ..............................................[FAIL]
 
  * demo/010:
 
-    Direct Buffer Access (Syntactically Chunked)
-        010.sh copy ..................................................[OK]
-               copy-conversion .......................................[OK]
-               copy-conversion-direct ..............................[FAIL]
-               copy-ez .............................................[FAIL]
-               fill ..................................................[OK]
-               fill-conversion-direct ..............................[FAIL]
-               fill-ez ...............................................[OK]
-               point .................................................[OK]
-               re-point ............................................[FAIL]
+    Manual Buffer Filling (w/ Converter)
+        010b.sh arbitrary-copy .......................................[OK]
+                arbitrary-fill .......................................[OK]
+                syntactic-copy .......................................[OK]
+                syntactic-fill .......................................[OK]
+    Manual Buffer Filling (w/o Converter)
+        010.sh arbitrary-copy ........................................[OK]
+               arbitrary-fill ........................................[OK]
+               syntactic-copy ........................................[OK]
+               syntactic-fill ........................................[OK]
+    Pointing to Buffer Memory
+        010c.sh ......................................................[OK]
 
  * demo/011:
 
@@ -636,16 +638,13 @@ demo/C/TEST                                                          <no date>
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
     [FAIL] makefile-diff.sh _ 001
+                          \__ 003
+                          \__ 009
+                          \__ 010
                           \__ 011
-    [FAIL] 001.sh _ DEBUG
-                \__ NDEBUG
-    [FAIL] 003-bom.sh _ UTF8-BOM
-                    \__ Without
     [FAIL] 009b.sh
-    [FAIL] 010.sh _ copy-conversion-direct
-                \__ copy-ez
-                \__ fill-conversion-direct
-                \__ re-point
+    [FAIL] 009.sh _ lexer
+                \__ wlexer
     [FAIL] 012.sh _ DEBUG
                 \__ NDEBUG
     [FAIL] 012b.sh _ DEBUG
@@ -679,8 +678,8 @@ demo/Cpp/TEST                                                        <no date>
 
     Byte Order Mark (BOM) Cutting
         003-bom.sh UTF16BE-BOM .......................................[OK]
-                   UTF8-BOM ........................................[FAIL]
-                   Without .........................................[FAIL]
+                   UTF8-BOM ..........................................[OK]
+                   Without ...........................................[OK]
     Unicode Based Lexical Analyzis (Using GNU's Lib IConv)
         003.sh BPC=2 .................................................[OK]
                BPC=2_NDEBUG ..........................................[OK]
@@ -736,16 +735,18 @@ demo/Cpp/TEST                                                        <no date>
 
  * demo/010:
 
-    Direct Buffer Access (Syntactically Chunked)
-        010.sh copy ................................................[FAIL]
-               copy-conversion .....................................[FAIL]
-               copy-conversion-direct ..............................[FAIL]
-               copy-ez .............................................[FAIL]
-               fill ................................................[FAIL]
-               fill-conversion-direct ..............................[FAIL]
-               fill-ez .............................................[FAIL]
-               point .................................................[OK]
-               re-point ............................................[FAIL]
+    Manual Buffer Filling (w/ Converter)
+        010b.sh arbitrary-copy .......................................[OK]
+                arbitrary-fill .......................................[OK]
+                syntactic-copy .......................................[OK]
+                syntactic-fill .......................................[OK]
+    Manual Buffer Filling (w/o Converter)
+        010.sh arbitrary-copy ........................................[OK]
+               arbitrary-fill ........................................[OK]
+               syntactic-copy ........................................[OK]
+               syntactic-fill ........................................[OK]
+    Pointing to Buffer Memory
+        010c.sh ......................................................[OK]
 
  * demo/011:
 
@@ -777,17 +778,7 @@ demo/Cpp/TEST                                                        <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] 003-bom.sh _ UTF8-BOM
-                    \__ Without
     [FAIL] 009b.sh
-    [FAIL] 010.sh _ copy
-                \__ copy-conversion
-                \__ copy-conversion-direct
-                \__ copy-ez
-                \__ fill
-                \__ fill-conversion-direct
-                \__ fill-ez
-                \__ re-point
     [FAIL] 012.sh _ DEBUG
                 \__ NDEBUG
     [FAIL] 012b.sh _ DEBUG
@@ -1031,9 +1022,9 @@ quex/TEST/errors-warnings/TEST                                       <no date>
 quex/TEST/event-handling/TEST                                        <no date>
 -------------------------------------------------------------------------------
  * Customized on_skip_range_open event.
-        on_skip_range_open-customized.sh customized .........[MAKE FAILED]
+        on_skip_range_open-customized.sh customized ..................[OK]
  * Default on_skip_range_open event.
-        on_skip_range_open.sh default .......................[MAKE FAILED]
+        on_skip_range_open.sh default ................................[OK]
 
  * Mode Transitions:
 
@@ -1047,13 +1038,10 @@ quex/TEST/event-handling/TEST                                        <no date>
                       2 ..............................................[OK]
                       3 ..............................................[OK]
                       error ..........................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] on_skip_range_open-customized.sh _ customized
-    [FAIL] on_skip_range_open.sh _ default
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -1212,7 +1200,7 @@ quex/TEST/misc/TEST                                                  <no date>
                        skip_nested_range .............................[OK]
                        skip_range ....................................[OK]
  * Test code comments
-        comment.sh ...................................................[OK]
+        comment.sh .................................................[FAIL]
  * Testing the implementation of line number pragmas
         line-number-pragma.sh ......................................[FAIL]
                                                            ___   _    _   _    
@@ -1220,6 +1208,7 @@ quex/TEST/misc/TEST                                                  <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
+    [FAIL] comment.sh
     [FAIL] line-number-pragma.sh
 ===============================================================================
                                                                                
@@ -1339,38 +1328,40 @@ quex/TEST/source-package/TEST                                        <no date>
                                                                                
 quex/TEST/token-class/TEST                                           <no date>
 -------------------------------------------------------------------------------
- * With token policy 'queue'.
-        simple-queue.exe .............................................[OK]
- * With token policy 'simple'.
-        simple.exe ...................................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+ * 
+        simple-queue.exe ......................................[NO OUTPUT]
+ * 
+        simple.exe ............................................[NO OUTPUT]
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] simple-queue.exe
+    [FAIL] simple.exe
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
 quex/TEST/token-policies/TEST                                        <no date>
 -------------------------------------------------------------------------------
-
- * Token Policy 'queue':
-
-    Pseudo Analysis
-        queue.exe ....................................................[OK]
-    Real Analysis
-        queue-real.exe ...............................................[OK]
-
- * Token Policy 'single':
-
-    Pseudo Analysis
-        users_token.exe ..............................................[OK]
-    Real Analysis
-        users_token-real.exe .........................................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+ * 
+        queue-real.exe ........................................[NO OUTPUT]
+ * 
+        queue.exe .............................................[NO OUTPUT]
+ * 
+        users_token-real.exe ..................................[NO OUTPUT]
+ * 
+        users_token.exe .......................................[NO OUTPUT]
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] queue-real.exe
+    [FAIL] queue.exe
+    [FAIL] users_token-real.exe
+    [FAIL] users_token.exe
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -1973,7 +1964,7 @@ quex/output/core/TEST                                                <no date>
                                   Cpp-PathUniform-CG .................[OK]
                                   Cpp-Template .......................[OK]
                                   Cpp-Template-CG ....................[OK]
-                                  Cpp_StrangeStream ................[FAIL]
+                                  Cpp_StrangeStream ..................[OK]
     No Backward Reload -- Precondition at Border
         test-no-backward-reloading.py ANSI-C .........................[OK]
                                       ANSI-C-ASSERTS .................[OK]
@@ -1988,7 +1979,7 @@ quex/output/core/TEST                                                <no date>
                                       Cpp-PathUniform-CG .............[OK]
                                       Cpp-Template ...................[OK]
                                       Cpp-Template-CG ................[OK]
-                                      Cpp_StrangeStream ............[FAIL]
+                                      Cpp_StrangeStream ..............[OK]
 
  * CONTINUE:
 
@@ -2004,7 +1995,7 @@ quex/output/core/TEST                                                <no date>
                                         Cpp-PathUniform-CG ...........[OK]
                                         Cpp-Template .................[OK]
                                         Cpp-Template-CG ..............[OK]
-                                        Cpp_StrangeStream ..........[FAIL]
+                                        Cpp_StrangeStream ............[OK]
 
  * Post Conditions:
 
@@ -2020,7 +2011,7 @@ quex/output/core/TEST                                                <no date>
                                   Cpp-PathUniform-CG .................[OK]
                                   Cpp-Template .......................[OK]
                                   Cpp-Template-CG ....................[OK]
-                                  Cpp_StrangeStream ................[FAIL]
+                                  Cpp_StrangeStream ..................[OK]
     Part I
         test-post-conditions.py ANSI-C ...............................[OK]
                                 ANSI-C-CG ............................[OK]
@@ -2044,7 +2035,7 @@ quex/output/core/TEST                                                <no date>
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
     Part 2
         test-pre-conditions-2.py ANSI-C ..............................[OK]
                                  ANSI-C-CG ...........................[OK]
@@ -2057,7 +2048,7 @@ quex/output/core/TEST                                                <no date>
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
 
  * Pre- and Post- Conditions:
 
@@ -2073,7 +2064,7 @@ quex/output/core/TEST                                                <no date>
                                    Cpp-PathUniform-CG ................[OK]
                                    Cpp-Template ......................[OK]
                                    Cpp-Template-CG ...................[OK]
-                                   Cpp_StrangeStream ...............[FAIL]
+                                   Cpp_StrangeStream .................[OK]
 
  * Pre-conditions:
 
@@ -2094,7 +2085,7 @@ quex/output/core/TEST                                                <no date>
                                                  Cpp-Path-CG .........[OK]
                                                  Cpp-Template ........[OK]
                                                  Cpp-Template-CG .....[OK]
-                                                 Cpp_StrangeStream .[FAIL]
+                                                 Cpp_StrangeStream ...[OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C ............[OK]
                                                    ANSI-C-CG .........[OK]
@@ -2105,7 +2096,7 @@ quex/output/core/TEST                                                <no date>
                                                    Cpp-Path-CG .......[OK]
                                                    Cpp-Template ......[OK]
                                                    Cpp-Template-CG ...[OK]
-                                                   Cpp_StrangeStream [FAIL]
+                                                   Cpp_StrangeStream .[OK]
 
  * Simple:
 
@@ -2121,7 +2112,7 @@ quex/output/core/TEST                                                <no date>
                         Cpp-PathUniform-CG ...........................[OK]
                         Cpp-Template .................................[OK]
                         Cpp-Template-CG ..............................[OK]
-                        Cpp_StrangeStream ..........................[FAIL]
+                        Cpp_StrangeStream ............................[OK]
     Keywords 'for', 'forest', 'forester', and 'formidable'
         test-simple-5.py ANSI-C ......................................[OK]
                          ANSI-C-CG ...................................[OK]
@@ -2132,7 +2123,7 @@ quex/output/core/TEST                                                <no date>
                          Cpp-Path-CG .................................[OK]
                          Cpp-Template ................................[OK]
                          Cpp-Template-CG .............................[OK]
-                         Cpp_StrangeStream .........................[FAIL]
+                         Cpp_StrangeStream ...........................[OK]
     Maximum Length Match
         test-simple-2.py ANSI-C ......................................[OK]
                          ANSI-C-CG ...................................[OK]
@@ -2145,7 +2136,7 @@ quex/output/core/TEST                                                <no date>
                          Cpp-PathUniform-CG ..........................[OK]
                          Cpp-Template ................................[OK]
                          Cpp-Template-CG .............................[OK]
-                         Cpp_StrangeStream .........................[FAIL]
+                         Cpp_StrangeStream ...........................[OK]
     Reload Init State
         test-continue-without-return-2.py ANSI-C .....................[OK]
                                           ANSI-C-CG ..................[OK]
@@ -2173,7 +2164,7 @@ quex/output/core/TEST                                                <no date>
                        Cpp-PathUniform-CG ............................[OK]
                        Cpp-Template ..................................[OK]
                        Cpp-Template-CG ...............................[OK]
-                       Cpp_StrangeStream ...........................[FAIL]
+                       Cpp_StrangeStream .............................[OK]
 
  * Single State:
 
@@ -2184,24 +2175,10 @@ quex/output/core/TEST                                                <no date>
                                          B-UTF8 ......................[OK]
                                          C ...........................[OK]
                                          C-UTF8 ......................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] test-position_adaption.py _ Cpp_StrangeStream
-    [FAIL] test-no-backward-reloading.py _ Cpp_StrangeStream
-    [FAIL] test-continue-without-return.py _ Cpp_StrangeStream
-    [FAIL] test-post-conditions-2.py _ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-3.py _ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-2.py _ Cpp_StrangeStream
-    [FAIL] test-pre-post-condition.py _ Cpp_StrangeStream
-    [FAIL] test-pseudo_ambiguous_post_conditions.py _ Cpp_StrangeStream
-    [FAIL] test-pseudo_ambiguous_post_conditions-2.py _ Cpp_StrangeStream
-    [FAIL] test-bol-eol.py _ Cpp_StrangeStream
-    [FAIL] test-simple-5.py _ Cpp_StrangeStream
-    [FAIL] test-simple-2.py _ Cpp_StrangeStream
-    [FAIL] test-simple.py _ Cpp_StrangeStream
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                                   Output Cpp                                   
@@ -2263,7 +2240,7 @@ quex/code_base/buffer/filler/TEST                                    <no date>
  * Load Forward:
 
     With Error in Stream (Character=4 Byte(s))
-        BufferFiller_forward_load-error.exe .................[MAKE FAILED]
+        BufferFiller_forward_load-error.exe ................[NO GOOD FILE]
 
  * Tell and Seek:
 
@@ -2282,6 +2259,9 @@ quex/code_base/buffer/filler/TEST                                    <no date>
                                                                                
 quex/code_base/buffer/loader/TEST                                    <no date>
 -------------------------------------------------------------------------------
+ * Segmented Input
+        segmented-input.exe Handler ..................................[OK]
+                            Normal ...................................[OK]
 
  * ByteLoader:
 
@@ -2447,45 +2427,45 @@ quex/engine/state_machine/check/TEST                                 <no date>
 quex/output/core/skipper/TEST                                        <no date>
 -------------------------------------------------------------------------------
  * Indentation Counting
-        test-indentation-counter.py NonUniform .......................[OK]
-                                    NonUniform-2 .....................[OK]
-                                    Uniform ..........................[OK]
+        test-indentation-counter.py NonUniform .......[KEYBOARD_INTERRUPT]
+                                    NonUniform-2 .....[KEYBOARD_INTERRUPT]
+                                    Uniform ..........[KEYBOARD_INTERRUPT]
 
  * Skip-Characters:
 
     Large Buffer
-        test-skip.py ANSI-C ....................................[TIME_OUT]
-                     ANSI-C-PlainMemory ........................[TIME_OUT]
-                     Cpp ...........................................[FAIL]
-                     Cpp_StrangeStream .............................[FAIL]
+        test-skip.py ANSI-C ..........................[KEYBOARD_INTERRUPT]
+                     ANSI-C-PlainMemory ..............[KEYBOARD_INTERRUPT]
+                     Cpp .............................[KEYBOARD_INTERRUPT]
+                     Cpp_StrangeStream ...............[KEYBOARD_INTERRUPT]
     UTF8 Engine -- Varrying Buffer Size
         test-skip-utf8.py 5 ..........................................[OK]
                           6 ..........................................[OK]
                           7 ..........................................[OK]
                           8 ..........................................[OK]
     Varrying Buffer Size
-        test-skip-2.py 3 .............................................[OK]
-                       4 .............................................[OK]
-                       5 .............................................[OK]
-                       6 .............................................[OK]
-                       7 .............................................[OK]
-                       8 .............................................[OK]
+        test-skip-2.py 3 .............................[KEYBOARD_INTERRUPT]
+                       4 .............................[KEYBOARD_INTERRUPT]
+                       5 .............................[KEYBOARD_INTERRUPT]
+                       6 .............................[KEYBOARD_INTERRUPT]
+                       7 .............................[KEYBOARD_INTERRUPT]
+                       8 .............................[KEYBOARD_INTERRUPT]
 
  * Skip-NestedRange:
 
     Delimiter Sizes 1 and 2
-        test-skip_nested_range.py ANSI-C .............................[OK]
-                                  ANSI-C-PlainMemory ...........[TIME_OUT]
-                                  Cpp ................................[OK]
-                                  Cpp_StrangeStream ................[FAIL]
+        test-skip_nested_range.py ANSI-C .............[KEYBOARD_INTERRUPT]
+                                  ANSI-C-PlainMemory .[KEYBOARD_INTERRUPT]
+                                  Cpp ................[KEYBOARD_INTERRUPT]
+                                  Cpp_StrangeStream ..[KEYBOARD_INTERRUPT]
 
  * Skip-Range:
 
     DelimiterLength=2, BufferSize=5
         test-skip_range.py ANSI-C ....................................[OK]
-                           ANSI-C-PlainMemory ..................[TIME_OUT]
+                           ANSI-C-PlainMemory ........................[OK]
                            Cpp .......................................[OK]
-                           Cpp_StrangeStream .......................[FAIL]
+                           Cpp_StrangeStream .........................[OK]
     Varrying DelimiterLength, Large Buffer
         test-skip_range-2.py DL=1 ....................................[OK]
                              DL=2 ....................................[OK]
@@ -2496,14 +2476,23 @@ quex/output/core/skipper/TEST                                        <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
+    [FAIL] test-indentation-counter.py _ NonUniform
+                                     \__ NonUniform-2
+                                     \__ Uniform
     [FAIL] test-skip.py _ ANSI-C
                       \__ ANSI-C-PlainMemory
                       \__ Cpp
                       \__ Cpp_StrangeStream
-    [FAIL] test-skip_nested_range.py _ ANSI-C-PlainMemory
+    [FAIL] test-skip-2.py _ 3
+                        \__ 4
+                        \__ 5
+                        \__ 6
+                        \__ 7
+                        \__ 8
+    [FAIL] test-skip_nested_range.py _ ANSI-C
+                                   \__ ANSI-C-PlainMemory
+                                   \__ Cpp
                                    \__ Cpp_StrangeStream
-    [FAIL] test-skip_range.py _ ANSI-C-PlainMemory
-                            \__ Cpp_StrangeStream
 ===============================================================================
                                                                                
                          Buffer Moving/Copying Content                         
@@ -2514,22 +2503,22 @@ quex/code_base/buffer/TESTS/move/TEST                                <no date>
  * move_away_passed_content:
 
     (BPC=1, FB=0)
-        move_away_passed_content-fb0.exe ....................[MAKE FAILED]
+        move_away_passed_content-fb0.exe ...........................[FAIL]
     (BPC=1, FB=1)
-        move_away_passed_content-fb1.exe ....................[MAKE FAILED]
+        move_away_passed_content-fb1.exe ...........................[FAIL]
     (BPC=1, FB=2)
-        move_away_passed_content-fb2.exe ....................[MAKE FAILED]
+        move_away_passed_content-fb2.exe ...........................[FAIL]
     (BPC=4, FB=2)
-        move_away_passed_content-fb2-32.exe .................[MAKE FAILED]
+        move_away_passed_content-fb2-32.exe ........................[FAIL]
 
  * move_away_upfront_content:
 
     (BPC=1)
-        move_away_upfront_content-8.exe .....................[MAKE FAILED]
+        move_away_upfront_content-8.exe ............................[FAIL]
     (BPC=2)
-        move_away_upfront_content-16.exe ....................[MAKE FAILED]
+        move_away_upfront_content-16.exe ...........................[FAIL]
     (BPC=4)
-        move_away_upfront_content-32.exe ....................[MAKE FAILED]
+        move_away_upfront_content-32.exe ...........................[FAIL]
                                                            ___   _    _   _    
                                                           |  _| / \  | | | |   
                                                           | |_|/ - \ | | | |_  
@@ -2871,27 +2860,29 @@ quex/code_base/buffer/filler/converter/icu/TEST                      <no date>
                                                                    / _ \| |/ ) 
                                                                   ( (_) | _ <  
                                                                    \___/|_|\_) 
+    [NO GOOD FILE] bug-1935701.exe
+    [NO GOOD FILE] BufferFiller_forward_load-error.exe
 ===============================================================================
 
 SUMMARY:
 
     Fails: N:  Verdict: Directory:                                        
 
-       19  237   [FAIL] TEST                                              
-       15  66    [FAIL] demo/C/TEST                                       
-       15  53    [FAIL] ..../Cpp/TEST                                     
+       20  236   [FAIL] TEST                                              
+       12  66    [FAIL] demo/C/TEST                                       
+        5  53    [FAIL] ..../Cpp/TEST                                     
            2       [OK] quex/TEST/command-line/TEST                       
            2       [OK] ........./did-you-mean/TEST                       
            1       [OK] ........./errors-warnings/TEST                    
-        2  10    [FAIL] ........./event-handling/TEST                     
+           10      [OK] ........./event-handling/TEST                     
        14  14    [FAIL] ........./include-stack/TEST                      
            18      [OK] ........./indentation_count/TEST                  
            45      [OK] ........./match-precedence/TEST                   
-        1  10    [FAIL] ........./misc/TEST                               
+        2  10    [FAIL] ........./misc/TEST                               
            55      [OK] ........./reset/TEST                              
            24      [OK] ........./source-package/TEST                     
-           2       [OK] ........./token-class/TEST                        
-           4       [OK] ........./token-policies/TEST                     
+        2  2     [FAIL] ........./token-class/TEST                        
+        4  4     [FAIL] ........./token-policies/TEST                     
            10      [OK] ..../code_base/TEST                               
            42      [OK] ............../analyzer/TEST                      
         7  7     [FAIL] ............../buffer/TESTS/move/TEST             
@@ -2899,7 +2890,7 @@ SUMMARY:
         2  2     [FAIL] ...................../filler/TEST                 
            12      [OK] ............................/converter/iconv/TEST 
            12      [OK] ....................................../icu/TEST   
-           8       [OK] ...................../loader/TEST                 
+           10      [OK] ...................../loader/TEST                 
            10      [OK] ............../converter_helper/TEST              
            42      [OK] ..../engine/TEST                                  
            112     [OK] .........../analyzer/TEST                         
@@ -2913,16 +2904,16 @@ SUMMARY:
            13      [OK] ........................./check/TEST              
            56      [OK] ..../input/TEST                                   
            27      [OK] ........../regular_expression/TEST                
-       13  196   [FAIL] ..../output/core/TEST                             
-        8  29    [FAIL] ................/skipper/TEST                     
+           196     [OK] ..../output/core/TEST                             
+       17  29    [FAIL] ................/skipper/TEST                     
            22      [OK] ................/state/transition_map/TEST        
            30      [OK] .........../cpp/TEST                              
 
 -------------------------------------------------------------------------------
-     _____     _ _           ___    __             
-    |  ___|_ _(_) |___      / _ \  / /_      __  __
-    | |_ / _` | | / __|    | (_) || '_ \     \ \/ /
-    |  _| (_| | | \__ \     \__, || (_) |     >  < 
-    |_|  \__,_|_|_|___/       /_/  \___/     /_/\_\
-                                                                   (1482 tests)
+     _____     _ _           ___   ____             
+    |  ___|_ _(_) |___      ( _ ) | ___|      __  __
+    | |_ / _` | | / __|     / _ \ |___ \      \ \/ /
+    |  _| (_| | | \__ \    | (_) | ___) |      >  < 
+    |_|  \__,_|_|_|___/     \___/ |____/      /_/\_\
+                                                                   (1483 tests)
 ===============================================================================
