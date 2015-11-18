@@ -634,7 +634,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0);
+        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0, true);
         /**/
         (void)run_test(test_string, "$$COMMENT$$");
 
@@ -676,7 +676,7 @@ test_program_db = {
         StrangeStream<istringstream>*  strange_stream = new StrangeStream<istringstream>(&istr);
 
         DEAL_WITH_COMPUTED_GOTOS();
-        lexer_state.from(strange_stream, 0x0);
+        lexer_state.from_StrangeStream(strange_stream, 0x0);
         return run_test("$$TEST_STRING$$", "$$COMMENT$$");
     }\n""",
 
@@ -695,7 +695,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         DEAL_WITH_COMPUTED_GOTOS();
-        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0);
+        QUEX_NAME(from_FILE)(&lexer_state, fh, 0x0, true);
 
         /* Double check, that buffer size has been set. */
         real_buffer_size = lexer_state.buffer._memory._back - lexer_state.buffer._memory._front + 1;

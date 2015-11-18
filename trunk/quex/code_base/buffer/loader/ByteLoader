@@ -76,11 +76,11 @@ QUEX_INLINE void  ByteLoader_delete(ByteLoader** me);
 #include <quex/code_base/buffer/loader/ByteLoader_FILE>
 #include <quex/code_base/buffer/loader/ByteLoader_stream>
 #ifdef QUEX_OPTION_POSIX
-#   include <quex/buffer/loader/ByteLoader_POSIX>    /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_POSIX>    /* (tm) */
 #endif
 #if 0
-#   include <quex/buffer/loader/ByteLoader_FreeRTOS> /* (tm) */
-#   include <quex/buffer/loader/ByteLoader_PalmOS>   /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_FreeRTOS> /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_PalmOS>   /* (tm) */
 #endif
 
 #endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER */

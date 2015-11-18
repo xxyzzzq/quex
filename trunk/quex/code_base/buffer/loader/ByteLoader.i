@@ -61,7 +61,6 @@ ByteLoader_load(ByteLoader* me, void* begin_p, const size_t N)
     do {
         /* Try to load 'N' bytes.                                            */
         loaded_n  = me->derived.load(me, begin_p, N);
-        printf("loaded_n: %i;\n", loaded_n);
         /* If at least some bytes could be loaded, return 'success'.         */
         if( loaded_n != 0 )         return loaded_n;
         /* If user has no plan for absence of data, return 'failure', EOS.   */
@@ -104,11 +103,11 @@ ByteLoader_delete(ByteLoader** me)
 #include <quex/code_base/buffer/loader/ByteLoader_FILE.i>
 #include <quex/code_base/buffer/loader/ByteLoader_stream.i>
 #ifdef QUEX_OPTION_POSIX
-#   include <quex/buffer/loader/ByteLoader_POSIX.i>    /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_POSIX.i>    /* (tm) */
 #endif
 #if 0
-#   include <quex/buffer/loader/ByteLoader_FreeRTOS.i> /* (tm) */
-#   include <quex/buffer/loader/ByteLoader_PalmOS.i>   /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_FreeRTOS.i> /* (tm) */
+#   include <quex/code_base/buffer/loader/ByteLoader_PalmOS.i>   /* (tm) */
 #endif
 
 #endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_I */
