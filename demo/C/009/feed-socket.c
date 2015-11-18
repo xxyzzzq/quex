@@ -88,7 +88,9 @@ feed_socket(FILE* fh, int socket_fd, int ChunkSize)
     while( 1 + 1 == 2 ) {
         /* Read some bytes from the file that contains the source for 
          * feeding.                                                          */
-        read_n = fread(&buffer[0], ChunkSize, 1, fh);
+        read_n = fread(&buffer[0], 1, ChunkSize, fh);
+        buffer[read_n] = '\0';
+        printf("read: %i: [%s]\n", read_n, &buffer[0]);
         if( ! read_n ) break;
 
         /* Flush the bytes into the socket.                                  */
@@ -98,4 +100,5 @@ feed_socket(FILE* fh, int socket_fd, int ChunkSize)
         }
         usleep(200);
     }
+    printf("<done>\n");
 }

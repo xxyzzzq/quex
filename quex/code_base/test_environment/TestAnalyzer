@@ -86,7 +86,7 @@ QUEX_NAMESPACE_MAIN_OPEN
        * 'from' functions are provided so that explicit constructor calls 
        * can be done without placement ::new or sophisticated C++11 features.  */
       void    from(const char*  Filename, const char*  CodecName = 0x0);
-      void    from(std::FILE* fh, const char*  CodecName = 0x0);
+      void    from(std::FILE* fh, const char*  CodecName = 0x0, bool BinaryF=true);
       void    from(std::istream* istream_p, const char*  CodecName = 0x0);
       void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
       template <class UnderlyingStreamT> void
@@ -137,13 +137,21 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(user_constructor)
 {
+#   if __cplusplus
     (void)this;
+#   else
+    (void)me;
+#   endif
 }
 
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(user_reset) 
 {
+#   if __cplusplus
     (void)this;
+#   else
+    (void)me;
+#   endif
 }
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
@@ -151,13 +159,23 @@ QUEX_MEMBER_FUNCTIONO(user_reset)
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO1(user_memento_pack, QUEX_NAME(Memento)* memento) 
 {
-    (void)this; (void)memento;
+    (void)memento;
+#   if __cplusplus
+    (void)this;
+#   else
+    (void)me;
+#   endif
 }
 
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO1(user_memento_unpack, QUEX_NAME(Memento)*  memento)
 {
-    (void)this; (void)memento;
+    (void)memento;
+#   if __cplusplus
+    (void)this;
+#   else
+    (void)me;
+#   endif
 }
 #endif /* QUEX_OPTION_INCLUDE_STACK */
 

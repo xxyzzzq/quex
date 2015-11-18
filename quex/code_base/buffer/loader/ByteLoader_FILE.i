@@ -86,7 +86,7 @@ QUEX_INLINE size_t
 ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN) 
 { 
     size_t loaded_byte_n = fread(buffer, 1, ByteN, ((ByteLoader_FILE*)me)->input_handle); 
-#   if 1
+#   if 0
     int    i;
     printf("#load @%i:         [", (int)ftell(((ByteLoader_FILE*)me)->input_handle));
     for(i=0; i<loaded_byte_n; ++i) printf("%02X.", ((uint8_t*)buffer)[i]);

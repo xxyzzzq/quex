@@ -34,6 +34,7 @@
 static int  setup_socket_server(void);
 static bool accept_and_lex(int listen_fd);
 static void print_token(quex_Token*  token);
+static bool self_on_nothing(struct ByteLoader_tag*  me, size_t TryN, size_t LoadedN);
  
 int main(void)
 {
@@ -66,7 +67,7 @@ accept_and_lex(int listen_fd)
     }
 
     /* A handler for the case that nothing is received over the line. */
-    loader->on_nothing = self_on_nothing;
+    loader->on_nothing = self_on_nothing; 
 
     QUEX_NAME(from_ByteLoader)(&qlex, loader, NULL);
 
@@ -119,6 +120,16 @@ setup_socket_server(void)
 
     return listen_fd;
 }
+
+/* A handler for the case that nothing is received over the line. */
+static bool  
+self_on_nothing(struct ByteLoader_tag*  me, size_t TryN, size_t LoadedN)
+{ 
+    (void)me; (void)TryN; (void)LoadedN; 
+    printf("try: %i; loaded_n: %i;\n", (int)TryN, (int)LoadedN);
+    return true; 
+}
+
 
 static void
 print_token(quex_Token*  token)

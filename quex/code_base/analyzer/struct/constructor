@@ -29,13 +29,6 @@ QUEX_INLINE void QUEX_NAME(from_FILE)(
                                   const char*       CodecName   /* = 0x0   */,
                                   bool              BinaryModeF /* false */);
 
-#if defined(QUEX_OPTION_POSIX)
-QUEX_INLINE void QUEX_NAME(from_POSIX)(
-                                  QUEX_TYPE_ANALYZER*,
-                                  __QUEX_STD_FILE*  fh, 
-                                  const char*       CodecName /* = 0x0   */);
-#endif
-
 #if ! defined(__QUEX_OPTION_PLAIN_C)
 QUEX_INLINE void QUEX_NAME(from_istream)(
                                   QUEX_TYPE_ANALYZER*,

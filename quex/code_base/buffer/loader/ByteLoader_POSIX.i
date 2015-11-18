@@ -82,7 +82,11 @@ ByteLoader_POSIX_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos)
 
 QUEX_INLINE size_t  
 ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN) 
-{ return read(((ByteLoader_POSIX*)me)->fd, buffer, ByteN); }
+{ 
+    int n = read(((ByteLoader_POSIX*)me)->fd, buffer, ByteN); 
+    printf("n=%i;\n", (int)n);
+    return n;
+}
 
 QUEX_INLINE bool  
 ByteLoader_POSIX_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B) 
