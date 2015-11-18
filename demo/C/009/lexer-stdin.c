@@ -12,7 +12,7 @@ main(int argc, char** argv)
 
     announce();
 
-    QUEX_NAME(from_FILE)(&qlex, stdin, NULL, true);
+    QUEX_NAME(from_POSIX)(&qlex, stdin, NULL, true);
 
     do {
         QUEX_NAME(receive)(&qlex, &token);
