@@ -339,6 +339,7 @@ $$MARKER_LIST$$
             }
             QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
         }
+        ++(me->buffer._read_p);
     }
     return true;
 }
