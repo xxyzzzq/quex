@@ -32,13 +32,13 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "FILE") == 0 ) { 
         FILE* fh = 0x0;
 
-        fh = fopen("misc/bug-1935701-text.dat", "r");
+        fh = fopen("misc/bug-1935701-text.dat", "rb");
         if( fh == 0x0 ) {
             cout << "error file 'misc/bug-1935701-text.dat' not found.\n";
             return 0;
         }
 
-        ByteLoader*                byte_loader = ByteLoader_FILE_new(fh);
+        ByteLoader*                byte_loader = ByteLoader_FILE_new(fh, true);
         QUEX_NAME(BufferFiller)*   is = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
 
         loaded_character_n = is->derived_load_characters(is, buffer, BufferSize);
