@@ -1,77 +1,77 @@
 {
 title: (BPC=1, FB=0);
 title_group: move_away_passed_content;
-build_time: 0.8357799053192139;
+build_time: 1.2640352249145508;
 file_name: move_away_passed_content-fb0.exe;
-hwut_info_time: 1447964085L;
+hwut_info_time: 1447997942L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.235021; 0; ]
+  [ ; FAIL; 0.353015; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=1);
 title_group: move_away_passed_content;
-build_time: 0.8343098163604736;
+build_time: 1.1563329696655273;
 file_name: move_away_passed_content-fb1.exe;
-hwut_info_time: 1447964087L;
+hwut_info_time: 1447997944L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.229502; 0; ]
+  [ ; FAIL; 0.334088; 0; ]
 ]
 }
 {
 title: (BPC=1, FB=2);
 title_group: move_away_passed_content;
-build_time: 0.9935870170593262;
+build_time: 1.3709590435028076;
 file_name: move_away_passed_content-fb2.exe;
-hwut_info_time: 1447964083L;
+hwut_info_time: 1447997939L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.229705; 0; ]
+  [ ; FAIL; 0.440922; 0; ]
 ]
 }
 {
 title: (BPC=4, FB=2);
 title_group: move_away_passed_content;
-build_time: 0.8349919319152832;
+build_time: 1.143157958984375;
 file_name: move_away_passed_content-fb2-32.exe;
-hwut_info_time: 1447964087L;
+hwut_info_time: 1447997945L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.230695; 0; ]
+  [ ; FAIL; 0.410345; 0; ]
 ]
 }
 {
 title: (BPC=1);
 title_group: move_away_upfront_content;
-build_time: 1.0664141178131104;
+build_time: 1.5601060390472412;
 file_name: move_away_upfront_content-8.exe;
-hwut_info_time: 1447964082L;
+hwut_info_time: 1447997938L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.228685; 1075482349; ]
+  [ ; FAIL; 0.379727; 1075482349; ]
 ]
 }
 {
 title: (BPC=2);
 title_group: move_away_upfront_content;
-build_time: 0.8476829528808594;
+build_time: 1.2973229885101318;
 file_name: move_away_upfront_content-16.exe;
-hwut_info_time: 1447964086L;
+hwut_info_time: 1447997943L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.233302; 0; ]
+  [ ; FAIL; 0.372115; 0; ]
 ]
 }
 {
 title: (BPC=4);
 title_group: move_away_upfront_content;
-build_time: 0.8409831523895264;
+build_time: 1.2463669776916504;
 file_name: move_away_upfront_content-32.exe;
-hwut_info_time: 1447964084L;
+hwut_info_time: 1447997940L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.230289; 0; ]
+  [ ; FAIL; 0.400594; 0; ]
 ]
 }

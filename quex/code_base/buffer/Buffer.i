@@ -618,10 +618,16 @@ QUEX_INLINE void
 QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
                                     intmax_t           move_distance,
                                     ptrdiff_t          move_size)
+/* Restore the buffer's raw memory to what it was before in the 'FORWARD' case. 
+ * It is assumed that the buffer's parameters in
+ *
+ *                         me->input
+ *
+ * remained UNTOUCHED during the moving and loading of the caller function.
+ * That is, they indicate the situation to be restored.                      */
 {
     QUEX_TYPE_CHARACTER* BeginP      = &me->_memory._front[1];
     QUEX_TYPE_CHARACTER* EndP        = me->_memory._back;
-    const ptrdiff_t      ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
     ptrdiff_t            load_request_n;
     ptrdiff_t            loaded_n;
 
@@ -633,7 +639,7 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
         load_request_n = (ptrdiff_t)move_distance;
     }
     else {
-        load_request_n = (ptrdiff_t)ContentSize;
+        load_request_n = (me->input.end_p - BeginP);
     }
     __quex_assert(&BeginP[load_request_n] <= EndP);
     (void)EndP;
