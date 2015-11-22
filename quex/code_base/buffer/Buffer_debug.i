@@ -47,9 +47,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
             return (QUEX_TYPE_CHARACTER)'?'; 
         else if( buffer->input.end_p == C )       
-            return (QUEX_TYPE_CHARACTER)']';
+            return (QUEX_TYPE_CHARACTER)']'; /* End of stream sign. */
         else if( QUEX_NAME(Buffer_input_character_index_begin)(buffer) == 0 && buffer->_memory._front == C )     
-            return (QUEX_TYPE_CHARACTER)'[';
+            return (QUEX_TYPE_CHARACTER)'['; /* Begin of stream sign. */
         else
             return (QUEX_TYPE_CHARACTER)'|';
     }
@@ -65,10 +65,9 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
         QUEX_TYPE_CHARACTER*  iterator     = 0x0;
-        QUEX_TYPE_CHARACTER*  end_p        = buffer->input.end_p ? buffer->input.end_p 
-                                             :                     buffer->_memory._back;
-
-        bool                  end_p_error_f = (end_p > buffer->_memory._back || end_p < buffer->_memory._front);
+        QUEX_TYPE_CHARACTER*  end_p        = buffer->input.end_p;
+        bool                  end_p_error_f = (   end_p > buffer->_memory._back 
+                                               || end_p < buffer->_memory._front);
 
         end_p = QUEX_MIN(end_p, buffer->_memory._front);
         end_p = QUEX_MAX(end_p, buffer->_memory._back);
@@ -95,11 +94,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void  
     QUEX_NAME(Buffer_show_content)(QUEX_NAME(Buffer)* buffer) 
+    /* Simple printing function for unit testing and debugging it is thought to
+     * print only ASCII characters (i.e. code points < 0xFF)                 */
     {
-        /* NOTE: If the limiting char needs to be replaced temporarily by
-         *       a terminating zero.
-         * NOTE: This is a **simple** printing function for unit testing and debugging
-         *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
         char*                 tmp = 0;
         const size_t          ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);
@@ -108,7 +105,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
 
         __quex_assert(buffer != 0x0);
-        /*_________________________________________________________________________________*/
+        /*__________________________________________________________________*/
         tmp = (char*)__QUEX_STD_malloc(ContentSize + 4);
         /* tmp[0]                 = outer border*/
         /* tmp[1]                 = buffer limit*/
@@ -122,7 +119,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         tmp[ContentSize+2] = (char)QUEX_NAME(__Buffer_get_border_char)(buffer, BufferBack);
         tmp[1]             = (char)QUEX_NAME(__Buffer_get_border_char)(buffer, BufferFront);
         tmp[0]             = '|';
-        /* tmp[_SHOW_current_fallback_n - 1 + 2] = ':';        */
+        /* tmp[_SHOW_current_fallback_n - 1 + 2] = ':';                      */
         tmp[buffer->_read_p - ContentFront + 2] = 'C';
         if( buffer->_lexeme_start_p >= ContentFront && buffer->_lexeme_start_p <= BufferBack ) 
             tmp[(int)(buffer->_lexeme_start_p - ContentFront) + 2] = 'S';
