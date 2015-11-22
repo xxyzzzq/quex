@@ -7,8 +7,6 @@
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/analyzer/struct/reset>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 /* Level (0) __________________________________________________________________
@@ -245,7 +243,5 @@ QUEX_MEMBER_FUNCTIONO(basic_reset)
 
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__RESET_I */

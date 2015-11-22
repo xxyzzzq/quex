@@ -44,7 +44,6 @@ __QUEX_CORE = \
     ./converter_helper/from-unicode-buffer.i \
     ./asserts \
     ./definitions \
-    ./temporary_macros_on \
     ./analyzer/dumpster.i \
     ./analyzer/Accumulator \
     ./analyzer/Accumulator.i \
@@ -64,7 +63,6 @@ __QUEX_CORE = \
     ./analyzer/configuration/TXT \
     ./analyzer/configuration/validation \
     ./analyzer/configuration/undefine \
-    ./temporary_macros_off \
     ./test_environment/StrangeStream)
 
 ifeq ($(QUEX_PATH), $(QUEX_DEV_PATH))

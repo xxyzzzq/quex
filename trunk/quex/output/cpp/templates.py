@@ -180,7 +180,6 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
     function_signature_str = __function_signature.replace("$$STATE_MACHINE_NAME$$", 
                                                           StateMachineName)
     txt = [
-        "#include <quex/code_base/temporary_macros_on>\n",
         function_signature_str,
         # 
         # Macro definitions
@@ -241,7 +240,6 @@ def _analyzer_function(StateMachineName, Setup, variable_definitions,
         "#   undef self\n",
         "#   undef QUEX_LABEL_STATE_ROUTER\n",
         "}\n",
-        "#include <quex/code_base/temporary_macros_off>\n",
     ])
     return txt
 

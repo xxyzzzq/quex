@@ -31,8 +31,6 @@ base = """
 /MemoryManager.i
 /single.i
 /multi.i
-/temporary_macros_off
-/temporary_macros_on
 """
 
 base_compatibility = """

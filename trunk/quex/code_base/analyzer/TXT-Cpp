@@ -90,8 +90,6 @@ $$MEMENTO_EXTENSIONS$$
 
 QUEX_NAMESPACE_MAIN_CLOSE 
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN 
 
 extern QUEX_NAME(Mode)*   (QUEX_NAME(mode_db)[__QUEX_SETTING_MAX_MODE_CLASS_N]);  
@@ -422,7 +420,6 @@ public:
 };
 
 QUEX_NAMESPACE_MAIN_CLOSE
-#include <quex/code_base/temporary_macros_off>
 
 $$ADDITIONAL_HEADER_CONTENT$$
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */

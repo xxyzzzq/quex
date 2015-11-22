@@ -10,8 +10,6 @@
 #   include <quex/code_base/analyzer/struct/include-stack>
 #endif
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
@@ -82,8 +80,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     }
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/Buffer.i>
 

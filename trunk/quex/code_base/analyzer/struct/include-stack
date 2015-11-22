@@ -6,8 +6,6 @@
 
 #include <quex/code_base/definitions>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN 
 
 #ifdef __QUEX_OPTION_PLAIN_C
@@ -80,7 +78,5 @@ QUEX_INLINE bool   QUEX_NAME(include_detect_recursion)(QUEX_TYPE_ANALYZER* me,
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__INCLUDE_STACK */
