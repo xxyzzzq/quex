@@ -45,26 +45,13 @@
 
 ------------------------------------------------------------------------
 */
-#include <quex/code_base/test_environment/TestAnalyzer-configuration>
-#include <quex/code_base/buffer/filler/BufferFiller.i>
-#include <quex/code_base/buffer/Buffer_debug.i>
-#include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/converter_helper/from-unicode-buffer.i>
-#include <quex/code_base/single.i>
-#include <cstring>
-#include <hwut_unit.h>
-
 #include <move_away_passed_content-gen.h>
-using namespace quex;
+#include "commonly-pasted.cpp" /* requires 'G_t' from above header. */
 
-static void self_init(QUEX_NAME(Buffer)* buffer, G_t* it);
-static void self_print(QUEX_NAME(Buffer)* buffer);
-static void self_prepare_memory(QUEX_NAME(Buffer)*   buffer, 
-                                QUEX_TYPE_CHARACTER* end_p);
-
-
-static int cl_has(int argc, char** argv, const char* What)
-{ return argc > 1 && strcmp(argv[1], What) == 0; }
+static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
+const  ptrdiff_t            ContentSize = sizeof(content)/sizeof(content[0]);
+static QUEX_TYPE_CHARACTER  memory[12];
+const  ptrdiff_t            MemorySize = sizeof(memory)/sizeof(memory[0]);
 
 int
 main(int argc, char** argv)
@@ -85,7 +72,9 @@ main(int argc, char** argv)
     
     printf("        lexeme_start_p: read_p: end_p: end_index: buffer:\n");
     while( G_next(&it) ) {
-        self_init(&buffer, &it);
+        instantiate_iterator(&buffer, &it, 
+                             &memory[0], MemorySize, 
+                             &content[0], ContentSize);
         printf("\n-( %2i )---------------------------------------------\n", (int)G_key_get(&it));
         self_print(&buffer);
 
@@ -106,66 +95,4 @@ main(int argc, char** argv)
     }
 }
 
-static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
-ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
-static QUEX_TYPE_CHARACTER  memory[12];
-ptrdiff_t                   MemorySize = 12;
 
-static void
-self_init(QUEX_NAME(Buffer)* buffer, G_t* it)
-{
-    QUEX_TYPE_CHARACTER*   end_p;
-    ptrdiff_t              memory_size = MemorySize;
-
-    if( it->eof_f ) {
-        end_p       = &memory[content_size+1];
-        *end_p      = QUEX_SETTING_BUFFER_LIMIT_CODE;
-    }
-    else {
-        end_p       = &memory[MemorySize-1];
-        memory_size = MemorySize; /* content_size + 2; */
-    }
-
-    /* Filler = 0x0, otherwise, buffer would start loading content */
-    QUEX_NAME(Buffer_construct)(buffer, 
-                                (QUEX_NAME(BufferFiller)*)0x0, 
-                                &memory[0], memory_size, end_p, 
-                                E_Ownership_EXTERNAL);
-
-    self_prepare_memory(buffer, end_p);
-
-    buffer->_lexeme_start_p = &buffer->_memory._front[it->lexeme_start_i+1];
-    buffer->_read_p         = &buffer->_memory._front[it->read_i+1];
-}
-
-static void
-self_prepare_memory(QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* end_p)
-{
-    static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
-    ptrdiff_t                   content_size = sizeof(content)/sizeof(content[0]);
-
-    memset(&buffer->_memory._front[1], (QUEX_TYPE_CHARACTER) - 1, 
-           (buffer->_memory._back - buffer->_memory._front -1)*sizeof(QUEX_TYPE_CHARACTER));
-    memcpy(&buffer->_memory._front[1], (void*)content, 
-           sizeof(content));
-
-    QUEX_NAME(Buffer_register_content)(buffer, end_p, 
-                                       content_size - (end_p - &buffer->_memory._front[1]));
-    QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
-}
-
-static void
-self_print(QUEX_NAME(Buffer)* buffer)
-{
-    /**/
-    printf("        @%i '%c';         @%i '%c'; @%2i;   @%i;       ", 
-           (int)(buffer->_lexeme_start_p - buffer->_memory._front),
-           (int)(*(buffer->_lexeme_start_p)),
-           (int)(buffer->_read_p - buffer->_memory._front),
-           (int)(*(buffer->_read_p)),
-           (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
-           (int)QUEX_NAME(Buffer_input_character_index_end)(buffer));
-    /**/
-    QUEX_NAME(Buffer_show_content_intern)(buffer);
-    printf("\n");
-}

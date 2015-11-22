@@ -40,11 +40,9 @@ QUEX_BUFFER_ASSERT_limit_codes_in_place(QUEX_NAME(Buffer)* B)
     if( ! (*B)._memory._front && ! (*B)._memory._back ) {                    
         return;
     }
-    __quex_assert(*((*B)._memory._front) == QUEX_SETTING_BUFFER_LIMIT_CODE );    
-    __quex_assert(*((*B)._memory._back)  == QUEX_SETTING_BUFFER_LIMIT_CODE );    
-    if( (*B).input.end_p ) {                                           
-        __quex_assert(*(*B).input.end_p  == QUEX_SETTING_BUFFER_LIMIT_CODE);   
-    }                                                                            
+    __quex_assert(*((*B)._memory._front) == QUEX_SETTING_BUFFER_LIMIT_CODE);    
+    __quex_assert(*((*B)._memory._back)  == QUEX_SETTING_BUFFER_LIMIT_CODE);    
+    __quex_assert(*(*B).input.end_p      == QUEX_SETTING_BUFFER_LIMIT_CODE);   
 }
 
 QUEX_INLINE void

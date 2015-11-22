@@ -64,8 +64,8 @@ QUEX_INLINE void
 QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me, 
                                 QUEX_TYPE_CHARACTER* EndOfFileP) 
 {
-    QUEX_TYPE_CHARACTER*      BeginP = &me->_memory._front[1];
-    QUEX_TYPE_CHARACTER*      EndP   = me->_memory._back;
+    QUEX_TYPE_CHARACTER*  BeginP = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*  EndP   = me->_memory._back;
 
     /* (1) BEFORE LOAD: The pointers must be defined which restrict the 
      *                  fill region. 
@@ -282,7 +282,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me)
                                        me->input.character_index_begin + move_distance);
 
     /*_______________________________________________________________________*/
-    QUEX_IF_ASSERTS_poison(&EndP[- move_distance], EndP);
+    QUEX_IF_ASSERTS_poison(&EndP[- move_distance + 1], EndP);
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     (void)EndP;
 
@@ -326,8 +326,8 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
     if( me->_lexeme_start_p ) {
         move_distance = QUEX_MIN(move_distance, &EndP[-1] - me->_lexeme_start_p);
     }
-    move_end_p    = EndP - move_distance;
-    move_size     = move_end_p - BeginP;
+    move_end_p = EndP - move_distance;
+    move_size  = move_end_p - BeginP;
 
     if( ! move_distance ) return 0;
 
