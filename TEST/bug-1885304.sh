@@ -47,13 +47,13 @@ echo
 echo "(*) Dos vs Unix (no output is good output)"
 cat Dos  | awk '! /DATE/' > tmp0.txt
 cat Unix | awk '! /DATE/' > tmp1.txt
-diff tmp0.txt tmp1.txt
+diff tmp0.txt tmp1.txt 
 echo
 for ext in $(echo "-configuration  .cpp  -token -token_ids"); do
     echo "(*) Dos$ext vs Unix$ext (no output is good output)"
     cat Dos$ext  | awk '! /DATE/' > tmp0.txt
     cat Unix$ext | awk '! /DATE/' > tmp1.txt
-    diff tmp0.txt tmp1.txt
+    diff tmp0.txt tmp1.txt | grep line
     echo
 done
 echo

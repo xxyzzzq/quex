@@ -1,6 +1,9 @@
 < COMPILER = g++ -std=c++0x -ggdb 
 ---
-> COMPILER = gcc # -ggdb 
+> COMPILER = gcc -ggdb 
+< 	 $(CCFLAG_ASSERTS)                               \
+---
+> 	 $(CCFLAG_ASSERTS)                               
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 
@@ -14,3 +17,6 @@
 ---
 > EasyLexer.c: simple.qx 
 > 		 --language         C          \
+
+
+

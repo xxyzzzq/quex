@@ -5,7 +5,7 @@
 int main(int argc, char* argv[])
 {
     Lexer lex;
-    QUEX_NAME(from_file_name)(&lex, argv[1], NULL, false);
+    QUEX_NAME(from_file_name)(&lex, argv[1], 0x0);
 
     while (1) {
         QUEX_TYPE_TOKEN* t = NULL;

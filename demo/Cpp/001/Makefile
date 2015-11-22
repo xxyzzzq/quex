@@ -24,9 +24,9 @@ CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
 	 -Wall -Werror -Wconversion -pedantic                    \
 	 $(CCFLAG_ASSERTS)                               \
+     # -DQUEX_OPTION_DEBUG_SHOW
 	 # -DQUEX_OPTION_ASSERTS_DISABLED
 	 # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-     # -DQUEX_OPTION_DEBUG_SHOW
    
 LD = $(COMPILER) 
 
@@ -48,8 +48,8 @@ example.o: ../example.cpp  EasyLexer.cpp
 
 EasyLexer.cpp: simple.qx 
 	quex -i                 simple.qx  \
-	     -o           EasyLexer  \
-		 --token-id-offset     0x1000     \
+	     -o                 EasyLexer  \
+		 --token-id-offset  0x1000     \
 		 --post-categorizer 
 
 # (*) HELPERS __________________________________________________________________
