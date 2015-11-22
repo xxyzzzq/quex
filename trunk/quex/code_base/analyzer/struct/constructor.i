@@ -207,6 +207,10 @@ QUEX_MEMBER_FUNCTIONO(basic_constructor)
     __QUEX_IF_POST_CATEGORIZER(  QUEX_NAME(PostCategorizer_construct)(&me->post_categorizer));
     __QUEX_IF_COUNT(             QUEX_NAME(Counter_construct)(&me->counter); )
 
+    /* A user's mode change callbacks may be called as a consequence of the 
+     * call to 'set_mode_brutally_by_id()'. The current mode must be set to '0'
+     * so that the user may detect whether this is the first mode transition.*/
+    me->__current_mode_p = (QUEX_NAME(Mode)*)0;
     QUEX_NAME(set_mode_brutally_by_id)(me, __QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
     QUEX_MEMBER_FUNCTION_CALLO(user_constructor);
