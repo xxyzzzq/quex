@@ -1,77 +1,83 @@
 {
 title: (BPC=1, FB=0);
 title_group: move_away_passed_content;
-build_time: 0.00983881950378418;
+build_time: 0.9331240653991699;
 file_name: move_away_passed_content-fb0.exe;
-hwut_info_time: 1448159426L;
+hwut_info_time: 1448160827L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005238; -798590125; ]
+  [ ; OK; 0.004728; -798590125; ]
 ]
 }
 {
 title: (BPC=1, FB=1);
 title_group: move_away_passed_content;
-build_time: 0.010244131088256836;
+build_time: 0.9514110088348389;
 file_name: move_away_passed_content-fb1.exe;
-hwut_info_time: 1448159427L;
+hwut_info_time: 1448160829L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005626; -1095250267; ]
+  [ ; OK; 0.004846; -1095250267; ]
 ]
 }
 {
 title: (BPC=1, FB=2);
 title_group: move_away_passed_content;
-build_time: 0.006866931915283203;
+build_time: 1.1180250644683838;
 file_name: move_away_passed_content-fb2.exe;
-hwut_info_time: 1448159428L;
+hwut_info_time: 1448160826L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005544; -2084881114; ]
+  [ ; OK; 0.005638; -2084881114; ]
 ]
 }
 {
 title: (BPC=4, FB=2);
 title_group: move_away_passed_content;
-build_time: 0.007012844085693359;
+build_time: 0.951469898223877;
 file_name: move_away_passed_content-fb2-32.exe;
-hwut_info_time: 1448159429L;
+hwut_info_time: 1448160830L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005452; -2084881114; ]
+  [ ; OK; 0.005466; -2084881114; ]
 ]
 }
 {
 title: (BPC=1);
 title_group: move_away_upfront_content;
-build_time: 0.008079051971435547;
+build_time: 0.9429349899291992;
 file_name: move_away_upfront_content-8.exe;
-hwut_info_time: 1448159430L;
+hwut_info_time: 1448160825L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.005478; 1075482349; ]
+  [ cib=0; OK; 0.005409; 0; ]
+  [ cib=1; OK; 0.007091; 0; ]
+  [ cib=2; OK; 0.005517; 0; ]
 ]
 }
 {
 title: (BPC=2);
 title_group: move_away_upfront_content;
-build_time: 0.0068361759185791016;
+build_time: 0.9626381397247314;
 file_name: move_away_upfront_content-16.exe;
-hwut_info_time: 1448159431L;
+hwut_info_time: 1448160828L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.005712; 0; ]
+  [ cib=0; OK; 0.004941; 0; ]
+  [ cib=1; OK; 0.006500; 0; ]
+  [ cib=2; OK; 0.006819; 0; ]
 ]
 }
 {
 title: (BPC=4);
 title_group: move_away_upfront_content;
-build_time: 0.00781702995300293;
+build_time: 0.0065441131591796875;
 file_name: move_away_upfront_content-32.exe;
-hwut_info_time: 1448159432L;
+hwut_info_time: 1448160515L;
 make_dependent_f: True;
 result_list: [
-  [ ; FAIL; 0.005205; 0; ]
+  [ cib=0; OK; 0.004465; 1320920137; ]
+  [ cib=1; OK; 0.006034; -1608117997; ]
+  [ cib=2; OK; 0.006306; -664086839; ]
 ]
 }

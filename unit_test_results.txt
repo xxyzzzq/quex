@@ -4,8 +4,6 @@
                                                                                
 TEST                                                                 <no date>
 -------------------------------------------------------------------------------
- * 
-        bug-1935701.exe ....................................[NO GOOD FILE]
 
  * alexeevm:
 
@@ -162,7 +160,7 @@ TEST                                                                 <no date>
     3157923 Memory Leak by Components
         bug-3157923.sh .............................................[FAIL]
     3513568 0.62.2 Memory Leak when using ICU
-        bug-3513568.sh .............................................[FAIL]
+        bug-3513568.sh ...............................................[OK]
 
  * inhenriksen:
 
@@ -379,6 +377,9 @@ TEST                                                                 <no date>
         bug-1908092.sh ...............................................[OK]
     1908436 0.23.6 rule precedence reversed for identical patterns
         bug-1908436.sh ...............................................[OK]
+    1935701 - 0.24.7 buffer handling size mismatch
+        bug-1935701.exe FILE .........................................[OK]
+                        fstream ......................................[OK]
     1936707 0.24.10 --plot flag doesnt seem to work
         bug-1936707.sh ...............................................[OK]
     1969629 0.25.4 token list with just TERMINATION treated empty
@@ -474,7 +475,6 @@ TEST                                                                 <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] bug-1935701.exe
     [FAIL] bug-3022603.sh
     [FAIL] bug-2599228.sh _ Developper
                         \__ FilesExist
@@ -485,7 +485,6 @@ TEST                                                                 <no date>
                             \__ GOTO-2
     [FAIL] bug-3082041.sh
     [FAIL] bug-3157923.sh
-    [FAIL] bug-3513568.sh
     [FAIL] bug-3115741.sh _ undo-line-colum-count
     [FAIL] bug-3526210.sh
     [FAIL] bug-2896732.sh
@@ -1052,40 +1051,25 @@ quex/TEST/include-stack/TEST                                         <no date>
  * Include Stack:
 
     Misc Scenarios
-        queue.exe 1 ................................................[FAIL]
-                  2 ................................................[FAIL]
-                  20 ...............................................[FAIL]
-                  3 ................................................[FAIL]
-                  4 ................................................[FAIL]
-                  5 ................................................[FAIL]
-                  empty .......................................[NO OUTPUT]
+        queue.exe 1 ..................................................[OK]
+                  2 ..................................................[OK]
+                  20 .................................................[OK]
+                  3 ..................................................[OK]
+                  4 ..................................................[OK]
+                  5 ..................................................[OK]
+                  empty ..............................................[OK]
     Misc Scenarios
-        users_token.exe 1 ..........................................[FAIL]
-                        2 ..........................................[FAIL]
-                        20 .........................................[FAIL]
-                        3 ..........................................[FAIL]
-                        4 ..........................................[FAIL]
-                        5 ..........................................[FAIL]
-                        empty .................................[NO OUTPUT]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] queue.exe _ 1
-                   \__ 2
-                   \__ 20
-                   \__ 3
-                   \__ 4
-                   \__ 5
-                   \__ empty
-    [FAIL] users_token.exe _ 1
-                         \__ 2
-                         \__ 20
-                         \__ 3
-                         \__ 4
-                         \__ 5
-                         \__ empty
+        users_token.exe 1 ............................................[OK]
+                        2 ............................................[OK]
+                        20 ...........................................[OK]
+                        3 ............................................[OK]
+                        4 ............................................[OK]
+                        5 ............................................[OK]
+                        empty ........................................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                        Indentation Counter / Birds View                        
@@ -1328,40 +1312,38 @@ quex/TEST/source-package/TEST                                        <no date>
                                                                                
 quex/TEST/token-class/TEST                                           <no date>
 -------------------------------------------------------------------------------
- * 
-        simple-queue.exe ......................................[NO OUTPUT]
- * 
-        simple.exe ............................................[NO OUTPUT]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] simple-queue.exe
-    [FAIL] simple.exe
+ * With token policy 'queue'.
+        simple-queue.exe .............................................[OK]
+ * With token policy 'simple'.
+        simple.exe ...................................................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
 quex/TEST/token-policies/TEST                                        <no date>
 -------------------------------------------------------------------------------
- * 
-        queue-real.exe ........................................[NO OUTPUT]
- * 
-        queue.exe .............................................[NO OUTPUT]
- * 
-        users_token-real.exe ..................................[NO OUTPUT]
- * 
-        users_token.exe .......................................[NO OUTPUT]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] queue-real.exe
-    [FAIL] queue.exe
-    [FAIL] users_token-real.exe
-    [FAIL] users_token.exe
+
+ * Token Policy 'queue':
+
+    Pseudo Analysis
+        queue.exe ....................................................[OK]
+    Real Analysis
+        queue-real.exe ...............................................[OK]
+
+ * Token Policy 'single':
+
+    Pseudo Analysis
+        users_token.exe ..............................................[OK]
+    Real Analysis
+        users_token-real.exe .........................................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -2260,8 +2242,8 @@ quex/code_base/buffer/filler/TEST                                    <no date>
 quex/code_base/buffer/loader/TEST                                    <no date>
 -------------------------------------------------------------------------------
  * Segmented Input
-        segmented-input.exe Handler ..................................[OK]
-                            Normal ...................................[OK]
+        segmented-input.exe Handler ................................[FAIL]
+                            Normal .................................[FAIL]
 
  * ByteLoader:
 
@@ -2269,7 +2251,7 @@ quex/code_base/buffer/loader/TEST                                    <no date>
         test-FILE.exe basic ..........................................[OK]
                       init-pos .......................................[OK]
     POSIX
-        test-POSIX.exe basic .........................................[OK]
+        test-POSIX.exe basic ...................................[OVERSIZE]
                        init-pos ......................................[OK]
     std::fstream
         test-fstream.exe basic .......................................[OK]
@@ -2277,10 +2259,14 @@ quex/code_base/buffer/loader/TEST                                    <no date>
     std::stringstream
         test-stringstream.exe basic ..................................[OK]
                               init-pos ...............................[OK]
-                                                                    ___  _  _  
-                                                                   / _ \| |/ ) 
-                                                                  ( (_) | _ <  
-                                                                   \___/|_|\_) 
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] segmented-input.exe _ Handler
+                             \__ Normal
+    [FAIL] test-POSIX.exe _ basic
 ===============================================================================
                                                                                
                              State Machine Algebra                             
@@ -2427,37 +2413,37 @@ quex/engine/state_machine/check/TEST                                 <no date>
 quex/output/core/skipper/TEST                                        <no date>
 -------------------------------------------------------------------------------
  * Indentation Counting
-        test-indentation-counter.py NonUniform .......[KEYBOARD_INTERRUPT]
-                                    NonUniform-2 .....[KEYBOARD_INTERRUPT]
-                                    Uniform ..........[KEYBOARD_INTERRUPT]
+        test-indentation-counter.py NonUniform .......................[OK]
+                                    NonUniform-2 .....................[OK]
+                                    Uniform ..........................[OK]
 
  * Skip-Characters:
 
     Large Buffer
-        test-skip.py ANSI-C ..........................[KEYBOARD_INTERRUPT]
-                     ANSI-C-PlainMemory ..............[KEYBOARD_INTERRUPT]
-                     Cpp .............................[KEYBOARD_INTERRUPT]
-                     Cpp_StrangeStream ...............[KEYBOARD_INTERRUPT]
+        test-skip.py ANSI-C ..........................................[OK]
+                     ANSI-C-PlainMemory ..............................[OK]
+                     Cpp .............................................[OK]
+                     Cpp_StrangeStream ...............................[OK]
     UTF8 Engine -- Varrying Buffer Size
         test-skip-utf8.py 5 ..........................................[OK]
                           6 ..........................................[OK]
                           7 ..........................................[OK]
                           8 ..........................................[OK]
     Varrying Buffer Size
-        test-skip-2.py 3 .............................[KEYBOARD_INTERRUPT]
-                       4 .............................[KEYBOARD_INTERRUPT]
-                       5 .............................[KEYBOARD_INTERRUPT]
-                       6 .............................[KEYBOARD_INTERRUPT]
-                       7 .............................[KEYBOARD_INTERRUPT]
-                       8 .............................[KEYBOARD_INTERRUPT]
+        test-skip-2.py 3 .............................................[OK]
+                       4 .............................................[OK]
+                       5 .............................................[OK]
+                       6 .............................................[OK]
+                       7 .............................................[OK]
+                       8 .............................................[OK]
 
  * Skip-NestedRange:
 
     Delimiter Sizes 1 and 2
-        test-skip_nested_range.py ANSI-C .............[KEYBOARD_INTERRUPT]
-                                  ANSI-C-PlainMemory .[KEYBOARD_INTERRUPT]
-                                  Cpp ................[KEYBOARD_INTERRUPT]
-                                  Cpp_StrangeStream ..[KEYBOARD_INTERRUPT]
+        test-skip_nested_range.py ANSI-C .............................[OK]
+                                  ANSI-C-PlainMemory .................[OK]
+                                  Cpp ................................[OK]
+                                  Cpp_StrangeStream ..................[OK]
 
  * Skip-Range:
 
@@ -2471,28 +2457,10 @@ quex/output/core/skipper/TEST                                        <no date>
                              DL=2 ....................................[OK]
                              DL=3 ....................................[OK]
                              DL=4 ....................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] test-indentation-counter.py _ NonUniform
-                                     \__ NonUniform-2
-                                     \__ Uniform
-    [FAIL] test-skip.py _ ANSI-C
-                      \__ ANSI-C-PlainMemory
-                      \__ Cpp
-                      \__ Cpp_StrangeStream
-    [FAIL] test-skip-2.py _ 3
-                        \__ 4
-                        \__ 5
-                        \__ 6
-                        \__ 7
-                        \__ 8
-    [FAIL] test-skip_nested_range.py _ ANSI-C
-                                   \__ ANSI-C-PlainMemory
-                                   \__ Cpp
-                                   \__ Cpp_StrangeStream
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                          Buffer Moving/Copying Content                         
@@ -2503,34 +2471,32 @@ quex/code_base/buffer/TESTS/move/TEST                                <no date>
  * move_away_passed_content:
 
     (BPC=1, FB=0)
-        move_away_passed_content-fb0.exe ...........................[FAIL]
+        move_away_passed_content-fb0.exe .............................[OK]
     (BPC=1, FB=1)
-        move_away_passed_content-fb1.exe ...........................[FAIL]
+        move_away_passed_content-fb1.exe .............................[OK]
     (BPC=1, FB=2)
-        move_away_passed_content-fb2.exe ...........................[FAIL]
+        move_away_passed_content-fb2.exe .............................[OK]
     (BPC=4, FB=2)
-        move_away_passed_content-fb2-32.exe ........................[FAIL]
+        move_away_passed_content-fb2-32.exe ..........................[OK]
 
  * move_away_upfront_content:
 
     (BPC=1)
-        move_away_upfront_content-8.exe ............................[FAIL]
+        move_away_upfront_content-8.exe cib=0 ........................[OK]
+                                        cib=1 ........................[OK]
+                                        cib=2 ........................[OK]
     (BPC=2)
-        move_away_upfront_content-16.exe ...........................[FAIL]
+        move_away_upfront_content-16.exe cib=0 .......................[OK]
+                                         cib=1 .......................[OK]
+                                         cib=2 .......................[OK]
     (BPC=4)
-        move_away_upfront_content-32.exe ...........................[FAIL]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] move_away_passed_content-fb0.exe
-    [FAIL] move_away_passed_content-fb1.exe
-    [FAIL] move_away_passed_content-fb2.exe
-    [FAIL] move_away_passed_content-fb2-32.exe
-    [FAIL] move_away_upfront_content-8.exe
-    [FAIL] move_away_upfront_content-16.exe
-    [FAIL] move_away_upfront_content-32.exe
+        move_away_upfront_content-32.exe cib=0 .......................[OK]
+                                         cib=1 .......................[OK]
+                                         cib=2 .......................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                       Extensive Tests on Buffer Seek&Tell                      
@@ -2860,7 +2826,6 @@ quex/code_base/buffer/filler/converter/icu/TEST                      <no date>
                                                                    / _ \| |/ ) 
                                                                   ( (_) | _ <  
                                                                    \___/|_|\_) 
-    [NO GOOD FILE] bug-1935701.exe
     [NO GOOD FILE] BufferFiller_forward_load-error.exe
 ===============================================================================
 
@@ -2868,29 +2833,29 @@ SUMMARY:
 
     Fails: N:  Verdict: Directory:                                        
 
-       20  236   [FAIL] TEST                                              
+       18  237   [FAIL] TEST                                              
        12  66    [FAIL] demo/C/TEST                                       
         5  53    [FAIL] ..../Cpp/TEST                                     
            2       [OK] quex/TEST/command-line/TEST                       
            2       [OK] ........./did-you-mean/TEST                       
            1       [OK] ........./errors-warnings/TEST                    
            10      [OK] ........./event-handling/TEST                     
-       14  14    [FAIL] ........./include-stack/TEST                      
+           14      [OK] ........./include-stack/TEST                      
            18      [OK] ........./indentation_count/TEST                  
            45      [OK] ........./match-precedence/TEST                   
         2  10    [FAIL] ........./misc/TEST                               
            55      [OK] ........./reset/TEST                              
            24      [OK] ........./source-package/TEST                     
-        2  2     [FAIL] ........./token-class/TEST                        
-        4  4     [FAIL] ........./token-policies/TEST                     
+           2       [OK] ........./token-class/TEST                        
+           4       [OK] ........./token-policies/TEST                     
            10      [OK] ..../code_base/TEST                               
            42      [OK] ............../analyzer/TEST                      
-        7  7     [FAIL] ............../buffer/TESTS/move/TEST             
+           13      [OK] ............../buffer/TESTS/move/TEST             
            78      [OK] .........................../navigation/TEST       
         2  2     [FAIL] ...................../filler/TEST                 
            12      [OK] ............................/converter/iconv/TEST 
            12      [OK] ....................................../icu/TEST   
-           10      [OK] ...................../loader/TEST                 
+        3  10    [FAIL] ...................../loader/TEST                 
            10      [OK] ............../converter_helper/TEST              
            42      [OK] ..../engine/TEST                                  
            112     [OK] .........../analyzer/TEST                         
@@ -2905,15 +2870,15 @@ SUMMARY:
            56      [OK] ..../input/TEST                                   
            27      [OK] ........../regular_expression/TEST                
            196     [OK] ..../output/core/TEST                             
-       17  29    [FAIL] ................/skipper/TEST                     
+           29      [OK] ................/skipper/TEST                     
            22      [OK] ................/state/transition_map/TEST        
            30      [OK] .........../cpp/TEST                              
 
 -------------------------------------------------------------------------------
-     _____     _ _           ___   ____             
-    |  ___|_ _(_) |___      ( _ ) | ___|      __  __
-    | |_ / _` | | / __|     / _ \ |___ \      \ \/ /
-    |  _| (_| | | \__ \    | (_) | ___) |      >  < 
-    |_|  \__,_|_|_|___/     \___/ |____/      /_/\_\
-                                                                   (1483 tests)
+     _____     _ _          _  _   ____            
+    |  ___|_ _(_) |___     | || | |___ \     __  __
+    | |_ / _` | | / __|    | || |_  __) |    \ \/ /
+    |  _| (_| | | \__ \    |__   _ / __/      >  < 
+    |_|  \__,_|_|_|___/       |_| |_____|    /_/\_\
+                                                                   (1490 tests)
 ===============================================================================
