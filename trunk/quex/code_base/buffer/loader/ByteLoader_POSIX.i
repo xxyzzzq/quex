@@ -84,7 +84,6 @@ QUEX_INLINE size_t
 ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN) 
 { 
     int n = read(((ByteLoader_POSIX*)me)->fd, buffer, ByteN); 
-    printf("n=%i;\n", (int)n);
     return n;
 }
 
