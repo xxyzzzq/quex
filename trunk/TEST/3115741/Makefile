@@ -43,7 +43,7 @@ Simple.o: Simple.c
 	$(CC) $< -o $@ 
 
 example.o: $(QUEX_PATH)/TEST/lexer.c  Simple.c
-	$(CC) $< -o $@ 
+	$(CC) -DPRINT_LINE_COLUMN_NUMBER $< -o $@ 
 
 # Macro expansions (only for debugging):
 %.E: %.c    

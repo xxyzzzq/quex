@@ -1,51 +1,28 @@
-< COMPILER = g++ -ggdb -Wall -Werror -pedantic 
+< COMPILER := g++ -ggdb -Wall -Werror -pedantic 
 ---
-> COMPILER = gcc -ggdb -Wall -Werror -pedantic -std=c89
-< copy-conversion.exe:        copy-conversion.cpp $(UTF8_OBJS)  
+> COMPILER := gcc -ggdb -Wall -Werror -pedantic -std=c89
+< point.exe:           point.cpp $(OBJS)  
 ---
-> copy-conversion.exe:        copy-conversion.c $(UTF8_OBJS)  
-< copy-conversion-direct.exe: copy-conversion-direct.cpp $(UTF8_OBJS)  
+> point.exe:           point.c $(OBJS)  
+< %.o:                 %.cpp  lexPlain
 ---
-> copy-conversion-direct.exe: copy-conversion-direct.c $(UTF8_OBJS)  
-< fill-conversion-direct.exe: fill-conversion-direct.cpp $(UTF8_OBJS)  
+> %.o:                 %.c  lexPlain.h
+< %_utf8.o:            %.cpp  lexUTF8
 ---
-> fill-conversion-direct.exe: fill-conversion-direct.c $(UTF8_OBJS)  
-< %.exe:                      %.cpp $(OBJS)  
+> %_utf8.o:            %.c  lexUTF8.h
+< %.E:                 %.cpp  
 ---
-> %.exe:                      %.c $(OBJS)  
-< point.exe:                  point.cpp  NON_UTF8
-< 	# All related files must be compiled with fallback_n = 0
-< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
-<           
-< re-point.exe:               re-point.cpp  NON_UTF8
-< 	# All related files must be compiled with fallback_n = 0
-< 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.cpp) 
+> %.E:                 %.c  
+< lexPlain lexPlain.cpp: lexPlain.qx 
 ---
-> point.exe:                  point.c $(OBJS:.o=.c)  NON_UTF8
-> 	## All related files must be compiled with fallback_n = 0 
-> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
->           
-> re-point.exe:               re-point.c  $(OBJS:.o=.c) NON_UTF8
-> 	## All related files must be compiled with fallback_n = 0
-> 	$(CC)      -o $@ -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 $< $(OBJS:.o=.c) 
-< %_utf8.o:                   %_utf8.cpp  UTF8
+> lexPlain.h lexPlain.c: lexPlain.qx 
+> 		 --language     C            \
+< lexUTF8 lexUTF8.cpp: lexUTF8.qx 
 ---
-> %_utf8.o:                   %_utf8.c  UTF8
-< messaging-framework_utf8.o: messaging-framework.cpp  UTF8
+> lexUTF8.h lexUTF8.c: lexUTF8.qx 
+> 		 --language            C            \
+< 	rm -f lexPlain.cpp lexPlain-configuration lexPlain-token lexPlain-token_ids lexPlain
+< 	rm -f lexUTF8.cpp  lexUTF8-configuration  lexUTF8-token  lexUTF8-token_ids lexUTF8
 ---
-> messaging-framework_utf8.o: messaging-framework.c  UTF8
-< %.o:                     %.cpp  NON_UTF8
----
-> %.o:                     %.c  NON_UTF8
-< %.E:                     %.cpp  NON_UTF8
----
-> %.E:                     %.c  NON_UTF8
-< tiny_lexer tiny_lexer.cpp:            NON_UTF8
----
-> tiny_lexer tiny_lexer.c:            NON_UTF8
-< tiny_lexer_utf8 tiny_lexer_utf8.cpp:  UTF8
----
-> tiny_lexer_utf8 tiny_lexer_utf8.c:	UTF8
-> 		 --language     C                  \
-> 		 --language            C                \
-> 	rm -f tmp*
+> 	rm -f lexPlain.[ch] lexPlain-configuration.h lexPlain-token.h lexPlain-token_ids.h
+> 	rm -f lexUTF8.[ch]  lexUTF8-configuration.h  lexUTF8-token.h  lexUTF8-token_ids.h

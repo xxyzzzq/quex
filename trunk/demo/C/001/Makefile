@@ -8,6 +8,7 @@ ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
+
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
 else 
@@ -47,8 +48,8 @@ example.o: ../example.c EasyLexer.c
 
 EasyLexer.c: simple.qx 
 	quex -i                 simple.qx  \
-	     -o           EasyLexer  \
-		 --token-id-offset     0x1000     \
+	     -o                 EasyLexer  \
+		 --token-id-offset  0x1000     \
 		 --language         C          \
 		 --post-categorizer
 
