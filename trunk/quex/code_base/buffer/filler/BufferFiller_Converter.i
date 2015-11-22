@@ -167,12 +167,12 @@ QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego
 { 
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
 
-    if( ! me )                                                    return;
-    else if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
+    if( ! me ) return;
+
+    if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
 
     QUEX_ASSERT_RAW_BUFFER(&me->raw_buffer);
 
-    ByteLoader_delete(&me->base.byte_loader);
     QUEX_NAME(Converter_delete)(&me->converter); 
 
     QUEXED(MemoryManager_free)((void*)me->raw_buffer.begin,

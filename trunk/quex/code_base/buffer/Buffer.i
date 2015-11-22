@@ -67,6 +67,27 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
     QUEX_TYPE_CHARACTER*  BeginP = &me->_memory._front[1];
     QUEX_TYPE_CHARACTER*  EndP   = me->_memory._back;
 
+    if( ! me->_memory._front ) {
+        /* No memory => Analyzer is put into a non-functional state.         */
+        me->_read_p                             = (QUEX_TYPE_CHARACTER*)0;
+        me->_lexeme_start_p                     = (QUEX_TYPE_CHARACTER*)0;
+        me->_character_at_lexeme_start          = (QUEX_TYPE_CHARACTER)0;                                   
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                 
+        me->_character_before_lexeme_start      = (QUEX_TYPE_CHARACTER)0;
+#       endif
+        me->input.end_p                         = (QUEX_TYPE_CHARACTER*)0;
+        me->input.character_index_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
+        me->input.character_index_begin         = (QUEX_TYPE_STREAM_POSITION)-1;
+        return;
+    }
+
+    /* No character covered yet -> '\0'.                                     */
+    me->_character_at_lexeme_start = '\0';                                   
+#   ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                 
+    /* When the buffer is initialized, a line begins. Signalize that.        */
+    me->_character_before_lexeme_start = QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;
+#   endif
+
     /* (1) BEFORE LOAD: The pointers must be defined which restrict the 
      *                  fill region. 
      *
@@ -75,13 +96,6 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
     me->_read_p         = BeginP;                            
     me->_lexeme_start_p = BeginP;                            
                                                                              
-    /* No character covered yet -> '\0'.                                     */
-    me->_character_at_lexeme_start = '\0';                                   
-#   ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION                 
-    /* When the buffer is initialized, a line begins. Signalize that.        */
-    me->_character_before_lexeme_start = QUEX_SETTING_CHARACTER_NEWLINE_IN_ENGINE_CODEC;
-#   endif
-
     /* (2) Load content, determine character indices of borders, determine
      *     end of file pointer.                                              */
     QUEX_NAME(Buffer_register_eos)(me, (QUEX_TYPE_STREAM_POSITION)-1);
@@ -91,7 +105,7 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
         QUEX_NAME(Buffer_register_content)(me, BeginP, 0);          /* EMPTY */
         QUEX_NAME(Buffer_load_forward)(me);   
     } 
-    else {
+    else if( me->_memory._front ) {
         __quex_assert(! EndOfFileP || (EndOfFileP >= BeginP && EndOfFileP <= EndP));
         (void)EndP;
 

@@ -35,8 +35,7 @@ reset_buffer reported buffer: Correct
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
-   size       = 512
-   eof offset = 1
+   <empty buffer>
 
 
 reset_buffer reported buffer: Correct
@@ -86,8 +85,7 @@ reset_buffer reported buffer: Correct
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
-   size       = 512
-   eof offset = 1
+   <empty buffer>
 
 
 reset_buffer reported buffer: Correct
@@ -111,8 +109,7 @@ reset_buffer reported buffer: Correct
 
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
-   size       = 77
-   eof offset = 61
+   <empty buffer>
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 77, ContentSize0 = 0)
@@ -124,19 +121,17 @@ reset_buffer reported buffer: Correct
 
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
-   size       = 77
-   eof offset = 1
+   <empty buffer>
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
-   size       = 512
-   eof offset = 1
+   <empty buffer>
+
+
 
 
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
-   size       = 512
-   eof offset = 1
+   <empty buffer>
 VALGRIND:   All heap blocks were freed -- no leaks are possible

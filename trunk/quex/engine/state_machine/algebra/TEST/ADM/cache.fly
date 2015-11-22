@@ -3,9 +3,9 @@ title: Algebraic Relations;
 file_name: test-algebraic-relations.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ unary; OK; 5.045161; None; ]
-  [ binary; OK; 10.129999; None; ]
-  [ derived_binary; OK; 10.977481; None; ]
+  [ unary; OK; 4.136403; None; ]
+  [ binary; OK; 7.670519; None; ]
+  [ derived_binary; OK; 8.464008; None; ]
 ]
 }
 {
@@ -13,11 +13,11 @@ title: Complementary State Machines;
 file_name: test-complement.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ Sequence; OK; 0.158619; None; ]
-  [ Branches; OK; 0.314537; None; ]
-  [ Loops; OK; 0.205559; None; ]
-  [ BranchesLoops; OK; 0.439218; None; ]
-  [ Misc; OK; 1.040165; None; ]
+  [ Sequence; OK; 0.130011; None; ]
+  [ Branches; OK; 0.269746; None; ]
+  [ Loops; OK; 0.157750; None; ]
+  [ BranchesLoops; OK; 0.372280; None; ]
+  [ Misc; OK; 0.740142; None; ]
 ]
 }
 {
@@ -25,12 +25,12 @@ title: Difference Operation;
 file_name: test-difference.py;
 hwut_info_time: 1426921701L;
 result_list: [
-  [ Easy; OK; 0.273258; None; ]
-  [ FalseCases; OK; 0.332357; None; ]
-  [ GoodCases; OK; 0.302940; None; ]
-  [ FalseCasesII; OK; 0.304733; None; ]
-  [ GoodCasesII; OK; 0.829811; None; ]
-  [ Misc; OK; 0.627386; None; ]
+  [ Easy; OK; 0.248517; None; ]
+  [ FalseCases; OK; 0.325134; None; ]
+  [ GoodCases; OK; 0.328451; None; ]
+  [ FalseCasesII; OK; 0.389093; None; ]
+  [ GoodCasesII; OK; 0.865053; None; ]
+  [ Misc; OK; 0.632485; None; ]
 ]
 }
 {
@@ -38,12 +38,12 @@ title: Intersection;
 file_name: test-intersection.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.192211; None; ]
-  [ 1; OK; 0.276042; None; ]
-  [ 2; OK; 0.190337; None; ]
-  [ 3; OK; 0.342322; None; ]
-  [ 4; OK; 0.842808; None; ]
-  [ 5; OK; 1.602896; None; ]
+  [ 0; OK; 0.182116; None; ]
+  [ 1; OK; 0.257886; None; ]
+  [ 2; OK; 0.190607; None; ]
+  [ 3; OK; 0.319976; None; ]
+  [ 4; OK; 0.813080; None; ]
+  [ 5; OK; 1.133890; None; ]
 ]
 }
 {
@@ -51,7 +51,7 @@ title: Unique State Indices;
 file_name: test-unique-state-indices.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ ; OK; 0.836569; None; ]
+  [ ; OK; 0.646576; None; ]
 ]
 }
 {
@@ -60,12 +60,12 @@ title_group: Complement Begin;
 file_name: test-complement_begin.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.559558; None; ]
-  [ 1; OK; 0.446049; None; ]
-  [ 2; OK; 0.277479; None; ]
-  [ 3; OK; 0.507757; None; ]
-  [ 4; OK; 1.199657; None; ]
-  [ 5; OK; 0.847058; None; ]
+  [ 0; OK; 0.509415; None; ]
+  [ 1; OK; 0.320723; None; ]
+  [ 2; OK; 0.197798; None; ]
+  [ 3; OK; 0.402195; None; ]
+  [ 4; OK; 0.944494; None; ]
+  [ 5; OK; 0.796315; None; ]
 ]
 }
 {
@@ -74,12 +74,12 @@ title_group: Complement Begin;
 file_name: test-complement_in.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.446696; None; ]
-  [ 1; OK; 0.376813; None; ]
-  [ 2; OK; 0.215016; None; ]
-  [ 3; OK; 0.335612; None; ]
-  [ 4; OK; 0.568939; None; ]
-  [ 5; OK; 0.882794; None; ]
+  [ 0; OK; 0.465576; None; ]
+  [ 1; OK; 0.298990; None; ]
+  [ 2; OK; 0.190933; None; ]
+  [ 3; OK; 0.276096; None; ]
+  [ 4; OK; 0.537615; None; ]
+  [ 5; OK; 0.741146; None; ]
 ]
 }
 {
@@ -88,12 +88,12 @@ title_group: Complement End;
 file_name: test-complement_end.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.386083; None; ]
-  [ 1; OK; 0.442582; None; ]
-  [ 2; OK; 0.332707; None; ]
-  [ 3; OK; 0.380683; None; ]
-  [ 4; OK; 0.749312; None; ]
-  [ 5; OK; 1.072467; None; ]
+  [ 0; OK; 0.277374; None; ]
+  [ 1; OK; 0.394124; None; ]
+  [ 2; OK; 0.248348; None; ]
+  [ 3; OK; 0.377435; None; ]
+  [ 4; OK; 0.560156; None; ]
+  [ 5; OK; 0.823279; None; ]
 ]
 }
 {
@@ -102,12 +102,12 @@ title_group: Cut Begin;
 file_name: test-cut_begin.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.434257; None; ]
-  [ 1; OK; 0.248762; None; ]
-  [ 2; OK; 0.162260; None; ]
-  [ 3; OK; 0.281303; None; ]
-  [ 4; OK; 0.566975; None; ]
-  [ 5; OK; 0.260497; None; ]
+  [ 0; OK; 0.368239; None; ]
+  [ 1; OK; 0.244558; None; ]
+  [ 2; OK; 0.131973; None; ]
+  [ 3; OK; 0.265252; None; ]
+  [ 4; OK; 0.515288; None; ]
+  [ 5; OK; 0.239125; None; ]
 ]
 }
 {
@@ -116,11 +116,11 @@ title_group: Cut End;
 file_name: test-cut_end.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ 0; OK; 0.503639; None; ]
-  [ 1; OK; 0.324630; None; ]
-  [ 2; OK; 0.195912; None; ]
-  [ 3; OK; 0.358646; None; ]
-  [ 4; OK; 0.593277; None; ]
-  [ 5; OK; 0.291864; None; ]
+  [ 0; OK; 0.492886; None; ]
+  [ 1; OK; 0.451522; None; ]
+  [ 2; OK; 0.226905; None; ]
+  [ 3; OK; 0.376838; None; ]
+  [ 4; OK; 0.598599; None; ]
+  [ 5; OK; 0.348137; None; ]
 ]
 }

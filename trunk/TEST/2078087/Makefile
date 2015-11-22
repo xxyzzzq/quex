@@ -8,7 +8,7 @@ CFLAGS = \
 
 lexer:
 	quex -i $(INPUT) -o Simple --token-policy single --language C --debug-exception
-	g++ -I$(QUEX_PATH) -I. \
+	g++ -I$(QUEX_PATH) -I. -Wall \
 		-DPRINT_TOKEN \
 		$(CFLAGS) \
 		../lexer.c Simple*.c \
@@ -16,7 +16,7 @@ lexer:
 
 lexer.E:
 	quex -i $(INPUT) -o Simple --token-policy single --language C --debug-exception
-	g++ -I$(QUEX_PATH) -I. \
+	g++ -I$(QUEX_PATH) -I. -Wall \
 		-E $(CFLAGS) \
 		../lexer.c \
 		-ggdb -o lexer.E

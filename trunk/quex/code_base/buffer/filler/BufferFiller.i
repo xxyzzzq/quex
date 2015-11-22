@@ -82,9 +82,12 @@ QUEX_NAME(BufferFiller_new_DEFAULT)(ByteLoader*   byte_loader,
 QUEX_INLINE void       
 QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
 { 
-    if     ( ! *me )                                           return;
+    if( ! *me ) return;
     else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
-    else if( (*me)->delete_self )                              (*me)->delete_self(*me);
+
+    ByteLoader_delete(&(*me)->byte_loader);
+
+    if( (*me)->delete_self ) (*me)->delete_self(*me);
     (*me) = (QUEX_NAME(BufferFiller)*)0;
 }
 
@@ -142,12 +145,10 @@ QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, ByteLoader* new_byte_
 
     if( new_byte_loader != me->byte_loader ) {
         if( ByteLoader_is_equivalent(new_byte_loader, me->byte_loader) ) {
-            /* QUEX_ERROR_EXIT("Upon 'reset': current and new ByteLoader objects contain same input handle."); */
+            __QUEX_STD_printf("Upon 'reset': current and new ByteLoader objects contain same input handle.\n"); 
         }
-        else {
-            ByteLoader_delete(&me->byte_loader);
-            me->byte_loader = new_byte_loader;
-        }
+        ByteLoader_delete(&me->byte_loader);
+        me->byte_loader = new_byte_loader;
     }
     QUEX_NAME(BufferFiller_character_index_reset)(me);
 }

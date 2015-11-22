@@ -277,7 +277,7 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
 #   endif
     __QUEX_IF_COUNT(memento->counter          = me->counter);
 
-    me->buffer                              = *new_buffer_setup;
+    me->buffer                                = *new_buffer_setup;
     __QUEX_IF_COUNT(QUEX_NAME(Counter_construct)(&me->counter); )
 
     /* Deriberately not subject to include handling:
@@ -299,6 +299,8 @@ QUEX_MEMBER_FUNCTIONO2(basic_include_push,
 
 QUEX_INLINE bool
 QUEX_MEMBER_FUNCTIONO(include_pop) 
+/* RETURNS: true, if there was a memento that has been restored. 
+ *          false, else.                                                     */
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(Memento)* memento;
@@ -309,6 +311,8 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
      * loaders, buffer fillers, and converters.                              */
     QUEX_NAME(Buffer_destruct)(&me->buffer);                              
 
+    memento             = me->_parent_memento;
+    me->_parent_memento = memento->_parent_memento;
     /* memento_unpack():                                                    
      *    => Current mode                                                   
      *           => __current_mode_p                                        
@@ -324,11 +328,8 @@ QUEX_MEMBER_FUNCTIONO(include_pop)
      *    -- File handle by constructor                                      */
                                                                             
     /* Copy Back of content that was stored upon inclusion.                  */
-    memento = me->_parent_memento;
 
     me->input_name                       = memento->input_name;
-
-    me->_parent_memento                  = memento->_parent_memento;
     me->buffer                           = memento->buffer;
     me->__current_mode_p                 = memento->__current_mode_p; 
     me->current_analyzer_function        = memento->current_analyzer_function;
@@ -356,11 +357,7 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(include_stack_delete)
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    while( me->_parent_memento ) {
-        if( ! QUEX_MEMBER_FUNCTION_CALLO(include_pop) ) {
-            QUEX_ERROR_EXIT("Error during deletion of include stack.");
-        }
-    }
+    while( QUEX_MEMBER_FUNCTION_CALLO(include_pop) );
 }
 
 QUEX_INLINE bool

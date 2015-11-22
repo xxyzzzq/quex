@@ -18,17 +18,22 @@ QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me,
                                   const size_t              Size,
                                   E_Ownership               Ownership) 
 {
-    __quex_assert(Memory);
-    /* "Memory size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2" is reqired.
-     * Maybe, define '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0' for 
-     * compilation (assumed no pre-contexts.)                                */
-    __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
+    if( Memory ) {
+        /* "Memory size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2" is reqired.
+         * Maybe, define '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0' for 
+         * compilation (assumed no pre-contexts.)                                */
+        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
 
-    me->_front    = Memory;
-    me->_back     = &Memory[Size-1];
-    me->ownership = Ownership;
-    *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-    *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        me->_front    = Memory;
+        me->_back     = &Memory[Size-1];
+        me->ownership = Ownership;
+        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    } else {
+        me->_front    = (QUEX_TYPE_CHARACTER*)0;
+        me->_back     = me->_front;
+        me->ownership = Ownership;
+    }
 }
 
 QUEX_INLINE void 

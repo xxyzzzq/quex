@@ -195,8 +195,9 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
  *               accordingly, it deleted it itself.                          */
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    QUEX_TYPE_CHARACTER* previous_buffer_memory;
-    __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
+    QUEX_TYPE_CHARACTER*       previous_buffer_memory;
+    __quex_assert((! Memory) || (EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]));
+    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_CHARACTER*)0)); 
 
     QUEX_NAME(Buffer_destruct)(&me->buffer); 
     /* In case, that the memory was owned by the analyzer, the destructor did
@@ -223,7 +224,7 @@ QUEX_MEMBER_FUNCTIONO(basic_reset)
 
     QUEX_NAME(ModeStack_construct)(me);
 
-    __QUEX_IF_INCLUDE_STACK(     me->_parent_memento = (QUEX_NAME(Memento)*)0);
+    __QUEX_IF_INCLUDE_STACK(     QUEX_MEMBER_FUNCTION_CALLO(include_stack_delete));
 
     __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_destruct)(&me->accumulator));
     __QUEX_IF_STRING_ACCUMULATOR(QUEX_NAME(Accumulator_construct)(&me->accumulator, me));
