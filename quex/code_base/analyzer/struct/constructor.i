@@ -187,7 +187,8 @@ QUEX_MEMBER_FUNCTION3(from, memory,
  * buffer filler'.                                                           */
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
+    __quex_assert((! Memory) || (EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]));
+    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_CHARACTER*)0)); 
 
     QUEX_NAME(Buffer_construct)(&me->buffer, 
                                 (QUEX_NAME(BufferFiller)*)0,

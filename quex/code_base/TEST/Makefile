@@ -1,4 +1,3 @@
-# Get: QUEX_CORE dedendencies
 
 TEST_FILES = \
 	       strange_stream.exe  \

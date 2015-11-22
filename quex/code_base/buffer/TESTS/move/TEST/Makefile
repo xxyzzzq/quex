@@ -1,4 +1,3 @@
-# Get: QUEX_CORE dedendencies
 
 TEST_FILES = \
 		   move_away_passed_content-fb0.exe \

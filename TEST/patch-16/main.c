@@ -11,9 +11,9 @@ char file_buffer[BUFFER_SIZE];
 int main(int argc, char** argv) {
 	quex_simple qlex;
 	QUEX_TYPE_TOKEN token_p;
-	char* file = argc == 1 ? "example.txt" : argv[1];
+	char* file_name = argc == 1 ? "example.txt" : argv[1];
 	QUEX_NAME_TOKEN(construct)(&token_p);
-	QUEX_NAME(from_file_name)(&qlex, file, ENCODING_NAME, false);
+	QUEX_NAME(from_file_name)(&qlex, file_name, ENCODING_NAME);
 	QUEX_NAME(token_p_swap)(&qlex, &token_p);
 	do {
 		QUEX_NAME(receive)(&qlex);

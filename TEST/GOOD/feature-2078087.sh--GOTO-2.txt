@@ -1,5 +1,5 @@
 quex -i GOTO-2.qx -o Simple --token-policy single --language C --debug-exception
-g++ -I<<QUEX_PATH>> -I. \
+g++ -I<<QUEX_PATH>> -I. -Wall \
 		-DPRINT_TOKEN \
 		-DQUEX_OPTION_DEBUG_SHOW_MODES -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \
 		../lexer.c Simple*.c \
@@ -18,7 +18,6 @@ g++ -I<<QUEX_PATH>> -I. \
 ##
 ## Report any bug at
 ##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
-## An Assert-Abortion might be an intended element of the experiment.
 ,------------------------------------------------------------------------------------
 | [START]
 LETTER '1'

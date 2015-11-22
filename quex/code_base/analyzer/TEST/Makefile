@@ -1,4 +1,3 @@
-# Get: QUEX_CORE dedendencies
 
 PROGRAMS = \
 		   post-categorizer-enter.exe \

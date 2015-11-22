@@ -101,7 +101,6 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego) 
 {
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    ByteLoader_delete(&me->base.byte_loader); 
     QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
 
 }
