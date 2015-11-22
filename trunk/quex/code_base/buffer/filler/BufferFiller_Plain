@@ -14,8 +14,6 @@
 #include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/buffer/loader/ByteLoader>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
     typedef struct QUEX_NAME(BufferFiller_Plain_tag) {
@@ -29,10 +27,6 @@ QUEX_NAMESPACE_MAIN_OPEN
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read.                             */
 
-#   undef TEMPLATED_CLASS
-
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__ */

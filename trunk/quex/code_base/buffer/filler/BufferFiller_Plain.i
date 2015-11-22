@@ -14,8 +14,6 @@
 #include <quex/code_base/buffer/filler/BufferFiller>
 #include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
@@ -173,8 +171,6 @@ QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/filler/BufferFiller.i>
 

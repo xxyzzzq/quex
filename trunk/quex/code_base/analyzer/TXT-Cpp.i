@@ -1,5 +1,3 @@
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
@@ -63,8 +61,6 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #endif /* QUEX_OPTION_INCLUDE_STACK */
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #if defined(__QUEX_OPTION_CONVERTER_HELPER)
 #   include "$$CONVERTER_HELPER_I$$"
