@@ -13,8 +13,6 @@
 #endif
 
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 /* Level (1) __________________________________________________________________
@@ -376,7 +374,5 @@ QUEX_MEMBER_FUNCTIONO1(include_detect_recursion,
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I */

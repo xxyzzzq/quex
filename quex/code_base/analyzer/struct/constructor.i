@@ -8,8 +8,6 @@
 #include <quex/code_base/buffer/filler/BufferFiller.i>
 #include <quex/code_base/analyzer/struct/include-stack>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
                     
 QUEX_INLINE void   QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
@@ -371,7 +369,5 @@ QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me)
 
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I */
