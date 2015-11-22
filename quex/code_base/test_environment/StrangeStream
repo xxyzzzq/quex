@@ -74,7 +74,7 @@ private:
 
 };
 
-#   define TEMPLATE_IN  template <class StdStreamType> inline
+#define TEMPLATE_IN  template <class StdStreamType> inline
 
 TEMPLATE_IN
 StrangeStream<StdStreamType>::StrangeStream(StdStreamType* SH)

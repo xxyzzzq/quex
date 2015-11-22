@@ -5,8 +5,6 @@
 #include<quex/code_base/definitions>
 #include<quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 typedef struct { 
@@ -162,7 +160,6 @@ QUEX_INLINE bool       QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)*, const 
 QUEX_INLINE bool       QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
 
 QUEX_NAMESPACE_MAIN_CLOSE
-#include <quex/code_base/temporary_macros_off>
 #include <quex/code_base/buffer/filler/BufferFiller>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER */

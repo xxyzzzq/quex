@@ -9,8 +9,6 @@
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
 
-#include <quex/code_base/temporary_macros_on>
-
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
@@ -299,7 +297,6 @@ QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_e
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/temporary_macros_off>
 #include <quex/code_base/buffer/filler/BufferFiller.i>
 #include <quex/code_base/buffer/filler/BufferFiller_Converter_RawBuffer.i>
 #include <quex/code_base/buffer/filler/converter/Converter.i>

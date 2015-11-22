@@ -7,8 +7,6 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 /* NOTE: QUEX_TYPE_TOKEN must be defined at this place! */
 
 
@@ -274,7 +272,5 @@ QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRemainder)* me, QUEX_
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE_I */

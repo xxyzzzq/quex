@@ -7,8 +7,6 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/temporary_macros_on>
-
 #ifndef QUEX_TYPE_TOKEN
 #    error "QUEX_TYPE_TOKEN must be defined before including this file."
 #endif
@@ -77,7 +75,5 @@ QUEX_INLINE void  QUEX_NAME(TokenQueueRemainder_restore)(QUEX_NAME(TokenQueueRem
 #endif
 
 QUEX_NAMESPACE_MAIN_CLOSE
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif /* __QUEX_INCLUDE_GUARD__TOKEN__TOKENQUEUE */
