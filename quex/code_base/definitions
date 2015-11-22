@@ -29,7 +29,7 @@
 #   define QUEXED(X)                  QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
 #   define QUEXED_DEF(X)              QUEXED_AUX(QUEX_NAMESPACE_QUEX, X)
 #endif
-#ifdef __cplusplus
+#if defined( __cplusplus) && ! defined(__QUEX_OPTION_PLAIN_C)
 #   define QUEX_MAP_THIS_TO_ME(CLASS)   CLASS* me = this; (void)me;
 #else
 #   define QUEX_MAP_THIS_TO_ME(CLASS)   /* 'me' already plays the role of 'this'.   */

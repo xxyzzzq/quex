@@ -8,7 +8,7 @@ TEST                                                                 <no date>
  * alexeevm:
 
     3022603 0.49.2 Using external buffer with Quex lexer
-        bug-3022603.sh .............................................[FAIL]
+        bug-3022603.sh ...............................................[OK]
     3025173 0.49.2 Custom Token struct for quex
         bug-3025173.sh ...............................................[OK]
     3032877 -b, --buffer-element-size enhancement
@@ -124,8 +124,8 @@ TEST                                                                 <no date>
     2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP
         feature-2078087.sh GOSUB ...................................[FAIL]
                            GOSUB-2 .................................[FAIL]
-                           GOTO ....................................[FAIL]
-                           GOTO-2 ..................................[FAIL]
+                           GOTO ......................................[OK]
+                           GOTO-2 ....................................[OK]
     2161098 0.32.1 Nested-Range Skipper Line Number Counter
         bug-2161098-x.sh c_comments ..................................[OK]
                          funny_comments ..............................[OK]
@@ -475,14 +475,11 @@ TEST                                                                 <no date>
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
-    [FAIL] bug-3022603.sh
     [FAIL] bug-2599228.sh _ Developper
                         \__ FilesExist
     [FAIL] patch-16.sh
     [FAIL] feature-2078087.sh _ GOSUB
                             \__ GOSUB-2
-                            \__ GOTO
-                            \__ GOTO-2
     [FAIL] bug-3082041.sh
     [FAIL] bug-3157923.sh
     [FAIL] bug-3115741.sh _ undo-line-colum-count
@@ -2242,8 +2239,8 @@ quex/code_base/buffer/filler/TEST                                    <no date>
 quex/code_base/buffer/loader/TEST                                    <no date>
 -------------------------------------------------------------------------------
  * Segmented Input
-        segmented-input.exe Handler ................................[FAIL]
-                            Normal .................................[FAIL]
+        segmented-input.exe Handler ..................................[OK]
+                            Normal ...................................[OK]
 
  * ByteLoader:
 
@@ -2251,7 +2248,7 @@ quex/code_base/buffer/loader/TEST                                    <no date>
         test-FILE.exe basic ..........................................[OK]
                       init-pos .......................................[OK]
     POSIX
-        test-POSIX.exe basic ...................................[OVERSIZE]
+        test-POSIX.exe basic .........................................[OK]
                        init-pos ......................................[OK]
     std::fstream
         test-fstream.exe basic .......................................[OK]
@@ -2259,14 +2256,10 @@ quex/code_base/buffer/loader/TEST                                    <no date>
     std::stringstream
         test-stringstream.exe basic ..................................[OK]
                               init-pos ...............................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] segmented-input.exe _ Handler
-                             \__ Normal
-    [FAIL] test-POSIX.exe _ basic
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                              State Machine Algebra                             
@@ -2833,7 +2826,7 @@ SUMMARY:
 
     Fails: N:  Verdict: Directory:                                        
 
-       18  237   [FAIL] TEST                                              
+       15  237   [FAIL] TEST                                              
        12  66    [FAIL] demo/C/TEST                                       
         5  53    [FAIL] ..../Cpp/TEST                                     
            2       [OK] quex/TEST/command-line/TEST                       
@@ -2855,7 +2848,7 @@ SUMMARY:
         2  2     [FAIL] ...................../filler/TEST                 
            12      [OK] ............................/converter/iconv/TEST 
            12      [OK] ....................................../icu/TEST   
-        3  10    [FAIL] ...................../loader/TEST                 
+           10      [OK] ...................../loader/TEST                 
            10      [OK] ............../converter_helper/TEST              
            42      [OK] ..../engine/TEST                                  
            112     [OK] .........../analyzer/TEST                         
@@ -2875,10 +2868,10 @@ SUMMARY:
            30      [OK] .........../cpp/TEST                              
 
 -------------------------------------------------------------------------------
-     _____     _ _          _  _   ____            
-    |  ___|_ _(_) |___     | || | |___ \     __  __
-    | |_ / _` | | / __|    | || |_  __) |    \ \/ /
-    |  _| (_| | | \__ \    |__   _ / __/      >  < 
-    |_|  \__,_|_|_|___/       |_| |_____|    /_/\_\
+     _____     _ _          _____   __             
+    |  ___|_ _(_) |___     |___ /  / /_      __  __
+    | |_ / _` | | / __|      |_ \ | '_ \     \ \/ /
+    |  _| (_| | | \__ \     ___) || (_) |     >  < 
+    |_|  \__,_|_|_|___/    |____/  \___/     /_/\_\
                                                                    (1490 tests)
 ===============================================================================
