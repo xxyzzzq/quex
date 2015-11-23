@@ -3,6 +3,7 @@
 case $1 in
     --hwut-info)
         echo "Testing the implementation of line number pragmas;"
+        echo "HAPPY: [0-9]+;"
         ;;
 
     *)
