@@ -939,7 +939,7 @@ cpp_reload_forward_str = [
 """,
 """
         __quex_debug_reload_before();          /* Report source position. */
-        QUEX_NAME(buffer_reload_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN);
+        QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN);
 """,
 """
         __quex_debug_reload_after();
@@ -958,7 +958,7 @@ cpp_reload_backward_str = [
     }
     if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
         __quex_debug_reload_before();          /* Report source position. */
-        QUEX_NAME(buffer_reload_backward)(&me->buffer);
+        QUEX_NAME(Buffer_load_backward)(&me->buffer);
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);   /* may use 'computed goto' */
     }

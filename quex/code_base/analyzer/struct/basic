@@ -20,11 +20,6 @@ QUEX_NAMESPACE_MAIN_OPEN
                            const char*             CharacterEncodingName, 
                            const size_t            TranslationBufferMemorySize);
 
-    QUEX_INLINE void      QUEX_NAME(buffer_reload_backward)(QUEX_NAME(Buffer)* buffer);
-    QUEX_INLINE void      QUEX_NAME(buffer_reload_forward)(QUEX_NAME(Buffer)*  buffer, 
-                                                           QUEX_TYPE_CHARACTER** post_context_start_position,
-                                                           const size_t          PostContextN);
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__BASIC */
