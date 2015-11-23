@@ -103,7 +103,7 @@ QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
     if( me->filler && me->filler->byte_loader ) {
         __quex_assert(! EndOfFileP);
         QUEX_NAME(Buffer_register_content)(me, BeginP, 0);          /* EMPTY */
-        QUEX_NAME(Buffer_load_forward)(me);   
+        QUEX_NAME(Buffer_load_forward)(me, (QUEX_TYPE_CHARACTER**)0, 0);   
     } 
     else if( me->_memory._front ) {
         __quex_assert(! EndOfFileP || (EndOfFileP >= BeginP && EndOfFileP <= EndP));
@@ -503,7 +503,9 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
 }
    
 QUEX_INLINE bool
-QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
+QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
+                               QUEX_TYPE_CHARACTER** position_register,
+                               const size_t          PositionRegisterN)
 /* Load as much new content into the buffer as possible--from what lies
  * ahead in the input stream. The '_read_p' and the '_lexeme_start_p' 
  * MUST be maintained inside the buffer. The 'input.end_p' pointer
@@ -517,6 +519,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
     QUEX_TYPE_STREAM_POSITION   ci_begin    = QUEX_NAME(Buffer_input_character_index_begin)(me);
     QUEX_TYPE_STREAM_POSITION   new_ci_begin;
     ptrdiff_t                   delta;
+    QUEX_TYPE_CHARACTER**       pr_it       = 0x0;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
@@ -533,6 +536,9 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
          * spans the whole buffer, then nothing can be loaded.               */
         QUEX_NAME(__BufferFiller_on_overflow)(me, /* Forward */ true);
         return false;
+    }
+    else if( me->on_buffer_content_change ) {
+        me->on_buffer_content_change(me->_memory._front, me->_memory._back);
     }
 
     delta        = QUEX_MIN(me->_read_p, me->_lexeme_start_p) - BeginP;
@@ -551,6 +557,11 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
     }
     me->_read_p         -= delta; 
     me->_lexeme_start_p -= delta; 
+    if( position_register ) {
+        for(pr_it = position_register; pr_it != &position_register[PositionRegisterN]; ++pr_it) {
+            *pr_it = (*pr_it - BeginP) >= delta ? *pr_it - delta : 0;
+        }
+    }
 
     __quex_debug_buffer_load(me, "LOAD FORWARD(exit)\n");
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -559,10 +570,24 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)* me)
 
 QUEX_INLINE bool   
 QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
-/* Load *previous* content into the buffer so that the analyzer can 
- * continue seeminglessly (in backward direction).
+
+/* Load *previous* content into the buffer so that the analyzer can continue
+ * seeminglessly (in backward direction).
  *
- * RETURNS: Number of loaded buffer elements of type QUEX_TYPE_CHARACTER     */
+ * RETURNS: Number of loaded buffer elements of type QUEX_TYPE_CHARACTER     
+ *
+ * REMARK: NO ADAPTIONS OF POST-CONTEXT POSITIONS !
+ *
+ *   Backward lexing happens in two cases:
+ *  
+ *    (1) When checking for a pre-condition. In this case, no dedicated
+ *    acceptance is involved. No acceptance positions are considered.
+ *  
+ *    (2) When tracing back to get the end of a core pattern in pseudo-ambigous
+ *    post conditions. Then, no acceptance positions are involved, because the
+ *    start of the lexeme shall not drop before the begin of the buffer and the
+ *    end of the core pattern, is of course, after the start of the lexeme. 
+ *    => there will be no reload backwards.                                  */
 {
     QUEX_TYPE_CHARACTER*       EndP   = me->_memory._back;
     const ptrdiff_t            ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
@@ -589,6 +614,10 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
         QUEX_NAME(__BufferFiller_on_overflow)(me, /* Forward */ false);
         return false;
     }
+    else if( me->on_buffer_content_change ) {
+        me->on_buffer_content_change(me->_memory._front, me->input.end_p);
+    }
+
 
     delta          = ContentSize >> 1;
     delta          = QUEX_MIN(delta, 
