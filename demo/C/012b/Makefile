@@ -9,12 +9,12 @@ else
 	CCFLAG_ASSERTS=-DQUEX_OPTION_ASSERTS_DISABLED
 endif
 
-CC := gcc -DQUEX_OPTION_MULTI -Wall -Werror
+CC := gcc -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
 
 lexer: $(ENGINE:.c=.o) lexer.o A_B_C-token.o
 	$(CC) $^ -o  $@ -I$(QUEX_PATH) `icu-config --ldflags` 
 	 
-%.o: %.c $(ENGINE_SOURCES)
+%.o: %.c $(ENGINE)
 	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 
 # -DQUEX_OPTION_ASSERTS_DISABLED
@@ -41,11 +41,12 @@ moritz_Lexer.c: moritz.qx A_B_C-token.c A_B_C-token_ids.h
 A_B_C-token_ids.h \
 A_B_C-token.c: 
 	quex -i token_ids.qx               \
+		 --language C                  \
 		 --icu -b 4                    \
 		 --token-id-prefix TKN_        \
 		 -o A::B::C                    \
-		 --token-class A::B::C::Token   \
-		 --token-class-only            --language C
+		 --token-class A::B::C::Token  \
+		 --token-class-only            
 
 clean:
 	rm -rf $(ENGINE)

@@ -12,11 +12,8 @@ endif
 CC := g++ -ggdb -Wall -Werror -DQUEX_OPTION_MULTI 
 
 lexer: $(ENGINE:.cpp=.o) lexer.o A_B_C-token.o
-	$(CC) $^ -ggdb -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
+	$(CC) $^ -o  $@ -I$(QUEX_PATH) `icu-config --ldflags`
 	 
-lexer.o: lexer.cpp $(ENGINE)
-	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
-
 %.o: %.cpp $(ENGINE)
 	$(CC) -c $< -o $@ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
 
@@ -25,7 +22,8 @@ lexer.o: lexer.cpp $(ENGINE)
 
 COMMON_TOKEN_OPTIONS = \
 	 --token-class-file A_B_C-token \
-     --token-policy single --suppress 0 1 6
+     --token-policy     single \
+	 --suppress         0 1 6
 		 # --no-message-on-extra-options \
 
 %.E: %.cpp
@@ -46,7 +44,7 @@ A_B_C-token.cpp:
 		 --icu -b 4                    \
 		 --token-id-prefix TKN_        \
 		 -o A::B::C                    \
-		 --token-class A::B::C::Token   \
+		 --token-class A::B::C::Token  \
 		 --token-class-only 
 
 clean:
