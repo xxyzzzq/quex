@@ -162,16 +162,17 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
     const QUEX_TYPE_STREAM_POSITION ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
     QUEX_TYPE_CHARACTER             chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
     QUEX_TYPE_STREAM_POSITION       remaining_n = TargetCI - me->character_index_next_to_fill;
+    bool                            end_of_stream_f = false;
 
     __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
 
     for(; remaining_n > ChunkSize; remaining_n -= ChunkSize ) {
-        if( ChunkSize > me->derived_load_characters(me, &chunk[0], (size_t)ChunkSize) ) {
+        if( ChunkSize > me->derived_load_characters(me, &chunk[0], (size_t)ChunkSize, &end_of_stream_f) ) {
             return false;
         }
     }
     if( remaining_n ) {
-        if( remaining_n > me->derived_load_characters(me, &chunk[0], (size_t)remaining_n) ) {
+        if( remaining_n > me->derived_load_characters(me, &chunk[0], (size_t)remaining_n, &end_of_stream_f) ) {
             return false;
         }
     }

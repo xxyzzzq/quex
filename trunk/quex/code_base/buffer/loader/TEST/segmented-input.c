@@ -127,6 +127,7 @@ reader_process(int fd, int ReadChunkSize,
     ByteLoader* loader = ByteLoader_POSIX_new(fd);
     int         cmp_n=0;
     int         loaded_n=0;
+    bool        end_of_stream_f;
 
     loader->on_nothing = on_nothing;
 
@@ -134,7 +135,7 @@ reader_process(int fd, int ReadChunkSize,
     do {
         usleep(10);
 
-        loaded_n = loader->load(loader, &buffer[sum_loaded_n], ReadChunkSize);
+        loaded_n = loader->load(loader, &buffer[sum_loaded_n], ReadChunkSize, &end_of_stream_f);
 
         if( ! loaded_n ) break;
 

@@ -42,7 +42,9 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
     /* -- 'Read' reads N characters from a stream into a buffer 
      * (independent of their size)                                           */
     size_t      (*derived_load_characters)(struct QUEX_NAME(BufferFiller_tag)*,
-                                                QUEX_TYPE_CHARACTER* memory, const size_t N);
+                                           QUEX_TYPE_CHARACTER* memory, 
+                                           const size_t         N,
+                                           bool*                end_of_stream_f);
 
     /* -- 'Tell': Character index of the next character to be loaded into
      *            the buffer, when 'derived_load_characters()' is called.
@@ -117,7 +119,9 @@ QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_INLINE void    
     QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                   size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                                  QUEX_TYPE_CHARACTER*, const size_t),
+                                                                  QUEX_TYPE_CHARACTER*, 
+                                                                  const size_t, 
+                                                                  bool*),
                                   ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                                   void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                                   void         (*delete_self)(QUEX_NAME(BufferFiller)*),
@@ -137,10 +141,11 @@ QUEX_INLINE void
     QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
 
 QUEX_INLINE ptrdiff_t  
-    QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*         me, 
+    QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*   me, 
                                  QUEX_TYPE_CHARACTER*       RegionBeginP, 
                                  const ptrdiff_t            Size,
-                                 QUEX_TYPE_STREAM_POSITION  CharacterIndexBegin);
+                                 QUEX_TYPE_STREAM_POSITION  CharacterIndexBegin,
+                                 bool*                      end_of_stream_f);
 
 QUEX_INLINE void    
     QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 

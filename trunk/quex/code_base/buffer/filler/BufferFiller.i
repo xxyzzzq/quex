@@ -94,7 +94,9 @@ QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
 QUEX_INLINE void    
 QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                               size_t       (*derived_load_characters)(QUEX_NAME(BufferFiller)*,
-                                                                           QUEX_TYPE_CHARACTER*, const size_t),
+                                                                           QUEX_TYPE_CHARACTER*, 
+                                                                           const size_t, 
+                                                                           bool*),
                               ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                               void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
@@ -115,13 +117,13 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     __quex_assert(derived_delete_self);
 
     /* Support for buffer filling without user interaction                   */
-    me->stomach_byte_n               = stomach_byte_n;
-    me->stomach_clear                = stomach_clear;
-    me->input_character_tell         = QUEX_NAME(BufferFiller_character_index_tell);
-    me->input_character_seek         = QUEX_NAME(BufferFiller_character_index_seek);
+    me->stomach_byte_n          = stomach_byte_n;
+    me->stomach_clear           = stomach_clear;
+    me->input_character_tell    = QUEX_NAME(BufferFiller_character_index_tell);
+    me->input_character_seek    = QUEX_NAME(BufferFiller_character_index_seek);
     me->derived_load_characters = derived_load_characters;
-    me->delete_self                  = derived_delete_self;
-    me->_on_overflow                 = 0x0;
+    me->delete_self             = derived_delete_self;
+    me->_on_overflow            = 0x0;
 
     /* Support for manual buffer filling.                                    */
     me->fill_prepare = derived_fill_prepare;
@@ -157,7 +159,8 @@ QUEX_INLINE ptrdiff_t
 QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me, 
                              QUEX_TYPE_CHARACTER*      LoadP, 
                              const ptrdiff_t           LoadN,
-                             QUEX_TYPE_STREAM_POSITION StartCharacterIndex)
+                             QUEX_TYPE_STREAM_POSITION StartCharacterIndex,
+                             bool*                     end_of_stream_f)
 /* Seeks the input position StartCharacterIndex and loads 'LoadN' 
  * characters into the engine's buffer starting from 'LoadP'.
  *
@@ -174,7 +177,8 @@ QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me,
 
     /* (2) Load content into the given region.                                   
      *                                                                       */
-    loaded_n = (ptrdiff_t)me->derived_load_characters(me, LoadP, (size_t)LoadN);
+    loaded_n = (ptrdiff_t)me->derived_load_characters(me, LoadP, (size_t)LoadN,
+                                                      end_of_stream_f);
     __quex_assert(loaded_n <= LoadN);
 
     if(    me->character_index_next_to_fill - StartCharacterIndex 
