@@ -48,9 +48,10 @@ test(ByteLoader* me, int LoadN)
     QUEX_TYPE_STREAM_POSITION position = 0;
     QUEX_TYPE_STREAM_POSITION position_limit;
     QUEX_TYPE_STREAM_POSITION previous;
+    bool                      end_of_stream_f;
 
     me->seek(me, 0);
-    hwut_verify(TEST_FILE_SIZE == me->load(me, reference, TEST_FILE_SIZE));
+    hwut_verify(TEST_FILE_SIZE == me->load(me, reference, TEST_FILE_SIZE, &end_of_stream_f));
     position_limit = TEST_FILE_SIZE;
 
     for(i=0; i < 65536 ; ++i) {
@@ -86,14 +87,16 @@ test(ByteLoader* me, int LoadN)
 static bool
 verify_load(ByteLoader* me, int Offset, int N, QUEX_TYPE_STREAM_POSITION position_limit)
 /* Loads 'N' bytes and compares the loaded content with what is stored 
- * in the reference storage.                                             */
-{
-    uint8_t                   buffer[4096];
-    uint8_t*                  content = &buffer[4];
-    ptrdiff_t                 loaded_n;
-    hwut_verify(N < 4096);
+ * in the reference storage.                                                 */
+{                                                                            
+    uint8_t     buffer[4096];                                  
+    uint8_t*    content = &buffer[4];                          
+    ptrdiff_t   loaded_n;                                      
+    bool        end_of_stream_f;
 
-    /* Set borders to detect overwrite.                                  */
+    hwut_verify(N < 4096);                                                   
+                                                                             
+    /* Set borders to detect overwrite.                                      */
     memset(&content[-4], 0x5A, 4);
     memset(&content[N], 0x5A, 4);
 
@@ -106,20 +109,25 @@ verify_load(ByteLoader* me, int Offset, int N, QUEX_TYPE_STREAM_POSITION positio
     hwut_verify(content[N+2] == 0x5A);
     hwut_verify(content[N+3] == 0x5A);
 
-    loaded_n = me->load(me, content, N);
+    loaded_n = me->load(me, content, N, &end_of_stream_f);
+    /* (i)  The 'end_of_stream_f' does not have to be set. 
+     * (ii) But it MUST NOT be set if there is no end of stream!             */
+    if( Offset + N < position_limit ) {
+        hwut_verify(! end_of_stream_f);
+    }
 
     hwut_verify(loaded_n <= QUEX_MIN(position_limit, N));
     if( me->binary_mode_f ) {
         hwut_verify(Offset + loaded_n == me->tell(me));
     }
 
-    /* Make sure that the content corresponds to the reference data.     */
+    /* Make sure that the content corresponds to the reference data.         */
     if( memcmp((void*)&reference[Offset], (void*)content, (size_t)loaded_n) != 0) {
         print_difference(content, Offset, loaded_n, position_limit);
         return false;
     }
 
-    /* Make sure nothing has been written beyond borders.                */
+    /* Make sure nothing has been written beyond borders.                    */
     hwut_verify(content[-4] == 0x5A);
     hwut_verify(content[-3] == 0x5A);
     hwut_verify(content[-2] == 0x5A);

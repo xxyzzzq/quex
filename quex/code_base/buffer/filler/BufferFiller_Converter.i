@@ -27,9 +27,10 @@ QUEX_INLINE ptrdiff_t
 QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE size_t 
-QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)* alter_ego,
-                                                       QUEX_TYPE_CHARACTER*     RegionBeginP, 
-                                                       const size_t             N);
+QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
+                                                       QUEX_TYPE_CHARACTER* RegionBeginP, 
+                                                       const size_t         N,
+                                                       bool*                end_of_stream_f);
 QUEX_INLINE void 
 QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
                                                QUEX_TYPE_CHARACTER*       RegionBeginP,
@@ -50,7 +51,9 @@ QUEX_INLINE void
 QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me);
 
 QUEX_INLINE size_t 
-QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me, ByteLoader* byte_loader);
+QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
+                          ByteLoader*            byte_loader, 
+                          bool*                  end_of_stream_f);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
@@ -181,8 +184,9 @@ QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego
 
 QUEX_INLINE size_t 
 QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
-                                                       QUEX_TYPE_CHARACTER*      RegionBeginP, 
-                                                       const size_t              N)
+                                                  QUEX_TYPE_CHARACTER*      RegionBeginP, 
+                                                  const size_t              N,
+                                                  bool*                     end_of_stream_f)
 /* Loads content into the raw buffer, convert it and write it to the engine's
  * buffer. The region where to write into the engine's buffer expands from
  * 'RegionBeginP' to 'N' characters after it.                                */
@@ -194,6 +198,8 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
     ptrdiff_t                          converted_character_n;
     bool                               drain_filled_f;
     uint32_t                           first_character;
+    size_t                             raw_loaded_byte_n;
+    bool                               raw_end_of_stream_f;
 #   if 0
     int                                i;
     QUEX_TYPE_CHARACTER*               buffer_insertion_begin_p;
@@ -208,6 +214,8 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
 
     /* Some converters keep some content internally. So, it is a more general
      * solution to convert first and reload new bytes upon need.             */
+    *end_of_stream_f    = false;
+    raw_end_of_stream_f = false;
     while( 1 + 1 == 2 ) {
         /* NOT: if( next_to_convert_p != fill_end_p ) ...
          * Because, converters may leave some content in their stomach and spit
@@ -232,19 +240,22 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
 
         if( drain_filled_f ) break;
 
-        __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' means break  */
-        QUEX_ASSERT_RAW_BUFFER(raw); 
+        __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' break  */
 
-        if( ! QUEX_NAME(RawBuffer_load)(&me->raw_buffer, me->base.byte_loader) ) {
-            /* No bytes have been loaded.                                    */
-            if( raw->fill_end_p != raw->begin ) {
-                /* There are still bytes, but they were not converted by the 
-                 * converter.                                                */
-                __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
-            }
-            break;
+        /* if( ! raw_end_of_stream_f ) { */
+        raw_loaded_byte_n = QUEX_NAME(RawBuffer_load)(&me->raw_buffer, me->base.byte_loader,
+                                                      &raw_end_of_stream_f);
+        if( raw_loaded_byte_n ) continue;
+        /* } */
+        
+        *end_of_stream_f = true;
+        if( raw->fill_end_p != raw->begin ) {
+            /* There are still bytes, but they were not converted.           */
+            __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
         }
+        break;
     }
+
     me->converter->virginity_f = false;
     /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
      * last byte that was converted.                                         */ 

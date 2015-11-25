@@ -407,6 +407,7 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
     ptrdiff_t                  loaded_n;
     intmax_t                   move_distance;
     ptrdiff_t                  move_size;
+    bool                       end_of_stream_f = false;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     __quex_assert(me->input.character_index_begin      <= NewCharacterIndexBegin);
@@ -432,9 +433,10 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
     __quex_assert(&load_p[load_request_n] <= EndP);
     (void)EndP;
     loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, load_p, load_request_n,
-                                            load_character_index);
+                                            load_character_index,
+                                            &end_of_stream_f);
 
-    if( loaded_n != load_request_n ) { /* End of stream detected.            */
+    if( (! loaded_n) || end_of_stream_f ) { /* End of stream detected.       */
         QUEX_NAME(Buffer_register_eos)(me, load_character_index + loaded_n);
     }
 
@@ -474,6 +476,7 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
     ptrdiff_t                  loaded_n;
     intmax_t                   move_distance;
     QUEX_TYPE_CHARACTER*       end_p;
+    bool                       end_of_stream_f = false;
 
     __quex_assert(NewCharacterIndexBegin >= 0);
     __quex_assert(ci_begin  >= NewCharacterIndexBegin);
@@ -486,7 +489,8 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
 
     /* (2) Move away content, so that previous content can be reloaded.      */
     loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
-                                            NewCharacterIndexBegin);
+                                            NewCharacterIndexBegin,
+                                            &end_of_stream_f);
 
     /* (3) In case of error, the stream must have been corrupted. Previously
      *     present content is not longer available. Continuation impossible. */
@@ -673,6 +677,7 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_CHARACTER* EndP        = me->_memory._back;
     ptrdiff_t            load_request_n;
     ptrdiff_t            loaded_n;
+    bool                 end_of_stream_f = false;
 
     /* Character with character index 'MinCharacterIndexInBuffer' has
      * not been loaded. => Buffer must be setup as before.                   */
@@ -687,7 +692,8 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
     __quex_assert(&BeginP[load_request_n] <= EndP);
     (void)EndP;
     loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
-                                            me->input.character_index_begin);
+                                            me->input.character_index_begin,
+                                            &end_of_stream_f);
 
     if( loaded_n != load_request_n ) {
         QUEX_ERROR_EXIT("Buffer filler failed to load content that has been loaded before.!");

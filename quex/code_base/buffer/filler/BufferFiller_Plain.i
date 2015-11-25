@@ -31,7 +31,8 @@ QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
 QUEX_INLINE size_t 
 QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)* alter_ego,
                                                    QUEX_TYPE_CHARACTER*     RegionBeginP, 
-                                                   const size_t             N);
+                                                   const size_t             N,
+                                                   bool*                    end_of_stream_f);
 
 QUEX_INLINE void 
 QUEX_NAME(BufferFiller_Plain_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_ego,
@@ -105,8 +106,9 @@ QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
 
 QUEX_INLINE size_t   
 QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_ego,
-                                                   QUEX_TYPE_CHARACTER*      RegionBeginP, 
-                                                   const size_t              N)  
+                                                   QUEX_TYPE_CHARACTER* RegionBeginP, 
+                                                   const size_t         N,
+                                                   bool*                end_of_stream_f)  
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
  * variables. 
  *
@@ -127,7 +129,8 @@ QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_eg
 
     loaded_byte_n = me->base.byte_loader->load(me->base.byte_loader, 
                                                RegionBeginP, 
-                                               N * sizeof(QUEX_TYPE_CHARACTER));
+                                               N * sizeof(QUEX_TYPE_CHARACTER),
+                                               end_of_stream_f);
 
     if( loaded_byte_n % sizeof(QUEX_TYPE_CHARACTER) ) {
         __QUEX_STD_printf("Error: End of file cuts in the middle a multi-byte character.");

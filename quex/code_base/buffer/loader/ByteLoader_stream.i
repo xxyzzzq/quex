@@ -1,3 +1,5 @@
+/* vim: set ft=c:
+ * (C) Frank-Rene Schaefer */
 #ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM_I
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER_STREAM_I
 
@@ -9,7 +11,7 @@
 template <class StreamType> QUEX_INLINE QUEX_TYPE_STREAM_POSITION  ByteLoader_stream_tell(ByteLoader* me);
 template <class StreamType> QUEX_INLINE void                       ByteLoader_stream_seek(ByteLoader* me, 
                                                                                           QUEX_TYPE_STREAM_POSITION Pos);
-template <class StreamType> QUEX_INLINE size_t                     ByteLoader_stream_load(ByteLoader* me, void* buffer, const size_t ByteN);
+template <class StreamType> QUEX_INLINE size_t                     ByteLoader_stream_load(ByteLoader* me, void* buffer, const size_t ByteN, bool*);
 template <class StreamType> QUEX_INLINE void                       ByteLoader_stream_delete_self(ByteLoader* me);
 template <class StreamType> QUEX_INLINE bool                       ByteLoader_stream_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B);
 
@@ -98,13 +100,14 @@ ByteLoader_stream_seek(ByteLoader* alter_ego, QUEX_TYPE_STREAM_POSITION Pos)
 }
 
 template <class StreamType> QUEX_INLINE size_t  
-ByteLoader_stream_load(ByteLoader* alter_ego, void* buffer, const size_t ByteN) 
+ByteLoader_stream_load(ByteLoader*  alter_ego, 
+                       void*        buffer, 
+                       const size_t ByteN, 
+                       bool*        end_of_stream_f) 
 { 
-    ByteLoader_stream<StreamType>*       me = (ByteLoader_stream<StreamType>*)alter_ego;
-    const QUEX_TYPE_STREAM_POSITION      CharSize = \
+    ByteLoader_stream<StreamType>*    me = (ByteLoader_stream<StreamType>*)alter_ego;
+    const QUEX_TYPE_STREAM_POSITION   CharSize = \
          (QUEX_TYPE_STREAM_POSITION)sizeof(typename StreamType::char_type);
-
-    const typename StreamType::pos_type  position_before = me->input_handle->tellg();
 
     if( ! ByteN ) return (size_t)0;
 
@@ -113,17 +116,9 @@ ByteLoader_stream_load(ByteLoader* alter_ego, void* buffer, const size_t ByteN)
 
     const size_t loaded_char_n = (size_t)(me->input_handle->gcount());
 
-    if( me->input_handle->eof() && ! me->input_handle->bad() ) {
-        me->input_handle->clear();
-        /* A position can only be seeked, if it is valid. Interactive input streams
-         * may not return a valid stream position, because they have none.           */
-        if( position_before != (typename StreamType::pos_type)-1 ) {
-            me->input_handle->seekg(
-                position_before 
-              + (typename StreamType::off_type)(loaded_char_n)
-            );
-        }
-    } else if( me->input_handle->fail() ) {
+    *end_of_stream_f = me->input_handle->eof();
+
+    if( (! *end_of_stream_f) && me->input_handle->fail() ) {
         throw std::runtime_error("Fatal error during stream reading.");
     }
 

@@ -7,7 +7,7 @@
 QUEX_INLINE void                       ByteLoader_POSIX_construct(ByteLoader_POSIX* me, int fd);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  ByteLoader_POSIX_tell(ByteLoader* me);
 QUEX_INLINE void                       ByteLoader_POSIX_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos);
-QUEX_INLINE size_t                     ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN);
+QUEX_INLINE size_t                     ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN, bool*);
 QUEX_INLINE void                       ByteLoader_POSIX_delete_self(ByteLoader* me);
 QUEX_INLINE bool                       ByteLoader_POSIX_compare_handle(const ByteLoader* alter_ego_A, 
                                                                        const ByteLoader* alter_ego_B);
@@ -81,9 +81,12 @@ ByteLoader_POSIX_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos)
 { lseek(((ByteLoader_POSIX*)me)->fd, (long)Pos, SEEK_SET); }
 
 QUEX_INLINE size_t  
-ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN) 
+ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN, bool* end_of_stream_f) 
 { 
+    /* The POSIX interface does not allow to detect end of file upon reading.
+     * The caller will realize end of stream by a return of zero bytes.      */
     int n = read(((ByteLoader_POSIX*)me)->fd, buffer, ByteN); 
+    *end_of_stream_f = false;
     return n;
 }
 
