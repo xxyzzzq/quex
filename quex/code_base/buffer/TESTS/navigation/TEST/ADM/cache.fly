@@ -232,19 +232,6 @@ result_list: [
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 2.295355796813965;
-file_name: test-Plain-wiostream-2-0.exe;
-hwut_info_time: 1448742443L;
-make_dependent_f: True;
-same_f: True;
-result_list: [
-  [ linear; OK; 0.335119; 0; ]
-  [ stepping; OK; 0.214838; 0; ]
-]
-}
-{
-title: BufferFiller_Plain (BPC=4, FALLBACK=0);
-title_group: Buffer Tell&Seek;
 build_time: 1.4999878406524658;
 file_name: test-Plain-4-0.exe;
 hwut_info_time: 1448742465L;
@@ -253,6 +240,19 @@ same_f: True;
 result_list: [
   [ linear; OK; 0.529684; 0; ]
   [ stepping; OK; 2.820790; 0; ]
+]
+}
+{
+title: BufferFiller_Plain (BPC=4, FALLBACK=0);
+title_group: Buffer Tell&Seek;
+build_time: 2.295355796813965;
+file_name: test-Plain-wiostream-2-0.exe;
+hwut_info_time: 1448742443L;
+make_dependent_f: True;
+same_f: True;
+result_list: [
+  [ linear; OK; 0.335119; 0; ]
+  [ stepping; OK; 0.214838; 0; ]
 ]
 }
 {
