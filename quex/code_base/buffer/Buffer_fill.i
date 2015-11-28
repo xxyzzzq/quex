@@ -46,7 +46,7 @@ QUEX_NAME(Buffer_fill_prepare)(QUEX_NAME(Buffer)*  me,
  * The content may be filled into the engine's buffer or an intermediate 
  * 'raw' buffer which still needs to be converted.                          */
 {
-    (void)QUEX_NAME(Buffer_move_away_passed_content)(me);
+    (void)QUEX_NAME(Buffer_move_away_passed_content)(me, (QUEX_TYPE_CHARACTER**)0, 0);
 
     /* Get the pointers for the border where to fill content.               */
     me->filler->fill_prepare(me->filler, 

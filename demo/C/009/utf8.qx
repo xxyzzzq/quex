@@ -7,13 +7,14 @@ token {
     DOT;
     FAIL;
     IDENTIFIER;
+    WHITESPACE;
 }
 
 mode ONE_AND_ONLY :
-<skip: [ \n\t\r] >
 {
     on_end_of_stream             => QUEX_TKN_TERMINATION(LexemeNull);
     on_failure                   => QUEX_TKN_FAIL(Lexeme);
+    [ \t\n]                      => QUEX_TKN_WHITESPACE;
 
     "أهلا بك"|"欢迎"              => QUEX_TKN_HELLO(Lexeme);
     "天地"|"عالم"                => QUEX_TKN_WORLD(Lexeme);

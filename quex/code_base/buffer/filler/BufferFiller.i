@@ -24,8 +24,6 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX
 QUEX_INLINE void       QUEX_NAME(BufferFiller_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
                                                                   const QUEX_TYPE_CHARACTER* End);
 
-QUEX_INLINE void       QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
-
                        
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
@@ -123,7 +121,6 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
     me->input_character_seek    = QUEX_NAME(BufferFiller_character_index_seek);
     me->derived_load_characters = derived_load_characters;
     me->delete_self             = derived_delete_self;
-    me->_on_overflow            = 0x0;
 
     /* Support for manual buffer filling.                                    */
     me->fill_prepare = derived_fill_prepare;

@@ -59,11 +59,6 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
     bool        (*input_character_seek)(struct QUEX_NAME(BufferFiller_tag)*,
                                         const QUEX_TYPE_STREAM_POSITION Index);
 
-    /* -- 'Overflow': user defined handler for the case that the distance
-     *                from lexeme start  to lexeme end exceeds the buffer size.
-     *                                                                       */
-    bool        (*_on_overflow)(QUEX_NAME(Buffer)*, bool ForwardF);
-
     /* -- 'Stomach Byte Number': is the number of bytes that have been read
      *                           from the stream but not yet converted.      
      *                                                                       */

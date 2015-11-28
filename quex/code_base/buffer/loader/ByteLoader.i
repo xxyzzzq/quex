@@ -45,9 +45,22 @@ ByteLoader_tell(ByteLoader* me)
 }
 
 QUEX_INLINE void
+ByteLoader_seek_disable(ByteLoader* me)
+{
+    me->derived.seek = (void (*)(ByteLoader*, QUEX_TYPE_STREAM_POSITION))0;
+}
+
+QUEX_INLINE bool
+ByteLoader_seek_is_enabled(ByteLoader* me)
+{
+    return me->derived.seek ? true : false;
+}
+
+QUEX_INLINE void
 ByteLoader_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Position)
 {
-    if( Position < me->initial_position ) return;
+    if     ( Position < me->initial_position ) return;
+    else if( ! me->derived.seek )              return;
     me->derived.seek(me, Position);
 }
 

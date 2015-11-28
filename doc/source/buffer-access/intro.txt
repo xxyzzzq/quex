@@ -12,6 +12,9 @@ circumstances. In a first section basic concepts are discussed to describe a
 input policy situation. The remaining sections explain how to implement
 aspects of input policies that deviate from the default handling.
 
+TODO: Setting the 'end_of_stream_f' is essential in 'unidirectional streams'
+      where a reload is impossible! Then, the 'end_of_stream_f' initiates
+      the 'end_of_stream_character_index' which prevents a reload.
 
 Basic Concepts of Input Policies
 ################################

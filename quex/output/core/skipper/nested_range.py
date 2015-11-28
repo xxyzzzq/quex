@@ -130,9 +130,7 @@ $$RELOAD$$:
     $$MARK_LEXEME_START$$
 
 $$LC_COUNT_BEFORE_RELOAD$$
-    if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) == false ) {
-        QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position,
-                                       PositionRegisterN);
+    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, &position[0], PositionRegisterN)) {
         /* Recover '_read_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         $$INPUT_P_TO_LEXEME_START$$

@@ -25,7 +25,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void feed_socket(FILE* fh, int socket_fd, int ChunkSize);
+static void feed_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms);
 static int  connect_to_server();
 
 int 
@@ -34,11 +34,13 @@ main(int argc, char** argv)
  * socket 0x4711 on this host.
  *
  * $1 Name of file that contains what is to be fed into socket.
- * $2 Chunk size of chunks fed into socket.                                  */
+ * $2 Chunk size of chunks fed into socket.                                  
+ * $3 milliseconds to wait in between sendings.                              */
 {
-    int                 socket_fd = 0;
-    FILE*               fh        = argc > 1 ? fopen(argv[1], "rb") : NULL;
-    const int           ChunkSize = argc > 2 ? atoi(argv[2]) : 3;
+    int        socket_fd = 0;
+    FILE*      fh        = argc > 1 ? fopen(argv[1], "rb") : NULL;
+    const int  ChunkSize = argc > 2 ? atoi(argv[2]) : 3;
+    const int  Delay_ms  = argc > 3 ? atoi(argv[3]) : 1;
 
     if( ! fh ) {
         printf("client: could not open input file.\n");
@@ -48,7 +50,7 @@ main(int argc, char** argv)
     socket_fd = connect_to_server();
     if( socket_fd == -1 ) return -1;
 
-    feed_socket(fh, socket_fd, ChunkSize);
+    feed_socket(fh, socket_fd, ChunkSize, Delay_ms);
     return 0;
 }
 
@@ -76,7 +78,7 @@ connect_to_server()
 }
 
 static void
-feed_socket(FILE* fh, int socket_fd, int ChunkSize)
+feed_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
 /* Take the content found in 'fh' and feeds it into socket 'socket_fd' in 
  * chunks of size 'ChunkSize'. When done, this function returns.             */
 {
@@ -98,7 +100,7 @@ feed_socket(FILE* fh, int socket_fd, int ChunkSize)
             printf("client: write() terminates with failure.\n");
             return;
         }
-        usleep(200);
+        usleep(1000L * Delay_ms);
     }
     printf("<done>\n");
 }

@@ -26,7 +26,8 @@ endif
 
 COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-	 -DQUEX_OPTION_POSIX -DQUEX_OPTION_DEBUG_SHOW
+    -DQUEX_OPTION_DEBUG_SHOW \
+	 -DQUEX_OPTION_POSIX 
 
 # Debugging Options:
 #   -DQUEX_OPTION_DEBUG_SHOW

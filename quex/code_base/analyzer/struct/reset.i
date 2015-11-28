@@ -172,7 +172,8 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
     else {
         /* Assume, that buffer filler has been reset.                        */
     }
-    QUEX_NAME(Buffer_init_analyzis)(&me->buffer, (QUEX_TYPE_CHARACTER*)0); 
+    QUEX_NAME(Buffer_init_content)(&me->buffer, (QUEX_TYPE_CHARACTER*)0);
+    QUEX_NAME(Buffer_init_analyzis)(&me->buffer); 
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
