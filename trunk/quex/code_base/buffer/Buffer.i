@@ -833,6 +833,7 @@ QUEX_NAME(Buffer_on_content_change_DEFAULT)(const QUEX_TYPE_CHARACTER* BeginP,
 QUEX_INLINE void
 QUEX_NAME(Buffer_on_overflow_DEFAULT)(QUEX_NAME(Buffer)* me, bool ForwardF)
 {
+    (void)me; (void)ForwardF;
 #   ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
     uint8_t                     utf8_encoded_str[512]; 
     char                        message[1024];

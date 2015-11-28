@@ -23,7 +23,7 @@ QUEX_INLINE void
 QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,
                                                  void               (*callback)(const QUEX_TYPE_CHARACTER*, 
                                                                                 const QUEX_TYPE_CHARACTER*))
-{ me->buffer.on_buffer_content_change = callback; }
+{ me->buffer.on_content_change = callback; }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
 QUEX_NAME(token_p)(QUEX_TYPE_ANALYZER* me)

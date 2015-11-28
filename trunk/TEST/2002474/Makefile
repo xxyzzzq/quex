@@ -46,7 +46,6 @@ lex_codec:
 		-DPRINT_TOKEN_FIRST_NUMBER='402508 - 20' \
 		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-		-DQUEX_OPTION_DEBUG_SHOW \
 		-o $@
 
 # C Versions ________________________________________________________________
