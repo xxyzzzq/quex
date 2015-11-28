@@ -89,7 +89,6 @@ ByteLoader_POSIX_load(ByteLoader* me, void* buffer, const size_t ByteN, bool* en
      * The caller will realize end of stream by a return of zero bytes.      */
     int n = read(((ByteLoader_POSIX*)me)->fd, buffer, ByteN); 
     *end_of_stream_f = false;
-    printf("#loaded_n: %i;\n", (int)n);
     return n;
 }
 
