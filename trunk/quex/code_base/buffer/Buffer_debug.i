@@ -258,55 +258,6 @@ QUEX_NAMESPACE_MAIN_OPEN
         __QUEX_STD_fprintf(stderr, "_________________________________________________________________\n");
     }
 
-    QUEX_INLINE void
-    QUEX_NAME(__BufferFiller_on_overflow)(QUEX_NAME(Buffer)* buffer, bool ForwardF)
-    {
-        QUEX_NAME(BufferFiller)* me = buffer->filler;
-#       ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
-        uint8_t               utf8_encoded_str[512]; 
-        char                  message[1024];
-        const size_t          MessageSize = (size_t)1024;
-        uint8_t*              WEnd        = 0x0;
-        uint8_t*              witerator   = 0x0; 
-        QUEX_TYPE_CHARACTER*  End         = 0x0; 
-        const QUEX_TYPE_CHARACTER*  iterator    = 0x0; 
-#       endif
-
-        if(    me->_on_overflow == 0x0
-            || me->_on_overflow(buffer, ForwardF) == false ) {
-
-#           ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
-            /* Print out the lexeme start, so that the user has a hint. */
-            WEnd        = utf8_encoded_str + 512 - 7;
-            witerator   = utf8_encoded_str; 
-            End         = buffer->_memory._back; 
-            iterator    = buffer->_lexeme_start_p; 
-
-            QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC, utf8)(&iterator, End, &witerator, WEnd);
-
-            message[0] = '\0';
-            /* No use of 'snprintf()' because not all systems seem to support it propperly. */
-            __QUEX_STD_strncat(message, 
-                               "Distance between lexeme start and current pointer exceeds buffer size.\n"
-                               "(tried to load buffer",
-                               MessageSize);
-            __QUEX_STD_strncat(message, ForwardF ? "forward)" : "backward)",                   MessageSize);
-            __QUEX_STD_strncat(message, "As a hint consider the beginning of the lexeme:\n[[", MessageSize);
-            __QUEX_STD_strncat(message, (char*)utf8_encoded_str,                               MessageSize);
-            __QUEX_STD_strncat(message, "]]\n",                                                MessageSize);
-
-            QUEX_ERROR_EXIT(message);
-#           else
-            QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
-                            "(tried to load buffer forward). Please, compile with option\n\n"
-                            "    QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE\n\n"
-                            "in order to get a more informative output. Most likely, one of your patterns\n"
-                            "eats more than you intended. Alternatively you might want to set the buffer\n"
-                            "size to a greater value or use skippers (<skip: [ \\n\\t]> for example).\n");
-#           endif /* QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE */
-        }
-    }
-
     QUEX_INLINE void  
     QUEX_NAME(Buffer_print_this)(QUEX_NAME(Buffer)* me)
     {

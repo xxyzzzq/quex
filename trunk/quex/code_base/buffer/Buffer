@@ -88,8 +88,17 @@ typedef struct QUEX_NAME(Buffer_tag) {
     void      (*fill_finish)(struct QUEX_NAME(Buffer_tag)* me,
                              const void*                   FilledEndP);
 
-    void      (*on_buffer_content_change)(const QUEX_TYPE_CHARACTER*  BeginOfContent,
-                                          const QUEX_TYPE_CHARACTER*  EndOfContent);
+    /* Event handlers:                                          
+     * on_content_change: If the user maintained pointers into the buffer, 
+     *                    this callback indicates that everything from 'BeginP'
+     *                    to 'EndP' needs to be copied somewhere else.
+     * on_overflow: Distance between current '_read_p' and the lexeme start
+     *              plus the fallback region are too big for the current 
+     *              buffer's size.                                           */
+    void      (*on_content_change)(const QUEX_TYPE_CHARACTER*  BeginP,
+                                          const QUEX_TYPE_CHARACTER*  EndP);
+    void      (*on_overflow)(struct QUEX_NAME(Buffer_tag)*, bool ForwardF);
+
 } QUEX_NAME(Buffer);
 
 QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
@@ -102,14 +111,13 @@ QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*              
 /* Constructor, destructor, reset. */
 QUEX_INLINE void  QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 
                                           struct QUEX_NAME(BufferFiller_tag)* filler); 
-QUEX_INLINE void  QUEX_NAME(Buffer_init_analyzis)(QUEX_NAME(Buffer)*   me,
-                                                  QUEX_TYPE_CHARACTER* EndOfFileP); 
 
 QUEX_INLINE void  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
 
 /* Moving buffer content. */
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-                       QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)* me);
+QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
+                                                                  QUEX_TYPE_CHARACTER** position_register,
+                                                                  const size_t          PositionRegisterN);
 QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me);
                       
 /* Automatic loading of buffer content (during analysis). */

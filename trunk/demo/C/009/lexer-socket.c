@@ -8,7 +8,7 @@
  *
  * As soon as a "bye" lexeme is received, the application terminates.
  *
- *           socket feeder                          lexer-socket
+ *          "feed-socket.c"                        "lexer-socket.c"
  *          .----------------------.               .-------------------------.
  * .------. |    .--------.        |               |           .----------.  |
  * | file |-+--->| socket |    .--------.      .--------.      | lexical  |  |
@@ -66,6 +66,8 @@ accept_and_lex(int listen_fd)
         return true;
     }
 
+    ByteLoader_seek_disable(loader);
+
     /* A handler for the case that nothing is received over the line. */
     loader->on_nothing = self_on_nothing; 
 
@@ -121,13 +123,33 @@ setup_socket_server(void)
     return listen_fd;
 }
 
-/* A handler for the case that nothing is received over the line. */
 static bool  
-self_on_nothing(struct ByteLoader_tag*  me, size_t TryN, size_t LoadedN)
+self_on_nothing(ByteLoader*  me, size_t TryN, size_t RequiredToLoad)
+/* ByteLoader's handler to treat the case that nothing has been received. Note,
+ * that with the current setup the socket receiver blocks until something comes
+ * in. If nothing is received, the socket is closed.
+ *
+ * RETURNS: 'false' in any case to mark the end of transmission.
+ *                                                                           */
 { 
-    (void)me; (void)TryN; (void)LoadedN; 
-    printf("try: %i; loaded_n: %i;\n", (int)TryN, (int)LoadedN);
-    return true; 
+    int       error  = 0;
+    socklen_t len    = sizeof (error);
+    int       retval = getsockopt(((ByteLoader_POSIX*)me)->fd, SOL_SOCKET, SO_ERROR, &error, &len);
+    (void)TryN; (void)RequiredToLoad;
+
+    if( retval ) {
+        /* there was a problem getting the error code */
+        fprintf(stderr, "error getting socket error code: %s\n", strerror(retval));
+        return  false;
+    }
+    else if( error ) {
+        /* socket has a non zero error status */
+        fprintf(stderr, "socket error: %s\n", strerror(error));
+        return false;
+    }
+    else {
+        return false;
+    }
 }
 
 

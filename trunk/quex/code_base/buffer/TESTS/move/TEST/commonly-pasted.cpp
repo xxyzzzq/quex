@@ -21,8 +21,12 @@ static void memory_fill_with_content(QUEX_TYPE_CHARACTER* memory, size_t MemoryS
                                      QUEX_TYPE_CHARACTER* content, size_t ContentSize);
 static int  cl_has(int argc, char** argv, const char* What);
 static void instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
+                                 bool EndOfStreamInBufferF,
                                  QUEX_TYPE_CHARACTER* memory, ptrdiff_t MemorySize,
                                  QUEX_TYPE_CHARACTER* content, ptrdiff_t ContentSize);
+static void self_on_content_change(const QUEX_TYPE_CHARACTER* BeginP, 
+                                   const QUEX_TYPE_CHARACTER* EndP);
+static void self_on_overflow(QUEX_NAME(Buffer)* me, bool ForwardF);
 
 
 static int cl_has(int argc, char** argv, const char* What)
@@ -46,28 +50,26 @@ self_print(QUEX_NAME(Buffer)* buffer)
            (int)(*(buffer->_lexeme_start_p)),
            (int)(buffer->_read_p - buffer->_memory._front),
            (int)(*(buffer->_read_p)),
-           (int)(buffer->input.character_index_end_of_stream != -1 ? buffer->input.end_p - buffer->_memory._front : -1),
-           (int)QUEX_NAME(Buffer_input_character_index_end)(buffer));
+           (int)(buffer->input.end_p ? buffer->input.end_p - buffer->_memory._front : -1),
+           (int)(buffer->input.character_index_end_of_stream));
 
     QUEX_NAME(Buffer_show_content_intern)(buffer);
-    printf("\n");
 }
 
 static void
 instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
+                     bool EndOfStreamInBufferF,
                      QUEX_TYPE_CHARACTER* memory, ptrdiff_t MemorySize,
                      QUEX_TYPE_CHARACTER* content, ptrdiff_t ContentSize)
 /* Sets the buffer up according to what is specified in the iterator:
  *
- *  it.eof_f          --> size of memory = size of content or whole memory.
- *                        set the 'end of file' notifier.
  *  it.read_i         --> position of the buffer's _read_p.
  *  it.lexeme_start_i --> position of the buffer's _lexeme_start_p.
  *                                                                           */
 {
     QUEX_TYPE_CHARACTER*   BeginP;
     QUEX_TYPE_CHARACTER*   end_p;
-    ptrdiff_t              memory_size = it->eof_f ? MemorySize : ContentSize + 2;
+    ptrdiff_t              memory_size = EndOfStreamInBufferF ? MemorySize : ContentSize + 2;
 
     end_p  = &memory[ContentSize + 1];
     *end_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
@@ -88,11 +90,29 @@ instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
     buffer->_read_p         = &BeginP[it->read_i];
 
     QUEX_NAME(Buffer_register_content)(buffer, end_p, 0);
-    if( it->eof_f ) {
-        QUEX_NAME(Buffer_register_eos)(buffer, end_p - BeginP); 
+    if( EndOfStreamInBufferF ) {
+        buffer->input.character_index_end_of_stream =   buffer->input.character_index_begin \
+                                                      + (QUEX_TYPE_STREAM_POSITION)(end_p - BeginP);
+    }
+    else {
+        buffer->input.character_index_end_of_stream = (QUEX_TYPE_STREAM_POSITION)-1;
     }
 
     QUEX_BUFFER_ASSERT_limit_codes_in_place(buffer);
 }
+
+static void
+self_on_content_change(const QUEX_TYPE_CHARACTER* BeginP, 
+                       const QUEX_TYPE_CHARACTER* EndP)
+{ 
+    printf("on_content_change: size: %i;\n", (int)(EndP - BeginP));
+}
+
+static void
+self_on_overflow(QUEX_NAME(Buffer)* me, bool ForwardF)
+{ 
+    printf("on_overflow: %s;\n", ForwardF ? "forward" : "backward");
+}
+
 #endif /* INCLUDE_GUARD_TEST_MOVE_AWAY_PASSED_CONTENT_COMMON_H */
 

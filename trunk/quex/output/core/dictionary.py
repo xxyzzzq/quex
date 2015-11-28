@@ -876,8 +876,6 @@ class Lng_Cpp(dict):
         if ForwardF:
             return [
                 cpp_reload_forward_str[0],
-                cpp_reload_forward_str[1],
-                cpp_reload_forward_str[2],
             ]
         else:
             return cpp_reload_backward_str[0]
@@ -935,18 +933,13 @@ cpp_reload_forward_str = [
     if( me->buffer._read_p != me->buffer.input.end_p ) {
         __quex_assert(false); /* Later: on codec error! */
     }
-    if( ! QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
-""",
-"""
-        __quex_debug_reload_before();          /* Report source position. */
-        QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN);
-""",
-"""
+    __quex_debug_reload_before();                 /* Report source position. */
+    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN) ) {
         __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);   /* may use 'computed goto' */
+        QUEX_GOTO_STATE(target_state_index);      /* may use 'computed goto' */
     }
     __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);  /* may use 'computed goto' */
+    QUEX_GOTO_STATE(target_state_else_index);     /* may use 'computed goto' */
 """]
 
 cpp_reload_backward_str = [
@@ -956,14 +949,13 @@ cpp_reload_backward_str = [
     if( me->buffer._read_p != me->buffer._memory._front ) {
         __quex_assert(false); /* Later: on codec error! */
     }
-    if( QUEX_NAME(Buffer_is_begin_of_file)(&me->buffer) == false ) {
-        __quex_debug_reload_before();          /* Report source position. */
-        QUEX_NAME(Buffer_load_backward)(&me->buffer);
+    __quex_debug_reload_before();                 /* Report source position. */
+    if( QUEX_NAME(Buffer_load_backward)(&me->buffer) ) {
         __quex_debug_reload_after();
-        QUEX_GOTO_STATE(target_state_index);   /* may use 'computed goto' */
+        QUEX_GOTO_STATE(target_state_index);      /* may use 'computed goto' */
     }
     __quex_debug("reload impossible\\n");
-    QUEX_GOTO_STATE(target_state_else_index);  /* may use 'computed goto' */
+    QUEX_GOTO_STATE(target_state_else_index);     /* may use 'computed goto' */
 """]
 
 cpp_header_definition_str = """

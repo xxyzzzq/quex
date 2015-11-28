@@ -8,18 +8,13 @@ features of quex and the ability to create directly coded engines will
 generate much faster lexical analysers. Also, the process of programming shall
 be much quicker by means of the handy shortcuts and elegant solutions that quex provides.
 
-The last letter 'χ' is a the greek lowercase letter 'chi'.  It
-is intended to remind the author of this text that he actually wanted to create
-a better \TeX [#f1]_  system with optimized
-source code appearance. When he realized that traditional lexical analysers did
-not provide the functionality to express solutions easily he started working on
-quex--and dove much deeper into the subject than he ever thought he would. 
+The last letter 'χ' is a the greek lowercase letter 'chi'.  It is intended to
+remind the author of this text that he actually wanted to create a better \TeX
+[#f1]_  system with optimized source code appearance. When he realized that
+traditional lexical analysers did not provide the functionality to express
+solutions easily he started working on quex--and dove much deeper into the
+subject than he ever thought he would. 
 
-
-.. figure:: ../figures/calligraphy-plain.*
-
-   Calligraphy of the name Quex based on the arabic spelling: 'kaf', 'wau', 
-   and 'kha'.
 
 A question closely related to the name might be what the logo actually stands for.
 It is a calligraphic essay of the author of quex. Based on the arabic spelling of 

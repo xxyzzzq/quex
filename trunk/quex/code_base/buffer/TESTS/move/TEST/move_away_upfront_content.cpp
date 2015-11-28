@@ -40,8 +40,8 @@
 ------------------------------------------------------------------------
 #include <stdint.h>
 ------------------------------------------------------------------------
-    int lexeme_start_i;    int read_i;                                   int eof_f; 
-    |0:5|;                 |lexeme_start_i-1:lexeme_start_i+1| in |0:5|; [0, 1];
+    int lexeme_start_i;    int read_i;                                    
+    |0:5|;                 |lexeme_start_i-1:lexeme_start_i+1| in |0:5|; 
 
 ------------------------------------------------------------------------
 */
@@ -60,44 +60,89 @@ main(int argc, char** argv)
 {
     QUEX_NAME(Buffer)         buffer;
     G_t                       it;
-    QUEX_TYPE_CHARACTER       lsp_char, rp_char;
+    struct {
+        QUEX_TYPE_CHARACTER* end_p;     
+        QUEX_TYPE_CHARACTER* read_p;     
+        QUEX_TYPE_CHARACTER  read_char;
+        QUEX_TYPE_CHARACTER* lexeme_start_p;     
+        QUEX_TYPE_CHARACTER  lexeme_start_char;
+    } before;
+    QUEX_TYPE_CHARACTER*      min_p;     
     QUEX_TYPE_STREAM_POSITION character_index_at_begin;
+    bool                      end_of_stream_in_buffer_f;
+    ptrdiff_t                 move_distance;
+    QUEX_TYPE_CHARACTER       backup[MemorySize * 2];
+    int                       count = 0;
 
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("move_away_upfront_content: (BPC=%i);\n", 
                sizeof(QUEX_TYPE_CHARACTER));
-        printf("CHOICES: cib=0, cib=1, cib=2;\n");
+        printf("CHOICES: cib=0, cib=1, cib=2, cib=0:EOS, cib=1:EOS, cib=2:EOS;\n");
         return 0;
-    }
+    };
     stderr = stdout;
-    hwut_if_choice("cib=0") character_index_at_begin = 0;
-    hwut_if_choice("cib=1") character_index_at_begin = 1;
-    hwut_if_choice("cib=2") character_index_at_begin = 2;
+    hwut_if_choice("cib=0")     { character_index_at_begin = 0; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=1")     { character_index_at_begin = 1; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=2")     { character_index_at_begin = 2; end_of_stream_in_buffer_f = false; }
+    hwut_if_choice("cib=0:EOS") { character_index_at_begin = 0; end_of_stream_in_buffer_f = true;  }
+    hwut_if_choice("cib=1:EOS") { character_index_at_begin = 1; end_of_stream_in_buffer_f = true;  }
+    hwut_if_choice("cib=2:EOS") { character_index_at_begin = 2; end_of_stream_in_buffer_f = true;  }
 
     G_init(&it);
     
     printf("        lexeme_start_p: read_p: end_p: begin_ci: end_ci: buffer:\n");
     while( G_next(&it) ) {
         instantiate_iterator(&buffer, &it, 
+                             end_of_stream_in_buffer_f,
                              &memory[0], MemorySize, 
                              &content[0], ContentSize);
         buffer.input.character_index_begin = character_index_at_begin;
+        buffer.on_content_change = self_on_content_change;
+        buffer.on_overflow       = self_on_overflow;
 
         printf("\n-( %2i )---------------------------------------------\n", (int)G_key_get(&it));
         self_print(&buffer);
 
-        lsp_char = *buffer._lexeme_start_p;
-        rp_char  = *buffer._read_p;
+        /* Preparation of Verification_______________________________________*/
+        before.end_p     = buffer.input.end_p;
+        before.read_p    = buffer._read_p;
+        before.read_char = *buffer._read_p;
+        if( buffer._lexeme_start_p ) {
+            before.lexeme_start_p    = buffer._lexeme_start_p;
+            before.lexeme_start_char = *buffer._lexeme_start_p;
+            min_p                    = QUEX_MIN(buffer._read_p, buffer._lexeme_start_p);
+        }
+        else {
+            min_p                    = buffer._read_p;
+        }
+        memcpy(&backup[0], min_p, buffer.input.end_p - min_p);
 
-        QUEX_NAME(Buffer_move_away_upfront_content)(&buffer);
+        /* Call Function under Test _________________________________________*/
+        move_distance = QUEX_NAME(Buffer_move_away_upfront_content)(&buffer);
 
         self_print(&buffer);
 
-        /* Asserts after print, so that errors appear clearly. */
-        hwut_verify(lsp_char == *buffer._lexeme_start_p);
-        hwut_verify(rp_char  == *buffer._read_p);
+        /* Verification _____________________________________________________*/
+        if( buffer._memory._back - before.end_p > move_distance ) {
+            hwut_verify(buffer.input.end_p      == &before.end_p[move_distance]);
+        } else {
+            hwut_verify(buffer.input.end_p      == buffer._memory._back);
+        }
+        hwut_verify(buffer._read_p          == &before.read_p[move_distance]);
+        hwut_verify(*buffer._read_p         == before.read_char);
+        if( before.lexeme_start_p ) {
+            hwut_verify(buffer._lexeme_start_p  == &before.lexeme_start_p[move_distance]);
+            hwut_verify(*buffer._lexeme_start_p == before.lexeme_start_char);
+            min_p = QUEX_MIN(buffer._read_p, buffer._lexeme_start_p);
+        }
+        else {
+            min_p = buffer._read_p;
+        }
+        hwut_verify(memcmp(&backup[0], min_p, buffer.input.end_p - min_p) == 0);
 
         QUEX_NAME(Buffer_destruct)(&buffer);
+        ++count;
     }
+    printf("<terminated %i>\n", count);
 }
 

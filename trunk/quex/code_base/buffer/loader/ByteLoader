@@ -73,6 +73,8 @@ QUEX_INLINE void  ByteLoader_construct(ByteLoader*                me,
                                        size_t                     (*load)(ByteLoader*, void*, const size_t, bool*),
                                        void                       (*delete_self)(ByteLoader*),
                                        bool                       (*compare_handle)(const ByteLoader*, const ByteLoader*));
+QUEX_INLINE void  ByteLoader_seek_disable(ByteLoader* me);
+QUEX_INLINE bool  ByteLoader_seek_is_enabled(ByteLoader* me);
 QUEX_INLINE bool  ByteLoader_is_equivalent(const ByteLoader* A, const ByteLoader* B);
 QUEX_INLINE void  ByteLoader_delete(ByteLoader** me);
 
