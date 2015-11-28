@@ -11,13 +11,6 @@ QUEX_NAMESPACE_MAIN_OPEN
 struct QUEX_NAME(Converter_tag);
 struct QUEX_NAME(Buffer_tag);
 
-typedef enum {
-    QUEX_TYPE_BUFFER_FILLER_NONE,
-    QUEX_TYPE_BUFFER_FILLER_PLAIN,
-    QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICONV,
-    QUEX_TYPE_BUFFER_FILLER_CONVERTER_ICU
-} E_BufferFillerType;
-
 typedef struct QUEX_NAME(BufferFiller_tag) {
     /* This is the interface that the buffer sees of the buffer filler. Its
      * task is to coordinate the filling of buffer content from a stream in the

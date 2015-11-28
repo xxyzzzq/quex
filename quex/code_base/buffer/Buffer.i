@@ -697,9 +697,6 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
     ptrdiff_t                  loaded_n;
     bool                       end_of_stream_f = false;
 
-#   ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
-    QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM_IN_BACKWARD_LOAD);
-#   endif
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
     __quex_debug_buffer_load(me, "BACKWARD(entry)\n");
