@@ -1,132 +1,132 @@
 {
 title: uint16_t;
 title_group: Convert all in one beat;
-build_time: 1.0739610195159912;
+build_time: 0.8337349891662598;
 file_name: one-beat-2.exe;
-hwut_info_time: 1448742797L;
+hwut_info_time: 1448748500L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.138992; 1696848317; ]
+  [ ; OK; 0.008331; 1696848317; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert all in one beat;
-build_time: 0.8856649398803711;
+build_time: 0.8321068286895752;
 file_name: one-beat-4.exe;
-hwut_info_time: 1448742788L;
+hwut_info_time: 1448748492L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.010738; -1510868994; ]
+  [ ; OK; 0.009418; -1510868994; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert all in one beat;
-build_time: 1.0424549579620361;
+build_time: 0.8427870273590088;
 file_name: one-beat-1.exe;
-hwut_info_time: 1448742789L;
+hwut_info_time: 1448748493L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005416; -1210189373; ]
+  [ ; OK; 0.005310; -1210189373; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert all in one beat;
-build_time: 1.0046730041503906;
+build_time: 0.8173258304595947;
 file_name: one-beat-WC.exe;
-hwut_info_time: 1448742798L;
+hwut_info_time: 1448748501L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005122; -1409238846; ]
+  [ ; OK; 0.005896; -1409238846; ]
 ]
 }
 {
 title: uint16_t;
 title_group: Convert drain character by drain character;
-build_time: 0.9284918308258057;
+build_time: 0.8263199329376221;
 file_name: stepwise-drain-2.exe;
-hwut_info_time: 1448742794L;
+hwut_info_time: 1448748497L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.007146; -630722490; ]
+  [ ; OK; 0.005522; -630722490; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert drain character by drain character;
-build_time: 0.9870889186859131;
+build_time: 0.8233470916748047;
 file_name: stepwise-drain-4.exe;
-hwut_info_time: 1448742792L;
+hwut_info_time: 1448748496L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.046869; -1906569407; ]
+  [ ; OK; 0.048382; -1906569407; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert drain character by drain character;
-build_time: 1.038451910018921;
+build_time: 0.8395981788635254;
 file_name: stepwise-drain-1.exe;
-hwut_info_time: 1448742793L;
+hwut_info_time: 1448748497L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005287; 2100247114; ]
+  [ ; OK; 0.004944; 2100247114; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert drain character by drain character;
-build_time: 1.161803960800171;
+build_time: 0.8252289295196533;
 file_name: stepwise-drain-WC.exe;
-hwut_info_time: 1448742787L;
+hwut_info_time: 1448748492L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006232; -512632811; ]
+  [ ; OK; 0.005090; -512632811; ]
 ]
 }
 {
 title: uint16_t;
 title_group: Convert source byte by source byte;
-build_time: 0.9974651336669922;
+build_time: 0.8318240642547607;
 file_name: stepwise-source-2.exe;
-hwut_info_time: 1448742796L;
+hwut_info_time: 1448748499L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005662; 155150535; ]
+  [ ; OK; 0.005145; 155150535; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert source byte by source byte;
-build_time: 0.9327101707458496;
+build_time: 0.8703758716583252;
 file_name: stepwise-source-4.exe;
-hwut_info_time: 1448742790L;
+hwut_info_time: 1448748494L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.008959; -1880253425; ]
+  [ ; OK; 0.009539; -1880253425; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert source byte by source byte;
-build_time: 1.0743930339813232;
+build_time: 0.8347151279449463;
 file_name: stepwise-source-1.exe;
-hwut_info_time: 1448742795L;
+hwut_info_time: 1448748498L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005335; 226863269; ]
+  [ ; OK; 0.005499; 226863269; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert source byte by source byte;
-build_time: 1.011993169784546;
+build_time: 0.8237791061401367;
 file_name: stepwise-source-WC.exe;
-hwut_info_time: 1448742791L;
+hwut_info_time: 1448748495L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.011071; -377390510; ]
+  [ ; OK; 0.006322; -377390510; ]
 ]
 }

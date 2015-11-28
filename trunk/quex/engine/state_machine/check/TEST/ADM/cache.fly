@@ -3,7 +3,7 @@ title: Commonality Checker;
 file_name: test-outrun.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ ; OK; 1.768136; None; ]
+  [ ; OK; 1.428974; None; ]
 ]
 }
 {
@@ -11,7 +11,7 @@ title: Commonality Checker;
 file_name: test-commonality.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ ; OK; 1.574523; None; ]
+  [ ; OK; 1.300166; None; ]
 ]
 }
 {
@@ -19,10 +19,10 @@ title: Pattern Identity Determination;
 file_name: test-identity_checker.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ True; OK; 0.629182; None; ]
-  [ False; OK; 0.251492; None; ]
-  [ Pre-Post-Contexts-True; OK; 0.093871; None; ]
-  [ Pre-Post-Contexts-False; OK; 0.100792; None; ]
+  [ True; OK; 0.518092; None; ]
+  [ False; OK; 0.224904; None; ]
+  [ Pre-Post-Contexts-True; OK; 0.088826; None; ]
+  [ Pre-Post-Contexts-False; OK; 0.092888; None; ]
 ]
 }
 {
@@ -30,12 +30,12 @@ title: Pattern Superset/Subset Determination;
 file_name: test-subset_checker.py;
 hwut_info_time: 1424896296L;
 result_list: [
-  [ Easy; OK; 0.121973; None; ]
-  [ FalseCases; OK; 0.169150; None; ]
-  [ GoodCases; OK; 0.145560; None; ]
-  [ FalseCasesII; OK; 0.265197; None; ]
-  [ GoodCasesII; OK; 0.648453; None; ]
-  [ Misc; OK; 0.561041; None; ]
-  [ Pre-Post-Conditions; OK; 0.096958; None; ]
+  [ Easy; OK; 0.115800; None; ]
+  [ FalseCases; OK; 0.165331; None; ]
+  [ GoodCases; OK; 0.102504; None; ]
+  [ FalseCasesII; OK; 0.220796; None; ]
+  [ GoodCasesII; OK; 0.526973; None; ]
+  [ Misc; OK; 0.424547; None; ]
+  [ Pre-Post-Conditions; OK; 0.093412; None; ]
 ]
 }

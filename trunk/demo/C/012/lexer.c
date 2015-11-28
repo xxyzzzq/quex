@@ -22,9 +22,9 @@ main(int argc, char** argv)
 
     size_t          i = 0;
 
-    max_Lexer_from_file_name(&max_lex,       "example-utf16.txt", "UTF16", false);
-    moritz_Lexer_from_file_name(&moritz_lex, "example-ucs2.txt",  "UCS-2", false);
-    boeck_Lexer_from_file_name(&boeck_lex,   "example-utf8.txt",  0x0,     false);
+    max_Lexer_from_file_name(&max_lex,       "example-utf16.txt", "UTF16");
+    moritz_Lexer_from_file_name(&moritz_lex, "example-ucs2.txt",  "UCS-2");
+    boeck_Lexer_from_file_name(&boeck_lex,   "example-utf8.txt",  0x0);
 
     /* Each lexer reads one token, since the grammars are similar the lexeme 
      * is always the same.                                                   */
