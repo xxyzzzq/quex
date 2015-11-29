@@ -35,14 +35,14 @@ test(bool BinaryF, size_t BPC)
 {
     QUEX_NAME(Buffer)         buffer;
     std::wstringstream        sh;
-    ByteLoader*               byte_loader;
+    QUEX_NAME(ByteLoader)*               byte_loader;
     QUEX_NAME(BufferFiller*)  filler;
     const size_t              MemorySize  = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
 
     sh << L"Fest gemauert in der Erden\n";
     sh.seekg(0);
-    byte_loader = ByteLoader_stream_new(&sh);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(&sh);
     hwut_verify(byte_loader);
 
     byte_loader->binary_mode_f = BinaryF;

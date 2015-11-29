@@ -705,7 +705,7 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
     if( ! me->filler || ! me->filler->byte_loader ) {
         return false;                    /* Buffer based analysis.           */
     }
-    else if( ! ByteLoader_seek_is_enabled(me->filler->byte_loader) ) {
+    else if( ! QUEX_NAME(ByteLoader_seek_is_enabled)(me->filler->byte_loader) ) {
         return false;                    /* Stream cannot go backwards.      */
     }
 

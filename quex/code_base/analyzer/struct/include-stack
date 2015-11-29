@@ -38,10 +38,10 @@ QUEX_INLINE bool QUEX_NAME(include_push_POSIX)(QUEX_TYPE_ANALYZER*  me,
 /* Level (3) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE bool QUEX_NAME(include_push_ByteLoader)(
-                           QUEX_TYPE_ANALYZER*  me,
-                           const char*          InputName,
-                           ByteLoader*          byte_loader,
-                           const char*          CodecName);
+                           QUEX_TYPE_ANALYZER*    me,
+                           const char*            InputName,
+                           QUEX_NAME(ByteLoader)* byte_loader,
+                           const char*            CodecName);
 
 /* Level (4) __________________________________________________________________
  *                                                                           */

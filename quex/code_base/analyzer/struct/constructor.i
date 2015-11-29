@@ -28,9 +28,9 @@ QUEX_MEMBER_FUNCTION2(from, file_name,
                       const char*  FileName, 
                       const char*  CodecName)
 {
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
 
-    byte_loader = ByteLoader_FILE_new_from_file_name(FileName);
+    byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(FileName);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -48,7 +48,7 @@ QUEX_MEMBER_FUNCTION3(from, FILE,
                       bool              BinaryModeF)
 /* 'BinaryModeF' tells whether the file has been opened in 'binary mode'.    */
 {
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( fh );
 
     /* At the time of this writing 'stdin' as located in the C++ global
@@ -58,7 +58,7 @@ QUEX_MEMBER_FUNCTION3(from, FILE,
      * <fschaef 2010y02m06d>                                                 */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer!    */
-    byte_loader = ByteLoader_FILE_new(fh, BinaryModeF);
+    byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, BinaryModeF);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -73,10 +73,10 @@ QUEX_MEMBER_FUNCTION2(from, istream,
                       std::istream*   istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -93,10 +93,10 @@ QUEX_MEMBER_FUNCTION2(from, wistream,
                       std::wistream*  istream_p, 
                       const char*     CodecName /* = 0x0   */)
 {
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -114,10 +114,10 @@ QUEX_MEMBER_FUNCTION2(from_StrangeStream, strange_stream,
                       quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
                       const char*                              CodecName /* = 0x0   */)
 {
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( byte_loader ) {
@@ -134,7 +134,7 @@ QUEX_MEMBER_FUNCTION2(from_StrangeStream, strange_stream,
  *                                                                           */
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION2(from, ByteLoader,
-                      ByteLoader*   byte_loader,
+                      QUEX_NAME(ByteLoader)*   byte_loader,
                       const char*   CodecName) 
 {
     QUEX_NAME(BufferFiller)* filler;

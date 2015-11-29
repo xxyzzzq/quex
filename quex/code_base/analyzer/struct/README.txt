@@ -40,7 +40,7 @@ byte loading is abstracted through a byte loader class. Figure one depicts
 the entities related to buffer filling.
 
    file, stream,      .------------.      .--------------.     .--------.
-   message, or   <--->| ByteLoader |<---->| BufferFiller |---->| Buffer |
+   message, or   <--->| QUEX_NAME(ByteLoader )|<---->| BufferFiller |---->| Buffer |
    signal, etc.       '------------'      '--------------'     '--------'
                         <File API>          <Conversion>       <Analysis>
 
@@ -61,7 +61,7 @@ file.  Thus, there should be a way to construct a lexical analyzer from a file
 name.  Additionally, a conversion codec may be specified which defines a
 character conversion before parsing. Internally, the most expected file handle
 type ``FILE`` is used to access the file with the given name. The abstracted
-loader interface is therefore ``ByteLoader_FILE`` nesting the opened file
+loader interface is therefore ``QUEX_NAME(ByteLoader_FILE)`` nesting the opened file
 handle.  Together with the conversion codec's name a
 ``BufferFiller_Conversion`` or a ``BufferFiller_Plain`` can be constructed.
 This object is then used to fill the buffer. 
@@ -110,15 +110,15 @@ constructors for that are
            X(std::wistream*, CodecName);      // Standard C++ Library   
 
 In case, there is no byte loader class that fits the user's environment,
-byte loader may be derived from 'ByteLoader'. An object of this type
+byte loader may be derived from 'QUEX_NAME(ByteLoader)'. An object of this type
 may then be passed to the constructor of level (3).
 
-           X(ByteLoader*, CodecName);
+           X(QUEX_NAME(ByteLoader)*, CodecName);
 
-Examples for dedicated ByteLoaders, i.e. derived classes from it may be
-observed in the definitions of 'ByteLoader_FILE', 'ByteLoader_stream',
-'ByteLoader_POSIX', or 'ByteLoader_FreeRTOS'. A customized byte loader
-derived from 'ByteLoader' may then be used as input to the
+Examples for dedicated QUEX_NAME(ByteLoaders), i.e. derived classes from it may be
+observed in the definitions of 'QUEX_NAME(QUEX_NAME(ByteLoader_FILE))', 'ByteLoader_stream',
+'QUEX_NAME(QUEX_NAME(ByteLoader_POSIX))', or 'ByteLoader_FreeRTOS'. A customized byte loader
+derived from 'QUEX_NAME(ByteLoader)' may then be used as input to the
 aforementioned constructor.
 
 Depending on the conversion codec name, a BufferFiller object is constructed.
@@ -167,7 +167,7 @@ The level (2) interfaces are
 
 The level (3) interface is
 
-    X_from_ByteLoader(byte_loader, CodecName)
+    X_from_QUEX_NAME(ByteLoader)(byte_loader, CodecName)
 
 The level (4) interface is
 
@@ -190,7 +190,7 @@ input from the beginning. C++ Interfaces are:
     x.reset(std::istream*, CodecName);                     
     x.reset(std::wistream*, CodecName);                    
                                                            
-    x.reset(ByteLoader*, CodecName);                      // Level (3)
+    x.reset(QUEX_NAME(ByteLoader)*, CodecName);                      // Level (3)
                                                            
     x.reset(BufferFiller*)                                // Level (4)
 
@@ -203,7 +203,7 @@ The according 'C' functions are
     X_reset_FILE(me, FILE*, CodecName);            // Level (2)
     X_reset_POSIX(me, int, CodecName);                                    
                                                             
-    X_reset_ByteLoader(me, ByteLoader*);           // Level (3)
+    X_reset_QUEX_NAME(ByteLoader)(me, QUEX_NAME(ByteLoader)*);           // Level (3)
                                                             
     X_reset_BufferFiller(me, BufferFiller*);       // Level (4)
 
@@ -232,9 +232,9 @@ On level (2), an input specified by other input handles may included by
     x.include_push(std::istream*, CodecName);       // Standard C++ Library
     x.include_push(std::wistream*, CodecName);      // Standard C++ Library   
 
-A dedicated ByteLoader can be specified on level (3) by
+A dedicated QUEX_NAME(ByteLoader )can be specified on level (3) by
 
-    x.include_push(ByteLoader*, CodecName)
+    x.include_push(QUEX_NAME(ByteLoader)*, CodecName)
 
 A dedicated BufferFiller can be passed to the level (4) function
 
@@ -252,7 +252,7 @@ The according 'C' functions are
     X_include_push_FILE(me, FILE*, CodecName);            // Level (2)
     X_include_push_POSIX(me, int, CodecName);                                    
                                                             
-    X_include_push_ByteLoader(me, ByteLoader*);           // Level (3)
+    X_include_push_QUEX_NAME(ByteLoader)(me, QUEX_NAME(ByteLoader)*);           // Level (3)
                                                             
     X_include_push_BufferFiller(me, BufferFiller*);       // Level (4)
 

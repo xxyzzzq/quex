@@ -39,7 +39,7 @@ main(int argc, char** argv)
             return 0;
         }
 
-        ByteLoader*                byte_loader = ByteLoader_FILE_new(fh, true);
+        QUEX_NAME(ByteLoader)*     byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
         QUEX_NAME(BufferFiller)*   is = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
 
         loaded_character_n = is->derived_load_characters(is, buffer, BufferSize, &end_of_stream_f);
@@ -55,7 +55,7 @@ main(int argc, char** argv)
             return 0;
         }
         
-        ByteLoader*              byte_loader = ByteLoader_stream_new(&fh);
+        QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_stream_new)(&fh);
         QUEX_NAME(BufferFiller)* is          = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
         loaded_character_n = is->derived_load_characters(is, buffer, BufferSize, &end_of_stream_f);
         

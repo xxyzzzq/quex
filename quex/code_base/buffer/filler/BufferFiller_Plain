@@ -23,7 +23,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     } QUEX_NAME(BufferFiller_Plain);
 
     QUEX_INLINE QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_Plain_new)(ByteLoader* byte_loader);
+    QUEX_NAME(BufferFiller_Plain_new)(QUEX_NAME(ByteLoader)* byte_loader);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read.                             */
 

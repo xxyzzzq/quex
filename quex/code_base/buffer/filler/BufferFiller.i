@@ -26,9 +26,9 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_reverse_byte_order)(QUEX_TYPE_CHAR
 
                        
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader, 
-                            QUEX_NAME(Converter)* converter,
-                            const size_t          TranslationBufferMemorySize)
+QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*  byte_loader, 
+                            QUEX_NAME(Converter)*   converter,
+                            const size_t            TranslationBufferMemorySize)
 {
     QUEX_NAME(BufferFiller)* filler;
     (void)TranslationBufferMemorySize;
@@ -46,7 +46,7 @@ QUEX_NAME(BufferFiller_new)(ByteLoader*           byte_loader,
 }
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
-QUEX_NAME(BufferFiller_new_DEFAULT)(ByteLoader*   byte_loader, 
+QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*   byte_loader, 
                                     const char*   InputCodecName) 
 {
 #   if   defined(QUEX_OPTION_CONVERTER_ICONV)
@@ -83,7 +83,7 @@ QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
     if( ! *me ) return;
     else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
 
-    ByteLoader_delete(&(*me)->byte_loader);
+    QUEX_NAME(ByteLoader_delete)(&(*me)->byte_loader);
 
     if( (*me)->delete_self ) (*me)->delete_self(*me);
     (*me) = (QUEX_NAME(BufferFiller)*)0;
@@ -107,7 +107,7 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                                                   QUEX_TYPE_CHARACTER*       BeginP,
                                                                   const QUEX_TYPE_CHARACTER* EndP,
                                                                   const void*                FilledEndP),
-                              ByteLoader*  byte_loader,
+                              QUEX_NAME(ByteLoader)*  byte_loader,
                               ptrdiff_t    ByteNPerCharacter)
 {
     __quex_assert(me);
@@ -137,16 +137,16 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
 }
 
 QUEX_INLINE void
-QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, ByteLoader* new_byte_loader)
-/* Resets the BufferFiller with a new ByteLoader.                            */
+QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, QUEX_NAME(ByteLoader)* new_byte_loader)
+/* Resets the BufferFiller with a new QUEX_NAME(ByteLoader).                            */
 {
     __quex_assert(new_byte_loader);
 
     if( new_byte_loader != me->byte_loader ) {
-        if( ByteLoader_is_equivalent(new_byte_loader, me->byte_loader) ) {
-            __QUEX_STD_printf("Upon 'reset': current and new ByteLoader objects contain same input handle.\n"); 
+        if( QUEX_NAME(ByteLoader_is_equivalent)(new_byte_loader, me->byte_loader) ) {
+            __QUEX_STD_printf("Upon 'reset': current and new QUEX_NAME(ByteLoader )objects contain same input handle.\n"); 
         }
-        ByteLoader_delete(&me->byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&me->byte_loader);
         me->byte_loader = new_byte_loader;
     }
     QUEX_NAME(BufferFiller_character_index_reset)(me);

@@ -89,7 +89,7 @@ QUEX_NAMESPACE_MAIN_OPEN
       void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
       template <class UnderlyingStreamT> void
               from_StrangeStream(quex::StrangeStream<UnderlyingStreamT>*  istream_p, const char* CodecName = 0x0);
-      void    from(ByteLoader* byte_loader, const char*  CodecName = 0x0);
+      void    from(QUEX_NAME(ByteLoader)* byte_loader, const char*  CodecName = 0x0);
       void    from(QUEX_NAME(BufferFiller)* filler);
       void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                    size_t               BufferMemorySize,

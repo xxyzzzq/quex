@@ -17,7 +17,7 @@ main(int argc, char** argv)
     }
     QUEX_NAME(Buffer)         buffer;
     FILE*                     fh = prepare_input(); /* Festgemauert ... */
-    ByteLoader*               byte_loader = ByteLoader_FILE_new(fh, true);
+    QUEX_NAME(ByteLoader)*               byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     QUEX_NAME(BufferFiller*)  filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
     const size_t              MemorySize  = 8;
 

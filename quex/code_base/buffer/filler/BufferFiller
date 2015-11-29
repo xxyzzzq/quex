@@ -25,9 +25,9 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
      * element of the derived struct is to be of this type and best called
      * 'base'.  For example, please, consider the 'plain' and 'iconv'
      * implementations in the correspondent sub directories.                 */
-    E_Ownership    ownership;
+    E_Ownership               ownership;
 
-    ByteLoader*    byte_loader;
+    QUEX_NAME(ByteLoader)*    byte_loader;
 
     /* PASSIVE API: Lexical analyzer requests BufferFiller to fill its
      *              buffer.                                                  */
@@ -96,12 +96,12 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
 } QUEX_NAME(BufferFiller);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(ByteLoader*                      byte_loader, 
+    QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*                      byte_loader, 
                                 struct QUEX_NAME(Converter_tag)* converter,
                                 const size_t                     TranslationBufferMemorySize);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
-    QUEX_NAME(BufferFiller_new_DEFAULT)(ByteLoader*   byte_loader, 
+    QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*   byte_loader, 
                                         const char*   InputCodecName);
 
 QUEX_INLINE void    
@@ -122,8 +122,8 @@ QUEX_INLINE void
                                                                       QUEX_TYPE_CHARACTER*       BeginP,
                                                                       const QUEX_TYPE_CHARACTER* EndP,
                                                                       const void*                FilledEndP),
-                                  ByteLoader*  byte_loader, 
-                                  ptrdiff_t    ByteNPerCharacter);
+                                  QUEX_NAME(ByteLoader)*  byte_loader, 
+                                  ptrdiff_t               ByteNPerCharacter);
 
 QUEX_INLINE void    
     QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
@@ -137,7 +137,7 @@ QUEX_INLINE ptrdiff_t
 
 QUEX_INLINE void    
     QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 
-                                  ByteLoader*              new_byte_loader);
+                                  QUEX_NAME(ByteLoader)*              new_byte_loader);
 
 
 QUEX_NAMESPACE_MAIN_CLOSE

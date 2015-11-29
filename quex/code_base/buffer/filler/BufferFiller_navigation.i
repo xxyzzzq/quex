@@ -12,16 +12,16 @@
  *
  *    -- Buffer's seek sets the '_read_p' of the analyzer to a character
  *       that is to be treated next.
- *    -- ByteLoader's seek sets the position in the low level input
+ *    -- QUEX_NAME(ByteLoader)'s seek sets the position in the low level input
  *       stream.
  * 
  * A BufferFiller's seek has NO direct influence on the content or the pointers
  * of the Buffer object that it fills.
  *
- * The difference between the ByteLoader's seeking (stream seeking) and the
- * BufferFiller's seeking is that the ByteLoader understands the position 
+ * The difference between the QUEX_NAME(ByteLoader)'s seeking (stream seeking) and the
+ * BufferFiller's seeking is that the QUEX_NAME(ByteLoader )understands the position 
  * independently of its meaning. The BufferFiller already interprets the stream
- * as 'characters'. A ByteLoader sets the stream to a particular byte position.
+ * as 'characters'. A QUEX_NAME(ByteLoader )sets the stream to a particular byte position.
  * A BufferFiller prepare the input of a character.
  *
  * (C) Frank-Rene Schaefer                                                   */
@@ -113,7 +113,7 @@ QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me)
     if( me->byte_loader ) {
         me->byte_loader->seek(me->byte_loader, me->byte_loader->initial_position);
         if( me->byte_loader->tell(me->byte_loader) != me->byte_loader->initial_position ) {
-            QUEX_ERROR_EXIT("ByteLoader failed to seek to initial position.\n");
+            QUEX_ERROR_EXIT("QUEX_NAME(ByteLoader )failed to seek to initial position.\n");
         }
     }
     me->character_index_next_to_fill = 0;
@@ -125,7 +125,7 @@ QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX_NAME(BufferFiller)* me
                                                      QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
                                                      ptrdiff_t                 BackupStomachByteN, 
                                                      QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition)
-/* Reset a previous state of the BufferFiller and its ByteLoader.            */
+/* Reset a previous state of the BufferFiller and its QUEX_NAME(ByteLoader).            */
 {
     QUEX_TYPE_STREAM_POSITION backup_byte_pos;
 

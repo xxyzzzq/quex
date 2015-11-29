@@ -2,12 +2,12 @@
  *          the initial position.
  *
  * (C) Frank-Rene Schaefer                                                   */
-#include <quex/code_base/buffer/loader/ByteLoader>
+#include <basic_functionality.h>
 #include <hwut_unit.h>
 #include <assert.h>
 
 void
-initial_position(ByteLoader* me)
+initial_position(QUEX_NAME(ByteLoader)* me)
 {
     QUEX_TYPE_STREAM_POSITION ip;
     QUEX_TYPE_STREAM_POSITION target = 0;

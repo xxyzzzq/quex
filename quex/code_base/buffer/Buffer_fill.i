@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __QUEX_INCLUDE_GUARD__BUFFER_FILL_I
-#define __QUEX_INCLUDE_GUARD__BUFFER_FILL_I
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILL_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILL_I
 
 #include <quex/code_base/buffer/Buffer>
 
@@ -96,4 +96,4 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__BUFFER_FILL_I */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILL_I */

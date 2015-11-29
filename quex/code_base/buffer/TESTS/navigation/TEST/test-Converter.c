@@ -101,7 +101,7 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
     /* With 'BufferFiller_Plain()' no conversion takes place. Thus, the file
      * containing the REFERENCE data and the INPUT file are the SAME.        */
     const char*               ref_file_name = find_reference(FileStem); 
-    ByteLoader*               byte_loader   = ByteLoader_FILE_new_from_file_name(FileName);
+    QUEX_NAME(ByteLoader)*               byte_loader   = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(FileName);
     const size_t              MemorySize    = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
     QUEX_NAME(BufferFiller)*  filler;  

@@ -29,7 +29,7 @@ main(int argc, char** argv)
                                          2, 3, 15, 22, 17, 22, 21,
                                          0, 20, 13, 1, 16, 12, 14, 
                                          9, 7, 5, 19, 999 };
-    ByteLoader*        byte_loader = ByteLoader_FILE_new(fh, true);
+    QUEX_NAME(ByteLoader)*        byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     assert( fh != 0x0 );
 
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_Converter_new)(

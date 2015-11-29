@@ -24,16 +24,16 @@ QUEX_MEMBER_FUNCTION2(include_push, file_name,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
 
-    byte_loader = ByteLoader_FILE_new_from_file_name(FileName);
+    byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(FileName);
     if( ! byte_loader ) {
         return false;
     }
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     verdict_f = QUEX_MEMBER_FUNCTION_CALL3(include_push, ByteLoader, FileName, byte_loader, CodecName); 
     if( ! verdict_f ) {
-        ByteLoader_delete(&byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&byte_loader);
     }
     return verdict_f;
 }
@@ -49,7 +49,7 @@ QUEX_MEMBER_FUNCTION4(include_push, FILE,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( fh );
 
     /* At the time of this writing 'stdin' as located in the C++ global namespace. 
@@ -58,7 +58,7 @@ QUEX_MEMBER_FUNCTION4(include_push, FILE,
      * user information anyway. So better no risks taken.      <fschaef 2010y02m06d> */
     setbuf(fh, 0);   /* turn off system based buffering! 
     **               ** this is essential to profit from the quex buffer! */
-    byte_loader = ByteLoader_FILE_new(fh, BinaryModeF);
+    byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, BinaryModeF);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( ! byte_loader ) {
@@ -67,7 +67,7 @@ QUEX_MEMBER_FUNCTION4(include_push, FILE,
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     verdict_f = QUEX_MEMBER_FUNCTION_CALL3(include_push, ByteLoader, InputName, byte_loader, CodecName); 
     if( ! verdict_f ) {
-        ByteLoader_delete(&byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&byte_loader);
     }
     return verdict_f;
 }
@@ -81,10 +81,10 @@ QUEX_MEMBER_FUNCTION3(include_push, istream,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( ! byte_loader ) {
@@ -93,7 +93,7 @@ QUEX_MEMBER_FUNCTION3(include_push, istream,
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     verdict_f = QUEX_MEMBER_FUNCTION_CALL3(include_push, ByteLoader, InputName, byte_loader, CodecName); 
     if( ! verdict_f ) {
-        ByteLoader_delete(&byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&byte_loader);
     }
     return verdict_f;
 }
@@ -109,10 +109,10 @@ QUEX_MEMBER_FUNCTION3(include_push, wistream,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( ! byte_loader ) {
@@ -121,7 +121,7 @@ QUEX_MEMBER_FUNCTION3(include_push, wistream,
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     verdict_f = QUEX_MEMBER_FUNCTION_CALL3(include_push, ByteLoader, InputName, byte_loader, CodecName); 
     if( ! verdict_f ) {
-        ByteLoader_delete(&byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&byte_loader);
     }
     return verdict_f;
 }
@@ -137,10 +137,10 @@ QUEX_MEMBER_FUNCTION3(include_push, strange_stream,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool          verdict_f;
-    ByteLoader*   byte_loader;
+    QUEX_NAME(ByteLoader)*   byte_loader;
     __quex_assert( istream_p );
 
-    byte_loader = ByteLoader_stream_new(istream_p);
+    byte_loader = QUEX_NAME(ByteLoader_stream_new)(istream_p);
     /* NOT: Abort/return if byte_loader == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( ! byte_loader ) {
@@ -149,7 +149,7 @@ QUEX_MEMBER_FUNCTION3(include_push, strange_stream,
     byte_loader->ownership = E_Ownership_LEXICAL_ANALYZER;
     verdict_f = QUEX_MEMBER_FUNCTION_CALL3(include_push, ByteLoader, InputName, byte_loader, CodecName); 
     if( ! verdict_f ) {
-        ByteLoader_delete(&byte_loader);
+        QUEX_NAME(ByteLoader_delete)(&byte_loader);
     }
     return verdict_f;
 }
@@ -161,7 +161,7 @@ QUEX_MEMBER_FUNCTION3(include_push, strange_stream,
 QUEX_INLINE bool
 QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
                       const char*   InputName,
-                      ByteLoader*   byte_loader,
+                      QUEX_NAME(ByteLoader)*   byte_loader,
                       const char*   CodecName) 
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
