@@ -143,7 +143,7 @@ construct_with_single_token(CLexer* lexer, CToken* token, const char* CodecName)
  * RETURNS: A meaningless 0.                                                 */
 {
     QUEX_NAME_TOKEN(construct)(token);
-    QUEX_NAME(from_ByteLoader)(lexer, (ByteLoader*)0, CodecName);
+    QUEX_NAME(from_ByteLoader)(lexer, (QUEX_NAME(ByteLoader)*)0, CodecName);
 
     /* -- LOOP until 'bye' token arrives */
     (void)QUEX_NAME(token_p_swap)(lexer, token);
@@ -168,7 +168,7 @@ construct_with_token_bank(CLexer*  lexer, CToken* token_bank, const char* CodecN
     CToken*           prev_token;
 
     /* Initialize analyzer.                                                  */
-    QUEX_NAME(from_ByteLoader)(lexer, (ByteLoader*)0, CodecName);
+    QUEX_NAME(from_ByteLoader)(lexer, (QUEX_NAME(ByteLoader)*)0, CodecName);
 
     /* initialize token objects.                                             */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);

@@ -1,7 +1,7 @@
 /* vim: set ft=c:
  * (C) Frank-Rene Schaefer */
-#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_I
-#define QUEX_INCLUDE_GUARD_BYTE_LOADER_I
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_I
+#define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_I
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -154,4 +154,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #   include <quex/code_base/buffer/loader/ByteLoader_PalmOS.i>   /* (tm) */
 #endif
 
-#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_I */
+#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_I */

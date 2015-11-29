@@ -2,11 +2,11 @@
  *
  * (C) 2004-2009 Frank-Rene Schaefer
  *
- * __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I may be undefined in case
+ *  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__INCLUDE_STACK_I may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
  *    QUEX_NAME(Accumulator) must be different.                             */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
-#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
+#ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__INCLUDE_STACK_I
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__INCLUDE_STACK_I
 
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
@@ -375,4 +375,4 @@ QUEX_MEMBER_FUNCTIONO1(include_detect_recursion,
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I */
+#endif /*  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__INCLUDE_STACK_I */
