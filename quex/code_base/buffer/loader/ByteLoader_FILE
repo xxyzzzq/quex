@@ -1,5 +1,7 @@
-#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
-#define QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE
+/* vim: ft=c: 
+ * (C) Frank-Rene Schaefer */
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_FILE
+#define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_FILE
 
 #include <quex/code_base/buffer/loader/ByteLoader>
 
@@ -23,4 +25,4 @@ QUEX_INLINE QUEX_NAME(ByteLoader)*    QUEX_NAME(ByteLoader_FILE_new_from_file_na
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE */
+#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_FILE */

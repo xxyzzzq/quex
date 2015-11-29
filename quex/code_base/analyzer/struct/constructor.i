@@ -1,8 +1,8 @@
 /* -*- C++ -*- vim:set syntax=cpp:
  * (C) 2005-2015 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
-#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I
+#ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR_I
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR_I
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/filler/BufferFiller.i>
@@ -370,4 +370,4 @@ QUEX_NAME(ModeStack_construct)(QUEX_TYPE_ANALYZER* me)
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__CONSTRUCTOR_I */
+#endif /*  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR_I */

@@ -17,8 +17,8 @@
  *   (C) 2009 Frank-Rene Schaefer
  *
  *   ABSOLUTELY NO WARRANTY                                                                 */
-#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H
-#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__ICU__SPECIAL_HEADERS_H
+#define  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__ICU__SPECIAL_HEADERS_H
    
 #if ! defined(QUEX_OPTION_CONVERTER_ICU)
 #    error "This header has been included without setting the compile option QUEX_OPTION_CONVERTER_ICU. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
@@ -45,4 +45,4 @@ extern "C" {
 #include "unicode/unistr.h"
 #endif
 
-#endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H */
+#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__ICU__SPECIAL_HEADERS_H */

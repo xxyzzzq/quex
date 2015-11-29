@@ -1,7 +1,7 @@
 /* vim: ft=c:
  * (C) Frank-Rene Schaefer */
-#ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_POSIX_I
-#define QUEX_INCLUDE_GUARD_BYTE_LOADER_POSIX_I
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_POSIX_I
+#define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_POSIX_I
 
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/loader/ByteLoader_POSIX>
@@ -113,5 +113,5 @@ QUEX_NAME(ByteLoader_POSIX_compare_handle)(const QUEX_NAME(ByteLoader)* alter_eg
     return A->fd == B->fd;
 }
 
-#endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_POSIX_I */
+#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_POSIX_I */
 

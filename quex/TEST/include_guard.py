@@ -27,8 +27,9 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
     ## print root
     for file in file_list:
         ext = os.path.splitext(file)[1]
-        if ext not in ["", ".i", ".h", ".txt"]: continue
-        if file.lower() in ["makefile", "tags", "readme"]: continue
+        if ext not in ["", ".i", ".h", ".txt", ".bak"]: continue
+        elif file.endswith("~"): continue
+        elif file.lower() in ["makefile", "tags", "readme", "readme.txt"]: continue
         file_name = root + "/" + file
 
         fh = open(file_name, "rb")

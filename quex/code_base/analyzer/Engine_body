@@ -1,10 +1,8 @@
 
         /*_________________________________________________________________________
-         *  ___  __        ___       __  
-         *   |  /  \ |__/ |__  |\ | /__` 
-         *   |  \__/ |  \ |___ | \| .__/ 
+         *  Tokens:      
          *                                                                        
-         *  Allow public access, for user's special tricks.                       
+         *  Allow public access.
          *
          *  Tokens are placed directly before the buffer. They are one of the most
          *  used variables. The most used variables shall be stored close to each

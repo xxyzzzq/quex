@@ -1,7 +1,7 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER_I
-#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER_I
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__CONVERTER_I
+#define  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__CONVERTER_I
 
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/filler/converter/Converter>
@@ -53,4 +53,4 @@ QUEX_NAME(Converter_delete)(QUEX_NAME(Converter)** me)
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER_I */
+#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__CONVERTER_I */

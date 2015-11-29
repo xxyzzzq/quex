@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER_NAVIGATION_I
-#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER_NAVIGATION_I
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__BUFFER_FILLER_NAVIGATION_I
+#define  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__BUFFER_FILLER_NAVIGATION_I
 /* PURPOSE: BufferFiller's seek: 
  *
  *    .------------------------------------------------------------------.
@@ -184,4 +184,4 @@ QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER_NAVIGATION_I */
+#endif /*   __QUEX_INCLUDE_GUARD__BUFFER__FILLER__BUFFER_FILLER_NAVIGATION_I */

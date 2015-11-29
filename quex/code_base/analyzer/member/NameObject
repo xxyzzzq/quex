@@ -1,5 +1,7 @@
-#ifndef QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT
-#define QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT
+/* vim:set ft=c:
+ * (C) Frank-Rene Schaefer */
+#ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAME_OBJECT
+#define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAME_OBJECT
 
 typedef struct {
     long     hash;
@@ -74,4 +76,4 @@ QUEX_NAME(NameObject_delete)(NameObject** me)
     *me = (NameObject*)0;
 }
 
-#endif /* QUEX_INCLUDE_GUARD__ANALYZER__MISC__NAME_OBJECT */
+#endif /*  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAME_OBJECT */
