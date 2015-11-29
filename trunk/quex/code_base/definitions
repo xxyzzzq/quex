@@ -96,7 +96,9 @@
 
 /* Define the QUEX_TYPE_STREAM_POSITION at a central place, so that it is the
  * same when it is used in multiple analyzers compiled into one binary.      */
-#define QUEX_TYPE_STREAM_POSITION intmax_t
+#ifndef    QUEX_TYPE_STREAM_POSITION
+#   define QUEX_TYPE_STREAM_POSITION intmax_t
+#endif
 
 #define QUEX_MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
 #define QUEX_MAX(X, Y)  ((X) > (Y) ? (X) : (Y))

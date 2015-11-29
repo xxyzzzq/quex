@@ -12,7 +12,7 @@
  *
  *    -- BufferFiller's seek sets the input position of the next 
  *       character to be loaded into the buffer.
- *    -- ByteLoader's seek sets the position in the low level input
+ *    -- QUEX_NAME(ByteLoader)'s seek sets the position in the low level input
  *       stream.
  *
  * A 'seek' always implies that the following happens:

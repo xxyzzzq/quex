@@ -41,7 +41,7 @@ main(int argc, char** argv)
 
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
-    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh, true);
+    QUEX_NAME(ByteLoader)*          byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
 
     QUEX_NAME(BufferFiller)* filler = \
         QUEX_NAME(BufferFiller_Converter_new)(byte_loader, 

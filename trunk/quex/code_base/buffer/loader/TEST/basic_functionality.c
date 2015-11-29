@@ -1,5 +1,5 @@
-/* PURPOSE: This tests checks on the basic member functions of a ByteLoader
- *          implementation:
+/* PURPOSE: This tests checks on the basic member functions of a QUEX_NAME(ByteLoader
+   )*          implementation:
  *
  *                  .tell()
  *                  .seek(position)
@@ -11,18 +11,18 @@
  * consideration of valgrind's output.
  *
  * The code of this file is general, because it relies on the base class 
- * 'ByteLoader'. The only macro that needs to be defined in 'TEST_FILE_SIZE'.
+ * 'QUEX_NAME(ByteLoader)'. The only macro that needs to be defined in 'TEST_FILE_SIZE'.
  * A test application needs to construct the derived class' object and call
  * 'verify_basic_functionality()' of this file. The test does not produce any
  * output and relies solely on 'hwut_verify()' macros.
  *
  * (C) Frank-Rene Schaefer                                                   */
-#include <quex/code_base/buffer/loader/ByteLoader>
+#include <basic_functionality.h>
 #include <hwut_unit.h>
 
-static bool  verify_load(ByteLoader* me, int Offset, int N, 
+static bool  verify_load(QUEX_NAME(ByteLoader)* me, int Offset, int N, 
                          QUEX_TYPE_STREAM_POSITION position_limit);
-static bool  test(ByteLoader* me, int LoadN);
+static bool  test(QUEX_NAME(ByteLoader)* me, int LoadN);
 static void  print_difference(const uint8_t* content, int Offset, int N, 
                               QUEX_TYPE_STREAM_POSITION position_limit);
 
@@ -31,7 +31,7 @@ static void  print_difference(const uint8_t* content, int Offset, int N,
 static uint8_t reference[TEST_FILE_SIZE];
 
 void
-verify_basic_functionality(ByteLoader* me)
+verify_basic_functionality(QUEX_NAME(ByteLoader)* me)
 {
     if( ! test(me, 0) ) return;
     if( ! test(me, 1) ) return;
@@ -42,7 +42,7 @@ verify_basic_functionality(ByteLoader* me)
 }
 
 static bool
-test(ByteLoader* me, int LoadN)
+test(QUEX_NAME(ByteLoader)* me, int LoadN)
 {
     int  i;
     QUEX_TYPE_STREAM_POSITION position = 0;
@@ -85,7 +85,7 @@ test(ByteLoader* me, int LoadN)
 }
 
 static bool
-verify_load(ByteLoader* me, int Offset, int N, QUEX_TYPE_STREAM_POSITION position_limit)
+verify_load(QUEX_NAME(ByteLoader)* me, int Offset, int N, QUEX_TYPE_STREAM_POSITION position_limit)
 /* Loads 'N' bytes and compares the loaded content with what is stored 
  * in the reference storage.                                                 */
 {                                                                            

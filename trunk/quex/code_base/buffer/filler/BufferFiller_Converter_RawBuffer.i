@@ -65,7 +65,7 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
 
 QUEX_INLINE size_t 
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
-                          ByteLoader*            byte_loader, 
+                          QUEX_NAME(ByteLoader)*            byte_loader, 
                           bool*                  end_of_stream_f)  
 /* Try to fill the me buffer to its limits with data from the file.  The
  * filling starts from its current position, thus the remaining bytes to be

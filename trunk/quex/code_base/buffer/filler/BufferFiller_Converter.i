@@ -13,7 +13,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* me, 
-                                            ByteLoader*            byte_loader,
+                                            QUEX_NAME(ByteLoader)*            byte_loader,
                                             QUEX_NAME(Converter)*  converter,
                                             size_t                 RawMemorySize);
 
@@ -52,11 +52,11 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me);
 
 QUEX_INLINE size_t 
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
-                          ByteLoader*            byte_loader, 
+                          QUEX_NAME(ByteLoader)*            byte_loader, 
                           bool*                  end_of_stream_f);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
+QUEX_NAME(BufferFiller_Converter_new)(QUEX_NAME(ByteLoader)*            byte_loader,
                                       QUEX_NAME(Converter)*  converter,
                                       size_t                 RawMemorySize)
 { 
@@ -69,7 +69,7 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
     else if( byte_loader && ! byte_loader->binary_mode_f ) {
         /* Binary mode is ABSOLUTELY REQUIRED for converters, otherwise the 
          * positioning with respect to the raw buffer becomes unreliable.    */
-        __QUEX_STD_printf("! BufferFiller_Converter_new: ByteLoader is not in binary mode. !\n");
+        __QUEX_STD_printf("! BufferFiller_Converter_new: QUEX_NAME(ByteLoader )is not in binary mode. !\n");
         __QUEX_STD_printf("! Has file been opened in binary mode?                          !\n");
         return (QUEX_NAME(BufferFiller)*)0;
     }
@@ -89,7 +89,7 @@ QUEX_NAME(BufferFiller_Converter_new)(ByteLoader*            byte_loader,
 
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* me, 
-                                            ByteLoader*            byte_loader,
+                                            QUEX_NAME(ByteLoader)*            byte_loader,
                                             QUEX_NAME(Converter)*  converter,
                                             size_t                 RawMemorySize)
 {

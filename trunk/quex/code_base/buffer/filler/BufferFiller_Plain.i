@@ -17,7 +17,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)*, ByteLoader* byte_loader);
+QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)*, QUEX_NAME(ByteLoader)* byte_loader);
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Plain_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego);
@@ -48,7 +48,7 @@ QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
                                           const void*                ContentEnd);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-QUEX_NAME(BufferFiller_Plain_new)(ByteLoader* byte_loader)
+QUEX_NAME(BufferFiller_Plain_new)(QUEX_NAME(ByteLoader)* byte_loader)
 {
     QUEX_NAME(BufferFiller_Plain)*  me = \
          (QUEX_NAME(BufferFiller_Plain)*) \
@@ -64,7 +64,7 @@ QUEX_NAME(BufferFiller_Plain_new)(ByteLoader* byte_loader)
 
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me, 
-                                        ByteLoader*                    byte_loader)
+                                        QUEX_NAME(ByteLoader)*         byte_loader)
 {
     /* A linear relationship between stream position and character index 
      * requires that the input stream is in 'binary mode'. That is, the 

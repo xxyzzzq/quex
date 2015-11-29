@@ -75,7 +75,7 @@ test_file(bool BinaryF, const char* FileStem)
      * containing the REFERENCE data and the INPUT file are the SAME.        */
     const char*               file_name   = find_reference(FileStem); 
     FILE*                     fh          = fopen(file_name, "rb"); 
-    ByteLoader*               byte_loader = ByteLoader_FILE_new(fh, true);
+    QUEX_NAME(ByteLoader)*               byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     QUEX_NAME(BufferFiller)*  filler;
     const size_t              MemorySize  = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];

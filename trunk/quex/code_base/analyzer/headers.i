@@ -25,6 +25,7 @@
 
 #include    <quex/code_base/buffer/Buffer.i>
 #include    <quex/code_base/buffer/filler/BufferFiller.i>
+#include    <quex/code_base/buffer/loader/ByteLoader>
 
 #if defined(__QUEX_OPTION_CONVERTER)
 #   include <quex/code_base/buffer/filler/BufferFiller_Converter.i>

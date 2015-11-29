@@ -1,8 +1,8 @@
-/* PURPOSE: ByteLoader under the influence of segmented input.
+/* PURPOSE: QUEX_NAME(ByteLoader )under the influence of segmented input.
  *
  * In contrast to 'file input', not the whole input is completely available 
  * from the beginning. Instead, the input arrives in chunks, and the 
- * ByteLoader needs to cope with the timely segmented incoming chunks.
+ * QUEX_NAME(ByteLoader )needs to cope with the timely segmented incoming chunks.
  *
  * Practical applications of these scenario are pipes, socket connections,
  * or specifically scanning of the standard input. 
@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <basic_functionality.h>
 #include <quex/code_base/buffer/loader/ByteLoader_POSIX>
 #include <quex/code_base/buffer/loader/ByteLoader.i>
 #include <quex/code_base/buffer/loader/ByteLoader_POSIX.i>
@@ -40,11 +41,11 @@
 
 static void   writer_process(int fd, int WriteChunkSize);
 static void   reader_process(int fd, int ReadChunkSize,
-                             bool (*on_nothing)(ByteLoader*, size_t, size_t));
+                             bool (*on_nothing)(QUEX_NAME(ByteLoader)*, size_t, size_t));
 static void   test(int WriteChunkSize, int ReadChunkSize,
-                   bool (*on_nothing)(ByteLoader*, size_t, size_t));
+                   bool (*on_nothing)(QUEX_NAME(ByteLoader)*, size_t, size_t));
               
-static bool   self_on_nothing(ByteLoader* me, size_t TryN, size_t RequestN);
+static bool   self_on_nothing(QUEX_NAME(ByteLoader)* me, size_t TryN, size_t RequestN);
 
 int  sum_loaded_n;
 char send_data[] = "A MESSAGE OF A KILO BYTE BEGINS WITH A BIT";
@@ -55,7 +56,7 @@ main(int argc, char** argv)
     int  w_chunk;
     int  r_chunk;
     int  experiment_n = 0;
-    bool (*on_nothing)(ByteLoader* me, size_t TryN, size_t RequestN);
+    bool (*on_nothing)(QUEX_NAME(ByteLoader)* me, size_t TryN, size_t RequestN);
 
     hwut_info("Segmented Input;\n"
               "CHOICES: Normal, Handler;\n"
@@ -77,7 +78,7 @@ main(int argc, char** argv)
 
 static void 
 test(int WriteChunkSize, int ReadChunkSize,
-     bool (*on_nothing)(ByteLoader*, size_t, size_t))
+     bool (*on_nothing)(QUEX_NAME(ByteLoader)*, size_t, size_t))
 {
     int     fd[2]; 
     pid_t   child_pid;
@@ -121,10 +122,10 @@ writer_process(int fd, int WriteChunkSize)
 
 static void
 reader_process(int fd, int ReadChunkSize,
-               bool (*on_nothing)(ByteLoader*, size_t, size_t))
+               bool (*on_nothing)(QUEX_NAME(ByteLoader)*, size_t, size_t))
 {
     char        buffer[64];
-    ByteLoader* loader = ByteLoader_POSIX_new(fd);
+    QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(fd);
     int         cmp_n=0;
     int         loaded_n=0;
     bool        end_of_stream_f;
@@ -155,9 +156,9 @@ reader_process(int fd, int ReadChunkSize,
 }
 
 static bool 
-self_on_nothing(ByteLoader* me, size_t TryN, size_t RequestN)
-/* A handler on missing input. If the handler returns 'false', the ByteLoader
- * must break up the reception.                                              */
+self_on_nothing(QUEX_NAME(ByteLoader)* me, size_t TryN, size_t RequestN)
+/* A handler on missing input. If the handler returns 'false', the QUEX_NAME(ByteLoader
+   )* must break up the reception.                                              */
 {
     if( TryN > 1000) {
         printf("Max. try number exceeded: %i\n", (int)TryN);

@@ -6,6 +6,9 @@ TESTS := test-FILE.exe \
 
 FLAGS    :=  -ggdb -Wall -Werror \
    	         -DTEST_FILE_SIZE=100 \
+			 -DQUEX_NAMESPACE_MAIN_CLOSE='' \
+			 -DQUEX_NAMESPACE_MAIN_OPEN='' \
+			 -DQUEX_TYPE_STREAM_POSITION=long \
 			 -I$(HWUT_PATH)/support/C \
 			 -I$(QUEX_PATH) \
 			 -I.
@@ -23,6 +26,9 @@ test-%.exe: test-%.cpp basic_functionality.c initial_position.c
 
 segmented-input.exe: segmented-input.c
 	gcc $(FLAGS) -D__QUEX_OPTION_PLAIN_C $^ -o $@
+
+%.E: %.c
+	gcc -E $(FLAGS) -D__QUEX_OPTION_PLAIN_C $^ -o $@
 
 clean:
 	rm -f *.exe

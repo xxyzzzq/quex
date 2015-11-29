@@ -78,12 +78,15 @@ def better_name(FileName):
     return "__QUEX_INCLUDE_GUARD__" + suffix
 
 def __AUX_helper_to_name_the_include_guards_according_to_quex_convention():
+    global include_guard_list
+
+    stranger_list = [ x.file_name for x in include_guard_list if x.name != better_name(x.file_name) ]
     for x in include_guard_list:
-        # print x.file_name + ":" + repr(x.line_n) + "  " + x.name
+        if x.file_name not in stranger_list: continue
+        print x.file_name + ":1:",
         # Cut the QUEX_PATH from the file name
 
-        print "%s%s %s  %s" % \
-              (x.name, " " * (max_length - len(x.name)), better_name(file_name), x.file_name[max_length:])
+        print " %s" % better_name(x.file_name)
 
 def check_include_guard_convention():
     stranger_list = filter(lambda x: x.name != better_name(x.file_name), include_guard_list)
@@ -145,3 +148,7 @@ if "convention" in sys.argv:
 
 elif "undefinition" in sys.argv:
     check_include_guard_undefinition()
+
+elif "help" in sys.argv:
+    # Help to develop include guard according quex-internal convention
+    __AUX_helper_to_name_the_include_guards_according_to_quex_convention()

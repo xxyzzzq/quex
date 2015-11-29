@@ -15,7 +15,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void
     QUEX_NAME(reset_basic)(QUEX_TYPE_ANALYZER*     me,
-                           ByteLoader*             byte_loader, 
+                           QUEX_NAME(ByteLoader)*             byte_loader, 
                            const QUEX_NAME(Mode)*  Mode, 
                            const char*             CharacterEncodingName, 
                            const size_t            TranslationBufferMemorySize);

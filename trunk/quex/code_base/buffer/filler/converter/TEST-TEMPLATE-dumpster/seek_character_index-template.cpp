@@ -35,7 +35,7 @@ main(int argc, char** argv)
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_TYPE_CHARACTER  memory[MemorySize];
-    ByteLoader*          byte_loader = ByteLoader_FILE_new(fh, true);
+    QUEX_NAME(ByteLoader)*          byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     /**/
     ptrdiff_t    Delta = 0;
     ptrdiff_t    Front = 0;

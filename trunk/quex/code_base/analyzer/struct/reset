@@ -52,7 +52,7 @@ QUEX_INLINE void QUEX_NAME(reset_wistream)(QUEX_TYPE_ANALYZER* me,
 /* Level (3) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(reset_ByteLoader)(QUEX_TYPE_ANALYZER* me,
-                                             ByteLoader* byte_loader,
+                                             QUEX_NAME(ByteLoader)* byte_loader,
                                              const char* CodecName);
 
 /* Level (4) __________________________________________________________________

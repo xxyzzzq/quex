@@ -1,69 +1,73 @@
+/* vim: set ft=c:
+ * (C) Frank-Rene Schaefer */
 #ifndef QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE_I
 #define QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE_I
 
 #include <quex/code_base/MemoryManager>
 
-QUEX_INLINE void                       ByteLoader_FILE_construct(ByteLoader_FILE* me, __QUEX_STD_FILE* fh);
-QUEX_INLINE QUEX_TYPE_STREAM_POSITION  ByteLoader_FILE_tell(ByteLoader* me);
-QUEX_INLINE void                       ByteLoader_FILE_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos);
-QUEX_INLINE size_t                     ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN, bool*);
-QUEX_INLINE void                       ByteLoader_FILE_delete_self(ByteLoader* me);
-QUEX_INLINE bool                       ByteLoader_FILE_compare_handle(const ByteLoader* alter_ego_A, 
-                                                                      const ByteLoader* alter_ego_B);
+QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE ByteLoader*    
-ByteLoader_FILE_new(FILE* fh, bool BinaryModeF)
+QUEX_INLINE void                       QUEX_NAME(ByteLoader_FILE_construct)(QUEX_NAME(ByteLoader_FILE)* me, __QUEX_STD_FILE* fh);
+QUEX_INLINE QUEX_TYPE_STREAM_POSITION  QUEX_NAME(ByteLoader_FILE_tell)(QUEX_NAME(ByteLoader)* me);
+QUEX_INLINE void                       QUEX_NAME(ByteLoader_FILE_seek)(QUEX_NAME(ByteLoader)* me, QUEX_TYPE_STREAM_POSITION Pos);
+QUEX_INLINE size_t                     QUEX_NAME(ByteLoader_FILE_load)(QUEX_NAME(ByteLoader)* me, void* buffer, const size_t ByteN, bool*);
+QUEX_INLINE void                       QUEX_NAME(ByteLoader_FILE_delete_self)(QUEX_NAME(ByteLoader)* me);
+QUEX_INLINE bool                       QUEX_NAME(ByteLoader_FILE_compare_handle)(const QUEX_NAME(ByteLoader)* alter_ego_A, 
+                                                                                 const QUEX_NAME(ByteLoader)* alter_ego_B);
+
+QUEX_INLINE QUEX_NAME(ByteLoader)*    
+QUEX_NAME(ByteLoader_FILE_new)(FILE* fh, bool BinaryModeF)
 {
-    ByteLoader_FILE* me;
+    QUEX_NAME(ByteLoader_FILE)* me;
    
-    if( ! fh ) return (ByteLoader*)0;
+    if( ! fh ) return (QUEX_NAME(ByteLoader)*)0;
 
-    me = (ByteLoader_FILE*)QUEXED(MemoryManager_allocate)(sizeof(ByteLoader_FILE),
+    me = (QUEX_NAME(ByteLoader_FILE)*)QUEXED(MemoryManager_allocate)(sizeof(QUEX_NAME(ByteLoader_FILE)),
                                                           E_MemoryObjectType_BYTE_LOADER);
-    if( ! me ) return (ByteLoader*)0;
+    if( ! me ) return (QUEX_NAME(ByteLoader)*)0;
 
-    ByteLoader_FILE_construct(me, fh);
+    QUEX_NAME(ByteLoader_FILE_construct)(me, fh);
     me->base.binary_mode_f = BinaryModeF;
 
     return &me->base;
 }
 
-QUEX_INLINE ByteLoader*    
-ByteLoader_FILE_new_from_file_name(const char* FileName)
+QUEX_INLINE QUEX_NAME(ByteLoader)*    
+QUEX_NAME(ByteLoader_FILE_new_from_file_name)(const char* FileName)
 {
-    __QUEX_STD_FILE* fh = fopen(FileName, "rb");
-    ByteLoader*      alter_ego;
+    __QUEX_STD_FILE*        fh = fopen(FileName, "rb");
+    QUEX_NAME(ByteLoader)*  alter_ego;
 
     if( ! fh ) {
-        return (ByteLoader*)0;
+        return (QUEX_NAME(ByteLoader)*)0;
     }
-    alter_ego = ByteLoader_FILE_new(fh, true);
+    alter_ego = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     if( ! alter_ego ) {
-        return (ByteLoader*)0;
+        return (QUEX_NAME(ByteLoader)*)0;
     }
     alter_ego->handle_ownership = E_Ownership_LEXICAL_ANALYZER;
     return alter_ego;
 }
 
 QUEX_INLINE void
-ByteLoader_FILE_construct(ByteLoader_FILE* me, __QUEX_STD_FILE* fh)
+QUEX_NAME(ByteLoader_FILE_construct)(QUEX_NAME(ByteLoader_FILE)* me, __QUEX_STD_FILE* fh)
 {
     /* IMPORTANT: input_handle must be set BEFORE call to constructor!
      *            Constructor does call 'tell()'                             */
     me->input_handle = fh;
 
-    ByteLoader_construct(&me->base,
-                         ByteLoader_FILE_tell,
-                         ByteLoader_FILE_seek,
-                         ByteLoader_FILE_load,
-                         ByteLoader_FILE_delete_self,
-                         ByteLoader_FILE_compare_handle);
+    QUEX_NAME(ByteLoader_construct)(&me->base,
+                         QUEX_NAME(ByteLoader_FILE_tell),
+                         QUEX_NAME(ByteLoader_FILE_seek),
+                         QUEX_NAME(ByteLoader_FILE_load),
+                         QUEX_NAME(ByteLoader_FILE_delete_self),
+                         QUEX_NAME(ByteLoader_FILE_compare_handle));
 }
 
 QUEX_INLINE void    
-ByteLoader_FILE_delete_self(ByteLoader* alter_ego)
+QUEX_NAME(ByteLoader_FILE_delete_self)(QUEX_NAME(ByteLoader)* alter_ego)
 {
-    ByteLoader_FILE* me = (ByteLoader_FILE*)(alter_ego);
+    QUEX_NAME(ByteLoader_FILE)* me = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego);
 
     if( me->input_handle && me->base.handle_ownership == E_Ownership_LEXICAL_ANALYZER ) {
         fclose(me->input_handle);
@@ -72,38 +76,44 @@ ByteLoader_FILE_delete_self(ByteLoader* alter_ego)
 }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION    
-ByteLoader_FILE_tell(ByteLoader* me)            
-{ return (QUEX_TYPE_STREAM_POSITION)ftell(((ByteLoader_FILE*)me)->input_handle); }
+QUEX_NAME(ByteLoader_FILE_tell)(QUEX_NAME(ByteLoader)* me)            
+{ return (QUEX_TYPE_STREAM_POSITION)ftell(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle); }
 
 QUEX_INLINE void    
-ByteLoader_FILE_seek(ByteLoader* me, QUEX_TYPE_STREAM_POSITION Pos) 
+QUEX_NAME(ByteLoader_FILE_seek)(QUEX_NAME(ByteLoader)* me, QUEX_TYPE_STREAM_POSITION Pos) 
 { 
-    fseek(((ByteLoader_FILE*)me)->input_handle, (long)Pos, SEEK_SET); 
+    fseek(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle, (long)Pos, SEEK_SET); 
 }
 
 QUEX_INLINE size_t  
-ByteLoader_FILE_load(ByteLoader* me, void* buffer, const size_t ByteN, bool* end_of_stream_f) 
+QUEX_NAME(ByteLoader_FILE_load)(QUEX_NAME(ByteLoader)* me, 
+                                void*                  buffer, 
+                                const size_t           ByteN, 
+                                bool*                  end_of_stream_f) 
 { 
-    size_t loaded_byte_n = fread(buffer, 1, ByteN, ((ByteLoader_FILE*)me)->input_handle); 
+    size_t loaded_byte_n = fread(buffer, 1, ByteN, ((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle); 
 #   if 0
     int    i;
-    printf("#load @%i:         [", (int)ftell(((ByteLoader_FILE*)me)->input_handle));
+    printf("#load @%i:         [", (int)ftell(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle));
     for(i=0; i<loaded_byte_n; ++i) printf("%02X.", ((uint8_t*)buffer)[i]);
     printf("]\n");
 #   endif
-    *end_of_stream_f = feof(((ByteLoader_FILE*)me)->input_handle) ? true : false;
+    *end_of_stream_f = feof(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle) ? true : false;
     return loaded_byte_n;
 }
 
 QUEX_INLINE bool  
-ByteLoader_FILE_compare_handle(const ByteLoader* alter_ego_A, const ByteLoader* alter_ego_B) 
+QUEX_NAME(ByteLoader_FILE_compare_handle)(const QUEX_NAME(ByteLoader)* alter_ego_A, 
+                                          const QUEX_NAME(ByteLoader)* alter_ego_B) 
 /* RETURNS: true  -- if A and B point to the same FILE object.
  *          false -- else.                                                   */
 { 
-    const ByteLoader_FILE* A = (ByteLoader_FILE*)(alter_ego_A);
-    const ByteLoader_FILE* B = (ByteLoader_FILE*)(alter_ego_B);
+    const QUEX_NAME(ByteLoader_FILE)* A = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego_A);
+    const QUEX_NAME(ByteLoader_FILE)* B = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego_B);
 
     return A->input_handle == B->input_handle;
 }
+
+QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /* QUEX_INCLUDE_GUARD_BYTE_LOADER_FILE_I */
