@@ -1,6 +1,6 @@
 Test Collection on Source Code
 ---------------------------------------
-dash *.sh
+bash *.sh
 *.py
 --not compilation-independence.sh
 ---------------------------------------

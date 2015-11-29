@@ -142,8 +142,10 @@ construct_with_single_token(CLexer** lexer, CToken* token, const char* CodecName
  *
  * RETURNS: A meaningless 0.                                                 */
 {
+    using namespace quex;
+
     QUEX_NAME_TOKEN(construct)(token);
-    *lexer = new QUEX_TYPE_ANALYZER((ByteLoader*)0, CodecName);
+    *lexer = new QUEX_TYPE_ANALYZER((QUEX_NAME(ByteLoader)*)0, CodecName);
 
     /* -- LOOP until 'bye' token arrives */
     (void)QUEX_NAME(token_p_swap)(*lexer, token);
@@ -165,10 +167,12 @@ construct_with_token_bank(CLexer**  lexer, CToken* token_bank, const char* Codec
  *
  * RETURNS: A pointer to the 'previous token'.                               */
 {
+    using namespace quex;
+
     CToken*           prev_token;
 
     /* Initialize analyzer.                                                  */
-    *lexer = new QUEX_TYPE_ANALYZER((ByteLoader*)0, CodecName);
+    *lexer = new QUEX_TYPE_ANALYZER((QUEX_NAME(ByteLoader)*)0, CodecName);
 
     /* initialize token objects.                                             */
     QUEX_NAME_TOKEN(construct)(&token_bank[0]);
