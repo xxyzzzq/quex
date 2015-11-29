@@ -604,14 +604,14 @@ demo/C/TEST                                                          <no date>
  * demo/012:
 
     Single Application/Multiple Lexical Analyzers
-        012.sh DEBUG ...............................................[FAIL]
-               NDEBUG ..............................................[FAIL]
+        012.sh DEBUG .................................................[OK]
+               NDEBUG ................................................[OK]
 
  * demo/012b:
 
     Multiple Lexical Analyzers -- shared token
-        012b.sh DEBUG ..............................................[FAIL]
-                NDEBUG .............................................[FAIL]
+        012b.sh DEBUG ................................................[OK]
+                NDEBUG ...............................................[OK]
                                                            ___   _    _   _    
                                                           |  _| / \  | | | |   
                                                           | |_|/ - \ | | | |_  
@@ -622,10 +622,6 @@ demo/C/TEST                                                          <no date>
     [FAIL] 009b.sh
     [FAIL] 009.sh _ lexer
                 \__ wlexer
-    [FAIL] 012.sh _ DEBUG
-                \__ NDEBUG
-    [FAIL] 012b.sh _ DEBUG
-                 \__ NDEBUG
 ===============================================================================
                                                                                
                                  Demos for Cpp                                 
@@ -742,24 +738,20 @@ demo/Cpp/TEST                                                        <no date>
  * demo/012:
 
     Single Application/Multiple Lexical Analyzers
-        012.sh DEBUG ...............................................[FAIL]
-               NDEBUG ..............................................[FAIL]
+        012.sh DEBUG .................................................[OK]
+               NDEBUG ................................................[OK]
 
  * demo/012b:
 
     Multiple Lexical Analyzers -- shared token
-        012b.sh DEBUG ..............................................[FAIL]
-                NDEBUG .............................................[FAIL]
+        012b.sh DEBUG ................................................[OK]
+                NDEBUG ...............................................[OK]
                                                            ___   _    _   _    
                                                           |  _| / \  | | | |   
                                                           | |_|/ - \ | | | |_  
                                                           |_|  |_|_| |_| |___| 
 -------------------------------------------------------------------------------
     [FAIL] 009b.sh
-    [FAIL] 012.sh _ DEBUG
-                \__ NDEBUG
-    [FAIL] 012b.sh _ DEBUG
-                 \__ NDEBUG
 ===============================================================================
                                                                                
                       <no file 'hwut-info.dat', no title>                      
@@ -954,9 +946,43 @@ quex/input/TEST                                                      <no date>
                                                                    \___/|_|\_) 
 ===============================================================================
                                                                                
+                        Test Collection on Source Code                         
+                                                                               
+quex/TESTS/code/TEST                                                 <no date>
+-------------------------------------------------------------------------------
+ * Check if the default configuration has been updated.
+        check-default-configuration.sh ...............................[OK]
+ * Check that 'Lexeme' macro is not used.
+        no-use-of-lexeme-macro.sh ..................................[FAIL]
+ * Code Check with pyflakes
+        pyflakes-check.sh ............................[KEYBOARD_INTERRUPT]
+ * Command Line Option Documentation
+        command_line_options-verify-doc.py man .......................[OK]
+                                           sphinx ....................[OK]
+ * Double Check that Exception Handlers are in place
+        test-exceptions-in-place.sh ..................................[OK]
+ * Include Guards for C/C++
+        include_guard.py convention ..................................[OK]
+                         undefinition ................................[OK]
+ * Propper undefinition of configuration parameters.
+        macro-check.py ...............................................[OK]
+
+ * User defined token id file:
+
+    __parse_token_id_file
+        test-token_id_file-find_ids.py ...............................[OK]
+                                                           ___   _    _   _    
+                                                          |  _| / \  | | | |   
+                                                          | |_|/ - \ | | | |_  
+                                                          |_|  |_|_| |_| |___| 
+-------------------------------------------------------------------------------
+    [FAIL] no-use-of-lexeme-macro.sh
+    [FAIL] pyflakes-check.sh
+===============================================================================
+                                                                               
                               Command Line Checks                              
                                                                                
-quex/TEST/command-line/TEST                                          <no date>
+quex/TESTS/command-line/TEST                                         <no date>
 -------------------------------------------------------------------------------
  * Detect lower prio-patterns outrun higher-prio patterns
         outrun.sh ....................................................[OK]
@@ -970,7 +996,7 @@ quex/TEST/command-line/TEST                                          <no date>
                                                                                
                        Check Lexical Similarity Analyzer                       
                                                                                
-quex/TEST/did-you-mean/TEST                                          <no date>
+quex/TESTS/did-you-mean/TEST                                         <no date>
 -------------------------------------------------------------------------------
  * Explicit Token Type Member Assignment
         token_type-member-name.sh ....................................[OK]
@@ -984,7 +1010,7 @@ quex/TEST/did-you-mean/TEST                                          <no date>
                                                                                
                               Errors and Warnings                              
                                                                                
-quex/TEST/errors-warnings/TEST                                       <no date>
+quex/TESTS/errors-warnings/TEST                                      <no date>
 -------------------------------------------------------------------------------
  * Token identifier definition and orthography.
         token_identifier.sh ..........................................[OK]
@@ -996,7 +1022,7 @@ quex/TEST/errors-warnings/TEST                                       <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/TEST/event-handling/TEST                                        <no date>
+quex/TESTS/event-handling/TEST                                       <no date>
 -------------------------------------------------------------------------------
  * Customized on_skip_range_open event.
         on_skip_range_open-customized.sh customized ..................[OK]
@@ -1023,7 +1049,7 @@ quex/TEST/event-handling/TEST                                        <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/TEST/include-stack/TEST                                         <no date>
+quex/TESTS/include-stack/TEST                                        <no date>
 -------------------------------------------------------------------------------
 
  * Include Stack:
@@ -1052,7 +1078,7 @@ quex/TEST/include-stack/TEST                                         <no date>
                                                                                
                        Indentation Counter / Birds View                        
                                                                                
-quex/TEST/indentation_count/TEST                                     <no date>
+quex/TESTS/indentation_count/TEST                                    <no date>
 -------------------------------------------------------------------------------
  * Bad character detection.
         bad.sh customized ............................................[OK]
@@ -1084,7 +1110,7 @@ quex/TEST/indentation_count/TEST                                     <no date>
                                                                                
                                Match Precedence                                
                                                                                
-quex/TEST/match-precedence/TEST                                      <no date>
+quex/TESTS/match-precedence/TEST                                     <no date>
 -------------------------------------------------------------------------------
  * Checking DELETE marks internally.
         deletion.py 1 ................................................[OK]
@@ -1148,7 +1174,7 @@ quex/TEST/match-precedence/TEST                                      <no date>
                                                                                
                                      Misc                                      
                                                                                
-quex/TEST/misc/TEST                                                  <no date>
+quex/TESTS/misc/TEST                                                 <no date>
 -------------------------------------------------------------------------------
  * Analyzer State Tracer
         debug_show.sh ................................................[OK]
@@ -1173,7 +1199,7 @@ quex/TEST/misc/TEST                                                  <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/TEST/reset/TEST                                                 <no date>
+quex/TESTS/reset/TEST                                                <no date>
 -------------------------------------------------------------------------------
  * Normal Reset
         lexer-x 0 ....................................................[OK]
@@ -1246,7 +1272,7 @@ quex/TEST/reset/TEST                                                 <no date>
                                                                                
                           Source Package Distribution                          
                                                                                
-quex/TEST/source-package/TEST                                        <no date>
+quex/TESTS/source-package/TEST                                       <no date>
 -------------------------------------------------------------------------------
 
  * Source Packager:
@@ -1285,7 +1311,7 @@ quex/TEST/source-package/TEST                                        <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/TEST/token-class/TEST                                           <no date>
+quex/TESTS/token-class/TEST                                          <no date>
 -------------------------------------------------------------------------------
  * With token policy 'queue'.
         simple-queue.exe .............................................[OK]
@@ -1299,7 +1325,7 @@ quex/TEST/token-class/TEST                                           <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/TEST/token-policies/TEST                                        <no date>
+quex/TESTS/token-policies/TEST                                       <no date>
 -------------------------------------------------------------------------------
 
  * Token Policy 'queue':
@@ -1936,7 +1962,7 @@ quex/output/core/TEST                                                <no date>
                                       Cpp-PathUniform-CG .............[OK]
                                       Cpp-Template ...................[OK]
                                       Cpp-Template-CG ................[OK]
-                                      Cpp_StrangeStream ............[FAIL]
+                                      Cpp_StrangeStream ..............[OK]
 
  * CONTINUE:
 
@@ -1992,7 +2018,7 @@ quex/output/core/TEST                                                <no date>
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
     Part 2
         test-pre-conditions-2.py ANSI-C ..............................[OK]
                                  ANSI-C-CG ...........................[OK]
@@ -2005,7 +2031,7 @@ quex/output/core/TEST                                                <no date>
                                  Cpp-PathUniform-CG ..................[OK]
                                  Cpp-Template ........................[OK]
                                  Cpp-Template-CG .....................[OK]
-                                 Cpp_StrangeStream .................[FAIL]
+                                 Cpp_StrangeStream ...................[OK]
 
  * Pre- and Post- Conditions:
 
@@ -2021,7 +2047,7 @@ quex/output/core/TEST                                                <no date>
                                    Cpp-PathUniform-CG ................[OK]
                                    Cpp-Template ......................[OK]
                                    Cpp-Template-CG ...................[OK]
-                                   Cpp_StrangeStream ...............[FAIL]
+                                   Cpp_StrangeStream .................[OK]
 
  * Pre-conditions:
 
@@ -2132,15 +2158,10 @@ quex/output/core/TEST                                                <no date>
                                          B-UTF8 ......................[OK]
                                          C ...........................[OK]
                                          C-UTF8 ......................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] test-no-backward-reloading.py _ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-3.py _ Cpp_StrangeStream
-    [FAIL] test-pre-conditions-2.py _ Cpp_StrangeStream
-    [FAIL] test-pre-post-condition.py _ Cpp_StrangeStream
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                                   Output Cpp                                   
@@ -2225,7 +2246,7 @@ quex/code_base/buffer/loader/TEST                                    <no date>
         segmented-input.exe Handler ..................................[OK]
                             Normal ...................................[OK]
 
- * ByteLoader:
+ * QUEX_NAME(ByteLoader):
 
     FILE
         test-FILE.exe basic ..........................................[OK]
@@ -2822,20 +2843,21 @@ SUMMARY:
     Fails: N:  Verdict: Directory:                                        
 
         3  234   [FAIL] TEST                                              
-        9  66    [FAIL] demo/C/TEST                                       
-        5  53    [FAIL] ..../Cpp/TEST                                     
-           2       [OK] quex/TEST/command-line/TEST                       
-           2       [OK] ........./did-you-mean/TEST                       
-           1       [OK] ........./errors-warnings/TEST                    
-           10      [OK] ........./event-handling/TEST                     
-           14      [OK] ........./include-stack/TEST                      
-           18      [OK] ........./indentation_count/TEST                  
-           45      [OK] ........./match-precedence/TEST                   
-           10      [OK] ........./misc/TEST                               
-           55      [OK] ........./reset/TEST                              
-           24      [OK] ........./source-package/TEST                     
-           2       [OK] ........./token-class/TEST                        
-           4       [OK] ........./token-policies/TEST                     
+        5  66    [FAIL] demo/C/TEST                                       
+        1  53    [FAIL] ..../Cpp/TEST                                     
+        2  10    [FAIL] quex/TESTS/code/TEST                              
+           2       [OK] ........../command-line/TEST                      
+           2       [OK] ........../did-you-mean/TEST                      
+           1       [OK] ........../errors-warnings/TEST                   
+           10      [OK] ........../event-handling/TEST                    
+           14      [OK] ........../include-stack/TEST                     
+           18      [OK] ........../indentation_count/TEST                 
+           45      [OK] ........../match-precedence/TEST                  
+           10      [OK] ........../misc/TEST                              
+           55      [OK] ........../reset/TEST                             
+           24      [OK] ........../source-package/TEST                    
+           2       [OK] ........../token-class/TEST                       
+           4       [OK] ........../token-policies/TEST                    
            10      [OK] ..../code_base/TEST                               
            42      [OK] ............../analyzer/TEST                      
            26      [OK] ............../buffer/TESTS/move/TEST             
@@ -2857,16 +2879,16 @@ SUMMARY:
            13      [OK] ........................./check/TEST              
            56      [OK] ..../input/TEST                                   
            27      [OK] ........../regular_expression/TEST                
-        4  196   [FAIL] ..../output/core/TEST                             
+           196     [OK] ..../output/core/TEST                             
            29      [OK] ................/skipper/TEST                     
            22      [OK] ................/state/transition_map/TEST        
            30      [OK] .........../cpp/TEST                              
 
 -------------------------------------------------------------------------------
-     _____     _ _          ____   _____           
-    |  ___|_ _(_) |___     |___ \ |___ /     __  __
-    | |_ / _` | | / __|      __) |  |_ \     \ \/ /
-    |  _| (_| | | \__ \     / __/  ___) |     >  < 
-    |_|  \__,_|_|_|___/    |_____||____/     /_/\_\
-                                                                   (1500 tests)
+     _____     _ _          _  _____           
+    |  ___|_ _(_) |___     / ||___ /     __  __
+    | |_ / _` | | / __|    | |  |_ \     \ \/ /
+    |  _| (_| | | \__ \    | | ___) |     >  < 
+    |_|  \__,_|_|_|___/    |_||____/     /_/\_\
+                                                                   (1510 tests)
 ===============================================================================
