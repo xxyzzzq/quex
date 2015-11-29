@@ -21,7 +21,9 @@ grep -sHIne '\(\bLexeme\b\)\|\(\bLexemeBegin\b\)\|\(\bLexemeEnd\b\)\|\(\bLexemeN
      . -r --exclude-dir TEST --exclude-dir .svn \
      --include "*.py" \
   | awk " ! /define Lexeme/ && ! /undef Lexeme/ && ! /\"Lexeme/ && ! /'Lexeme/ "
-$QUEX_PATH/TEST/quex_pathify.sh $tmp1_file 
+
+bash $QUEX_PATH/TEST/quex_pathify.sh $tmp1_file 
+
 echo "|||| potpourri end"
 rm -f $tmp0_file
 rm -f $tmp1_file

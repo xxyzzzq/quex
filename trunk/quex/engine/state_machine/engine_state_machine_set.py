@@ -172,7 +172,7 @@ class CharacterSetStateMachine:
             else:
                 assert False
                 # Here, the character begin p needs to be adapted to what has been reloaded.
-                on_before_reload = [ ] # LexemeBegin is enough.
+                on_before_reload = [ ] # Begin of lexeme is enough.
                 on_after_reload  = [ ]
         else:
             on_before_reload = [ Op.Assign(E_R.LexemeStartP, E_R.InputP) ] 
