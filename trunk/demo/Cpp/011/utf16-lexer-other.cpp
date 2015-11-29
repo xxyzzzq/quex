@@ -18,7 +18,7 @@ main(int argc, char** argv)
     Token*                   token;
     bool                     BigEndianF  = (strcmp(argv[1], "BE") == 0); 
     const char*              file_name   = BigEndianF ? "example-other-utf16be.txt" : "example-other-utf16le.txt";
-    ByteLoader*              byte_loader = ByteLoader_FILE_new_from_file_name(file_name);
+    QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(file_name);
     QUEX_NAME(BufferFiller)* filler      = QUEX_NAME(BufferFiller_new)(byte_loader, 0, 0);
     UTF16Lex*                qlex;
 

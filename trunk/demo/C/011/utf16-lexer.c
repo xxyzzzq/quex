@@ -9,7 +9,7 @@ main(int argc, char** argv)
     quex_Token*              token_p     = 0x0;
     bool                     BigEndianF  = (argc < 2 || (strcmp(argv[1], "BE") == 0)); 
     const char*              file_name   = BigEndianF ? "example-utf16be.txt" : "example-utf16le.txt";
-    ByteLoader*              byte_loader = ByteLoader_FILE_new_from_file_name(file_name);
+    QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(file_name);
     QUEX_NAME(BufferFiller)* filler      = QUEX_NAME(BufferFiller_new)(byte_loader, 0, 0);
     quex_UTF16Lex            qlex;
     size_t                   BufferSize = 1024;
