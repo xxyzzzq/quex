@@ -34,7 +34,7 @@
 static int  setup_socket_server(void);
 static bool accept_and_lex(int listen_fd);
 static void print_token(quex_Token*  token);
-static bool self_on_nothing(struct ByteLoader_tag*  me, size_t TryN, size_t LoadedN);
+static bool self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t LoadedN);
  
 int main(void)
 {
@@ -55,10 +55,10 @@ accept_and_lex(int listen_fd)
  * RETURNS: True, lexing successful.
  *          False, if an error occured or the 'BYE' token requests to stop.  */
 {
-    int            connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
-    quex_Token*    token;
-    quex_LexAscii  qlex;
-    ByteLoader*    loader = ByteLoader_POSIX_new(connected_fd);
+    int              connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
+    quex_Token*      token;
+    quex_LexAscii    qlex;
+    QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(connected_fd);
 
     if( connected_fd == -1 ) {
         printf("server: accept() terminates with failure.\n");
@@ -66,15 +66,16 @@ accept_and_lex(int listen_fd)
         return true;
     }
 
-    ByteLoader_seek_disable(loader);
+    QUEX_NAME(ByteLoader_seek_disable)(loader);
 
     /* A handler for the case that nothing is received over the line. */
     loader->on_nothing = self_on_nothing; 
 
     QUEX_NAME(from_ByteLoader)(&qlex, loader, NULL);
 
+    token = qlex.token;
     do {
-        QUEX_NAME(receive)(&qlex, &token);
+        (void)QUEX_NAME(receive)(&qlex);
 
         print_token(token);
 
@@ -124,7 +125,7 @@ setup_socket_server(void)
 }
 
 static bool  
-self_on_nothing(ByteLoader*  me, size_t TryN, size_t RequiredToLoad)
+self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t RequiredToLoad)
 /* ByteLoader's handler to treat the case that nothing has been received. Note,
  * that with the current setup the socket receiver blocks until something comes
  * in. If nothing is received, the socket is closed.
@@ -134,7 +135,7 @@ self_on_nothing(ByteLoader*  me, size_t TryN, size_t RequiredToLoad)
 { 
     int       error  = 0;
     socklen_t len    = sizeof (error);
-    int       retval = getsockopt(((ByteLoader_POSIX*)me)->fd, SOL_SOCKET, SO_ERROR, &error, &len);
+    int       retval = getsockopt(((QUEX_NAME(ByteLoader_POSIX)*)me)->fd, SOL_SOCKET, SO_ERROR, &error, &len);
     (void)TryN; (void)RequiredToLoad;
 
     if( retval ) {

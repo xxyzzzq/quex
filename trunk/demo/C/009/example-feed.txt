@@ -1,1 +1,1 @@
-hello world bonjour le monde hallo welt 0123456789 Every kilo byte begins with a single bit.
+A message of a kilo byte begins with a 1 bit.

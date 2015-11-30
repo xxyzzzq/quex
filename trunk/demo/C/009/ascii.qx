@@ -1,7 +1,11 @@
 // -*- C++ -*- vim: set syntax=cpp:
 token {
-    HELLO;
-    WORLD;
+    ARTICLE;
+    STORAGE_UNIT;
+    PREPOSITION;
+    NUMBER;
+    VERB;
+    SUBJECT;
     NUMBER;
     BYE;
     DOT;
@@ -15,11 +19,13 @@ mode ONE_AND_ONLY :
     on_end_of_stream => QUEX_TKN_TERMINATION(LexemeNull);
     on_failure       => QUEX_TKN_FAIL(Lexeme);
 
-    "hello"|"bonjour"|"hallo" => QUEX_TKN_HELLO(Lexeme);
-    "world"|"le monde"|"welt" => QUEX_TKN_WORLD(Lexeme);
+    "A"|"a"|"The"|"the"       => QUEX_TKN_ARTICLE(Lexeme);
+    "byte"|"bit"              => QUEX_TKN_STORAGE_UNIT(Lexeme);
+    "with"|"of"               => QUEX_TKN_PREPOSITION(Lexeme);
     [0-9]+                    => QUEX_TKN_NUMBER(Lexeme);
+    "begin"s?                 => QUEX_TKN_VERB(Lexeme);
     "bye"                     => QUEX_TKN_BYE(Lexeme);
-    [A-Za-z_][A-Za-z0-9_]+    => QUEX_TKN_IDENTIFIER(Lexeme);
+    [A-Za-z_][A-Za-z0-9_]+    => QUEX_TKN_SUBJECT(Lexeme);
 }
 
 
