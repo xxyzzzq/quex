@@ -25,32 +25,81 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void feed_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms);
+static void feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms);
 static int  connect_to_server();
 
 int 
 main(int argc, char** argv)
 /* Reads a file whose name is given on the command line add flushes it through
- * socket 0x4711 on this host.
+ * socket 0x4711 on this host: 
  *
- * $1 Name of file that contains what is to be fed into socket.
- * $2 Chunk size of chunks fed into socket.                                  
- * $3 milliseconds to wait in between sendings.                              */
+ * USAGE:
+ *
+ *  (i) $1 == "string":
+ *
+ *     $2 = string to be sent. 
+ *
+ *     Send the string given by $2 over the line to the quex analyzer. Use
+ *     this to send the "bye" token which terminates the session.
+ *
+ *  $2 == "file":
+ *
+ *     $2 = name of file containing the content to be sent. 
+ *
+ *  $3 Chunk size of chunks fed into socket.                                  
+ *  $4 Milliseconds to wait in between sendings.                             
+ *
+ *  EXAMPLES: 
+ *
+ *  The 'bye' token is sent by
+ *
+ *     > feed-socket string bye  
+ *
+ *  The content of file "example-feed.txt" is sent in chunks of 7 byte every 5 
+ *  milliseconds by
+ *
+ *     > feed-socket file example-feed.txt 7 5
+ *
+ * The string "hello world" is sent in chunks of 2 bytes every second by
+ *
+ *     > feed-socket string 'hello world' 2 1000
+ *  
+ *  (C) Frank-Rene Schaefer                                                  */
 {
-    int        socket_fd = 0;
-    FILE*      fh        = argc > 1 ? fopen(argv[1], "rb") : NULL;
-    const int  ChunkSize = argc > 2 ? atoi(argv[2]) : 3;
-    const int  Delay_ms  = argc > 3 ? atoi(argv[3]) : 1;
+    enum mode { 
+        FEED_STRING, 
+        FEED_FILE, 
+        FEED_BAD 
+    }            mode;
+    int          socket_fd = 0;
+    const char*  specification_str; 
+    FILE*        fh        = argc > 1 ? fopen(argv[1], "rb") : NULL;
+    const int    ChunkSize = argc > 2 ? atoi(argv[2]) : 3;
+    const int    Delay_ms  = argc > 3 ? atoi(argv[3]) : 1;
 
-    if( ! fh ) {
-        printf("client: could not open input file.\n");
-        return -1;
+    if( argc < 2 ) {
+        printf("command line argument 1: mode 'string' or 'file' not specified.\n");
+        exit(-1);
+    }
+    else {
+        if     ( strcmp(argv[1], "string") == 0 ) mode = FEED_STRING;
+        else if( strcmp(argv[1], "file") == 0 )   mode = FEED_FILE;
+        else {
+            printf("command line argument 1: mode 'string' or 'file' not specified.\n");
+            exit(-1);
+        }
+    }
+    if( argc < 3 ) {
+        printf("command line argument 2: missing specification of file or string.\n");
+    }
+    else {
+        specification_str = argv[2];
     }
 
     socket_fd = connect_to_server();
     if( socket_fd == -1 ) return -1;
 
-    feed_socket(fh, socket_fd, ChunkSize, Delay_ms);
+    feed_file_to_socket(fh, socket_fd, ChunkSize, Delay_ms);
     return 0;
 }
 
@@ -78,7 +127,35 @@ connect_to_server()
 }
 
 static void
-feed_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
+feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
+/* Take the content found in 'fh' and feeds it into socket 'socket_fd' in 
+ * chunks of size 'ChunkSize'. When done, this function returns.             */
+{
+    char   buffer[256];
+    size_t read_n; 
+
+    assert(ChunkSize <= 256);
+
+    while( 1 + 1 == 2 ) {
+        /* Read some bytes from the file that contains the source for 
+         * feeding.                                                          */
+        read_n = fread(&buffer[0], 1, ChunkSize, fh);
+        buffer[read_n] = '\0';
+        printf("read: %i: [%s]\n", read_n, &buffer[0]);
+        if( ! read_n ) break;
+
+        /* Flush the bytes into the socket.                                  */
+        if( write(socket_fd, &buffer[0], read_n) == -1 ) {
+            printf("client: write() terminates with failure.\n");
+            return;
+        }
+        usleep(1000L * Delay_ms);
+    }
+    printf("<done>\n");
+}
+
+static void
+feed_string_to_socket(const char* content, size_t Size, int socket_fd, int ChunkSize, int Delay_ms)
 /* Take the content found in 'fh' and feeds it into socket 'socket_fd' in 
  * chunks of size 'ChunkSize'. When done, this function returns.             */
 {

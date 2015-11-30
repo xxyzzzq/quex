@@ -26,7 +26,6 @@ endif
 
 COMPILER = gcc -ggdb -Wall -Werror -pedantic 
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-    -DQUEX_OPTION_DEBUG_SHOW \
 	 -DQUEX_OPTION_POSIX 
 
 # Debugging Options:
@@ -70,7 +69,8 @@ LexUtf8Uint32.c: utf8.qx
 		 --token-policy single       
 	
 LexAscii.c: ascii.qx 
-	quex -i ascii.qx -o LexAscii --language C 
+	quex -i ascii.qx -o LexAscii --language C \
+		 --token-policy single
 
 # (*) HELPERS __________________________________________________________________
 clean:	
