@@ -1,3 +1,5 @@
+from quex.engine.misc.tools import flatten_it_list_of_lists
+
 class StateInfo(object):
     """Base class for state informations with respect to 'recipes' and the
     set of concerned registers 'V'. This class is to be considered 'abstract'.
@@ -155,7 +157,7 @@ def SnapshotSetDb(dict):
                      recipe.snapshot_set_db[variable_id]
                      for recipe in Mouth.entry_recipe_db.itervalues()))
             )
-            for variable_id in mouth.required_variable_set
+            for variable_id in Mouth.required_variable_set
         )
         return db
 

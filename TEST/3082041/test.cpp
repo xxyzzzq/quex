@@ -34,7 +34,8 @@ void test(size_t Size0, size_t ContentSize0, size_t Size1, size_t ContentSize1)
 
     if( buffer_0 ) end_of_content_p = &buffer_0[ContentSize0+1];
     else           end_of_content_p = (QUEX_TYPE_CHARACTER*)0;
-    quex::EasyLexer qlex((QUEX_TYPE_CHARACTER*)buffer_0, Size0, end_of_content_p); 
+
+    quex::EasyLexer qlex(&buffer_0[0], Size0, end_of_content_p); 
 
     cout << "--------------------------------------------------------------------------\n";
     cout << "Constructor:\n";

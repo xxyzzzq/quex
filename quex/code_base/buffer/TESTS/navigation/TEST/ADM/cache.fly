@@ -103,15 +103,15 @@ result_list: [
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.2374510765075684;
+build_time: 0.015601158142089844;
 file_name: test-Converter-4-0.exe;
-hwut_info_time: 1448936990L;
+hwut_info_time: 1449011102L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
   [ ICU-linear; OK; 1.327540; 0; ]
   [ ICU-stepping; OK; 19.527305; 0; ]
-  [ IConv-linear; TIME_OUT; 1.121948; 0; ]
+  [ IConv-linear; OK; 1.264380; 0; ]
   [ IConv-stepping; OK; 17.326790; 0; ]
   [ IConv-stepping-cls; OK; 17.352002; 0; ]
   [ ICU-stepping-cls; OK; 19.505286; 0; ]
@@ -232,19 +232,6 @@ result_list: [
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.216202974319458;
-file_name: test-Plain-4-0.exe;
-hwut_info_time: 1448937002L;
-make_dependent_f: True;
-same_f: True;
-result_list: [
-  [ linear; OK; 0.520294; 0; ]
-  [ stepping; OK; 2.800724; 0; ]
-]
-}
-{
-title: BufferFiller_Plain (BPC=4, FALLBACK=0);
-title_group: Buffer Tell&Seek;
 build_time: 1.8131728172302246;
 file_name: test-Plain-wiostream-2-0.exe;
 hwut_info_time: 1448936983L;
@@ -253,6 +240,19 @@ same_f: True;
 result_list: [
   [ linear; OK; 0.139622; 0; ]
   [ stepping; OK; 0.161076; 0; ]
+]
+}
+{
+title: BufferFiller_Plain (BPC=4, FALLBACK=0);
+title_group: Buffer Tell&Seek;
+build_time: 1.216202974319458;
+file_name: test-Plain-4-0.exe;
+hwut_info_time: 1448937002L;
+make_dependent_f: True;
+same_f: True;
+result_list: [
+  [ linear; OK; 0.520294; 0; ]
+  [ stepping; OK; 2.800724; 0; ]
 ]
 }
 {

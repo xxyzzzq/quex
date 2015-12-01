@@ -1,5 +1,4 @@
 from   quex.engine.misc.tree_walker           import TreeWalker
-from   quex.engine.misc.tools                 import typed
 
 class RecursiveRecipeAccumulator(TreeWalker):
     """Walks recursively along linear states until it reaches a terminal, until the

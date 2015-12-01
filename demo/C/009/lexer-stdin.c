@@ -13,6 +13,10 @@
  *  command to the standard input of the lexical analyzer.
  *  
  *     > cat example-feed.txt | ./lexer-stdin
+ *
+ *  Or, respectively for a UTF8 lexer:
+ *
+ *     > cat example-feed-utf8.txt | ./lexer-stdin-utf8
  *  
  *_____________________________________________________________________________
  *
@@ -30,35 +34,21 @@
 #endif
 
 static void  print_token(quex_Token*  token);
-static void  announce(void);
 
 int 
 main(int argc, char** argv) 
 {        
-    quex_Token*     token;
-    LEXER_CLASS     qlex;   
-
-
-    QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(connected_fd);
-
-    announce();
-
-    if( connected_fd == -1 ) {
-        printf("server: accept() terminates with failure.\n");
-        sleep(1);
-        return true;
-    }
+    quex_Token*            token;
+    LEXER_CLASS            qlex;   
+    QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(0); /* 0 = stdin */
 
     QUEX_NAME(ByteLoader_seek_disable)(loader);
 
-    /* A handler for the case that nothing is received over the line. */
-    loader->on_nothing = self_on_nothing; 
-
     QUEX_NAME(from_ByteLoader)(&qlex, loader, CODEC);
 
-
+    token = qlex.token;
     do {
-        QUEX_NAME(receive)(&qlex, &token);
+        (void)QUEX_NAME(receive)(&qlex);
         print_token(token);
     } while( token->_id != QUEX_TKN_TERMINATION && token->_id != QUEX_TKN_BYE );
         
@@ -76,11 +66,3 @@ print_token(quex_Token*  token)
                                                          PrintBufferSize));
 }
 
-static void  announce(void)
-{
-    printf("Please, type an arbitrary sequence of the following:\n"
-           "-- One of the words: 'hello', 'world', 'hallo', 'welt', 'bonjour', 'le monde'.\n"
-           "-- An integer number.\n"
-           "-- The word 'bye' in order to terminate.\n"
-           "Please, terminate each line with pressing [enter].\n");
-}

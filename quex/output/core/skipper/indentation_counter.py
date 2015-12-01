@@ -1,6 +1,6 @@
 from   quex.input.code.core                         import CodeTerminal
 from   quex.engine.analyzer.door_id_address_label   import DoorID
-from   quex.engine.operations.operation_list                    import Op
+from   quex.engine.operations.operation_list        import Op
 from   quex.engine.analyzer.door_id_address_label   import dial_db
 from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountOpFactory
@@ -212,7 +212,7 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
 
     if SmComment.last_character_set().contains_only(ord('\n')):
         code = Lng.COMMAND_LIST([
-            LineCountAdd(1),
+            Op.LineCountAdd(1),
             Op.AssignConstant(E_R.Column, 1),
         ])
     else:

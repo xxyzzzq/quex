@@ -1,5 +1,6 @@
 from  quex.blackboard import E_R, \
                              E_Compression
+from  copy import deepcopy
 
 class RouterOnStateKeyContent:
     """_________________________________________________________________________

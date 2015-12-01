@@ -58,17 +58,19 @@ class AnalyzerState(Processor):
 
     @staticmethod
     def from_LinearState(S):
-        if EntryRecipe is not None:
-            self.entry.enter_OpList(S.entry_transition_id,
-                                         S.recipe.get_entry_OpList())
-        self.on_drop_out = Recipe.get_drop_out_OpList()
+        assert False, "Currently Unused"
+        #if EntryRecipe is not None:
+        #    self.entry.enter_OpList(S.entry_transition_id,
+        #                            S.recipe.get_entry_OpList())
+        #self.on_drop_out = Recipe.get_drop_out_OpList()
 
     @staticmethod
     def from_MouthState(S):
-        for transition_id, recipe in S.entry_db.iteritems():
-            self.entry.enter_OpList(transition_id,
-                                         recipe.get_entry_OpList())
-        self.on_drop_out = S.recipe.get_drop_out_OpList()
+        assert False, "Currently Unused"
+        #for transition_id, recipe in S.entry_db.iteritems():
+        #    self.entry.enter_OpList(transition_id,
+        #                                 recipe.get_entry_OpList())
+        #self.on_drop_out = S.recipe.get_drop_out_OpList()
 
     @staticmethod
     def from_State(SM_State, StateIndex, EngineType):
