@@ -39,37 +39,41 @@ LD = $(COMPILER)
 all: $(FILES)
 
 # -- char application
-lexer-socket:     lexer-socket.o     LexAscii.o 
+lexer-socket:     lexer-socket.o LexAscii.o 
 	$(LD) -o $@  $^                  
 
+lexer-socket-utf8:     lexer-socket-utf8.o LexUtf8.o 
+	$(LD) -o $@  $^                  
+
+lexer-stdin:      lexer-stdin.o LexAscii.o
+	$(LD) -o $@  $^
+
+lexer-stdin-utf8: lexer-stdin-utf8.o LexUtf8.o
+	$(LD) -o $@  $^
+          
 feed-socket:      feed-socket.o
 	$(LD) -o $@  $^                  
                                      
-lexer-stdin:      lexer-stdin.o      LexAscii.o
-	$(LD) -o $@  $^
-
-lexer-stdin-utf8: lexer-stdin-utf8.o LexUtf8Uint32.o
-	$(LD) -o $@  $^
-          
-%.o: %.c $(ALL_ENGINES)
+%.o: %.c LexAscii.h
 	$(CC) -c $< -o $@ 
 
-LexUtf8WChar.c: utf8.qx 
-	quex -i             utf8.qx      \
-	     -o             LexUtf8WChar \
-		 --language     C            \
-		 --bet          wchar_t      \
+%-utf8.o: %.c LexUtf8.h
+	$(CC) -DWITH_UTF8 -c $< -o $@ 
+
+LexUtf8.h \
+LexUtf8.c: utf8.qx 
+	quex -i             utf8.qx \
+	     -o             LexUtf8 \
+		 --iconv                \
+		 --language     C       \
+		 --bet          wchar_t \
 		 --token-policy single       
 	
-LexUtf8Uint32.c: utf8.qx 
-	quex -i             utf8.qx       \
-	     -o             LexUtf8Uint32 \
-		 --language     C             \
-		 --bet          uint32_t      \
-		 --token-policy single       
-	
+LexAscii.h \
 LexAscii.c: ascii.qx 
-	quex -i ascii.qx -o LexAscii --language C \
+	quex -i             ascii.qx \
+		 -o             LexAscii \
+	     --language     C        \
 		 --token-policy single
 
 # (*) HELPERS __________________________________________________________________

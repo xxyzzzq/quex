@@ -16,9 +16,32 @@
  *          |    '--------'    '--------'      '--------'      '----------'  |
  *          '----------------------'               '-------------------------'
  *
+ *_____________________________________________________________________________
  *
- * (C) Frank-Rene Schaefer
- *                                                                           */
+ * EXAMPLE:
+ *  
+ * Let "[T1]>" denote the command line on a terminal '1' and "[T2]>" denote the
+ * command line on a terminal '2'. Then, the socket based lexical analyzer may 
+ * be tried out by
+ *
+ *    [T1]> ./lexer-socket
+ *    # (now waiting for incomming connections ...)
+ *    
+ *    [T2]> ./feed-socket file example-feed.txt 7 1000
+ *                         |       |            |   '----- send every second
+ *                         |       |            '--------- send chunks of 7 byte
+ *                         |       '---------------------- send content of file
+ *                         |                               "example-feed.txt"
+ *                         |
+ *                         '------------------------------ mode: 'read from file'
+ *    [T2] starts sending
+ *    [T1] starts receiving (watch the drippling tokens!)
+ *
+ *    [T2]> ./feed-socket string "bye" 1 1
+ *    # sends the connection terminating "bye" token.
+ *_____________________________________________________________________________
+ *
+ * (C) Frank-Rene Schaefer                                                   */
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -29,7 +52,17 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include <LexAscii.h>
+#include <stdio.h>
+
+#if ! defined(WITH_UTF8)
+#   include <LexAscii.h>
+#   define  LEXER_CLASS   quex_LexAscii
+#   define  CODEC         NULL
+#else
+#   include <LexUtf8.h>
+#   define  LEXER_CLASS   quex_LexUtf8
+#   define  CODEC         "UTF8"
+#endif
 
 static int  setup_socket_server(void);
 static bool accept_and_lex(int listen_fd);
@@ -57,7 +90,8 @@ accept_and_lex(int listen_fd)
 {
     int              connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
     quex_Token*      token;
-    quex_LexAscii    qlex;
+    LEXER_CLASS      qlex;
+
     QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(connected_fd);
 
     if( connected_fd == -1 ) {
@@ -71,7 +105,7 @@ accept_and_lex(int listen_fd)
     /* A handler for the case that nothing is received over the line. */
     loader->on_nothing = self_on_nothing; 
 
-    QUEX_NAME(from_ByteLoader)(&qlex, loader, NULL);
+    QUEX_NAME(from_ByteLoader)(&qlex, loader, CODEC);
 
     token = qlex.token;
     do {

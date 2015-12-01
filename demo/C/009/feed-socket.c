@@ -25,7 +25,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static void feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms);
+static void feed_file_to_socket(char* FileName, int socket_fd, int ChunkSize, int Delay_ms);
+static void feed_string_to_socket(char* String, int socket_fd, int ChunkSize, int Delay_ms);
 static int  connect_to_server();
 
 int 
@@ -72,10 +73,16 @@ main(int argc, char** argv)
         FEED_BAD 
     }            mode;
     int          socket_fd = 0;
-    const char*  specification_str; 
-    FILE*        fh        = argc > 1 ? fopen(argv[1], "rb") : NULL;
-    const int    ChunkSize = argc > 2 ? atoi(argv[2]) : 3;
-    const int    Delay_ms  = argc > 3 ? atoi(argv[3]) : 1;
+    char*        specification_str = argc > 2 ? argv[2] : "";
+    const int    ChunkSize         = argc > 3 ? atoi(argv[3]) : 3;
+    const int    Delay_ms          = argc > 4 ? atoi(argv[4]) : 1;
+
+    printf("Setup:\n");
+    printf("   mode:  %s;\n",        argc > 1 ? argv[1] : "<missing>");
+    printf("   spec:  \"%s\";\n",    specification_str);
+    printf("   chunk: %i [byte];\n", ChunkSize);
+    printf("   freq:  %i [chunks/millisec];\n", Delay_ms);
+    printf("\n");
 
     if( argc < 2 ) {
         printf("command line argument 1: mode 'string' or 'file' not specified.\n");
@@ -93,14 +100,26 @@ main(int argc, char** argv)
         printf("command line argument 2: missing specification of file or string.\n");
     }
     else {
-        specification_str = argv[2];
     }
 
     socket_fd = connect_to_server();
     if( socket_fd == -1 ) return -1;
 
-    feed_file_to_socket(fh, socket_fd, ChunkSize, Delay_ms);
-    return 0;
+    if( ! ChunkSize ) {
+        printf("Chunk size must be > 0!\n");
+        return -1;
+    }
+
+    switch( mode ) {
+    case FEED_STRING:
+        feed_string_to_socket(specification_str, socket_fd, ChunkSize, Delay_ms);
+        return 0;
+    case FEED_FILE:
+        feed_file_to_socket(specification_str, socket_fd, ChunkSize, Delay_ms);
+        return 0;
+    default: 
+        return -1;
+    }
 }
 
 static int
@@ -127,13 +146,18 @@ connect_to_server()
 }
 
 static void
-feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
+feed_file_to_socket(char* FileName, int socket_fd, int ChunkSize, int Delay_ms)
 /* Take the content found in 'fh' and feeds it into socket 'socket_fd' in 
  * chunks of size 'ChunkSize'. When done, this function returns.             */
 {
     char   buffer[256];
     size_t read_n; 
+    FILE*  fh = fopen(FileName, "rb");
 
+    if( ! fh ) {
+        printf("could not open file '%s'.\n", FileName);
+        return;
+    }
     assert(ChunkSize <= 256);
 
     while( 1 + 1 == 2 ) {
@@ -141,7 +165,7 @@ feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
          * feeding.                                                          */
         read_n = fread(&buffer[0], 1, ChunkSize, fh);
         buffer[read_n] = '\0';
-        printf("read: %i: [%s]\n", read_n, &buffer[0]);
+        printf("flush: %i: [%s]\n", read_n, &buffer[0]);
         if( ! read_n ) break;
 
         /* Flush the bytes into the socket.                                  */
@@ -155,25 +179,30 @@ feed_file_to_socket(FILE* fh, int socket_fd, int ChunkSize, int Delay_ms)
 }
 
 static void
-feed_string_to_socket(const char* content, size_t Size, int socket_fd, int ChunkSize, int Delay_ms)
+feed_string_to_socket(char* String, int socket_fd, int ChunkSize, int Delay_ms)
 /* Take the content found in 'fh' and feeds it into socket 'socket_fd' in 
  * chunks of size 'ChunkSize'. When done, this function returns.             */
 {
-    char   buffer[256];
-    size_t read_n; 
+    char*       p;
+    const char* StringEnd = &String[strlen(String)+1];
+    int         chunk_size;
+    char        tmp;
 
     assert(ChunkSize <= 256);
 
-    while( 1 + 1 == 2 ) {
-        /* Read some bytes from the file that contains the source for 
-         * feeding.                                                          */
-        read_n = fread(&buffer[0], 1, ChunkSize, fh);
-        buffer[read_n] = '\0';
-        printf("read: %i: [%s]\n", read_n, &buffer[0]);
-        if( ! read_n ) break;
+    for(p = &String[0]; p < StringEnd; p += ChunkSize) {
+
+        chunk_size = ChunkSize > StringEnd - p ? StringEnd - p : ChunkSize;
+
+        tmp = p[chunk_size];
+        p[chunk_size] = '\0';
+
+        printf("flush: %i: [%s]\n", chunk_size, p);
+
+        p[chunk_size] = tmp;
 
         /* Flush the bytes into the socket.                                  */
-        if( write(socket_fd, &buffer[0], read_n) == -1 ) {
+        if( write(socket_fd, p, chunk_size) == -1 ) {
             printf("client: write() terminates with failure.\n");
             return;
         }
