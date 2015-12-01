@@ -151,7 +151,9 @@ QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, QUEX_TYPE_CHARACTER* EndOf
     me->input.character_index_begin         = ci_begin;
     me->input.character_index_end_of_stream = ci_end_of_stream;
     me->input.end_p                         = end_p;
-    *(me->input.end_p)                      = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    if( me->input.end_p ) {
+        *(me->input.end_p)                  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
 
     QUEX_IF_ASSERTS_poison(&me->input.end_p[1], me->_memory._back);
 }
@@ -542,6 +544,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
  * to chew on.                                                               */
 {
     QUEX_TYPE_CHARACTER*        BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*        EndP        = me->_memory._back;
     const ptrdiff_t             ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
     QUEX_TYPE_STREAM_POSITION   ci_begin    = QUEX_NAME(Buffer_input_character_index_begin)(me);
     QUEX_TYPE_STREAM_POSITION   ci_load_begin;
@@ -562,7 +565,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
      * Adapt pointers.                                                       */
     move_distance = QUEX_NAME(Buffer_move_away_passed_content)(me, position_register, 
                                                                PositionRegisterN);
-    if( ! move_distance ) {
+    if( ! move_distance && me->input.end_p == EndP ) {
         return false;        /* Cannot free space for loading => no loading! */
     }
 

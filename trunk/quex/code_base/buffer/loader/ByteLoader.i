@@ -93,8 +93,8 @@ QUEX_NAME(ByteLoader_load)(QUEX_NAME(ByteLoader)* me, void* begin_p, const size_
 
     do {
         /* Try to load 'N' bytes.                                            */
-        loaded_n  = me->derived.load(me, begin_p, N, end_of_stream_f);
-        if( loaded_n != 0 ) {
+        loaded_n = me->derived.load(me, begin_p, N, end_of_stream_f);
+        if( loaded_n ) {
             /* If at least some bytes could be loaded, return 'success'.     */
             return loaded_n;
         }

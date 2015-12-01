@@ -63,6 +63,8 @@ QUEX_NAME(ByteLoader_POSIX_construct)(QUEX_NAME(ByteLoader_POSIX)* me, int fd)
                                     QUEX_NAME(ByteLoader_POSIX_delete_self),
                                     QUEX_NAME(ByteLoader_POSIX_compare_handle));
 
+    /* A POSIX file handle is always in binary mode.                         */
+    me->base.binary_mode_f = true;
 }
 
 QUEX_INLINE void    

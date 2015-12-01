@@ -11,6 +11,7 @@ token {
     DOT;
     FAIL;
     IDENTIFIER;
+    ATTRIBUTE;
 }
 
 mode ONE_AND_ONLY :
@@ -22,9 +23,9 @@ mode ONE_AND_ONLY :
     "A"|"a"|"The"|"the"       => QUEX_TKN_ARTICLE(Lexeme);
     "byte"|"bit"              => QUEX_TKN_STORAGE_UNIT(Lexeme);
     "with"|"of"               => QUEX_TKN_PREPOSITION(Lexeme);
-    [0-9]+                    => QUEX_TKN_NUMBER(Lexeme);
     "begin"s?                 => QUEX_TKN_VERB(Lexeme);
     "bye"                     => QUEX_TKN_BYE(Lexeme);
+    "single"                  => QUEX_TKN_ATTRIBUTE(Lexeme);
     [A-Za-z_][A-Za-z0-9_]+    => QUEX_TKN_SUBJECT(Lexeme);
 }
 

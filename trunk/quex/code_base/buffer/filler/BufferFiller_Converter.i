@@ -50,13 +50,18 @@ QUEX_NAME(RawBuffer_init)(QUEX_NAME(RawBuffer)* me,
 QUEX_INLINE void 
 QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me);
 
-QUEX_INLINE size_t 
+QUEX_INLINE bool 
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
                           QUEX_NAME(ByteLoader)*            byte_loader, 
                           bool*                  end_of_stream_f);
 
+QUEX_INLINE void
+QUEX_NAME(BufferFiller_remove_spurious_BOM)(QUEX_NAME(BufferFiller_Converter)* me,
+                                            QUEX_TYPE_CHARACTER**              buffer_insertion_p,
+                                            QUEX_TYPE_CHARACTER*               RegionBeginP);
+
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-QUEX_NAME(BufferFiller_Converter_new)(QUEX_NAME(ByteLoader)*            byte_loader,
+QUEX_NAME(BufferFiller_Converter_new)(QUEX_NAME(ByteLoader)* byte_loader,
                                       QUEX_NAME(Converter)*  converter,
                                       size_t                 RawMemorySize)
 { 
@@ -89,9 +94,9 @@ QUEX_NAME(BufferFiller_Converter_new)(QUEX_NAME(ByteLoader)*            byte_loa
 
 QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* me, 
-                                            QUEX_NAME(ByteLoader)*            byte_loader,
-                                            QUEX_NAME(Converter)*  converter,
-                                            size_t                 RawMemorySize)
+                                            QUEX_NAME(ByteLoader)*             byte_loader,
+                                            QUEX_NAME(Converter)*              converter,
+                                            size_t                             RawMemorySize)
 {
     /* A linear relationship between stream position and character index 
      * requires that: (1) The input stream is in 'binary mode'. That is, the 
@@ -197,8 +202,7 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
     const QUEX_TYPE_CHARACTER*         BufferRegionEnd    = &RegionBeginP[N];
     ptrdiff_t                          converted_character_n;
     bool                               drain_filled_f;
-    uint32_t                           first_character;
-    size_t                             raw_loaded_byte_n;
+    bool                               load_complete_f;
     bool                               raw_end_of_stream_f;
 #   if 0
     int                                i;
@@ -214,57 +218,58 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
 
     /* Some converters keep some content internally. So, it is a more general
      * solution to convert first and reload new bytes upon need.             */
-    *end_of_stream_f    = false;
+    drain_filled_f = me->converter->convert(me->converter, 
+                                            &raw->next_to_convert_p, raw->fill_end_p,
+                                            &buffer_insertion_p,     BufferRegionEnd);
+
+    QUEX_NAME(BufferFiller_remove_spurious_BOM)(me, &buffer_insertion_p, RegionBeginP);
+
+    /* Convert, as long as the following two hold:
+     *  (i)  Drain is not totally filled.
+     *  (ii) Loading of 'to-be-converted bytes' received enough to fill the
+     *       raw buffer to its limits. The contrary indicates that there is 
+     *       an transmission interuption, or even and end-of-stream. In both
+     *       cases, the analyser may continue, before the next try.          */
     raw_end_of_stream_f = false;
-    while( 1 + 1 == 2 ) {
-        /* NOT: if( next_to_convert_p != fill_end_p ) ...
-         * Because, converters may leave some content in their stomach and spit
-         * it out later (e.g. ICU).                                          */
+    load_complete_f     = true;
+    while( (! drain_filled_f) && load_complete_f ) {
+        __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' break  */
+
+        if( ! raw_end_of_stream_f ) {
+            load_complete_f = QUEX_NAME(RawBuffer_load)(&me->raw_buffer, me->base.byte_loader,
+                                                        &raw_end_of_stream_f);
+        } else  {
+            load_complete_f = false;
+        }
+
+        /*  next_to_convert_p == raw->fill_end_p => nothing happens.         */
         drain_filled_f = me->converter->convert(me->converter, 
                                                 &raw->next_to_convert_p, raw->fill_end_p,
                                                 &buffer_insertion_p,     BufferRegionEnd);
 
-        if( buffer_insertion_p != RegionBeginP ) {
-            first_character = (uint32_t)RegionBeginP[0];    /* avoid warning */
-            if( first_character == 0xFEFF ) {
-                if( ! me->converter->virginity_f ) {
-                    QUEX_ERROR_EXIT("Converter produced BOM upon not-first call to 'convert'\n"
-                                    "Better make sure that converter NEVER produces BOM.\n"
-                                    "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
-                }
-                __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
-                                   (size_t)(buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
-                buffer_insertion_p = &buffer_insertion_p[-1];
-            }
-        }
-
-        if( drain_filled_f ) break;
-
-        __quex_assert(buffer_insertion_p < BufferRegionEnd);  /* '==' break  */
-
-        /* if( ! raw_end_of_stream_f ) { */
-        raw_loaded_byte_n = QUEX_NAME(RawBuffer_load)(&me->raw_buffer, me->base.byte_loader,
-                                                      &raw_end_of_stream_f);
-        if( raw_loaded_byte_n ) continue;
-        /* } */
-        
-        *end_of_stream_f = true;
-        if( raw->fill_end_p != raw->begin ) {
-            /* There are still bytes, but they were not converted.           */
-            __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
-        }
-        break;
+        QUEX_NAME(BufferFiller_remove_spurious_BOM)(me, &buffer_insertion_p, RegionBeginP);
     }
 
     me->converter->virginity_f = false;
+
     /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
      * last byte that was converted.                                         */ 
-    converted_character_n      = buffer_insertion_p - RegionBeginP;
+    converted_character_n                  = buffer_insertion_p - RegionBeginP;
     me->base.character_index_next_to_fill += converted_character_n;
 
+    if( (! drain_filled_f) && raw_end_of_stream_f ) {
+       if( raw->next_to_convert_p == raw->fill_end_p ) {
+           *end_of_stream_f = true;
+       } else {
+           /* There are still bytes, but they were not converted.               
+            * ('drain_filled_f' => remainder is converted next time)         */
+           __QUEX_STD_printf("Error. At end of file, byte sequence not interpreted as character.");
+       }
+    }
     /* NOT: QUEX_IF_ASSERTS_poison(buffer_insertion_p, BufferRegionEnd);
      *      Buffer MUST be left as is, in case of ERROR!                     */
     __quex_assert(BufferRegionEnd >= buffer_insertion_p);
+
     return (size_t)converted_character_n;
 }
 
@@ -301,9 +306,37 @@ QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_e
     me->converter->convert(me->converter, 
                            &raw->next_to_convert_p, raw->fill_end_p,
                            &insertion_p,            RegionEndP);
+
+    QUEX_NAME(BufferFiller_remove_spurious_BOM)(me, &insertion_p, RegionBeginP);
+    me->converter->virginity_f = false;
     
     QUEX_ASSERT_RAW_BUFFER(raw);
     return insertion_p - RegionBeginP;
+}
+
+
+QUEX_INLINE void
+QUEX_NAME(BufferFiller_remove_spurious_BOM)(QUEX_NAME(BufferFiller_Converter)* me,
+                                            QUEX_TYPE_CHARACTER**              buffer_insertion_p,
+                                            QUEX_TYPE_CHARACTER*               RegionBeginP)
+{
+    uint32_t  first_character;
+
+    if( *buffer_insertion_p == RegionBeginP ) return;
+
+    first_character = (uint32_t)RegionBeginP[0];    /* avoid warning */
+    if( first_character != 0xFEFF ) return;
+
+    if( ! me->converter->virginity_f ) {
+        QUEX_ERROR_EXIT("Converter produced BOM upon not-first call to 'convert'\n"
+                        "Better make sure that converter NEVER produces BOM.\n"
+                        "(May be, by specifiying the endianness of 'FromCoding' or 'ToCoding')\n");
+    }
+
+    __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
+                       (size_t)(*buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+
+    *buffer_insertion_p = &(*buffer_insertion_p)[-1];
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

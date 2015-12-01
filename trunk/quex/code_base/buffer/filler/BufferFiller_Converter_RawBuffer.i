@@ -51,7 +51,9 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
     move_size     = me->fill_end_p - me->next_to_convert_p;
     move_distance = me->next_to_convert_p - me->begin;
 
-    if( ! move_distance ) return;
+    if( ! move_distance ) {
+        return;
+    }
     else if( move_size ) {
         __QUEX_STD_memmove((void*)me->begin, (void*)move_begin_p, (size_t)move_size);
     }
@@ -63,16 +65,16 @@ QUEX_NAME(RawBuffer_move_away_passed_content)(QUEX_NAME(RawBuffer)*  me)
     QUEX_ASSERT_RAW_BUFFER(me);
 }
 
-QUEX_INLINE size_t 
+QUEX_INLINE bool 
 QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
-                          QUEX_NAME(ByteLoader)*            byte_loader, 
+                          QUEX_NAME(ByteLoader)* byte_loader, 
                           bool*                  end_of_stream_f)  
 /* Try to fill the me buffer to its limits with data from the file.  The
  * filling starts from its current position, thus the remaining bytes to be
  * translated are exactly the number of bytes in the buffer.                 */
 {
     uint8_t*  fill_begin_p;
-    size_t    fill_size;
+    size_t    load_request_n;
     size_t    loaded_byte_n;
 
     QUEX_ASSERT_RAW_BUFFER(me);
@@ -81,12 +83,20 @@ QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
     QUEX_NAME(RawBuffer_move_away_passed_content)(me);
 
     fill_begin_p    = me->fill_end_p;
-    fill_size       = (size_t)(me->memory_end - fill_begin_p);
-    loaded_byte_n   = byte_loader->load(byte_loader, fill_begin_p, fill_size, end_of_stream_f);
+    load_request_n  = (size_t)(me->memory_end - fill_begin_p);
+    /* load(): Blocks until either bytes are received, or the end-of-stream
+     *         occurs. In the latter case zero bytes are received. The end-
+     *         of-stream, may also be detected in other cases--as hint.      */
+    loaded_byte_n   = byte_loader->load(byte_loader, fill_begin_p, load_request_n, 
+                                        end_of_stream_f);
     me->fill_end_p  = &fill_begin_p[loaded_byte_n];
 
+    if( ! loaded_byte_n ) {
+        *end_of_stream_f = true;
+    }
+
     QUEX_ASSERT_RAW_BUFFER(me);
-    return loaded_byte_n;
+    return loaded_byte_n == load_request_n;
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

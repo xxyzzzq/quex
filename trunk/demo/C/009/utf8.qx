@@ -5,20 +5,28 @@ token {
     NUMBER;
     BYE;
     DOT;
-    FAIL;
+    SOMETHING;
     IDENTIFIER;
     WHITESPACE;
+    MESSAGE;
+    KILOBYTE;
+    STARTS;
+    SINGLE;
+    BIT;
 }
 
 mode ONE_AND_ONLY :
 {
     on_end_of_stream             => QUEX_TKN_TERMINATION(LexemeNull);
-    on_failure                   => QUEX_TKN_FAIL(Lexeme);
-    [ \t\n]                      => QUEX_TKN_WHITESPACE;
+    on_failure                   => QUEX_TKN_SOMETHING(Lexeme);
+    [ \t\n]                      => QUEX_TKN_WHITESPACE(Lexeme);
+    
+    "Ένα μήνυμα"|"message"|"Сообщение" => QUEX_TKN_MESSAGE(Lexeme);
+    "kilobyte"|"килобайт"              => QUEX_TKN_KILOBYTE(Lexeme);
+    "ξεκινά με"|"starts"|"начинается"  => QUEX_TKN_STARTS(Lexeme);
+    "ένα μόνο"|"single"|"одного"       => QUEX_TKN_SINGLE(Lexeme);
+    "bit"|"бита"                       => QUEX_TKN_BIT(Lexeme);
 
-    "أهلا بك"|"欢迎"              => QUEX_TKN_HELLO(Lexeme);
-    "天地"|"عالم"                => QUEX_TKN_WORLD(Lexeme);
-    \G{Nd}+                      => QUEX_TKN_NUMBER(Lexeme);
     "bye"                        => QUEX_TKN_BYE(Lexeme);
     \P{ID_Start}\P{ID_Continue}+ => QUEX_TKN_IDENTIFIER(Lexeme);
 }
