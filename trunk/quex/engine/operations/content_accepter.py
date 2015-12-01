@@ -68,7 +68,7 @@ class AccepterContent:
     def from_iterable(PreContext_AcceptanceId_Iterable):
         result = AccepterContent()
         result.__list = [
-            AccepterContentElement(PreContextID, AcceptanceID)
+            AccepterContentElement(pre_context_id, acceptance_id)
             for pre_context_id, acceptance_id in PreContext_AcceptanceId_Iterable
         ]
         return result

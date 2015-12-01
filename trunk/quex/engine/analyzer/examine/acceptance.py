@@ -1,13 +1,10 @@
 from quex.engine.analyzer.examine.recipe_base import Recipe
-from quex.engine.operations.content_accepter  import AccepterContent
-from quex.engine.operations.operation_list    import Op
 from quex.engine.operations.se_operations     import SeAccept, \
                                                      SeStoreInputPosition
 from quex.engine.misc.tools                   import flatten_it_list_of_lists, \
                                                      UniformObject, \
                                                      E_Values, \
-                                                     none_is_None, \
-                                                     all_isinstance
+                                                     none_is_None
 
 from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
@@ -210,14 +207,15 @@ class RecipeAcceptance(Recipe):
         """RETURNS: Recipe =     concatenation of 'Recipe' 
                              and relevant operations of 'SingleEntry'.
         """
-        accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
-        ip_offset_db = cls._accumulate_read_pointer_storage(PrevRecipe, CurrSingleEntry)
+        assert False, "Currently unused"
+        #accepter     = cls._accumulate_acceptance(PrevRecipe, CurrSingleEntry)
+        #ip_offset_db = cls._accumulate_read_pointer_storage(PrevRecipe, CurrSingleEntry)
 
-        # Filter out those entries in the snapshot map, where the recipe does 
-        # no longer rely on stored entries.
-        snapshot_set_db = cls.snapshot_set_db_filtered_clone(snapshot_set_db, accepter, ip_offset_db)
+        ## Filter out those entries in the snapshot map, where the recipe does 
+        ## no longer rely on stored entries.
+        #snapshot_set_db = cls.snapshot_set_db_filtered_clone(snapshot_set_db, accepter, ip_offset_db)
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
+        #return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
         
     @classmethod
     def interference(cls, Mouth, StateIndex):
@@ -231,20 +229,21 @@ class RecipeAcceptance(Recipe):
         The undetermined registers are those, that need to be computed upon
         entry, and are restored from inside the recipe.
         """
-        snapshot_set_db = SnapshotSetDb.from_mouth(Mouth)
+        assert False, "currently unused"
+        # snapshot_set_db = SnapshotSetDb.from_mouth(Mouth)
 
-        # Acceptance
-        accepter = cls._interfere_acceptance(snapshot_set_db, 
-                                             Mouth.entry_recipe_db, 
-                                             StateIndex)
+        ## Acceptance
+        #accepter = cls._interfere_acceptance(snapshot_set_db, 
+        #                                     Mouth.entry_recipe_db, 
+        #                                     StateIndex)
 
-        # Input position storage
-        ip_offset_db = cls._interfere_read_position_storage(snapshot_set_db, 
-                                                             Mouth.entry_recipe_db, 
-                                                             Mouth.required_variable_set, 
-                                                             StateIndex)
+        ## Input position storage
+        #ip_offset_db = cls._interfere_read_position_storage(snapshot_set_db, 
+        #                                                     Mouth.entry_recipe_db, 
+        #                                                     Mouth.required_variable_set, 
+        #                                                     StateIndex)
 
-        return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
+        #return RecipeAcceptance(accepter, ip_offset_db, snapshot_set_db)
 
     @staticmethod
     def _accumulate_acceptance(PrevRecipe, SingleEntry):
@@ -403,24 +402,25 @@ class RecipeAcceptance(Recipe):
         """Take those entries out of the snapshot map, where the recipe does
         not rely on stored values.
         """
-        db = defaultdict(set)
-
-        # (*) Input position storage / offset
-        db.update(
-            (variable_id, copy(snapshot_set))
-            for variable_id, state_index in snapshot_set_db.items()
-            # 'variable_id[1]' = position register
-            if     type(variable_id) == tuple \
-               and IpOffsetDb.get(variable_id[1]) != E_Values.RESTORE
-        )
-
-        # (*) The 'RESTORE_ACCEPTANCE' must always be the last in the accepter,
-        #     because it does not depend on a pre-context.
-        assert Accepter
-        if Accepter[-1].acceptance_id() == E_IncidenceIDs.RESTORE_ACCEPTANCE:
-            db[E_R.AcceptanceRegister] = copy(snapshot_set_db[E_R.AcceptanceRegister])
-        
-        return db
+        assert False, "currently unused"
+        # db = defaultdict(set)
+        #
+        # # (*) Input position storage / offset
+        # db.update(
+        #     (variable_id, copy(snapshot_set))
+        #     for variable_id, state_index in snapshot_set_db.items()
+        #     # 'variable_id[1]' = position register
+        #     if     type(variable_id) == tuple \
+        #        and IpOffsetDb.get(variable_id[1]) != E_Values.RESTORE
+        # )
+        #
+        # # (*) The 'RESTORE_ACCEPTANCE' must always be the last in the accepter,
+        # #     because it does not depend on a pre-context.
+        # assert Accepter
+        # if Accepter[-1].acceptance_id() == E_IncidenceIDs.RESTORE_ACCEPTANCE:
+        #     db[E_R.AcceptanceRegister] = copy(snapshot_set_db[E_R.AcceptanceRegister])
+        # 
+        # return db
 
     @staticmethod
     def get_string_accepter(Accepter):

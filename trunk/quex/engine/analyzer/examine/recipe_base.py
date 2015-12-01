@@ -19,9 +19,6 @@ functions with meaningful content.
 
 (C) Frank-Rene Schaefer
 """
-from quex.engine.misc.tools  import UniformObject, E_Values
-from quex.blackboard         import E_StateIndices
-
 class Recipe:
     """Base class for SCR recipes. The general recipe depends on:
 

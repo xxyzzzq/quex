@@ -8,8 +8,7 @@ from   quex.engine.misc.file_in         import get_include_guard_extension
 from   quex.DEFINITIONS                 import QUEX_PATH, QUEX_VERSION
 import quex.blackboard                  as     blackboard
 from   quex.blackboard                  import setup as Setup, \
-                                               Lng, \
-                                               E_IncidenceIDs
+                                               Lng
 
 def do(ModeDB):
     assert blackboard.token_type_definition is not None

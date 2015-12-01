@@ -16,8 +16,7 @@ from   quex.input.code.base                              import SourceRef, \
                                                                 CodeFragment
 from   quex.engine.analyzer.state.core                   import Processor
 from   quex.engine.operations.content_terminal_router    import RouterContentElement
-from   quex.engine.operations.operation_list             import E_R, \
-                                                                Op
+from   quex.engine.operations.operation_list             import E_R
 from   quex.engine.analyzer.mega_state.template.state    import TemplateState
 from   quex.engine.analyzer.mega_state.path_walker.state import PathWalkerState
 from   quex.engine.analyzer.door_id_address_label        import DoorID, \
