@@ -6,7 +6,7 @@ fh = open(file_name)
 
 print_f = False
 for line in fh.readlines():
-    if line.find("--") == 0:
+    if line.find("--") == 0 and line.find("-----") == -1:
         continue
     if line.find("==") == 0:
         # 'valgrind' line

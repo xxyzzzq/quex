@@ -3,110 +3,71 @@ Constructor:
    (Size0 = 77, ContentSize0 = 60)
    size       = 77
    eof offset = 61
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 50)
    size       = 66
    eof offset = 51
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 77, ContentSize0 = 0)
    size       = 77
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 50)
    size       = 66
    eof offset = 51
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
    <empty buffer>
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 50)
    size       = 66
    eof offset = 51
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 77, ContentSize0 = 60)
    size       = 77
    eof offset = 61
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 0)
    size       = 66
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 77, ContentSize0 = 0)
    size       = 77
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 0)
    size       = 66
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
    <empty buffer>
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 66, ContentSize1 = 0)
    size       = 66
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 --------------------------------------------------------------------------
 Constructor:
    (Size0 = 77, ContentSize0 = 60)
    size       = 77
    eof offset = 61
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
    <empty buffer>
@@ -115,10 +76,7 @@ Constructor:
    (Size0 = 77, ContentSize0 = 0)
    size       = 77
    eof offset = 1
-
-
 reset_buffer reported buffer: Correct
-
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
    <empty buffer>
@@ -126,10 +84,6 @@ reset_buffer reported buffer: Correct
 Constructor:
    (Size0 = 0, ContentSize0 = 0)
    <empty buffer>
-
-
-
-
 reset_buffer reported buffer: Correct
 'reset_buffer':
    (Size1 = 0, ContentSize1 = 0)
