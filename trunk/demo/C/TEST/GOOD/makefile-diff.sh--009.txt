@@ -1,37 +1,21 @@
-< SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  \
-< 		   tiny_lexer-configuration
-< WSOURCES = tiny_wlexer tiny_wlexer.cpp tiny_wlexer-token_ids \
-< 		   tiny_wlexer-configuration
+< COMPILER := g++ -ggdb -Wall -Werror -pedantic 
 ---
-> SOURCES  = tiny_lexer.h  tiny_lexer.c  tiny_lexer-token_ids.h  \
-> 		   tiny_lexer-token.h tiny_lexer-token.c \
-> 		   tiny_lexer-configuration.h
-> WSOURCES = tiny_wlexer.h tiny_wlexer.c tiny_wlexer-token_ids.h \
-> 		   tiny_wlexer-token.h tiny_wlexer-token.c \
-> 		   tiny_wlexer-configuration.h
-< COMPILER = g++ -ggdb -Wall -Werror -pedantic 
+> COMPILER := gcc -ggdb -Wall -Werror -pedantic 
+< %.o: %.cpp LexAscii
 ---
-> COMPILER = gcc -ggdb -Wall -Werror -pedantic 
-< stdinlexer: stdinlexer.cpp tiny_lexer_st.cpp 
+> %.o: %.c LexAscii.h
+< %-utf8.o: %.cpp LexUtf8
 ---
-> stdinlexer: stdinlexer.c tiny_lexer_st.c 
-< tiny_lexer_st.cpp:   hello.qx 
+> %-utf8.o: %.c LexUtf8.h
+< LexUtf8 LexUtf8.cpp: utf8.qx 
 ---
-> tiny_lexer_st.c: hello.qx 
-> 		 --language C                        \
-< 		 --token-policy single 
+> LexUtf8.h LexUtf8.c: utf8.qx 
+> 		 --language     C       \
+< LexAscii LexAscii.cpp: ascii.qx 
 ---
-> 		 --language C                     \
-< 		 --bet wchar_t \
-< 		 --token-policy single
----
-> 		 --language C                      \
-> 	  	 --bet wchar_t 
-< # -- The general way to get .o from .cpp
-< %.o: %.cpp $(SOURCES) $(WSOURCES)
----
-> # -- The general way to get .o from .c
-> %.o: %.c $(SOURCES) $(WSOURCES)
-< 	rm -f wchar_t-example.txt # created by wlexer.cpp
----
-> 	rm -f wchar_t-example.txt # created by wlexer.c
+> LexAscii.h LexAscii.c: ascii.qx 
+> 	     --language     C        \
+< %.E: %.cpp
+< 	$(CC) -E $< -o $@ 
+< 
+< 	rm -f *.E

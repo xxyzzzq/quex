@@ -3,7 +3,7 @@
 > COMPILER = gcc -ggdb 
 < 	 -Wall -Werror -Wconversion                              \
 ---
-> 	 -Wall -Werror -W -Wconversion -pedantic                 \
+> 	 -Wall -Werror -W -Wconversion -pedantic         \
 > #    -- Intel's icpc (tm)
 <              $(findstring $(COMPILER),cl dmc)))
 ---
@@ -14,13 +14,17 @@
 < example.o: ../example.cpp  EasyLexer.cpp
 ---
 > example.o: ../example.c  EasyLexer.c
-< example-bom.o: example-bom.cpp  EasyLexer.cpp
+< lexer-with-bom.o: lexer-with-bom.cpp  EasyLexer.cpp
 ---
-> example-bom.o: example-bom.c EasyLexer.c
+> lexer-with-bom.o: lexer-with-bom.c EasyLexer.c
 < %.E: %.cpp    
 ---
 > %.E: %.c    
 < EasyLexer.cpp: definitions.qx end_of_file.qx program.qx 
 ---
 > EasyLexer.c: definitions.qx end_of_file.qx program.qx 
-> 		 --language C                  \
+> 		 --language        C                      \
+< 	rm -f lexer
+< 	rm -f bom-lexer
+---
+> 	rm -f lexer lexer-with-bom
