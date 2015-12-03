@@ -10,7 +10,7 @@ from quex.blackboard import E_PreContextIDs, \
                             E_IncidenceIDs, \
                             E_R
 
-from copy import copy
+# from copy import copy
 from collections import defaultdict
 
 class RecipeAcceptance(Recipe):
