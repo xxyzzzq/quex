@@ -49,21 +49,20 @@
 #   define  CODEC         "UTF8"
 #endif
 
-static void  print_token(quex_Token*  token);
 
 int 
 main(int argc, char** argv) 
 {        
     using namespace quex;
     Token*                   token;
-    LEXER_CLASS              qlex;   
+    LEXER_CLASS*             qlex;   
     size_t                   size = 4096;
     char                     buffer[4096];
     char*                    p;
     ssize_t                  received_n;
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new_DEFAULT)(NULL, CODEC);
 
-    QUEX_NAME(from_BufferFiller)(&qlex, filler);
+    qlex = new LEXER_CLASS(filler);
 
     while( 1 + 1 == 2 ) {
         printf("type here: ");
@@ -72,29 +71,20 @@ main(int argc, char** argv)
         if( (received_n = getline(&p, &size, stdin)) == -1 ) break;
 
         printf("    read: %i [byte]\n", received_n);
-        QUEX_NAME(reset)(&qlex);
-        qlex.buffer.fill(&qlex.buffer, &p[0], &p[received_n]);
+        qlex->reset();
+        qlex->buffer.fill(&qlex->buffer, &p[0], &p[received_n]);
 
-        token = qlex.token;
+        token = qlex->token;
         do {
-            (void)QUEX_NAME(receive)(&qlex);
-            print_token(token);
+            qlex->receive();
+            printf("   Token: %s\n", token->get_string().c_str()); 
         } while( token->_id != QUEX_TKN_TERMINATION && token->_id != QUEX_TKN_BYE );
     }
         
-    QUEX_NAME(destruct)(&qlex);
+    delete qlex; 
     filler->delete_self(filler);
     printf("<terminated>\n");
     return 0;
 }
 
-static void
-print_token(quex_Token*  token)
-{
-    size_t PrintBufferSize = 1024;
-    char   print_buffer[1024];
-
-    printf("   Token: %s\n", QUEX_NAME_TOKEN(get_string)(token, print_buffer, 
-                                                         PrintBufferSize));
-}
 

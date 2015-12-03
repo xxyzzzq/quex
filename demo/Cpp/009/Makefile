@@ -72,6 +72,9 @@ LexAscii LexAscii.cpp: ascii.qx
 		 -o             LexAscii \
 		 --token-policy single
 
+%.E: %.cpp
+	$(CC) -E $< -o $@ 
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f Lex*
@@ -79,3 +82,4 @@ clean:
 	rm -f *.o
 	rm -f *.bak
 	rm -f *~
+	rm -f *.E
