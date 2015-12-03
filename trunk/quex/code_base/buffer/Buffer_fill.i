@@ -49,9 +49,9 @@ QUEX_NAME(Buffer_fill_prepare)(QUEX_NAME(Buffer)*  me,
     (void)QUEX_NAME(Buffer_move_away_passed_content)(me, (QUEX_TYPE_CHARACTER**)0, 0);
 
     /* Get the pointers for the border where to fill content.               */
-    me->filler->fill_prepare(me->filler, 
-                             me->input.end_p, me->_memory._back, 
-                             begin_p, end_p);
+    me->filler->derived.fill_prepare(me->filler, 
+                                     me->input.end_p, me->_memory._back, 
+                                     begin_p, end_p);
 
     __quex_assert(*end_p >= *begin_p);
 }
@@ -68,10 +68,10 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
     QUEX_TYPE_CHARACTER*   BeginP = &me->_memory._front[1];
 
     /* Place new content in the engine's buffer.                             */
-    ptrdiff_t inserted_character_n = me->filler->fill_finish(me->filler, 
-                                                             me->input.end_p,
-                                                             me->_memory._back, 
-                                                             FilledEndP);
+    ptrdiff_t inserted_character_n = me->filler->derived.fill_finish(me->filler, 
+                                                                     me->input.end_p,
+                                                                     me->_memory._back, 
+                                                                     FilledEndP);
 
     /* Assume: content from 'input.end_p' to 'input.end_p[CharN]'
      * has been filled with data.                                            */

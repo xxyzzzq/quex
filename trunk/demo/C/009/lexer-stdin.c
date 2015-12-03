@@ -53,6 +53,7 @@ main(int argc, char** argv)
     } while( token->_id != QUEX_TKN_TERMINATION && token->_id != QUEX_TKN_BYE );
         
     QUEX_NAME(destruct)(&qlex);
+    loader->delete_self(loader);
     return 0;
 }
 

@@ -70,7 +70,9 @@ QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me,
 QUEX_INLINE void
 QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me)
 {
-    QUEX_NAME(BufferFiller_delete)(&me->filler); 
+    if( me->filler && me->filler->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        me->filler->delete_self(me->filler); 
+    }
     QUEX_NAME(BufferMemory_destruct)(&me->_memory);
 }
 

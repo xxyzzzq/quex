@@ -1,27 +1,26 @@
-EXAMPLE: Lexing in Non-File Environments
-----------------------------------------
-(C) Frank-Rene Schaefer
+ Lexical Analysis in Non-File Environments
+------------------------------------------------------------------------------
 
-In this directory examples of lexical analysis are demonstrated that show
-lexical analysis under circumstance where there is no file, namely. The
-examples show:
+This directory contains examples that show how lexical analyzers may be used
+easily in environments where there is no file that can be directly accessed,
+namely:
 
-  (1) "lexer-stdin.c": lexical analysis from the standard input. The example
-      can be tried by pipe-ing "example-feed.txt" into the application, i.e.
+  * lexer-command-line, lexer-command-line-utf8:   
 
-          ./lexer-stdin < example-feed.txt
+    A command line application that analyzes upon input from a user's command 
+    line.
 
-  (2) "lexer-stdin-utf8.c": lexical analysis from the standard input but passed
-      through a converter that converts from UTF8 to the internal buffer 
-      running on UCS. To test the example pipe:
+  * lexer-stdin, lexer-stdin-utf8:          
 
-          ./lexer-stdin-utf8 < example-feed-utf8.txt
+    Example where the input comes from the standard input as a pipe.
 
-  (3) "lexer-socket.c": lexical analysis through a socket connection. To try
-      this example, run the application and in parallel the "socket-feeder.sh".
+  * lexer-socket, lexer-socket-utf8:
 
-          ./lexer-socket &
-          ./socket-feeder.sh
+    A lexical analyzer that directly listens on a socket. The program 
+    'feed-socket' made by this Makefile may be used to feed the socket lexer.
 
-All tests are designed to run on Unix-like operating system. However, an 
-adaptation to other OS-es should not be too difficult.
+ All lexer's exist in two forms: ASCII and UTF8. This is to show that the
+ application may be applied with and without converters.
+
+ ABSOLUTELY NO WARRANTY
+ (C) Frank-Rene Schaefer

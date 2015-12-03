@@ -176,8 +176,9 @@ QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
         filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     }
     verdict_f = QUEX_MEMBER_FUNCTION_CALL2(include_push, BufferFiller, InputName, filler);
-    if( ! verdict_f ) {
-        QUEX_NAME(BufferFiller_delete)(&filler);
+    if( ! verdict_f && filler->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        me->buffer.filler->delete_self(me->buffer.filler); 
+        me->buffer.filler = (QUEX_NAME(BufferFiller)*)0;
     }
     return verdict_f;
 }

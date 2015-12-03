@@ -6,6 +6,8 @@ fh = open(file_name)
 
 print_f = False
 for line in fh.readlines():
+    if line.find("--") == 0:
+        continue
     if line.find("==") == 0:
         # 'valgrind' line
         if   line.find("All heap blocks were freed") != -1: print "VALGRIND: ", line[8:].replace("=", "").replace(".", ""), 

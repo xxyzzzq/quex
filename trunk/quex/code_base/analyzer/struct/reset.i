@@ -136,8 +136,8 @@ QUEX_MEMBER_FUNCTION2(reset_StrangeStream, strange_stream,
  *                                                                           */
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
-                      QUEX_NAME(ByteLoader)*   byte_loader,
-                      const char*   CodecName) 
+                      QUEX_NAME(ByteLoader)*  byte_loader,
+                      const char*             CodecName) 
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_NAME(BufferFiller)* filler = me->buffer.filler;
@@ -166,7 +166,9 @@ QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     if( filler != me->buffer.filler ) {
-        QUEX_NAME(BufferFiller_delete)(&me->buffer.filler);
+        if( me->buffer.filler && me->buffer.filler->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+            me->buffer.filler->delete_self(me->buffer.filler); 
+        }
         me->buffer.filler = filler;
     }
     else {

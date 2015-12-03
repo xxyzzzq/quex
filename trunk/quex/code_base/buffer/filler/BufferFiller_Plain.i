@@ -26,7 +26,7 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Plain_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE void   
-QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
+QUEX_NAME(BufferFiller_Plain_destruct_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE size_t 
 QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)* alter_ego,
@@ -76,7 +76,7 @@ QUEX_NAME(BufferFiller_Plain_construct)(QUEX_NAME(BufferFiller_Plain)* me,
                                   QUEX_NAME(BufferFiller_Plain_load_characters),
                                   QUEX_NAME(BufferFiller_Plain_stomach_byte_n),
                                   QUEX_NAME(BufferFiller_Plain_stomach_clear),
-                                  QUEX_NAME(BufferFiller_Plain_delete_self), 
+                                  QUEX_NAME(BufferFiller_Plain_destruct_self), 
                                   QUEX_NAME(BufferFiller_Plain_fill_prepare), 
                                   QUEX_NAME(BufferFiller_Plain_fill_finish), 
                                   byte_loader,
@@ -97,11 +97,13 @@ QUEX_NAME(BufferFiller_Plain_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego)
 }
 
 QUEX_INLINE void 
-QUEX_NAME(BufferFiller_Plain_delete_self)(QUEX_NAME(BufferFiller)* alter_ego) 
+QUEX_NAME(BufferFiller_Plain_destruct_self)(QUEX_NAME(BufferFiller)* alter_ego) 
+/* destruct_self: Free resources occupied by 'me' BUT NOT 'myself'.
+ * delete_self:   Free resources occupied by 'me' AND 'myself'.              */
 {
-    QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
-    QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
-
+    (void)alter_ego;
+    /* There is nothing allocated by a BufferFiller_Plain. 
+     * Nothing to do.                                                        */
 }
 
 QUEX_INLINE size_t   

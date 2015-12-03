@@ -21,7 +21,7 @@ QUEX_INLINE void
 QUEX_NAME(BufferFiller_Converter_stomach_clear)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE void   
-QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego);
+QUEX_NAME(BufferFiller_Converter_destruct_self)(QUEX_NAME(BufferFiller)* alter_ego);
 
 QUEX_INLINE ptrdiff_t   
 QUEX_NAME(BufferFiller_Converter_stomach_byte_n)(QUEX_NAME(BufferFiller)* alter_ego);
@@ -115,7 +115,7 @@ QUEX_NAME(BufferFiller_Converter_construct)(QUEX_NAME(BufferFiller_Converter)* m
                                   QUEX_NAME(BufferFiller_Converter_load_characters),
                                   QUEX_NAME(BufferFiller_Converter_stomach_byte_n),
                                   QUEX_NAME(BufferFiller_Converter_stomach_clear),
-                                  QUEX_NAME(BufferFiller_Converter_delete_self),
+                                  QUEX_NAME(BufferFiller_Converter_destruct_self),
                                   QUEX_NAME(BufferFiller_Converter_fill_prepare),
                                   QUEX_NAME(BufferFiller_Converter_fill_finish),
                                   byte_loader,
@@ -169,22 +169,22 @@ QUEX_NAME(BufferFiller_Converter_stomach_clear)(QUEX_NAME(BufferFiller)* alter_e
 }
 
 QUEX_INLINE void   
-QUEX_NAME(BufferFiller_Converter_delete_self)(QUEX_NAME(BufferFiller)* alter_ego)
+QUEX_NAME(BufferFiller_Converter_destruct_self)(QUEX_NAME(BufferFiller)* alter_ego)
+/* destruct_self: Free resources occupied by 'me' BUT NOT 'myself'.
+ * delete_self:   Free resources occupied by 'me' AND 'myself'.              */
 { 
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
 
     if( ! me ) return;
 
-    if( me->base.ownership != E_Ownership_LEXICAL_ANALYZER ) return;
-
     QUEX_ASSERT_RAW_BUFFER(&me->raw_buffer);
 
-    QUEX_NAME(Converter_delete)(&me->converter); 
+    if( me->converter && me->converter->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        me->converter->delete_self(me->converter); 
+    }
 
     QUEXED(MemoryManager_free)((void*)me->raw_buffer.begin,
                                E_MemoryObjectType_BUFFER_RAW); 
-
-    QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
 }
 
 QUEX_INLINE size_t 
