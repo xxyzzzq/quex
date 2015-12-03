@@ -3,7 +3,7 @@
  *
  * This application implements a lexical analyzer that directly reads content
  * from a socket connection. For trying, the socket connection may be fed
- * with the 'feeder-socket.c' application which reads content from a file
+ * with the 'feed-socket.c' application which reads content from a file
  * and passes it trough the socket.
  *
  * As soon as a "bye" lexeme is received, the application terminates.
