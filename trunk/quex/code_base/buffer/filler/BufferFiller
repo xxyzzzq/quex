@@ -142,6 +142,8 @@ QUEX_INLINE void
     QUEX_NAME(BufferFiller_reset)(QUEX_NAME(BufferFiller)* me, 
                                   QUEX_NAME(ByteLoader)*              new_byte_loader);
 
+QUEX_INLINE void       
+    QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

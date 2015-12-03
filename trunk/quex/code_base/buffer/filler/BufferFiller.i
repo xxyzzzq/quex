@@ -16,7 +16,6 @@ QUEX_INLINE QUEX_TYPE_STREAM_POSITION
                        QUEX_NAME(BufferFiller_character_index_tell)(QUEX_NAME(BufferFiller)* me);
 QUEX_INLINE bool       QUEX_NAME(BufferFiller_character_index_step_to)(QUEX_NAME(BufferFiller)*        me,
                                                                        const QUEX_TYPE_STREAM_POSITION TargetCI);
-QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset)(QUEX_NAME(BufferFiller)* me);
 QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX_NAME(BufferFiller)* me, 
                                                           QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
                                                           ptrdiff_t                 BackupStomachByteN, 
