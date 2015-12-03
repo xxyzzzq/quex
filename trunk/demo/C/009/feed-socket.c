@@ -73,7 +73,8 @@ main(int argc, char** argv)
         FEED_BAD 
     }            mode;
     int          socket_fd = 0;
-    char*        specification_str = argc > 2 ? argv[2] : "";
+    char         empty[] = { '\0' };
+    char*        specification_str = argc > 2 ? argv[2] : &empty[0];
     const int    ChunkSize         = argc > 3 ? atoi(argv[3]) : 3;
     const int    Delay_ms          = argc > 4 ? atoi(argv[4]) : 1;
 

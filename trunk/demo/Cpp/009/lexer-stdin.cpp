@@ -33,39 +33,28 @@
 #   define  CODEC         "UTF8"
 #endif
 
-static void  print_token(quex_Token*  token);
-
 int 
 main(int argc, char** argv) 
 {        
     using namespace quex;
 
-    quex_Token*            token;
-    LEXER_CLASS            qlex;   
+    Token*                 token;
+    LEXER_CLASS*           qlex;   
     QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(0); /* 0 = stdin */
 
     QUEX_NAME(ByteLoader_seek_disable)(loader);
 
-    QUEX_NAME(from_ByteLoader)(&qlex, loader, CODEC);
+    qlex = new LEXER_CLASS(loader, CODEC);
 
-    token = qlex.token;
+    token = qlex->token;
     do {
-        (void)QUEX_NAME(receive)(&qlex);
-        print_token(token);
+        qlex->receive(); 
+        printf("   Token: %s\n", token->get_string().c_str()); 
     } while( token->_id != QUEX_TKN_TERMINATION && token->_id != QUEX_TKN_BYE );
         
-    QUEX_NAME(destruct)(&qlex);
+    delete qlex;
     loader->delete_self(loader);
     return 0;
 }
 
-static void
-print_token(quex_Token*  token)
-{
-    size_t PrintBufferSize = 1024;
-    char   print_buffer[1024];
-
-    printf("   Token: %s\n", QUEX_NAME_TOKEN(get_string)(token, print_buffer, 
-                                                         PrintBufferSize));
-}
 

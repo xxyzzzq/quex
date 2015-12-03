@@ -66,8 +66,7 @@
 
 static int  setup_socket_server(void);
 static bool accept_and_lex(int listen_fd);
-static void print_token(quex_Token*  token);
-static bool self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t LoadedN);
+static bool self_on_nothing(quex::QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t LoadedN);
  
 int main(void)
 {
@@ -90,10 +89,10 @@ accept_and_lex(int listen_fd)
 {
     using namespace quex;
 
-    int              connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
-    quex_Token*      token;
-    LEXER_CLASS      qlex;
-    bool             continue_f;
+    int           connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
+    Token*        token;
+    LEXER_CLASS*  qlex;
+    bool          continue_f;
 
     QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(connected_fd);
 
@@ -108,14 +107,13 @@ accept_and_lex(int listen_fd)
     /* A handler for the case that nothing is received over the line. */
     loader->on_nothing = self_on_nothing; 
 
-    QUEX_NAME(from_ByteLoader)(&qlex, loader, CODEC);
+    qlex = new LEXER_CLASS(loader, CODEC);
 
-    token = qlex.token;
+    token = qlex->token;
     continue_f = true;
     do {
-        (void)QUEX_NAME(receive)(&qlex);
-
-        print_token(token);
+        qlex->receive(); 
+        printf("   Token: %s\n", token->get_string().c_str()); 
 
         if( token->_id == QUEX_TKN_BYE ) {
              continue_f = false;
@@ -124,7 +122,7 @@ accept_and_lex(int listen_fd)
 
     } while( token->_id != QUEX_TKN_TERMINATION );
         
-    QUEX_NAME(destruct)(&qlex);
+    delete qlex;
     loader->delete_self(loader);
     printf("<terminated>\n");
     return continue_f;
@@ -167,7 +165,7 @@ setup_socket_server(void)
 }
 
 static bool  
-self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t RequiredToLoad)
+self_on_nothing(quex::QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t RequiredToLoad)
 /* ByteLoader's handler to treat the case that nothing has been received. Note,
  * that with the current setup the socket receiver blocks until something comes
  * in. If nothing is received, the socket is closed.
@@ -175,6 +173,8 @@ self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t RequiredToLoad)
  * RETURNS: 'false' in any case to mark the end of transmission.
  *                                                                           */
 { 
+    using namespace quex;
+
     int       error  = 0;
     socklen_t len    = sizeof (error);
     int       retval = getsockopt(((QUEX_NAME(ByteLoader_POSIX)*)me)->fd, SOL_SOCKET, SO_ERROR, &error, &len);
@@ -196,12 +196,3 @@ self_on_nothing(QUEX_NAME(ByteLoader)*  me, size_t TryN, size_t RequiredToLoad)
 }
 
 
-static void
-print_token(quex_Token*  token)
-{
-    size_t PrintBufferSize = 1024;
-    char   print_buffer[1024];
-
-    printf("   Token: %s\n", QUEX_NAME_TOKEN(get_string)(token, print_buffer, 
-                                                         PrintBufferSize));
-}

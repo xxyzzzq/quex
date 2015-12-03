@@ -115,5 +115,7 @@ QUEX_NAME(ByteLoader_POSIX_compare_handle)(const QUEX_NAME(ByteLoader)* alter_eg
     return A->fd == B->fd;
 }
 
+QUEX_NAMESPACE_MAIN_CLOSE
+
 #endif /*  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_POSIX_I */
 

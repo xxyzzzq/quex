@@ -1,0 +1,98 @@
+Setup:
+   mode:  file;
+   spec:  "example-feed-utf8.txt";
+   chunk: 5 [byte];
+   freq:  1 [chunks/millisec];
+
+flush: 5: [Со�]
+flush: 5: [�бщ]
+flush: 5: [ен�]
+flush: 5: [�е �]
+flush: 5: [� к�]
+flush: 5: [�ло]
+flush: 5: [ба�]
+flush: 5: [�т �]
+flush: 5: [�ач]
+flush: 5: [ин�]
+flush: 5: [�ет]
+flush: 5: [ся ]
+flush: 5: [с о]
+flush: 5: [дн�]
+flush: 5: [�го]
+flush: 5: [ би]
+flush: 5: [та.]
+flush: 5: [
+
+Έ�]
+flush: 5: [�α �]
+flush: 5: [�ήν]
+flush: 5: [υμ�]
+flush: 5: [� ε�]
+flush: 5: [�ός]
+flush: 5: [ kilo]
+flush: 5: [byte ]
+flush: 5: [ξε�]
+flush: 5: [�ιν]
+flush: 5: [ά μ]
+flush: 5: [ε έ]
+flush: 5: [να ]
+flush: 5: [μό�]
+flush: 5: [�ο b]
+flush: 5: [it.
+
+]
+flush: 0: []
+<done>
+Setup:
+   mode:  string;
+   spec:  "bye";
+   chunk: 1 [byte];
+   freq:  10 [chunks/millisec];
+
+flush: 1: [b]
+flush: 1: [y]
+flush: 1: [e]
+flush: 1: []
+<done>
+   Token: MESSAGE 'Сообщение'
+   Token: WHITESPACE ' '
+   Token: SOMETHING 'о'
+   Token: WHITESPACE ' '
+   Token: KILOBYTE 'килобайт'
+   Token: WHITESPACE ' '
+   Token: STARTS 'начинается'
+   Token: WHITESPACE ' '
+   Token: SOMETHING 'с'
+   Token: WHITESPACE ' '
+   Token: SINGLE 'одного'
+   Token: WHITESPACE ' '
+   Token: BIT 'бита'
+   Token: SOMETHING '.'
+   Token: WHITESPACE '
+'
+   Token: WHITESPACE '
+'
+   Token: MESSAGE 'Ένα μήνυμα'
+   Token: WHITESPACE ' '
+   Token: SOMETHING 'ε'
+   Token: SOMETHING 'ν'
+   Token: SOMETHING 'ό'
+   Token: SOMETHING 'ς'
+   Token: WHITESPACE ' '
+   Token: KILOBYTE 'kilobyte'
+   Token: WHITESPACE ' '
+   Token: STARTS 'ξεκινά με'
+   Token: WHITESPACE ' '
+   Token: SINGLE 'ένα μόνο'
+   Token: WHITESPACE ' '
+   Token: BIT 'bit'
+   Token: SOMETHING '.'
+   Token: WHITESPACE '
+'
+   Token: WHITESPACE '
+'
+   Token: <TERMINATION> ''
+<terminated>
+   Token: BYE 'bye'
+<terminated>
+VALGRIND:  All heap blocks were freed -- no leaks are possible
