@@ -42,7 +42,7 @@ main(int argc, char** argv)
         QUEX_NAME(ByteLoader)*     byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
         QUEX_NAME(BufferFiller)*   is = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
 
-        loaded_character_n = is->derived_load_characters(is, buffer, BufferSize, &end_of_stream_f);
+        loaded_character_n = is->derived.load_characters(is, buffer, BufferSize, &end_of_stream_f);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
 
@@ -57,7 +57,7 @@ main(int argc, char** argv)
         
         QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_stream_new)(&fh);
         QUEX_NAME(BufferFiller)* is          = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
-        loaded_character_n = is->derived_load_characters(is, buffer, BufferSize, &end_of_stream_f);
+        loaded_character_n = is->derived.load_characters(is, buffer, BufferSize, &end_of_stream_f);
         
         fh.close();
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
