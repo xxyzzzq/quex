@@ -29,24 +29,14 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
 
     QUEX_NAME(ByteLoader)*    byte_loader;
 
-    /* PASSIVE API: Lexical analyzer requests BufferFiller to fill its
-     *              buffer.                                                  */
-
-    /* -- 'Read' reads N characters from a stream into a buffer 
-     * (independent of their size)                                           */
-    size_t      (*derived_load_characters)(struct QUEX_NAME(BufferFiller_tag)*,
-                                           QUEX_TYPE_CHARACTER* memory, 
-                                           const size_t         N,
-                                           bool*                end_of_stream_f);
-
     /* -- 'Tell': Character index of the next character to be loaded into
-     *            the buffer, when 'derived_load_characters()' is called.
+     *            the buffer, when 'derived.load_characters()' is called.
      *                                                                       */
     QUEX_TYPE_STREAM_POSITION   
                 (*input_character_tell)(struct QUEX_NAME(BufferFiller_tag)*);
 
     /* -- 'Seek': Sets the character index of the next character to be loaded
-     *            into the buffer, when 'derived_load_characters()' is 
+     *            into the buffer, when 'derived.load_characters()' is 
      *            called.
      *                                                                       */
     bool        (*input_character_seek)(struct QUEX_NAME(BufferFiller_tag)*,
@@ -62,26 +52,13 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
      *                                                                       */
     void        (*stomach_clear)(struct QUEX_NAME(BufferFiller_tag)*);       
                                                                              
-    /* -- 'Destructor': There are derived 'classes' from this one. The user 
+    /* -- 'Delete Operator': There are derived 'classes' from this one. User 
      *                  only stores a pointer to BufferFiller, and requires a 
      *                  way to delete the whole object.
      *                                                                       */
     void        (*delete_self)(struct QUEX_NAME(BufferFiller_tag)*);         
                                                                              
                                                                              
-    /* ACTIVE: User fills the buffer manually                                
-     *
-     * To be implemented by the derived class ...                            */
-    void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*  me,
-                                QUEX_TYPE_CHARACTER*                 RegionBeginP,
-                                QUEX_TYPE_CHARACTER*                 RegionEndP,
-                                void**                               begin_p,
-                                const void**                         end_p);
-    ptrdiff_t   (*fill_finish)(struct QUEX_NAME(BufferFiller_tag)* me,
-                               QUEX_TYPE_CHARACTER*                BeginP,
-                               const QUEX_TYPE_CHARACTER*          EndP,
-                               const void*                         FilledEndP);
-
     /* -- byte order (i.e little- vs. big-endian) reversion: enable/disable
      *    the reversion of byte order.    
      *                                                                       */
@@ -93,6 +70,35 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
      *                            between character position and character
      *                            index.                                     */
     ptrdiff_t                 byte_n_per_character;
+
+    struct {
+        /* PASSIVE API: Lexical analyzer requests BufferFiller to fill its
+         *              buffer.                                              */
+
+        /* -- 'Read' reads N characters from a stream into a buffer 
+         * (independent of their size)                                       */
+        size_t      (*load_characters)(struct QUEX_NAME(BufferFiller_tag)*,
+                                       QUEX_TYPE_CHARACTER* memory, 
+                                       const size_t         N,
+                                       bool*                end_of_stream_f);
+
+        /* ACTIVE: User fills the buffer manually                                
+         *
+         * To be implemented by the derived class ...                        */
+        void        (*fill_prepare)(struct QUEX_NAME(BufferFiller_tag)*  me,
+                                    QUEX_TYPE_CHARACTER*                 RegionBeginP,
+                                    QUEX_TYPE_CHARACTER*                 RegionEndP,
+                                    void**                               begin_p,
+                                    const void**                         end_p);
+        ptrdiff_t   (*fill_finish)(struct QUEX_NAME(BufferFiller_tag)* me,
+                                   QUEX_TYPE_CHARACTER*                BeginP,
+                                   const QUEX_TYPE_CHARACTER*          EndP,
+                                   const void*                         FilledEndP);
+
+        /* destruct_self: Free resources occupied by 'me' BUT NOT 'myself'.
+         * delete_self:   Free resources occupied by 'me' AND 'myself'.      */
+        void        (*destruct_self)(struct QUEX_NAME(BufferFiller_tag)*);
+    } derived;
 } QUEX_NAME(BufferFiller);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
@@ -101,8 +107,8 @@ QUEX_INLINE QUEX_NAME(BufferFiller)*
                                 const size_t                     TranslationBufferMemorySize);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
-    QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*   byte_loader, 
-                                        const char*   InputCodecName);
+    QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*  byte_loader, 
+                                        const char*             InputCodecName);
 
 QUEX_INLINE void    
     QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
@@ -112,7 +118,7 @@ QUEX_INLINE void
                                                                   bool*),
                                   ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                                   void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
-                                  void         (*delete_self)(QUEX_NAME(BufferFiller)*),
+                                  void         (*destruct_self)(QUEX_NAME(BufferFiller)*),
                                   void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
                                                                        QUEX_TYPE_CHARACTER*      RegionBeginP,
                                                                        QUEX_TYPE_CHARACTER*      RegionEndP,
@@ -124,9 +130,6 @@ QUEX_INLINE void
                                                                       const void*                FilledEndP),
                                   QUEX_NAME(ByteLoader)*  byte_loader, 
                                   ptrdiff_t               ByteNPerCharacter);
-
-QUEX_INLINE void    
-    QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)**); 
 
 QUEX_INLINE ptrdiff_t  
     QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*   me, 

@@ -42,15 +42,6 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
     return open(me, FromCodec, ToCodec);
 }
 
-QUEX_INLINE void
-QUEX_NAME(Converter_delete)(QUEX_NAME(Converter)** me)
-{
-    if     ( ! *me )                                            return;
-    else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER ) return;
-    else if( (*me)->delete_self )                               (*me)->delete_self(*me);
-    *me = (QUEX_NAME(Converter)*)0;
-}
-
 QUEX_NAMESPACE_MAIN_CLOSE
 
 #endif /*  __QUEX_INCLUDE_GUARD__BUFFER__FILLER__CONVERTER__CONVERTER_I */

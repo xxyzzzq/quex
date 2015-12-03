@@ -1,0 +1,18 @@
+type here:     read: 10 [byte]
+   Token: ARTICLE 'A'
+   Token: SUBJECT 'message'
+   Token: <TERMINATION> ''
+type here:     read: 14 [byte]
+   Token: PREPOSITION 'of'
+   Token: ARTICLE 'a'
+   Token: SUBJECT 'kilobyte'
+   Token: <TERMINATION> ''
+type here:     read: 19 [byte]
+   Token: SUBJECT 'starts'
+   Token: PREPOSITION 'with'
+   Token: ARTICLE 'a'
+   Token: STORAGE_UNIT 'bit'
+   Token: FAIL '.'
+   Token: <TERMINATION> ''
+type here: <terminated>
+VALGRIND:  All heap blocks were freed -- no leaks are possible

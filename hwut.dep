@@ -1,5 +1,6 @@
 HWUT Tests Require:
 
+-- bash
 -- gcc, g++, make, python
 -- valgrind
 -- efence / electric fence

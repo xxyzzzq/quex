@@ -91,6 +91,7 @@ accept_and_lex(int listen_fd)
     int              connected_fd = accept(listen_fd, (struct sockaddr*)NULL ,NULL); 
     quex_Token*      token;
     LEXER_CLASS      qlex;
+    bool             continue_f;
 
     QUEX_NAME(ByteLoader)* loader = QUEX_NAME(ByteLoader_POSIX_new)(connected_fd);
 
@@ -108,18 +109,23 @@ accept_and_lex(int listen_fd)
     QUEX_NAME(from_ByteLoader)(&qlex, loader, CODEC);
 
     token = qlex.token;
+    continue_f = true;
     do {
         (void)QUEX_NAME(receive)(&qlex);
 
         print_token(token);
 
-        if( token->_id == QUEX_TKN_BYE ) return false;
+        if( token->_id == QUEX_TKN_BYE ) {
+             continue_f = false;
+             break;
+        }
 
     } while( token->_id != QUEX_TKN_TERMINATION );
         
     QUEX_NAME(destruct)(&qlex);
-
-    return true;
+    loader->delete_self(loader);
+    printf("<terminated>\n");
+    return continue_f;
 }
 
 

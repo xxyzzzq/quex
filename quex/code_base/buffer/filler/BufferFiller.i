@@ -24,6 +24,8 @@ QUEX_INLINE void       QUEX_NAME(BufferFiller_character_index_reset_backup)(QUEX
 QUEX_INLINE void       QUEX_NAME(BufferFiller_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
                                                                   const QUEX_TYPE_CHARACTER* End);
 
+QUEX_INLINE void       QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)*); 
+
                        
 QUEX_INLINE QUEX_NAME(BufferFiller)*
 QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*  byte_loader, 
@@ -47,7 +49,7 @@ QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*  byte_loader,
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
 QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*   byte_loader, 
-                                    const char*   InputCodecName) 
+                                    const char*              InputCodecName) 
 {
 #   if   defined(QUEX_OPTION_CONVERTER_ICONV)
     QUEX_NAME(Converter)* converter = QUEX_NAME(Converter_IConv_new)(InputCodecName, 0);
@@ -78,15 +80,21 @@ QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*   byte_loader,
 }
 
 QUEX_INLINE void       
-QUEX_NAME(BufferFiller_delete)(QUEX_NAME(BufferFiller)** me)
+QUEX_NAME(BufferFiller_delete_self)(QUEX_NAME(BufferFiller)* me)
 { 
-    if( ! *me ) return;
-    else if( (*me)->ownership != E_Ownership_LEXICAL_ANALYZER) return;
+    if( ! me ) return;
 
-    QUEX_NAME(ByteLoader_delete)(&(*me)->byte_loader);
+    if( me->byte_loader && me->byte_loader->ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        QUEX_NAME(ByteLoader_delete)(&me->byte_loader);
+    }
 
-    if( (*me)->delete_self ) (*me)->delete_self(*me);
-    (*me) = (QUEX_NAME(BufferFiller)*)0;
+    /* destruct_self: Free resources occupied by 'me' BUT NOT 'myself'.
+     * delete_self:   Free resources occupied by 'me' AND 'myself'.          */
+    if( me->derived.destruct_self ) {
+        me->derived.destruct_self(me);
+    }
+
+    QUEXED(MemoryManager_free)((void*)me, E_MemoryObjectType_BUFFER_FILLER);
 }
 
 QUEX_INLINE void    
@@ -97,7 +105,7 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
                                                                            bool*),
                               ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
                               void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
-                              void         (*derived_delete_self)(QUEX_NAME(BufferFiller)*),
+                              void         (*derived_destruct_self)(QUEX_NAME(BufferFiller)*),
                               void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
                                                                    QUEX_TYPE_CHARACTER*      RegionBeginP,
                                                                    QUEX_TYPE_CHARACTER*      RegionEndP,
@@ -112,19 +120,20 @@ QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
 {
     __quex_assert(me);
     __quex_assert(derived_load_characters);
-    __quex_assert(derived_delete_self);
+    __quex_assert(derived_destruct_self);
 
     /* Support for buffer filling without user interaction                   */
     me->stomach_byte_n          = stomach_byte_n;
     me->stomach_clear           = stomach_clear;
     me->input_character_tell    = QUEX_NAME(BufferFiller_character_index_tell);
     me->input_character_seek    = QUEX_NAME(BufferFiller_character_index_seek);
-    me->derived_load_characters = derived_load_characters;
-    me->delete_self             = derived_delete_self;
+    me->derived.load_characters = derived_load_characters;
+    me->derived.destruct_self   = derived_destruct_self;
+    me->delete_self             = QUEX_NAME(BufferFiller_delete_self);
 
     /* Support for manual buffer filling.                                    */
-    me->fill_prepare = derived_fill_prepare;
-    me->fill_finish  = derived_fill_finish;
+    me->derived.fill_prepare    = derived_fill_prepare;
+    me->derived.fill_finish     = derived_fill_finish;
 
     me->byte_loader                    = byte_loader;
 
@@ -174,7 +183,7 @@ QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me,
 
     /* (2) Load content into the given region.                                   
      *                                                                       */
-    loaded_n = (ptrdiff_t)me->derived_load_characters(me, LoadP, (size_t)LoadN,
+    loaded_n = (ptrdiff_t)me->derived.load_characters(me, LoadP, (size_t)LoadN,
                                                       end_of_stream_f);
     __quex_assert(loaded_n <= LoadN);
 

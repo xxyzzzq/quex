@@ -48,7 +48,7 @@ main(int argc, char** argv)
 
     size_t loaded_n = 0;
     do {
-        loaded_n = filler->derived_load_characters(filler, 
+        loaded_n = filler->derived.load_characters(filler, 
                                            (QUEX_TYPE_CHARACTER*)memory, memory_size);
 
         cout << "## loaded character n = " << loaded_n << endl;
