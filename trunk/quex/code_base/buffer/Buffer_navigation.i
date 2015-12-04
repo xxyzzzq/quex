@@ -1,6 +1,6 @@
-#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
-#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
-/* PURPOSE: Buffer's seek: 
+/* vim: set ft=c:
+ * 
+ * PURPOSE: Buffer's seek: 
  *  
  *    .---------------------------------------------------------------.
  *    |  Setting the '_read_p' to a specific position in the stream.  |
@@ -35,6 +35,8 @@
  * it points contains the next character to be read during analysis.           
  *
  * (C) Frank-Rene Schaefer                                                   */
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_NAVIGATION_I
 
 QUEX_NAMESPACE_MAIN_OPEN
 

@@ -61,7 +61,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t                length = 0;
 
         QUEX_TYPE_CHARACTER   EmptyChar    = (QUEX_TYPE_CHARACTER)(-1);
-        QUEX_TYPE_CHARACTER*  ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
+        QUEX_TYPE_CHARACTER*  BeginP = &buffer->_memory._front[1]; 
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
         QUEX_TYPE_CHARACTER*  iterator     = 0x0;
@@ -73,7 +73,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         end_p = QUEX_MAX(end_p, buffer->_memory._back);
 
         __QUEX_STD_printf("|%c", (int)QUEX_NAME(__Buffer_get_border_char)(buffer, BufferFront));
-        for(iterator = ContentFront; iterator != end_p; ++iterator) {
+        for(iterator = BeginP; iterator != end_p; ++iterator) {
             __QUEX_STD_printf("%c",   *iterator == EmptyChar                      ? (int)'~' 
                                     : *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ? (int)'*' 
                                     : (int)*iterator);
@@ -100,7 +100,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         size_t                i = 0;
         char*                 tmp = 0;
         const size_t          ContentSize  = QUEX_NAME(Buffer_content_size)(buffer);
-        QUEX_TYPE_CHARACTER*  ContentFront = QUEX_NAME(Buffer_content_front)(buffer);
+        QUEX_TYPE_CHARACTER*  BeginP       = &buffer->_memory._front[1]; 
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
 
@@ -109,7 +109,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         tmp = (char*)__QUEX_STD_malloc(ContentSize + 4);
         /* tmp[0]                 = outer border*/
         /* tmp[1]                 = buffer limit*/
-        /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
+        /* tmp[2...ContentSize+1] = BeginP[0...ContentSize-1]*/
         /* tmp[ContentSize+2]     = buffer limit*/
         /* tmp[ContentSize+3]     = outer border*/
         /* tmp[ContentSize+4]     = terminating zero*/
@@ -120,11 +120,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         tmp[1]             = (char)QUEX_NAME(__Buffer_get_border_char)(buffer, BufferFront);
         tmp[0]             = '|';
         /* tmp[_SHOW_current_fallback_n - 1 + 2] = ':';                      */
-        tmp[buffer->_read_p - ContentFront + 2] = 'C';
-        if( buffer->_lexeme_start_p >= ContentFront && buffer->_lexeme_start_p <= BufferBack ) 
-            tmp[(int)(buffer->_lexeme_start_p - ContentFront) + 2] = 'S';
+        tmp[buffer->_read_p - BeginP + 2] = 'C';
+        if( buffer->_lexeme_start_p >= BeginP && buffer->_lexeme_start_p <= BufferBack ) 
+            tmp[(int)(buffer->_lexeme_start_p - BeginP) + 2] = 'S';
         /**/
-        if ( buffer->_read_p == ContentFront - 2 ) {
+        if ( buffer->_read_p == BeginP - 2 ) {
             __QUEX_STD_printf("%s", tmp); 
             __QUEX_STD_printf(" <out>");
         } else {

@@ -13,12 +13,12 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE ptrdiff_t QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)*  me, 
-                                                     intmax_t            move_distance);
+                                                     ptrdiff_t           move_distance);
 QUEX_INLINE void      QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
                                                           intmax_t           move_distance,
                                                           ptrdiff_t          move_size);
 QUEX_INLINE ptrdiff_t QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, 
-                                                      intmax_t           move_distance);
+                                                      ptrdiff_t          move_distance);
 
 QUEX_INLINE void*     QUEX_NAME(Buffer_fill)(QUEX_NAME(Buffer)*  me, 
                                              const void*         ContentBegin,
@@ -230,28 +230,6 @@ QUEX_NAME(Buffer_read_p_add_offset)(QUEX_NAME(Buffer)* buffer, const size_t Offs
     QUEX_BUFFER_ASSERT_pointers_in_range(buffer);
 }
 
-QUEX_INLINE QUEX_TYPE_CHARACTER
-QUEX_NAME(Buffer_input_get_offset)(QUEX_NAME(Buffer)* me, 
-                                   const ptrdiff_t Offset)
-{
-    QUEX_BUFFER_ASSERT_pointers_in_range(me);
-    __quex_assert( me->_read_p + Offset > me->_memory._front );
-    __quex_assert( me->_read_p + Offset <= me->_memory._back );
-    return *(me->_read_p + Offset); 
-}
-
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)* me)
-{
-    return me->_memory._front + 1;
-}
-
-QUEX_INLINE QUEX_TYPE_CHARACTER*
-QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)* me)
-{
-    return me->_memory._back - 1;
-}
-
 QUEX_INLINE size_t
 QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)* me)
 {
@@ -340,8 +318,8 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
     }
 
     /* (1) Move existing content in the buffer to appropriate position.      */
-    move_distance = NewCharacterIndexBegin - me->input.character_index_begin;
-    move_size            = QUEX_NAME(Buffer_move_forward)(me, move_distance);
+    move_distance        = NewCharacterIndexBegin - me->input.character_index_begin;
+    move_size            = QUEX_NAME(Buffer_move_forward)(me, (ptrdiff_t)move_distance);
     load_character_index = NewCharacterIndexBegin + move_size;
     load_request_n       = ContentSize - move_size; 
     load_p               = &BeginP[move_size];
@@ -392,7 +370,7 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
     QUEX_TYPE_STREAM_POSITION  ci_begin = QUEX_NAME(Buffer_input_character_index_begin)(me);
     ptrdiff_t                  load_request_n;
     ptrdiff_t                  loaded_n;
-    intmax_t                   move_distance;
+    ptrdiff_t                  move_distance;
     QUEX_TYPE_CHARACTER*       end_p;
     bool                       end_of_stream_f = false;
 
@@ -400,8 +378,8 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
     __quex_assert(ci_begin  >= NewCharacterIndexBegin);
 
     /* (1) Move away content, so that previous content can be reloaded.      */
-    move_distance  = ci_begin - NewCharacterIndexBegin;
-    load_request_n = QUEX_NAME(Buffer_move_backward)(me, move_distance);
+    move_distance  = (ptrdiff_t)(ci_begin - NewCharacterIndexBegin);
+    load_request_n = QUEX_NAME(Buffer_move_backward)(me, (ptrdiff_t)move_distance);
 
     __quex_assert(&BeginP[load_request_n] <= EndP);
 
@@ -473,17 +451,13 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
      * BUT: Consider case where 'move_begin_p - FallBackN < 0'! CAREFUL!     */
     move_begin_p  = move_begin_p - BeginP < FallBackN ? BeginP 
                                                       : &move_begin_p[- FallBackN];
-    move_size     = me->input.end_p - move_begin_p;
     move_distance = move_begin_p    - BeginP;
 
     if( ! move_distance ) {
         return 0;
     }
-    me->on_content_change(me->_memory._front, me->input.end_p);
-    if( move_size ) {
-        __QUEX_STD_memmove((void*)BeginP, (void*)move_begin_p,
-                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-    }
+
+    move_size = QUEX_NAME(Buffer_move_forward)(me, move_distance);
 
     /* Pointer Adaption: _read_p, _lexeme_start_p, position registers.
      *                   input.end_p, input.end_character_index              */
@@ -507,6 +481,7 @@ QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
 
     /*_______________________________________________________________________*/
     __quex_assert(me->input.end_p == &move_begin_p[move_size - move_distance]);
+    (void)move_size;
     QUEX_IF_ASSERTS_poison(&EndP[- move_distance + 1], EndP);
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     (void)EndP;
@@ -606,13 +581,11 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
  *
  * RETURNS: Distance the the buffer content has been freed to be filled.     */
 {
-    const QUEX_TYPE_CHARACTER*       BeginP      = &me->_memory._front[1];
-    QUEX_TYPE_CHARACTER*             EndP        = me->_memory._back;
-    const ptrdiff_t                  ContentSize = EndP - BeginP;
-    const QUEX_TYPE_CHARACTER*       move_end_p;
-    ptrdiff_t                        move_distance;
-    ptrdiff_t                        move_size;
-    QUEX_TYPE_CHARACTER*             end_p;
+    const QUEX_TYPE_CHARACTER*  BeginP      = &me->_memory._front[1];
+    QUEX_TYPE_CHARACTER*        EndP        = me->_memory._back;
+    const ptrdiff_t             ContentSize = EndP - BeginP;
+    ptrdiff_t                   move_distance;
+    QUEX_TYPE_CHARACTER*        end_p;
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
@@ -635,18 +608,12 @@ QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me)
     if( me->_lexeme_start_p ) {
         move_distance = QUEX_MIN(move_distance, &EndP[-1] - me->_lexeme_start_p);
     }
-    move_end_p = EndP - move_distance;
-    move_size  = move_end_p - BeginP;
 
     if( ! move_distance ) {
         return 0;
     }
-    me->on_content_change(me->_memory._front, me->input.end_p);
-    if( move_size ) {
-        /* Move.                                                             */
-        __QUEX_STD_memmove((void*)&BeginP[move_distance], (void*)BeginP, 
-                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-    }
+
+    (void)QUEX_NAME(Buffer_move_backward)(me, move_distance);
 
     /* Pointer Adaption: _read_p, _lexeme_start_p.                           */
     me->_read_p += move_distance;
@@ -742,21 +709,80 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
 
 QUEX_INLINE ptrdiff_t
 QUEX_NAME(Buffer_move_forward)(QUEX_NAME(Buffer)* me, 
-                               intmax_t           move_distance)
-/* RETURNS: Size of the moved region.                                        */
+                               ptrdiff_t          move_distance)
+/* Moves the entire (meaningful) content of the buffer by 'move_distance'
+ * forward. It does NOT MODIFY any pointers about the buffer content!
+ *
+ *                                                               EndP
+ *                                         |<---- move size ---->|
+ *     Before:   | . . . . . . . . . . . . .x.x.x.x.x.x.x.x.x.x.x| 
+ *               |<---- move distance -----|                     |
+ *                  .----------------------'                     |
+ *               .-'                            .----------------'
+ *               |                     .-------'
+ *     After:    |x.x.x.x.x.x.x.x.x.x.x| . . . . . . . . . . . . | 
+ *               |<---- move_size ---->|
+ *
+ * The callback 'on_content_change()' informs the user that any pointer into
+ * the buffer must now copy its pointed objects, because the pointers will 
+ * become invalid.
+ *
+ * RETURNS: Number of characters that have been moved.                       */
 {
-    QUEX_TYPE_CHARACTER* BeginP     = &me->_memory._front[1];
-    const ptrdiff_t      FilledSize = me->input.end_p - BeginP;
+    QUEX_TYPE_CHARACTER* BeginP       = &me->_memory._front[1];
+    const ptrdiff_t      FilledSize   = me->input.end_p - BeginP;
     ptrdiff_t            move_size;
 
-    if( move_distance >= FilledSize ) return 0;
+    if( move_distance >= FilledSize ) {
+        return 0;
+    }
 
-    move_size = me->input.end_p - &BeginP[move_distance];
-    if( move_distance ) {
-        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance], 
+    move_size = FilledSize - move_distance;
+
+    if( move_distance && move_size ) {
+        me->on_content_change(BeginP, me->input.end_p);
+
+        __QUEX_STD_memmove((void*)BeginP, (void*)&BeginP[move_distance],
                            (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
     }
     return move_size;
+}
+
+QUEX_INLINE ptrdiff_t
+QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, 
+                                ptrdiff_t          move_distance)
+/* Moves content so that previous content may be filled into the buffer.
+ *
+ *          BeginP
+ *            |<--- move size---->|                         
+ *            |x.x.x.x.x.x.x.x.x.x| . . . . . . . . . . . . . . |
+ *            |                   '--------------.               
+ *            '------------.                      '-------------.
+ *                          '---------------.                   |
+ *            :------- move distance------->|                   |
+ *            | . . . . . . . . . . . . . . |x.x.x.x.x.x.x.x.x.x| 
+ *                               
+ *
+ * RETURNS: Number of character that need to be filled into the gap.
+ *                                                                           */
+{
+    QUEX_TYPE_CHARACTER*  BeginP      = &me->_memory._front[1];
+    const ptrdiff_t       ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
+    ptrdiff_t             move_size;
+
+    if( move_distance > ContentSize ) {
+        return ContentSize;
+    }
+
+    move_size = ContentSize - move_distance;
+
+    if( move_distance && move_size ) {
+        me->on_content_change(BeginP, me->input.end_p);
+
+        __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
+                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
+    }
+    return (ptrdiff_t)move_distance;
 }
 
 QUEX_INLINE void
@@ -799,31 +825,6 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
     else {
         /* Ensure, that the buffer limit code is restored.                   */
         *(me->input.end_p) = (QUEX_TYPE_CHARACTER)QUEX_SETTING_BUFFER_LIMIT_CODE;
-    }
-}
-
-QUEX_INLINE ptrdiff_t
-QUEX_NAME(Buffer_move_backward)(QUEX_NAME(Buffer)* me, intmax_t move_distance)
-/* Moves content so that previous content may be filled into the buffer.
- *
- * RETURNS: Number of character that need to be filled into the gap.
- *                                                                           */
-{
-    QUEX_TYPE_CHARACTER*  BeginP      = &me->_memory._front[1];
-    const ptrdiff_t       ContentSize = (ptrdiff_t)QUEX_NAME(Buffer_content_size)(me);
-    ptrdiff_t             move_size;
-
-    if( move_distance < ContentSize ) {
-        move_size = QUEX_MIN(me->input.end_p - BeginP, 
-                             ContentSize - (ptrdiff_t)move_distance);
-        move_size = QUEX_MAX(0, move_size);
-
-        __QUEX_STD_memmove((void*)&BeginP[move_distance], BeginP, 
-                           (size_t)move_size * sizeof(QUEX_TYPE_CHARACTER));
-        return (ptrdiff_t)move_distance;
-    }
-    else {
-        return ContentSize;
     }
 }
 

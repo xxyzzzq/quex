@@ -157,8 +157,6 @@ QUEX_INLINE QUEX_TYPE_STREAM_POSITION
                        QUEX_NAME(Buffer_input_character_index_end)(QUEX_NAME(Buffer)* me);
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION  
                        QUEX_NAME(Buffer_input_character_index_begin)(QUEX_NAME(Buffer)* me);
-QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_front)(QUEX_NAME(Buffer)*);
-QUEX_INLINE QUEX_TYPE_CHARACTER*  QUEX_NAME(Buffer_content_back)(QUEX_NAME(Buffer)*);
 QUEX_INLINE size_t                QUEX_NAME(Buffer_content_size)(QUEX_NAME(Buffer)*);
 
 /* Tell & seek '_read_p' to/from character index. */

@@ -1,16 +1,15 @@
 Installation
 ============
 
-On sourceforge there are a variety of Quex packages supporting
-the major operating systems and distributions at the time of this
-writing as they are: Microsoft Windows (tm), Mac OS (tm), and Linux
-(.deb and .rpm based distributions).
+On sourceforge there are a variety of Quex packages supporting the major
+operating systems and distributions at the time of this writing as they are:
+Microsoft Windows (tm), Mac OS (tm), and Linux (.deb and .rpm based
+distributions).
 
-This section discusses the major 'pillars' of an installation. It is
-explains how to install quex from one of the source packages on
-an arbitrary platform. At the same time, it may provide first hints
-for troubleshooting. The pillars of a Quex installation are the 
-following:
+This section discusses the major 'pillars' of an installation. It is explains
+how to install quex from one of the source packages on an arbitrary platform.
+At the same time, it may provide first hints for troubleshooting. The pillars
+of a Quex installation are the following:
 
 .. describe:: Python
 
@@ -92,6 +91,11 @@ following:
    On Windows, the file ``quex.bat`` should be copied into ``C:\WINDOWS\SYSTEM``
    where most probably executable files can be found.
 
+.. describe:: Quex Man-Page
+
+   Along with the distribution comes q file ``quex.1`` which is a man page.
+   I should be copied into the ``$MANPATH``.
+
 This is all for the installation of Quex. Your should now be able 
 to type on the command line::
 
@@ -146,82 +150,79 @@ feature of quex:
 
 .. data:: demo/000
 
-          shows how to setup a lexical analyzer very quickly.
+          A very simple a lexical analyzer to get started.
 
 .. data:: demo/001
 
-          demonstrates basics on modes and mode transitions.
+          An example that shows basics on modes and mode transitions.
 
 .. data:: demo/002
 
-          contains a sample application for an indentation based language.
+          An indentation based lexical analyzer reyling on implicitly generated
+          tokens ``INDENT``, ``DEDENT``, and ``NODENT``. 
 
 .. data:: demo/003
 
-          implements a lexical analyzer handling UTF8 encoding. Quex creates an
-          engine that relies on *converters* ICU and IConv. The converters
-          are used to convert the incoming data stream to unicode. The internal
-          engine still runs on plain unicode code points.
-
-          In contrast, directory demo/011 an example is shown how quex creates
-          analyzer engines that do not need converters. The engine itself 
-          understands the codec and triggers on its code elements.
+          Analyzers running on several codecs using converters, either ICU or
+          IConv. This is in contrast to the example in ``demo/011`` where the
+          internal engine directly runs on the desired codec.
 
 .. data:: demo/004
 
-          contains a setup to generate a lexical analyser for the 'C' language.
-          Users are encouraged to submit other exciting examples of their language.
+          A lexical analyser for the 'C' language.  
 
 .. data:: demo/005
 
-          explains how to do lexical analysis with files that include other files.
+          An application that demonstrates how the inclusion of files and the 
+          return from included files is handled by quex's feature of include
+          stacks.
 
 .. data:: demo/006
 
-          contains an example that treats *pseudo ambiguous post contexts* (or,
+          An example that treats *pseudo ambiguous post contexts* (or,
           'dangerous trailing contexts) which are difficult to deal with by
           means of traditional lexical analyser generators.
 
 .. data:: demo/007
 
-          examples showing pattern priorization between base and derived modes as well as
-          applications of ``PRIORITY-MARK`` and ``DELETION``.
+          Lexical analyzer specifications showing pattern priorization between
+          base and derived modes as well as applications of ``PRIORITY-MARK``
+          and ``DELETION``.
 
 .. data:: demo/008
 
-          shows how a quex generated lexer is linked to a bison generated parser. 
+          A quex generated lexer is linked to a bison generated parser. 
 
 .. data:: demo/009
 
-          shows how analyzers can be implemented for ``char`` and ``wchar_t`` string streams.
+          Analyzers receiving directly from sockets, standard input (pipes), and 
+          a command line.
 
 .. data:: demo/010
 
-          shows how to access the analyzer's memory buffer directly. It also
-          contains an example, ``stdinlexer.cpp``, that shows how to parse the
-          standard input (i.e. the ``cin`` or ``stdin`` stream).
+          Examples of this directory treat manual buffer filling in contrast to
+          the default automatic filling.
 
 .. data:: demo/011
 
-          provides an example of how to adapt the character encoding of the
-          lexical analyzer engine without using converters. Example codecs are 
-          iso8859-7 and utf8.
-
+          Examples where the internal engine runs on a character encoding different
+          from unicode. This is in contrast to using a converter. 
+          
 .. data:: demo/012
 
-          gives an example of how to use multiple lexical analyzers in one single
-          application. 
+          Multiple lexical analysers linked into a single application. 
 
 .. data:: demo/012b
 
-          deals with multiple lexical analyzers sharing the same token type.
+          Multiple lexical analyzers linked into a single application while 
+          sharing the same token type.
 
 .. data:: benchmark
 
-          contains a benchmark suite to measure the performance of the lexical
-          analyzer. As an example a benchmark for a C-lexer is implemented. The
-          suite can build lexical analyzers based on quex, but also as a
-          comparison the same analyzers generated by flex and re2c.
+          Benchmark suite to measure the performance of the lexical analyzer.
+          As an example a benchmark for a C-lexer is implemented. The suite can
+          build lexical analyzers based on quex, but also as a comparison the
+          same analyzers generated by flex and re2c.
 
 The author of this document suggests that the user looks at these sample
 applications first before continuing with the remainder of this text.  With the
