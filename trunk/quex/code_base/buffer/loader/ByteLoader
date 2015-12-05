@@ -59,8 +59,8 @@ typedef struct QUEX_NAME(ByteLoader_tag) {
     QUEX_TYPE_STREAM_POSITION initial_position;
 
     /* It is crucial for 'seeking' in the stream whether the stream is in 
-     * binary mode or not. If not, then character/byte number is not const. */
-    bool                      binary_mode_f;      /* In doubt, say 'false'. */
+     * binary mode or not. If not, then character/byte number is not const.  */
+    bool                      binary_mode_f;      /* In doubt, say 'false'.  */
 
     struct {
         QUEX_TYPE_STREAM_POSITION (*tell)(struct QUEX_NAME(ByteLoader_tag)*);

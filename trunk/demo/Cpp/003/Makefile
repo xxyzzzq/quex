@@ -37,7 +37,7 @@ COMPILER = g++ -ggdb -W -pedantic
 
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH)                             \
-	 -Wall -Werror -Wconversion                              \
+	 -Wall -Werror -Wconversion                      \
 	 $(CCFLAG_ASSERTS)                               \
 	 -DENCODING_NAME='"UTF8"'                        \
 	 -DPRINT_TOKEN         
@@ -50,11 +50,12 @@ LD = $(COMPILER)
 # (*) Determining the Converter Lib (IConv or ICU) ____________________________
 #
 # Some compiler distributions have iconv in a separate lib:
+#    -- Intel's icpc (tm)
 #    -- MS's cl (tm)
 #    -- Digital Mars dmc (tm)
 #    -- g++ on apple (tm)
 ifneq (,$(or $(findstring apple, $(shell $(COMPILER) --version)), \
-             $(findstring $(COMPILER),cl dmc)))
+             $(findstring $(COMPILER),icpc cl dmc)))
 	LIBICONV=-liconv
 else
     LIBICONV=#
@@ -93,10 +94,10 @@ lexer-with-bom.o: lexer-with-bom.cpp  EasyLexer.cpp
 	$(CC) -E $< -o $@ 
 
 EasyLexer.cpp: definitions.qx end_of_file.qx program.qx 
-	quex -i                 definitions.qx end_of_file.qx program.qx \
-	     -o           EasyLexer  \
-		 --token-id-offset     0x1000     \
-	     -b $(BYTES_PER_CHARACTER)     \
+	quex -i                definitions.qx end_of_file.qx program.qx \
+	     -o                EasyLexer              \
+		 --token-id-offset 0x1000                 \
+	     -b                $(BYTES_PER_CHARACTER) \
 		 $(QUEX_FLAG)
 
 # (*) HELPERS __________________________________________________________________

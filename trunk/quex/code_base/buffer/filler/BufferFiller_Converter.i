@@ -194,7 +194,9 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
                                                   bool*                     end_of_stream_f)
 /* Loads content into the raw buffer, convert it and write it to the engine's
  * buffer. The region where to write into the engine's buffer expands from
- * 'RegionBeginP' to 'N' characters after it.                                */
+ * 'RegionBeginP' to 'N' characters after it.                                
+ *
+ * RETURNS: Number of loaded characters into the given region.               */
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
@@ -252,11 +254,6 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
 
     me->converter->virginity_f = false;
 
-    /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
-     * last byte that was converted.                                         */ 
-    converted_character_n                  = buffer_insertion_p - RegionBeginP;
-    me->base.character_index_next_to_fill += converted_character_n;
-
     if( (! drain_filled_f) && raw_end_of_stream_f ) {
        if( raw->next_to_convert_p == raw->fill_end_p ) {
            *end_of_stream_f = true;
@@ -270,6 +267,10 @@ QUEX_NAME(BufferFiller_Converter_load_characters)(QUEX_NAME(BufferFiller)*  alte
      *      Buffer MUST be left as is, in case of ERROR!                     */
     __quex_assert(BufferRegionEnd >= buffer_insertion_p);
 
+    /* 'buffer_insertion_p' was updated by 'convert' and points behind the 
+     * last byte that was converted.                                         */ 
+    converted_character_n = buffer_insertion_p - RegionBeginP;
+
     return (size_t)converted_character_n;
 }
 
@@ -281,26 +282,37 @@ QUEX_NAME(BufferFiller_Converter_fill_prepare)(QUEX_NAME(BufferFiller)*   alter_
                                                const void**               end_p)
 {
     QUEX_NAME(BufferFiller_Converter)* me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
-    QUEX_NAME(RawBuffer_move_away_passed_content)(&me->raw_buffer);
+    QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
     (void)RegionBeginP; (void)RegionEndP;
 
-    *begin_p = (void*)me->raw_buffer.fill_end_p; 
-    *end_p   = (void*)me->raw_buffer.memory_end;
+    QUEX_NAME(RawBuffer_move_away_passed_content)(&me->raw_buffer);
+
+    *begin_p = (void*)raw->fill_end_p; 
+    *end_p   = (void*)raw->memory_end;
 }
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
                                               const QUEX_TYPE_CHARACTER* RegionEndP,
-                                              const void*                FilledEndP)
+                                              const void*                FilledEndP_raw)
 /* Converts what has been filled into the 'raw_buffer' until 'FilledEndP
  * and stores it into the buffer.                                            */
 {
-    QUEX_NAME(BufferFiller_Converter)*  me = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
+    QUEX_NAME(BufferFiller_Converter)*  me  = (QUEX_NAME(BufferFiller_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
     QUEX_TYPE_CHARACTER*                insertion_p = RegionBeginP;
+    uint8_t*                            FilledEndP = (uint8_t*)FilledEndP_raw;
 
-    raw->fill_end_p = (uint8_t*)FilledEndP;   
+    __quex_assert(FilledEndP >= raw->next_to_convert_p);
+    __quex_assert(FilledEndP <= raw->memory_end);
+
+    /* If the following assert triggers, it means that the end pointer WRONGLY 
+     * points BEHIND the terminating zero. It should actually point to it.   */
+    __quex_assert(   FilledEndP     <= raw->next_to_convert_p 
+                  || FilledEndP[-1] != QUEX_SETTING_BUFFER_LIMIT_CODE);
+
+    raw->fill_end_p = FilledEndP;   
     QUEX_ASSERT_RAW_BUFFER(raw);
 
     me->converter->convert(me->converter, 

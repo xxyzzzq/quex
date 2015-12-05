@@ -54,11 +54,10 @@ int
 main(int argc, char** argv) 
 {        
     using namespace quex;
+    using namespace std;
     Token*                   token;
     LEXER_CLASS*             qlex;   
-    size_t                   size = 4096;
     char                     buffer[4096];
-    char*                    p;
     ssize_t                  received_n;
     QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new_DEFAULT)(NULL, CODEC);
 
@@ -66,13 +65,26 @@ main(int argc, char** argv)
 
     while( 1 + 1 == 2 ) {
         printf("type here: ");
-        p    = &buffer[0];
-        size = 4096;
-        if( (received_n = getline(&p, &size, stdin)) == -1 ) break;
 
-        printf("    read: %i [byte]\n", received_n);
+		cin.getline((std::basic_istream<char>::char_type*)&buffer[0], 4096);
+        received_n = cin.gcount();
+
+        /* Last received byte is the terminating zero! => -1 !               
+         *                                                                   */
+        printf("    read: %i [byte]\n", received_n - 1);
+
         qlex->reset();
-        qlex->buffer.fill(&qlex->buffer, &p[0], &p[received_n]);
+
+        /* NOTE: If the character index of the pipe needs to be traced properly
+         * the 'newline' character needs to be inserted manually, because, it
+         * is cut out of the stream by 'getline()'. Trick: replace the
+         * terminating zero (which is not needed by the engine) by the line's
+         * newline, i.e:                                
+         *
+         *            buffer[received_n-1] = '\n';      
+         *            qlex->buffer.fill( ... &buffer[received_n]);                 
+         *                                                                   */
+        qlex->buffer.fill(&qlex->buffer, &buffer[0], &buffer[received_n - 1]);
 
         token = qlex->token;
         do {

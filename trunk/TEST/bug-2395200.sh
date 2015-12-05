@@ -2,7 +2,7 @@
 bug=2395200
 if [[ $1 == "--hwut-info" ]]; then
     echo "nobody: $bug assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)"
-    echo "CHOICES: error-lexer, lexer;"
+    echo "CHOICES: lexer;"
     exit
 fi
 
