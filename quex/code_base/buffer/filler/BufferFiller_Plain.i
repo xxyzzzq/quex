@@ -114,9 +114,6 @@ QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_eg
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
  * variables. 
  *
- * AFFECTS: 'filler->base.character_index_next_to_fill'. 
- *          => may be used to seek through non-linear input streams.
- *
  * RETURNS: Number of loaded characters into the given region.               */
 { 
     QUEX_NAME(BufferFiller_Plain)* me = (QUEX_NAME(BufferFiller_Plain)*)alter_ego;
@@ -139,8 +136,6 @@ QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_eg
     }
     loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
 
-    me->base.character_index_next_to_fill += loaded_n;
-
     return loaded_n;
 }
 
@@ -162,17 +157,22 @@ QUEX_INLINE ptrdiff_t
 QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
                                           QUEX_TYPE_CHARACTER*       insertion_p,
                                           const QUEX_TYPE_CHARACTER* BufferEnd,
-                                          const void*                FilledEndP)
+                                          const void*                FilledEndP_raw)
 {
-    const QUEX_TYPE_CHARACTER*  EndP = (const QUEX_TYPE_CHARACTER*)FilledEndP;
+    const QUEX_TYPE_CHARACTER*  FilledEndP = (const QUEX_TYPE_CHARACTER*)FilledEndP_raw;
     (void)alter_ego;
     (void)BufferEnd;
-    __quex_assert(EndP >= insertion_p);
-    __quex_assert(EndP <= BufferEnd);
+
+    __quex_assert(FilledEndP >= insertion_p);
+    __quex_assert(FilledEndP <= BufferEnd);
+    /* If the following assert triggers, it means that the end pointer WRONGLY 
+     * points BEHIND the terminating zero. It should actually point to it.   */
+    __quex_assert(   FilledEndP     <= insertion_p 
+                  || FilledEndP[-1] != QUEX_SETTING_BUFFER_LIMIT_CODE);
 
     /* Copying of content is done, already, by caller.                       */
     /* Inserted number of characters = End - Begin.                          */
-    return (ptrdiff_t)(EndP - insertion_p);
+    return (ptrdiff_t)(FilledEndP - insertion_p);
 }
 
 QUEX_NAMESPACE_MAIN_CLOSE

@@ -185,11 +185,7 @@ QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*  me,
     loaded_n = (ptrdiff_t)me->derived.load_characters(me, LoadP, (size_t)LoadN,
                                                       end_of_stream_f);
     __quex_assert(loaded_n <= LoadN);
-
-    if(    me->character_index_next_to_fill - StartCharacterIndex 
-        != (QUEX_TYPE_STREAM_POSITION)loaded_n ) {
-        QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM); 
-    }
+    me->character_index_next_to_fill += loaded_n;
 
     /* (3) Optionally reverse the byte order.                                    
      *                                                                       */

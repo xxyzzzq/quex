@@ -1,0 +1,30 @@
+define
+{
+	P_EOS         [:space:]*\n+
+	P_LETTER      [:intersection(union(\G{Ll}, \G{Lu}, \G{Lt}, \G{Lm}, \G{Lo}, \G{Pc}), [\X0-\XFFFF]):]
+	P_ALNUM       {P_LETTER}|[:digit:]|\X00B2|\X00B3|\X00B9
+	P_WORD        {P_LETTER}{P_ALNUM}*([.\-]{P_ALNUM}+)*
+}
+
+token
+{
+	EOS;
+	WORD;
+	NONE;
+}
+
+mode COMMON:
+{
+	<<EOF>>        => QUEX_TKN_TERMINATION;
+	on_failure     {
+
+	}
+	{P_EOS}        {
+					   Lexeme;
+					   self_send2(QUEX_TKN_EOS, LexemeEnd - 1, LexemeEnd);
+				   }
+	{P_WORD}       => QUEX_TKN_WORD(Lexeme);
+
+	.              {}
+}
+
