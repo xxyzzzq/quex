@@ -56,8 +56,8 @@ main(int argc, char** argv)
         assert(filler->input_character_tell(filler) == i);
 
         loaded_n = filler->derived.load_characters(filler, 
-                                                        (QUEX_TYPE_CHARACTER*)memory, 
-                                                        MemorySize);
+                                                   (QUEX_TYPE_CHARACTER*)memory, 
+                                                   MemorySize);
 
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */
