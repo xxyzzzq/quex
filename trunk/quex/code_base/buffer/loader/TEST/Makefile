@@ -1,5 +1,6 @@
 TESTS := test-FILE.exe \
 	     test-POSIX.exe \
+	     test-Memory.exe \
 	     test-fstream.exe \
 	     test-stringstream.exe \
 		 segmented-input.exe

@@ -307,8 +307,8 @@ QUEX_NAME(BufferFiller_Converter_fill_finish)(QUEX_NAME(BufferFiller)*   alter_e
     __quex_assert(FilledEndP >= raw->next_to_convert_p);
     __quex_assert(FilledEndP <= raw->memory_end);
 
-    /* If the following assert triggers, it means that the end pointer WRONGLY 
-     * points BEHIND the terminating zero. It should actually point to it.   */
+    /* Assert triggers => FilledEndP points WRONGLY BEHIND terminating zero. 
+     * (FilledEndP, may point to it, at max.)                                */
     __quex_assert(   FilledEndP     <= raw->next_to_convert_p 
                   || FilledEndP[-1] != QUEX_SETTING_BUFFER_LIMIT_CODE);
 
