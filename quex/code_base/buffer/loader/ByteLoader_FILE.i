@@ -76,29 +76,35 @@ QUEX_NAME(ByteLoader_FILE_delete_self)(QUEX_NAME(ByteLoader)* alter_ego)
 }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION    
-QUEX_NAME(ByteLoader_FILE_tell)(QUEX_NAME(ByteLoader)* me)            
-{ return (QUEX_TYPE_STREAM_POSITION)ftell(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle); }
+QUEX_NAME(ByteLoader_FILE_tell)(QUEX_NAME(ByteLoader)* alter_ego)            
+{ 
+    QUEX_NAME(ByteLoader_FILE)* me = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego);
+
+    return (QUEX_TYPE_STREAM_POSITION)ftell(me->input_handle); 
+}
 
 QUEX_INLINE void    
-QUEX_NAME(ByteLoader_FILE_seek)(QUEX_NAME(ByteLoader)* me, QUEX_TYPE_STREAM_POSITION Pos) 
+QUEX_NAME(ByteLoader_FILE_seek)(QUEX_NAME(ByteLoader)* alter_ego, QUEX_TYPE_STREAM_POSITION Pos) 
 { 
-    fseek(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle, (long)Pos, SEEK_SET); 
+    QUEX_NAME(ByteLoader_FILE)* me = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego);
+    fseek(me->input_handle, (long)Pos, SEEK_SET); 
 }
 
 QUEX_INLINE size_t  
-QUEX_NAME(ByteLoader_FILE_load)(QUEX_NAME(ByteLoader)* me, 
+QUEX_NAME(ByteLoader_FILE_load)(QUEX_NAME(ByteLoader)* alter_ego, 
                                 void*                  buffer, 
                                 const size_t           ByteN, 
                                 bool*                  end_of_stream_f) 
 { 
-    size_t loaded_byte_n = fread(buffer, 1, ByteN, ((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle); 
+    QUEX_NAME(ByteLoader_FILE)* me = (QUEX_NAME(ByteLoader_FILE)*)(alter_ego);
+    size_t                      loaded_byte_n = fread(buffer, 1, ByteN, me->input_handle); 
 #   if 0
     int    i;
     printf("#load @%i:         [", (int)ftell(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle));
     for(i=0; i<loaded_byte_n; ++i) printf("%02X.", ((uint8_t*)buffer)[i]);
     printf("]\n");
 #   endif
-    *end_of_stream_f = feof(((QUEX_NAME(ByteLoader_FILE)*)me)->input_handle) ? true : false;
+    *end_of_stream_f = feof(me->input_handle) ? true : false;
     return loaded_byte_n;
 }
 

@@ -125,7 +125,6 @@ QUEX_NAME(BufferFiller_Plain_load_characters)(QUEX_NAME(BufferFiller)*  alter_eg
     __quex_assert(me->base.byte_loader); 
     /* NOT: QUEX_IF_ASSERTS_poison(RegionBeginP, &RegionBeginP[N]);
      * The buffer must remain intact, in case that not all is loaded.        */
-
     loaded_byte_n = me->base.byte_loader->load(me->base.byte_loader, 
                                                RegionBeginP, 
                                                N * sizeof(QUEX_TYPE_CHARACTER),
@@ -165,8 +164,8 @@ QUEX_NAME(BufferFiller_Plain_fill_finish)(QUEX_NAME(BufferFiller)*   alter_ego,
 
     __quex_assert(FilledEndP >= insertion_p);
     __quex_assert(FilledEndP <= BufferEnd);
-    /* If the following assert triggers, it means that the end pointer WRONGLY 
-     * points BEHIND the terminating zero. It should actually point to it.   */
+    /* Assert triggers => FilledEndP points WRONGLY BEHIND terminating zero. 
+     * (FilledEndP, may point to it, at max.)                                */
     __quex_assert(   FilledEndP     <= insertion_p 
                   || FilledEndP[-1] != QUEX_SETTING_BUFFER_LIMIT_CODE);
 

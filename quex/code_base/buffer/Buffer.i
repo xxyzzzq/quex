@@ -497,7 +497,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
  * in the input stream. Maintains '_read_p', '_lexeme_start_p' inside the
  * buffer (if possible also fallback region). The 'input.end_p' pointer and
  * 'input.end_character_index' are adapted according to the newly loaded
- * content.
+ * content, i.e. the point to exactly the same character as before the load.
  *
  * BEHAVIOR: BLOCKING wait for incoming stream content. 
  *           No return without content--except at end of stream.
