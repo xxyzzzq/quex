@@ -1,4 +1,4 @@
-/* PURPOSE: Testin Buffer_load_forward()
+/* PURPOSE: Testin Buffer_load_backward()
  *
  * INPUTS:
  *    .input.end_p     = [Front, Inside, Back]
@@ -38,12 +38,11 @@
 */
 
 #include "commonly_pasted.c"
-#include <forward-gen.h>
+#include <backward-gen.h>
 
-
-static ptrdiff_t            test_load_forward(QUEX_NAME(Buffer)* buffer);
-static QUEX_TYPE_CHARACTER* random_between(QUEX_TYPE_CHARACTER* A, QUEX_TYPE_CHARACTER* B);
-static ptrdiff_t            walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta);
+static ptrdiff_t            test_load_backward(QUEX_NAME(Buffer)* buffer);
+static ptrdiff_t            walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta);
+static void                 load_forward_until_eos(QUEX_NAME(Buffer)* me);
 
 int
 main(int argc, char**argv)
@@ -52,7 +51,7 @@ main(int argc, char**argv)
     int    count = 0;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        printf("Buffer_load_forward: (BPC=%i, FB=%i);\n", 
+        printf("Buffer_load_backward: (BPC=%i, FB=%i);\n", 
                sizeof(QUEX_TYPE_CHARACTER),
                (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
@@ -60,14 +59,14 @@ main(int argc, char**argv)
 
     G_init(&it);
     while( G_next(&it) ) {
-        count += walk_forward(it.read_p_delta, it.lexeme_start_p_delta);
+        count += walk_backward(it.read_p_delta, it.lexeme_start_p_delta);
     }
     printf("<terminated %i>\n", (int)count);
     return 0;
 }
 
 static ptrdiff_t
-walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
+walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
 /* Walk through file by incrementing the 'read_p' by 'ReadPDelta' until the 
  * end of file is reached. The 'lexeme_start_p' remains in a constant distance 
  * to 'read_p' given by 'LexemeStartPDelta'.                                 */
@@ -81,7 +80,7 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
 
     QUEX_NAME(ByteLoader_Memory_construct)(&loader, 
                                            (uint8_t*)&PseudoFile[0], 
-                                           (const uint8_t*)&PseudoFile[PSEUDO_FILE_SIZE]);
+                                           (const uint8_t*)&PseudoFile[sizeof(PseudoFile)/sizeof(PseudoFile[0])]);
     filler = QUEX_NAME(BufferFiller_new)(&loader.base, 
                                          (QUEX_NAME(Converter)*)0, 0);
 
@@ -89,23 +88,42 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
                                 &memory[0], MemorySize,
                                 (QUEX_TYPE_CHARACTER*)0, E_Ownership_EXTERNAL); 
 
-    for(buffer._read_p = &buffer._memory._front[1]; 
-        buffer._read_p < buffer._memory._back; 
-        buffer._read_p += ReadPDelta) {
+    load_forward_until_eos(&buffer);
+
+    for(buffer._read_p =  &buffer.input.end_p[-1]; 
+        buffer._read_p >= &buffer._memory._front[1];
+        buffer._read_p -= ReadPDelta) {
         buffer._lexeme_start_p = buffer._read_p + LexemeStartPDelta;  
-        if( buffer._lexeme_start_p >= buffer._memory._back ) {
-            buffer._lexeme_start_p = &buffer._memory._back[-1];
+        if( buffer._lexeme_start_p >= &buffer._memory._back[-1] ) {
+            buffer._lexeme_start_p =  &buffer._memory._back[-2];
         }
         if( buffer._lexeme_start_p <= buffer._memory._front ) {
             buffer._lexeme_start_p = &buffer._memory._front[1];
         }
-        count += test_load_forward(&buffer);
+        count += test_load_backward(&buffer);
     }
     return count;
 }
 
+static void
+load_forward_until_eos(QUEX_NAME(Buffer)* me)
+{
+    int  count = 0;
+
+    while( me->input.character_index_end_of_stream == -1 ) {
+        me->_read_p         = me->input.end_p;
+        me->_lexeme_start_p = me->input.end_p;
+        QUEX_NAME(Buffer_load_forward)(me, NULL, 0);
+
+        (void)verify_content(me);
+        ++count;
+        hwut_verify(count < 100);
+    }
+    hwut_verify(me->input.character_index_end_of_stream == sizeof(PseudoFile)/sizeof(PseudoFile[0])); 
+}
+
 static ptrdiff_t
-test_load_forward(QUEX_NAME(Buffer)* buffer) 
+test_load_backward(QUEX_NAME(Buffer)* buffer) 
 {
     struct {
         QUEX_TYPE_CHARACTER*      read_p;
@@ -118,29 +136,26 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
     } before;
     bool                 verdict_f;
     ptrdiff_t            delta;
-    QUEX_TYPE_CHARACTER* PoisonP = (QUEX_TYPE_CHARACTER*)0x5A5A5A5A; 
-    QUEX_TYPE_CHARACTER* NullP   = (QUEX_TYPE_CHARACTER*)0; 
-    size_t               PositionRegisterN = 3;
-    QUEX_TYPE_CHARACTER* (position_register[5]);
     ptrdiff_t            count = 0;
 
+#   if 0
     position_register[0]       = PoisonP; 
     before.position_register_1 = position_register[1] = random_between(buffer->_lexeme_start_p, buffer->_read_p);
     position_register[2]       = NullP;   
     before.position_register_3 = position_register[3] = random_between(buffer->_lexeme_start_p, buffer->_read_p);
     position_register[4]       = PoisonP; 
+#   endif
 
-    before.read_p         = buffer->_read_p;
-    before.read           = *buffer->_read_p;
-    before.lexeme_start_p = buffer->_lexeme_start_p;
-    before.lexeme_start   = *buffer->_lexeme_start_p;
-
+    before.read_p                = buffer->_read_p;
+    before.read                  = *buffer->_read_p;
+    before.lexeme_start_p        = buffer->_lexeme_start_p;
+    before.lexeme_start          = *buffer->_lexeme_start_p;
     before.character_index_begin = buffer->input.character_index_begin;
 
-    /* User registers [1] until including [3], borders are poisoned. */
-    verdict_f = QUEX_NAME(Buffer_load_forward)(buffer, &position_register[1], 
-                                               PositionRegisterN);
-    delta = before.read_p - buffer->_read_p;
+    verdict_f = QUEX_NAME(Buffer_load_backward)(buffer); 
+    /* &position_register[1], PositionRegisterN); */
+
+    delta = buffer->_read_p - before.read_p;
     if( delta ) { 
         hwut_verify(delta > 0);
         hwut_verify(delta <= buffer->_memory._back - &buffer->_memory._front[1]);
@@ -152,15 +167,17 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
         hwut_verify(! verdict_f);  
     }
 
-    hwut_verify(buffer->input.character_index_begin >= before.character_index_begin);
-    hwut_verify(buffer->input.character_index_begin - before.character_index_begin == delta);
+    hwut_verify(before.character_index_begin >= buffer->input.character_index_begin);
+    hwut_verify(before.character_index_begin -  buffer->input.character_index_begin == delta);
 
-    hwut_verify(before.lexeme_start_p      -  buffer->_lexeme_start_p   == delta);
+    hwut_verify(buffer->_lexeme_start_p - before.lexeme_start_p == delta);
+#   if 0
     hwut_verify(position_register[0]       == PoisonP);
     hwut_verify(before.position_register_1 -  position_register[1] == delta);
     hwut_verify(position_register[2]       == NullP);
     hwut_verify(before.position_register_3 -  position_register[3] == delta);
     hwut_verify(position_register[4]       == PoisonP);
+#   endif
 
     hwut_verify(*buffer->_read_p         == before.read);
     hwut_verify(*buffer->_lexeme_start_p == before.lexeme_start);
@@ -169,25 +186,8 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
      * variable 'pseudo_file' it can be previewed what the content is 
      * supposed to be.                                                   */
     count += verify_content(buffer);
-
-    hwut_verify(count == buffer->input.end_p - &buffer->_memory._front[1]);
     hwut_verify(buffer->input.end_p[0] == QUEX_SETTING_BUFFER_LIMIT_CODE);
 
     return count + 1;
-}
-
-static QUEX_TYPE_CHARACTER*
-random_between(QUEX_TYPE_CHARACTER* A, QUEX_TYPE_CHARACTER* B)
-{
-    QUEX_TYPE_CHARACTER* min   = A > B ? B : A;
-    QUEX_TYPE_CHARACTER* max   = A > B ? A : B;
-    ptrdiff_t            delta = max - min;
-    static uint32_t      seed  = 971;
-
-    if( ! delta ) return min;
-
-    seed = (seed << 16) % 537;
-        
-    return &min[seed % delta];
 }
 

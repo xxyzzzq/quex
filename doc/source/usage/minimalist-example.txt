@@ -66,9 +66,9 @@ program demonstrates the accesses to lexical analyser engine:
             do {
                 qlex.receive(&token_p);       // --token-policy queue
                 // token_id = qlex.receive(); // --token-policy single
-                std::cout << Token.type_id_name() << endl;
+                std::cout << token_p->type_id_name() << std::endl;
 
-            } while( Token.type_id() != QUEX_TKN_TERMINATION );
+            } while( token_p->type_id() != QUEX_TKN_TERMINATION );
 
             return 0;
         }
