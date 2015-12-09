@@ -664,7 +664,6 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
  *      to go farther back then the buffer's begin.                        */
 {
     QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
-    QUEX_TYPE_STREAM_POSITION  ci_load_begin;
     ptrdiff_t                  move_distance;
     ptrdiff_t                  loaded_n;
     bool                       end_of_stream_f = false;
@@ -688,10 +687,9 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
     }
 
     /* Load new content.                                                     */
-    ci_load_begin = me->input.character_index_begin - move_distance;
     loaded_n      = QUEX_NAME(BufferFiller_load)(me->filler, 
                                                  BeginP, move_distance,
-                                                 ci_load_begin, 
+                                                 me->input.character_index_begin, 
                                                  &end_of_stream_f);
 
     if( loaded_n  != move_distance ) {

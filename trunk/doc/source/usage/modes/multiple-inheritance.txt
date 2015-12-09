@@ -26,8 +26,8 @@ Resolution <fig-inheritance-resolution>`. The letters in the boxes name the
 modes and the numbers at their right bottom edges indicate the mode's
 precedence. The applied depth-first approach implies two things:
 
-#. Modes that mentioned first in the inheritance relationship have a higher
-   precedence.  In the above example ``B`` has a higher precedence then ``C``,
+#. Modes that are mentioned before in the inheritance relationship have a higher
+   precedence than those mentioned after.  In the above example ``B`` has a higher precedence then ``C``,
    because it is mentioned before it in the definition ``mode A : B, C { ...
    }``.
 
