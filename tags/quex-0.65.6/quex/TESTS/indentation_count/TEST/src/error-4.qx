@@ -1,0 +1,13 @@
+token { 
+    A;
+    B;
+}
+
+mode X :
+<indentation: 
+    \\|_  => suppressor; 
+    [ \t] => whitespace; 
+>
+{
+    _ => QUEX_TKN_A;
+}

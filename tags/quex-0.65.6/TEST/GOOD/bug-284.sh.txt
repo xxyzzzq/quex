@@ -1,0 +1,77 @@
+-----------------------------------------------------------------------
+--version
+
+Quex - Fast Universal Lexical Analyzer Generator
+Version 0.65.5-pre
+(C) Frank-Rene Schaefer
+ABSOLUTELY NO WARRANTY
+-----------------------------------------------------------------------
+
+--help
+
+
+USAGE: quex -i INPUT-FILE-LIST -o NAME [OPTION ...]"
+       quex [QUERY MODE] [OPTION ...]"
+
+Quex's main purpose is to generate lexical analyzer engines. However, it may
+also be used to query for results of regular expressions, in particular unicode
+properties. When the '-i' option is passed to quex it is assumed that there are
+input files for which a lexical analyzer engine with name 'NAME' needs to be
+generated. Output file names (source files, header files) are directly derived
+from 'NAME'. For full documentation of command line options, please, consult
+the documentation or the man page.
+
+QUERY MODE (selected options):
+
+  --help, -h            Brief help.
+  --version, -v         Version information.
+  --codec-info, 
+  --ci                  Display Unicode characters of codec. If no name is 
+                        specified, a list of all supported codecs is printed.
+  --codec-for-language, 
+  --cil                 Lists Unicode codecs supported human language. If no
+                        language is specified, all available languages are 
+                        listed.
+  --property, 
+  --pr                  Information on Unicode property or property alias. If no
+                        is not specified, brief information on all available 
+                        Unicode properties is listed.
+  --set-by-property, 
+  --sbpr                Display Unicode characters of property setting. Binary
+                        property require soley the property name.  Otherwise, 
+                        "name=value" is required.
+  --property-match, 
+  --prm                 Displays property settings that match the given wildcard 
+                        expression. Helps to find correct identifiers in Unicode 
+                        settings. For example, wildcard-expression "Name=*LATIN*" 
+                        gives all settings of property Name that contain the 
+                        string LATIN.
+  --set-by-expression, 
+  --sbe                 Show characters matching the given regular expression. 
+
+  --numeric, --num      Numeric representation of characters.
+  --intervals, --itv    Display larger regions of adjacent characters as 
+                        intervals.
+  --names               Display characters by their name.
+
+GENERATOR MODE (selected options):
+
+  -i                      The following '.qx' files are the basis for lexical 
+                          analyzer generation.
+  -o, 
+  --analyzer-class        Specifies the name of the generated analyzer class 
+                          and the file stem of the output files.
+  --template-compression, 
+  --path-compression      Use template/path compression to reduce code size.
+  --no-count-lines, 
+  --no-count-columns      Disable line/column counting.
+  --iconv, 
+  --icu                   Generates analyzer with a converter IConv or ICU.
+  --language, -l [C/C++]  Language for which code is to be generated.
+  --output-directory, 
+  --odir                  Output directory.
+  --source-package, --sp  Generate a source package independent of quex 
+                          installation.
+
+Please, report bugs at http://quex.sourceforge.net.
+

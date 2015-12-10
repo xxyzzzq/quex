@@ -1,0 +1,26 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+    
+00001 S1
+     == 'b' ==> 00002
+    
+00002 A(1,pre=1,R1)
+    
+
+#State 0
+    p-id           pre-id   as-i     ps-i     tnsp
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 1
+    p-id           pre-id   as-i     ps-i     tnsp
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+
+#State 2
+    p-id           pre-id   as-i     ps-i     tnsp
+    1              1        2        1        1        
+    MATCH_FAILURE  NONE     0        0        LEXEME_START_PLUS_ONE
+
+

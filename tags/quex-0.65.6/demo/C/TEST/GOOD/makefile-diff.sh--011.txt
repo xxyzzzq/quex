@@ -1,0 +1,34 @@
+< CC := g++ -ggdb -Wall -Werror -I$(QUEX_PATH) -I. $(CCFLAG_ASSERTS)
+---
+> CC := gcc -ggdb -Wall -Werror -I$(QUEX_PATH) -I. $(CCFLAG_ASSERTS)
+< iso8859-7-lexer: iso8859-7-lexer.cpp greek.qx
+---
+> iso8859-7-lexer: iso8859-7-lexer.c greek.qx
+> 		 --language        C         \
+< 	$(CC) -D__QUEX_TEST_OPTION_ISO8859_7 $< ISO8859_7_Lex.cpp -o $@
+---
+> 	$(CC) -D__QUEX_TEST_OPTION_ISO8859_7 $< ISO8859_7_Lex.c -o $@
+< utf8-lexer: utf8-lexer.cpp greek.qx
+---
+> utf8-lexer: utf8-lexer.c greek.qx
+> 		 --language        C    \
+< 	$(CC) $< UTF8Lex.cpp -o $@
+---
+> 	$(CC) $< UTF8Lex.c -o $@
+< utf16-lexer: utf16-lexer.cpp greek.qx
+---
+> utf16-lexer: utf16-lexer.c greek.qx
+> 		 --language        C         \
+< 	$(CC) -D__QUEX_TEST_OPTION_UTF16BE $< UTF16Lex.cpp -o $@
+---
+> 	$(CC) -D__QUEX_TEST_OPTION_UTF16BE $< UTF16Lex.c -o $@
+< utf16-lexer-other: utf16-lexer-other.cpp greek-other.qx
+---
+> utf16-lexer-other: utf16-lexer-other.c greek-other.qx
+> 		 --language        C               \
+< 	$(CC) -D__QUEX_TEST_OPTION_UTF16BE $< UTF16Lex.cpp -o $@
+---
+> 	$(CC) -D__QUEX_TEST_OPTION_UTF16BE $< UTF16Lex.c -o $@
+< %.E: %.cpp
+---
+> %.E: %.c

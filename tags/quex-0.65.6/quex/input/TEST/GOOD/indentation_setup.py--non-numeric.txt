@@ -1,0 +1,24 @@
+(1) |/* empty will do */>|
+
+Whitespace:
+    '\t', ' '
+Bad:
+    <none>
+Newline:
+    init-state = 0L
+    00000 
+         == '\n' ==> 00001
+         == '\r' ==> 00002
+        
+    00001 A
+        
+    00002 
+         == '\n' ==> 00003
+        
+    00003 A
+Suppressor:
+    <none>
+Comment:
+    <none>
+
+

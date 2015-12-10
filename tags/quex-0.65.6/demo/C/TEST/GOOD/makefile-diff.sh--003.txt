@@ -1,0 +1,23 @@
+< COMPILER = g++ -ggdb -W -pedantic 
+---
+> COMPILER = gcc -ggdb -W -pedantic
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp  EasyLexer.cpp
+---
+> example.o: ../example.c  EasyLexer.c
+< lexer-with-bom.o: lexer-with-bom.cpp  EasyLexer.cpp
+---
+> lexer-with-bom.o: lexer-with-bom.c EasyLexer.c
+< %.E: %.cpp    
+---
+> %.E: %.c    
+< EasyLexer.cpp: definitions.qx end_of_file.qx program.qx 
+---
+> EasyLexer.c: definitions.qx end_of_file.qx program.qx 
+> 		 --language        C                      \
+< 	rm -f lexer
+< 	rm -f bom-lexer
+---
+> 	rm -f lexer lexer-with-bom

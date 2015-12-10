@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [constructor{  ]
+
+OUT:
+
+string:1:error: End of file reached while parsing 'token_type' section.

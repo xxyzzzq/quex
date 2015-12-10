@@ -1,0 +1,7 @@
+Template State Construction
+--------------------------------------------
+*.py
+--not __init__.py
+--not templates_aux.py
+--not run_coverage.sh
+--------------------------------------------

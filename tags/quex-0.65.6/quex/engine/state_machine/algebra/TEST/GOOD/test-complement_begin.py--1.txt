@@ -1,0 +1,206 @@
+---------------------------
+Original = [a-n]
+Cutter   = [m-z]
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == ['a', 'l'] ==> 00001
+    
+00001 A
+    
+
+
+Original = [m-z]
+Cutter   = [a-n]
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == ['o', 'z'] ==> 00001
+    
+00001 A
+    
+
+---------------------------
+Original = "1234"|"ABC"
+Cutter   = "123"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 
+     == 'B' ==> 00002
+    
+00002 
+     == 'C' ==> 00003
+    
+00003 A
+    
+
+
+Original = "123"
+Cutter   = "1234"|"ABC"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 
+     == '2' ==> 00002
+    
+00002 
+     == '3' ==> 00003
+    
+00003 A
+    
+
+---------------------------
+Original = "12"|"A"
+Cutter   = "1"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 A
+    
+
+
+Original = "1"
+Cutter   = "12"|"A"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 A
+    
+
+---------------------------
+Original = 12
+Cutter   = 1
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = 1
+Cutter   = 12
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 A
+    
+
+---------------------------
+Original = "1BAC"|"1BBC"
+Cutter   = "1ABC"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 
+     == 'B' ==> 00002
+    
+00002 
+     == ['A', 'B'] ==> 00003
+    
+00003 
+     == 'C' ==> 00004
+    
+00004 A
+    
+
+
+Original = "1ABC"
+Cutter   = "1BAC"|"1BBC"
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 
+     == 'A' ==> 00002
+    
+00002 
+     == 'B' ==> 00003
+    
+00003 
+     == 'C' ==> 00004
+    
+00004 A
+    
+
+---------------------------
+Original = alb|albertikus
+Cutter   = albert
+
+superset(Original, result):           True
+intersection(Cutter, result) is None: True
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+     == 'a' ==> 00001
+    
+00001 
+     == 'l' ==> 00002
+    
+00002 
+     == 'b' ==> 00003
+    
+00003 A
+    
+
+
+Original = albert
+Cutter   = alb|albertikus
+
+union(Original, result) == Original:  True
+
+result =  init-state = 0L
+00000 
+    
+

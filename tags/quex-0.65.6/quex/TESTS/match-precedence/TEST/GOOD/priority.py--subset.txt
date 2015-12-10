@@ -1,0 +1,7 @@
+#---------------------------------------------------------------------------
+mode X { [A-Za-z]+ {a} 0 {b} A+        PRIORITY-MARK; }
+
+<string>:1:warning: PRIORITY mark does not have any effect.
+Mode: 'X'
+(0) [A-Za-z]+ {a}
+(1) 0 {b}

@@ -1,0 +1,163 @@
+## (2) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall -Werror   ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## IGNORED: ./tmp.c:34:1: warning: ‘quex_Token_DumpedTokenIdObject’ defined but not used [-Wunused-variable]
+(*) test string: 
+'abcdefg*/*hijklmnop*/*qrstuvw*/*xyz*/*ok'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 11;
+next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
+next letter: <q>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 11;
+next letter: <x>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 7;
+next letter: <o>
+end
+  ''
+
+(*) test string: 
+'*/*hijklmnop*/*qrstuvw*/*xyz*/*'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 4;
+next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
+next letter: <q>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 11;
+next letter: <x>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 7;
+end
+  ''
+
+(*) test string: 
+'a*/*h*/**/**/*'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 5;
+next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 5;
+next letter: <*>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 4;
+next letter: <*>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 4;
+end
+  ''
+
+(*) test string: 
+'abcdefgo*o*/o*/*hijklmnopo*o*/o*/*qrstuvwo*o*/o*/*xyzo*o*/o*/*ab'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 17;
+next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 19;
+next letter: <q>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 17;
+next letter: <x>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
+next letter: <a>
+end
+  ''
+
+(*) test string: 
+'o*o*/hijklmnopo*o*/qrstuvwo*o*/xyzo*o*/'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 10;
+next letter: <h>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 19;
+next letter: <q>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 17;
+next letter: <x>
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 13;
+end
+  ''
+
+(*) test string: 
+'ao*o*/o*/*h'##
+(*) result:
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 11;
+next letter: <h>
+end
+  ''
+

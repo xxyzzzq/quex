@@ -1,0 +1,73 @@
+// -*- C++ -*- vim: set syntax=cpp:
+token {
+    HELLO;
+    WORLD;
+    NUMBER;
+    BYE;
+    DOT;
+    SOMETHING;
+    IDENTIFIER;
+    WHITESPACE;
+    MESSAGE;
+    KILOBYTE;
+    STARTS;
+    SINGLE;
+    BIT;
+}
+
+define {
+    LATIN              [: intersection(\P{Script=Latin},    [\X0-\XFFFF]) :]
+    GREEK              [: intersection(\P{Script=Greek},    [\X0-\XFFFF]) :]
+    CYRILLIC           [: intersection(\P{Script=Cyrillic}, [\X0-\XFFFF]) :]
+
+    LATIN_ID_START     [: intersection({LATIN}, \P{ID_Start})    :]
+    LATIN_ID_CONTINUE  [: intersection({LATIN}, \P{ID_Continue}) :]
+    LATIN_IDENTIFIER   {LATIN_ID_START}{LATIN_ID_CONTINUE}*
+
+    GREEK_ID_START     [: intersection({GREEK}, \P{ID_Start})    :]
+    GREEK_ID_CONTINUE  [: intersection({GREEK}, \P{ID_Continue}) :]
+    GREEK_IDENTIFIER   {GREEK_ID_START}{GREEK_ID_CONTINUE}*
+
+    CYRILLIC_ID_START     [: intersection({CYRILLIC}, \P{ID_Start})    :]
+    CYRILLIC_ID_CONTINUE  [: intersection({CYRILLIC}, \P{ID_Continue}) :]
+    CYRILLIC_IDENTIFIER   {CYRILLIC_ID_START}{CYRILLIC_ID_CONTINUE}*
+
+    ID_START     (LATIN_ID_START|GREEK_ID_START|CYRILLIC_ID_START)
+    ID_CONTINUE  (LATIN_ID_CONTINUE|GREEK_ID_CONTINUE|CYRILLIC_ID_CONTINUE)
+}
+
+mode ONE_AND_ONLY :
+{
+    on_end_of_stream             => QUEX_TKN_TERMINATION(LexemeNull);
+    on_failure                   => QUEX_TKN_SOMETHING(Lexeme);
+    [ \t\n]                      => QUEX_TKN_WHITESPACE(Lexeme);
+    
+    "Ένα μήνυμα"|"message"|"Сообщение" => QUEX_TKN_MESSAGE(Lexeme);
+    "kilobyte"|"килобайт"              => QUEX_TKN_KILOBYTE(Lexeme);
+    "ξεκινά με"|"starts"|"начинается"  => QUEX_TKN_STARTS(Lexeme);
+    "ένα μόνο"|"single"|"одного"       => QUEX_TKN_SINGLE(Lexeme);
+    "bit"|"бита"                       => QUEX_TKN_BIT(Lexeme);
+
+    "bye"                              => QUEX_TKN_BYE(Lexeme);
+    {ID_START}{ID_CONTINUE}+           => QUEX_TKN_IDENTIFIER(Lexeme);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

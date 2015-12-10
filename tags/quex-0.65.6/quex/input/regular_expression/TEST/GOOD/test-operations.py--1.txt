@@ -1,0 +1,62 @@
+-------------------------------------------------------------------
+expression    = "\A{[a-z]+}"
+state machine
+init-state = 0L
+00000 
+     == [-oo, '`'], ['{', oo] ==> 00001
+    
+00001 A
+    
+
+-------------------------------------------------------------------
+expression    = "\C{[a-z]+}"
+state machine
+init-state = 0L
+00000 
+     == ['A', 'Z'], ['a', 'z'], 'ſ', 'K' ==> 00001
+    
+00001 A
+     == ['A', 'Z'], ['a', 'z'], 'ſ', 'K' ==> 00001
+    
+
+-------------------------------------------------------------------
+expression    = "\Diff{[a-z]+}"
+command line:1:error: Exactly 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Intersection{[a-z]+}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\NotBegin{[a-z]+}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\NotEnd{[a-z]+}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Not{[a-z]+}"
+state machine
+init-state = 0L
+00000 
+     == [-oo, '`'], ['{', oo] ==> 00001
+     == ['a', 'z'] ==> 00000
+    
+00001 A
+     == [-oo, oo] ==> 00001
+    
+
+-------------------------------------------------------------------
+expression    = "\R{[a-z]+}"
+state machine
+init-state = 0L
+00000 
+     == ['a', 'z'] ==> 00001
+    
+00001 A
+     == ['a', 'z'] ==> 00001
+    
+
+-------------------------------------------------------------------
+expression    = "\SymDiff{[a-z]+}"
+command line:1:error: Exactly 2 patterns required between '{' and '}'
+-------------------------------------------------------------------
+expression    = "\Union{[a-z]+}"
+command line:1:error: At minimum 2 patterns required between '{' and '}'

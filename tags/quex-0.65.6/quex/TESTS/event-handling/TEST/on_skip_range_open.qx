@@ -1,0 +1,9 @@
+token { X; }
+
+mode X :
+<skip_range: "/*" "*/">
+<skip:       [ \t\n] >
+{
+    . => TK_X;
+}
+

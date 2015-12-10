@@ -1,0 +1,28 @@
+(*) Lexical Analyser Patterns:
+            X/hello/ --> X/hello/
+             [a-z]*X --> [a-z]*X
+               hello --> hello
+               world --> world
+                 [ ] --> [ ]
+## (1) code generation
+## (*) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall -Werror  -DQUEX_OPTION_ASSERTS ./tmp.c -I./. -I/home/fschaef/prj/quex/trunk -o ./tmp.c.exe  ##
+
+## (*) running the test
+(*) test string: 
+'Xhello XhellohelloX Xhelloworld helloworld'
+(*) result:
+            [a-z]*X  'X'
+           X/hello/  'hello'
+                [ ]  ' '
+            [a-z]*X  'X'
+            [a-z]*X  'hellohelloX'
+                [ ]  ' '
+            [a-z]*X  'X'
+           X/hello/  'hello'
+              world  'world'
+                [ ]  ' '
+              hello  'hello'
+              world  'world'
+  ''
+

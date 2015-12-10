@@ -1,0 +1,3 @@
+PredecessorDb (for all 2 permutations):
+0 -> []
+1 -> [0, 1]

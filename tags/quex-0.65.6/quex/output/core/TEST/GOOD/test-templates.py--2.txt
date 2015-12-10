@@ -1,0 +1,85 @@
+--(Transition Targets)--------------------------------------------------
+
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_0[6])       = { QUEX_LABEL(1), QUEX_LABEL(2), QUEX_LABEL(1), QUEX_LABEL(2), QUEX_LABEL(2), QUEX_LABEL(2), };
+    const QUEX_TYPE_GOTO_LABEL     (template_1_target_1[6])       = { QUEX_LABEL(2), QUEX_LABEL(3), QUEX_LABEL(1), QUEX_LABEL(2), QUEX_LABEL(2), QUEX_LABEL(2), };
+
+
+--(Template Code)-------------------------------------------------------
+
+    __quex_assert_no_passage();
+_100:
+
+    __quex_debug_state(100);
+    template_state_key = 0;
+        goto _1;
+
+    __quex_assert_no_passage();
+_200:
+
+    __quex_debug_state(200);
+    template_state_key = 1;
+        goto _1;
+
+    __quex_assert_no_passage();
+_202:
+
+    __quex_debug_state(202);
+    template_state_key = 2;
+        goto _1;
+
+    __quex_assert_no_passage();
+_300:
+
+    __quex_debug_state(300);
+    template_state_key = 3;
+        goto _1;
+
+    __quex_assert_no_passage();
+_400:
+
+    __quex_debug_state(400);
+    template_state_key = 4;
+        goto _1;
+
+    __quex_assert_no_passage();
+_500:
+
+    __quex_debug_state(500);
+    template_state_key = 5;
+        goto _1;
+
+    __quex_assert_no_passage();
+_1:
+    __quex_debug_state(1);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+
+    if( input >= 0xA ) {
+        QUEX_GOTO_STATE(template_1_target_1[template_state_key]);
+
+    } else {
+        QUEX_GOTO_STATE(template_1_target_0[template_state_key]);
+}
+_2:
+goto __TERMINAL_ROUTER;
+
+--(State Router)--------------------------------------------------------
+
+#   ifndef QUEX_OPTION_COMPUTED_GOTOS
+    __quex_assert_no_passage();
+__STATE_ROUTER:
+    switch( target_state_index ) {
+        case 100: { goto _100; }
+        case 200: { goto _200; }
+        case 202: { goto _202; }
+        case 300: { goto _300; }
+        case 400: { goto _400; }
+        case 500: { goto _500; }
+
+        default:
+            __QUEX_STD_fprintf(stderr, "State router: index = %i\n", (int)target_state_index);
+            QUEX_ERROR_EXIT("State router: unknown index.");
+    }
+#   endif /* QUEX_OPTION_COMPUTED_GOTOS */
+
+

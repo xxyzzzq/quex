@@ -1,0 +1,78 @@
+expression    = "a-z"
+state machine
+## ucs letters =  [97, 45, 122]
+init-state = 0L
+00000 == 'a' ==> 00001
+      <no epsilon>
+00001 == \45 ==> 00002
+      <no epsilon>
+00002 == 'z' ==> 00003
+      <no epsilon>
+00003* <no epsilon>
+
+expression    = "ABCDE0-9"
+state machine
+## ucs letters =  [65, 66, 67, 68, 69, 48, 45, 57]
+init-state = 4L
+00004 == 'A' ==> 00005
+      <no epsilon>
+00005 == 'B' ==> 00006
+      <no epsilon>
+00006 == 'C' ==> 00007
+      <no epsilon>
+00007 == 'D' ==> 00008
+      <no epsilon>
+00008 == 'E' ==> 00009
+      <no epsilon>
+00009 == '0' ==> 00010
+      <no epsilon>
+00010 == \45 ==> 00011
+      <no epsilon>
+00011 == '9' ==> 00012
+      <no epsilon>
+00012* <no epsilon>
+
+expression    = "ABCD\aE0-9"
+state machine
+## ucs letters =  [65, 66, 67, 68, 7, 69, 48, 45, 57]
+init-state = 13L
+00013 == 'A' ==> 00014
+      <no epsilon>
+00014 == 'B' ==> 00015
+      <no epsilon>
+00015 == 'C' ==> 00016
+      <no epsilon>
+00016 == 'D' ==> 00017
+      <no epsilon>
+00017 == \7 ==> 00018
+      <no epsilon>
+00018 == 'E' ==> 00019
+      <no epsilon>
+00019 == '0' ==> 00020
+      <no epsilon>
+00020 == \45 ==> 00021
+      <no epsilon>
+00021 == '9' ==> 00022
+      <no epsilon>
+00022* <no epsilon>
+
+expression    = "A-Z\n^CD"
+state machine
+## ucs letters =  [65, 45, 90, 10, 94, 67, 68]
+init-state = 23L
+00023 == 'A' ==> 00024
+      <no epsilon>
+00024 == \45 ==> 00025
+      <no epsilon>
+00025 == 'Z' ==> 00026
+      <no epsilon>
+00026 == \10 ==> 00027
+      <no epsilon>
+00027 == '^' ==> 00028
+      <no epsilon>
+00028 == 'C' ==> 00029
+      <no epsilon>
+00029 == 'D' ==> 00030
+      <no epsilon>
+00030* <no epsilon>
+
