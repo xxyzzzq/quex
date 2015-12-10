@@ -1,20 +1,13 @@
 /* PURPOSE: Testin Buffer_load_forward()
  *
- * INPUTS:
- *    .input.end_p     = [Front, Inside, Back]
- *    ._read_p         = [Front, FallBack-1, FallBack, FallBack+1]
- *    ._lexeme_start_p = [Front, FallBack-1, FallBack, FallBack+1]
- *    BF.ci            = [0, != 0, LastCi, EndCi]
- *    .input.character_index_begin = [0, < BF.ci, == BF.ci, > BF.ci]
- *    .input.character_index_end_of_stream = [ -1, != -1]
+ * The load forward is tested sequentially. The '_read_p' is incremented
+ * by a given 'delta' after each load forward. The '_lexeme_start_p' follows
+ * the '_read_p' at a given distance. This is repeated until the end of 
+ * stream is reached. An iterator 'G_t' iterates over possible settings of
+ * the '_read_p delta' and the '_lexeme_start_p delta'.
  *
- *    where "BF.ci" is the BufferFiller's next_character_index_to_load, 
- *    "LastCi" the last character index, and "EndCi" the end character 
- *    index of the file.
- *
- *    Content to be loaded may: -- load until limit, 
- *                              -- load some content, or
- *                              -- not load anything at all.
+ * The behavior is checked with a set of 'hwut_verify' conditions on the 
+ * buffer's state and its relation to its setting before.
  *
  * OUTPUTS:
  *    * adapted pointers: ._read_p, ._lexeme_start_p and position registers.
@@ -32,7 +25,7 @@
 ------------------------------------------------------------------------
 #include <stdint.h>
 ------------------------------------------------------------------------
-    ptrdiff_t read_p_delta;            ptrdiff_t lexeme_start_p_delta;               
+    ptrdiff_t read_p_delta;      ptrdiff_t lexeme_start_p_delta;               
     [ 1, 2, 3 ];                 |0:6|; 
 ------------------------------------------------------------------------
 */
@@ -92,6 +85,7 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
     for(buffer._read_p = &buffer._memory._front[1]; 
         buffer._read_p < buffer._memory._back; 
         buffer._read_p += ReadPDelta) {
+
         buffer._lexeme_start_p = buffer._read_p + LexemeStartPDelta;  
         if( buffer._lexeme_start_p >= buffer._memory._back ) {
             buffer._lexeme_start_p = &buffer._memory._back[-1];
@@ -99,6 +93,7 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
         if( buffer._lexeme_start_p <= buffer._memory._front ) {
             buffer._lexeme_start_p = &buffer._memory._front[1];
         }
+
         count += test_load_forward(&buffer);
     }
     return count;

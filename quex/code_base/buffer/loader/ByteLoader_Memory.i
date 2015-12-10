@@ -1,7 +1,7 @@
 /* vim: set ft=c:
  * (C) Frank-Rene Schaefer */
-#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_Memory_I
-#define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_Memory_I
+#ifndef  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_MEMORY_I
+#define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_MEMORY_I
 
 #include <quex/code_base/MemoryManager>
 
@@ -117,4 +117,4 @@ QUEX_NAME(ByteLoader_Memory_compare_handle)(const QUEX_NAME(ByteLoader)* alter_e
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#endif /*  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_Memory_I */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_MEMORY_I */

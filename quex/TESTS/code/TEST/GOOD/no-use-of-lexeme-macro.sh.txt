@@ -5,5 +5,28 @@ that referes to the Lexeme macros.
 
 Following lines are suppossed to be accepted:
 
-|||| potpourri begin
-|||| potpourri end
+~/prj/quex/trunk/quex ~/prj/quex/trunk/quex/TESTS/code/TEST
+./blackboard.py:222:           "LexemeEnd",
+./engine/incidence_db.py:83:                  + "                \"    Proposal: Define 'on_failure' and analyze 'Lexeme'.\\n\");\n"
+./input/files/code_fragment.py:257:            if argument_list[0] == "Lexeme":
+./input/files/code_fragment.py:264:                error.log("If one unnamed argument is specified it must be 'Lexeme'\n"          + \
+./input/files/code_fragment.py:267:                          "QUEX_TKN_MY_ID(Lexeme + 1, LexemeEnd - 2);\n"                             + \
+./input/files/code_fragment.py:277:                      "     one argument:   'Lexeme'   =>  token.take_text(..., LexemeBegin, LexemeEnd);\n"
+./input/files/code_fragment.py:299:            idx = value.find("Lexeme")
+./input/files/code_fragment.py:304:                    error.log("Assignment of token member '%s' with 'Lexeme' directly being involved. The\n" % member_name + 
+./input/files/code_fragment.py:305:                              "'Lexeme' points into the text buffer and it is not owned by the token object.\n"
+./input/files/code_fragment.py:308:                              "   (1) Use '(Lexeme)', i.e. surround 'Lexeme' by brackets to indicate\n"
+./input/files/code_fragment.py:311:                              "       is not directly dependent anymore on 'Lexeme'. This is particularly\n"
+./input/files/code_fragment.py:315:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
+./input/files/code_fragment.py:316:                              "          \"%s(Lexeme)\"\n" % TokenName + 
+./output/core/dictionary.py:227:        return "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"
+./output/core/loop.py:35:                            |      |  LexemeEnd
+./output/core/loop.py:43:    first character which is not in CharacterSet (or the LexemeEnd).
+./output/cpp/counter.py:100:       + "     __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
+./output/cpp/counter.py:71:        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+./output/cpp/counter.py:84:        "    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)\n"
+./output/cpp/counter.py:87:        "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
+./output/cpp/counter.py:88:        "    if(LexemeBegin == LexemeEnd) return;\n"
+./output/cpp/counter.py:89:        "    %s = LexemeBegin;\n" % IteratorName
+./output/cpp/templates.py:247:    /* Lexeme setup: 
+~/prj/quex/trunk/quex/TESTS/code/TEST
