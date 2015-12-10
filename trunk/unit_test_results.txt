@@ -41,6 +41,8 @@ TEST                                                                 <no date>
                        icu ...........................................[OK]
     2619679 QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY redefined
         bug-2619679.sh ...............................................[OK]
+    286 Maintaining character index during manual buffer filling.
+        bug-286.sh ...................................................[OK]
     2937342 0.47.3 Regular expression parsing -- closing bracket.
         bug-2937342.sh 1 .............................................[OK]
                        2 .............................................[OK]
@@ -233,8 +235,7 @@ TEST                                                                 <no date>
  * nobody:
 
     2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)
-        bug-2395200.sh error-lexer .................................[FAIL]
-                       lexer .........................................[OK]
+        bug-2395200.sh lexer .........................................[OK]
     2841726 0.44.2 Unknown exception on unicode properties
         bug-2841726.sh ...............................................[OK]
     2891125 0.45.1 bug in -- version
@@ -280,6 +281,11 @@ TEST                                                                 <no date>
 
     3476232 0.62.1 Slow C code generation (unicode)
         bug-3476232.sh ...............................................[OK]
+
+ * rayhayes:
+
+    284 Assert on '--version' (also check for '--help')
+        bug-284.sh ...................................................[OK]
 
  * remcobloemen1:
 
@@ -466,12 +472,10 @@ TEST                                                                 <no date>
 
     2974074 0.48.1 union modifies its arguments
         bug-2974074.sh ...............................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] bug-2395200.sh _ error-lexer
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                                   Demos for C                                  
@@ -947,7 +951,7 @@ quex/TESTS/code/TEST                                                 <no date>
  * Check if the default configuration has been updated.
         check-default-configuration.sh ...............................[OK]
  * Check that 'Lexeme' macro is not used.
-        no-use-of-lexeme-macro.sh ..................................[FAIL]
+        no-use-of-lexeme-macro.sh ....................................[OK]
  * Code Check with pyflakes
         pyflakes-check.sh ............................................[OK]
  * Command Line Option Documentation
@@ -965,12 +969,10 @@ quex/TESTS/code/TEST                                                 <no date>
 
     __parse_token_id_file
         test-token_id_file-find_ids.py ...............................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] no-use-of-lexeme-macro.sh
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                               Command Line Checks                              
@@ -2210,29 +2212,6 @@ quex/output/cpp/TEST                                                 <no date>
                                                                                
                       <no file 'hwut-info.dat', no title>                      
                                                                                
-quex/code_base/buffer/filler/TEST                                    <no date>
--------------------------------------------------------------------------------
-
- * Load Forward:
-
-    With Error in Stream (Character=4 Byte(s))
-        BufferFiller_forward_load-error.exe .................[MAKE FAILED]
-
- * Tell and Seek:
-
-    wiostream
-        Buffer_tell_and_seek-wiostream.exe ..................[MAKE FAILED]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] BufferFiller_forward_load-error.exe
-    [FAIL] Buffer_tell_and_seek-wiostream.exe
-===============================================================================
-                                                                               
-                      <no file 'hwut-info.dat', no title>                      
-                                                                               
 quex/code_base/buffer/loader/TEST                                    <no date>
 -------------------------------------------------------------------------------
  * Segmented Input
@@ -2244,6 +2223,9 @@ quex/code_base/buffer/loader/TEST                                    <no date>
     FILE
         test-FILE.exe basic ..........................................[OK]
                       init-pos .......................................[OK]
+    Memory
+        test-Memory.exe basic ........................................[OK]
+                        init-pos .....................................[OK]
     POSIX
         test-POSIX.exe basic .........................................[OK]
                        init-pos ......................................[OK]
@@ -2447,6 +2429,38 @@ quex/output/core/skipper/TEST                                        <no date>
                              DL=2 ....................................[OK]
                              DL=3 ....................................[OK]
                              DL=4 ....................................[OK]
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
+===============================================================================
+                                                                               
+                         Forward and Backward Loading                          
+                                                                               
+quex/code_base/buffer/TESTS/load/TEST                                <no date>
+-------------------------------------------------------------------------------
+
+ * Buffer_load_backward:
+
+    (BPC=1, FB=0)
+        backward-fb0.exe .............................................[OK]
+    (BPC=1, FB=1)
+        backward-fb1.exe .............................................[OK]
+    (BPC=1, FB=2)
+        backward-fb2.exe .............................................[OK]
+    (BPC=4, FB=2)
+        backward-fb2-32.exe ..........................................[OK]
+
+ * Buffer_load_forward:
+
+    (BPC=1, FB=0)
+        forward-fb0.exe ..............................................[OK]
+    (BPC=1, FB=1)
+        forward-fb1.exe ..............................................[OK]
+    (BPC=1, FB=2)
+        forward-fb2.exe ..............................................[OK]
+    (BPC=4, FB=2)
+        forward-fb2-32.exe ...........................................[OK]
                                                                     ___  _  _  
                                                                    / _ \| |/ ) 
                                                                   ( (_) | _ <  
@@ -2835,10 +2849,10 @@ SUMMARY:
 
     Fails: N:  Verdict: Directory:                                        
 
-        1  234   [FAIL] TEST                                              
+           235     [OK] TEST                                              
            69      [OK] demo/C/TEST                                       
            56      [OK] ..../Cpp/TEST                                     
-        1  10    [FAIL] quex/TESTS/code/TEST                              
+           10      [OK] quex/TESTS/code/TEST                              
            2       [OK] ........../command-line/TEST                      
            2       [OK] ........../did-you-mean/TEST                      
            1       [OK] ........../errors-warnings/TEST                   
@@ -2853,12 +2867,12 @@ SUMMARY:
            4       [OK] ........../token-policies/TEST                    
            10      [OK] ..../code_base/TEST                               
            42      [OK] ............../analyzer/TEST                      
-           26      [OK] ............../buffer/TESTS/move/TEST             
+           8       [OK] ............../buffer/TESTS/load/TEST             
+           26      [OK] .........................../move/TEST             
            78      [OK] .........................../navigation/TEST       
-        2  2     [FAIL] ...................../filler/TEST                 
-           12      [OK] ............................/converter/iconv/TEST 
+           12      [OK] ...................../filler/converter/iconv/TEST 
            12      [OK] ....................................../icu/TEST   
-           10      [OK] ...................../loader/TEST                 
+           12      [OK] ...................../loader/TEST                 
            10      [OK] ............../converter_helper/TEST              
            42      [OK] ..../engine/TEST                                  
            112     [OK] .........../analyzer/TEST                         
@@ -2878,10 +2892,10 @@ SUMMARY:
            30      [OK] .........../cpp/TEST                              
 
 -------------------------------------------------------------------------------
-     _____     _ _          _  _            
-    |  ___|_ _(_) |___     | || |     __  __
-    | |_ / _` | | / __|    | || |_    \ \/ /
-    |  _| (_| | | \__ \    |__   _     >  < 
-    |_|  \__,_|_|_|___/       |_|     /_/\_\
-                                                                   (1516 tests)
+     ___  _ _   _  __                        _      _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_   | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|  | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_)
+                                                                   (1525 tests)
 ===============================================================================

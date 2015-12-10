@@ -102,34 +102,34 @@ typedef struct QUEX_NAME(BufferFiller_tag) {
 } QUEX_NAME(BufferFiller);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)*
-    QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*                      byte_loader, 
-                                struct QUEX_NAME(Converter_tag)* converter,
-                                const size_t                     TranslationBufferMemorySize);
+QUEX_NAME(BufferFiller_new)(QUEX_NAME(ByteLoader)*                      byte_loader, 
+                            struct QUEX_NAME(Converter_tag)* converter,
+                            const size_t                     TranslationBufferMemorySize);
 
 QUEX_INLINE QUEX_NAME(BufferFiller)* 
-    QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*  byte_loader, 
-                                        const char*             InputCodecName);
+QUEX_NAME(BufferFiller_new_DEFAULT)(QUEX_NAME(ByteLoader)*  byte_loader, 
+                                    const char*             InputCodecName);
 
 QUEX_INLINE void    
-    QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
-                                  size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
-                                                                  QUEX_TYPE_CHARACTER*, 
-                                                                  const size_t, 
-                                                                  bool*),
-                                  ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
-                                  void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
-                                  void         (*destruct_self)(QUEX_NAME(BufferFiller)*),
-                                  void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
-                                                                       QUEX_TYPE_CHARACTER*      RegionBeginP,
-                                                                       QUEX_TYPE_CHARACTER*      RegionEndP,
-                                                                       void**                    begin_p,
-                                                                       const void**              end_p),
-                                  ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
-                                                                      QUEX_TYPE_CHARACTER*       BeginP,
-                                                                      const QUEX_TYPE_CHARACTER* EndP,
-                                                                      const void*                FilledEndP),
-                                  QUEX_NAME(ByteLoader)*  byte_loader, 
-                                  ptrdiff_t               ByteNPerCharacter);
+QUEX_NAME(BufferFiller_setup)(QUEX_NAME(BufferFiller)*   me,
+                              size_t       (*read_characters)(QUEX_NAME(BufferFiller)*,
+                                                              QUEX_TYPE_CHARACTER*, 
+                                                              const size_t, 
+                                                              bool*),
+                              ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(BufferFiller)*),
+                              void         (*stomach_clear)(QUEX_NAME(BufferFiller)*),
+                              void         (*destruct_self)(QUEX_NAME(BufferFiller)*),
+                              void         (*derived_fill_prepare)(QUEX_NAME(BufferFiller)*  me,
+                                                                   QUEX_TYPE_CHARACTER*      RegionBeginP,
+                                                                   QUEX_TYPE_CHARACTER*      RegionEndP,
+                                                                   void**                    begin_p,
+                                                                   const void**              end_p),
+                              ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(BufferFiller)*   me,
+                                                                  QUEX_TYPE_CHARACTER*       BeginP,
+                                                                  const QUEX_TYPE_CHARACTER* EndP,
+                                                                  const void*                FilledEndP),
+                              QUEX_NAME(ByteLoader)*  byte_loader, 
+                              ptrdiff_t               ByteNPerCharacter);
 
 QUEX_INLINE ptrdiff_t  
     QUEX_NAME(BufferFiller_load)(QUEX_NAME(BufferFiller)*   me, 

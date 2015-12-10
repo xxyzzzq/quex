@@ -1,38 +1,35 @@
 /* PURPOSE: Testin Buffer_load_backward()
  *
- * INPUTS:
- *    .input.end_p     = [Front, Inside, Back]
- *    ._read_p         = [Front, FallBack-1, FallBack, FallBack+1]
- *    ._lexeme_start_p = [Front, FallBack-1, FallBack, FallBack+1]
- *    BF.ci            = [0, != 0, LastCi, EndCi]
- *    .input.character_index_begin = [0, < BF.ci, == BF.ci, > BF.ci]
- *    .input.character_index_end_of_stream = [ -1, != -1]
+ * Before the load backward can be tested, the buffer is brought into a
+ * state where 'end of stream' is detected. This ensures that the backward
+ * load steps through the whole stream backwards.
  *
- *    where "BF.ci" is the BufferFiller's next_character_index_to_load, 
- *    "LastCi" the last character index, and "EndCi" the end character 
- *    index of the file.
+ * The load backward is tested sequentially. The '_read_p' is decremented
+ * by a given 'delta' after each load. The '_lexeme_start_p' follows
+ * the '_read_p' at a given distance. This is repeated until the begin of 
+ * stream is reached. An iterator 'G_t' iterates over possible settings of
+ * the '_read_p delta' and the '_lexeme_start_p delta'.
  *
- *    Content to be loaded may: -- load until limit, 
- *                              -- load some content, or
- *                              -- not load anything at all.
+ * The behavior is checked with a set of 'hwut_verify' conditions on the 
+ * buffer's state and its relation to its setting before.
+ *
  *
  * OUTPUTS:
- *    * adapted pointers: ._read_p, ._lexeme_start_p and position registers.
+ *    * adapted pointers: ._read_p, ._lexeme_start_p.
  *    * buffer's content.
  *    * input.end_p, 
  *      input.character_index_begin, 
  *      input.character_index_end_of_stream
  *
  * The read and lexeme pointers shall point exactly to the same character as
- * before the load procedure. That is, they need
- */
+ * before the load procedure. That is, they need.                            */
 
 /* 
 <<hwut-iterator: G>> 
 ------------------------------------------------------------------------
 #include <stdint.h>
 ------------------------------------------------------------------------
-    ptrdiff_t read_p_delta;            ptrdiff_t lexeme_start_p_delta;               
+    ptrdiff_t read_p_delta;      ptrdiff_t lexeme_start_p_delta;               
     [ 1, 2, 3 ];                 |0:6|; 
 ------------------------------------------------------------------------
 */
