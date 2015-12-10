@@ -73,7 +73,37 @@ in order to detect undesired mode changes.
     }
 
 As with ``GOTO`` additional arguments indicate a token sending. Those
-arguments are applied on the constructor for the resulting token.
+arguments are applied on the constructor for the resulting token. Inside
+C++ code the mode transitions can be controlled by the member functions
+of the analyzer
+
+.. code-block:: cpp
+
+    void    enter_mode(/* NOT const*/ QUEX_NAME(Mode)& TargetMode);
+    void    push_mode(QUEX_NAME(Mode)& new_mode);
+    void    pop_mode();
+    void    pop_drop_mode();
+
+Respectively, in C mode transitions are controlled by
+
+.. code-block:: cpp
+
+    void    QUEX_NAME(enter_mode)(L*, QUEX_NAME(Mode)& TargetMode);
+    void    QUEX_NAME(push_mode)(L*, QUEX_NAME(Mode)& new_mode);
+    void    QUEX_NAME(pop_mode)(L*, );
+    void    QUEX_NAME(pop_drop_mode)(L*, );
+
+where ``L*`` is a pointer to the generated lexical analyzer. Inside 
+a lexical analyzer, the following macros work in both environments, C
+and C++.
+
+.. code-block:: cpp
+
+    #define self_enter_mode(ModeP)  ...
+    #define self_pop_mode()         ...
+    #define self_pop_drop_mode()    ...
+    #define self_push_mode(ModeP)   ...
+
 
 .. note::
 

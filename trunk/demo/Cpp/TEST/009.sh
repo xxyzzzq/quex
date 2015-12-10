@@ -42,7 +42,7 @@ case $1 in
         make_silent lexer-socket feed-socket 
         # If there is a 'lexer-socket' application running already => stop it.
         observe ./lexer-socket &
-        sleep 1
+        sleep 3
         ./feed-socket file   example-feed.txt 5 1  >& tmp-feed.txt
         ./feed-socket string bye              1 10 >> tmp-feed.txt 2>&1
         cat tmp-feed.txt
@@ -54,7 +54,7 @@ case $1 in
         make_silent lexer-socket-utf8 feed-socket 
         # If there is a 'lexer-socket' application running already => stop it.
         observe ./lexer-socket-utf8 &
-        sleep 1
+        sleep 3
         ./feed-socket file   example-feed-utf8.txt 5 1  >& tmp-feed.txt
         ./feed-socket string bye                   1 10 >> tmp-feed.txt 2>&1
         cat tmp-feed.txt
