@@ -305,6 +305,15 @@ a one-to-one correspondance to what is mentioned above. Possibly some later
 versions will totally dismiss the lex related engine core, and then also
 these constructs will disappear in favor of the mentioned two incidence handlers.
 
+.. note::
+
+   The space character (UCS 32) is not allowed except in quotes or in range
+   boundaries. In fact, it is supposed to seperate the pattern from subsequent
+   tokens such as ``=>``. Also, it cannot be backslashed.
+   
+   The backslash also does not suppress newline. A pattern must be completely
+   specified in a single line.
+
 *Operations*    
 
 Let ``R`` and ``S`` be regular expressions, i.e. a chain of characters specified in the
