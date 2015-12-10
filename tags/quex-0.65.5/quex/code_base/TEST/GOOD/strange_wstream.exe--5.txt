@@ -1,0 +1,25 @@
+position: 0
+content:  <Im Fr>
+position: 13
+content:  <uetau>
+position: 25
+content:  < zu B>
+position: 31
+content:  <erge >
+position: 41
+content:  <wir z>
+position: 53
+content:  <iehen>
+Re-Do ---------------------------------------------
+position: 0
+content:  <Im Fr>
+position: 13
+content:  <uetau>
+position: 25
+content:  < zu B>
+position: 31
+content:  <erge >
+position: 41
+content:  <wir z>
+position: 53
+content:  <iehen>

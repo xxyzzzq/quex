@@ -1,0 +1,21 @@
+(*) Lexical Analyser Patterns:
+                  AZ --> A_Z
+                 A*X --> A_STAR_X
+                 A*Y --> A_STAR_Y
+## (1) code generation
+## (*) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros -Wall -Werror  -DQUEX_OPTION_ASSERTS ./tmp.c -I./. -I/home/fschaef/prj/quex/branch -o ./tmp.c.exe  ##
+
+## (*) running the test
+(*) test string: 
+'AZXAXAAXYAYAAY'
+(*) result:
+                A_Z  'AZ'
+           A_STAR_X  'X'
+           A_STAR_X  'AX'
+           A_STAR_X  'AAX'
+           A_STAR_Y  'Y'
+           A_STAR_Y  'AY'
+           A_STAR_Y  'AAY'
+  ''
+

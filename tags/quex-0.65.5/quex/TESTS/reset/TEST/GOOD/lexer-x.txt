@@ -1,0 +1,23 @@
+AFTER Reset:
+   CurrentMode = SIMPLE;
+   Buffer:
+      Memory:
+      _front         =  0;
+      _back          = +0xD;
+      input.end_p = +0xD;
+      _external_owner_f = false;
+   _read_p        = +0x1;
+   _lexeme_start_p = +0x1;
+   _character_at_lexeme_start = 0;
+   _character_before_lexeme_start = A;
+   _content_character_index_begin = 0;
+   input.end_character_index   = 12;
+   _byte_order_reversion_active_f = true;
+   Accumulator = ''
+   Counter:
+   _line_number_at_begin = 1;
+   _line_number_at_end   = 1;
+   _column_number_at_begin = 1;
+   _column_number_at_end   = 1;
+   Mode Stack (0/8) = []
+   ByteOrderInversion = true;

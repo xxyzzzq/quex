@@ -1,0 +1,16 @@
+define {
+	A13         (A|AA|AAA)
+	IPv6address	(({A13}"B"){0,4}{A13})?"BB"{A13}"B"
+}
+
+token { 
+    OK;
+}
+
+start = ONE_AND_ONLY;
+
+mode ONE_AND_ONLY
+{
+	<<EOF>>			=> QUEX_TKN_TERMINATION;
+	{IPv6address}	=> QUEX_TKN_OK;
+}

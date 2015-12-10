@@ -1,0 +1,16 @@
+define {
+}
+
+token { 
+    OK;
+    IDENTIFIER;
+}
+
+start = ONE_AND_ONLY;
+
+mode ONE_AND_ONLY
+{
+	<<EOF>>	        => QUEX_TKN_TERMINATION;
+    [a-yA-Y]{0,7}z   => QUEX_TKN_IDENTIFIER;
+    [a-yA-Y]+       => QUEX_TKN_IDENTIFIER;
+}

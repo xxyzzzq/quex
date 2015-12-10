@@ -1,0 +1,41 @@
+--(Path Definitions)----------------------------------------------------
+
+    const QUEX_TYPE_CHARACTER      path_walker_23_base[12]        = {
+    111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
+    102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
+
+    };
+    const QUEX_TYPE_CHARACTER*     path_17                        = path_walker_23_base + 5;
+    QUEX_TYPE_GOTO_LABEL           path_end_state                 = QUEX_GOTO_STATE_LABEL_INIT_VALUE;
+    const QUEX_TYPE_CHARACTER*     path_iterator                  = ((QUEX_TYPE_CHARACTER*)0x0);
+    const QUEX_TYPE_CHARACTER*     path_1                         = path_walker_23_base + 0;
+
+
+--(Pathwalker Code)-----------------------------------------------------
+
+
+    __quex_assert_no_passage();
+_23:
+
+    __quex_debug_state(23);
+    ++(me->buffer._read_p);
+    input = *(me->buffer._read_p);
+    if( input == *path_iterator ) {
+        ++path_iterator;
+        goto _23;
+    } else if( *path_iterator == QUEX_SETTING_PATH_TERMINATION_CODE ) {
+        --(me->buffer._read_p);
+
+        QUEX_GOTO_STATE(path_end_state);
+        }
+
+    switch( input ) {
+        case 0x0:     QUEX_GOTO_RELOAD(__RELOAD_FORWARD, QUEX_LABEL(23), QUEX_LABEL(24));
+    }
+_24:
+goto __TERMINAL_ROUTER; 
+
+--(Involved State Indices)----------------------------------------------
+
+set([1L, 2L, 3L, 4L, 17L, 18L, 19L, 20L, 21L])
+

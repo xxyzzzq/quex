@@ -1,0 +1,21 @@
+< COMPILER := g++ -ggdb -Wall -Werror -pedantic 
+---
+> COMPILER := gcc -ggdb -Wall -Werror -pedantic 
+< %.o: %.cpp LexAscii
+---
+> %.o: %.c LexAscii.h
+< %-utf8.o: %.cpp LexUtf8
+---
+> %-utf8.o: %.c LexUtf8.h
+< LexUtf8 LexUtf8.cpp: utf8.qx 
+---
+> LexUtf8.h LexUtf8.c: utf8.qx 
+> 		 --language     C       \
+< LexAscii LexAscii.cpp: ascii.qx 
+---
+> LexAscii.h LexAscii.c: ascii.qx 
+> 	     --language     C        \
+< %.E: %.cpp
+< 	$(CC) -E $< -o $@ 
+< 
+< 	rm -f *.E

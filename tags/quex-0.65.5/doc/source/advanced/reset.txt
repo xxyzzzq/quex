@@ -1,0 +1,118 @@
+.. _sec-reset:
+
+Reset and Change of Input Source
+================================
+
+TODO: Mention that ownership of objects are passed to the lexer.
+      Thus, passing a FILE handle twice will cause an error, e.g.
+
+          FILE* fh = open("file.txt", "rb");
+
+          Lexer  lex(fh);
+          ...
+
+          lex.reset(fh)
+
+      will cause an error! In the aforementioned case it is sufficient
+      to call
+
+          lex.reset()
+
+      to achieve the desired effect.
+
+
+TODO: mention 'reset { ... }'  section to define reset extensions
+      after all reset has been done.
+
+In many practical applications the source of input is changed in
+the form of included files that are 'pasted' at the point where 
+the according statement occurs. The handling of this scenerio
+was mentioned in section :ref:`sec-include-stack`. In this section
+a more liberal approach is described where the input source
+can be switched without keeping track of previous content. This
+is done by the ``reset()`` function group which has the 
+following signatures
+
+.. code-block:: cpp
+
+        template <class InputHandleT> void
+        reset(InputHandleT*   input_handle, 
+              const char*     CharacterEncodingName = 0x0); 
+
+        void 
+        reset_buffer(QUEX_TYPE_ANALYZER*  me,
+                     QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                     size_t               BufferMemorySize,
+                     QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                     const char*          CharacterEncodingName = 0x0);
+
+.. describe:: reset(...)
+
+The first argument is an input handle of the user's like, i.e. either a
+``FILE*``, ``istream*``, or ``wistream*`` pointer, or a pointer to a derived
+class' object. The second argument is character encoding name which is used for
+the input. If *the same* converter is used, the ``CharacterEncodingName`` must be set
+to zero. If the analyzer works only on plain memory, the following
+reset function may be used
+
+.. code-block:: cpp
+
+    void  reset(const char* CharacterEncodingName = 0x0); 
+
+which allows to specify a character encoding name, but the input stream
+is not specified.
+
+The reset function clears and resets all components of the lexical
+analyzer as they are:
+
+#. The core analyzer including buffer management and buffer fill
+   management. The buffer memory remains intact, but is cleaned.
+   When ``reset(...)`` is called an initial load to fill the buffer
+   is accomplished. Thus, the input handle must be placed at the
+   point where the lexical analyzer is supposed to start.
+
+#. The current mode is reset to the start mode and the mode stack is cleared.
+
+#. The include stack is cleared and all mementos are deleted.
+
+#. The accumulator is cleared.
+
+#. The line and column number counter is reset.
+
+#. All entries of the post categorizer dictionary are deleted.
+
+.. note:: 
+
+    The byte order reversion flag is *not* set to ``false``. It
+    remains as it was before the reset.
+
+.. describe:: reset_buffer(...)
+
+The reset buffer function allows to (re-)start lexical analyzis on a 
+user provided buffer. It does basically the same as the ``reset``
+function. However, it distinguishes two cases as indicated by its
+return value:
+
+.. describe:: == 0x0
+
+   If ``reset_buffer`` returns 0x0, then there was no user provided
+   buffer and nothing further is to be done with respect to memory
+   management. 
+   
+.. describe:: != 0x0 
+ 
+   If the return value is non-zero, then there was a buffer memory
+   which as previouly been provided by the user. The return value
+   points to the beginning of the old memory chunk. The engine itselft
+   does not de-allocate the memory. It is the task of the user. 
+
+If the function ``reset_buffer`` is called with zero as the first argument
+``BufferMemoryBegin``, then no memory is initialized. However, the current
+memory pointer is returned if it was provided by the user. Otherwise, 
+as described above, zero is returned. This is helpful at the end of the
+analyzis in order to de-allocate any memory that is still contained inside
+the analyzer. An application of ``reset_buffer`` can be observed in 
+file ``re-point.cpp`` and ``re-point.c`` in the ``010`` subdirectory of 
+the demos.
+
+

@@ -1,0 +1,40 @@
+---------------------------
+super = "123"+
+sub   = "123"
+claim =  True
+
+super = "123"
+sub   = "123"+
+claim =  False
+---------------------------
+super = X"123"?
+sub   = X"123"
+claim =  True
+
+super = X"123"
+sub   = X"123"?
+claim =  False
+---------------------------
+super = "123"?X
+sub   = "123"X
+claim =  True
+
+super = "123"X
+sub   = "123"?X
+claim =  False
+---------------------------
+super = "123"*X
+sub   = "123"X
+claim =  True
+
+super = "123"X
+sub   = "123"*X
+claim =  False
+---------------------------
+super = X"123"*
+sub   = X"123"
+claim =  True
+
+super = X"123"
+sub   = X"123"*
+claim =  False

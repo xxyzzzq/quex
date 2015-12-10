@@ -1,0 +1,500 @@
+.. _sec-advanced-indentation-blocks:
+
+Indentation Based Blocks
+------------------------
+
+With the rise of the Python programming language, the use of indentation as the
+block delimiter has become popular. Classical programming languages such as C,
+Java, and Pascal, rely on brackets, e.g. ``{`` and ``}`` for opening and
+opening blocks. Indentation based languages rely on the indentation space
+of a code fragment. For example, in the C-code statements list:
+
+.. code-block:: cpp
+
+   while( i < L ) 
+   {
+       if( check_this(i) ) 
+       {
+           do_something();
+       }
+   }
+   print("done")
+
+blocks are delimited ``{`` and ``}``. An equivalent statement list in an
+indentation based language, such as Python looks like the following: 
+        
+.. code-block:: python
+
+   while i < L:
+       if check_this(i): 
+           do_something()
+   print("done")
+
+The code in the second example, obviously looks much more dense and contains
+lesser visual noise. For readability, code is best indented according to the
+block it belongs to. In this sense the brackets are redundant--if one is able
+to detect the indentation. Quex generated engines can.
+
+For the parser to group statements into blocks, it requires that tokens
+are sent that indicate the opening and closing of a block. When relying 
+on explicit delimiters, such as brackets, then this does not require
+any additional effort. For clarity, let 'indentation' be defined as follows:
+
+.. note:: *Indentation* is considered the amount of whitespace between
+          the beginning of a line and the first non-whitespace character
+          in a line.
+
+For indentation based languages the lexical analyzer has some work to do behind
+the scenes. It must count indentation, detect wether blocks are opening, remain
+the same, or are closing. When closing blocks, is possible that with one step
+multiple tokens may be sent. In the example above, after the function call
+``do_something()``, two scopes close the ``if`` and the ``while`` block.
+Quex generated code takes care of this.
+
+If indentation counting is enabled, Quex generated engines send the following
+tokens:
+
+ * ``INDENT`` if an indentation block opens.
+ * ``DEDENT`` if an indentation block closes.
+ * ``NODENT`` if the indentation remains the same.
+
+An indentation counting framework is implemented for a mode as soon as a
+``indentation`` option is specified--even an empty option will do::
+
+  .. code-block:: cpp
+
+     mode X : 
+         <indentation: /* all default */> 
+     {
+        ...
+     }
+
+There are different philosophies around indentation based parsing with respect
+to spaces, tabulators, and newline suppressors. Even the definition of the
+newline pattern may be subject to discussion (e.g. 0xA or 0xD, 0xA, or both).
+Inside the ``indentation`` option the character of those can be specified, e.g.
+
+.. code-block:: cpp
+
+          <indentation:
+             [ \t]      => whitespace;
+             (\r\n)|\n  => newline;
+             \\[ \t]*   => suppressor;
+          >
+
+specifies that a normal space and tabulators count as white space. Thus, the
+indentation will be counted as long as the incoming characters after newline
+are either space or tabulator. The column number increment can be specified by
+the ``<counter ...>`` for a mode (:ref:`sec-counter`). Both, the Unix (``\\n``)
+and the DOS Version of newline (``\\r\\n``) are accepted as ``newline``. A
+newline suppressor is defined as a backslash. Since whitespace between the
+backslash and newline is hardly identified, possible whitespace is packed into
+the definition of the suppressor. The above setup is a *safe* setup to work on
+many environments and it helps to avoid confusion. It is indeed the default
+setup which is in place, if nothing is specified. The following section
+explains in detail the setting of the above parameters.
+
+Indentation Parameters
+======================
+
+As with ``counter`` definitions (see :ref:`sec-counter-def`), the syntax of
+parameter settings in the ``indentation`` option follows the scheme:
+
+.. code-block:: cpp
+
+       pattern '=>' parameter-name [argument] ';'
+
+The allowed parameter names are ``space``, ``grid``, ``bad``, ``newline``, and
+``suppressor``. The first three parameter names allow only character sets as 
+pattern. For ``newline`` and ``suppressor`` any regular expression can 
+by given. The following list explains the different parameters.
+
+   .. describe :: whitespace
+
+      Defines the set of allowed character in the indentation. As soon as 
+      a character appears that is not whitespace, the indentation is 
+      equal to the column number. Note, that the indentation level is 
+      determined by the number of open indentation blocks and not by 
+      means of the column number directly.
+
+   .. describe :: bad
+
+      There is some philosophical discussion whether both spaces and grids or
+      tabulators shal be allowed as indentation characters.  There are very
+      rational arguments for 'spaces are bad' and so there are arguments for
+      'tabulators are bad'.  If some characters are specifically to be
+      considered bad, then they may be specified as such by the ``bad``
+      keyword.  The philosophy of 'tabs are bad' can be expressed by
+
+      .. code-block:: cpp
+         
+             [\t]  =>  bad; 
+
+   .. describe :: newline
+
+      Indentation count is triggered by 'newline'. By this specifier it
+      can be determined what character or character sequence triggers the
+      indentation count. For example,
+
+      .. code-block:: cpp
+
+           (\r\n)|\n  => newline;
+
+      matches newlines under DOS (0x0D, 0x0A) and under Unix (0x0A).  All
+      specifiers before only accept character sets as input. Clearly, the
+      newline specifier accepts a full regular expression. 
+
+
+      .. note::
+
+      The newline pattern will be used to trigger the indentation counting.
+      Actually, the newline pattern is automatically extended to the pattern::
+
+               newline [[ ispace ]* newline]*
+
+      and inserted into state machine. Here, ``ispace`` is any kind of
+      indentation counter mentioned in ``space`` or ``grid``. By means of this
+      construction empty lines are eaten silently. Thus, it is avoided that 
+      empty lines cause a DEDENT or NODENT incidences. 
+
+   .. describe :: suppressor
+
+      The newline incidence can be suppressed by a subsequent suppressor. When it
+      is suppressed the subsequent line is not going to be subject to
+      indentation count. Famous suppressors are the backslash, as in Python, C,
+      and Makefiles, or the underline '_' as in some Basic dialects. For example,
+      the backslash in
+
+      .. code-block :: python
+
+         if    db.out_of_date() \
+            or db.disconnected(): 
+                ...
+
+      princidences the python interpreter to consider indentation before the 'or'
+      which is now grouped into the if-condition.
+      
+      Many times interpreters are sensitive to whitespace that follows these. 
+      Quex allows to be less sensitive by defining the suppressor as a regular
+      expression, e.g.
+
+      .. code-block:: cpp
+
+         \\[ \t]*   => suppressor;
+
+      eats any amount of non-newline whitespace after the suppressor '\\'.
+
+   .. describe :: comment
+  
+      Allows for the definition of a comment-until-newline region. When a
+      comment is reached it will not be treated as indentation. If the
+      detection of comments is left to patterns inside the mode, it would be
+      triggering an indentation event. For example:
+
+            while 1 + 1 == 2:
+                do something
+            # this is a comment
+                do more
+
+      When comment handling is left to the mode itself, then the comment in the
+      ``#`` would trigger a ``DEDENT`` event, because a lower indentation has
+      been detected. If it was defined inside the indentation handler as
+
+         #((\\[^\n])|[^\n])+ => comment
+
+      then no ``DEDENT`` is triggered. This is a more pythonic behavior.
+                
+
+          
+
+
+      
+
+When an indention option is specified, the generated lexical analyzer
+starts sending tokens carrying indentation information. As mentioned earlier,
+those are ``QUEX_TKN_INDENT`` if a new indentation block opens, ``QUEX_TKN_DEDENT``
+if an indentation block closes, and ``QUEX_TKN_NODENT`` if the indentation
+is the same as in the previous line. Note, that the newline character is eaten
+by the indentation counter. If it is a statement delimiter, then it might
+make sense to define in the ``token`` section something like::
+
+   token { 
+       ...
+       NODENT = STATEMENT_END;
+       ...
+   }
+
+which ensures that the token id of ``NODENT`` is the same as the id for
+``STATEMENT_END`` and no special treatment is required. If more then one
+token is to be sent on indentation incidences, or if some sophisticated 
+customized handling is required the indentation incidences can be specified,
+as shown in the next section.
+
+Customized Indentation Incidence Handlers
+=====================================
+
+By default, a quex generated engine sends tokens on the incidence of indentation
+and aborts on the incidence of a bad character or indentation error. If this
+behavior is not enough, the correspondent actions may be customized by
+means of incidence handlers, as they are:
+
+  * ``on_indent`` on the incidence that an opening indentation occurs.
+
+    For example in the code fragment
+
+    .. code-block:: python
+
+       while 1 + 1 == 2:
+           print "Hello"
+           print "World"
+
+    The ``print`` commands are more indented than the ``while`` key word. This indicates
+    that the prints are in a nested block. On the incidence of the first indented ``print``
+    key word the ``on_indent`` handler is called. The user might want to send an ``INDENT``
+    token to indicate the opening of a block. For example:
+
+    .. code-block:: cpp
+
+       on_indent { 
+           self_send(QUEX_TKN_INDENT);
+       }
+
+  * ``on_dedent`` and ``on_n_dedent`` on the incidence that one ore mode 
+    indentation blocks are closed.
+
+    Note, that by means of a single line multiple indentation blocks may
+    be closed. For example in
+
+    .. code-block:: python
+
+       while time() < 3600:
+           if time() % 10: 
+               print "Tick"
+       print "End"
+
+    The line containing ``print "End"`` closes the ``if`` block and the
+    ``while`` block. It is appropriate that the lexical analyzer sends two
+    ``DEDENT`` tokens. There are basically two ways to do this. Either by
+    sending a ``DEDENT`` token each time an indentation block closes, or
+    by counting the indentation blocks which close and the start the sending
+    of the ``DEDENT`` tokens. Accordingly there are two de-dentation handlers.
+
+    .. describe:: on_dedent
+
+       Argument: ``First``
+    
+       The ``on_dedent`` handler is called repeatedly for each closing
+       indentation. Each time the handler is called one ``DEDENT`` token should
+       be sent. If there are things to be done only once for whole a de-dentation
+       sequence, then the flag ``First`` can be used. It is ``true`` for the
+       first de-dedentation incidence of a sequence and ``false`` for any other. A
+       typical usage would be 
+
+         .. code-block:: cpp
+
+            on_dedent { 
+                ...
+                if( First ) self_send(QUEX_TKN_NEWLINE);
+                self_send(QUEX_TKN_DEDENT);
+                ...
+            }
+
+    .. describe:: on_n_dedent
+
+       Argument: ``ClosedN``
+
+         The ``on_n_dedent`` is called after the number of closing indentations
+         has been counted and it receives the argument ``ClosedN``. This
+         argument indicates the number of closed indentations.  A typical
+         handler will then call ``self_send_n(...)`` somewhere down the lines
+         as shown below.
+
+         .. code-block:: cpp
+
+            on_n_dedent { 
+                ...
+                /* provided that token repetition support is enabled! */
+                self_send_n(ClosedN, QUEX_TKN_DEDENT);
+                ...
+            }
+
+         It is advisable to activate token repetition support :ref:``, since otherwise
+         the token queue might be flooded with ``DEDENT`` tokens.
+
+
+  * ``on_nodent`` on the incidence that the current line has the same indentation
+                  as the previous.
+
+  * ``on_indentation_error`` on the incidence that a lesser indentation occured 
+                             which does not fit the indentation borders of 
+                             previous indentation blocks.
+
+     .. describe:: Indentation
+
+        The indentation that has occured.
+
+     .. describe:: IndentationStackSize
+
+        The number of currently open indentation blocks.
+
+     .. describe:: IndentationStack(i)
+
+        Delivers the indentation number 'i' from the current 
+        indentation blocks.
+
+     .. describe:: IndentationUpper
+
+        Delivers the smallest indentation level that is greater than the current.
+
+     .. describe:: IndentationLower
+
+        Delivers the greatest indentation level that is smaller than the current.
+
+     .. describe:: ClosedN
+
+        Number of closed indentation levels.
+
+
+  * ``on_indentation_bad`` on the incidence that a *bad* indentation character 
+                           occured. The argument to this handler is
+
+     .. describe:: BadCharacter
+
+        A constant that contains the bad indentation character. It is of
+        type ``QUEX_TYPE_CHARACTER``.
+
+     Quex does not forbid the definition of a pattern that contains the 
+     bad character. The contrary, it is essential to define such a pattern
+     in case that only a warning is intended and not a break up of the 
+     lexical analyzis. A skipper will also do. For example, 
+
+     .. code-block:: cpp
+
+         mode X : <indentation: [\t] => bad;> 
+                  <skip: [\t]> 
+         {
+             ...
+             on_indentation_bad { 
+                 std::cout << "Warning: Bad indentation character!\n"; 
+             }
+             ...
+         }
+
+     is a reasonable setup in a lexical analyzer that forbids tabulators in 
+     indentation. Alternatively, a 'bad character token' might be defined 
+     and sent.
+
+The following code fragment shows an example application that implements
+the default behavior.
+
+   .. code-block:: cpp
+
+      on_indent {
+          self_send(QUEX_TKN_INDENT);
+      }
+      on_dedent {
+          self_send(QUEX_TKN_DEDENT);
+      }
+      on_nodent {
+          self_send(QUEX_TKN_NODENT);
+      }
+      on_indentation_error {
+          QUEX_ERROR_EXIT("Lexical analyzer mode 'MyMode': indentation error detected!\n");
+      }
+      on_indentation_bad {
+          QUEX_ERROR_EXIT("Lexical analyzer mode 'MyMode': bad indentation character detected!\n");
+      }
+
+.. note::
+
+   The current indentation level can be accessed via the macro
+   ``self_indentation()``. For this, it holds the same as for line and column
+   counting: The value is the current indentation level and not the level of
+   indentation of the current token. For token policy ``token-queue`` this
+   value might be stored inside the token itself.
+
+Remarks on Hand-Written Indentation Management
+==============================================
+
+It is not trivial to express indentation in terms of pattern action
+pairs based solely on regular expressions. It is not enough to define a pattern
+such as::
+
+          P_INDENTATION_CATCHER    "\n"[ ]*
+
+That is a newline followed by whitespace. Imagine, one introduces a comment
+sign such as the traditional # for comment until newline. The comment eating
+pattern would be at first glance::
+
+          P_COMMENT_EATER    "#"[^\n]*\n
+
+That is a # followed by anything but newline and then one newline. The action
+related to this pattern would have to put back the last newline. Otherwise the
+indentation catcher which starts with a newline can never trigger. In this
+particular case, this problem can be solved by deleting the last newline from
+the comment eater pattern, knowing that after as many not-newline as possible
+there must be a newline, i.e.
+
+          P_COMMENT_EATER    "#"[^\n]*
+
+The last newline is then eaten by the indentation catcher. However, the main
+problem remains: 
+
+.. note:: 
+
+   A design without indentation incidences, forces the pattern actions to know
+   about each other.  Otherwise, they might not function propperly together! In
+   an environment of many different modes which are additionally related by
+   inheritance, it is potentially difficult to guarantee that all pattern
+   actions avoid interferences with some overal concepts. 
+
+Similarly, catching indentation with pre-condition newline plus whitespace,
+i.e. ``^[ \t]*`` is fragile, in the sense that another pattern that
+contains newline plus whitespace might hinder this pattern from triggering.
+In a lexical analyzer with dozens or hundreds of patterns this becomes
+quickly unmanageable. Errors that arise from patterns defined somewhere
+else are very hard to find and require a lot of insight into the actual
+process of lexical analysis. Using the quex's ability to detect indentation 
+blocks ends up in a much clearer and safer design. 
+
+
+Caveat
+------
+
+If a pattern contains more than one newline then only the indentation
+incidence concerning the last newline is triggered! Imagine a pattern such as
+in the following example::
+
+     mode INDENTICUS { 
+        " "*"hello"[\n]+" "*"world"[\n]+" "*"how are you?" => TKN_STRANGE;
+     }
+
+then the following pattern would match::
+
+     hello
+   world
+        how are you?
+
+If this matches, then the lines of ``hello`` and ``world`` do not trigger an
+indentation incidence. So, when dealing with indentation based scoping such strange
+things are best avoided.  If the line after the concatinated line does
+not end with a backslash the incidence handler is automatically active and
+indentation handling is in place. Lets turn this into a warning.
+
+.. warning::
+
+   Avoid having multiple non-whitespace sub patterns (such as keywords or
+   identifiers) concatinated by newline-containing sub-patterns in 
+   *one single pattern*. Otherwise only the last transition from whitespace 
+   to non-whitespace inside the pattern triggers an indentation incidence.
+
+The author of this text hopes that this caveat is only of theoretical interest.
+It is hard to imagine a case where such a construct would actually make sense.
+In any case, before implementing an indentation based analyzer it is advisable
+to have a look at the demo/002 directory for a functioning example.
+
+.. rubrik:: Footnotes
+
+   [#f0] For more information about the pre-condition newline pitfall see 
+         section :ref:`sec-formal-patterns-context-dependent-pitfalls`.
+

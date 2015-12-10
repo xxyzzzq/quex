@@ -1,0 +1,32 @@
+start = THE_MODE;
+
+token {
+  A; B; C;
+}
+
+mode THE_MODE : <skip: [ \t\n] > {
+  [:alnum:]+   { 
+      self_send1(QUEX_TKN_A, Lexeme);
+      QUEX_NAME(seek_backward)(&self, LexemeL - 1); 
+  }
+  <<EOF>> { 
+      QUEX_NAME(seek)(&self, 0);
+      self_enter_mode(&SECOND_EXPERIMENT);
+  }
+}
+
+mode SECOND_EXPERIMENT : <skip: [ \t\n] > {
+  [:alnum:]+   { 
+      self_send1(QUEX_TKN_B, Lexeme);
+      QUEX_NAME(undo)(&self); 
+      self_enter_mode(&THIRD_EXPERIMENT);
+  }
+}
+
+mode THIRD_EXPERIMENT : <skip: [ \t\n] > {
+  [:alnum:]+   { 
+      self_send1(QUEX_TKN_C, Lexeme);
+      QUEX_NAME(seek)(&self, QUEX_NAME(tell)(&self) - LexemeL + 1); 
+  }
+  <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull); 
+}

@@ -1,0 +1,6 @@
+Macro __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__$$INCLUDE_GUARD_EXTENSION$$ defined but not undefined.
+Macro __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION defined but not undefined.
+Macro QUEX_CHARACTER_CONVERTER_DECLARED undefined but not defined.
+Macro QUEX_ACTION_TOKEN_STAMP undefined but not defined.
+
+

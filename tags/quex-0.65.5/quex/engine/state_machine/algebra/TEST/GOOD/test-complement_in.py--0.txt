@@ -1,0 +1,268 @@
+---------------------------
+Original = [01]+
+Cutter   = 0
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 A
+     == '1' ==> 00001
+    
+
+
+Original = 0
+Cutter   = [01]+
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = 1[01]*
+Cutter   = 0
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 A
+     == '1' ==> 00001
+    
+
+
+Original = 0
+Cutter   = 1[01]*
+
+result =  init-state = 0L
+00000 
+     == '0' ==> 00001
+    
+00001 A
+    
+
+---------------------------
+Original = print|integer|ente
+Cutter   = int
+
+result =  init-state = 0L
+00000 
+     == 'e' ==> 00001
+    
+00001 
+     == 'n' ==> 00002
+    
+00002 
+     == 't' ==> 00003
+    
+00003 
+     == 'e' ==> 00004
+    
+00004 A
+    
+
+
+Original = int
+Cutter   = print|integer|ente
+
+result =  init-state = 0L
+00000 
+     == 'i' ==> 00001
+    
+00001 
+     == 'n' ==> 00002
+    
+00002 
+     == 't' ==> 00003
+    
+00003 A
+    
+
+---------------------------
+Original = [0-9]+
+Cutter   = [0-9]
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = [0-9]
+Cutter   = [0-9]+
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = [0-9]+
+Cutter   = 0
+
+result =  init-state = 0L
+00000 
+     == ['1', '9'] ==> 00001
+    
+00001 A
+     == ['1', '9'] ==> 00001
+    
+
+
+Original = 0
+Cutter   = [0-9]+
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = [0-9]+
+Cutter   = 01
+
+result =  init-state = 0L
+00000 
+     == '0' ==> 00001
+     == ['1', '9'] ==> 00002
+    
+00001 A
+     == '0' ==> 00001
+     == ['2', '9'] ==> 00002
+    
+00002 A
+     == '0' ==> 00001
+     == ['1', '9'] ==> 00002
+    
+
+
+Original = 01
+Cutter   = [0-9]+
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = [0-9]{2,}
+Cutter   = 01
+
+result =  init-state = 0L
+00000 
+     == '0' ==> 00001
+     == ['1', '9'] ==> 00004
+    
+00001 
+     == '0' ==> 00002
+     == ['2', '9'] ==> 00003
+    
+00002 A
+     == '0' ==> 00002
+     == ['2', '9'] ==> 00003
+    
+00003 A
+     == '0' ==> 00002
+     == ['1', '9'] ==> 00003
+    
+00004 
+     == '0' ==> 00002
+     == ['1', '9'] ==> 00003
+    
+
+
+Original = 01
+Cutter   = [0-9]{2,}
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = 123
+Cutter   = 123(4?)
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = 123(4?)
+Cutter   = 123
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = 12
+Cutter   = 1(2?)
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = 1(2?)
+Cutter   = 12
+
+result =  init-state = 0L
+00000 
+     == '1' ==> 00001
+    
+00001 A
+    
+
+---------------------------
+Original = 1
+Cutter   = 1(2?)
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = 1(2?)
+Cutter   = 1
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = "123"|"ABC"
+Cutter   = "123"
+
+result =  init-state = 0L
+00000 
+     == 'A' ==> 00001
+    
+00001 
+     == 'B' ==> 00002
+    
+00002 
+     == 'C' ==> 00003
+    
+00003 A
+    
+
+
+Original = "123"
+Cutter   = "123"|"ABC"
+
+result =  init-state = 0L
+00000 
+    
+
+---------------------------
+Original = \n
+Cutter   = (\r\n)|\n
+
+result =  init-state = 0L
+00000 
+    
+
+
+Original = (\r\n)|\n
+Cutter   = \n
+
+result =  init-state = 0L
+00000 
+    
+

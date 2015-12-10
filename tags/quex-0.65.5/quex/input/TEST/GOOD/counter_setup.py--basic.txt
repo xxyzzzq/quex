@@ -1,0 +1,128 @@
+(1) |>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+space:
+      1 by [\0, 'ÿ']
+
+
+(2) |[\v\a]|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(3) |[\v\a] >|
+
+test_string:1:error: Missing '=>' after character set definition.
+Exception!
+
+(4) |[\v\a] => grid|
+
+test_string:1:error: End of file reached while parsing 'counter' section.
+
+(5) |[\v\a] => trid|
+
+test_string:1:error: Unrecognized specifier 'trid'.
+test_string:1:error: Did you mean 'grid'?
+Exception!
+
+(6) |[\v\a] => grid>|
+
+test_string:1:warning: Indentation grid counts of '1' are equivalent of to a space
+test_string:1:warning: count of '1'. The latter is faster to compute.
+test_string:1:error: Missing ';' after 'grid' specification.
+Exception!
+
+(7) |[\v\a] => grid 4;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+grid:
+      4 by '\a', '\v'
+space:
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
+
+
+(8) |[\v\a] => space;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+space:
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
+      1 by '\a', '\v'
+
+
+(9) |[\v\a] => space 0rXVI;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+space:
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
+     16 by '\a', '\v'
+
+
+(10) |[\v\a] => newline;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+newline:
+      1 by '\a', '\v'
+space:
+      1 by [\0, \6], ['\b', '\n'], ['\f', 'ÿ']
+
+
+(11)
+::
+[\v\a] => space;
+[\t] => grid 10;
+::
+
+test_string:2:error: End of file reached while parsing 'counter' section.
+
+(12)
+::
+[\v\a] => space;
+[\t] => grid 10;>
+::
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+grid:
+     10 by '\t'
+space:
+      1 by [\0, \6], '\b', '\n', ['\f', 'ÿ']
+      1 by '\a', '\v'
+
+
+(13) |[\n]    => space;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+test_string:1:warning: Setup does not define 'newline'.
+test_string:1:warning: ('--suppress 11' to avoid this message)
+space:
+      1 by [\0, '\t'], ['\v', 'ÿ']
+      1 by '\n'
+
+
+(14) |x        => newline; [\n]    => space 2;>|
+
+test_string:1:warning: No '\else' defined in counter setup. Assume '\else => space 1;'
+test_string:1:warning: ('--suppress 12' to avoid this message)
+newline:
+      1 by 'x'
+space:
+      1 by [\0, '\t'], ['\v', 'w'], ['y', 'ÿ']
+      2 by '\n'
+
+
