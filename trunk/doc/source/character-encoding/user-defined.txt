@@ -299,7 +299,7 @@ defined character converter.
          beginning of the derived class' object. A pointer to the (beginning) of 
          the derived class' object points at the same time to the beginning of the
          member ``base`` which is of type ``QuexConverter``. A pointer to the
-         derived class can act seeminglessly as a pointer to the base class.
+         derived class can act seamlessly as a pointer to the base class.
 
 .. [#f2] A ``me`` pointer in C corresponds to the ``this`` pointer in C++. It gives
          access to the objects content.

@@ -7,14 +7,14 @@ Microsoft Windows (tm), Mac OS (tm), and Linux (.deb and .rpm based
 distributions).
 
 This section discusses the major 'pillars' of an installation. It is explains
-how to install quex from one of the source packages on an arbitrary platform.
+how to install Quex from one of the source packages on an arbitrary platform.
 At the same time, it may provide first hints for troubleshooting. The pillars
 of a Quex installation are the following:
 
 .. describe:: Python
 
-    Before beginning the installation of quex, make sure that
-    Python (http://www.python.org) is installed. Most linux distributions provide
+    Before beginning the installation of Quex, make sure that
+    Python (http://www.python.org) is installed. Most Linux distributions provide
     handy .rpm or .deb packages.
 
     .. warning:: 
@@ -24,7 +24,7 @@ of a Quex installation are the following:
        2.6.
 
     In order to verify that Python is installed you may open a 
-    console (``cmd.exe``, ``xterm`` or a shel/terminal under Unix).
+    console (``cmd.exe``, ``xterm`` or a shell/terminal under Unix).
     Then type ``python`` and the output should be similar to::
 
         > python
@@ -53,7 +53,7 @@ of a Quex installation are the following:
    That is, select a file with the ending '.tgz', '.zip', or '.7z' from the
    download directory.  Extract the files to a directory of your choice.
 
-.. describe:: The QUEX_PATH
+.. describe:: The ``QUEX_PATH``
 
    Quex knows about where it is installed through the environment variable
    ``QUEX_PATH``. If you are using a Unix system and the bash-shell, add 
@@ -63,16 +63,16 @@ of a Quex installation are the following:
 
    To do the same thing on Windows, go to Control Panel, System, Advanced,
    Environment Variables. Then add the variable ``QUEX_PATH`` with the
-   value ``C:\Programs\Quex``, provided that quex is installed there.
+   value ``C:\Programs\Quex``, provided that Quex is installed there.
 
-   For clarity, the path must point to the place wher ``quex-exe.py`` 
+   For clarity, the path must point to the place where ``quex-exe.py`` 
    is located.
 
 .. describe:: The Quex Executable
 
    The safest way to do this is to add the content of the ``QUEX_PATH``
    variable to the PATH variable. Thus the systems will search for
-   executables in quex's installation directory. Or, on operating systems
+   executables in Quex's installation directory. Or, on operating systems
    that can provide links, make a link::
    
       > ln -s $QUEX_PATH/quex-exe.py $EXECUTABLE_PATH/quex
@@ -109,13 +109,13 @@ and get a result similar to::
     ABSOLUTELY NO WARRANTY
 
 Note, that with the operating system installers there might be problems
-occuring with previous installations. Thus, when updating better better 
+occurring with previous installations. Thus, when updating better better 
 move any older installation to a place where the system can find them
 (e.g. in the trash can). 
 
 .. describe:: Compilation
 
-    When compiling Quex-generated code the QUEX_PATH
+    When compiling Quex-generated code the ``QUEX_PATH``
     must be provided as an include path, i.e. you must add 
     an ``-I`` option ``-I$QUEX_PATH`` on the command line
     or ``-I$(QUEX_PATH)`` in a Makefile.
@@ -131,9 +131,9 @@ move any older installation to a place where the system can find them
 
 That is all. Now, you should either copy the directories ``./demo/*`` to a
 place where you want to work on it, or simply change directory to there.  These
-directories contain sample applications 000, 001, $\ldots$. Change to the directory of the
+directories contain sample applications 000, 001, etc. Change to the directory of the
 sample applications and type ``make``. If everything is setup properly,
-you will get your first quex-made lexical analyser executable in a matter
+you will get your first Quex-made lexical analyzer executable in a matter
 of seconds. 
 
 .. note::
@@ -144,9 +144,9 @@ of seconds.
    of variables that need to be adapted.
 
 The example applications depict easy ways to specify
-traditional lexical analysers, they show some special features of quex such
+traditional lexical analyzers, they show some special features of Quex such
 as mode transitions, and more. Each demo-application deals with a particular
-feature of quex: 
+feature of Quex: 
 
 .. data:: demo/000
 
@@ -158,7 +158,7 @@ feature of quex:
 
 .. data:: demo/002
 
-          An indentation based lexical analyzer reyling on implicitly generated
+          An indentation based lexical analyzer relying on implicitly generated
           tokens ``INDENT``, ``DEDENT``, and ``NODENT``. 
 
 .. data:: demo/003
@@ -169,29 +169,29 @@ feature of quex:
 
 .. data:: demo/004
 
-          A lexical analyser for the 'C' language.  
+          A lexical analyzer for the 'C' language.  
 
 .. data:: demo/005
 
           An application that demonstrates how the inclusion of files and the 
-          return from included files is handled by quex's feature of include
+          return from included files is handled by Quex's feature of include
           stacks.
 
 .. data:: demo/006
 
           An example that treats *pseudo ambiguous post contexts* (or,
           'dangerous trailing contexts) which are difficult to deal with by
-          means of traditional lexical analyser generators.
+          means of traditional lexical analyzer generators.
 
 .. data:: demo/007
 
-          Lexical analyzer specifications showing pattern priorization between
+          Lexical analyzer specifications showing pattern prioritization between
           base and derived modes as well as applications of ``PRIORITY-MARK``
           and ``DELETION``.
 
 .. data:: demo/008
 
-          A quex generated lexer is linked to a bison generated parser. 
+          A Quex generated lexer is linked to a bison generated parser. 
 
 .. data:: demo/009
 
@@ -206,11 +206,11 @@ feature of quex:
 .. data:: demo/011
 
           Examples where the internal engine runs on a character encoding different
-          from unicode. This is in contrast to using a converter. 
+          from Unicode. This is in contrast to using a converter. 
           
 .. data:: demo/012
 
-          Multiple lexical analysers linked into a single application. 
+          Multiple lexical analyzers linked into a single application. 
 
 .. data:: demo/012b
 
@@ -221,13 +221,13 @@ feature of quex:
 
           Benchmark suite to measure the performance of the lexical analyzer.
           As an example a benchmark for a C-lexer is implemented. The suite can
-          build lexical analyzers based on quex, but also as a comparison the
+          build lexical analyzers based on Quex, but also as a comparison the
           same analyzers generated by flex and re2c.
 
 The author of this document suggests that the user looks at these sample
 applications first before continuing with the remainder of this text.  With the
 background of easy-to-use examples to serve as starting point for their own
-efforts, it should be natural to get a feeling for the ease of quex.
+efforts, it should be natural to get a feeling for the ease of Quex.
 
 Please, consider the section 'trouble shooting' for further hints.
 

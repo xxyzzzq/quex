@@ -40,7 +40,7 @@ Automatic Token Memory Management
 
 Automatic token memory management is active by default. It relieves the user
 from anything related to memory management of the internal token or token
-queues. It is the seemingless nature which makes it possible to introduce the
+queues. It is the seamless nature which makes it possible to introduce the
 concepts of token passing policies without much distractive comments. 
 
 

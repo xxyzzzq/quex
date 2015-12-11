@@ -1,13 +1,13 @@
 Incidence Handling
 ==================
 
-User activity triggered by the lexical analyser is not restricted to 'on
-pattern match' as it is implemented by pattern-action pairs.  Instead, quex
+User activity triggered by the lexical analyzer is not restricted to 'on
+pattern match' as it is implemented by pattern-action pairs.  Instead, Quex
 allows the definition of incidence handlers for several 'incidences'. 
 
 .. note:: The term 'incidence' is chosen deliberately instead of 'event'. 
    The intend is to emphasize the difference to 'events' in state machines.
-   An incidence is something 'big' that happend during analysis such as 
+   An incidence is something 'big' that happened during analysis such as 
    a pattern match or the arrival at end-of-stream. Events in state machines
    are more 'atomic' in the sense that they trigger state transitions. Since
    Quex's business is closely related to state machines it had to be avoided
@@ -16,9 +16,9 @@ allows the definition of incidence handlers for several 'incidences'.
 An incidence handlers can contain user written code which is executed as soon
 as the particular incidence arrives. Examples for incidences are 'on_match' which is
 triggered whenever a pattern matches, 'on_indentation' whenever there is a
-transition from whitespace to non-whitespace after newline, and so on. Incidence
+transition from white space to non-white space after newline, and so on. Incidence
 handlers are tied to modes, thus they are defined inside modes. An incidence
-handler of a mode A is only armed as long as the lexical analyser is in that
+handler of a mode A is only armed as long as the lexical analyzer is in that
 particular mode.
 
 The following example shows how entry and exit of a mode may be used to 
@@ -60,4 +60,4 @@ based languages--as shown in the following example:
         ...
     }
 
-The usage details about those example is explained in the sections to come.
+The usage details about this example is explained in the sections to come.

@@ -29,13 +29,13 @@ to combine them into powerful patterns.
 .. describe:: [xyz]
 
      a "character class" or "character set"; in this case, the pattern matches
-     either an ``x``, a ``y``, or a ``z``. The brackets '$[$' and '$]$' are
+     either an ``x``, a ``y``, or a ``z``. The brackets ``[`` and ``]`` are
      examples for lonestanding characters that are operators. If they are to be
      matched quotes or backslashes have to be used as shown below. Character
      sets are a form of *alternative* expressions-- for one single character.
      For more sophisticated alternative expressions see the paragraphs below. 
 
-.. describe:: [: expression :]
+.. describe:: [:expression:]
 
      matches a set of characters that result from a character set expression
      `expression`.  Section <<formal/patterns/character-set-expressions>>
@@ -49,8 +49,7 @@ to combine them into powerful patterns.
      letter from ``j`` through ``o``, or a ``Z``. The minus ``-`` determines
      the range specification. Its left hand side is the start of the range.
      Its right hand sinde the end of the range (here ``j-o`` means from ``j``
-                                                to ``o``).  Note, that ``-``
-     standards for 'range from to' where the character code of the right hand
+     to ``o``).  The ``-`` stands for 'range from to' where the character code of the right hand
      side needs to be greater than the character code of the left hand side.
 
 .. describe:: [^A-Z\\n]
@@ -135,7 +134,7 @@ to combine them into powerful patterns.
      The default behavior corresponds to the flags *s* and *m* 
      (``\C{R}`` ≡ ``\C(sm){R}``) for patterns and *s* (``\C{R}`` ≡ ``\C(s){R}``) 
      for character sets. Characters that are beyond the scope of the current 
-     codec or input character byte width are cut out seeminglessly. 
+     codec or input character byte width are cut out seamlessly. 
 
 .. describe:: \\R{ ... }
 

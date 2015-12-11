@@ -167,7 +167,7 @@ with the following member functions.
    void     byte_order_reversion_set(bool Value);
 
 An engine created for codec ``utf16`` can be used for both, little endian and big endian
-data streams. The abovementioned flags allow to synchronize the byte order of the CPU
+data streams. The aforementioned flags allow to synchronize the byte order of the CPU
 with the data streams byte order by means of reversion, if necessary.
 
 .. note::

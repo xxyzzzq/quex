@@ -7,7 +7,7 @@ interface and its users tend to be more graphical-oriented. This section tries
 to overcome initial troubles related to the usage of Visual Studio.
 
 Quex comes with a variety of demos located in subdirectories of
-`$QUEX_PATH/demo`. To start, one of the project files must be loaded into
+``$QUEX_PATH/demo``. To start, one of the project files must be loaded into
 Visual Studio. Then, under 'Project' or 'Debug' a choice allows to 'Build the
 Project'. If this works, it can be run by clicking on a green triangle that
 points to the right in the top tool bar. The first thing that might fail, is

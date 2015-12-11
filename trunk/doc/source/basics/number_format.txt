@@ -3,7 +3,7 @@
 Number Format
 -------------
 
-Numbers in quex are specified in a way similar to what is common practice in
+Numbers in Quex are specified in a way similar to what is common practice in
 many programming languages such as C, Python, Java, etc. -- with some convenient
 extensions. Number formats are as follows:
 
@@ -31,6 +31,6 @@ extensions. Number formats are as follows:
 
    Roman numbers must be preceeded by a '0r' prefix.
 
-.. describe :: 0n as in "0raabdea" or "0rABHJ"
+.. describe :: 0n as in "0naabdea" or "0nABHJ"
 
    Napier numbers (location arithmetric) must be preceeded by a '0n' prefix.

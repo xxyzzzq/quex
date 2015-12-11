@@ -9,7 +9,7 @@ example is the 'block-close' token that appears in indentation based
 languages, such as Python. Consider, for example the following python
 code fragment:
  
-  .. code-block:: python
+.. code-block:: python
 
      for i in range(10):
          if i in my_list:
@@ -31,7 +31,7 @@ Tokens that should carry the potential to be sent repeatedly must be
 mentioned in a ``repeated_token`` section inside the quex input sources, 
 e.g.
 
-  .. code-block:: cpp
+.. code-block:: cpp
 
       repeated_token {
           ABC;
@@ -45,13 +45,13 @@ generated engine supports token repetition for the above three token ids.  This
 means that ``self_send_n()`` can be used for them and the token receive
 functions consider their possible repetition. That means that if, for example, 
 
-  .. code-block:: cpp
+.. code-block:: cpp
 
      self_send_n(5, QUEX_TKN_XYZ);
 
 is called from inside the analyzer, then
 
-  .. code-block:: cpp
+.. code-block:: cpp
  
      token_id = my_lexer.receive();
 

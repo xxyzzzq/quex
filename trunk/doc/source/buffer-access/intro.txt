@@ -370,7 +370,7 @@ Now, the buffer is filled and the real analyzis can start.
 When a ``TERMINATION`` token is detected a new frame must be loaded. The
 inner analyzis loop is left and the outer loop loads new content. If the
 ``BYE`` token appears the analyzis is done. Any token that is not one
-of the two abovementioned ones is a token to be considered by the parser.
+of the two aforementioned ones is a token to be considered by the parser.
 It follows the complete code of the analyzer for syntactically chunked
 input frames:
 
