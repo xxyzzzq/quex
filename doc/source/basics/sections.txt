@@ -57,33 +57,33 @@ in a source file to be treated by quex:
 
    In this section token identifier can be specified. The definition of token identifiers
    is optional. The fact that quex warns about undefined token-ids helps to avoid 
-   dubios effects of typos, where the analyzer sends token ids that no one catches.
+   dubious effects of typos, where the analyzer sends token ids that no one catches.
 
    The syntax of this section is 
 
-   .. code-block:: cpp
+       .. code-block:: cpp
 
-      token {
-          ...
-          TOKEN_NAME;
-          ...
-      }
+              token {
+                  ...
+                  TOKEN_NAME;
+                  ...
+              }
       
    The token identifiers need to be separated by semi-colons.
 
    .. note:: 
 
-       The token identifier in this section are prefix-less. The token prefix, e.g. defined
-       by comand line option ``--token-id-prefix`` is automatically pasted in front of the 
-       identifier.
+      The token identifier in this section are prefix-less. The token prefix, e.g. defined
+      by comand line option ``--token-id-prefix`` is automatically pasted in front of the 
+      identifier.
 
-   .. code-block:: cpp
+      .. code-block:: cpp
 
-      repeated_token {
-          ...
-          TOKEN_NAME;
-          ...
-      }
+              repeated_token {
+                  ...
+                  TOKEN_NAME;
+                  ...
+              }
 
       Inside this section the token names are listed that may be sent
       via implicit repetition using ``self_send_n(...)``. That is, inside
@@ -94,7 +94,7 @@ in a source file to be treated by quex:
 
 
 Additionally to the section defining the behavior of the lexical analyzer there are sections
-that allow to past code directly into the definition of the engine to be generated. They all 
+which allow one to paste code directly into the definition of the engine to be generated. They all 
 follow the pattern::
 
    section-name {

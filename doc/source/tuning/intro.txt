@@ -215,7 +215,7 @@ It follows a list of general hints for performance tuning:
 
 .. note::
 
-   The forth important thing about improving performance is to avoid frequent
+   The fourth important thing about improving performance is to avoid frequent
    system calls. For example, allocate memory in a chunk and then cut from it
    when needed, instead of calling ``new``, ``delete``, ``malloc`` or ``free``
    all the time. You might also consider to implement containers yourself

@@ -119,4 +119,4 @@ and to apply the appropriate interaction scheme.
 
 In the view of the author, these use case cover all possible scenarios. However,
 do not hesitate to write a email if there is a scenario which cannot be handled 
-by one of the abovementioned interaction schemes.
+by one of the aforementioned interaction schemes.

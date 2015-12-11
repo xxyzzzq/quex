@@ -139,7 +139,7 @@ converters can be included by
 
 Where ``MyLexer`` is the name of the generated lexical analyzer class and 
 ``iso8859_7`` is the name of the engine's codec. Furthermore, there is
-a set of basic functions that are designed to support the abovementioned
+a set of basic functions that are designed to support the aforementioned
 functions, but are still available for whom it may be useful. They are
 accessed by including
 

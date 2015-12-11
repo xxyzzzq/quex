@@ -65,7 +65,7 @@ analysers such as lex or flex:
     
  * Indentation *incidences*, i.e it is possible to provide an incidence handler
    for the incidence of the first appearing non-whitespace in a line. This incidence
-   handling happens quasi-paralell to the pattern matching.
+   handling happens quasi-paralel to the pattern matching.
   
 * A default general purpose *token* class. Additionally, Quex
   provides an interface to run the lexical analyser with a user-defined token
