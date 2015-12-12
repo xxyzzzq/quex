@@ -103,6 +103,13 @@
 #define QUEX_MIN(X, Y)  ((X) < (Y) ? (X) : (Y))
 #define QUEX_MAX(X, Y)  ((X) > (Y) ? (X) : (Y))
 
+/* In cases, such as DLL compilation for some dedicated compilers, 
+ * the classes need some epilog. If the user does not specify such
+ * a thing, it must be empty.                                                */
+#ifndef    QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#   define QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#endif
+
 /* Hash Function:
  *
  * Using Dan Bernstein's 'dbj2' (published in comp.lang.c) which is extremely
