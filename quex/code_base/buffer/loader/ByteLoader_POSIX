@@ -16,7 +16,7 @@ extern "C" {
 }
 #endif
 
-typedef struct { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     QUEX_NAME(ByteLoader)  base;
     int                    fd;
 } QUEX_NAME(ByteLoader_POSIX);

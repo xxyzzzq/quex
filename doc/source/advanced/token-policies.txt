@@ -23,12 +23,12 @@ the user of the lexical analyzer. Token passing in quex can be characterized by
   .. describe:: Token passing policy
  
      Possible policies are 'queue' and 'single'.  Tokens can be stored in a
-     *queue* to be able to produce more than one token per analyzis step. If
+     *queue* to be able to produce more than one token per analysis step. If
      this is not required a *single* token instance may be used to communicate
-     analyzis results.
+     analysis results.
 
      The default policy is 'queue' since it is the easiest and safest to handle
-     during analyzis and incidence handlers.
+     during analysis and incidence handlers.
 
 The following two sections discuss automatic and user controlled token memory
 management separately. For each memory management type the two token passing
@@ -97,7 +97,7 @@ a code fragment like the following
 
     QUEX_TYPE_TOKEN*  token_p = 0x0; 
     ...
-    while( analyzis ) {
+    while( analysis ) {
         lexer.receive(&token_p);
         ...
         if( content_is_important_f ) {
@@ -124,7 +124,7 @@ queue is princidenceed since the analyser returns as soon as the queue is full.
 Then the ``--token-queue-safety-border`` command line flag allows to define a
 safety region. Now, the analyzer returns as soon as the remaining free places
 in the queue are less then the specified number. This ensures that for each
-analyzis step there is a minimum of places in the queue to which it can write
+analysis step there is a minimum of places in the queue to which it can write
 tokens. In other words, the safety-border corresponds to the maximum number of
 tokens send as reaction to a pattern match, including indentation incidences and
 mode transitions.  
@@ -150,7 +150,7 @@ of this function:
     QUEX_TYPE_TOKEN*  begin_p  = 0x0;
     QUEX_TYPE_TOKEN*  end_p    = 0;
     ...
-    while( analyzis ) {
+    while( analysis ) {
         qlex.receive(&iterator);
         if( content_is_important_f ) {
             store_away(iterator);
@@ -192,7 +192,7 @@ The advantages of a token queue are all lost, i.e.
 
 On the other hand, there is a major advantage:
 
-   -- The state of the analyzer is conform with the currently reported
+   -- The state of the analyzer conforms to the currently reported
       token.
 
 Thus, line numbers stream positions and even the current lexeme can be
@@ -212,7 +212,7 @@ improve the performance of an analyzer.
 In contrast to the policy 'queue' a with 'single' the call to ``receive()``
 does not bend any token pointer to a current token. Instead, the one 
 token inside the analyzer can be referred to once. The receive function
-returns only the token id as a basis for later analyzis. If necessary, the
+returns only the token id as a basis for later analysis. If necessary, the
 application may rely on the token's content by dereferencing the pointer
 at any time. A code fragment for policy 'single' is shown below:
 
@@ -222,7 +222,7 @@ at any time. A code fragment for policy 'single' is shown below:
     ...
     token_p = qlex.token_p();
     ...
-    while( analyzis ) {
+    while( analysis ) {
         token_id = qlex.receive();
         ...
         if( content_is_important_f ) {
@@ -260,7 +260,7 @@ User Controlled Token Memory Management
 The previous discussion has revealed a major drawback in automatic token memory
 management: Whenever the content of a token is of interest for a longer term,
 it must be copied. This could be spared, if the lexical analyzer is told
-were to write the token information. When an analyzis step is done the user
+were to write the token information. When an analysis step is done the user
 takes the pointer to the finished token, and provides the analyzer with a
 pointer to an empty token.  This token-switching  reduces the need for
 memory allocation and disposes the need of copying. As a disadvantage, the
@@ -310,7 +310,7 @@ scenerio looks like
     ...
     lexer.set_token_p(&token_bank[0]);
     ...
-    while( analyzis ) {
+    while( analysis ) {
         /* call to receive(...) switches token pointer */
         token_id = lexer.receive();
         ...
@@ -345,7 +345,7 @@ The following code fragment displays a sample application of this approach:
     queue = get_new_token_queue(queue_size);
     qlex.token_queue_set(queue, queue_size);
     ...
-    while( analyzis ) {
+    while( analysis ) {
         iterator    = qlex.receive();
         /* consider the first token, the remainder is in the queue.
         ...
@@ -398,13 +398,13 @@ and
    for(iterator = queue; iterator != queue QueueSize; ++iterator) 
        QUEX_NAME_TOKEN(destruct)(iterator);
 
-   free(queue)
+   free(queue);
 
 
 Remark on Token Passing
 -----------------------
 
-The user initiates an analyzis step by his call to ``.receive()``. The analyzer
+The user initiates an analysis step by his call to ``.receive()``. The analyzer
 tries to make sense out of the following sequence of characters, i.e.
 characterizes it as being a number, a keyword, etc. The character sequence that
 constitutes the pattern, i.e. the lexeme, has a begin and an end. Now, comes
@@ -415,7 +415,7 @@ the point where this information has to be passed to the caller of
 
    The concept of a 'token' is that of a container that carries some
    information from the analyzer to the user. No tokens shall be allocated
-   in a pattern action. During analyzis it is only filled, not created, and when
+   in a pattern action. During analysis it is only filled, not created, and when
    ``receive()`` returns the user reads it what is in it. 
   
    Token allocation, construction, destruction, and deallocation is either
@@ -427,7 +427,7 @@ Token passing is something with happens notoriously often, and thus it is
 crucial for the performance of the lexical analyzer. During the pattern-match
 action the lexeme is referred to by means of a character pointer. This pointer
 is safe, as long as no buffer reload happens. Buffer reloads are triggered 
-by analyzis steps. Depending on the token passing policy, the lexeme pointer 
+by analysis steps. Depending on the token passing policy, the lexeme pointer 
 is safe to be used without copying:
 
  .. describe:: Single
@@ -438,20 +438,20 @@ is safe to be used without copying:
     may happen. If string to which the lexeme pointer points is important, then
     it must be copied before this next call to receive.
 
-    .. note:: When ``CONTINUE`` is used, this initiates an analyzis step
+    .. note:: When ``CONTINUE`` is used, this initiates an analysis step
               during which a buffer reload may happen.
 
 
  .. describe:: Queue
 
     As with 'single', a lexeme pointer must be copied away before the next
-    call to ``receive()``. However, potentially multipl tokens are sent,
-    and analyzis continues after a pattern has matched, then the lexeme
+    call to ``receive()``. However, potentially multiple tokens are sent,
+    and analysis continues after a pattern has matched, then the lexeme
     pointer may be invalid after each step.
 
 The default token implementation ensures, that the lexeme is stored away
 in  safe place, during the pattern match action. However, for things that
-can be interpreted, such as numbers it may be advantegeous to interpret
+can be interpreted, such as numbers it may be advantageous to interpret
 them directly and store only the result inside the token. 
 
 The above mentioned copy operations are done, because the buffer content
@@ -485,7 +485,7 @@ taken about tokens being sent from inside incidence handlers and multiple tokens
 can be sent from inside a single action without much worries. Token queues
 require a little more memory and a little more computation time than 
 single tokens. Token queue can reduce the number of function calls since
-the analyzis can continue without returning until the queue is filled.
+the analysis can continue without returning until the queue is filled.
 Nevertheless, only benchmark tests can produce quantitative statements
 about which policy is preferable for a particular application.
 
@@ -499,6 +499,6 @@ about which policy is preferable for a particular application.
 .. rubric:: Footnotes
 
    [#f1] Previous designs where both setups compiled for both policies had
-   let to wrong and confusing results; and only in depth analyzis revealed the
+   let to wrong and confusing results; and only in depth analysis revealed the
    inappropriate token policy being applied. 
 

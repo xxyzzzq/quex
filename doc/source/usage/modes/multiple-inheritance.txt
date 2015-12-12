@@ -7,7 +7,7 @@ Quex allows multiple inheritance, i.e. a mode can inherit more than one base
 mode.  Multiple inheritance is a potential cause of confusion when it comes to
 pattern match resolution or incidence handler sequence. The resolution sequence
 follows the 'depth-first approach'. As an example consider the following 
-mode hierarchie: 
+mode hierarchy: 
 
 .. code-block:: cpp
 
@@ -21,7 +21,7 @@ mode hierarchie:
     mode D : H        { [a-z]{1,2} => T_D(Lexeme); }
     mode H            { [a-z]{1,1} => T_H(Lexeme); }
 
-The according mode inheritance hierarchie is show in figure :ref:`Inheritance
+The according mode inheritance hierarchy is show in figure :ref:`Inheritance
 Resolution <fig-inheritance-resolution>`. The letters in the boxes name the
 modes and the numbers at their right bottom edges indicate the mode's
 precedence. The applied depth-first approach implies two things:

@@ -1,11 +1,10 @@
 Byte Order Mark
 ===============
 
-Unicode character stream may contain a byte order mark (BOM)
-at the beginning. Converters like IConv or ICU may possibly
-not eat the BOM. Also, if an engine runs in a genuine codec
-mode, i.e. without conversion, it does not know about BOMs.
-It is the user's task to cut the BOM--but Quex helps. 
+Unicode character stream may contain a byte order mark (BOM) at the beginning.
+Converters like IConv or ICU may possibly not eat the BOM. Also, if an engine
+runs in a genuine codec mode, i.e. without conversion, it does not know about
+BOMs.  It is the user's task to cut the BOM--but Quex helps. 
 
 Quex provides functions to handle the recognition and cutting of the BOM from a
 character stream. To access the following files must be included:
@@ -38,15 +37,14 @@ and in C
     QUEX_TYPE_BOM  quex_bom_identify(const uint8_t* const Buffer, size_t* n);
     const char*    quex_bom_name(QUEX_TYPE_BOM BOM);
 
-In the further discussion the functions will be referred to without their
-name or namespace prefix. The function ``bom_snap(...)``
-checks whether the stream starts with a byte sequence that is identified
-as a byte order mark. If so, it steps over it so that the lexical analyzis
-can start immediately after it. An exception is the BOM for UTF7; this 
-coding is identified, but the stream does not step over it. If UTF7
-is detected, it has to be considered with care because it may actually 
-a normal character sequence. The type ``QUEX_TYPE_BOM`` defines constants
-that identify BOMs. It is defined as follows:
+In the further discussion the functions will be referred to without their name
+or namespace prefix. The function ``bom_snap(...)`` checks whether the stream
+starts with a byte sequence that is identified as a byte order mark. If so, it
+steps over it so that the lexical analysis can start immediately after it. An
+exception is the BOM for UTF7; this coding is identified, but the stream does
+not step over it. If UTF7 is detected, it has to be considered with care
+because it may actually a normal character sequence. The type ``QUEX_TYPE_BOM``
+defines constants that identify BOMs. It is defined as follows:
 
 .. code-block::cpp
 
@@ -78,7 +76,7 @@ that identify BOMs. It is defined as follows:
 
 .. note:: The BOM for UTF7 consists of the three bytes 0x2B, 0x2F, 0x76 
           plus one of 0x2B, 0x2F, 0x38, or 0x39. This corresponds to the
-          caracters "+", "/", "v" and one of "+", "/", "8", or "9". All
+          characters "+", "/", "v" and one of "+", "/", "8", or "9". All
           of them are normal Unicode Characters.  Thus a normal Unicode
           stream could wrongly be identified as an UTF7 stream. Also,
           The last two bits are the beginning of a new character. Thus,
@@ -178,7 +176,7 @@ fragment shows an initialization in C language:
     /* The lexer **must** be constructed after the BOM-cut */
     QUEX_NAME(from_FILE)(&qlex, fh, "UTF8", false);
 
-    /* Now, the qlex is ready for analyzis. */
+    /* Now, the qlex is ready for analysis. */
     ... 
 
 If a running lexer needs to set the bom dynamically, a pattern like the

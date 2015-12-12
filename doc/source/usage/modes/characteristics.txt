@@ -68,7 +68,9 @@ The possible options for modes to be specified are the following.
    
    * ``no`` means that no other mode may inherit from this mode. 
    
-   * ``only`` princidences that the lexical analyzer ever enters this mode. Its sole purpose is to be a base mode for other modes. It then acts very much like an *abstract class* in C++ or an *interface* in Java.
+   * ``only`` princidences that the lexical analyzer ever enters this 
+      mode. Its sole purpose is to be a base mode for other modes. It then 
+      acts very much like an *abstract class* in C++ or an *interface* in Java.
 
 .. data::  <exit: arg0 arg1 ... argN>      
 
@@ -150,7 +152,7 @@ The possible options for modes to be specified are the following.
    linear string.
 
    .. warning:: For 'real' C++ comments the ``skip_range`` cannot produce a behavior
-                that is conform to the standard. For this, the lexical analyzer must
+                that conforms to the standard. For this, the lexical analyzer must
                 be able to consider the following as a single comment line
 
                 .. code-block:: cpp
@@ -160,7 +162,7 @@ The possible options for modes to be specified are the following.
                       a comment
 
                 where the end of comment can be suppressed by a backslashed followed
-                by whitespace. The ``skip_range`` option's efficiency is based on the
+                by white space. The ``skip_range`` option's efficiency is based on the
                 delimiter being a linear character sequence. For the above case a 
                 regular expression is required.
 
@@ -219,7 +221,8 @@ The possible options for modes to be specified are the following.
              while( 1 + 1 == 2 ) { /* Forever */
                  const int next_listener_id = get_open_listener();
                  if( next_listener_id == 0 ) break;
-                 com_send(next_listener_id, PLEASE_RETURN); /* Ask thread to exit. */
+                 /* Request from thread to exit/return. */
+                 com_send(next_listener_id, PLEASE_RETURN); 
              }
          }
 
@@ -238,7 +241,8 @@ The possible options for modes to be specified are the following.
              while( 1 + 1 == 2 ) { /* Forever *_/
                  const int next_listener_id = get_open_listener();
                  if( next_listener_id == 0 ) break;
-                 com_send(next_listener_id, PLEASE_RETURN); /* Ask thread to exit. *_/
+                 /* Request from thread to exit/return. */
+                 com_send(next_listener_id, PLEASE_RETURN); 
              }
          }
          */
@@ -262,7 +266,7 @@ The possible options for modes to be specified are the following.
 
    .. warning:: Nested range skipping is a very nice feature for a programming
       language.  However, when a lexical analyzer for an already existing language
-      is to be developped, e.g.  'C' or 'C++', make sure that this feature is not
+      is to be developed, e.g.  'C' or 'C++', make sure that this feature is not
       used. Otherwise, the analyzer may produce undesired results.
 
 .. _sec-usage-modes-characteristics-incidence-handlers:
@@ -343,7 +347,8 @@ in the incidence handler definition. The list of incidence handlers is the follo
 
    Incidence handler for the case that a character stream does not match any pattern 
    in the mode. This is equivalent to the ``<<FAIL>>`` pattern as known in 
-   the 'lex' family of lexical analyzer generators.
+   the 'lex' family of lexical analyzer generators. ``on_failure``, though, eats
+   one character. The lexical analyzer may retry matching from what follows.
 
    .. note:: The definition of an ``on_failure`` section can be of great help
              whenever the analyzer shows an unexpected behavior. Before doing any
@@ -362,8 +367,11 @@ in the incidence handler definition. The list of incidence handlers is the follo
              .. code-block:: cpp
               
                 ...
-                on_failure { undo(); self << NEW_MODE; }
+                on_failure { self.undo(); self << NEW_MODE; }
                 ...
+
+             If ``undo()`` is not used, the letter consumed by ``on_failure`` is not
+             available to the patterns of mode ``NEW_MODE``. In C, 
 
    In a broader sense, 'on_failure' implements the 'anti-pattern' of all
    occurring patterns in a mode. That is it matches the shortest lexeme that
@@ -487,11 +495,11 @@ Here, there are listed only to provide in overview.
               indentation management has been improved heavily. It is likely
               that it will be removed totally.
 
-    The occurence of the first non-whitespace in a line triggers the ``on_indentation``
+    The occurence of the first non-white space in a line triggers the ``on_indentation``
     incidence handler. Note, that it is only executed at the moment where a pattern matches 
     that eats part (or all) of the concerned part of the stream. This incidence handler 
     facilitates the definition of languages that rely on indentation. ``Indentation``
-    provides the number of whitespace since the beginning of the line. Please,
+    provides the number of white space since the beginning of the line. Please,
     refer to section :ref:`sec-advanced-indentation-blocks` for further information.
 
 .. data:: on_indent

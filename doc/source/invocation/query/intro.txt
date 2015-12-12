@@ -64,11 +64,11 @@ lexical analyzer.
 
 .. warning::
 
-   Be careful with whitespace in expressions. A query such as::
+   Be careful with white space in expressions. A query such as::
 
       quex --set-by-expression 'intersection([a-m], [h-z])' 
 
-   may fail, because of the whitespace after the ','. The query::
+   may fail, because of the white space after the ','. The query::
 
       quex --set-by-expression 'intersection([a-m],[h-z])' 
 

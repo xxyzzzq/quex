@@ -16,7 +16,7 @@ a code fragment like
    }
 
 is straight forward: When the pattern ``while`` matches, then return the
-token-id ``QUEX_TKN_KEYWORD_WHILE``. Note, that quex takes the fuss of the
+token-id ``QUEX_TKN_KEYWORD_WHILE``. Quex takes the fuss off the
 user's shoulders to define numerical values for the tokens. Technically, in the
 generated code the token constructor is called and the token-id is set to the
 specified value. Now, the token constructor may allow other arguments. Those
@@ -27,7 +27,7 @@ additional arguments may be specified in brackets, such as
    mode MINE {
      ...
          // More general, and required when generating 'C' code:
-         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=atoi(Lexeme), text=4711);
+         [0-9]+  => QUEX_TKN_KEYWORD_NUMBER(number=(size_t)atoi((char*)Lexeme), text=4711);
          [a-z]+  => QUEX_TKN_KEYWORD_WORD(text=Lexeme);
      ...
    }
@@ -35,8 +35,8 @@ additional arguments may be specified in brackets, such as
 The list of arguments contains assigments such as ``number = atoi(Lexeme)``.
 The assigned attributes are the members of the token class which are set. In
 the above example the lexeme's numerical interpretation is assigned to the
-member variable 'number' inside the token, and the Lexeme itself is assigned
-directly to the text member variable. More than one of those assignments may
+member variable ``number`` inside the token, and the Lexeme itself is assigned
+directly to the ``text`` member variable. More than one of those assignments may
 occur. 
 
 .. _fig-lexeme-variables:
@@ -165,12 +165,12 @@ prefix. This is shown in the following example:
 .. code-block:: cpp
 
     Z      => 27;
-    honey  => 0x1000;             // decimal: 4069
+    honey  => 0x1000;             // decimal: 4096
     butter => 0o456;              // decimal: 302 hex: 12E
     bread  => 0b1000011010100101; // decimal: 34469 hex: 86A5
 
 Finally, the token-id can be specified via the name of a character from the
-unicode character by using 'UC' plus whitespace as a prefix. The unicode
+unicode character by using 'UC' plus white space as a prefix. The unicode
 character name must have the spaces inside replaced with underscores. An
 example is shown here:
 
@@ -185,7 +185,7 @@ example is shown here:
    The token is not initialized upon sending! In particular, this means, that
    elements of the token which are not explicitly set during the sending are
    left as they are. Tokens are considered as 'ships' that are constructed
-   before the analysis and destructed after the analyzis. They ship token
+   before the analysis and destructed after the analysis. They ship token
    information from the lexer to the user (parser). But, the construction
    process is not supposed to slow down the lexical analysis.
    
@@ -218,7 +218,7 @@ Analyzis Continuation
 
 If the token policy ``users_token`` is applied the analyzer returns after each
 sending of a token. When the token policy ``queue`` is used the analyzer
-continues its analyzis until it hits the safety border in the queue. An
+continues its analysis until it hits the safety border in the queue. An
 exception to this is the reaction to the end of file incidence, i.e.
 ``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer returns. This is
 to princidence sending tokens after the ``TERMINATION`` token.  Without an action

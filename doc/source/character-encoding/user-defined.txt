@@ -51,12 +51,12 @@ or the algorithm for character conversion. The role of each function is explaine
 
         This opens internally a conversion handle for the conversion from 'FromCodingName'
         to ``ToCodingName``. Pass ``0x0`` as ``ToCodingName`` in order to indicate a conversion
-        to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
+        to Unicode of size sizeof(QUEX_TYPE_CHARACTER). 
                 
         It is the task of the particular implementation to provide the 'to coding'
         which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
 
-        Based on the ``FromCodingName`` this function needs to decide wether the
+        Based on the ``FromCodingName`` this function needs to decide whether the
         character encoding is fixed size or dynamic size. According to this, the
         flag ``dynamic_character_size_f`` needs to be set. Setting it to ``true``
         is safe, but may slow down the stream navigation.
@@ -110,16 +110,16 @@ or the algorithm for character conversion. The role of each function is explaine
 
         The function ``on_conversion_discontinuity`` is called whenever a conversion discontinuity appears.
         Such cases appear only when the user navigates through the input
-        stream (seek_character_index(...)), or with long pre-conditions when
+        stream (seek_character_index(...)), or with long preconditions when
         the buffer size is exceeded. 
             
         For 'normal' converters this function can be set to '0x0'. If a converter
-        has an internal 'statefulness' that is difficult to be tamed, then use
+        has an internal 'stateful-ness' that is difficult to be tamed, then use
         this function to reset the converter. Actually, the initial reason
         for introducing the function pointer was the strange behavior of the 
         ICU Converters of IBM(R). Note, that if the function pointer is set, then
         the buffer filler does not use any hints on character index positions. This
-        may slow down the seek procedure. If a pre-condition makes it necessary to load
+        may slow down the seek procedure. If a precondition makes it necessary to load
         backwards, or the user navigates arbitrarily in the buffer stream there
         can be significant trade-offs.
 
@@ -191,17 +191,17 @@ converter functions be defined as
 
 Note, that the function signatures contain a pointer to ``CryptoConverter`` as
 a ``me`` pointer [#f2]_, where the required function pointers require a pointer to
-a ``QuexConverter`` converter object. This is no contradition. When the buffer filler
+a ``QuexConverter`` converter object. This is no contradiction. When the buffer filler
 creates an object of the derived type ``CryptoConverter`` is stores the pointer to
 it in as pointer to ``QuexConverter``. The member functions, though, know that
 they work on an object of the derived class ``CryptoConverter``. 
 
 Once, the access functions and the dedicated class have been defined a function
-needs to be implemented that creates a the converter. This needs to following:
+needs to be implemented that creates the converter. This needs to following:
 
 #. Allocate space for the converter object. The allocation method for the converter
    object must correspond the deletion method in ``delete_self``. A simple
-   way to implent this is to rely on ``malloc`` like this
+   way to implement this is to rely on ``malloc`` like this
 
    .. code-block:: cpp
 
@@ -258,7 +258,7 @@ needs to be implemented that creates a the converter. This needs to following:
         ...
 
    which assigns something useless to the conversion handle. This way it can be
-   easily detected wether the ``open`` call was done propperly.
+   easily detected whether the ``open`` call was done properly.
 
 #. Return a pointer to the created object. That is the easiest part:
 

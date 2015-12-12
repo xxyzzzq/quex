@@ -14,7 +14,7 @@ QUEX_NAMESPACE_MAIN_OPEN
      * The implementation of the categorization tree is a little more efficient
      * than the STL map, since we do not iterator over the content.
      *________________________________________________________________________________*/
-    typedef struct QUEX_NAME(DictionaryNode_tag) {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(DictionaryNode_tag) {
         /* Store the first character separately from the remainder. This might
          * help to avoid loading 'remotely allocated' strings into the cache if
          * they do not fit anyway (because of their first character).                 */ 
@@ -28,7 +28,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     } QUEX_NAME(DictionaryNode);
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         QUEX_NAME(DictionaryNode)*  root;
 
 #       ifndef __QUEX_OPTION_PLAIN_C

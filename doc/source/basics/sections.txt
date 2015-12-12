@@ -28,7 +28,7 @@ in a source file to be treated by quex:
       }
 
    After the ``mode`` keyword an identifier must name the mode to be specified. A ':'
-   is followed by a list of whitespace separated list of mode names of base 
+   is followed by a list of white space separated list of mode names of base 
    modes (see section <<>>). Then options can be specified as a list of html-like
    tags, i.e. bracketed in ``<`` - ``>`` brackets (see section <<>>). An opening curly
    bracket ``{`` opens the region for the definition of pattern-action pairs
@@ -47,7 +47,7 @@ in a source file to be treated by quex:
           ...
       }
 
-   The ``define`` keyword is followed by an opening curly bracked ``{``. Then pattern
+   The ``define`` keyword is followed by an opening curly bracket ``{``. Then pattern
    names can be defined as pairs. Each pattern name is an identifier. Note, that the
    pattern names do not enter any namespace of the generated source code. They are only
    known inside the mode definitions. The pattern-definition can be any formal description
@@ -154,7 +154,7 @@ A customized token type can easily be defined in a section called
 
    Defines a customized token class, see :ref:`Customized Token Classes <sec-customized-token-class>`.
 
-Quex supports the inclusion of other files or streams during analyzis. This
+Quex supports the inclusion of other files or streams during analysis. This
 is done by means of a include stack handler :ref:`Include Stack <sec-include-stack>`. It writes the
 relevant state information into a so called *memento* [#f2]_ when it dives
 into a file and restores its state from it when it comes back. The following

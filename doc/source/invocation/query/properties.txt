@@ -39,7 +39,7 @@ leads to an output as follows:
 Each line contains three fields separated by commas. The first field contains
 the *alias* for the property name, the second field contains the *property name*,
 and the last column contains the *type* of property. If a field containing
-``<unsuported>`` is appended, this means that this property is not supported
+``<unsupported>`` is appended, this means that this property is not supported
 by quex. In most cases this so because these properties support character operations
 rather then the definition of character sets. 
 
@@ -63,7 +63,7 @@ To help out with the second question call quex with the command line option
 This tells, that ``Numeric_Type`` is a property of type ``Enumerated``, i.e. its
 values are taken from a fixed list of values. The *alias* ``nt`` can be used as a
 placeholder for ``Numeric_Type``, and the possible value settings are ``Decimal``,
-``Digit``, and ``Numeric``. The strings mentioned in brackets are the *value aliases*
+``Digit``, and ``Numeric``. The strings mentioned in parenthesis are the *value aliases*
 that can be used as placeholders for the values, in case one does not want to type
 the whole name of the value. From this output one knows that expressions
 such as ``\P{Numeric_Type=Decimal}``, ``\P{nt=Di}``, and ``\P{Numeric_Type=Nu}`` are

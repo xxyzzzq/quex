@@ -102,7 +102,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         E_Ownership               ownership;
 
         uint8_t*                  begin;
@@ -113,7 +113,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     } QUEX_NAME(RawBuffer);
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         /* BufferFiller_Converter:
          *               *---------------------> QUEX_NAME(ByteLoader
          )*               *---------------------> Converter                 

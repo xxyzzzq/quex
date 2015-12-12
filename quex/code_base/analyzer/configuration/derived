@@ -432,3 +432,8 @@
 #    define __QUEX_IF_INCLUDE_STACK(X) /* No operation */
 #endif
 
+/* If the user does not define a class declaration epilog, 
+ * define it as empty.                                        */
+#ifndef     QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#    define QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG
+#endif

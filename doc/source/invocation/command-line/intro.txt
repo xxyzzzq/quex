@@ -1,11 +1,11 @@
 Command Line Options
 ====================
 
-This chapter sums up all command line options which can be passed to quex
-(Version 0.65.6) together with their meaning.  Most of the options here are alread explained in
-separate sections. The present enumeration serves the purpose of a quick
-reference. There are command line options for code generations, but also for
-queries. Each family of options is described in a separate section.
+This chapter sums up all command line options which can be passed to quex. Most
+of the options here are already explained in separate sections. The present
+enumeration serves the purpose of a quick reference. There are command line
+options for code generations, but also for queries. Each family of options is
+described in a separate section.
 
 Code Generation
 ===============
@@ -462,7 +462,7 @@ Default: false (disabled)
 There may be cases where the characters used to indicate buffer limit needs to be redefined, because 
 the default value appear in a pattern. For most codecs, such as ASCII and Unicode, the buffer 
 limit codes do not intersect with valid used code points of characters. Theoretically however, 
-the user may define buffer codecs that require a different definition of the limitting 
+the user may define buffer codecs that require a different definition of the limiting 
 codes. The following option allows modification of the buffer limit code:  
 
 .. cmdoption:: --buffer-limit number
@@ -609,7 +609,7 @@ and 0x93. Each byte is read separately and causes a separate state transition.
     The size of 
     a buffer element should be large enough so that it can carry the Unicode value of any character 
     of the desired input coding space. When using Unicode, to be safe '-b 4' should be used 
-    except that it is unconceivable that any code point beyond 0xFFFF ever appears. In this 
+    except that it is inconceivably that any code point beyond 0xFFFF ever appears. In this 
     case '-b 2' is enough.  
 
     When using dynamic sized codecs, this option is better not used. The 
@@ -651,7 +651,7 @@ Default: -1
 
     There are two types of byte ordering for integer number depending on the CPU. For creating a lexical 
     analyzer engine on the same CPU type as quex runs then this option is not required, since 
-    quex finds this out by its own. If you create an engine for a different plattform, you must 
+    quex finds this out by its own. If you create an engine for a different platform, you must 
     know its byte ordering scheme, i.e. little endian or big endian, and specify it after ``--endian``. 
      
 
@@ -843,7 +843,7 @@ Default: false (disabled)
 
 
     This means, that there is a mode ``PROGRAM``. The first three pattern are related to the terminal 
-    states '117', '119', and '121'. The whitespace pattern of 117 was inherited from mode 
+    states '117', '119', and '121'. The white space pattern of 117 was inherited from mode 
     `ALL`. The math operator pattern was inherited from mode ``CALC_OP`` and the comment start 
     pattern "//" was implemented in ``PROGRAM`` itself.  
 

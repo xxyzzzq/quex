@@ -8,7 +8,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct QUEX_NAME(Converter_tag) {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_tag) {
     E_Ownership   ownership;
 
     bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 

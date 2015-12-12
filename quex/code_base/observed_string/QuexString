@@ -11,7 +11,7 @@
  *  QuexStrings are located in token.
  *
  * /                   
-typedef struct {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
     QUEX_TYPE_CHARACTER* begin;
     QUEX_TYPE_CHARACTER* end;
 } QuexString; 
@@ -27,7 +27,7 @@ QuexString_atoi(QuexString*);
 QuexString_atof(QuexString*);
 
 
-typedef struct QuexStringPointerList_tag* next_list {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QuexStringPointerList_tag* next_list {
     QuexString** begin;
     QuexString** end;
     QuexString** memory_end;
@@ -38,7 +38,7 @@ typedef struct QuexStringPointerList_tag* next_list {
 QuexStringPointerList_append(QuexStringPointerList*, QuexString*);
 QuexStringPointerList_destruct(QuexStringPointerList*);
 
-typedef struct {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
    QuexStringPointerList  head;
 } QuexStringObserver;
 

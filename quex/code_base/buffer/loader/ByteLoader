@@ -8,7 +8,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct QUEX_NAME(ByteLoader_tag) {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(ByteLoader_tag) {
     QUEX_TYPE_STREAM_POSITION (*tell)(struct QUEX_NAME(ByteLoader_tag)* me);
     void                      (*seek)(struct QUEX_NAME(ByteLoader_tag)* me, 
                                       QUEX_TYPE_STREAM_POSITION Pos);

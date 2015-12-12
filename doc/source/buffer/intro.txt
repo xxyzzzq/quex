@@ -4,7 +4,7 @@ Buffer Handling
 ===============
 
 This chapter discusses the interactions of quex and the buffer management. The
-knowledge about this is helpful for the implemention a customized buffer
+knowledge about this is helpful for the implementation a customized buffer
 handling procedure and the understanding of the generated analyzer code. Let
 the term 'engine' refer to the analyzer that quex generates.
 

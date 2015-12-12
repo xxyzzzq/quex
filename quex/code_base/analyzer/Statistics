@@ -63,13 +63,13 @@
  * ____________________________________________________________________________*/
 #include <quex/code_base/definitions>
 
-typedef struct { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     const size_t                         boundary_n;  
     const QUEX_TYPE_CHARACTER* const     boundary;
     QUEX_TYPE_STATISTICS_COUNTER* const  counter;     /* size = boundary_n + 1 */
 } QUEX_NAME(statistics_interval_list);
 
-typedef struct { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     const char*                mode_name;
     const size_t               state_index;
     QUEX_NAME(statistics_interval_list) interval_list;

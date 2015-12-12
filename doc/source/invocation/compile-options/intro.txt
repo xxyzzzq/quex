@@ -13,7 +13,7 @@ lexical analyzer engine. The compile options split into the following groups
 
        QUEX_OPTION_ ... _DISABLED
 
-   If this option is set than any setting is outruled, even those that have 
+   If this option is set than any setting is overruled, even those that have 
    been set by quex. To disable asserts for example the compiler is called
    like this::
 
@@ -31,7 +31,7 @@ lexical analyzer engine. The compile options split into the following groups
 
 .. cmacro:: QUEX_TYPE_ ...
 
-   By means of those macros types are defined. The following overides quex's
+   By means of those macros types are defined. The following overrides Quex's
    definition for the internal character type::
 
       $CC ... -DQUEX_TYPE_CHARACTER=UChar
@@ -39,7 +39,7 @@ lexical analyzer engine. The compile options split into the following groups
 
 None of the following compile options is necessary to get a working analyser.
 Indeed, many of them are already controlled by quex. Nevertheless, they provide
-toolset for fine tuning or adaptions to less regular system constraints.
+tool set for fine tuning or adaptations to less regular system constraints.
 
 ..  toctree:: 
     

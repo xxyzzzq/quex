@@ -54,7 +54,7 @@ for the post-condition.
 		 
 .. describe:: Q/R/ 
 
-    matches ``R`` from the current position, but only if it is preceeded by a
+    matches ``R`` from the current position, but only if it is preceded by a
     ``Q``. Practically, this means that quex goes backwards in order to determine
     if the pre-condition ``Q`` has matched and then forward to see if ``R`` has
     matched. ``R`` is pre-conditioned.  Note, with pre-conditions there is no

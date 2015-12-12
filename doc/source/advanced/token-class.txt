@@ -36,7 +36,7 @@ approach places the responsibility on the parser. For fine tuning
 both approaches should be studies with respect to their memory print and cache
 locality. It might not be the first approach which is always preferable.
 
-The remaining framework of quex does not any adaptions to a customized token
+The remaining framework of quex does not any adaptations to a customized token
 class. If the token class is designed according certain rules, then it fits
 smoothly in any generated engine.
 
@@ -860,7 +860,7 @@ A hand written token class must comply to the following constraints:
     
       .. cfunction:: const char* QUEX_NAME_TOKEN(map_id_to_name)(QUEX_TYPE_TOKEN_ID Id)
    
-      that maps any token-id to a human readable string. Note, that queχ does
+      that maps any token-id to a human readable string. Note, that Quex does
       generate this function automatically, as long as it is not told not to do
       so by specifying command line option ``--user-token-id-file``. The macro
       ``QUEX_NAME_TOKEN`` adapts the mapping function to the appropriate

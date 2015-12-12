@@ -30,8 +30,8 @@ example
     }
 
 The C-code fragments may be ended with ``RETURN`` and ``CONTINUE``. If
-``RETURN`` is specified the analyzer returns from its analyzis. If ``CONTINUE``
-is specified the analyzis may continue without returning to the caller. The reason
+``RETURN`` is specified the analyzer returns from its analysis. If ``CONTINUE``
+is specified the analysis may continue without returning to the caller. The reason
 for these two being defined as macros is that they behave differently depending
 of token passing policies (:ref:`sec-token-policies`).
 
@@ -164,7 +164,7 @@ during run-time.
 
 In addition to direct mode transitions, modes can be pushed and popped similar to subroutine calls (without arguments). This is provided by the functions:
 
-.. cfunction:: void push_mode(queχ_mode& new_mode);
+.. cfunction:: void push_mode(quex_mode& new_mode);
 
 .. cfunction:: void pop_mode();
 
@@ -181,7 +181,7 @@ Mode Objects
 ------------
 
 Modes themselves are implemented as objects of classes which are derived from
-the base class queχ_mode. Those mode objects have member functions that provide
+the base class quex_mode. Those mode objects have member functions that provide
 information about the modes and possible transitions:
 
 .. code-block:: cpp
@@ -189,8 +189,8 @@ information about the modes and possible transitions:
     bool  has_base(const quex_mode& Mode,       bool PrintErrorMsgF = false) const;
     bool  has_entry_from(const quex_mode& Mode, bool PrintErrorMsgF = false) const;
     bool  has_exit_to(const quex_mode& Mode,    bool PrintErrorMsgF = false) const;
-    const int     ID; \\
-    const string  Name; \\
+    const int     ID; 
+    const string  Name; 
 
 The first three member functions return information about the relation to
 other modes. If the flag ``PringErrorMsgF`` is set than the function will print an
@@ -205,7 +205,7 @@ pair, for example, one might write
      if( PROGRAM.has_base(self.mode()) )
          cerr << "mode not a base of PROGRAM: " << self.mode_name() << endl;
 
-For the end-user these functions are not really relevant, since queχ itself
+For the end-user these functions are not really relevant, since quex itself
 introduces ``assert`` calls on mode transitions and provides convienient member
 functions in the lexical analyser class to access information about the current
 mode.

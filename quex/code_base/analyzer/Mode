@@ -18,7 +18,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_TYPE0_ANALYZER;   
 #   endif
 
-    typedef struct QUEX_NAME(Mode_tag) {  
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Mode_tag) {  
         int                  id;
         const char*          name;
 
@@ -57,7 +57,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void
     QUEX_NAME(Mode_on_entry_exit_null_function)(QUEX_TYPE_ANALYZER*, const QUEX_NAME(Mode)*);
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         QUEX_NAME(Mode)*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
         QUEX_NAME(Mode)** end;
         QUEX_NAME(Mode)** memory_end;

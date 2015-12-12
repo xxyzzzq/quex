@@ -94,7 +94,7 @@ and to apply the appropriate interaction scheme.
     The command line from start to end is passed to the
     analyzer engine. If there is a keyword ``print`` and the line ends with
     "``pri``", then the engine does not have to wait for the next line in order
-    to check wether it completes the ``print`` keyword. It is imposed that each
+    to check whether it completes the ``print`` keyword. It is imposed that each
     line is syntactically complete, and thus, ``pri`` can be considered as an
     identifier or whatsoever the language proposes (most likely 'error').
 
