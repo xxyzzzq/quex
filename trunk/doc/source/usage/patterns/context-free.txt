@@ -4,7 +4,7 @@ Context Free Regular Expressions
 Context free regular expressions match against an input independent on what 
 come before or after it. For example the regular expression ``for``
 will match against the letters `f`, `o`, and `r` independent
-if there was a whitespace or whatsoever before it or after it. This is
+if there was a white space or whatsoever before it or after it. This is
 the 'usual' way to define patterns. More sophisticated techniques are 
 explained in the subsequent section. This sections explains how to 
 define simple *chains of characters* and `operations`
@@ -215,7 +215,7 @@ to combine them into powerful patterns.
 .. describe:: \\0 
 
      a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!
-     The NULL character is also used aa buffer limitting character!
+     The NULL character is also used a buffer limitting character!
      See section <<sec-formal-command-line-options>> for specifying a different
      value for the buffer limit code.
 

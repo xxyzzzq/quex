@@ -1,4 +1,4 @@
-Makro Tricks
+Macro Tricks
 ============
 
 Quex uses extensive macro techniques and it is not always obvious to the

@@ -3,7 +3,7 @@
 #ifndef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAME_OBJECT
 #define  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__NAME_OBJECT
 
-typedef struct {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
     long     hash;
     size_t   size;
     uint8_t* content;

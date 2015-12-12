@@ -1,19 +1,19 @@
 Stability
 ==========
 
-Quex has grown over the years, gained more and more features and became more
-and more complex. In the frame of this development many refactorings and
-redesigns happend in order to maintain a transparent clear code structure.  The
-basis for a solid refactoring are automated unit tests and system tests. By
+Quex has grown over the last decade, gained more and more features and became
+more and more complex. In the frame of this development much refactoring and
+redesign took place in order to maintain a transparent clear code structure.
+The basis for a solid refactoring are automated unit tests and system tests. By
 means of these tests it is verified that changes to the code or the design do
 not influence the functioning of the system.
 
-Additionally to the tests for the implemented modules, it is tried
-to implement for every non-trivial bug and feature request a regression test that
-ensures that the error does not occur in any future release. Since no release
-is made without all tests being passed a certain level of quality is
-guaranteed. Nevertheless, no bug is too small to be reported. It is by bug
-reports that quex has gained its actual level of maturity. 
+Additionally to the tests for the implemented modules, it is tried to implement
+for every non-trivial bug and feature request a regression test that ensures
+that the error does not occur in any future release. Since no release is made
+without all tests being passed a certain level of quality is guaranteed.
+Nevertheless, no bug is too small to be reported. It is by bug reports that
+Quex has gained its actual level of maturity. 
 
 .. note::
 
@@ -21,11 +21,11 @@ reports that quex has gained its actual level of maturity.
     
     The few minutes spend to submit a bug may help to improve the quality for
     many other users or pinpoint to new interesting issues. In the humble
-    history of quex there have been several cases where small issues let
-    to important design changes. Much of the maturity of quex is due to 
+    history of Quex there have been several cases where small issues let
+    to important design changes. Much of the maturity of Quex is due to 
     changes that were made due to bug reports.
 
-Released versions of quex come with a file ``unit_test_results.txt`` that
+Released versions of Quex come with a file ``unit_test_results.txt`` that
 contains descriptions of all performed tests. It allows the user to overview the
 level of testing. Any observed lack of coverage may be reported as bug or
 feature request.

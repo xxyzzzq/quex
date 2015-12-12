@@ -29,7 +29,7 @@ arguments. Those are
    If you want to use GNU IConv by-default for conversion.
 
 The decision which one to choose needs to be made should not have to do anything
-with the judgement about the clarity of the API of those libraries. The user
+with the judgment about the clarity of the API of those libraries. The user
 is completely isolated from the details of that. Questions of concern might be
 
 #. Make sure that the converter supports the encoding that you want to
@@ -54,8 +54,8 @@ Further, each conversion library has some specific behavior. Under some
 circumstances, they might sometimes require or even produce the byte ordering
 mark (BOM). Quex's converter interfaces tries to handle as much as possible any
 predictable eventualities. In case that problems arise, the user might have to
-manually look into the implementatios of 'Converter_ICU.i' and
+manually look into the implementation of 'Converter_ICU.i' and
 'Converter_IConv.i'.  In the rare case, that problems arise setting the right
-byte ordering scheme (little or big endian), or specifiying appropriate coding
+byte ordering scheme (little or big endian), or specifying appropriate coding
 names might bring the solution.
 

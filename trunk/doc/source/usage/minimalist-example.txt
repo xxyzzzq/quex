@@ -88,7 +88,7 @@ The `$CC` needs to be replaced by the compiler that you are using
 two files `tiny_lexer.cpp` and `tiny_lexer-core-engine.cpp` are the files that
 have been created by quex. They are mostly human readable. Interested users
 might want to investigate how the analysis work, or derive from it with little
-adaptions a 'low-end' C version of the analyzer by hand. Anyway, this is 
+adaptations a 'low-end' C version of the analyzer by hand. Anyway, this is 
 all to know about the process of generating a lexical analyzer with quex. The application
 `lexer` is now ready to rumble. Assume that `example.txt` contains the following
 content:

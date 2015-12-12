@@ -55,7 +55,7 @@ which do not contain arbitrary repetition or optional paths. If the analyzing
 algorithm signalizes a run-time dependency, then code is produced which counts
 the line and columns at the time when the lexeme matches.  
 
-By default, a tabulator, i.e. Unicode character 0x09, causes a grid step of
+By default, a tab character, i.e. Unicode character 0x09, causes a grid step of
 four columns. That is, if there is a line starting with::
 
     0123\t0\t01\t012\tx
@@ -167,7 +167,7 @@ then a stamping action may be defined as follows.
             TOKEN_P->set_end_column_number(self.column_number_at_end()-1);
     }
 
-The stamping is defined in a ``header`` section, so that it preceeds the definition
+The stamping is defined in a ``header`` section, so that it precedes the definition
 of the default token stamping action.
 
 .. _sec-counter-def:
@@ -222,7 +222,7 @@ The actions 'space', 'grid' and 'newline are now described:
       
       Multiple definitions of ``space`` are possible in order to define 
       different space counts. Note, that in Unicode the following 
-      code points exist to represent different forms of whitespace:
+      code points exist to represent different forms of white space:
 
           * ``0x0020``: Normal Space.
           * ``0x00A0``: Normal space, no line break allowed after it.
@@ -265,7 +265,7 @@ The actions 'space', 'grid' and 'newline are now described:
       Characters associated with a 'grid' set the column number according to a
       grid of a certain width. Tabulators are modelled by grids. For example,
       if the grid width is four and the current indentation count is 5, then a
-      tabulator will set the column count to 8, because 8 is the closest grid
+      tab character will set the column count to 8, because 8 is the closest grid
       value ahead.
 
       As with 'space', a run-time modification of the grid value is possible
@@ -273,9 +273,9 @@ The actions 'space', 'grid' and 'newline are now described:
 
       .. code-block:: cpp
 
-         [\t]  => grid  tabulator_width;
+         [\t]  => grid  tab character_width;
 
-      results in a member variable ``tabulator_width`` inside the analyzer that
+      results in a member variable ``tab character_width`` inside the analyzer that
       can be changed at run-time, e.g.
 
       .. code-block:: cpp
@@ -283,8 +283,8 @@ The actions 'space', 'grid' and 'newline are now described:
          ...
          MyLexer   qlex(...);
          ...
-         if( file_format == MSVC ) qlex.tabulator_width = 8;
-         else                      qlex.tabulator_width = 4;
+         if( file_format == MSVC ) qlex.tab character_width = 8;
+         else                      qlex.tab character_width = 4;
          ...
 
    .. describe :: newline [number|variable]

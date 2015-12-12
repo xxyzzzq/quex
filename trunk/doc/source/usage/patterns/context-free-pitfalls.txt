@@ -49,7 +49,7 @@ problem related to 'greedy matching':
 
 An unexpected outrunning of lower-priority patterns manifests itself in a lexer
 that seems to work sometimes and sometimes not. The behavior then often seems
-to depend on some padding characters such as whitespace.  Quex can help to
+to depend on some padding characters such as white space.  Quex can help to
 detect unexpected outruns by the command line options '--warning-on-outrun' or
 '--woo'. When specified with a file containing the aforementioned example, quex
 will print the following notification::

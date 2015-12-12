@@ -17,7 +17,7 @@ expressions, where the ``P`` stands for property. For a quex user
 properties can be devided into two categories: 
 
 - Binary Properties, i.e. properties that a character either has
-  or has not. For example, a character is either a whitespace 
+  or has not. For example, a character is either a white space 
   character or it is not. Sets of characters having a binary
   property ``binary_property`` can be accessed through ``\P{binary_property}``.
  

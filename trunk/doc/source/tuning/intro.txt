@@ -21,7 +21,7 @@ Before any measurements can be made the following points need to be assumed:
 
 .# Avoid printing through system calls, i.e avoid ``fprintf``, ``cout << ``
    and their likes. If such a system call is performed for each token, 
-   the analyzer's overhead is neglectable and the results only measure
+   the analyzer's overhead is negligible and the results only measure
    the performance of the input/output stream library and its implementation
    on the operating system.
 
@@ -35,7 +35,7 @@ Before any measurements can be made the following points need to be assumed:
 
 A tuning setup is mostly the contrary of a debug scenario. For debugging all
 asserts should be active, print-outs prosper, and the buffer size is as small
-as possible to check out reload scenarios. Using a a debug setup for tuning,
+as possible to check out reload scenarios. Using a debug setup for tuning,
 though, safely drives the development into nonsensical directions.
 
 Template Compression
@@ -48,7 +48,7 @@ state that is represents. It can be activated with the command line option::
 
    > quex ... --template-compression
 
-The aggressivity of the compression can be controlled by the template compresison
+The aggressiveness of the compression can be controlled by the template compression
 'min-gain' to be set by the command line argument::
 
    > quex ... --template-compression-min-gain [number]
@@ -60,7 +60,7 @@ the following option can be specified::
 
    > quex ... --template-compression-uniform
 
-Especially unicode lexical analyzers large transition maps can profit
+Especially Unicode lexical analyzer with their large transition maps can profit
 tremendously from template compression. If your compiler supports computed
 gotos try to set ``QUEX_OPTION_COMPUTED_GOTOS`` on the compilers' command
 line, e.g. with GNU C++::
@@ -119,7 +119,7 @@ the state machine. The command line argument::
 
    --path-compression
 
-activates the analyzis and compression. With this compression all states are
+activates the analysis and compression. With this compression all states are
 considered to be combined into a path. As a result some special handling is
 implemented to distinguish the particularities of each state. If only uniform
 states shall be considered, the command line flag::
@@ -225,10 +225,11 @@ It follows a list of general hints for performance tuning:
 .. note::
 
    The fifth important thing is to use ``memcpy`` and ``memmove`` for copying
-   of content. Especially for larger datasets. Few people can compete with the
-   inside that is put into this functions. Simply compare a ``memcpy`` operation 
-   with a ``for`` loop doing the same thing. It is not seldom a factor of 40
-   between the two. Use ``memmove`` when source and destination may overlap.
+   of content--especially for larger amounts of data. Few people can compete
+   with the insight expert knowledge that is put into this functions. Simply
+   compare a ``memcpy`` operation with a ``for`` loop doing the same thing. It
+   is not seldom a factor of 40 between the two. Use ``memmove`` when source
+   and destination may overlap.
 
 [to be continued]
 

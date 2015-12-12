@@ -31,4 +31,4 @@ art and algorithm to produce something esthetically appealing.
          \TeX is an uppercase 'chi' so the name is to be pronounced like the German word
          'ach' (it's actually more a sound Germans utter, rather than a word with a
          dedicated meaning). Analogously, the χ at the end of quex should
-         be prononounced like that and not like the 'x' of the German word 'nix'.
+         be pronounced like that and not like the 'x' of the German word 'nix'.

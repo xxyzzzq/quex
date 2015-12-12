@@ -47,7 +47,7 @@ should be adapted to something similar to
 
 In conclusion, the only thing that has to be made sure is that the generated
 analyzers live in separate namespaces. All related entities of the analyzers
-are then propperly distinguished for compiling and linking.  Directory
+are then properly distinguished for compiling and linking.  Directory
 ``demo/012`` contains an example implementation of an application containing
 three different analyzers with different numbers of bytes per character and
 different decoders (ICU, IConv and engine codec). 

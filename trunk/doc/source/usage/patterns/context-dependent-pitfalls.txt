@@ -8,7 +8,7 @@ When using the '^' sign at the beginning of a line it is tempting to
 sing "don't worry, be happy ... this matches at _any_ begin of line"--well, it
 does not! The important thing to understand is that it matches when the lexical analysis
 step _starts_ at the beginning of a line. The alarm signal should ring
-if begin-of-line is triggered and a whitespace pattern is defined that includes newline.
+if begin-of-line is triggered and a white space pattern is defined that includes newline.
 Consider the following patterns being defined:
 
 .. code-block:: cpp
@@ -24,7 +24,7 @@ Consider the following patterns being defined:
         {GREETING}    => TKN_GREETING(Lexeme);
     }
 
-Where the ``hello`` greeting is to be matched after newline and some possible whitespace.
+Where the ``hello`` greeting is to be matched after newline and some possible white space.
 Now, given the character stream:
 
 .. code-block:: cpp
@@ -34,10 +34,10 @@ Now, given the character stream:
    ...
    hello
 
-will _not_ send a GREETING token. This is because the whitespace pattern eats
-the newline before the 'hello-line' and even the whitespace before hello. Now, the
+will _not_ send a GREETING token. This is because the white space pattern eats
+the newline before the 'hello-line' and even the white space before hello. Now, the
 next analysis step starts right before ``hello`` and this is not the beginning
-of a line. Splitting the whitespace eater into newline and non-newline helps:
+of a line. Splitting the white space eater into newline and non-newline helps:
 
 .. code-block:: cpp
 
@@ -53,8 +53,8 @@ of a line. Splitting the whitespace eater into newline and non-newline helps:
         {GREETING}      => TKN_GREETING(Lexeme);
     }
 
-Now, the first whitespace eating ends right before newline, then the second
-whitespace eating ends after newline, and the hello-greeting at the beginning
+Now, the first white space eating ends right before newline, then the second
+white space eating ends after newline, and the hello-greeting at the beginning
 of the line can be matched.
 
 Another pitfall is, again, related to precedence. Make sure that if there

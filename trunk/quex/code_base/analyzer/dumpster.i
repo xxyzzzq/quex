@@ -90,7 +90,7 @@
 */
 
 
-typedef struct QUEX_NAME(BufferFillerExtern_tag) {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(BufferFillerExtern_tag) {
 
     QUEX_NAME(BufferFiller)* filler;
 

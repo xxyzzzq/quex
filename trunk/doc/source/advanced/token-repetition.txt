@@ -3,7 +3,7 @@
 Token Repetition
 ================
 
-There are cases where a single step in the lexical analyzis produces
+There are cases where a single step in the lexical analysis produces
 multiple lexical tokens with the same token identifier. A classical
 example is the 'block-close' token that appears in indentation based
 languages, such as Python. Consider, for example the following python
@@ -19,7 +19,7 @@ code fragment:
 When the lexical analyzer passes ``"found"`` and transits to the 
 last ``print`` statement, it needs to close *three* indentation levels.
 Thus, three 'block-close' tokens need to be sent as result of one
-single analyzis step. 
+single analysis step. 
 
 The obvious solution is to have a field inside the token that tells how often
 it is to be repeated. Indeed, this is what the token send macro
@@ -56,8 +56,8 @@ is called from inside the analyzer, then
      token_id = my_lexer.receive();
 
 will return five times the token identifier ``QUEX_TKN_XYZ`` before it does the
-next analyzis step. Note, implicit token repetition may have a minor impact on
-performance since for each analyzis step an extra comparison is necessary. In
+next analysis step. Note, implicit token repetition may have a minor impact on
+performance since for each analysis step an extra comparison is necessary. In
 practical, though, the reduction of function calls for repetition largely
 outweighs this impact.
 

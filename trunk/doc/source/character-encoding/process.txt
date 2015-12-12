@@ -32,7 +32,7 @@ of buffer fillers.
    Loading data from a stream into the buffer memory.
 
 As mentioned earlier, the usage of character encodings is supported by the
-plug-in of converter libraries, and by adaptions made to the analyzer engine.
+plug-in of converter libraries, and by adaptations made to the analyzer engine.
 The following points should be kept in mind with respect to these two
 alternatives:
 
@@ -70,7 +70,7 @@ discussion:
 
 * Data Stream Codec
 
-  This is the character encoding of the input data stream. If non-unicode (or ASCII)
+  This is the character encoding of the input data stream. If Non-Unicode (or ASCII)
   streams are to be used, then a string must be passed to the buffer filler that
   tells from what encoding it has to convert.
 

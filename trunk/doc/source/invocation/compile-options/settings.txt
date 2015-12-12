@@ -15,8 +15,8 @@ Following settings can be made on the command line:
 
 .. cmacro:: QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 
-   Buffers in quex keep a certain fallback region when loading new content into
-   the buffer. This princidences the lexer from reloading backwards if the input pointer
+   Buffers in quex keep a certain fall-back region when loading new content into
+   the buffer. This prevents the lexer from reloading backwards if the input pointer
    is navigated below the current reload position. Note, that this has only effect
    in case of manual navigation of the input pointer, or in scanners with pre-conditions.
 

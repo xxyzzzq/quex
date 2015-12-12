@@ -40,7 +40,7 @@ extern "C" {
 }
 #endif
 
-typedef struct { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     QUEX_NAME(ByteLoader)  base;
     struct {
         const uint8_t*     begin_p;

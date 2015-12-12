@@ -57,14 +57,14 @@ analysers such as lex or flex:
 
   * *Transition control*, i.e. restriction can be made to which mode
     a certain mode can exit or from which mode it can be entered. This 
-    princidences the lexical analyser from accidentally dropping into an unwanted
+    prevents the lexical analyser from accidentally dropping into an unwanted
     lexical analysis mode.
 
  * Mode *transition incidences*, i.e. incidence handlers can be defined for
    the incidences of exiting or entering from or to a particular mode.    
     
  * Indentation *incidences*, i.e it is possible to provide an incidence handler
-   for the incidence of the first appearing non-whitespace in a line. This incidence
+   for the incidence of the first appearing non-white space in a line. This incidence
    handling happens quasi-paralel to the pattern matching.
   
 * A default general purpose *token* class. Additionally, Quex
@@ -89,7 +89,7 @@ analysers such as lex or flex:
   the analyzer state on return from the included file--without much fuss 
   for the end user.
 
-* *Indentation Incidences*. As soon as a non-whitespace occurs after a newline
+* *Indentation Incidences*. As soon as a non-white space occurs after a newline
   a indentation incidence is fired, that allows convenient means to implement
   indentation based languages of the Python-like style.
 
@@ -105,7 +105,7 @@ analysers such as lex or flex:
 This text briefly explains the basic concepts of lexical analysis
 in quex. Here, a short review is given on lexical analysis, but then it
 concentrates on the introduction of the features mentioned above. The
-subsequent chapter dicusses a simple example of a complete application for
+subsequent chapter discusses a simple example of a complete application for
 lexical analysis. The final chapter elaborates on the formal usage of
 all features of quex. 
 

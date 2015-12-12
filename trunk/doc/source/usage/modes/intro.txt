@@ -1,7 +1,7 @@
 Modes
 ======
 
-A lexical analyzer mode referes to a behavior of the analyzer engine.  More
+A lexical analyzer mode refers to a behavior of the analyzer engine.  More
 precisely, it defines a set of pattern-action pairs and incidence handlers that are
 exclusively active when the analyzer is in a particular mode. The reason for that
 might be syntactical. Imagine a nested mini-language in a 'mother' language that
@@ -16,13 +16,13 @@ a period of a sentence, such as in::
    [0-9]+   => NUMBER(Lexeme);
    "."      => TKN_PERIOD;
 
-If both patterns were describe in a single mode, than interferences would occur.
-If a number occured at the end of a sentence, such as in::
+If both patterns were describe in a single mode, then interferences would occur.
+If a number occurred at the end of a sentence, such as 1776 in::
 
-   The number of monkeys did not exceed 21. However, there was reason to ...
+                "... mentioned in 1776. In that year, ..."
 
-it would be eaten by the floating point number pattern (i.e. interpreted as
-``21.0``), since the engine follows the longest match. The period at the end 
+then it would be eaten by the floating point number pattern (i.e. interpreted as
+``1776.0``), since the engine follows the longest match. The period at the end 
 of the sentence would not be detected. This is an example were multiple modes
 are required from a syntax point of view. Another reason for having more
 than one mode is computational performance. The C-pre-processor statements in 

@@ -77,7 +77,7 @@ $$MODE_OBJECTS$$
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
-typedef struct QUEX_NAME(Memento_tag) {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Memento_tag) {
 #   include <quex/code_base/analyzer/EngineMemento_body>
 
     QUEX_NAME(Memento_tag)()  {}  /* Con- and Destruction necessary to trigger */

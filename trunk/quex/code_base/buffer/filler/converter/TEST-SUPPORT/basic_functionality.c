@@ -6,7 +6,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
    const char* reference_file; 
    int         character_n;
    int         total_converter_call_n;

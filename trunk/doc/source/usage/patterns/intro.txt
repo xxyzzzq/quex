@@ -30,7 +30,7 @@ identifiers in curly brackets. See the following example:
 .. code-block:: cpp
 
     define {
-       /* Eating whitespace */
+       /* Eating white space */
        WHITESPACE    [ \t\n]+
        // An identifier can never start with a number 
        IDENTIFIER    [_a-zA-Z][_a-zA-Z0-9]*

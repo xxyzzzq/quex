@@ -14,7 +14,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
 
         QUEX_TYPE_TOKEN*   begin;
         QUEX_TYPE_TOKEN*   read_iterator;    /* pointer to next token to be read          */
@@ -61,7 +61,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   define QUEX_ASSERT_TOKEN_QUEUE_AFTER_WRITE(me) /* empty */
 #endif
 
-typedef struct {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
     QUEX_TYPE_TOKEN*   token_list;
     size_t             size;
 } QUEX_NAME(TokenQueueRemainder);

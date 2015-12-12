@@ -26,7 +26,7 @@ the suffix enables something, the option with the suffix disables the 'something
 
 .. cmacro:: QUEX_OPTION_BUFFER_BASED_ANALYZIS
 
-   Turn on buffer based analyzis. In particular automatic buffer reload is
+   Turn on buffer based analysis. In particular automatic buffer reload is
    disabled. Also some consistency checks are disabled if asserts were enabled.
 
 .. cmacro:: QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -52,7 +52,7 @@ the suffix enables something, the option with the suffix disables the 'something
 
 .. cmacro:: QUEX_OPTION_DEBUG_SHOW
 
-   Enables/disables the output of details about the lexical analyzis process.
+   Enables/disables the output of details about the lexical analysis process.
 
 .. cmacro:: QUEX_OPTION_DEBUG_SHOW_LOADS
 
@@ -74,7 +74,7 @@ the suffix enables something, the option with the suffix disables the 'something
 .. cmacro:: QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
 
    Enables/disables informative buffer overflow messages. If set it prints the lexeme
-   on which the buffer overflow happend.
+   on which the buffer overflow happened.
 
 .. cmacro:: QUEX_OPTION_LINE_NUMBER_COUNTING
 
@@ -84,7 +84,7 @@ the suffix enables something, the option with the suffix disables the 'something
 
 .. cmacro:: QUEX_OPTION_POST_CATEGORIZER
 
-   Enables/disables an optional post categorizer that maps from a lexeme to a token-id.
+   Enables/disables an optional 'post categorizer' that maps from a lexeme to a token-id.
 
 .. cmacro:: QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 

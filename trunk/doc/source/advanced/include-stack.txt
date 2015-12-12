@@ -66,7 +66,7 @@ include statement. This statement tells it to read the content of file
 order to do this the lexical analyzer needs to store his state-relevant variables [#f1]_
 in a so called *memento* [#f2]_. When the analysis of ``my_header.h``
 terminates on 'end of file' the memento can be unpacked and the old state
-revived. The analyzis can continue in the file ``main.c``. 
+revived. The analysis can continue in the file ``main.c``. 
 
 .. _fig-include-stack-N-example:
 
@@ -198,7 +198,7 @@ which it was before the inclusion. The return values of this function are
 .. data:: false
 
   if there was no memento. The analyzer is in the root of all files. The most
-  appropriate reaction to this return value is to stop analyzis--at least for
+  appropriate reaction to this return value is to stop analysis--at least for
   the given file.
 
 
@@ -231,21 +231,21 @@ which it was before the inclusion. The return values of this function are
 Example
 -------
 
-In this section, an example usage is shown where whitespace per file is
+In this section, an example usage is shown where white space per file is
 counted.  The sections or mementos, namely ``memento``, ``memento_pack``, and
 ``memento_unpack`` are already explained in :ref:`sec-basics-sections`.  Let
-the variable to count whitespace in each file be part of the lexical analyzer
+the variable to count white space in each file be part of the lexical analyzer
 object using the global ``body`` section to declare a new member, ``init``
 to extend the constructor, and ``memento`` to extend the memento class.::
 
     body {
-        int   whitespace_count;
+        int   white space_count;
     }
     init {
-        whitespace_count = 0;
+        white space_count = 0;
     }
     memento {
-        int   whitespace_count;
+        int   white space_count;
     }
 
 Let the pattern to include content from another file be the C-like ``#inlude "file"``
@@ -280,10 +280,10 @@ global section ``memento_pack``.::
       }
 
       /* Packing */
-      memento->whitespace_count = self.whitespace_count;
+      memento->white space_count = self.white space_count;
 
       /* Re-Initialize packed variables! */
-      this->whitespace_count = 0;
+      this->white space_count = 0;
       return true;
   }
 
@@ -292,7 +292,7 @@ and *re-initialization*.  To prevent infinite recursion the member function
 ``include_detect_recursion`` is called.  An error initiates the return of
 ``false`` which would trigger the include-push function to signalize that the
 inclusion failed.  The packing, in this example is implemented by storing the
-current whitespace count in the memento object. Whitespace counting is file
+current white space count in the memento object. Whitespace counting is file
 local so it make sense to re-initialize the counter to zero when a new file is
 included.  
 
@@ -321,13 +321,13 @@ normal return from an included file or stream the analyzer must restore also
 the user's extra content. This is done in the memento unpacker.::
 
     memento_unpack {
-        this->whitespace_count = memento->whitespace_count;
+        this->white space_count = memento->white space_count;
     }
 
-With this behavior, it is now safe to assume that the whitespace count happens
-per file basis. When a file is included the current whitespace is stored away
+With this behavior, it is now safe to assume that the white space count happens
+per file basis. When a file is included the current white space is stored away
 and counting starts from zero with the new file. When the included file ends,
-the old whitespace count is restored and continues from where it left.
+the old white space count is restored and continues from where it left.
 
 
 .. _sec-include-stack-howto:
@@ -335,7 +335,7 @@ the old whitespace count is restored and continues from where it left.
 HOWTO
 -----
 
-There are two basic ways to handle the inclusion of files during analyzis.
+There are two basic ways to handle the inclusion of files during analysis.
 First, files can be included from within analyzer actions, i.e. as consequence
 of a pattern match or an incidence. Second, they can be included from outside when
 the ``.receive(...)`` function returns some user define ``INCLUDE`` token.  If
@@ -420,7 +420,7 @@ mode that all modes implement:
 
 The ``include_pop()`` function returns ``true`` if there was actually a file
 from which one had to return. It returns ``false``, if not. In the latter case
-we reached the 'end-of-file' of the root file. So, the lexical analyzis is over
+we reached the 'end-of-file' of the root file. So, the lexical analysis is over
 and the ``TERMINATION`` token can be sent. This is all to say about the
 framework.  We can now step on to defining the actions for packing an unpacking
 mementos. First, let the memento be extended to carry a stream handle:
@@ -535,7 +535,7 @@ parent pointer of ``0x0`` which provides the loop termination condition.
         /* Detect infinite recursion, i.e. re-occurence of file name           */
         for(MyLexerMemento* iterator = my_analyzer._memento_parent;
             iterator ; iterator = iterator->parent ) {
-            /* Check wether the current file name already appears in the chain */
+            /* Check whether the current file name already appears in the chain */
             if( iterator->file_name == (const char*)InputName ) {
                 REACTION_ON_INFINITE_RECURSION(Filename);
             }
@@ -566,7 +566,7 @@ the correspondent ``memento_unpack`` section:
 
    Do not be surprised if the ``memento_unpack`` handler is called upon
    deletion of the lexical analyzer or upon reset. This is required in order to
-   give the user a chance to clean up his memory propperly.
+   give the user a chance to clean up his memory properly.
 
 .. sec-include-stack-caveats:
 
@@ -617,7 +617,7 @@ sequence.  This can be done similarly to what was shown in section
 mode for reading the file name. On the incidence of matching the filename, the
 lexical analyzer needs to explicitly ``return``. 
 
-An explicit ``return`` stops the analyzis and the ``.receive(...)`` functions
+An explicit ``return`` stops the analysis and the ``.receive(...)`` functions
 return only tokens from the stack until the stack is empty. Since the last
 token on the stack is the ``FILE_NAME`` token, it is safe to assume that the
 token stack is empty when the file name comes in. Thus, no token queue

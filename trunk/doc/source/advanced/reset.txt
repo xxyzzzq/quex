@@ -88,7 +88,7 @@ analyzer as they are:
 
 .. describe:: reset_buffer(...)
 
-The reset buffer function allows to (re-)start lexical analyzis on a 
+The reset buffer function allows to (re-)start lexical analysis on a 
 user provided buffer. It does basically the same as the ``reset``
 function. However, it distinguishes two cases as indicated by its
 return value:
@@ -110,7 +110,7 @@ If the function ``reset_buffer`` is called with zero as the first argument
 ``BufferMemoryBegin``, then no memory is initialized. However, the current
 memory pointer is returned if it was provided by the user. Otherwise, 
 as described above, zero is returned. This is helpful at the end of the
-analyzis in order to de-allocate any memory that is still contained inside
+analysis in order to de-allocate any memory that is still contained inside
 the analyzer. An application of ``reset_buffer`` can be observed in 
 file ``re-point.cpp`` and ``re-point.c`` in the ``010`` subdirectory of 
 the demos.

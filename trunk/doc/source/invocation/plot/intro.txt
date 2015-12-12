@@ -1,11 +1,12 @@
 State Machine Plots
 ===================
 
-Since version 0.21.11, quex provides the ability to produce transition
-graphs for the state machines that result from the regular expressions
-of its modes. This happens with help of the tool 'graphviz' from AT\&T
-Labs http://www.graphviz.org. Please install this package before
-any attempt to produce transition graphs. 
+Quex has the ability to produce transition graphs for the state machines that
+result from the regular expressions of its modes. It outputs the structure of
+state machines in the '.dot' format. This format can be used to produce
+graphics using the tool 'graphviz' from AT\&T Labs :ref:`cite dot`
+http://www.graphviz.org. Please install this package before any attempt to
+produce transition graphs. 
 
 The plot of transition graphs is initiated with the command line argument
 ``--language dot`` followed by a string that indicates the graphic format, e.g.

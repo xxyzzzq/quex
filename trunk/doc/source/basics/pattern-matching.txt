@@ -24,16 +24,16 @@ to be performed when a pattern matches, i.e.
 
 Practical applications require a formal language for patterns. Quex
 requires patterns to be described in regular expressions in the traditional
-lex/flex style. The patten action pairs in the above list can be defined
+lex/flex style. The pattern action pairs in the above list can be defined
 for quex in the following manner
 
 .. code-block:: cpp
 
     mode MINE { 
         [0-9]+        { return TKN_NUMBER(Lexeme); }
-        [a-zA-Z_]+    { return TKN_NUMBER(Lexeme); }
         while         { return TKN_KEYWORD_WHILE; }
         for           { return TKN_KEYWORD_FOR; }
+        [a-zA-Z_]+    { return TKN_IDENTIFIER(Lexeme); }
     }
 
 Note, that pattern-action pairs can only occur inside modes. They can only be

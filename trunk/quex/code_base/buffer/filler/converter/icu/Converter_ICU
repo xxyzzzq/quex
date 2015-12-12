@@ -10,7 +10,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-    typedef struct {
+    typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         QUEX_NAME(Converter)  base;
 
         UConverter*  from_handle;

@@ -7,7 +7,7 @@ another mode it inherits the same way the characteristics of that other mode.
 This promotes the following ideas:
 
 #. A mode has somehow the character of a set or a category. If a set *B* is
-   a subset of a set *A* then every element of *B* is conform to the constraints
+   a subset of a set *A* then every element of *B* conforms to the constraints
    for being *A*, but has some special constraints for being in *B*.
 
    A mode ``B`` is being derived from a mode ``A``, then it contains all
@@ -54,7 +54,7 @@ Pattern-Action Pairs
    reaction to a pattern match. Further, the places where those tokens
    are send are not in one place, but distributed over multiple classes.
    Also, multiple concatinated mode transitions are very much prone to 
-   end up in total confusion. This is why pattern actions in a base mode outrule
+   end up in total confusion. This is why pattern actions in a base mode overrule
    pattern actions in the derived mode.
 
    There are possibilities to influence this behavior to be discussed in <<section>>.
@@ -74,7 +74,7 @@ Incidence Handlers
 
 Figure :ref:`(this) <fig-mode-inheritance>` shows an example where a mode ``B``
 is derived from  mode ``A``. The mode ``B*`` represents the internal result of
-the result of inheritance: patterns of the base mode *outrule* patterns of the derived mode,
+the result of inheritance: patterns of the base mode *overrule* patterns of the derived mode,
 incidence handlers of the base mode *preceed* incidence handlers of the derived mode.
 
 .. _fig-mode-inheritance:

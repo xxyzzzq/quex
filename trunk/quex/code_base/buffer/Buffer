@@ -7,7 +7,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-typedef struct { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     E_Ownership           ownership;
 
     /* (*) Buffer Memory Setup:
@@ -28,7 +28,7 @@ QUEX_INLINE void    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  
                                                       E_Ownership               Ownership);
 QUEX_INLINE void    QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
 
-typedef struct QUEX_NAME(Buffer_tag) { 
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) { 
 /* Buffer of characters on which the analyzer runs. 
  *
  * Character Stream:

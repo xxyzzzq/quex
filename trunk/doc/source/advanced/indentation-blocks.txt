@@ -40,12 +40,12 @@ are sent that indicate the opening and closing of a block. When relying
 on explicit delimiters, such as brackets, then this does not require
 any additional effort. For clarity, let 'indentation' be defined as follows:
 
-.. note:: *Indentation* is considered the amount of whitespace between
-          the beginning of a line and the first non-whitespace character
+.. note:: *Indentation* is considered the amount of white space between
+          the beginning of a line and the first non-white space character
           in a line.
 
 For indentation based languages the lexical analyzer has some work to do behind
-the scenes. It must count indentation, detect wether blocks are opening, remain
+the scenes. It must count indentation, detect whether blocks are opening, remain
 the same, or are closing. When closing blocks, is possible that with one step
 multiple tokens may be sent. In the example above, after the function call
 ``do_something()``, two scopes close the ``if`` and the ``while`` block.
@@ -70,25 +70,25 @@ An indentation counting framework is implemented for a mode as soon as a
      }
 
 There are different philosophies around indentation based parsing with respect
-to spaces, tabulators, and newline suppressors. Even the definition of the
+to spaces, tab characters, and newline suppressors. Even the definition of the
 newline pattern may be subject to discussion (e.g. 0xA or 0xD, 0xA, or both).
 Inside the ``indentation`` option the character of those can be specified, e.g.
 
 .. code-block:: cpp
 
           <indentation:
-             [ \t]      => whitespace;
+             [ \t]      => white space;
              (\r\n)|\n  => newline;
              \\[ \t]*   => suppressor;
           >
 
-specifies that a normal space and tabulators count as white space. Thus, the
+specifies that a normal space and tab characters count as white space. Thus, the
 indentation will be counted as long as the incoming characters after newline
-are either space or tabulator. The column number increment can be specified by
+are either space or tab character. The column number increment can be specified by
 the ``<counter ...>`` for a mode (:ref:`sec-counter`). Both, the Unix (``\\n``)
 and the DOS Version of newline (``\\r\\n``) are accepted as ``newline``. A
-newline suppressor is defined as a backslash. Since whitespace between the
-backslash and newline is hardly identified, possible whitespace is packed into
+newline suppressor is defined as a backslash. Since white space between the
+backslash and newline is hardly identified, possible white space is packed into
 the definition of the suppressor. The above setup is a *safe* setup to work on
 many environments and it helps to avoid confusion. It is indeed the default
 setup which is in place, if nothing is specified. The following section
@@ -109,10 +109,10 @@ The allowed parameter names are ``space``, ``grid``, ``bad``, ``newline``, and
 pattern. For ``newline`` and ``suppressor`` any regular expression can 
 by given. The following list explains the different parameters.
 
-   .. describe :: whitespace
+   .. describe :: white space
 
       Defines the set of allowed character in the indentation. As soon as 
-      a character appears that is not whitespace, the indentation is 
+      a character appears that is not white space, the indentation is 
       equal to the column number. Note, that the indentation level is 
       determined by the number of open indentation blocks and not by 
       means of the column number directly.
@@ -120,9 +120,9 @@ by given. The following list explains the different parameters.
    .. describe :: bad
 
       There is some philosophical discussion whether both spaces and grids or
-      tabulators shal be allowed as indentation characters.  There are very
+      tab characters shal be allowed as indentation characters.  There are very
       rational arguments for 'spaces are bad' and so there are arguments for
-      'tabulators are bad'.  If some characters are specifically to be
+      'tab characters are bad'.  If some characters are specifically to be
       considered bad, then they may be specified as such by the ``bad``
       keyword.  The philosophy of 'tabs are bad' can be expressed by
 
@@ -174,7 +174,7 @@ by given. The following list explains the different parameters.
       princidences the python interpreter to consider indentation before the 'or'
       which is now grouped into the if-condition.
       
-      Many times interpreters are sensitive to whitespace that follows these. 
+      Many times interpreters are sensitive to white space that follows these. 
       Quex allows to be less sensitive by defining the suppressor as a regular
       expression, e.g.
 
@@ -182,7 +182,7 @@ by given. The following list explains the different parameters.
 
          \\[ \t]*   => suppressor;
 
-      eats any amount of non-newline whitespace after the suppressor '\\'.
+      eats any amount of non-newline white space after the suppressor '\\'.
 
    .. describe :: comment
   
@@ -366,7 +366,7 @@ means of incidence handlers, as they are:
      Quex does not forbid the definition of a pattern that contains the 
      bad character. The contrary, it is essential to define such a pattern
      in case that only a warning is intended and not a break up of the 
-     lexical analyzis. A skipper will also do. For example, 
+     lexical analysis. A skipper will also do. For example, 
 
      .. code-block:: cpp
 
@@ -380,7 +380,7 @@ means of incidence handlers, as they are:
              ...
          }
 
-     is a reasonable setup in a lexical analyzer that forbids tabulators in 
+     is a reasonable setup in a lexical analyzer that forbids tab characters in 
      indentation. Alternatively, a 'bad character token' might be defined 
      and sent.
 
@@ -422,7 +422,7 @@ such as::
 
           P_INDENTATION_CATCHER    "\n"[ ]*
 
-That is a newline followed by whitespace. Imagine, one introduces a comment
+That is a newline followed by white space. Imagine, one introduces a comment
 sign such as the traditional # for comment until newline. The comment eating
 pattern would be at first glance::
 
@@ -443,14 +443,14 @@ problem remains:
 .. note:: 
 
    A design without indentation incidences, forces the pattern actions to know
-   about each other.  Otherwise, they might not function propperly together! In
+   about each other.  Otherwise, they might not function properly together! In
    an environment of many different modes which are additionally related by
    inheritance, it is potentially difficult to guarantee that all pattern
    actions avoid interferences with some overal concepts. 
 
-Similarly, catching indentation with pre-condition newline plus whitespace,
+Similarly, catching indentation with pre-condition newline plus white space,
 i.e. ``^[ \t]*`` is fragile, in the sense that another pattern that
-contains newline plus whitespace might hinder this pattern from triggering.
+contains newline plus white space might hinder this pattern from triggering.
 In a lexical analyzer with dozens or hundreds of patterns this becomes
 quickly unmanageable. Errors that arise from patterns defined somewhere
 else are very hard to find and require a lot of insight into the actual
@@ -483,10 +483,10 @@ indentation handling is in place. Lets turn this into a warning.
 
 .. warning::
 
-   Avoid having multiple non-whitespace sub patterns (such as keywords or
+   Avoid having multiple non-white space sub patterns (such as keywords or
    identifiers) concatinated by newline-containing sub-patterns in 
-   *one single pattern*. Otherwise only the last transition from whitespace 
-   to non-whitespace inside the pattern triggers an indentation incidence.
+   *one single pattern*. Otherwise only the last transition from white space 
+   to non-white space inside the pattern triggers an indentation incidence.
 
 The author of this text hopes that this caveat is only of theoretical interest.
 It is hard to imagine a case where such a construct would actually make sense.
