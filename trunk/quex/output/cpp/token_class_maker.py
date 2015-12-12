@@ -585,6 +585,7 @@ helper_definitions = """
 #   define QUEX_NAMESPACE_LEXEME_NULL_CLOSE    
 #endif
 #define QUEX_TYPE_TOKEN_ID             %s
+
 #include "%s"
 #include "%s" 
 """

@@ -67,11 +67,16 @@ GENERATOR MODE (selected options):
   --no-count-columns      Disable line/column counting.
   --iconv, 
   --icu                   Generates analyzer with a converter IConv or ICU.
-  --language, -l [C/C++]  Language for which code is to be generated.
+  --language, -l [C|C++|dot]  
+                          Language for which code is to be generated. 'dot' 
+                          generates 'graphviz' state machine graphs.
   --output-directory, 
   --odir                  Output directory.
   --source-package, --sp  Generate a source package independent of quex 
                           installation.
 
 Please, report bugs at http://quex.sourceforge.net.
+
+
+
 
