@@ -171,7 +171,7 @@ by given. The following list explains the different parameters.
             or db.disconnected(): 
                 ...
 
-      princidences the python interpreter to consider indentation before the 'or'
+      prevents the python interpreter to consider indentation before the 'or'
       which is now grouped into the if-condition.
       
       Many times interpreters are sensitive to white space that follows these. 

@@ -47,7 +47,7 @@ its closest base class ``I``.
    :align: center
    :alt:   Multiple inheritance mode structure.
 
-What sounds complicated is in practise very intuitive. Base mode patterns have
+What sounds complicated is in practice very intuitive. Base mode patterns have
 high precedence, thus they have a high influence on the mode's behavior. This
 follows the idea that a derived mode has the character of its base mode plus
 some extra functionality. The fact that first mentioned base classes are

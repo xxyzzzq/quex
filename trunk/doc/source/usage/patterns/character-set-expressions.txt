@@ -2,7 +2,7 @@ Character Set Expressions
 ==========================
 
 Character set expression are a tool to combine, filter and or select character
-ranges conviniently. The result of a character set expression is a set of
+ranges conveniently. The result of a character set expression is a set of
 characters. Such a set of characters can then be used to express that any of
 them can occur at a given position of the input stream. The character set
 expression ``[:alpha:]``, for example matches all characters that are 
@@ -12,7 +12,7 @@ explains how sets can be generated from other sets via the operations *union*,
 *intersection*, *difference*, and *inverse*.
 
 POSIX bracket expressions are basically shortcuts for some more 
-regular expressions that would formally look a bit more clumpsy. Quex
+regular expressions that would formally look a bit more clumsy. Quex
 provides those expressions bracketed in ``[:`` and ``:]`` brackets.
 They are specified in the table below.
 
@@ -30,7 +30,7 @@ They are specified in the table below.
     ``[:lower:]``    Lowercase letters                 ``[a-z]``                                
     ``[:print:]``    Visible characters and spaces     ``[\x20-\x7E]``                          
     ``[:punct:]``    Punctuation characters            ``[!"#$%&'()*+,-./:;?@[\\\]_`{|}~]`` 
-    ``[:space:]``    Whitespace characters             ``[ \t\r\n\v\f]``                        
+    ``[:space:]``    White space characters             ``[ \t\r\n\v\f]``                        
     ``[:upper:]``    Uppercase letters                 ``[A-Z]``                                
     ``[:xdigit:]``   Hexadecimal digits                ``[A-Fa-f0-9]``                          
     ==============  =================================  =====================================
@@ -54,7 +54,7 @@ section and replaced inside the ``[:`` ... ``:]`` brackets--provided
 that they are character sets and not complete state machines.
 
 The use of Unicode character set potentially implies the handling of many
-different properties and character sets. For convinience, quex provides
+different properties and character sets. For convenience, quex provides
 *operations on character sets* to combine and filter different character sets
 and create new adapted ones. The basic operations that quex allows are
 displayed in the following table:
@@ -84,14 +84,14 @@ function also takes more than one set, so one does not have to build the union
 first.
 
 Note, that the ``difference`` and ``intersection`` operation can be 
-used convienently to filter different sets. For example
+used conveniently to filter different sets. For example
 
 .. code-block:: cpp
 
   [: difference(\P{Script=Greek}, \G{Nd}, \G{Lowercase_Letter} :]
 
-results in the set of greek characters except the digits and except the
-lowercase letters. To allow only the numbers from the arabic code block
+results in the set of Greek characters except the digits and except the
+lowercase letters. To allow only the numbers from the Arabic code block
 ``intersection`` can be used as follows:
 
 .. code-block:: cpp
@@ -99,7 +99,7 @@ lowercase letters. To allow only the numbers from the arabic code block
   [: intersection(\P{Block=Arabic}, \G{Nd}) :]
 
 The subsequent section elaborates on the concept of Unicode properties. At this
-point, it is worth mentioning that quex provides a sophistacted query feature. This
+point, it is worth mentioning that quex provides a sophisticated query feature. This
 allows to determine the result of such set operations and view the result sets. 
 For example, to see the results of the former set operation quex can be called the
 following way:
@@ -109,5 +109,5 @@ following way:
    quex --set-by-expression 'difference(\P{Script=Greek}, \G{Nd}, \G{Lowercase_Letter})'
 
 In order to take full advantage of those set arithmetics the use should familiarize
-hiself with Unicode properties and quex's query mode. 
+himself with Unicode properties and quex's query mode. 
 

@@ -46,7 +46,7 @@ What happens internally is that the following:
    4. The analyzer switches back to the including file and continues
       the analyzes after the ``#include`` statement.
 
-The ability to include files princidences users from writing the same code
+The ability to include files prevents users from writing the same code
 multiple times.  Moreover, it supports centralized organization of the code.
 Scripts or configurations that are referred to in many files can be put into a
 central place that is maintained by trustworthy personal ensuring robustness of
@@ -292,7 +292,7 @@ and *re-initialization*.  To prevent infinite recursion the member function
 ``include_detect_recursion`` is called.  An error initiates the return of
 ``false`` which would trigger the include-push function to signalize that the
 inclusion failed.  The packing, in this example is implemented by storing the
-current white space count in the memento object. Whitespace counting is file
+current white space count in the memento object. White space counting is file
 local so it make sense to re-initialize the counter to zero when a new file is
 included.  
 
@@ -519,7 +519,7 @@ file, thus the analyzer's class body must be extended.
     }
 
 Then, at each inclusion it must be iterated over all including files, i.e.
-the preceeding mementos. The first memento, i.e. the root file has a
+the preceding mementos. The first memento, i.e. the root file has a
 parent pointer of ``0x0`` which provides the loop termination condition.
 
 .. code-block:: cpp

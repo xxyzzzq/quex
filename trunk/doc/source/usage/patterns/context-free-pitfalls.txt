@@ -28,7 +28,7 @@ then the lexeme ``keyword`` would produce a single token::
 
       IDENTIFIER   'keyword'
 
-because IDENTIFIER matches a longer lexeme than soley KEY does. If the the
+because IDENTIFIER matches a longer lexeme than solely KEY does. If the 
 desired token sequence, though, is::
 
       KEYWORD      'key'

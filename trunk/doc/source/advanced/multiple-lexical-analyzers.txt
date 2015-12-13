@@ -9,7 +9,7 @@ task has become very easy. The only requirement from the user's prespective is
 that the lexical analyzers and the token classes need to live in separate
 namespaces. The command line option ``-o, --engine, --analyzer-class`` allow
 to specify a name of the analyzer class as well as its namepsace by means
-of preceeding ``::`` sequences, e.g.::
+of preceding ``::`` sequences, e.g.::
 
   > quex ... -o world::germany::baden::Fritzle ...
 

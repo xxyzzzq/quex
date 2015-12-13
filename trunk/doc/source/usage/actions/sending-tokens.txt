@@ -4,7 +4,7 @@ Sending Tokens
 ===============
 
 The operator to send a token together with its token-id is ``=>``. It has
-already appeared in some examples in preceeding sections. The meaning of
+already appeared in some examples in preceding sections. The meaning of
 a code fragment like
 
 .. code-block:: cpp
@@ -32,7 +32,7 @@ additional arguments may be specified in brackets, such as
      ...
    }
 
-The list of arguments contains assigments such as ``number = atoi(Lexeme)``.
+The list of arguments contains assignments such as ``number = atoi(Lexeme)``.
 The assigned attributes are the members of the token class which are set. In
 the above example the lexeme's numerical interpretation is assigned to the
 member variable ``number`` inside the token, and the Lexeme itself is assigned
@@ -78,7 +78,7 @@ which are available to access the matched lexeme. In detail they are:
                  or one might rely on the borders ``LexemeBegin`` and
                  ``LexemeEnd``, or on ``LexemeBegin`` and ``LexemeL`` for
                  further processing. Note, that despite its being well
-                 established common practise, the terminating zero approach is
+                 established common practice, the terminating zero approach is
                  almost never the fastest and most efficient approach for
                  string handling!  Quex respects the tradition but leaves the
                  door open for intelligent other solutions.
@@ -221,7 +221,7 @@ sending of a token. When the token policy ``queue`` is used the analyzer
 continues its analysis until it hits the safety border in the queue. An
 exception to this is the reaction to the end of file incidence, i.e.
 ``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer returns. This is
-to princidence sending tokens after the ``TERMINATION`` token.  Without an action
+to prevent sending tokens after the ``TERMINATION`` token.  Without an action
 defined for 'end of stream' or 'failure', the analyzer returns a
 ``TERMINATION`` token, by default.
 
@@ -240,7 +240,7 @@ defined for 'end of stream' or 'failure', the analyzer returns a
    an included file.
 
    The behavior is there to help the user, not to bother him. It is to 
-   princidence subtle errors where the token queue contains tokens beyond the
+   prevent subtle errors where the token queue contains tokens beyond the
    terminating token that signified the end of a file.
 
 

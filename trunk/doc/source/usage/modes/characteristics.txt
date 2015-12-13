@@ -68,7 +68,7 @@ The possible options for modes to be specified are the following.
    
    * ``no`` means that no other mode may inherit from this mode. 
    
-   * ``only`` princidences that the lexical analyzer ever enters this 
+   * ``only`` prevents that the lexical analyzer ever enters this 
       mode. Its sole purpose is to be a base mode for other modes. It then 
       acts very much like an *abstract class* in C++ or an *interface* in Java.
 
@@ -99,7 +99,7 @@ The possible options for modes to be specified are the following.
 .. data:: <skip: [ character-set ]>
 
    By means of this option, it is possible to implement optimized skippers for 
-   regions of the input stream that are of no interest. Whitespace for example
+   regions of the input stream that are of no interest. White space for example
    can be skipped by defining a ``skip`` option like::
 
       mode MINE : 
@@ -161,7 +161,7 @@ The possible options for modes to be specified are the following.
                       is \
                       a comment
 
-                where the end of comment can be suppressed by a backslashed followed
+                where the end of comment can be suppressed by a backslash-ed followed
                 by white space. The ``skip_range`` option's efficiency is based on the
                 delimiter being a linear character sequence. For the above case a 
                 regular expression is required.
@@ -248,7 +248,7 @@ The possible options for modes to be specified are the following.
          */
 
    and the compiler might still print a warning for each ``/*`` that opens inside
-   the outer comment. When the code fragment is uncommented, all ``*_/`` markers
+   the outer comment. When the code fragment is de-commented, all ``*_/`` markers
    must be replaced again with ``*/``. 
    
    All this fuss is not necessary, if the programming language supports nested comments.
@@ -392,7 +392,7 @@ in the incidence handler definition. The list of incidence handlers is the follo
 
    .. note::
 
-      A slightly unintuitive behavior may occur when the token policy 'queue'
+      A lesser intuitive behavior may occur when the token policy 'queue'
       is used, as it is by default. As any other token which is sent, it goes
       through the token queue. It arrives at the user in a delayed manner after
       the queue has been filled up, or the stream ends. In this case, an
@@ -495,7 +495,7 @@ Here, there are listed only to provide in overview.
               indentation management has been improved heavily. It is likely
               that it will be removed totally.
 
-    The occurence of the first non-white space in a line triggers the ``on_indentation``
+    The occurrence of the first non-white space in a line triggers the ``on_indentation``
     incidence handler. Note, that it is only executed at the moment where a pattern matches 
     that eats part (or all) of the concerned part of the stream. This incidence handler 
     facilitates the definition of languages that rely on indentation. ``Indentation``
@@ -530,7 +530,7 @@ Here, there are listed only to provide in overview.
 
 .. data:: on_indentation_bad
 
-   In case that a character occured in the indentation which was
+   In case that a character occurred in the indentation which was
    specified by the user as being *bad*.
 
 As it has been mentioned in many places before, incidence handlers are specified in

@@ -8,7 +8,7 @@ what is usually called *traditional UNIX syntax* \cite{}, includes elements of
 *extended POSIX regular expressions* \cite{IEEE POSIX Standard 1003.2} and
 *POSIX bracket expressions* \cite{}. This facilitates the migration from and to
 other lexical analyzer generators and test environments. Additionally, quex
-provides support for *Unicode Propperties*. A compliance to *Unicode Regular
+provides support for *Unicode Properties*. A compliance to *Unicode Regular
 Expressions* \cite{Unicode 5.0 Technical Report Standard #18} is currently
 not targeted, though, because this expressive power is usually not required for
 compiler generation.

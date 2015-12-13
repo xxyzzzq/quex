@@ -49,11 +49,11 @@ Pattern-Action Pairs
 
    Alternatively, pattern-actions of ``B`` could have been executed after the 
    pattern-actions of ``A`` in case of interference. However, the decision
-   of a brutal outruling was done because the high probability of creating 
+   of a brutal overruling was done because the high probability of creating 
    a mess. Imagine, a lexical analyzer engine sends multiple tokens as a 
    reaction to a pattern match. Further, the places where those tokens
    are send are not in one place, but distributed over multiple classes.
-   Also, multiple concatinated mode transitions are very much prone to 
+   Also, multiple concatenated mode transitions are very much prone to 
    end up in total confusion. This is why pattern actions in a base mode overrule
    pattern actions in the derived mode.
 
@@ -67,7 +67,7 @@ Incidence Handlers
      <<section>>) [#f1]_. Also, tokens that are send from inside incidence handlers
      are *implicit* tokens, thus it is expected that those tokens are not
      necessarily tied to concrete lexemes. These assumptions makes the brutal
-     outruling of the base mode over derived mode meaningless. Incidence handlers
+     overruling of the base mode over derived mode meaningless. Incidence handlers
      of base mode and derived mode may be executed both without an inherent
      source of confusion.
 
@@ -75,7 +75,7 @@ Incidence Handlers
 Figure :ref:`(this) <fig-mode-inheritance>` shows an example where a mode ``B``
 is derived from  mode ``A``. The mode ``B*`` represents the internal result of
 the result of inheritance: patterns of the base mode *overrule* patterns of the derived mode,
-incidence handlers of the base mode *preceed* incidence handlers of the derived mode.
+incidence handlers of the base mode *precede* incidence handlers of the derived mode.
 
 .. _fig-mode-inheritance:
 

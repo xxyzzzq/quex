@@ -119,7 +119,7 @@ must be stored safely away.
 
 The size of the token queue is constant during run-time. Quex generates the size
 based on the the command line option ``--token-queue-size``. An overflow of the
-queue is princidenceed since the analyser returns as soon as the queue is full. 
+queue is prevented since the analyser returns as soon as the queue is full. 
 
 Then the ``--token-queue-safety-border`` command line flag allows to define a
 safety region. Now, the analyzer returns as soon as the remaining free places

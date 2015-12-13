@@ -62,7 +62,7 @@ for the post-condition.
                   
 .. describe:: Q/R/S 
 
-    matches ``R`` from the current position, but only if the preceeding
+    matches ``R`` from the current position, but only if the preceding
     stream matches a ``Q`` and the following stream matches an ``S``.
     ``R`` is pre- and post-conditioned.
 

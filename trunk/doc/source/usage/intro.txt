@@ -8,7 +8,7 @@ separate sections the definition of patterns and their related actions is explai
 Pattern-action pairs are grouped in modes. The particularities of mode definitions
 is explained in a dedicated section. At this point in time the user is familiar
 with the syntax of the input language of quex. A final section discusses the 
-command line arguments for the invokation of quex on the command, or in Makefiles 
+command line arguments for the invocation of quex on the command, or in Makefiles 
 and project files.
 
 .. toctree::
