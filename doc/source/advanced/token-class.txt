@@ -109,7 +109,7 @@ followed by ``}``.
        }
 
    The standard members are implemented in the actual token class with a
-   preceeding underscore.  That means, ``id`` becomes ``_id``, ``line_number``
+   preceding underscore.  That means, ``id`` becomes ``_id``, ``line_number``
    becomes ``_line_number`` and ``column_number`` becomes ``_column_number``.
    Depending on the setting of the macros::
 

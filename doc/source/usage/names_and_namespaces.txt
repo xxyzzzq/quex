@@ -35,7 +35,7 @@ The C implementation of those would be
         void                X0_X1_X2_function(void);
 
 which follows the well established naming scheme of 'from general to specific'.
-That is, from the outest name space to the deepest, then the class name, if
+That is, from the outermost name space to the deepest, then the class name, if
 there is one, and then the function or object name itself. Member functions
 from C++ are implemented as normal functions in 'C' where the correspondent C
 function receives a pointer to the class (struct) as the first argument. All

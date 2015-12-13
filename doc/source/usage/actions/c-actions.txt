@@ -99,11 +99,11 @@ The following send macros are available:
 
 The actual mechanism of sending consists of three steps:
 
-   #. Filling token content.
+   #. Fill token content.
 
-   #. Setting the current token's identifier.
+   #. Set the current token's identifier.
 
-   #. Incrementing setting the current token's pointer to the next
+   #. Increment or set the current token's pointer to the next
       token to be filled.
 
 Depending on the particularities of the setup, the send macros adapt
@@ -135,8 +135,8 @@ example
         }
 
 causes a mode transition to the ``STRING_READER`` mode as soon as a string
-delimiter arrives. A mode's id can be mapped to a mode object, and vice
-versa, via the two functions
+delimiter arrives. A mode's id can be mapped to a mode object, and via the two
+functions
 
 .. cfunction:: QuexMode&  map_mode_id_to_mode(const int ModeID);
 
