@@ -111,10 +111,10 @@
                             <scope>system</scope>
                             <path>${installdir}</path>
                         </addDirectoryToPath>
-                         <copyFile>
-                             <destination>${installdir}/quex.bat</destination>
-                             <origin>${installdir}/${product_shortname}-${product_version}/quex.bat</origin>
-                         </copyFile>
+                        <copyFile>
+                            <destination>${installdir}/quex.bat</destination>
+                            <origin>${installdir}/${product_shortname}-${product_version}/quex.bat</origin>
+                        </copyFile>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>
@@ -137,10 +137,12 @@
             </startMenuShortcutList>
         </component>
     </componentList>
-    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
-    <enableRollback>1</enableRollback>
+    <preUninstallationActionList>
+        <deleteFile>
+            <path>${installdir}/quex.bat</path>
+        </deleteFile>
+    </preUninstallationActionList>
     <enableTimestamp>1</enableTimestamp>
-    <registerWithPackageDatabase>1</registerWithPackageDatabase>
     <saveRelativePaths>1</saveRelativePaths>
     <parameterList>
         <directoryParameter>

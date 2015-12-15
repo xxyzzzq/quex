@@ -39,10 +39,6 @@ main(int argc, char** argv)
         cout << token_p->type_id_name() << endl;
 #       endif
 
-#       ifdef SPECIAL_ACTION
-        SPECIAL_ACTION(&qlex, &my_token);
-#       endif
-
         ++number_of_tokens;
 
         // (*) check against 'termination'

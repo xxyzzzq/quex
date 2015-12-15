@@ -61,10 +61,10 @@ Option("analyzer_class", "[name ::]* name",
     the class name. For example, the invocation
     """,
     Block("> quex ... -o ::Lexer", "bash"),
-    """sets up the lexical analyzer in the root namespace and
+    """sets up the lexical analyzer in the root name space and
     """,
     Block("> quex ... -o Lexer", "bash"),
-    """generates a lexical analyzer class \\v{Lexer} in default namespace \\v{quex}.
+    """generates a lexical analyzer class \\v{Lexer} in default name space \\v{quex}.
     """
     ),
 Option("output_directory", "directory",
@@ -76,7 +76,7 @@ Option("output_directory", "directory",
     """),
 Option("output_file_naming_scheme", "scheme",
     """
-    Specifies the filestem and extensions of the output files. The provided
+    Specifies the file stem and extensions of the output files. The provided
     argument identifies the naming scheme. The possible values for \\v{scheme}
     and their result is mentioned in the list below.
     """,
@@ -195,13 +195,13 @@ Option("analyzer_derived_class_name", "name",
     (see section <<sec-formal-derivation>>). Note, specifying this option
     signalizes that the user wants to derive from the generated class. If this
     is not desired, this option, and the following, have to be left out. The 
-    namespace of the derived analyzer class is specified analgously to the
+    name space of the derived analyzer class is specified analogously to the
     specification for `--analyzer-class`, as mentioned above.
     """),
 Option("analyzer_derived_class_file", "file name",
     """
     \\v{file-name} = If specified, the name of the file where the derived class is
-    defined.  This option only makes sense in the context of optioin
+    defined.  This option only makes sense in the context of option
     \\v{--derived-class}. 
     """),
 Option("token_id_prefix", "prefix",
@@ -251,7 +251,7 @@ Option("token_id_counter_offset", "number",
      """
      \\v{number} = Number where the numeric values for the token ids start
      to count. Note, that this does not include the standard token ids
-     for termination, unitialized, and indentation error.
+     for termination, uninitialized, and indentation error.
      """),
 """
 Certain token ids are standard, in a sense that they are required for a
@@ -329,7 +329,7 @@ Option("token_class_only_f", None,
 ),
 Option("external_lexeme_null_object", "name [:: name]+", 
      """
-     This option specifies the name and namespace of the \\v{LexemeNull} object. If the option is
+     This option specifies the name and name space of the \\v{LexemeNull} object. If the option is
      not specified, then this object is created along with the analyzer
      automatically. When using a shared token class, then this object must
      have been created along with the token class. Announcing the name of
@@ -341,11 +341,11 @@ There may be cases where the characters used to indicate buffer limit needs to
 be redefined, because the default value appear in a pattern.  For most codecs,
 such as ASCII and Unicode, the buffer limit codes do not intersect with valid
 used code points of characters. Theoretically however, the user may define 
-buffer codecs that require a different definition of the limitting codes.
+buffer codecs that require a different definition of the limiting codes.
 The following option allows modification of the buffer limit code:
 """,
 Option("buffer_limit_code", "number", 
-     """Definies the value used to mark buffer borders. This should be a number that
+     """Defines the value used to mark buffer borders. This should be a number that
      does not occur as an input character."""),
 """
 On several occasions quex produces code related to 'newline'. The coding of 
@@ -360,7 +360,7 @@ Option("dos_carriage_return_newline_f", None,
      """If specified, the DOS newline (0x0D, 0x0A) is not considered whenever
      newline is required."""),
 """
-Input codecs other than ASCII or UTF32 (which map 1:1 to unicode code points)
+Input codecs other than ASCII or UTF32 (which map 1:1 to Unicode code points)
 can be used in two ways. Either on uses a converter that converts the file
 content into Unicode and the engine still runs on Unicode, or the engine itself
 is adapted to the require codec. 
@@ -468,7 +468,7 @@ Option("buffer_element_size", "1|2|4",
      The size of a buffer element should be large enough so that it can
      carry the Unicode value of any character of the desired input coding
      space.  When using Unicode, to be safe '-b 4' should be used except that
-     it is unconceivable that any code point beyond 0xFFFF ever appears. In
+     it is inconceivable that any code point beyond 0xFFFF ever appears. In
      this case '-b 2' is enough.
 
      When using dynamic sized codecs, this option is better not used. The
@@ -507,7 +507,7 @@ Option("buffer_byte_order", "little|big|<system>",
         There are two types of byte ordering for integer number depending on the CPU.
         For creating a lexical analyzer engine on the same CPU type as quex runs
         then this option is not required, since quex finds this out by its own.
-        If you create an engine for a different plattform, you must know its byte ordering
+        If you create an engine for a different platform, you must know its byte ordering
         scheme, i.e. little endian or big endian, and specify it after \\v{--endian}. 
         """,
         """
@@ -656,7 +656,7 @@ Option("comment_mode_patterns_f", None,
      """, "cpp"),
      """
      This means, that there is a mode \\v{PROGRAM}. The first three pattern are related
-     to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was
+     to the terminal states '117', '119', and '121'. The white space pattern of 117 was
      inherited from mode `ALL`. The math operator pattern was inherited from mode
      \\v{CALC_OP} and the comment start pattern "//" was implemented in \\v{PROGRAM} 
      itself.
@@ -718,7 +718,7 @@ Item("2",
      """
     Error check on dominated patterns,                        
     i.e. patterns that may never match due to higher          
-    precedence patterns which cover a superset of lexemes.    
+    precedence patterns which cover a super set of lexemes.    
      """),
 Item("3",
      """

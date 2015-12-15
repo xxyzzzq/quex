@@ -1,5 +1,5 @@
 .\" Manpage for quex.
-.TH QUEX 1 "Quex 0.65.6" "User Commands"
+.TH QUEX 1 "Quex 0.65.7-test" "User Commands"
 .SH NAME
 Quex \- A fast lexical analyzer generator
 .SH SYNOPSIS
@@ -95,7 +95,7 @@ must be proceeding the class name. For example, the invocation
 
 
 .fi
-sets up the lexical analyzer in the root namespace and 
+sets up the lexical analyzer in the root name space and 
 
 
 .nf
@@ -107,7 +107,7 @@ sets up the lexical analyzer in the root namespace and
 .fi
 generates a lexical analyzer class 
 .B "Lexer"
-in default namespace 
+in default name space 
 .BR "quex" .
 
 
@@ -137,7 +137,7 @@ as a base.
 .BI "--file-extension-scheme, --fes scheme"
 
 .RS
-Specifies the filestem and extensions of the output files. The provided argument identifies the naming scheme. The possible values for 
+Specifies the file stem and extensions of the output files. The provided argument identifies the naming scheme. The possible values for 
 .B "scheme"
 and their result is mentioned in the list below. 
 
@@ -453,7 +453,7 @@ For the support of derivation from the generated lexical analyzer class the foll
 .RS
 
 .B "name"
-= If specified, the name of the derived class that the user intends to provide (see section <<sec-formal-derivation>>). Note, specifying this option signalizes that the user wants to derive from the generated class. If this is not desired, this option, and the following, have to be left out. The namespace of the derived analyzer class is specified analgously to the specification for `--analyzer-class`, as mentioned above. 
+= If specified, the name of the derived class that the user intends to provide (see section <<sec-formal-derivation>>). Note, specifying this option signalizes that the user wants to derive from the generated class. If this is not desired, this option, and the following, have to be left out. The name space of the derived analyzer class is specified analogously to the specification for `--analyzer-class`, as mentioned above. 
 
 
 .RE
@@ -465,7 +465,7 @@ For the support of derivation from the generated lexical analyzer class the foll
 .RS
 
 .B "file-name"
-= If specified, the name of the file where the derived class is defined. This option only makes sense in the context of optioin 
+= If specified, the name of the file where the derived class is defined. This option only makes sense in the context of option 
 .BR "--derived-class" .
 
 
@@ -577,7 +577,7 @@ Default: 16
 .RS
 
 .B "number"
-= Number where the numeric values for the token ids start to count. Note, that this does not include the standard token ids for termination, unitialized, and indentation error. 
+= Number where the numeric values for the token ids start to count. Note, that this does not include the standard token ids for termination, uninitialized, and indentation error. 
 
 
 .RE
@@ -734,7 +734,7 @@ Default: false (disabled)
 .BI "--lexeme-null-object, --lno name [:: name]+"
 
 .RS
-This option specifies the name and namespace of the 
+This option specifies the name and name space of the 
 .B "LexemeNull"
 object. If the option is not specified, then this object is created along with the analyzer automatically. When using a shared token class, then this object must have been created along with the token class. Announcing the name of the lexeme null object prevents quex from generating a lexeme null inside the engine itself. 
 
@@ -742,13 +742,13 @@ object. If the option is not specified, then this object is created along with t
 .RE
 
 
-There may be cases where the characters used to indicate buffer limit needs to be redefined, because the default value appear in a pattern. For most codecs, such as ASCII and Unicode, the buffer limit codes do not intersect with valid used code points of characters. Theoretically however, the user may define buffer codecs that require a different definition of the limitting codes. The following option allows modification of the buffer limit code: 
+There may be cases where the characters used to indicate buffer limit needs to be redefined, because the default value appear in a pattern. For most codecs, such as ASCII and Unicode, the buffer limit codes do not intersect with valid used code points of characters. Theoretically however, the user may define buffer codecs that require a different definition of the limiting codes. The following option allows modification of the buffer limit code: 
 
 .TP
 .BI "--buffer-limit number"
 
 .RS
-Definies the value used to mark buffer borders. This should be a number that does not occur as an input character. 
+Defines the value used to mark buffer borders. This should be a number that does not occur as an input character. 
 
 
 .RE
@@ -774,7 +774,7 @@ Default: true (not disabled)
 .RE
 
 
-Input codecs other than ASCII or UTF32 (which map 1:1 to unicode code points) can be used in two ways. Either on uses a converter that converts the file content into Unicode and the engine still runs on Unicode, or the engine itself is adapted to the require codec. 
+Input codecs other than ASCII or UTF32 (which map 1:1 to Unicode code points) can be used in two ways. Either on uses a converter that converts the file content into Unicode and the engine still runs on Unicode, or the engine itself is adapted to the require codec. 
 
 Currently quex-generated lexers can interact with GNU IConv and IBM's ICU library as input converters. Using one of those requires, of course, that the correspondent library is installed and available. On Unix systems, the iconv library is usually present. ICU is likely required to be installed but also freely available. Using input converters, such as IConv or ICU lets is a flexible solution. The converter can be adapted dynamically while the internal engine remains running on Unicode. 
 
@@ -889,7 +889,7 @@ If the internal engine runs on a specific codec (
 .RS
 With this option the number of bytes is specified that a buffer element occupies. 
 
-The size of a buffer element should be large enough so that it can carry the Unicode value of any character of the desired input coding space. When using Unicode, to be safe '-b 4' should be used except that it is unconceivable that any code point beyond 0xFFFF ever appears. In this case '-b 2' is enough. 
+The size of a buffer element should be large enough so that it can carry the Unicode value of any character of the desired input coding space. When using Unicode, to be safe '-b 4' should be used except that it is inconceivable that any code point beyond 0xFFFF ever appears. In this case '-b 2' is enough. 
 
 When using dynamic sized codecs, this option is better not used. The codecs define their chunks themselves. For example, UTF8 is built upon one byte chunks and UTF16 is built upon chunks of two bytes. 
 
@@ -935,7 +935,7 @@ By default, the buffer element type is determined by the buffer element size.
 .BI "--endian little|big|<system>"
 
 .RS
-There are two types of byte ordering for integer number depending on the CPU. For creating a lexical analyzer engine on the same CPU type as quex runs then this option is not required, since quex finds this out by its own. If you create an engine for a different plattform, you must know its byte ordering scheme, i.e. little endian or big endian, and specify it after 
+There are two types of byte ordering for integer number depending on the CPU. For creating a lexical analyzer engine on the same CPU type as quex runs then this option is not required, since quex finds this out by its own. If you create an engine for a different platform, you must know its byte ordering scheme, i.e. little endian or big endian, and specify it after 
 .BR "--endian" .
 
 
@@ -1174,7 +1174,7 @@ If this option is set a comment is printed that shows what pattern is present in
 .fi
 This means, that there is a mode 
 .BR "PROGRAM" .
-The first three pattern are related to the terminal states '117', '119', and '121'. The whitespace pattern of 117 was inherited from mode `ALL`. The math operator pattern was inherited from mode 
+The first three pattern are related to the terminal states '117', '119', and '121'. The white space pattern of 117 was inherited from mode `ALL`. The math operator pattern was inherited from mode 
 .B "CALC_OP"
 and the comment start pattern "//" was implemented in 
 .B "PROGRAM"
@@ -1278,7 +1278,7 @@ A token class file (
 
 .RS
 .IP 2
-Error check on dominated patterns, i.e. patterns that may never match due to higher precedence patterns which cover a superset of lexemes. 
+Error check on dominated patterns, i.e. patterns that may never match due to higher precedence patterns which cover a super set of lexemes. 
 
 
 .RE

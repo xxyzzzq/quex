@@ -45,9 +45,6 @@ main(int argc, char** argv)
         printf("%s\n", QUEX_NAME_TOKEN(map_id_to_name)(token_p->_id));
 #       endif
 
-#       ifdef SPECIAL_ACTION
-        SPECIAL_ACTION(&qlex, &my_token);
-#       endif
         ++number_of_tokens;
 
         /* Check against 'termination'            */
