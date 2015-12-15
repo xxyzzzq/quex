@@ -2,6 +2,8 @@
 # PURPOSE: Creating a release of Quex
 #   $1  version of the quex release
 #
+#   --no-repo => prevents repository update
+#
 # (C) 2005-2008 Frank-Rene Schaefer  fschaef@users.sourceforge.net
 # 
 # ABSOLUTELY NO WARRANTY
@@ -13,8 +15,9 @@ mkdir -p /tmp/quex-packages
 orig_directory=$PWD
 export QUEX_PATH=$PWD
 
-INSTALLBUILDER=$HOME/bin/installbuilder-9.5.5/bin/builder
-INSTALLBUILDER_OUT=$HOME/bin/installbuilder-9.5.5/output
+DIR_INSTALLBUILDER=$HOME/bin/installbuilder-9.5.5/
+INSTALLBUILDER=$DIR_INSTALLBUILDER/bin/builder
+INSTALLBUILDER_OUT=$DIR_INSTALLBUILDER/output
 
 
 # Temporary file for building a distribution file list
@@ -106,7 +109,7 @@ function collect_distribution_file_list()
     # -- change base directory from ./trunk to ./quex-$version
     echo "-- Place snapshot in temporary directory"
     cd /tmp/
-    tar xf quex-$1.tar
+    tar xf quex-$1.tar 
     rm quex-$1.tar 
 
     # -- Rename trunk, so that it carries the name quex and version info
@@ -133,6 +136,7 @@ function create_packages()
 
     # -- create xml file for the install builder
     $QUEX_PATH/adm/packager/make_install_builder_script.py `pwd`/quex-$1 $1
+
     $INSTALLBUILDER build ./install-builder.xml windows
     $INSTALLBUILDER build ./install-builder.xml linux
     $INSTALLBUILDER build ./install-builder.xml rpm
@@ -145,13 +149,13 @@ function create_packages()
 
     echo "-- Create tar and zip file"
     cd /tmp
-    tar cf quex-$1.tar ./quex-$1
-    zip -r quex-$1.zip ./quex-$1
-    7z   a quex-$1.7z  ./quex-$1
+    tar cf quex-$1.tar ./quex-$1 >& /dev/null
+    zip -r quex-$1.zip ./quex-$1 >& /dev/null
+    7z   a quex-$1.7z  ./quex-$1 >& /dev/null
 
     # -- compress the tar file
     echo "-- Further compress .tar --> 7z and gzip"
-    gzip -9 quex-$1.tar
+    gzip -9 quex-$1.tar          >& /dev/null
 }
 
 function validate_directory_tree()
@@ -166,7 +170,7 @@ function validate_directory_tree()
             .)             echo "directory .    [OK]";;
             ./demo)        echo "directory demo [OK]";;
             ./quex)        echo "directory quex [OK]";;
-            ./doc)        echo "directory quex [OK]";;
+            ./doc)         echo "directory quex [OK]";;
             *)             echo "directory '$d' is not to be packed. Abort!"; exit;; 
         esac
     done
@@ -265,7 +269,9 @@ create_packages $1
 
 collect_packages $1
 
-repository_update $1
+if [[ "$*" != *"--no-repo"* ]]; then
+    repository_update $1
+fi
 
 clean_up
 

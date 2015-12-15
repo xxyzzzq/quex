@@ -58,7 +58,7 @@ will print the following notification::
     mine.qx:4:warning: may outrun pattern 'key' as defined here.
 
 The potential outrunning of high priority patterns by low priority patterns
-can be very subtile. Consider::
+can be very subtle. Consider::
 
       'alb|albertikus' => TKN_ALB;
       'albert'         => TKN_ALBERT;
@@ -81,7 +81,7 @@ the IDENTIFIER would have to look like::
 
       \A{key|password|secret}[a-z]+ => TKN_IDENTIFIER;
     
-In the very large majority of cases greedy matching is a convienient
+In the very large majority of cases greedy matching is a convenient
 blessing. Imagine the problem with identifiers, i.e. any chain of alphabetic
 characters, and a keyword '`for`'.  If there was no greedy matching (longest
 match), then any lexeme starting with `for`, such as `forest`,  could not 
