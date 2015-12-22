@@ -1,15 +1,27 @@
- An Demonstration of Modes, Mode Inheritance, and Mode Transitions.
+ An Demonstration of Indentation Based Analysis
 ------------------------------------------------------------------------------
 
-The file "simple.qx" defines a set of modes. Some modes inherit from each
-other. Some modes transit to each other. Some modes restrict entry and exit
-from other modes. The handlers 'on_entry' and 'on_exit' react on mode
-transitions. 
+An indentation based analyzer produces tokens that indicate scope implicitly:
 
-When 'make' finished its job, there is an executable './lexer'. This can 
-be run like
+  INDENT: When a line is more indented than its predecessor.
+  DEDENT: When a line is less indented.
+  NODENT: When a line has the same indentation level as the predecessor.
 
-    > ./lexer  example.txt
+This directory contains two examples of lexical analyzers:
+
+  "simple.qx" defines a lexical analyzer that enables indentation scoping 
+              by then "<indentation>" tag, but does not customize it 
+              further.
+
+  "simple2.qx" demonstrates an example where 'whitespace', 'newline suppresser'
+               and 'comment' are user defined.
+
+The two resulting analyzers are './lexer' and 'lexer2'. They are run on the 
+command line like
+                    > ./lexer  example.txt
+
+and
+                    > ./lexer2  example2.txt
 
 Producing a display of the analyzed data.
 
