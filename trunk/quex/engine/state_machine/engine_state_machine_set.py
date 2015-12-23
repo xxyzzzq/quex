@@ -60,37 +60,53 @@ class EngineStateMachineSet:
         return state_machine_list, pre_context_sm_list, bipd_sm_list
 
 class CharacterSetStateMachine:
+    """Generates a state machine that implements the transition to terminals 
+    upon the input falling into a number set. 
+        
+               .-----------------.
+               | character set 0 +-----> Incidence0
+               |                 |
+               | character set 1 +-----> Incidence1
+               |                 |
+               | character set 2 +-----> Incidence2
+               '-----------------'         
+
+    At the same time, paralell state machines may be mounted. The result is
+    a state machine like
+
+               .-----------------.
+               | character set 0 +---- ...              -> Incidence0
+               |                 |                      
+               | character set 1 +---- ...  State       -> Incidence1
+               |                 |                      
+               | character set 2 +---- ...  Machine     -> Incidence2
+               '-----------------'         
+               | Other initial   +---- ...              -> TerminalA
+               | state transit-  +---- ...              
+               | ion map.        +---- ...              -> TerminalB
+               '-----------------'
+
+    The terminals related to the mentioned incidence ids are not implemented.
+    If 'Setup.buffer_codec' is defined the state machine is transformed 
+    accordingly.
+
+    MaintainLexemeF == True => The 'lexeme_start_p' is maintained. This restricts
+                               the amount of content which can be loaded into 
+                               the buffer.
+
+    ARGUMENTS:
+
+    IncidenceIdMap: List of tuples (NumberSet, IncidenceId) 
+
+    ParallelSmList: List of state machines which are supposed to be mounted
+                    in parallel to the root incidence map.
+
+    """
     @typed(IncidenceIdMap=list, MaintainLexemeF=bool)
     def __init__(self, IncidenceIdMap, MaintainLexemeF, ParallelSmList=None, 
                  OnBegin=None, OnEnd=None, OnBeforeReload=None, OnAfterReload=None, 
                  BeyondIid=None):
-        """Brief: Generates a state machine that implements the transition
-        to terminals upon the input falling into a number set. 
-            
-                   .-----------------.
-                   | character set 0 +---- - -> Incidence0
-                   |                 |
-                   | character set 1 +---- - -> Incidence1
-                   |                 |
-                   | character set 2 +---- - -> Incidence2
-                   '-----------------'         
 
-        The terminals related to the mentioned incidence ids are not implemented.
-        If Setup.buffer_codec is defined the state machine
-        is transformed accordingly.
-
-        MaintainLexemeF == True => The lexeme_start_p is maintained. This restricts
-                                   the amount of content which can be loaded into 
-                                   the buffer.
-
-        ARGUMENTS:
-
-        IncidenceIdMap: List of tuples (NumberSet, IncidenceId) 
-
-        ParallelSmList: List of state machines which are supposed to be mounted
-                        in parallel to the root incidence map.
-
-        """
         def trafo(SM):
             dummy, sm = transformation.do_state_machine(SM)
             assert sm is not None
@@ -104,7 +120,7 @@ class CharacterSetStateMachine:
         psm_list = []
         if ParallelSmList is not None:
             psm_list = [trafo(sm) for sm in ParallelSmList]
-        main_sm  = trafo(self.__prepare_incidence_id_map(IncidenceIdMap))
+        main_sm = trafo(self.__prepare_incidence_id_map(IncidenceIdMap))
 
         self.sm = get_combined_state_machine(psm_list + [main_sm],
                                              MarkNotSet=set([main_sm.get_id()]))
@@ -132,9 +148,9 @@ class CharacterSetStateMachine:
                    BeyondIid      = beyond_iid)
 
     def __prepare_begin_and_putback(self, OnBegin, OnEnd):
-        """If we deal with variable character sizes, the begin of the letter is stored
-        in 'character_begin_p'. To reset the input pointer 'input_p = character_begin_p' 
-        is applied.
+        """With codecs of dynamic character sizes (UTF8), the pointer to the 
+        first letter is stored in 'character_begin_p'. To reset the input 
+        pointer 'input_p = character_begin_p' is applied.  
         """
         if not Setup.buffer_codec.variable_character_sizes_f():
             # 1 character == 1 chunk
@@ -238,10 +254,9 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
 
     # (1) mark at each state machine the machine and states as 'original'.
     #      
-    #     This is necessary to trace in the combined state machine the
-    #     pattern that actually matched. Note, that a state machine in
-    #     the StateMachine_List represents one possible pattern that can
-    #     match the current input.   
+    # This is necessary to trace in the combined state machine the pattern that
+    # actually matched. Note, that a state machine in the StateMachine_List
+    # represents one possible pattern that can match the current input.   
     #
     for sm in StateMachine_List:
         if sm.get_id() in MarkNotSet: continue
@@ -252,7 +267,8 @@ def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True,
     sm = parallelize.do(StateMachine_List, CommonTerminalStateF=False) #, CloneF=False)
     __check("Parallelization", sm)
 
-    # (4) determine for each state in the DFA what is the dominating original state
+    # (4) determine for each state in the DFA what is the dominating original 
+    #     state
     if FilterDominatedOriginsF: sm.filter_dominated_origins()
     __check("Filter Dominated Origins", sm)
 

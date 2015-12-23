@@ -1,309 +1,309 @@
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.4122869968414307;
+build_time: 1.5023219585418701;
 file_name: test-Converter-1-0.exe;
-hwut_info_time: 1450219583L;
+hwut_info_time: 1450826725L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.382282; 0; ]
-  [ ICU-stepping; OK; 0.357854; 0; ]
-  [ IConv-linear; OK; 0.463335; 0; ]
-  [ IConv-stepping; OK; 0.394016; 0; ]
-  [ IConv-stepping-cls; OK; 0.425440; 0; ]
-  [ ICU-stepping-cls; OK; 0.432226; 0; ]
+  [ ICU-linear; OK; 0.468712; 0; ]
+  [ ICU-stepping; OK; 0.369460; 0; ]
+  [ IConv-linear; OK; 0.473981; 0; ]
+  [ IConv-stepping; OK; 0.358891; 0; ]
+  [ IConv-stepping-cls; OK; 0.353146; 0; ]
+  [ ICU-stepping-cls; OK; 0.368600; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.250133991241455;
+build_time: 1.8905022144317627;
 file_name: test-Converter-1-1.exe;
-hwut_info_time: 1450219595L;
+hwut_info_time: 1450826742L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.346480; 0; ]
-  [ ICU-stepping; OK; 0.364691; 0; ]
-  [ IConv-linear; OK; 0.345526; 0; ]
-  [ IConv-stepping; OK; 0.338823; 0; ]
-  [ IConv-stepping-cls; OK; 0.392735; 0; ]
-  [ ICU-stepping-cls; OK; 0.347196; 0; ]
+  [ ICU-linear; OK; 0.380237; 0; ]
+  [ ICU-stepping; OK; 0.485426; 0; ]
+  [ IConv-linear; OK; 0.344784; 0; ]
+  [ IConv-stepping; OK; 0.355149; 0; ]
+  [ IConv-stepping-cls; OK; 0.456793; 0; ]
+  [ ICU-stepping-cls; OK; 0.349935; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=1, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.2756950855255127;
+build_time: 1.614952802658081;
 file_name: test-Converter-1-2.exe;
-hwut_info_time: 1450219580L;
+hwut_info_time: 1450826721L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.386877; 0; ]
-  [ ICU-stepping; OK; 0.332370; 0; ]
-  [ IConv-linear; OK; 0.381990; 0; ]
-  [ IConv-stepping; OK; 0.329130; 0; ]
-  [ IConv-stepping-cls; OK; 0.319858; 0; ]
-  [ ICU-stepping-cls; OK; 0.358006; 0; ]
+  [ ICU-linear; OK; 0.437245; 0; ]
+  [ ICU-stepping; OK; 0.443789; 0; ]
+  [ IConv-linear; OK; 0.337136; 0; ]
+  [ IConv-stepping; OK; 0.428635; 0; ]
+  [ IConv-stepping-cls; OK; 0.430600; 0; ]
+  [ ICU-stepping-cls; OK; 0.351789; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.2733190059661865;
+build_time: 2.1000800132751465;
 file_name: test-Converter-2-0.exe;
-hwut_info_time: 1450219584L;
+hwut_info_time: 1450826727L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.716193; 0; ]
-  [ ICU-stepping; OK; 1.107294; 0; ]
-  [ IConv-linear; OK; 0.678473; 0; ]
-  [ IConv-stepping; OK; 1.084763; 0; ]
-  [ IConv-stepping-cls; OK; 1.056918; 0; ]
-  [ ICU-stepping-cls; OK; 0.982574; 0; ]
+  [ ICU-linear; OK; 0.715609; 0; ]
+  [ ICU-stepping; OK; 1.200346; 0; ]
+  [ IConv-linear; OK; 0.801932; 0; ]
+  [ IConv-stepping; OK; 0.881898; 0; ]
+  [ IConv-stepping-cls; OK; 1.206506; 0; ]
+  [ ICU-stepping-cls; OK; 1.297375; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.381579875946045;
+build_time: 1.779637098312378;
 file_name: test-Converter-2-1.exe;
-hwut_info_time: 1450219581L;
+hwut_info_time: 1450826723L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.801528; 0; ]
-  [ ICU-stepping; OK; 0.972059; 0; ]
-  [ IConv-linear; OK; 0.798727; 0; ]
-  [ IConv-stepping; OK; 0.872168; 0; ]
-  [ IConv-stepping-cls; OK; 0.966423; 0; ]
-  [ ICU-stepping-cls; OK; 1.119118; 0; ]
+  [ ICU-linear; OK; 0.743457; 0; ]
+  [ ICU-stepping; OK; 0.945921; 0; ]
+  [ IConv-linear; OK; 0.671773; 0; ]
+  [ IConv-stepping; OK; 0.892532; 0; ]
+  [ IConv-stepping-cls; OK; 1.022287; 0; ]
+  [ ICU-stepping-cls; OK; 1.213699; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=2, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.3271729946136475;
+build_time: 1.9127709865570068;
 file_name: test-Converter-2-2.exe;
-hwut_info_time: 1450219576L;
+hwut_info_time: 1450826716L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.766147; 0; ]
-  [ ICU-stepping; OK; 0.897175; 0; ]
-  [ IConv-linear; OK; 0.680360; 0; ]
-  [ IConv-stepping; OK; 0.970428; 0; ]
-  [ IConv-stepping-cls; OK; 0.968392; 0; ]
-  [ ICU-stepping-cls; OK; 0.916001; 0; ]
+  [ ICU-linear; OK; 0.666164; 0; ]
+  [ ICU-stepping; OK; 1.135056; 0; ]
+  [ IConv-linear; OK; 0.788966; 0; ]
+  [ IConv-stepping; OK; 0.814305; 0; ]
+  [ IConv-stepping-cls; OK; 0.856341; 0; ]
+  [ ICU-stepping-cls; OK; 1.097038; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.3572092056274414;
+build_time: 1.571479082107544;
 file_name: test-Converter-4-0.exe;
-hwut_info_time: 1450219578L;
+hwut_info_time: 1450826720L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 1.470760; 0; ]
-  [ ICU-stepping; OK; 20.553060; 0; ]
-  [ IConv-linear; OK; 1.273354; 0; ]
-  [ IConv-stepping; OK; 17.609005; 0; ]
-  [ IConv-stepping-cls; OK; 19.242766; 0; ]
-  [ ICU-stepping-cls; OK; 22.618884; 0; ]
+  [ ICU-linear; OK; 1.162147; 0; ]
+  [ ICU-stepping; OK; 19.243059; 0; ]
+  [ IConv-linear; OK; 1.437983; 0; ]
+  [ IConv-stepping; OK; 18.976494; 0; ]
+  [ IConv-stepping-cls; OK; 17.150536; 0; ]
+  [ ICU-stepping-cls; OK; 23.370630; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.4097800254821777;
+build_time: 1.7422080039978027;
 file_name: test-Converter-4-1.exe;
-hwut_info_time: 1450219585L;
+hwut_info_time: 1450826728L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 1.264698; 0; ]
-  [ ICU-stepping; OK; 21.922373; 0; ]
-  [ IConv-linear; OK; 1.239268; 0; ]
-  [ IConv-stepping; OK; 19.669434; 0; ]
-  [ IConv-stepping-cls; OK; 19.725644; 0; ]
-  [ ICU-stepping-cls; OK; 21.729860; 0; ]
+  [ ICU-linear; OK; 1.150632; 0; ]
+  [ ICU-stepping; OK; 20.891769; 0; ]
+  [ IConv-linear; OK; 1.434307; 0; ]
+  [ IConv-stepping; OK; 20.952529; 0; ]
+  [ IConv-stepping-cls; OK; 19.293129; 0; ]
+  [ ICU-stepping-cls; OK; 20.195911; 0; ]
 ]
 }
 {
 title: BufferFiller_Converter_IConv (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.4899368286132812;
+build_time: 1.7003610134124756;
 file_name: test-Converter-4-2.exe;
-hwut_info_time: 1450219594L;
+hwut_info_time: 1450826740L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 1.220174; 0; ]
-  [ ICU-stepping; OK; 21.437362; 0; ]
-  [ IConv-linear; OK; 1.213708; 0; ]
-  [ IConv-stepping; OK; 19.583224; 0; ]
-  [ IConv-stepping-cls; OK; 19.418142; 0; ]
-  [ ICU-stepping-cls; OK; 21.524470; 0; ]
+  [ ICU-linear; OK; 1.124100; 0; ]
+  [ ICU-stepping; OK; 39.253082; 0; ]
+  [ IConv-linear; OK; 1.280831; 0; ]
+  [ IConv-stepping; OK; 16.455725; 0; ]
+  [ IConv-stepping-cls; OK; 17.256589; 0; ]
+  [ ICU-stepping-cls; OK; 18.884460; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=1, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.2466678619384766;
+build_time: 1.5182609558105469;
 file_name: test-Plain-1-0.exe;
-hwut_info_time: 1450219569L;
+hwut_info_time: 1450826707L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.163237; 0; ]
-  [ stepping; OK; 0.177167; 0; ]
+  [ linear; OK; 0.168615; 0; ]
+  [ stepping; OK; 0.171904; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=1, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.4539189338684082;
+build_time: 1.684164047241211;
 file_name: test-Plain-1-1.exe;
-hwut_info_time: 1450219587L;
+hwut_info_time: 1450826730L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.168075; 0; ]
-  [ stepping; OK; 0.184985; 0; ]
+  [ linear; OK; 0.157779; 0; ]
+  [ stepping; OK; 0.170675; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=1, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.2749049663543701;
+build_time: 1.3193299770355225;
 file_name: test-Plain-1-2.exe;
-hwut_info_time: 1450219568L;
+hwut_info_time: 1450826706L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.152618; 0; ]
-  [ stepping; OK; 0.159889; 0; ]
+  [ linear; OK; 0.155355; 0; ]
+  [ stepping; OK; 0.161424; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=2, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.4933199882507324;
+build_time: 1.626661777496338;
 file_name: test-Plain-2-0.exe;
-hwut_info_time: 1450219577L;
+hwut_info_time: 1450826718L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.320473; 0; ]
-  [ stepping; OK; 0.351409; 0; ]
+  [ linear; OK; 0.306966; 0; ]
+  [ stepping; OK; 0.324725; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=2, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.3234889507293701;
+build_time: 1.756486177444458;
 file_name: test-Plain-2-1.exe;
-hwut_info_time: 1450219572L;
+hwut_info_time: 1450826712L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.325179; 0; ]
-  [ stepping; OK; 0.336675; 0; ]
+  [ linear; OK; 0.307526; 0; ]
+  [ stepping; OK; 0.323489; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=2, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.4325950145721436;
+build_time: 1.945091962814331;
 file_name: test-Plain-2-2.exe;
-hwut_info_time: 1450219591L;
+hwut_info_time: 1450826736L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.283147; 0; ]
-  [ stepping; OK; 0.314061; 0; ]
+  [ linear; OK; 0.279470; 0; ]
+  [ stepping; OK; 0.316510; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.329284906387329;
-file_name: test-Plain-4-0.exe;
-hwut_info_time: 1450219592L;
-make_dependent_f: True;
-same_f: True;
-result_list: [
-  [ linear; OK; 0.560391; 0; ]
-  [ stepping; OK; 2.817823; 0; ]
-]
-}
-{
-title: BufferFiller_Plain (BPC=4, FALLBACK=0);
-title_group: Buffer Tell&Seek;
-build_time: 1.9539680480957031;
+build_time: 2.599642038345337;
 file_name: test-Plain-wiostream-2-0.exe;
-hwut_info_time: 1450219571L;
+hwut_info_time: 1450826710L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.145688; 0; ]
-  [ stepping; OK; 0.288408; 0; ]
+  [ linear; OK; 0.145038; 0; ]
+  [ stepping; OK; 0.167745; 0; ]
+]
+}
+{
+title: BufferFiller_Plain (BPC=4, FALLBACK=0);
+title_group: Buffer Tell&Seek;
+build_time: 2.0013489723205566;
+file_name: test-Plain-4-0.exe;
+hwut_info_time: 1450826738L;
+make_dependent_f: True;
+same_f: True;
+result_list: [
+  [ linear; OK; 0.510244; 0; ]
+  [ stepping; OK; 2.793433; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 2.0536108016967773;
+build_time: 2.85402512550354;
 file_name: test-Plain-wiostream-2-1.exe;
-hwut_info_time: 1450219574L;
+hwut_info_time: 1450826714L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.145294; 0; ]
-  [ stepping; OK; 0.166289; 0; ]
+  [ linear; OK; 0.149644; 0; ]
+  [ stepping; OK; 0.178182; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.286402940750122;
+build_time: 1.9552390575408936;
 file_name: test-Plain-4-1.exe;
-hwut_info_time: 1450219589L;
+hwut_info_time: 1450826734L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.527392; 0; ]
-  [ stepping; OK; 3.151451; 0; ]
+  [ linear; OK; 0.500838; 0; ]
+  [ stepping; OK; 2.862399; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.3997790813446045;
+build_time: 2.0357768535614014;
 file_name: test-Plain-4-2.exe;
-hwut_info_time: 1450219588L;
+hwut_info_time: 1450826732L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.500327; 0; ]
-  [ stepping; OK; 3.089577; 0; ]
+  [ linear; OK; 0.495089; 0; ]
+  [ stepping; OK; 2.803591; 0; ]
 ]
 }
 {
 title: BufferFiller_Plain (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 2.0612590312957764;
+build_time: 2.278852939605713;
 file_name: test-Plain-wiostream-2-2.exe;
-hwut_info_time: 1450219597L;
+hwut_info_time: 1450826744L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.144891; 0; ]
-  [ stepping; OK; 0.158337; 0; ]
+  [ linear; OK; 0.147401; 0; ]
+  [ stepping; OK; 0.168120; 0; ]
 ]
 }

@@ -59,7 +59,7 @@ tokens:
  * ``NODENT`` if the indentation remains the same.
 
 An indentation counting framework is implemented for a mode as soon as a
-``indentation`` option is specified--even an empty option will do::
+``indentation`` option is specified--even an empty option will do.
 
   .. code-block:: cpp
 
@@ -74,10 +74,10 @@ to spaces, tab characters, and newline suppressors. Even the definition of the
 newline pattern may be subject to discussion (e.g. 0xA or 0xD, 0xA, or both).
 Inside the ``indentation`` option the character of those can be specified, e.g.
 
-.. code-block:: cpp
+  .. code-block:: cpp
 
           <indentation:
-             [ \t]      => white space;
+             [ \t]      => white_space;
              (\r\n)|\n  => newline;
              \\[ \t]*   => suppressor;
           >
@@ -165,7 +165,7 @@ by given. The following list explains the different parameters.
       and Makefiles, or the underline '_' as in some Basic dialects. For example,
       the backslash in
 
-      .. code-block :: python
+      .. code-block:: python
 
          if    db.out_of_date() \
             or db.disconnected(): 
@@ -191,6 +191,8 @@ by given. The following list explains the different parameters.
       detection of comments is left to patterns inside the mode, it would be
       triggering an indentation event. For example:
 
+      .. code-block:: python
+
             while 1 + 1 == 2:
                 do something
             # this is a comment
@@ -198,18 +200,14 @@ by given. The following list explains the different parameters.
 
       When comment handling is left to the mode itself, then the comment in the
       ``#`` would trigger a ``DEDENT`` event, because a lower indentation has
-      been detected. If it was defined inside the indentation handler as
+      been detected. If it was defined inside the indentation handler as::
 
-         #((\\[^\n])|[^\n])+ => comment
+         <indentation: 
+          ...
+          "#"(\\\n|[^\n])+ => comment;
 
       then no ``DEDENT`` is triggered. This is a more pythonic behavior.
                 
-
-          
-
-
-      
-
 When an indention option is specified, the generated lexical analyzer
 starts sending tokens carrying indentation information. As mentioned earlier,
 those are ``QUEX_TKN_INDENT`` if a new indentation block opens, ``QUEX_TKN_DEDENT``

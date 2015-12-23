@@ -587,8 +587,8 @@ def check_indentation_setup(isetup):
 
     def mutually_subset(Sm1, Sm2):
         if   Sm1 is None or Sm2 is None:                           return False
-        elif superset_check.do(sm_newline, sm_newline_suppressor): return True
-        elif superset_check.do(sm_newline_suppressor, sm_newline): return True
+        elif superset_check.do(Sm1, Sm2): return True
+        elif superset_check.do(Sm2, Sm1): return True
         return False
 
     for i, candidate1 in enumerate(candidates):

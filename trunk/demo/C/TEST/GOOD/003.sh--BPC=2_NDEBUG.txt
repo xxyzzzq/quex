@@ -34,7 +34,7 @@ executing ...
 (8, 30)  	OK '✓' 
 (10, 1)  	COPYRIGHT '©' 
 (10, 3)  	LATIN_IDENTIFIER 'Schäfer' 
-(10, 10)  	<TERMINATION> '' 
+(10, 10)  	<TERMINATION> 
 | [END] number of token = 31
 `------------------------------------------------------------------------------------
 cleaning ...

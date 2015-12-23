@@ -4,10 +4,10 @@ from   quex.engine.misc.tools                     import typed
 import quex.engine.misc.error                     as     error
 from   quex.engine.state_machine.core             import StateMachine  
 import quex.engine.state_machine.algorithm.beautifier as beautifier    
-from   quex.input.code.base            import SourceRefObject, \
+from   quex.input.code.base                       import SourceRefObject, \
                                                          SourceRef, \
                                                          SourceRef_DEFAULT
-from   quex.engine.misc.interval_handling              import NumberSet
+from   quex.engine.misc.interval_handling         import NumberSet
 from   quex.blackboard                            import E_CharacterCountType
 
 from   quex.blackboard import setup as Setup
@@ -33,7 +33,7 @@ class CountOpMapEntry(namedtuple("CountOpMapEntry", ("cc_type", "value", "sr")))
     def __new__(self, CCType, Value, sr):
         return super(CountOpMapEntry, self).__new__(self, CCType, Value, sr)
 
-CountInfo = namedtuple("CountInfo",        ("incidence_id", "cc_type", "parameter", "character_set"))
+CountInfo = namedtuple("CountInfo",  ("incidence_id", "cc_type", "parameter", "character_set"))
 
 class CountOpMap(object):
     """Association of character sets with triggered count commands.
@@ -437,7 +437,8 @@ class ParserDataIndentation(Base):
         self.sm_newline_suppressor    = SourceRefObject("suppressor", None)
         self.sm_comment               = SourceRefObject("comment", None)
 
-        Base.__init__(self, sr, "Indentation counter", ("whitespace", "comment", "newline", "suppressor", "bad"))
+        Base.__init__(self, sr, "Indentation counter", 
+                      ("whitespace", "comment", "newline", "suppressor", "bad"))
 
     def specify(self, identifier, pattern, sr):
         if   identifier == "whitespace": 

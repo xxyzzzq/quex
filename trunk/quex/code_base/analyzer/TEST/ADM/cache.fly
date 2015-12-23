@@ -1,113 +1,113 @@
 {
 title: Accumulator;
-build_time: 0.007091045379638672;
+build_time: 0.6781580448150635;
 file_name: accumulator.exe;
-hwut_info_time: 1450216174L;
+hwut_info_time: 1450826130L;
 make_dependent_f: True;
 result_list: [
-  [ String; OK; 0.005353; 0; ]
-  [ Character; OK; 0.004751; 0; ]
-  [ N-Character; OK; 0.005347; 0; ]
-  [ N-String; OK; 0.004722; 0; ]
-  [ Mix; OK; 0.005153; 0; ]
+  [ String; OK; 0.006047; 0; ]
+  [ Character; OK; 0.003787; 0; ]
+  [ N-Character; OK; 0.005505; 0; ]
+  [ N-String; OK; 0.006369; 0; ]
+  [ Mix; OK; 0.004895; 0; ]
 ]
 }
 {
 title: Statistics Module;
-build_time: 0.007761955261230469;
+build_time: 0.11806392669677734;
 file_name: statistics.exe;
-hwut_info_time: 1450216173L;
+hwut_info_time: 1450826129L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.008198; None; ]
+  [ ; OK; 0.004361; None; ]
 ]
 }
 {
 title: Enter;
 title_group: Post Categorizer;
-build_time: 0.006844997406005859;
+build_time: 0.8045339584350586;
 file_name: post-categorizer-find.exe;
-hwut_info_time: 1450216173L;
+hwut_info_time: 1450826129L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 0; OK; 0.004055; 0; ]
-  [ 1; OK; 0.004120; 0; ]
-  [ 2; OK; 0.004344; 0; ]
-  [ 3; OK; 0.007601; 0; ]
-  [ 4; OK; 0.004455; 0; ]
-  [ 5; OK; 0.007313; 0; ]
-  [ 6; OK; 0.003663; 0; ]
+  [ 0; OK; 0.004150; 0; ]
+  [ 1; OK; 0.005010; 0; ]
+  [ 2; OK; 0.004840; 0; ]
+  [ 3; OK; 0.004176; 0; ]
+  [ 4; OK; 0.004556; 0; ]
+  [ 5; OK; 0.003739; 0; ]
+  [ 6; OK; 0.003655; 0; ]
 ]
 }
 {
 title: Enter;
 title_group: Post Categorizer;
-build_time: 0.006726980209350586;
+build_time: 0.8175399303436279;
 file_name: post-categorizer-enter.exe;
-hwut_info_time: 1450216177L;
+hwut_info_time: 1450826133L;
 make_dependent_f: True;
 result_list: [
-  [ 0; OK; 0.004825; 0; ]
-  [ 1; OK; 0.003588; 0; ]
-  [ 2; OK; 0.006829; 0; ]
-  [ 3; OK; 0.006710; 0; ]
-  [ 4; OK; 0.006222; 0; ]
-  [ 5; OK; 0.004283; 0; ]
-  [ 6; OK; 0.003579; 0; ]
+  [ 0; OK; 0.004244; 0; ]
+  [ 1; OK; 0.004142; 0; ]
+  [ 2; OK; 0.004960; 0; ]
+  [ 3; OK; 0.004128; 0; ]
+  [ 4; OK; 0.004207; 0; ]
+  [ 5; OK; 0.003680; 0; ]
+  [ 6; OK; 0.004181; 0; ]
 ]
 }
 {
 title: Remove Existent Node;
 title_group: Post Categorizer;
-build_time: 0.00996088981628418;
+build_time: 0.8228719234466553;
 file_name: post-categorizer-remove-2.exe;
-hwut_info_time: 1450216175L;
+hwut_info_time: 1450826131L;
 make_dependent_f: True;
 result_list: [
-  [ Ab; OK; 0.008619; 0; ]
-  [ Ad; OK; 0.003500; 0; ]
-  [ Af; OK; 0.004462; 0; ]
-  [ Ah; OK; 0.003718; 0; ]
-  [ Bb; OK; 0.004383; 0; ]
-  [ Bd; OK; 0.006935; 0; ]
-  [ Bf; OK; 0.004150; 0; ]
+  [ Ab; OK; 0.004585; 0; ]
+  [ Ad; OK; 0.004297; 0; ]
+  [ Af; OK; 0.005080; 0; ]
+  [ Ah; OK; 0.004460; 0; ]
+  [ Bb; OK; 0.004251; 0; ]
+  [ Bd; OK; 0.004289; 0; ]
+  [ Bf; OK; 0.004371; 0; ]
 ]
 }
 {
 title: Remove Non-Existent Node;
 title_group: Post Categorizer;
-build_time: 0.009911060333251953;
+build_time: 0.8306088447570801;
 file_name: post-categorizer-remove.exe;
-hwut_info_time: 1450216176L;
+hwut_info_time: 1450826132L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ Aa; OK; 0.003537; 0; ]
-  [ Ac; OK; 0.005564; 0; ]
-  [ Ae; OK; 0.005904; 0; ]
-  [ Ag; OK; 0.003885; 0; ]
-  [ Ai; OK; 0.004436; 0; ]
-  [ Ba; OK; 0.003786; 0; ]
-  [ Bc; OK; 0.003526; 0; ]
-  [ Be; OK; 0.004069; 0; ]
+  [ Aa; OK; 0.005058; 0; ]
+  [ Ac; OK; 0.006612; 0; ]
+  [ Ae; OK; 0.004628; 0; ]
+  [ Ag; OK; 0.004180; 0; ]
+  [ Ai; OK; 0.005945; 0; ]
+  [ Ba; OK; 0.011584; 0; ]
+  [ Bc; OK; 0.003855; 0; ]
+  [ Be; OK; 0.003709; 0; ]
 ]
 }
 {
 title: Remove Total;
 title_group: Post Categorizer;
-build_time: 0.0066051483154296875;
+build_time: 0.851097822189331;
 file_name: post-categorizer-remove-total.exe;
-hwut_info_time: 1450216174L;
+hwut_info_time: 1450826130L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 1; OK; 0.004026; 0; ]
-  [ 2; OK; 0.004925; 0; ]
-  [ 3; OK; 0.004841; 0; ]
-  [ 4; OK; 0.009693; 0; ]
-  [ 5; OK; 0.005570; 0; ]
-  [ 6; OK; 0.007377; 0; ]
-  [ 7; OK; 0.003574; 0; ]
+  [ 1; OK; 0.003244; 0; ]
+  [ 2; OK; 0.003739; 0; ]
+  [ 3; OK; 0.004256; 0; ]
+  [ 4; OK; 0.004269; 0; ]
+  [ 5; OK; 0.003495; 0; ]
+  [ 6; OK; 0.004317; 0; ]
+  [ 7; OK; 0.003495; 0; ]
 ]
 }

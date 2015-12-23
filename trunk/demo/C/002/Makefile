@@ -15,15 +15,13 @@ else
 endif
 
 # (*) COMPILER SETTINGS ________________________________________________________
-#     (change COMPILER to whatever you use as compiler on the command line,
-#      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = gcc -Wall -Werror -Wconversion -pedantic # -ggdb 
+COMPILER := gcc -Wall -Werror -Wconversion -pedantic # -ggdb 
 
-CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
-	 -DPRINT_LINE_COLUMN_NUMBER                        \
-	 -DPRINT_TOKEN                                     \
-	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=10                \
-	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4      
+CC := $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
+      -DPRINT_LINE_COLUMN_NUMBER                        \
+      -DPRINT_TOKEN                                     \
+      -DQUEX_SETTING_TOKEN_QUEUE_SIZE=10                \
+      -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4      
 
 # Useful Debugging Options:
 # -DQUEX_OPTION_DEBUG_SHOW \
@@ -36,19 +34,16 @@ CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) \
 all:   lexer lexer2
 
 lexer: simple.qx
-	quex -i patterns.qx tokens.qx simple.qx \
-		 -o EasyLexer --language C
+	quex -i patterns.qx tokens.qx simple.qx -o EasyLexer --language C
 	$(CC) -o $@ ../example.c EasyLexer.c 
          
 lexer2: simple2.qx
-	quex -i patterns.qx tokens.qx simple2.qx \
-		 -o EasyLexer --language C
+	quex -i patterns.qx tokens.qx simple2.qx -o EasyLexer --language C
 	$(CC) -o $@ ../example.c EasyLexer.c 
 
 # (*) HELPERS __________________________________________________________________
 #
 
-# Macro expansions (only for debugging):
 %.E: %.c
 	$(CC) -E $< -o $@ 
 

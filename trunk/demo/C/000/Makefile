@@ -7,8 +7,6 @@
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
-
-
 ifdef ASSERTS_ENABLED_F
 	CCFLAG_ASSERTS=# By default asserts are enabled
 else 
@@ -19,52 +17,46 @@ endif
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER   = gcc -ggdb -pedantic -Wconversion -Wall -Werror -W
-ADD_FLAGS :=#
 
-ifneq (,$(findstring sun, $(COMPILER)))
-	ADD_FLAGS := +w
-endif	
-
-CC = $(COMPILER) -c       \
-	 -I./ -I$(QUEX_PATH)  \
-	 $(ADD_FLAGS) $(CCFLAG_ASSERTS) 
-     # -DQUEX_OPTION_ASSERTS_DISABLED
-     # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
-     # -DQUEX_OPTION_DEBUG_SHOW
+CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS) 
+# Other useful options for debugging:
+# -DQUEX_OPTION_ASSERTS_DISABLED
+# -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
+# -DQUEX_OPTION_DEBUG_SHOW
    
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
-# -- application
+#
 lexer:          example.o EasyLexer.o
 	$(LD) -o $@ example.o EasyLexer.o 
           
-# Object files:
 EasyLexer.o: EasyLexer.c 
 	$(CC) $< -o $@ 
 
-example.o: ../example.c  EasyLexer.c
+example.o: ../example.c EasyLexer.c
 	$(CC) $< -o $@ 
-
-# Macro expansions (only for debugging):
-%.E: %.c    
-	$(CC) -E $< > $@ 
 
 EasyLexer.c: simple.qx 
 	quex -i                 simple.qx  \
-	     -o           EasyLexer  \
+	     -o                 EasyLexer  \
 		 --token-id-offset  0x1000     \
 		 --language         C
 
+# (*) HELPERS __________________________________________________________________
+#
 source-package:
 	quex -i                 simple.qx  \
-	     -o           EasyLexer  \
+	     -o                 EasyLexer  \
 		 --token-id-offset  0x1000     \
 		 --post-categorizer            \
-		 --language         C          \
-		 --source-package   lexer_mine 
+		 --source-package   lexer_mine \
+		 --language         C
 
-# (*) HELPERS __________________________________________________________________
+# Macro expansions (only for debugging):
+%.E: %.c    
+	$(CC) -E $< -o $@ 
+
 clean:	
 	rm -f EasyLexer*
 	rm -f *.o

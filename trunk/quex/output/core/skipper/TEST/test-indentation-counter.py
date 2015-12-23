@@ -2,16 +2,16 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
-from   quex.input.regular_expression.construct           import Pattern
-from   quex.engine.misc.interval_handling                     import NumberSet, Interval
-from   quex.engine.counter                               import ParserDataIndentation
-from   quex.engine.analyzer.door_id_address_label        import dial_db
-from   quex.input.code.base                   import SourceRef_VOID
-from   quex.output.core.variable_db       import variable_db
-from   quex.output.core.TEST.generator_test         import __Setup_init_language_database
-from   quex.engine.misc.interval_handling                     import NumberSet, Interval
+from   quex.input.regular_expression.construct     import Pattern
+from   quex.input.code.base                        import SourceRef_VOID
+from   quex.engine.misc.interval_handling          import NumberSet, Interval
+from   quex.engine.counter                         import ParserDataIndentation
+from   quex.engine.analyzer.door_id_address_label  import dial_db
+from   quex.engine.misc.interval_handling          import NumberSet, Interval
+from   quex.output.core.variable_db                import variable_db
+from   quex.output.core.TEST.generator_test        import __Setup_init_language_database
 
-from   helper                                            import *
+from   helper import *
 
 from   StringIO import StringIO
 from   copy import deepcopy
@@ -91,3 +91,14 @@ elif "NonUniform-2" in sys.argv:
          , indent_setup)
 
 
+elif "Comment" in sys.argv:
+    indent_setup.specify("whitespace", get_Pattern(" :\t"), SourceRef_VOID)
+    indent_setup.specify("coment",     get_Pattern("\"%%\"(\"\\\\\n\"|[^\\n])+"), SourceRef_VOID)
+
+    test("\n"
+         "        a\n" # 8 spaces
+         "\t \tb\n"    # tab + 1 + tab = 8
+         "\t  \tc\n"   # tab + 2 + tab = 8
+         "\t   \td\n"  # tab + 3 + tab = 8
+         "\t    e\n"   # tab + 4       = 8
+         , indent_setup)

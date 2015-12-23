@@ -285,9 +285,7 @@ class Entry(object):
             (transition_id, action) for transition_id, action in self.__db.iteritems()
                                     if action.door_id is None
         ]
-
-        if len(work_list) == 0:
-            return
+        if not work_list: return
 
         command_list_db = dict(
             (action.command_list, action.door_id) for action in self.__db.itervalues()

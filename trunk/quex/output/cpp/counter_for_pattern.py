@@ -71,6 +71,14 @@ def get(ThePattern, ShiftF=True):
 
 @typed(counter=character_counter.CountInfo)
 def do_CountInfo(counter, ShiftF=True):
+    """RETURN: Verdict, CounterCode
+
+        Verdict == True  --> Pattern requires run-time counting. Default
+                             counter implementation required.
+                   False --> It was possible to determine the increments
+                             based on the pattern's structure. Non run-
+                             time counting is necessary.
+    """
     # (*) Default Character Counter ___________________________________________
     #
     #     Used when the increments and/or setting cannot be derived from the 

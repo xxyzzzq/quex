@@ -1,25 +1,28 @@
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
 import quex.engine.analyzer.core                  as     analyzer_generator
-from   quex.engine.operations.operation_list                  import Op, \
+from   quex.engine.operations.operation_list      import Op, \
                                                          OpList
 import quex.engine.state_machine.index            as     index
 from   quex.engine.analyzer.door_id_address_label import DoorID
 from   quex.engine.misc.tools                     import typed
 from   quex.output.core.variable_db               import variable_db
 import quex.output.core.base                      as     generator
+
 from   quex.blackboard import E_StateIndices, \
                               E_R, \
                               E_CharacterCountType, \
                               setup as Setup
 
 @typed(ReloadF=bool, LexemeEndCheckF=bool, AfterBeyond=list)
-def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadStateExtern=None, LexemeMaintainedF=False,
+def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, 
+       ReloadStateExtern=None, LexemeMaintainedF=False,
        ParallelSmTerminalPairList=None):
-    """Generates a (pseudo-one-state) state machine with the properties:
+    """Iterate over characters given in the CcFactory, but also in paralell 
+    implement the 'ParallelSmTerminalPairList' with its own terminals.
         
-               Buffer Limit Code --> Reload
-               Loop Character    --> Loop Entry
-               Else              --> Exit Loop
+               Buffer Limit Code          --> Reload
+               Matched Character Sequence --> Loop Entry
+               Else                       --> Exit Loop
 
     NOTE: This function does NOT code the FAILURE terminal. The caller needs to 
           do this if required.
@@ -52,52 +55,57 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
               transition
               map
               .------.  
-              |  i0  |----------> Terminal0: OpList0   
+              |  i0  |----------> Terminal0:       OpList0   
               +------+
-              |  i1  |----------> Terminal1: OpList1   
+              |  i1  |----------> Terminal1:       OpList1   
               +------+
-              |  X2  |----------> Terminal Beyond: input_p--; goto TerminalExit;
+              |  X2  |----------> Terminal Beyond: --input_p; goto TerminalExit;
               +------+
-              |  i2  |----------> Terminal2: OpList2
+              |  i2  |----------> Terminal2:       OpList2
               +------+
     """
     assert EngineType is not None
-    # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is None
-    # This would mean, that the user has to make these kinds of decisions. But, 
-    # we are easily able to ignore meaningless ReloadStateExtern objects.
+    # NOT: assert (not EngineType.subject_to_reload()) or ReloadStateExtern is
+    # None This would mean, that the user has to make these kinds of decisions.
+    # But, we are easily able to ignore meaningless ReloadStateExtern objects.
 
-    # (*) Construct State Machine and Terminals _______________________________
-    #
-    parallel_sm_list = None
+    parallel_sm_list       = None
+    parallel_terminal_list = []
     if ParallelSmTerminalPairList is not None:
-        parallel_sm_list = [ sm for sm, terminal in ParallelSmTerminalPairList ]
+        parallel_sm_list       = [ sm for sm, terminal in ParallelSmTerminalPairList ]
+        parallel_terminal_list = [ terminal for sm, terminal in ParallelSmTerminalPairList ]
 
+    # (*) Generate StateMachine
+    #
     CsSm = CharacterSetStateMachine.from_CountOpFactory(CcFactory, 
-                                                         LexemeMaintainedF,
-                                                         ParallelSmList=parallel_sm_list)
+                                                        LexemeMaintainedF,
+                                                        ParallelSmList=parallel_sm_list)
 
+    # (*) Generate Analyzer
+    #
     analyzer = analyzer_generator.do(CsSm.sm, EngineType,
                                      ReloadStateExtern,
                                      OnBeforeReload = OpList.from_iterable(CsSm.on_before_reload), 
                                      OnAfterReload  = OpList.from_iterable(CsSm.on_after_reload))
 
-    # -- The terminals 
+    # (*) Generate/Collect Terminals
     #
-    door_id_loop = _prepare_entry_and_reentry(analyzer, CsSm.on_begin, CsSm.on_step) 
+    door_id_loop = _prepare_entry_and_reentry(analyzer, 
+                                              CsSm.on_begin, 
+                                              CsSm.on_step) 
 
     def get_LexemeEndCheck_appendix(ccfactory, CC_Type):
+        """       .----------.        ,----------.   no
+              --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
+                  '----------'        '----+-----'
+                                           | yes
+                                     .-------------.
+                                     |  Lexeme End |
+                                     |  Count Op   |-----> DoorIdOnLexemeEnd
+                                     '-------------'
+        """  
         if not LexemeEndCheckF: 
             return [ Op.GotoDoorId(door_id_loop) ]
-        #
-        #       .---------------.        ,----------.   no
-        #   --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
-        #       '---------------'        '----+-----'
-        #                                     | yes
-        #                              .---------------.
-        #                              |  Lexeme End   |
-        #                              | Count Op |----> DoorIdOnLexemeEnd
-        #                              '---------------'
-        #  
         elif ccfactory.requires_reference_p() and CC_Type == E_CharacterCountType.COLUMN: 
             return [
                 Op.GotoDoorIdIfInputPNotEqualPointer(door_id_loop, E_R.LexemeEnd),
@@ -111,10 +119,7 @@ def do(CcFactory, AfterBeyond, LexemeEndCheckF=False, EngineType=None, ReloadSta
     terminal_list = CcFactory.get_terminal_list(CsSm.on_end + AfterBeyond,
                                                 CsSm.incidence_id_beyond,
                                                 get_LexemeEndCheck_appendix)
-    if ParallelSmTerminalPairList is not None:
-        terminal_list.extend(
-            terminal for sm, terminal in ParallelSmTerminalPairList
-        )
+    terminal_list.extend(parallel_terminal_list)
 
     # (*) Generate Code _______________________________________________________
     txt = _get_source_code(CcFactory, analyzer, terminal_list)
@@ -148,11 +153,11 @@ def _prepare_entry_and_reentry(analyzer, OnBegin, OnStep):
     ta_on_entry              = entry.get_action(init_state_index, 
                                                 E_StateIndices.BEFORE_ENTRY)
     ta_on_entry.command_list = OpList.concatinate(ta_on_entry.command_list, 
-                                                       OnBegin)
+                                                  OnBegin)
 
     # OnReEntry
     tid_reentry = entry.enter_OpList(init_state_index, index.get(), 
-                                          OpList.from_iterable(OnStep))
+                                     OpList.from_iterable(OnStep))
     entry.categorize(init_state_index)
 
     return entry.get(tid_reentry).door_id

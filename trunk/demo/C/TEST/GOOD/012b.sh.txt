@@ -27,5 +27,5 @@ Brücke   	SUBJECT___   SUBJECT___   SUBJECT___
 eine      	UKNOWN____   UKNOWN____   ARTICLE___
 Lücke    	SUBJECT___   SUBJECT___   SUBJECT___
 .         	MARK______   MARK______   MARK______
-          	<TERMINATION>   <TERMINATION>   <TERMINATION>
+          	<TERMINATION>  <TERMINATION>  <TERMINATION>
 VALGRIND:   All heap blocks were freed -- no leaks are possible

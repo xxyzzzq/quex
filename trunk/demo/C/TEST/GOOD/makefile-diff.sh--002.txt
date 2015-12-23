@@ -1,32 +1,16 @@
-< COMPILER = g++ -ggdb 
+< COMPILER := g++ -Wall -Werror -Wconversion -pedantic # -ggdb 
 ---
-> COMPILER = gcc # -ggdb 
-< Easy%.o: Easy%.cpp 
+> COMPILER := gcc -Wall -Werror -Wconversion -pedantic # -ggdb 
+< 	quex -i patterns.qx tokens.qx simple.qx -o EasyLexer
+< 	$(CC) -o $@ ../example.cpp EasyLexer.cpp 
 ---
-> Easy%.o: Easy%.c
-< example%.o: ../example.cpp  Easy%.cpp
+> 	quex -i patterns.qx tokens.qx simple.qx -o EasyLexer --language C
+> 	$(CC) -o $@ ../example.c EasyLexer.c 
+< 	quex -i patterns.qx tokens.qx simple2.qx -o EasyLexer
+< 	$(CC) -o $@ ../example.cpp EasyLexer.cpp 
 ---
-> example%.o: ../example.c  Easy%.c
-< %.E: %.cpp    
+> 	quex -i patterns.qx tokens.qx simple2.qx -o EasyLexer --language C
+> 	$(CC) -o $@ ../example.c EasyLexer.c 
+< %.E: %.cpp
 ---
 > %.E: %.c
-< EasyLexer EasyLexer.cpp: simple.qx 
-< 	quex -i simple.qx -o EasyLexer
-< 
-< EasyLexer_bad_space EasyLexer_bad_space.cpp: simple.qx 
-< 	quex -i simple_bad_space.qx -o EasyLexer_bad_space  
-< 
-< EasyLexer_bad_tab EasyLexer_bad_tab.cpp: simple.qx 
-< 	quex -i simple_bad_tab.qx -o EasyLexer_bad_tab  
----
-> EasyLexer EasyLexer.c: simple.qx 
-> 	quex -i simple.qx -o EasyLexer \
-> 		 --language C
-> 
-> EasyLexer_bad_space EasyLexer_bad_space.c: simple.qx 
-> 	quex -i simple_bad_space.qx -o EasyLexer_bad_space \
-> 	     --language C
-> 
-> EasyLexer_bad_tab EasyLexer_bad_tab.c: simple.qx 
-> 	quex -i simple_bad_tab.qx -o EasyLexer_bad_tab \
-> 		 --language C

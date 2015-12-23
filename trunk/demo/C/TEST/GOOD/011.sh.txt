@@ -19,4 +19,4 @@ NUMBER '13.676'
 UNIT 'χμ' 
 PERIOD '.' 
 <TERMINATION> '' 
-VALGRIND:  All heap blocks were freed -- no leaks are possible
+VALGRIND:   All heap blocks were freed -- no leaks are possible

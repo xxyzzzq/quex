@@ -15,7 +15,7 @@ FRITZ 'Fritz'
 FISCHES 'catches' 
 FISCH 'Sharks' 
 PERIOD '' 
-<TERMINATION> '' 
+<TERMINATION> 
 | [END] number of token = 16
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible
