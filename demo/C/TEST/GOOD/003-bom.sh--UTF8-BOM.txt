@@ -1,4 +1,3 @@
-##  /home/fschaef/prj/quex/trunk/demo/Cpp/003
 ## make lexer    
 Found BOM: UTF_8
 ,-----------------------------------------------------------------

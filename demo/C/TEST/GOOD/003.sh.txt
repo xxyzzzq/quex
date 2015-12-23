@@ -31,7 +31,7 @@ CLOSE_FRENCH_QUOTE '»'
 OK '✓' 
 COPYRIGHT '©' 
 LATIN_IDENTIFIER 'Schäfer' 
-<TERMINATION> '' 
+<TERMINATION> 
 | [END] number of token = 31
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible

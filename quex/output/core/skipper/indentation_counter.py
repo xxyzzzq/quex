@@ -6,6 +6,7 @@ from   quex.engine.analyzer.terminal.core           import Terminal
 from   quex.engine.counter                          import CountOpFactory
 from   quex.engine.state_machine.character_counter  import CountInfo
 import quex.output.core.loop                        as     loop
+import quex.output.cpp.counter_for_pattern          as     counter_coder
 from   quex.blackboard                              import Lng, \
                                                            E_IncidenceIDs, \
                                                            E_R, \
@@ -104,9 +105,9 @@ def do(Data, TheAnalyzer):
     # 'bad'        --> goto bad character indentation handler
     # else         --> non-whitespace detected => handle indentation
     ccfactory = CountOpFactory.from_ParserDataIndentation(isetup, 
-                                                           counter_db, 
-                                                           Lng.INPUT_P(), 
-                                                           DoorID.incidence(bad_indentation_iid))
+                                                          counter_db, 
+                                                          Lng.INPUT_P(), 
+                                                          DoorID.incidence(bad_indentation_iid))
 
     # (*) Generate Code
     code,          \
@@ -210,7 +211,7 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
     SmComment = SmCommentOriginal.clone()
     SmComment.set_id(comment_skip_iid)
 
-    if SmComment.last_character_set().contains_only(ord('\n')):
+    if SmComment.get_ending_character_set().contains_only(ord('\n')):
         code = Lng.COMMAND_LIST([
             Op.LineCountAdd(1),
             Op.AssignConstant(E_R.Column, 1),
@@ -219,11 +220,13 @@ def _add_comment(psml, SmCommentOriginal, CounterDb):
         count_info = CountInfo.from_StateMachine(SmComment, 
                                                  CounterDb,
                                                  CodecTrafoInfo=Setup.buffer_codec)
-        code = [
-            Lng.COMMAND(Op.Assign(E_R.ReferenceP, E_R.LexemeStartP)),
-            CounterDb.do_CountInfo(count_info),
-            Lng.COMMAND(Op.Assign(E_R.LexemeStartP, E_R.ReferenceP))
-        ]
+
+        default_counting_required_f, \
+        count_code                   = counter_coder.do_CountInfo(count_info)
+
+        code = [ Lng.COMMAND(Op.Assign(E_R.ReferenceP, E_R.LexemeStartP)) ]
+        code.extend(count_code)
+        code.append(Lng.COMMAND(Op.Assign(E_R.LexemeStartP, E_R.ReferenceP)))
 
     code.append(Lng.GOTO(DoorID.incidence(E_IncidenceIDs.INDENTATION_HANDLER)))
 

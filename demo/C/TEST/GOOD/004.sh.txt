@@ -3436,7 +3436,7 @@ CONTINUE 'continue'
 CONTINUE 'continue' 
 CONTINUE 'continue' 
 STRING '"End of Example"' 
-<TERMINATION> '' 
+<TERMINATION> 
 | [END] number of token = 3437
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible

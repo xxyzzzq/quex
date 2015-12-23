@@ -4,11 +4,11 @@ from   quex.engine.analyzer.transition_map         import TransitionMap
 from   quex.engine.analyzer.state.entry            import Entry
 from   quex.engine.analyzer.state.entry_action     import TransitionAction
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.engine.operations.operation_list                   import OpList, Op
-from   quex.engine.misc.tools import typed
-from   quex.blackboard  import setup as Setup, \
-                               E_IncidenceIDs, \
-                               E_StateIndices
+from   quex.engine.operations.operation_list       import OpList, Op
+from   quex.engine.misc.tools                      import typed
+from   quex.blackboard                             import setup as Setup, \
+                                                          E_IncidenceIDs, \
+                                                          E_StateIndices
 
 class Processor(object):
     __slots__ = ("_index", "entry")
@@ -149,12 +149,14 @@ class AnalyzerState(Processor):
         self.entry.categorize(self.index) # Categorize => DoorID is available.
         on_success_door_id = self.entry.get_door_id(self.index, reload_state.index)
 
-        # (2) Determin Door for RELOAD FAILURE
+        # (2) Determine Door for RELOAD FAILURE
         #
         if TheAnalyzer.is_init_state_forward(self.index):
             on_failure_door_id = DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)
         else:
             on_failure_door_id = TheAnalyzer.drop_out_DoorID(self.index)
+            if on_failure_door_id is None:
+                on_failure_door_id = DoorID.incidence(E_IncidenceIDs.END_OF_STREAM)
 
         # (3) Create 'Door from X' in Reloader
         assert on_failure_door_id != on_success_door_id
@@ -216,6 +218,7 @@ class ReloadState(Processor):
         assert self.index == OtherReloadState.index
         self.entry.absorb(OtherReloadState.entry)
 
+    @typed(StateIndex=(int,long), OnSuccessDoorId=DoorID, OnFailureDoorId=DoorID)
     def add_state(self, StateIndex, OnSuccessDoorId, OnFailureDoorId, BeforeReload=None):
         """Adds a state from where the reload state is entered. When reload is
         done it jumps to 'OnFailureDoorId' if the reload failed and to 'OnSuccessDoorId'

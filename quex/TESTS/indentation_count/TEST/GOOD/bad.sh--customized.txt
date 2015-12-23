@@ -18,14 +18,14 @@ WORD 'otto'
 WORD 'war' 
 WORD 'ein' 
 WORD 'kaiser' 
-<INDENT> '' 
+<INDENT>
 WORD 'heiser' 
 WORD 'manchmal' 
-<NODENT> '' 
+<NODENT>
 WORD 'leise' 
 WORD 'selten' 
 WORD 'hoho' 
-<DEDENT> '' 
-<TERMINATION> '' 
+<DEDENT>
+<TERMINATION>
 | [END] number of token = 13
 `-----------------------------------------------------------------

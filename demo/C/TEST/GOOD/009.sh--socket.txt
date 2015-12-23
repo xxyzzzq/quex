@@ -45,4 +45,4 @@ flush: 1: []
 <terminated>
    Token: BYE 'bye'
 <terminated>
-VALGRIND:  All heap blocks were freed -- no leaks are possible
+VALGRIND:   All heap blocks were freed -- no leaks are possible

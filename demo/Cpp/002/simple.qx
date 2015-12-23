@@ -1,66 +1,8 @@
-// -*- C++ -*-
+// -*- C++ -*-  vim:set ft=c:
+//
+// Default indentation handling setup, activated by '<inheritable: >'
+//_____________________________________________________________________________
 start = PROGRAM;
-
-define {
-    // Pattern definitions for example application
-    P_WHITESPACE          [ \t]
-    P_CURLY_BRACKET_O     "{"
-    P_CURLY_BRACKET_C     "}"
-    P_BRACKET_O           "("
-    P_BRACKET_C           ")"
-    P_EQUAL               "=="
-    P_KEY_STRUCT          "struct"
-    P_KEY_IF              "if"
-    P_KEY_IN              "in"
-    P_KEY_ELSE            "else:"
-    P_KEY_AND             "and"
-    P_KEY_OR              "or"
-    P_KEY_FOR             "for"
-    P_KEY_DEF             "def"
-    P_COLON               ":"
-    P_IDENTIFIER          [a-zA-Z]+
-    P_PRINT               "print"
-    P_NUMBER              [0-9]+
-    //
-    P_STRING_DELIMITER               "\""
-    P_BACKSLASHED_STRING_DELIMITER   "\\\""
-    P_BACKSLASHED_BACKSLASH          "\\\\"
-    P_BACKSLASHED_NEWLINE            "\\\n"
-}
-
-token {
-    INDENT;
-    DEDENT;
-    NODENT;
-    BRACKET_O;
-    BRACKET_C;
-    CURLY_BRACKET_O;
-    CURLY_BRACKET_C;
-    OP_EQUAL;
-    IF;
-    ELSE;
-    AND;
-    OR;
-    COLON;
-    FOR;
-    IN;
-    PRINT;
-    FUNCTION_DEF;
-    INDENTATION;
-    STRUCT;
-    SEMICOLON;
-    IDENTIFIER;
-    NUMBER;
-    STRING;
-    ERROR_MISALIGNED_INDENTATION;
-    EVENT_MODE_CHANGE;
-}
-
-/* Enables token repetition and defines the token to be
- * potentially repeated.                                */
-repeated_token { 
-    DEDENT;
-}
 
 mode END_OF_FILE :
 <inheritable: only>  
@@ -69,10 +11,7 @@ mode END_OF_FILE :
 }
 
 
-mode PROGRAM :
-     END_OF_FILE
-<entry: STRING_READER>
-<exit:  STRING_READER>
+mode PROGRAM : END_OF_FILE
 <indentation: /* the default setup will do */>
 <skip: {P_WHITESPACE}>
 {
@@ -93,22 +32,19 @@ mode PROGRAM :
     {P_KEY_FOR}         => QUEX_TKN_FOR(Lexeme); 
     {P_KEY_DEF}         => QUEX_TKN_FUNCTION_DEF(Lexeme);
     {P_IDENTIFIER}      => QUEX_TKN_IDENTIFIER(Lexeme);
-    {P_NUMBER}          => QUEX_TKN_NUMBER;
+    {P_NUMBER}          => QUEX_TKN_NUMBER(LexemeNull);
 
-    {P_STRING_DELIMITER} => GOTO(STRING_READER, QUEX_TKN_EVENT_MODE_CHANGE);
+    {P_STRING_DELIMITER} => GOTO(STRING_READER, QUEX_TKN_EVENT_MODE_CHANGE(LexemeNull));
 }
 
-mode STRING_READER :
-     END_OF_FILE
-    <entry: PROGRAM>
-    <exit:  PROGRAM>
+mode STRING_READER : END_OF_FILE
 {
     on_entry                         { self_accumulator_clear(); }
     on_exit                          { self_accumulator_flush(QUEX_TKN_STRING); }
 
     {P_BACKSLASHED_STRING_DELIMITER} { self_accumulator_add(Lexeme, LexemeEnd); }
     {P_BACKSLASHED_BACKSLASH}        { self_accumulator_add(Lexeme, LexemeEnd); }
-    {P_STRING_DELIMITER} => GOTO(PROGRAM, QUEX_TKN_EVENT_MODE_CHANGE);
+    {P_STRING_DELIMITER} => GOTO(PROGRAM, QUEX_TKN_EVENT_MODE_CHANGE(LexemeNull));
     /* Default pattern must come last! */
     .                                { self_accumulator_add(Lexeme, LexemeEnd); }
 }

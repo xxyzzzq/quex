@@ -295,6 +295,7 @@ class Analyzer:
         """
         for state in self.__state_db.itervalues():
             state.entry.categorize(state.index)
+
         self.drop_out.entry.categorize(E_StateIndices.DROP_OUT)
 
         for state in self.__state_db.itervalues():

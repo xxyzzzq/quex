@@ -16,7 +16,7 @@
 WORD 'o' 
 BAD '' 
 COLON '' 
-<NODENT> '' 
-<TERMINATION> '' 
+<NODENT>
+<TERMINATION>
 | [END] number of token = 5
 `-----------------------------------------------------------------

@@ -4,17 +4,18 @@
 < EasyLexer.o: EasyLexer.cpp 
 ---
 > EasyLexer.o: EasyLexer.c 
-< example.o: ../example.cpp  EasyLexer.cpp
+< example.o: ../example.cpp EasyLexer.cpp
 ---
-> example.o: ../example.c  EasyLexer.c
-< %.E: %.cpp    
-< 	$(CC) -E $< -o $@ 
----
-> %.E: %.c    
-> 	$(CC) -E $< > $@ 
+> example.o: ../example.c EasyLexer.c
 < EasyLexer.cpp: simple.qx 
 ---
 > EasyLexer.c: simple.qx 
 ---
 > 		 --language         C
-> 		 --language         C          \
+< 		 --source-package   lexer_mine
+---
+> 		 --source-package   lexer_mine \
+> 		 --language         C
+< %.E: %.cpp    
+---
+> %.E: %.c    

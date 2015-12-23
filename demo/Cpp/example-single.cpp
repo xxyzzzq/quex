@@ -12,41 +12,47 @@
 #    define ENCODING_NAME (0x0)
 #endif
 
+static void print_token(quex::Token* token_p);
+
 int 
 main(int argc, char** argv) 
 {        
     using namespace std;
 
-    // (*) create the lexical analyser
-    //     1st arg: input file, default = 'example.txt'
-    //     2nd arg: input character encoding name, 0x0 --> no codec conversion
     quex::EasyLexer    qlex(argc == 1 ? "example.txt" : argv[1], ENCODING_NAME);
+    quex::Token*       token_p  = qlex.token_p();
+    QUEX_TYPE_TOKEN_ID token_id = QUEX_TKN_UNINITIALIZED;
+    int                number_of_tokens = 0;
 
     cout << ",-----------------------------------------------------------------\n";
     cout << "| [START]\n";
 
-    int number_of_tokens = 0;
-    // (*) loop until the 'termination' token arrives
-    quex::Token*       token_p  = qlex.token_p();
-    QUEX_TYPE_TOKEN_ID token_id = QUEX_TKN_UNINITIALIZED;
     do {
-        // (*) get next token from the token stream
         token_id = qlex.receive();
 
-        // (*) print out token information
-#       ifdef PRINT_TOKEN
-        cout << string(*token_p) << endl;
-#       else
-        cout << token_p->type_id_name() << endl;
-#       endif
+        print_token(token_p);
 
         ++number_of_tokens;
 
-        // (*) check against 'termination'
     } while( token_id != QUEX_TKN_TERMINATION );
 
     cout << "| [END] number of tokens = " << number_of_tokens << "\n";
     cout << "`-----------------------------------------------------------------\n";
 
     return 0;
+}
+
+static void
+print_token(quex::Token* token_p)
+{
+    using namespace std;
+
+#   ifdef PRINT_LINE_COLUMN_NUMBER
+    cout << "(" << token_p->line_number() << ", " << token_p->column_number() << ")  \t";
+#   endif
+#   ifdef PRINT_TOKEN
+    cout << string(*token_p) << endl;
+#   else
+    cout << token_p->type_id_name() << endl;
+#   endif
 }

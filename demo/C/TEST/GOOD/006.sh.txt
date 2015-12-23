@@ -25,7 +25,7 @@ WHITESPACE ''
 LETTER_____________ 'x' 
 HEY________________ 'hey' 
 WHITESPACE '' 
-<TERMINATION> '' 
+<TERMINATION> 
 | [END] number of token = 26
 `-----------------------------------------------------------------
 VALGRIND:   All heap blocks were freed -- no leaks are possible

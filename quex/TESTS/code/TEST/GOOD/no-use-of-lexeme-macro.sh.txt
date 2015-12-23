@@ -20,8 +20,10 @@ Following lines are suppossed to be accepted:
 ./input/files/code_fragment.py:315:                              "          \"%s(Lexeme+1, LexemeEnd-2)\"\n" % TokenName + 
 ./input/files/code_fragment.py:316:                              "          \"%s(Lexeme)\"\n" % TokenName + 
 ./output/core/dictionary.py:227:        return "__QUEX_COUNT_VOID(&self, LexemeBegin, LexemeEnd);\n"
-./output/core/loop.py:35:                            |      |  LexemeEnd
-./output/core/loop.py:43:    first character which is not in CharacterSet (or the LexemeEnd).
+./output/core/loop.py:103:                                     |  Lexeme End |
+./output/core/loop.py:38:                            |      |  LexemeEnd
+./output/core/loop.py:46:    first character which is not in CharacterSet (or the LexemeEnd).
+./output/core/loop.py:99:              --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
 ./output/cpp/counter.py:100:       + "     __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
 ./output/cpp/counter.py:71:        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
 ./output/cpp/counter.py:84:        "    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)\n"
@@ -30,3 +32,5 @@ Following lines are suppossed to be accepted:
 ./output/cpp/counter.py:89:        "    %s = LexemeBegin;\n" % IteratorName
 ./output/cpp/templates.py:247:    /* Lexeme setup: 
 ~/prj/quex/trunk/quex/TESTS/code/TEST
+
+

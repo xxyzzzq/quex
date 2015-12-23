@@ -5,6 +5,6 @@
 (2, 65)  	NEWLINE '' 
 (3, 1)  	COMMENT ';\r' 
 (3, 3)  	NEWLINE '' 
-(4, 1)  	<TERMINATION> '' 
+(4, 1)  	<TERMINATION>
 | [END] number of token = 6
 `-----------------------------------------------------------------
