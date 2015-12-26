@@ -36,6 +36,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 extern "C" {
 #endif
 #include <stdio.h>
+#include <quex/code_base/MemoryManager>
 #ifdef __cplusplus
 }
 #endif
@@ -47,10 +48,12 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
         const uint8_t*     end_p;
         const uint8_t*     position;
     } byte_array;
+    E_Ownership            memory_ownership;
 } QUEX_NAME(ByteLoader_Memory);
 
 QUEX_INLINE QUEX_NAME(ByteLoader)*    QUEX_NAME(ByteLoader_Memory_new)(const uint8_t*  BeginP,
                                                                        const uint8_t*  EndP);
+QUEX_INLINE QUEX_NAME(ByteLoader)*    QUEX_NAME(ByteLoader_Memory_new_from_file_name)(const char*);
 
 QUEX_NAMESPACE_MAIN_CLOSE
 

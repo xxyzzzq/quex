@@ -379,7 +379,7 @@ class PropertyInfoDB:
         elif PropertyName in self.property_name_to_alias_map.keys():
             return self.db[self.property_name_to_alias_map[PropertyName]]
         else: 
-            return "<unknown property or alias '%s'>" % PropertyName
+            return None # "<unknown property or alias '%s'>" % PropertyName
 
     def get_property_value_matches(self, PropertyName, Value):
         assert Value is not None
@@ -412,9 +412,9 @@ class PropertyInfoDB:
         if self.db == {}: self.init_db()
 
         property = self[PropertyName]
+
         if not isinstance(property, PropertyInfo):
-            assert type(property) in [str, unicode]
-            txt = property
+            txt  = "Unicode property '%s' does not exist.\n" % PropertyName
             txt += "Properties: " + self.get_property_names()
             return txt
 
@@ -605,13 +605,13 @@ class PropertyInfoDB:
         alias_list = self.db.keys()
         alias_list.sort(lambda a, b: cmp(self.db[a], self.db[b]))
 
-        txt = ""
-        for alias in alias_list:
+        txt = []
+        for alias in sorted(alias_list):
             if BinaryOnlyF and self.db[alias].type != "Binary": continue
-            txt += self.db[alias].name + "(%s)" % alias
-            txt += ", "
-
-        return txt 
+            txt.append("%s (%s)" % (self.db[alias].name, alias))
+            txt.append(", ")
+        if txt: txt = txt[:-1] # Remove trailing ", "
+        return "".join(txt)
 
     def get_documentation(self):
         binary_property_list     = []

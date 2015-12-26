@@ -34,6 +34,8 @@
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
 #include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
+#include <quex/code_base/buffer/loader/ByteLoader_Memory>
+#include <quex/code_base/buffer/loader/ByteLoader_Memory.i>
 // #include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -101,7 +103,11 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
     /* With 'BufferFiller_Plain()' no conversion takes place. Thus, the file
      * containing the REFERENCE data and the INPUT file are the SAME.        */
     const char*               ref_file_name = find_reference(FileStem); 
+#   if 0
     QUEX_NAME(ByteLoader)*    byte_loader   = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(FileName);
+#   else
+    QUEX_NAME(ByteLoader)*    byte_loader   = QUEX_NAME(ByteLoader_Memory_new_from_file_name)(FileName);
+#   endif
     const size_t              MemorySize    = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
     QUEX_NAME(BufferFiller)*  filler;  
