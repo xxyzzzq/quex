@@ -1,0 +1,12 @@
+outrun.qx:17:warning: The pattern 'albert' may outrun
+outrun.qx:16:warning: pattern 'alb|albertikus'.
+outrun.qx:22:warning: The pattern 'a|al|alb|albe|alber|albert|alberti|albertik|albertiku|albertikus' may outrun
+outrun.qx:21:warning: pattern 'alb|albertikus'.
+outrun.qx:7:warning: The pattern '[a-z]+' may outrun
+outrun.qx:6:warning: pattern 'key'.
+outrun.qx:12:warning: The pattern 'ab' may outrun
+outrun.qx:11:warning: pattern 'a|abc'.
+outrun.qx:27:warning: The pattern 'a|al|alb|albe|alber|albert|alberti|albertik|albertiku|albertikus' may outrun
+outrun.qx:26:warning: pattern 'alb|(a((((lb)*er)*ti)*ku)*s)'.
+outrun.qx:32:warning: The pattern 'albert' may outrun
+outrun.qx:31:warning: pattern 'alb|(a((((lb)*er)*ti)*ku)*s)'.

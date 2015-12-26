@@ -1,0 +1,55 @@
+## Disable this message by compile option
+##        '-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED'
+##
+## Asserts activated! Lexical analyzer is 'paranoid'!
+## => Even smallest misbehavior causes program exit.
+##    This helps to find subtile errors.
+##
+## Note however: the paranoia is a heavy load on performance!
+##
+## Disable asserts by '-DQUEX_OPTION_ASSERTS_DISABLED'
+##
+## Report any bug at
+##        http://sourceforge.net/tracker/?group_id=168259&atid=846112
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'Ελληνικά'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'Euskara'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'فارسی'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'Frysk'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'Galego'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER '한국어'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: DOT '•'
+called: content_fill;
+called: loop_syntactic_chunks;
+   Token: IDENTIFIER 'हिन्दी'
+called: content_fill;
+called: loop_syntactic_chunks;
+VALGRIND:   All heap blocks were freed -- no leaks are possible

@@ -1,0 +1,15 @@
+token { 
+    WORD;
+}
+
+mode X :
+<indentation: 
+    (\r\n)|\n => newline; 
+    [ \t]     => whitespace; 
+    [\:]      => bad;
+>
+<skip: [ \t:] >
+{
+    on_indentation_bad { printf("Bad Char: '%c'\n", (char)BadCharacter); }
+    [a-z]+  => QUEX_TKN_WORD(Lexeme);
+}

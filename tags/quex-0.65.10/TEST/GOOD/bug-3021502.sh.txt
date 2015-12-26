@@ -1,0 +1,3 @@
+gcc point.c Simple.c -I. -I/home/fschaef/prj/quex/trunk -o a.out -ggdb -Wall -Werror
+EOF-Pointer: 0
+Buffer Size: 4711

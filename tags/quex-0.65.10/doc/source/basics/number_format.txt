@@ -1,0 +1,36 @@
+.. _sec-basics-number-format:
+
+Number Format
+-------------
+
+Numbers in Quex are specified in a way similar to what is common practice in
+many programming languages such as C, Python, Java, etc. -- with some convenient
+extensions. Number formats are as follows:
+
+.. describe:: no prefix as in "4711"
+
+    Normal decimal integers do not start with '0' and have none of the 
+    prefixes below.
+
+.. describe:: 0x as in "0xC0.FF.EE" or "0x3fea"
+
+    Hexadecimal numbers need to be preceded by '0x'. The dots inside the
+    hexadecimal numbers are meaningless for the parser, but may facilitate
+    the reading for the human reader.
+
+.. describe:: 0o as in "0o751"
+
+   Octal numbers are preceded by '0o'.
+
+.. describe:: 0b as in "0b100.1001"
+
+   Binary numbers are preceded by '0b'. Again, redundant dots may facilitate
+   the human interpretation of the specified number.
+   
+.. describe :: 0r as in "0rXMVIII" or "0rvii"
+
+   Roman numbers must be preceded by a '0r' prefix.
+
+.. describe :: 0n as in "0naabdea" or "0nABHJ"
+
+   Napier numbers (location arithmetic) must be preceded by a '0n' prefix.

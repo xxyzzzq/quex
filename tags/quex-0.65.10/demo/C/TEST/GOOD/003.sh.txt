@@ -1,0 +1,37 @@
+## make lexer BYTES_PER_CHARACTER=2   
+,-----------------------------------------------------------------
+| [START]
+PI 'π' 
+ALLMOST_EQUAL '≈' 
+LATIN_NUMBER '3.14159' 
+ALLMOST_EQUAL '≈' 
+ARABIC_NUMBER '٣.١٤١٥٩' 
+ALLMOST_EQUAL '≈' 
+DEVANGARI_NUMBER '३.१४१५९' 
+ALLMOST_EQUAL '≈' 
+THAI_NUMBER '๓.๑๔๑๕๙' 
+DJAMEEL 'ليمج' 
+ALLMOST_EQUAL '≈' 
+LATIN_IDENTIFIER 'nice' 
+ALLMOST_EQUAL '≈' 
+LATIN_IDENTIFIER 'schön' 
+OPEN_FRENCH_QUOTE '«' 
+LATIN_IDENTIFIER 'tan' 
+L_BRACKET '(' 
+ALPHA 'α' 
+R_BRACKET ')' 
+ARROW '→' 
+INFINITY '∞' 
+LATIN_IDENTIFIER 'for' 
+ALPHA 'α' 
+ARROW '→' 
+LATIN_NUMBER '90' 
+DEGREE_CELSIUS '°C' 
+CLOSE_FRENCH_QUOTE '»' 
+OK '✓' 
+COPYRIGHT '©' 
+LATIN_IDENTIFIER 'Schäfer' 
+<TERMINATION> 
+| [END] number of token = 31
+`-----------------------------------------------------------------
+VALGRIND:   All heap blocks were freed -- no leaks are possible

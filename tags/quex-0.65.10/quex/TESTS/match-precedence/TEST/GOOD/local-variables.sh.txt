@@ -1,0 +1,2 @@
+Watch if the generated code compiles. If is 'ls lexer' succeeds.
+lexer
