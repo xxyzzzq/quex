@@ -4,6 +4,7 @@
 #define  __QUEX_INCLUDE_GUARD__BUFFER__LOADER__BYTE_LOADER_MEMORY_I
 
 #include <quex/code_base/MemoryManager>
+#include <malloc.h> // DEBUG
 
 QUEX_NAMESPACE_MAIN_OPEN
 
@@ -38,6 +39,48 @@ QUEX_NAME(ByteLoader_Memory_new)(const uint8_t*  BeginP,
     return &me->base;
 }
 
+QUEX_INLINE QUEX_NAME(ByteLoader)*    
+QUEX_NAME(ByteLoader_Memory_new_from_file_name)(const char* FileName)
+{
+    size_t                  size;
+    uint8_t*                begin_p;
+    QUEX_NAME(ByteLoader)*  me = (QUEX_NAME(ByteLoader)*)0;
+
+    /* Determine size of file                                                */;
+    FILE* fh = fopen(FileName, "rb"); 
+    if( ! fh ) return me;
+        
+    if( fseek(fh, 0, SEEK_END) ) {
+        fclose(fh);
+        return me;
+    }
+    size = (size_t)ftell(fh);
+
+    if( fseek(fh, 0, SEEK_SET) ) {
+        fclose(fh);
+        return me;
+    }
+
+    /* Load the file's content into some memory.                             */
+    begin_p = (uint8_t*)QUEXED(MemoryManager_allocate)(size, E_MemoryObjectType_BUFFER_MEMORY);
+    if( size != fread(begin_p, 1, size, fh) ) {
+        QUEXED(MemoryManager_free)(begin_p, E_MemoryObjectType_BUFFER_MEMORY);
+        return me;
+    }
+
+    /* Call the main new operator to allocate the byte loader.               */
+    me = QUEX_NAME(ByteLoader_Memory_new)(begin_p, &begin_p[size]);
+    if( ! me ) {
+        QUEXED(MemoryManager_free)(begin_p, E_MemoryObjectType_BUFFER_MEMORY);
+    }
+    else {
+        /* Mark memory ownership => destructor deletes it.                   */
+        ((QUEX_NAME(ByteLoader_Memory)*)me)->memory_ownership = E_Ownership_LEXICAL_ANALYZER;
+    }
+
+    return me;
+}
+
 QUEX_INLINE void
 QUEX_NAME(ByteLoader_Memory_construct)(QUEX_NAME(ByteLoader_Memory)* me, 
                                        const uint8_t*                BeginP,
@@ -54,6 +97,7 @@ QUEX_NAME(ByteLoader_Memory_construct)(QUEX_NAME(ByteLoader_Memory)* me,
                          QUEX_NAME(ByteLoader_Memory_delete_self),
                          QUEX_NAME(ByteLoader_Memory_compare_handle));
     me->base.binary_mode_f = true;
+    me->memory_ownership   = E_Ownership_EXTERNAL; /* Default */
 }
 
 QUEX_INLINE void    
@@ -63,7 +107,13 @@ QUEX_NAME(ByteLoader_Memory_delete_self)(QUEX_NAME(ByteLoader)* alter_ego)
      *       constructed this object.                                        */
     QUEX_NAME(ByteLoader_Memory)* me = (QUEX_NAME(ByteLoader_Memory)*)(alter_ego);
 
+    if( me->memory_ownership == E_Ownership_LEXICAL_ANALYZER ) {
+        QUEXED(MemoryManager_free)((void*)&me->byte_array.begin_p[0], 
+                                   E_MemoryObjectType_BUFFER_MEMORY);
+    }
+
     QUEXED(MemoryManager_free)(me, E_MemoryObjectType_BYTE_LOADER);
+
 }
 
 QUEX_INLINE QUEX_TYPE_STREAM_POSITION    
