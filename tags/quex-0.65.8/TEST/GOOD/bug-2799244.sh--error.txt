@@ -1,0 +1,10 @@
+(*) Full Error
+
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator.
+error.qx:2:warning: ('--suppress 15' to avoid this message)
+(*) No String Accumulator
+
+error.qx:2:warning: Section token_type does not contain a 'take_text' section. It would be
+error.qx:2:warning: necessary if the analyzer uses the string accumulator.
+error.qx:2:warning: ('--suppress 15' to avoid this message)

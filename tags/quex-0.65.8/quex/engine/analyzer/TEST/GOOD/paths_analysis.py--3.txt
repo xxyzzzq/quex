@@ -1,0 +1,56 @@
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+     == 'b' ==> 00004
+    
+00001 A(1)
+     == 'c' ==> 00002
+    
+00002 
+     == 'd' ==> 00003
+    
+00003 A(3)
+    
+00004 A(2)
+     == 'c' ==> 00002
+    
+
+State 0:
+  .entry:
+    .from BEFORE_ENTRY: 
+
+.drop_out:
+pos = lexeme_start_p + 1;  goto Failure;
+
+State 1:
+  .entry:
+    .from 0: last_acceptance = Pattern1
+
+.drop_out:
+goto Pattern1;
+
+State 2:
+  .entry:
+    .from 1: 
+    .from 4: 
+
+.drop_out:
+on last_acceptance:
+case 1: pos -= 1;  goto Pattern1;
+case 2: pos -= 1;  goto Pattern2;
+
+
+State 3:
+  .entry:
+    .from 2: 
+
+.drop_out:
+goto Pattern3;
+
+State 4:
+  .entry:
+    .from 0: last_acceptance = Pattern2
+
+.drop_out:
+goto Pattern2;
+

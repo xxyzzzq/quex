@@ -1,0 +1,19 @@
+token {
+  IDENTIFIER;
+  WHITESPACE;
+  FOR;
+  FOREST;
+  FORESTER;
+  FORMIDABLE;
+  FAIL;
+}
+
+mode X { 
+    on_failure => QUEX_TKN_FAIL(Lexeme);
+    [a-eg-z]+  => QUEX_TKN_IDENTIFIER;
+    " "+       => QUEX_TKN_WHITESPACE;
+    for        => QUEX_TKN_FOR;
+    forest     => QUEX_TKN_FOREST;
+    forester   => QUEX_TKN_FORESTER;
+    formidable => QUEX_TKN_FORMIDABLE;
+}

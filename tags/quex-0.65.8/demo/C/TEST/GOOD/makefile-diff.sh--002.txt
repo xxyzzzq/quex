@@ -1,0 +1,16 @@
+< COMPILER := g++ -Wall -Werror -Wconversion -pedantic # -ggdb 
+---
+> COMPILER := gcc -Wall -Werror -Wconversion -pedantic # -ggdb 
+< 	quex -i patterns.qx tokens.qx simple.qx -o EasyLexer
+< 	$(CC) -o $@ ../example.cpp EasyLexer.cpp 
+---
+> 	quex -i patterns.qx tokens.qx simple.qx -o EasyLexer --language C
+> 	$(CC) -o $@ ../example.c EasyLexer.c 
+< 	quex -i patterns.qx tokens.qx simple2.qx -o EasyLexer
+< 	$(CC) -o $@ ../example.cpp EasyLexer.cpp 
+---
+> 	quex -i patterns.qx tokens.qx simple2.qx -o EasyLexer --language C
+> 	$(CC) -o $@ ../example.c EasyLexer.c 
+< %.E: %.cpp
+---
+> %.E: %.c

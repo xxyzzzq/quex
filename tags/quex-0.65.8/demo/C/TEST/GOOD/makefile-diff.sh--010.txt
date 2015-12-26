@@ -1,0 +1,28 @@
+< COMPILER := g++ -ggdb -Wall -Werror -pedantic 
+---
+> COMPILER := gcc -ggdb -Wall -Werror -pedantic -std=c89
+< point.exe:           point.cpp $(OBJS)  
+---
+> point.exe:           point.c $(OBJS)  
+< %.o:                 %.cpp  lexPlain
+---
+> %.o:                 %.c  lexPlain.h
+< %_utf8.o:            %.cpp  lexUTF8
+---
+> %_utf8.o:            %.c  lexUTF8.h
+< %.E:                 %.cpp  
+---
+> %.E:                 %.c  
+< lexPlain lexPlain.cpp: lexPlain.qx 
+---
+> lexPlain.h lexPlain.c: lexPlain.qx 
+> 		 --language     C            \
+< lexUTF8 lexUTF8.cpp: lexUTF8.qx 
+---
+> lexUTF8.h lexUTF8.c: lexUTF8.qx 
+> 		 --language            C            \
+< 	rm -f lexPlain.cpp lexPlain-configuration lexPlain-token lexPlain-token_ids lexPlain
+< 	rm -f lexUTF8.cpp  lexUTF8-configuration  lexUTF8-token  lexUTF8-token_ids lexUTF8
+---
+> 	rm -f lexPlain.[ch] lexPlain-configuration.h lexPlain-token.h lexPlain-token_ids.h
+> 	rm -f lexUTF8.[ch]  lexUTF8-configuration.h  lexUTF8-token.h  lexUTF8-token_ids.h

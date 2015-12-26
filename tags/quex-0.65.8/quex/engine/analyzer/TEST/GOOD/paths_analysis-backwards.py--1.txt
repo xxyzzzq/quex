@@ -1,0 +1,30 @@
+init-state = 0L
+00000 
+     == 'x' ==> 00001
+    
+00001 A(1)
+     == 'x' ==> 00001
+     == 'y' ==> 00002
+    
+00002 A(2)
+    
+
+State 0:
+  .entry:
+    .from BEFORE_ENTRY: 
+
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
+State 1:
+  .entry:
+    .from 0: pre-context-fulfilled = 1;
+    .from 1: pre-context-fulfilled = 1;
+
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)
+State 2:
+  .entry:
+    .from 1: pre-context-fulfilled = 2;
+
+.drop_out:
+GotoDoorId: DoorID(s=0, d=GLOBAL_END_OF_PRE_CONTEXT_CHECK)

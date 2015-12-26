@@ -1,0 +1,32 @@
+
+(*) 4 Intervals
+
+    [0] at 00000000: Codec Interval [100000,100010)
+    [1] at 00000080: Codec Interval [200000,200010)
+    [2] at 00000800: Codec Interval [300000,300010)
+    [3] at 00010000: Codec Interval [400000,400010)
+
+    if( input < 0x300000 ) {
+        if( input < 0x200000 ) {
+            unicode = (uint32_t)input - (uint32_t)0x100000;
+            goto one_byte;
+        } else {
+        
+            unicode = (uint32_t)input - (uint32_t)0x1FFF80;
+            goto two_bytes;
+        
+        }
+    } else {
+    
+        if( input < 0x400000 ) {
+            unicode = (uint32_t)input - (uint32_t)0x2FF800;
+            goto three_bytes;
+        } else {
+        
+            unicode = (uint32_t)input - (uint32_t)0x3F0000;
+            goto four_bytes;
+        
+        }
+    
+    }
+

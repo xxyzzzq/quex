@@ -1,0 +1,220 @@
+.\" Manpage for quex.
+.TH QUEX 1 "Quex $$VERSION$$" "User Commands"
+.SH NAME
+Quex \- A fast lexical analyzer generator
+.SH SYNOPSIS
+quex -i [file name]+ [OPTIONS]*
+
+quex --token-class-only -i [file name]+ [OPTIONS]*
+
+quex [QUERY OPTION]+
+
+.SH DESCRIPTION
+
+Quex is a tool to generate lexical analyzers. A lexical analyzer is a program that transforms a stream of characters into a stream of atomic chunks of meaning, as shown in the figure below:
+
+.sv 0.5i
+.nf
+     character stream
+                         "if( 3.1 > x ) { printf ..."   
+                                     | 
+                            .--------'---------.
+                            | lexical analyzer |
+                            '------------------'
+                                     | 
+     token stream                    ' 
+                     keyword:  bracket:  number:   ...
+                     'if'      '('       '3.1'       
+.fi
+
+The atomic chunks of meaning, so called 'tokens', are the basis of an interpretation on some higher level.  Each token consists at least of a type identifier such as 'keyword', 'number', or 'operator'. Additionally, some parameters about the matching 'lexeme' might be stored in the token.
+
+Quex provides a convenient means to describe the process of lexical analysis. It generates code in C or C++, which implements the user's lexical analyzer.  This man page provides a very brief overview over quex. A good entry point to learn quex are the subdirectories of './demo' which contain many examples for C and C++. Further, the Quex manual can be downloaded online at sourceforge.net.
+
+.SH OPTIONS
+
+Quex can be used in two ways: for code generation and for queries. Code generation includes the generation of lexical analyzers for C (--language C) and C++ (--language C++) as well as source code for graphical representations using graphviz (--language dot). By means of queries the effects of regular expressions can be explored as well as the character sets of codecs and unicode properties.
+
+$$OPTIONS$$
+
+.SH FILES
+
+Input files to quex best end with a '.qx' extension. They may contain lexical analyzer mode descriptions, pattern definition sections, token class descriptions, token id descriptions, and other sections that influence code generation. The most significant section types are described below.
+
+.SS Mode Description
+
+A quex-generated lexical analyzer does anything it does in a mode. Modes have a name by which they are referred. For a mode the following things can be specified: For a mode the following things can be specified:
+
+.RS
+.B (i) Pattern-action pairs.
+
+.B (ii) Event handlers, such as 'on end of stream'.
+
+.B (iii) Options, counter specifications, skippers, and indentation handlers.
+
+.B (iv) inheritance relationships to other modes.
+
+.RE
+
+A pattern-action-pair tells what action has to happen when the input stream matches a pattern. Usually, it simply sends a token. However, the actions are only restricted by the language for which code is generated. Modes also may contain specifications on events. For example the 'on_entry' handler specifies what is to be done if the mode is entered. 'on_failure' specifies what happens if no pattern matches.
+
+At the beginning of a mode a list of mode options can be specified. These options define skipping of characters and character ranges, column and line number counting behavior, indentation based lexical analyzis definitions, etc.
+
+The following describes a mode that may identify numbers and identifiers.
+
+.nf
+    mode BASE : 
+      <skip:       [ \\t\\n] > 
+      <skip_range: "/*" "*/> 
+    {
+        on_entry         { printf("Enter: from %s\\n", FromMode->name); }
+        on_exit          { printf("Exit:  to   %s\\n", ToMode->name); }
+        on_end_of_stream => QUEX_TKN_TERMINATION(LexemeNull);
+        [a-z]+           => QUEX_TKN_IDENTIFIER(Lexeme);
+        [0-9]+           => QUEX_TKN_NUMBER(Lexeme);
+    }
+.fi
+   
+The above mode defines three event handlers. 'on_entry' is executed whenever the mode 'BASE' is entered, 'on_exit' is executed upon exit, an 'on_end_of_stream' is executed if no more content can be read from the input stream. The pattern '[a-z]+' matches a sequences of letters. When it matches the token 'QUEX_TKN_IDENTIFIER' is sent. The 'Lexeme' contains the string that matched the pattern. Similarily, the regular expression [0-9]+ matches a sequence of numbers. Its occurrence triggers the sending of a 'QUEX_TKN_NUMBER' token.
+
+The '<skip: [ \\t\\n]>' in the option list lets the mode skip over and sequence that starts with space, tabulator, or newline. The '<skip_range: "/*" "*/">' option lets the mode ignore anything from '/*' to '*/'.
+
+Modes can be related to each other by inheritance relationships. If a mode is derived from another mode it inherits all options, event handlers, and pattern action pairs. A mode 'DERIVED' may be defined as being derived from 'BASE' the following way:
+
+.nf
+    mode DERIVED : BASE {
+        + => QUEX_TKN_OP_PLUS;
+        - => QUEX_TKN_OP_MINUS;
+        * => QUEX_TKN_OP_MULTIPLY;
+        / => QUEX_TKN_OP_DIVIDE;
+    }
+.fi
+
+Here, the mode 'DERIVED' triggers on numbers and identifiers, as their pattern actions pairs are inherited from 'BASE'. Additionally, is triggers on the binary operators plus, minus, multiplication, and division.
+
+When more then one mode is defined, the start mode must be explicitly specified by an assignment to 'start' (outside any 
+mode definition), i.e.
+
+.nf
+    start = DERIVED;
+.fi
+
+defines 'DERIVED' as the start mode for lexical analysis. The transition from one mode to another may be initiated by a 'GOTO' statement. The statement 'GOSUB' behaves like 'GOTO' but remembers from where it came from. The target mode may call 'GOUP' to go back to the mode from where it was entered. Such behavior comes handy, for example, with a string parsing mode that is used in two different environments. A string in quotes in a MATH mode may mean a comment, in a STATEMENT mode, it may mean a character string. Both modes may transit to the STRING mode using GOSUB. Once the string mode is done, it calls GOUP and returns into the mode where it came from--be it MATH or STATEMENT. This example in quex-code looks like the following
+
+.nf  
+    mode MATH {
+        ...
+        "     => GOSUB(STRING, QUEX_TKN_STRING_OPEN);
+        ...
+    }
+    mode STATEMENT {
+        ...
+        "     => GOSUB(STRING, QUEX_TKN_STRING_OPEN);
+        ...
+    }
+    mode STRING {
+        ...
+        "\\\\" => QUEX_TKN_BACKSLASH;
+        "    => GOUP(QUEX_TKN_STRING_CLOSE);
+        ...
+    }
+.fi
+
+.SS Pattern Definition Sections
+
+Regular expressions may be associated with names in pattern definition sections. Names which are defined there can be expanded to regular expressions using curly brackets. Using definitions facilitates the specification of complex expressions and to brea them  down into smaller elements. Example:
+
+.nf
+    define {
+        ARABIC         [: intersection(\\P{Block=Arabic},  [\\X0-\\XFFFF]) :]
+        ARABIC_DIGIT   [: intersection({ARABIC}, \\G{Nd}, [\\X660-\\X6D0]) :]
+        ARABIC_NUMBER  ({ARABIC_DIGIT}+".")?{ARABIC_DIGIT}+
+    }
+.fi
+
+In the example above, arabic numbers are defined based on Unicode properties. First, the codeset for ARABIC is defined as the set of arabic letters below 0xFFFF. Then, arabic digits are defined as those numbers from Unicode that intersect with that range. With the digits being described, an ARABIC_NUMBER can then be defined as a sequence of digits with a possible dot in between.
+
+
+.SS Token Section
+
+A token section defines names and possible the values of token identifiers. Token identifiers may be generated automatically, or the user may specify their numeric values explicity. The 'token' section contains a list of token names separated by ';'. If a token name is followed by a '=' and a numeric value, this particular value is associated with the token id.
+
+.nf
+    token {
+        TERMINATION   = 0b0000.0000;
+        UNINITIALIZED = 0b1000.0000;
+        DIV           = 0b0000.0001;
+        MULTIPLY      = 0b0001.0001;
+        PLUS          = 0b0011.0001;
+        MINUS         = 0b0100.0001;
+    }
+.fi
+
+In the above example, the lowest bit would allow to distinguish between operator tokens and others. The token's name in the token section appears in real code with the token prefix. So, with the default token prefix 'QUEX_TKN_' the 'DIV' token identifier appears in code as 'QUEX_TKN_DIV'.
+
+.SS Token Class Description
+
+Quex generates a default token class (C++) or token struct (C). In case, that this is not sufficient, it supports the generation of token types. For this, the internals of a token class may be described briefly in a 'token_type' section. Example:
+
+.nf
+    token_type {
+       inheritable;
+       name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+       distinct {
+           my_name  :  std::string;
+           numbers  :  std::vector<int>;
+       }
+       union {
+           { 
+              number       : float;
+              index        : short;
+           }
+           { 
+              x            : int16_t;
+              y            : int16_t;
+           }
+           stream_position : uint32_t;
+           token_id        : uint16_t;
+       }
+       constructor {
+           /* How a token is constructed. */
+       }
+       destructor {
+           /* How a token is destructed. */
+       }
+       take_text {
+           /* How it takes a lexeme. */
+       }
+       copy {
+           /* How it is copied. */
+       }
+    }
+.fi
+
+.SS Number Format
+
+Numbers in quex are specified similar to numeric literals in the C programming language. That is, no prefix means that the number is specified in decimal. The prefixes for other number systems are
+.B 0x
+for hexadecimal,
+.B 0o
+for octal, 
+.B 0b
+for binary, 
+.B 0r
+for roman, and
+.B 0n
+for Napier (positional location) numbers.
+
+.SH SEE ALSO
+
+The web project page at quex.org, or quex.sf.net provides futher information and documentation.
+    
+.SH ENVIRONMENT VARIABLES
+
+The environment variable QUEX_PATH must point to the place where quex is installed.
+    
+.SH BUGS
+See defect log at: https://sourceforge.net/p/quex/bugs/  
+
+.SH AUTHOR
+Frank-Rene Schaefer (fschaef@user.sourceforge.net)

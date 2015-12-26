@@ -1,0 +1,12 @@
+THING 'Ad' 
+EXPRESSION 'Auvers-sur-Oise' 
+NONE ',' 
+THING 'nei' 
+THING 'dintorni' 
+THING 'di' 
+THING 'Parigi' 
+NONE ',' 
+THING 'dipinse' 
+<TERMINATION> '' 
+| [END] number of token = 10
+`------------------------------------------------------------------------------------

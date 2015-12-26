@@ -1,0 +1,87 @@
+(1) Non-branchers: ___________________________________________________________
+
+(1.1) Commands with no interferring access to registers ______________________
+
+   A: if 'PreContext_0': position[PostContext_0]  = input_p;
+   B: if 'PreContext_0': position[PostContext_1]  = input_p;
+
+   is_switchable:  True
+
+   A: Assign: { target=InputP, source=CharacterBeginP,  }
+   B: Assign: { target=LexemeStartP, source=ReferenceP,  }
+
+   is_switchable:  True
+
+   A: ColumnCountAdd: { value=2,  }
+   B: LineCountAdd: { value=3,  }
+
+   is_switchable:  True
+
+(1.2) Commands with interferring access to registers, solely read ____________
+
+   A: InputPDereference
+   B: if 'PreContext_0': position[PostContext_1]  = input_p;
+
+   is_switchable:  True
+
+   A: Assign: { target=InputP, source=ReferenceP,  }
+   B: Assign: { target=LexemeStartP, source=ReferenceP,  }
+
+   is_switchable:  True
+
+   A: ColumnCountReferencePDeltaAdd: { pointer=InputP, column_n_per_chunk=5, subtract_one_f=False,  }
+   B: Assign: { target=CharacterBeginP, source=ReferenceP,  }
+
+   is_switchable:  True
+
+(1.3) Commands with interferring access to registers, one read other write ___
+
+   A: Assign: { target=InputP, source=CharacterBeginP,  }
+   B: if 'PreContext_0': position[PostContext_1]  = input_p;
+
+   is_switchable:  False
+
+   A: Assign: { target=InputP, source=ReferenceP,  }
+   B: Assign: { target=LexemeStartP, source=InputP,  }
+
+   is_switchable:  False
+
+   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5, subtract_one_f=False,  }
+   B: Assign: { target=ReferenceP, source=InputP,  }
+
+   is_switchable:  False
+
+(1.4) Commands with interferring access to registers, both write _____________
+
+   A: if 'PreContext_0': position[PostContext_1]  = input_p;
+   B: if 'PreContext_0': position[PostContext_1]  = input_p;
+
+   is_switchable:  False
+
+   A: Assign: { target=InputP, source=ReferenceP,  }
+   B: Assign: { target=InputP, source=InputP,  }
+
+   is_switchable:  False
+
+   A: ColumnCountReferencePDeltaAdd: { pointer=ReferenceP, column_n_per_chunk=5, subtract_one_f=False,  }
+   B: ColumnCountAdd: { value=2,  }
+
+   is_switchable:  False
+
+(2) Branchers: _______________________________________________________________
+
+   A: GotoDoorId: { door_id=DoorID(s=2, d=2),  }
+   B: GotoDoorIdIfInputPNotEqualPointer: { door_id=DoorID(s=1, d=1), pointer=ReferenceP,  }
+
+   is_switchable:  False
+
+   A: GotoDoorId: { door_id=DoorID(s=2, d=2),  }
+   B: GotoDoorId: { door_id=DoorID(s=1, d=1),  }
+
+   is_switchable:  False
+
+   A: GotoDoorIdIfInputPNotEqualPointer: { door_id=DoorID(s=2, d=2), pointer=ReferenceP,  }
+   B: GotoDoorIdIfInputPNotEqualPointer: { door_id=DoorID(s=1, d=1), pointer=ReferenceP,  }
+
+   is_switchable:  False
+

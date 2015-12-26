@@ -1,0 +1,55 @@
+define {
+  SPACE             \P{WSpace}
+  Letters           \P{Script=Latin}
+  Line_Space        \P{General_Category=Zl}
+  Sep_Space         \P{General_Category=Zs}
+  PUNCT             [: \P{General_Category=P} :]
+  NUMBERS           [: \P{Numeric_Type=Decimal} :]
+  ALNUM             [: union({Letters}, {NUMBERS}):]
+
+  ANYTHING          .
+  WORD_PUNCT        [.&\-,'/]
+  MOST_PUNCT        [: difference({PUNCT}, [WORD_PUNCT]):]
+  CHARS             [:  union({ALNUM}, {WORD_PUNCT}) :]
+  CLOSE             [,\.)"!?]
+
+  ABMONTH           Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec
+  ABDAYS            Mon|Tue|Tues|Wed|Thu|Thurs|Fri
+  ABSTATE           Ala|Ariz|[A]rk|Calif|Colo|Conn|Dak|Del|Fla|Ga|[I]ll|Ind|Kans?|Ky|La|[M]ass|Md|Mich|Minn|[M]iss|Mo|Mont|Neb|Nev|Okla|[O]re|Pa|Penn|Tenn|Tex|Va|Vt|[W]ash|Wisc?|Wyo
+  ACRO              [A-Za-z](\.[A-Za-z])+|(Canada|Sino|Korean|EU|Japan|non)-U\.S|U\.S\.-(U\.K|U\.S\.S\.R)
+  ABTITLE           Mr|Mrs|Ms|[M]iss|Drs?|Profs?|Sens?|Reps?|Attys?|Lt|Col|Gen|Messrs|Govs?|Adm|Rev|Maj|Sgt|Cpl|Pvt|Mt|Capt|Ste?|Ave|Pres|Lieut|Hon|Brig|Co?mdr|Pfc|Spc|Supts?|Det
+  ABPTIT            Jr|Sr|Bros|(Ed|Ph)\.D|Blvd|Rd|Esq
+  ABCOMP            Inc|Cos?|Corp|Pp?tys?|Ltd|Plc|Bancorp|Dept|Bhd|Assn|Univ|Intl|Sys
+  ABCOMP2           Invt|Elec|Natl|M[ft]g
+  ABNUM             Nos?|Prop|Ph|tel|est|ext|sq|ft
+
+  ABBREV1           ({ABMONTH}|{ABDAYS}|{ABSTATE}|{ABCOMP}|{ABNUM}|{ABPTIT}|etc|al|seq)\.
+  ABBREV4           [A-Za-z]|{ABTITLE}|vs|Alex|Wm|Jos|Cie|a\.k\.a|cf|TREAS|{ACRO}|{ABCOMP2}
+  ABBREV2           {ABBREV4}\.
+  ACRONYM           ({ACRO})\.
+  ABBREVIATION      ({ABBREV1}|{ABBREV2}|{ACRONYM})
+}
+
+token {
+  UNKNOWN;
+  WORD;
+  NUM;
+  END_WORD;
+  CLAUSE_END;
+  SENTENCE_END;
+  PUNCT;
+  ABBREVIATION;
+  MIXED;
+}
+
+mode NORMAL:
+<skip: [ \t\r\n]>
+{
+  {ALNUM}+/{SPACE}                      =>  QUEX_TKN_WORD(Lexeme);
+  {MOST_PUNCT}                          =>  QUEX_TKN_PUNCT(Lexeme);
+  {ABBREVIATION}                        =>  QUEX_TKN_ABBREVIATION(Lexeme);
+  {CHARS}*{ALNUM}/[.,]{SPACE}           =>  QUEX_TKN_CLAUSE_END(Lexeme);
+  {CHARS}+                               =>  QUEX_TKN_MIXED(Lexeme);
+  <<FAIL>>                              =>  QUEX_TKN_UNKNOWN;
+  <<EOF>>                               =>  QUEX_TKN_TERMINATION;
+}

@@ -1,0 +1,60 @@
+__________________________________________________________________
+Pragmas
+
+__________________________________________________________________
+Implementations
+
+LineNumberPragma.cpp:62: printf("((A)) 17");  printf("((A)) 31"); 
+LineNumberPragma.cpp:72: printf("((A)) 18");  printf("((A)) 32"); 
+LineNumberPragma.cpp:103: printf("((A)) 19");  printf("((A)) 33"); 
+LineNumberPragma.cpp:107: printf("((A)) 20");  printf("((A)) 34"); 
+LineNumberPragma.cpp:129: printf("((A)) 21"); 
+LineNumberPragma.cpp:137: printf("((A)) 22");  printf("((A)) 35"); 
+LineNumberPragma.cpp:200: printf("((A)) 17");  printf("((A)) 31"); 
+LineNumberPragma.cpp:210: printf("((A)) 18");  printf("((A)) 32"); 
+LineNumberPragma.cpp:241: printf("((A)) 19");  printf("((A)) 33"); 
+LineNumberPragma.cpp:245: printf("((A)) 20");  printf("((A)) 34"); 
+LineNumberPragma.cpp:267: printf("((A)) 21"); 
+LineNumberPragma.cpp:275: printf("((A)) 22");  printf("((A)) 35"); 
+LineNumberPragma.cpp:781: printf("((A)) 24"); {
+LineNumberPragma.cpp:782:printf("((A)) 28");
+LineNumberPragma.cpp:796:printf("((A)) 26");
+LineNumberPragma.cpp:935:/**/printf("((A)) 27");
+LineNumberPragma.cpp:947: printf("((A)) 24"); {
+LineNumberPragma.cpp:951:    printf("((A)) 29");
+LineNumberPragma.cpp:963: printf("((A)) 24"); {
+LineNumberPragma.cpp:967:    printf("((A)) 30");
+LineNumberPragma.cpp:1064: printf("((A)) 25");     __QUEX_PURE_RETURN;
+LineNumberPragma.cpp:1069: printf("((A)) 25"); 
+LineNumberPragma.cpp:1434: printf("((A)) 24");  printf("((A)) 37"); {
+LineNumberPragma.cpp:1435:printf("((A)) 28");
+LineNumberPragma.cpp:1436:printf("((A)) 41");
+LineNumberPragma.cpp:1450:printf("((A)) 26");
+LineNumberPragma.cpp:1451:printf("((A)) 39");
+LineNumberPragma.cpp:1590:/**/printf("((A)) 27");
+LineNumberPragma.cpp:1591:printf("((A)) 40");
+LineNumberPragma.cpp:1603: printf("((A)) 24");  printf("((A)) 37"); {
+LineNumberPragma.cpp:1607:    printf("((A)) 29");
+LineNumberPragma.cpp:1619: printf("((A)) 24");  printf("((A)) 37"); {
+LineNumberPragma.cpp:1623:    printf("((A)) 30");
+LineNumberPragma.cpp:1634: printf("((A)) 24");  printf("((A)) 37"); {
+LineNumberPragma.cpp:1638:    printf("((A)) 42");
+LineNumberPragma.cpp:1736: printf("((A)) 25");  printf("((A)) 38");     __QUEX_PURE_RETURN;
+LineNumberPragma.cpp:1741: printf("((A)) 25");  printf("((A)) 38"); 
+LineNumberPragma:61:    { printf("((A)) 1"); }
+LineNumberPragma:118: printf("((A)) 5"); 
+LineNumberPragma:463:    { printf("((A)) 2"); }
+LineNumberPragma:501: printf("((A)) 3"); 
+LineNumberPragma:517: printf("((A)) 4"); 
+LineNumberPragma:538: printf("((A)) 6"); 
+LineNumberPragma:556: printf("((A)) 7"); 
+LineNumberPragma-token:23:        { printf("((A)) 15"); }
+LineNumberPragma-token:101:        { printf("((A)) 14"); }
+LineNumberPragma-token:123:        { printf("((A)) 16"); }
+LineNumberPragma-token:156: printf("((A)) 8"); 
+LineNumberPragma-token:170: printf("((A)) 8"); 
+LineNumberPragma-token:183: printf("((A)) 9"); 
+LineNumberPragma-token:212: printf("((A)) 10"); 
+LineNumberPragma-token:243: printf("((A)) 11"); 
+LineNumberPragma-token:261: printf("((A)) 13"); 
+LineNumberPragma-token:276: printf("((A)) 12"); 

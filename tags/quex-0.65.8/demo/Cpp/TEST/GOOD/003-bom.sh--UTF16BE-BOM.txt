@@ -1,0 +1,5 @@
+##  /home/fschaef/prj/quex/trunk/demo/Cpp/003
+## make lexer    
+Found BOM: UTF_16_BE
+Found a non-UTF8 BOM. Exit
+VALGRIND:   All heap blocks were freed -- no leaks are possible

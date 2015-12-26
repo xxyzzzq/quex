@@ -1,0 +1,62 @@
+(1)
+::
+abc*  => newline;
+[ce] => whitespace;>
+::
+
+test_string:2:error: The character set defined in 'whitespace' intersects
+test_string:1:error: with 'end(newline)' at this place.
+test_string:2:error: Note, for example, 'newline' cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(2)
+::
+abc*  => newline;
+[be] => whitespace;>
+::
+
+test_string:2:error: The character set defined in 'whitespace' intersects
+test_string:1:error: with 'end(newline)' at this place.
+test_string:2:error: Note, for example, 'newline' cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(3)
+::
+ac*b? => newline;
+[ce] => whitespace;>
+::
+
+test_string:2:error: The character set defined in 'whitespace' intersects
+test_string:1:error: with 'end(newline)' at this place.
+test_string:2:error: Note, for example, 'newline' cannot end with a character which is subject
+test_string:2:error: to indentation counting (i.e. 'space' or 'grid').
+Exception!
+
+(4)
+::
+ac*b  => newline;
+[ce] => whitespace;>
+::
+
+Whitespace:
+    'c', 'e'
+Bad:
+    <none>
+Newline:
+    init-state = 0L
+    00000 
+         == 'a' ==> 00001
+        
+    00001 
+         == 'b' ==> 00002
+         == 'c' ==> 00001
+        
+    00002 A
+Suppressor:
+    <none>
+Comment:
+    <none>
+
+

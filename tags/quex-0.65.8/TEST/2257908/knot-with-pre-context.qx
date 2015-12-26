@@ -1,0 +1,16 @@
+define {
+}
+
+token { 
+    a; b; abc;
+}
+
+start = ONE_AND_ONLY;
+
+mode ONE_AND_ONLY
+{
+	<<EOF>>	 => QUEX_TKN_TERMINATION;
+    a/(([ab]c){0,32}a)/ => QUEX_TKN_a;
+    b/(([ab]c){0,32}b)/ => QUEX_TKN_b;
+    c/([ab]c){33}/      => QUEX_TKN_abc;
+}

@@ -1,0 +1,2 @@
+mode X { \A{foo$} => QUEX_TKN_END(Lexeme);
+}

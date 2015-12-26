@@ -1,0 +1,16 @@
+simple.qx:9:warning: Pattern contains elements not found in engine codec 'unicode'.
+simple.qx:9:warning: (Buffer element size is 1 [byte])
+,------------------------------------------------------------------------------------
+| [START]
+NON_WHITE_SPACE_NO_AMP 'A'
+WHITE_SPACE ' '
+NON_WHITE_SPACE_ANY_ONE '&'
+WHITE_SPACE ' '
+NON_WHITE_SPACE_NO_AMP 'B'
+WHITE_SPACE '
+'
+<TERMINATION> ''
+| [END] number of token = 7
+`------------------------------------------------------------------------------------
+
+

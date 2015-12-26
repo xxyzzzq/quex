@@ -1,0 +1,21 @@
+< COMPILER   = g++ -ggdb -pedantic -Wconversion -Wall -Werror -W
+---
+> COMPILER   = gcc -ggdb -pedantic -Wconversion -Wall -Werror -W
+< EasyLexer.o: EasyLexer.cpp 
+---
+> EasyLexer.o: EasyLexer.c 
+< example.o: ../example.cpp EasyLexer.cpp
+---
+> example.o: ../example.c EasyLexer.c
+< EasyLexer.cpp: simple.qx 
+---
+> EasyLexer.c: simple.qx 
+---
+> 		 --language         C
+< 		 --source-package   lexer_mine
+---
+> 		 --source-package   lexer_mine \
+> 		 --language         C
+< %.E: %.cpp    
+---
+> %.E: %.c    

@@ -1,0 +1,21 @@
+bzip2 -dk wiki.txt.bz2
+TOK 'e' 
+TOK 'due' 
+TOK 'emissari' 
+TOK 'di' 
+TOK 'Fidel' 
+TOK 'Castro' 
+TOK 'lo' 
+TOK 'convinsero' 
+TOK 'per' 
+NONE 'ò' 
+TOK 'a' 
+TOK 'lasciare' 
+TOK 'il' 
+TOK 'campo' 
+TOK 'di' 
+TOK 'battaglia' 
+NONE '.' 
+<TERMINATION> '' 
+| [END] number of token = 402508
+`------------------------------------------------------------------------------------

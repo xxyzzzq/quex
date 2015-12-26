@@ -1,0 +1,41 @@
+Last Acceptance / Post-Context-ID 'None'
+State Machine _____________________________________
+init-state = 0L
+00000 
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+    
+00001 A(1)
+     == 'a' ==> 00001
+     == 'b' ==> 00002
+     == 'c' ==> 00003
+    
+00002 
+     == ['a', 'b'] ==> 00002
+     == 'c' ==> 00003
+    
+00003 
+     == 'd' ==> 00004
+    
+00004 A(2)
+    
+
+Positioning Info __________________________________
+State 0:
+        [MATCH_FAILURE]: NONE/set([0L])
+
+State 1:
+        [      1]: NONE/set([1L])
+
+State 2:
+        [MATCH_FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 3:
+        [MATCH_FAILURE]: NONE/set([0L])
+    (*) [      1]: NONE/set([1L])
+
+State 4:
+        [      2]: NONE/set([4L])
+
+   1L: 0

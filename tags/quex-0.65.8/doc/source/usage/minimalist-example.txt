@@ -1,0 +1,165 @@
+.. _usage-minimalist-example:
+
+Minimalist Example
+==================
+
+This section shows a minimalist example of a complete lexical analyser.
+It shows the quex-code and the C++ code which is necessary to create a
+complete working lexical analyser executable. At this point it is 
+tolerated that the reader might not understand every detail of given 
+code fragments. However, the goal is to provide the reader with 
+quick overview of the related processes. Let us start with a .qx
+file as input to the lexical analyser generator:
+
+.. code-block:: cpp
+
+    header {
+    #include <cstdlib>  // for: atoi()
+    }
+
+    mode ONE_AND_ONLY
+    {
+        <<EOF>>     => QUEX_TKN_TERMINATION;
+
+        [ \t\r\n]+  { }
+        "struct"    => QUEX_TKN_STRUCT;
+        "int"       => QUEX_TKN_TYPE_INT;
+        "double"    => QUEX_TKN_TYPE_DOUBLE;
+        "send"      => QUEX_TKN_SEND;
+        "expect"    => QUEX_TKN_EXPECT;
+        ";"         => QUEX_TKN_SEMICOLON;
+        "{"         => QUEX_TKN_BRACKET_OPEN;
+        "}"         => QUEX_TKN_BRACKET_CLOSE;
+        [0-9]+      => QUEX_TKN_NUMBER(number=atoi((char*)Lexeme));
+        [_a-zA-Z]+  => QUEX_TKN_IDENTIFIER(Lexeme);
+    }
+
+First, a C standard header is included in a `header` section. This code is
+basically pasted inside the generated code. The included header `cstdlib`
+declares the function `atoi` which is used in the code fragments below.  The
+keyword `mode` signalizes the definition of a lexical analyser mode. All
+pattern action pairs need to be related to a mode. In the simple example there
+is only one mode `ONE_AND_ONLY` that collects all patterns to be matched
+against. The pattern actions simply 'send' a token as a reaction to a matched
+pattern. Assume that the content mentioned above is stored in a file called
+`simple.qx`. Then quex can now be invoked with
+
+.. code-block:: bash
+
+   > quex -i simple.qx -o tiny_lexer
+
+This will create some source code to be compiler later on. The following C++ 
+program demonstrates the accesses to lexical analyser engine:
+
+.. code-block:: cpp
+
+        #include<fstream>    
+        #include<iostream> 
+
+        #include "tiny_lexer"
+
+        int main(int argc, char** argv) 
+        {        
+            quex::Token*       token_p = 0x0;
+            quex::tiny_lexer   qlex("example.txt");
+
+            do {
+                qlex.receive(&token_p);       // --token-policy queue
+                // token_id = qlex.receive(); // --token-policy single
+                std::cout << token_p->type_id_name() << std::endl;
+
+            } while( token_p->type_id() != QUEX_TKN_TERMINATION );
+
+            return 0;
+        }
+
+This program creates a lexical analyser which gets its input character stream 
+from a file called `example.txt`. It contains a loop to read tokens from that
+input stream, prints the token's type and exits as soon as the termination token id
+is received. Assume that this code is saved in a file called `lexer.cpp`, then
+the following command would create the executable of the lexical analyser:
+
+.. code-block:: bash
+
+   > $CC  lexer.cpp  tiny_lexer.cpp -I$QUEX_PATH -I. -o lexer 
+
+The `$CC` needs to be replaced by the compiler that you are using 
+(e.g g++, icpc, sunCC etc.).  The
+two files `tiny_lexer.cpp` and `tiny_lexer-core-engine.cpp` are the files that
+have been created by quex. They are mostly human readable. Interested users
+might want to investigate how the analysis work, or derive from it with little
+adaptations a 'low-end' C version of the analyzer by hand. Anyway, this is 
+all to know about the process of generating a lexical analyzer with quex. The application
+`lexer` is now ready to rumble. Assume that `example.txt` contains the following
+content:
+
+.. code-block:: c
+
+    struct example {
+      int    x;
+      double y;
+    };
+
+    if ConfigOk {
+      send number 4711 hello world;
+      expect number 0815 handshake acknowledged;
+    }
+
+Then, a call to `lexer` will produce something like the following output:
+
+.. code-block:: bash
+
+    STRUCT
+    IDENTIFIER
+    BRACKET_OPEN
+    TYPE_INT
+    IDENTIFIER
+    SEMICOLON
+    TYPE_DOUBLE
+    IDENTIFIER
+    ...
+    SEMICOLON
+    EXPECT
+    IDENTIFIER
+    NUMBER
+    IDENTIFIER
+    IDENTIFIER
+    SEMICOLON
+    BRACKET_CLOSE
+
+The example is self containing, you can either type it by hand or use the
+example in the demo/000 directory. If it is required that the produced lexical
+analyzer is to be distributed in source code then quex can create an 
+independent source package, by
+
+.. code-block:: bash
+
+   > quex -i simple.qx -o tiny_lexer --source-package my-package
+
+The source package and the generated lexical analyzer are then located in
+directory ``my-packager``. That for compiling the source package the
+location of the package has to be passed as an include path with ``-I``, i.e.
+
+.. code-block:: bash
+
+   > $CC  lexer.cpp  tiny_lexer.cpp -Imy-package -o lexer 
+
+The source packager only collects those files which are actually required.
+Thus the command line instructs quex to create the independent source
+package should look exactly the same as the 'usual' command line plus
+the ``--source-package`` option. Alternatively, the compiler's pre-process
+could be used to generated a macro-expanded, all-included source file.
+The GNU Compilers supports this via the '-E' command line option. The
+command line
+
+.. code-block:: bash
+
+   > cat lexer.cpp >> tiny_lexer.cpp
+   > g++ tiny_lexer.cpp -I$QUEX_PATH -I. -E -o my-packaged-lexer.cpp
+
+The first line appends the user's lexer to the generated engine so that
+all is together in one single file. The second line uses the compiler
+to expand all macros and include all include files into one single
+source file that can now be compiled independently. This, however, 
+might include also some standard library headers which under normal
+conditions are not required in an independent source package.

@@ -1,0 +1,10 @@
+expr.  = " "+
+result =  True
+expr.  = [ \t]
+result =  False
+expr.  = "    "[ \t]
+result =  False
+expr.  = ("    ")|([ \t])
+result =  False
+expr.  = " "{4, 10}|(" "+)
+result =  True

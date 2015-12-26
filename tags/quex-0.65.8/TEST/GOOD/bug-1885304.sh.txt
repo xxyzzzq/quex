@@ -1,0 +1,74 @@
+Confirm, that 'dos.qx' contains 0x0A 0x0D as newline characters
+     30      61     718
+Confirm, that 'unix' contains NO 0x0A 0x0D as newline characters
+      0       0       0
+Watch out, that output from unix file format is the same as from dos format.
+DATE stamps are ignored
+
+Dos
+Dos-configuration
+Dos.cpp
+Dos-token
+Dos-token_ids
+Unix
+Unix-configuration
+Unix.cpp
+Unix-token
+Unix-token_ids
+
+(*) Dos vs Unix (no output is good output)
+
+(*) Dos-configuration vs Unix-configuration (no output is good output)
+
+(*) Dos.cpp vs Unix.cpp (no output is good output)
+< #   line 18 "dos.qx"
+> #   line 18 "unix.qx"
+< #   line 19 "dos.qx"
+> #   line 19 "unix.qx"
+< #   line 20 "dos.qx"
+> #   line 20 "unix.qx"
+< #   line 21 "dos.qx"
+> #   line 21 "unix.qx"
+< #   line 22 "dos.qx"
+> #   line 22 "unix.qx"
+< #   line 23 "dos.qx"
+> #   line 23 "unix.qx"
+< #   line 24 "dos.qx"
+> #   line 24 "unix.qx"
+< #   line 25 "dos.qx"
+> #   line 25 "unix.qx"
+< #   line 26 "dos.qx"
+> #   line 26 "unix.qx"
+< #   line 27 "dos.qx"
+> #   line 27 "unix.qx"
+< #   line 28 "dos.qx"
+> #   line 28 "unix.qx"
+(*) Dos-token vs Unix-token (no output is good output)
+(*) Dos-token_ids vs Unix-token_ids (no output is good output)
+DONE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

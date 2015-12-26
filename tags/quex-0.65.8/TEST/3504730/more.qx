@@ -1,0 +1,22 @@
+// -*- C++ -*-
+header {
+}
+
+token {
+  SOMETHING;
+  SPECIAL;
+  TERMINATION;
+  FAILURE;
+  NEWLINE;
+}
+
+mode ONE_AND_ONLY
+{
+  on_failure => QUEX_TKN_FAILURE(Lexeme);
+  @/(foo|bar|baz|quux)(foo|bar|baz|quux) => QUEX_TKN_SPECIAL(Lexeme);
+  \n                                     => QUEX_TKN_NEWLINE(LexemeNull);
+  .                                      => QUEX_TKN_SOMETHING(Lexeme);
+}
+
+
+
