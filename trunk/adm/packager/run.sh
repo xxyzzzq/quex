@@ -99,6 +99,7 @@ function collect_distribution_file_list()
          && ! /tmp?.txt$/ \
          && ! /tmp.txt$/  \
          && ! /\.log$/    \
+         && ! /\/quex\/engine\/analyzer\/examine\/doc\// \
          && ! /\/quex\/data_base\/misc\// { print; }' $file_list0 > $file_list
 
     # -- create tar file for ./trunk
