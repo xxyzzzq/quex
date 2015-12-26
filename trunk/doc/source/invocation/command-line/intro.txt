@@ -2,7 +2,7 @@ Command Line Options
 ====================
 
 This chapter sums up all command line options which can be passed to quex
-(Version 0.65.8) together with their meaning.  Most of the options here are alread explained in
+(Version 0.65.10) together with their meaning.  Most of the options here are alread explained in
 separate sections. The present enumeration serves the purpose of a quick
 reference. There are command line options for code generations, but also for
 queries. Each family of options is described in a separate section.

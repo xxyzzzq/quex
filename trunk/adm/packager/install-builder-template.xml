@@ -143,7 +143,6 @@
         </deleteFile>
     </preUninstallationActionList>
     <enableTimestamp>1</enableTimestamp>
-    <saveRelativePaths>1</saveRelativePaths>
     <parameterList>
         <directoryParameter>
             <name>installdir</name>
