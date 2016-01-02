@@ -22,7 +22,7 @@
    sodipodi:docname="lexatom-explanation.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="/home/fschaef/prj/quex/trunk/doc/source/figures/state-machine-for-pattern-matching.png"
+   inkscape:export-filename="/home/fschaef/prj/quex/trunk/doc/source/figures/lexatom-explanation.png"
    inkscape:export-xdpi="200"
    inkscape:export-ydpi="200">
   <metadata
@@ -33,7 +33,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

@@ -16,7 +16,7 @@ for the types ``char`` and ``wchar_t``. UTF8 is considered to be appropriate
 for ``char``. Depending on the size of ``wchar_t`` the output may either 
 be UCS4, i.e. UTF32, or UTF16 for systems where ``sizeof(wchar_t) == 2``.
 
-Moreover, converters from the buffer's codec to UTF8, UTF16, UTF32, ``char``
+Moreover, converters from the buffer's encoding to UTF8, UTF16, UTF32, ``char``
 and ``wchar_t`` are provided for each generated lexical analyzer. For Unicode
 code based buffers the required functions are declared and implemented by
 including::
@@ -109,17 +109,17 @@ are available, which are possibly not as fast but more convenient.
 where ``string<X>`` is a shorthand for ``std::basic_string<X>`` and
 ``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_CHARACTER>``.
 This means, that they can take a string of the type of the lexeme and
-return a string which is appropriate for the drain's codec. Fortunately,
+return a string which is appropriate for the drain's encoding. Fortunately,
 there is nothing compared to ``std::basic_string`` in plain C. So, in 
 this case those functions do not exist.
 
-When the internal engine is designed using ``--codec`` then the buffer codec is
+When the internal engine is designed using ``--encoding`` then the buffer encoding is
 some dedicated character encoding. The ``Lexeme`` that is presented to the user
 has exactly the coding of the internal buffer. Precisely, it is a chain of
 ``QUEX_TYPE_CHARACTER`` objects that are encoded in the buffer's character
 encoding. Then quex has to generate the converters towards UTF8, UTF16, and
 UTF32. The converters follow the same scheme as for Unicode, only that 
-'unicode' is replaced by the codec's name, e.g.
+'unicode' is replaced by the encoding's name, e.g.
 
 .. code-block:: cpp
 
@@ -129,7 +129,7 @@ UTF32. The converters follow the same scheme as for Unicode, only that
     QUEX_INLINE void   iso8859_7_to_char(...);
     QUEX_INLINE void   iso8859_7_to_wchar(...);
 
-are the generated converters if ``--codec iso8859-7`` was specified. The 
+are the generated converters if ``--encoding iso8859-7`` was specified. The 
 converters can be included by
 
 .. code-block:: cpp
@@ -138,7 +138,7 @@ converters can be included by
     #include "MyLexer-converter-iso8859_7.i" // Implementations
 
 Where ``MyLexer`` is the name of the generated lexical analyzer class and 
-``iso8859_7`` is the name of the engine's codec. Furthermore, there is
+``iso8859_7`` is the name of the engine's encoding. Furthermore, there is
 a set of basic functions that are designed to support the aforementioned
 functions, but are still available for whom it may be useful. They are
 accessed by including
@@ -156,7 +156,7 @@ for the declarations and::
      #include <quex/code_base/converter_helper/from-utf32.i>
 
 for the implementations. They function exactly the same way as the dedicate 
-converters for the ``--codec`` converters do. That is, their signatures are 
+converters for the ``--encoding`` converters do. That is, their signatures are 
 for example 
 
 .. code-block:: cpp
@@ -167,7 +167,7 @@ for example
     QUEX_INLINE void   utf8_to_char(...);
     QUEX_INLINE void   utf8_to_wchar(...);
 
-in order to convert UTF8 strings to one of the target codecs. UTF16 
+in order to convert UTF8 strings to one of the target encodings. UTF16 
 and UTF32 work analogously.
 
 

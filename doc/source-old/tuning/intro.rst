@@ -10,7 +10,7 @@ it introduces some basic thoughts which are crucial for optimization. This
 chapter starts by the introduction of two mechanisms that reduce the code
 size of the lexical analyzer: template and path compression. Then the influence
 of the token queue is discussed. Finally, the involvement of converters via
-engine based codecs is investigated. Were possible the findings are supported
+engine based encodings is investigated. Were possible the findings are supported
 by data accessed by some sample applications which are available in the quex
 distribution package directory 'demo/tuning/'. 
 

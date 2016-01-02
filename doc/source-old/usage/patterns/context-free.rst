@@ -20,7 +20,7 @@ to combine them into powerful patterns.
 
 .. describe:: . 
 
-      matches any character in the current codec except for the buffer limit
+      matches any character in the current encoding except for the buffer limit
       code and '0x0A' for newline.  On systems where newline is coded as
       '0x0D, 0x0A' this does match the '0x0D' character whenever a newline
       occurs.
@@ -134,7 +134,7 @@ to combine them into powerful patterns.
      The default behavior corresponds to the flags *s* and *m* 
      (``\C{R}`` ≡ ``\C(sm){R}``) for patterns and *s* (``\C{R}`` ≡ ``\C(s){R}``) 
      for character sets. Characters that are beyond the scope of the current 
-     codec or input character byte width are cut out seamlessly. 
+     encoding or input character byte width are cut out seamlessly. 
 
 .. describe:: \\R{ ... }
 
@@ -272,9 +272,9 @@ to combine them into powerful patterns.
 
 .. describe:: \\E{ Codec Name }
 
-     the subset of unicode characters which is covered by the given codec. Using
-     this is particularly helpful to cut out uncovered characters when a codec engine
-     is used (see :ref:`Engine Codec <sec-engine-codec>`).
+     the subset of unicode characters which is covered by the given encoding. Using
+     this is particularly helpful to cut out uncovered characters when a encoding engine
+     is used (see :ref:`Engine Codec <sec-engine-encoding>`).
 
 Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
 are considered to be unicode code points. For applications in English spoken

@@ -66,8 +66,8 @@ Here, the token stamping refers to the counter's line number which
 has been set to 'self.line_n_before'. As a result the token will carry
 the line number of the occurence of the opening ``/*``.
 
-.. warning:: If a dynamic length encoding is used (such as ``--codec utf8`` 
-             or ``--codec utf16``), then one *must not* use the function
+.. warning:: If a dynamic length encoding is used (such as ``--encoding utf8`` 
+             or ``--encoding utf16``), then one *must not* use the function
 
    .. code-block:: cpp
 

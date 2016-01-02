@@ -50,7 +50,7 @@ analyzers live in separate namespaces. All related entities of the analyzers
 are then properly distinguished for compiling and linking.  Directory
 ``demo/012`` contains an example implementation of an application containing
 three different analyzers with different numbers of bytes per character and
-different decoders (ICU, IConv and engine codec). 
+different decoders (ICU, IConv and engine encoding). 
 
 Directory ``demo\012b`` contains an example with multiple lexical analyzers
 using the same token class.  This subject is discusses in section

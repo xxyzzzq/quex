@@ -30,7 +30,7 @@ supports the usage of character encodings in two ways:
 
 The following section provides an overview about the lexical analysis process
 of a generated engine. The subsequent section elaborates on the adaption of the
-lexical analyzer engine for a particular codec. The remaining sections deal
+lexical analyzer engine for a particular encoding. The remaining sections deal
 with the usage of libraries for the conversion of character encodings to
 Unicode. Concluding on converters, a separate section explains how user
 generated converters can be plugged into the process.
@@ -46,7 +46,7 @@ generated converters can be plugged into the process.
 .. toctree::
 
    process.txt
-   engine-codec.txt
+   engine-encoding.txt
    converter.txt
    user-defined.txt
    converter_helper.txt

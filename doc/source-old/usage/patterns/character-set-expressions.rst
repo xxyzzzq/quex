@@ -79,7 +79,7 @@ subtracted. In fact, it subtracts the union of all sets mentioned after the
 first one. This is for the sake of convenience, so that one has to build the
 union first and then subtract it. The ``inverse`` function builds the
 complementary set. That is, the result is the set of characters which are not
-in the given set but in the set of the currently considered codec.  This
+in the given set but in the set of the currently considered encoding.  This
 function also takes more than one set, so one does not have to build the union
 first.
 

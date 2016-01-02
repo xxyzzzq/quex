@@ -460,9 +460,9 @@ Default: false (disabled)
     
 
 There may be cases where the characters used to indicate buffer limit needs to be redefined, because 
-the default value appear in a pattern. For most codecs, such as ASCII and Unicode, the buffer 
+the default value appear in a pattern. For most encodings, such as ASCII and Unicode, the buffer 
 limit codes do not intersect with valid used code points of characters. Theoretically however, 
-the user may define buffer codecs that require a different definition of the limiting codes. 
+the user may define buffer encodings that require a different definition of the limiting codes. 
 The following option allows modification of the buffer limit code:  
 
 .. cmdoption:: --buffer-limit number
@@ -490,9 +490,9 @@ flag.
 
 Default: true (not disabled)
 
-Input codecs other than ASCII or UTF32 (which map 1:1 to Unicode code points) can be used in two ways. 
+Input encodings other than ASCII or UTF32 (which map 1:1 to Unicode code points) can be used in two ways. 
 Either on uses a converter that converts the file content into Unicode and the engine still 
-runs on Unicode, or the engine itself is adapted to the require codec.  
+runs on Unicode, or the engine itself is adapted to the require encoding.  
 
 Currently quex-generated 
 lexers can interact with GNU IConv and IBM's ICU library as input converters. Using 
@@ -525,20 +525,20 @@ Default: false (disabled)
 
 Default: false (disabled)
 
-Alternatively, the engine can run directly on a specific codec, i.e. without a conversion to Unicode. 
+Alternatively, the engine can run directly on a specific encoding, i.e. without a conversion to Unicode. 
 This approach is less flexible, but may be faster.  
 
-.. cmdoption:: --codec codec name
+.. cmdoption:: --encoding encoding name
 
-    Specifies a codec for the generated engine. The codec name specifies the codec of the internal 
-    analyzer engine. An engine generated for a specific codec can only analyze input of 
-    this particular codec.  
+    Specifies a encoding for the generated engine. The encoding name specifies the encoding of the internal 
+    analyzer engine. An engine generated for a specific encoding can only analyze input of 
+    this particular encoding.  
 
         .. note::
 
-            When ``--codec`` is specified the command line flag ``-b`` or ``--buffer-element-size`` 
+            When ``--encoding`` is specified the command line flag ``-b`` or ``--buffer-element-size`` 
             does not represent the number of bytes per character, 
-            but *the number of bytes per code element*. The codec UTF8, for example, 
+            but *the number of bytes per code element*. The encoding UTF8, for example, 
             is of dynamic length and its code elements are bytes, thus only ``-b 1`` makes 
             sense. UTF16 triggers on elements of two bytes, while the length of an encoding 
             for a character varies. For UTF16, only ``-b 2`` makes sense.  
@@ -548,15 +548,15 @@ This approach is less flexible, but may be faster.
 
 Default: unicode
 
-.. cmdoption:: --codec-file file name
+.. cmdoption:: --encoding-file file name
 
-    By means of this option a freely customized codec can be defined. The ``file name`` determines 
-    at the same time the file where the codec mapping is described and the codec's name. 
-    The codec's name is the directory-stripped and extension-less part of the given follower. 
+    By means of this option a freely customized encoding can be defined. The ``file name`` determines 
+    at the same time the file where the encoding mapping is described and the encoding's name. 
+    The encoding's name is the directory-stripped and extension-less part of the given follower. 
     Each line of such a file must consist of three numbers, that specify 'source interval 
     begin', 'source interval length', and 'target interval end. Such a line specifies 
     how a cohesive Unicode character range is mapped to the number range of the customized 
-    codec. For example, the mapping for codec iso8859-6 looks like the following.  
+    encoding. For example, the mapping for encoding iso8859-6 looks like the following.  
 
         .. code-block:: plain
 
@@ -572,16 +572,16 @@ Default: unicode
                 
 
 
-    Here, the Unicode range from 0 to 0xA1 is mapped one to one from Unicode to the codec. 0xA4 and 0xAD 
+    Here, the Unicode range from 0 to 0xA1 is mapped one to one from Unicode to the encoding. 0xA4 and 0xAD 
     are also the same as in Unicode. The remaining lines describe how Unicode characters from 
     the 0x600-er page are mapped inside the range somewhere from 0xAC to 0xFF.  
 
         .. note::
 
-            This option is only to be used, if quex does not support the codec directly. The options 
-            ``--codec-info`` and ``--codec-for-language`` help to find out whether 
-            Quex directly supports a specific codec. If a ``--codec-file`` is required, 
-            it is advisable to use ``--codec-file-info file-name.dat`` to see if the 
+            This option is only to be used, if quex does not support the encoding directly. The options 
+            ``--encoding-info`` and ``--encoding-for-language`` help to find out whether 
+            Quex directly supports a specific encoding. If a ``--encoding-file`` is required, 
+            it is advisable to use ``--encoding-file-info file-name.dat`` to see if the 
             mapping is in fact as desired.  
 
             
@@ -598,7 +598,7 @@ a character occupies a fixed number of bytes. The check mark in 4 byte Unicode i
 It is treated as one chunk and causes a single state transition.  
 
 If the internal engine 
-runs on a specific codec (``--codec`` ) which is dynamic, e.g. UTF8, then state transitions 
+runs on a specific encoding (``--encoding`` ) which is dynamic, e.g. UTF8, then state transitions 
 happen on parts of a character. The check mark sign is coded in three bytes 0xE2, 0x9C, 
 and 0x93. Each byte is read separately and causes a separate state transition.  
 
@@ -612,8 +612,8 @@ and 0x93. Each byte is read separately and causes a separate state transition.
     except that it is inconceivable that any code point beyond 0xFFFF ever appears. In this 
     case '-b 2' is enough.  
 
-    When using dynamic sized codecs, this option is better not used. The 
-    codecs define their chunks themselves. For example, UTF8 is built upon one byte chunks and 
+    When using dynamic sized encodings, this option is better not used. The 
+    encodings define their chunks themselves. For example, UTF8 is built upon one byte chunks and 
     UTF16 is built upon chunks of two bytes.  
 
         .. note::
@@ -637,9 +637,9 @@ Default: -1
      
 
     Quex tries to determine the size of the buffer element type. This size is important 
-    to determine the target codec when converters are used. That is, if the size is 4 byte 
-    a different Unicode codec is used then if it was 2 byte. If quex fails to determine the size 
-    of a buffer element from the given name of the buffer element type, then the Unicode codec 
+    to determine the target encoding when converters are used. That is, if the size is 4 byte 
+    a different Unicode encoding is used then if it was 2 byte. If quex fails to determine the size 
+    of a buffer element from the given name of the buffer element type, then the Unicode encoding 
     must be specified explicitly by '--converter-ucs-coding-name'.  
 
     By default, the buffer 
@@ -684,7 +684,7 @@ The implementation of customized converters is supported by the following option
 
 .. cmdoption:: --converter-ucs-coding-name, --cucn name
 
-    Determines what string is passed to the converter so that it converters a codec into Unicode. 
+    Determines what string is passed to the converter so that it converters a encoding into Unicode. 
     In general, this is not necessary. But, if a unknown user defined type is specified 
     via '--buffer-element-type' then this option must be specified.  
 
@@ -977,7 +977,7 @@ The following enumerates suppress codes together with their associated messages.
 
 .. describe:: 10
 
-    Warning if there is no 'on_codec_error' handler while a codec different from Unicode is used. 
+    Warning if there is no 'on_encoding_error' handler while a encoding different from Unicode is used. 
      
 
     
@@ -1044,24 +1044,24 @@ Default: false (disabled)
 
 The following options allow to query on character sets and the result of regular expressions.  
 
-.. cmdoption:: --codec-info, --ci name
+.. cmdoption:: --encoding-info, --ci name
 
-    Displays the characters that are covered by the given codec's name. If the name is omitted, a 
-    list of all supported codecs is printed.  
+    Displays the characters that are covered by the given encoding's name. If the name is omitted, a 
+    list of all supported encodings is printed.  
 
     
 
-.. cmdoption:: --codec-info-file, --cif file name
+.. cmdoption:: --encoding-info-file, --cif file name
 
-    Displays the characters that are covered by the codec provided in the given file. This makes 
-    sense in conjunction with ``--codec-file`` where customized codecs can be defined. 
+    Displays the characters that are covered by the encoding provided in the given file. This makes 
+    sense in conjunction with ``--encoding-file`` where customized encodings can be defined. 
      
 
     
 
-.. cmdoption:: --codec-for-language, --cil language
+.. cmdoption:: --encoding-for-language, --cil language
 
-    Displays the codecs that quex supports for the given human language. If the language argument 
+    Displays the encodings that quex supports for the given human language. If the language argument 
     is omitted, all available languages are listed.  
 
     

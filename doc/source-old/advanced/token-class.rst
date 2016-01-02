@@ -708,7 +708,7 @@ Special Variables in Token Class Definitions
 --------------------------------------------
 
 A set of special variables support the usage of converters from the buffer's
-codec to some output codec, as they are
+encoding to some output encoding, as they are
 
 .. describe:: $INCLUDE_CONVERTER_DECLARATION
 
@@ -724,7 +724,7 @@ codec to some output codec, as they are
 .. describe:: $CONVERTER_STRING 
 
    Is replaced by the exact name of the function that converts a string 
-   in the buffer's codec into the default codec for 'char' (e.g. UTF8).
+   in the buffer's encoding into the default encoding for 'char' (e.g. UTF8).
    In C, this is the name of the function that converts memory chunks. In Cpp
    the same name is shared by the converter for memory chunks and the 
    std::string based converter.

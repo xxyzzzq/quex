@@ -91,7 +91,7 @@ that allows to add those libraries.  In the example of figure
 
     icuuc.lib
 
-is added, which is the library entry for ICU's character codec converters. The
+is added, which is the library entry for ICU's character encoding converters. The
 paths where the Visual Studio searches for additional libraries can be
 influenced by the entry 'Additional Library Directories' under 'Linker/General'
 in the same property window. With this setup the example projects should
