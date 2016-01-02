@@ -1,5 +1,5 @@
-The Flow of Data
-================
+Input
+=====
 
 Quex strives for being the most convenient and most general solution for text
 analysis. For that, the input provision must be handled. It must cope with
@@ -39,3 +39,4 @@ the analyzer actively produces tokens when content is received through a
 messaging framework. In such cases, manual buffer filling must be applied.
 During manual buffer filling the same infrastructure is used, only that the
 input comes from the user.
+

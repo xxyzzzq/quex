@@ -1,31 +1,31 @@
-.. _sec-codec-queries:
+.. _sec-encoding-queries:
 
 Codec Queries
 =============
 
-The usage of codecs is facilitated with the following query options:
+The usage of encodings is facilitated with the following query options:
 
-.. cmdoption:: `--codec-info` [codec-name]
+.. cmdoption:: `--encoding-info` [encoding-name]
 
-   Displays the characters which are supported by the given codec name.  If no
-   codec name is omitted, the list of all supported codecs is printed on the
+   Displays the characters which are supported by the given encoding name.  If no
+   encoding name is omitted, the list of all supported encodings is printed on the
    screen.
 
-.. cmdoption:: `--codec-file-info`  filename.dat
+.. cmdoption:: `--encoding-file-info`  filename.dat
 
-   Displays the characters that are covered by a user written codec mapping 
+   Displays the characters that are covered by a user written encoding mapping 
    file.
 
-.. cmdoption:: `--codec-for-language` [language-name]
+.. cmdoption:: `--encoding-for-language` [language-name]
 
-   Displays all supported codecs which are designed for the specified (human)
-   language.  If no language's name is omitted, the list of all supported codecs
+   Displays all supported encodings which are designed for the specified (human)
+   language.  If no language's name is omitted, the list of all supported encodings
    is printed on the screen.
 
 For example, if it is intended to design an input language for Chinese, quex
-can be called to show the directly supported codecs (other than Unicode)::
+can be called to show the directly supported encodings (other than Unicode)::
 
-    > quex --codec-for-language
+    > quex --encoding-for-language
 
 shows the list of supported languages::
 
@@ -39,14 +39,14 @@ shows the list of supported languages::
     command line: Maltese, Nordic languages, Celtic languages, Ukrainian, 
     command line: Kazakh,
 
-Now, asking for the codecs supporting the Celtic language::
+Now, asking for the encodings supporting the Celtic language::
 
-    > quex --codec-for-language 'Celtic languages'
+    > quex --encoding-for-language 'Celtic languages'
 
-delivers ``iso8859_14`` as possible codec. Again a call to quex
+delivers ``iso8859_14`` as possible encoding. Again a call to quex
 allows to verify if all desired characters are supported. 
 
-    > quex --codec-info iso8859_14
+    > quex --encoding-info iso8859_14
 
 By means of those queries it can be decided quickly which character encoding is
 the most appropriate for ones needs. For some script and languages, though,

@@ -1,5 +1,5 @@
-Automatic Lexical Analyzers
-===========================
+Lexical Analyzers
+=================
 
 The following paragraphs elaborate on the significance of sequential data
 streams for communication. They provide a rationale for the state machine
@@ -20,7 +20,7 @@ constructions may be defined.  The range of describable objects even exceeds
 what is imaginable. 
 
 In pictures, two dimensional cohesive patterns such as circles, pyramids, or
-boats identify basic elements. Precise definitions of such elements are
+arrows identify basic elements. Precise definitions of such elements are
 generally  difficult and prone to misunderstandings. For example, consider the
 effort to describe precisely how to distinguish between a triangle to mean
 pyramid or to mean a hat. In sequential communication, the only possible
@@ -42,9 +42,24 @@ ability to describe patterns in brief formal terms is essential for developing
 algorithms to accomplish the task. In the following paragraphs, it is shown how
 state machines are used as formal expressions for pattern matching behavior.
 
+Figure :ref:`fig:state-machine-students-life` may be considered as an informal
+introduction to state machines. It displays a, slightly idealized, state
+machine description of a student's daily life. His states are 'study', 'eat',
+and 'sleep' as they are shown as names framed by ellipses. The transitions
+between those states are triggered by him becoming hungry, replete, tired, and
+an alarm clock that buzzes. The events are shown as annotations to the arrows
+indicating state transitions.
+
+.. _fig:state-machine-students-life:
+
+.. figure:: ../figures/state-machine-students-life.png
+   
+   Description of a student's life in terms of a state machine.
+
+
 A state machine consists of a set of *states*, *state transition rules*, and
-*actions* that are be applied upon transitions :cite:`todo`.  A state in the
-state machine can be either 'active' or 'inactive' indicating its ability to react
+*actions* that are applied upon transitions :cite:`todo`.  A state in the
+state machine can be either *active* or *inactive* indicating its ability to react
 to incoming events. A state's transition behavior is specified in terms of a
 transition map.
 
@@ -133,6 +148,16 @@ carrying a lexatom must be at least 2 byte wide. In UTF8, the same character is
 represented by a sequences of lexatoms namely '0xF0',  '0x93', '0x8A', and
 '0x9D' which can be carried in bytes. 
 
+The term 'lexatom' has been introduced by the author of this text. Its name,
+though, is derived from an established term in computer science: the lexeme
+[#f2]_ . Following the definition in :cite:`Aho2007compilers` (p. 111), let this term be
+defined more precisely. 
+
+Lexeme
+    A lexeme is a sequence of lexatoms that matches a pattern associated 
+    with a category of meaning.
+
+
 Lexatoms are stored as a sequence in a buffer, so that they can be accessed
 quickly by the analyzer. Loading greater chunks of lexatoms into a buffer is
 likely always much faster than loading each lexatom on its own. Given a pointer
@@ -157,4 +182,5 @@ how lexatoms are filled into that buffer.
          concurrent pattern matches in one single state machine. Then, 
          it applies powerset construction :cite:`Rabin:1959:FAD` to generate 
          a state machine where only one state is active at a time.
-
+.. [#f2] The computer science expression 'lexeme' corresponds to a 'form of
+         a lexeme' in linguistics.

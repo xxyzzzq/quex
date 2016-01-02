@@ -442,11 +442,11 @@ in the incidence handler definition. The list of incidence handlers is the follo
              self_send1(QUEX_TKN_FAILURE, Lexeme);
          }
 
-.. data:: on_codec_error
+.. data:: on_encoding_error
 
-   When a converter or a codec engine is used it is conceivable that the input
+   When a converter or a encoding engine is used it is conceivable that the input
    stream contains data which is not a valid code point. To deal with that, the
-   'on_codec_error' handler can be specified.
+   'on_encoding_error' handler can be specified.
 
 .. data:: on_end_of_stream
 

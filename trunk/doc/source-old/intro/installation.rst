@@ -163,9 +163,9 @@ feature of Quex:
 
 .. data:: demo/003
 
-          Analyzers running on several codecs using converters, either ICU or
+          Analyzers running on several encodings using converters, either ICU or
           IConv. This is in contrast to the example in ``demo/011`` where the
-          internal engine directly runs on the desired codec.
+          internal engine directly runs on the desired encoding.
 
 .. data:: demo/004
 

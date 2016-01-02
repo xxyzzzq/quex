@@ -81,7 +81,7 @@ lexical analyzer.
    properties.txt  
    character-set-expressions.txt  
    property-wilcard-expansions.txt
-   codecs.txt
+   encodings.txt
 
 
 

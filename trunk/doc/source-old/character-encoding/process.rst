@@ -45,7 +45,7 @@ alternatives:
 
 .. describe:: Using plugged-in converter libraries
 
-    * Pro: Libraries provide a wider range of codecs to be used. 
+    * Pro: Libraries provide a wider range of encodings to be used. 
 
     * Contra: Using a converter implies a certain overhead with 
               respect to the memory footprint and run-time performance of an
@@ -76,12 +76,12 @@ discussion:
 
 * Lexical Analyzer Codec
 
-  This is the character encoding of the analyzer engine. The codec determines
+  This is the character encoding of the analyzer engine. The encoding determines
   what numeric value represents what character. For example, the greek letter α has a
-  different numeric value in the codec 'UCS4' than it has in 'ISO8859-7'.
-  By means of the command line flag ``--codec`` the engine's internal
+  different numeric value in the encoding 'UCS4' than it has in 'ISO8859-7'.
+  By means of the command line flag ``--encoding`` the engine's internal
   character encoding can be specified.
 
 The next section focusses on the adaption of the internal analyzer engine to a
-particular codec. The following sections discuss the alternative usage of
+particular encoding. The following sections discuss the alternative usage of
 converters such as ICU and IConv to fill the analyzer buffer.

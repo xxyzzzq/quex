@@ -3,7 +3,7 @@ Byte Order Mark
 
 Unicode character stream may contain a byte order mark (BOM) at the beginning.
 Converters like IConv or ICU may possibly not eat the BOM. Also, if an engine
-runs in a genuine codec mode, i.e. without conversion, it does not know about
+runs in a genuine encoding mode, i.e. without conversion, it does not know about
 BOMs.  It is the user's task to cut the BOM--but Quex helps. 
 
 Quex provides functions to handle the recognition and cutting of the BOM from a
@@ -99,7 +99,7 @@ example
         ...
     }
 
-Checks whether a BOM of codec UTF32 was found, or if there was no BOM. The
+Checks whether a BOM of encoding UTF32 was found, or if there was no BOM. The
 statement also holds if a UTF7 BOM is found, since the ``QUEX_BOM_UTF7`` has
 the ``QUEX_BOM_NONE`` bit raised. The exact information about the byte order
 can be detected by considering the whole value, e.g.
@@ -109,11 +109,11 @@ can be detected by considering the whole value, e.g.
     ...
     switch( bom_type ) {
     /* Little ending BOM  => use the little endian converter. */
-    case QUEX_BOM_UTF_32_LE: codec_name = "UTF32LE"; break;
+    case QUEX_BOM_UTF_32_LE: encoding_name = "UTF32LE"; break;
     /* No BOM, or big endian bom => use big endian converter. */
     case QUEX_BOM_UTF7:
     case QUEX_BOM_NONE:
-    case QUEX_BOM_UTF_32_BE: codec_name = "UTF32BE"; break;
+    case QUEX_BOM_UTF_32_BE: encoding_name = "UTF32BE"; break;
     /* Unkown BOM => break                                    */
     default: 
          error_msg("Unknown BOM detected %s", bom_name(bom_type)); 

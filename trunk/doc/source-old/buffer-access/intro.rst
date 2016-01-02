@@ -71,13 +71,13 @@ before being filled into the engines buffer, or not.
    required.
 
 #. *Converterted* filling means that the incoming data is converted, for
-   example from some encoding to a unicode codec, such as ASCII or UCS32. When
+   example from some encoding to a unicode encoding, such as ASCII or UCS32. When
    conversion is involved a 'raw buffer' might be necessary to store incoming
    data before it is converted and stored in the engine's buffer.
 
 A buffer is an array. The raw buffer, in case of converted filling, is always
 an array of bytes. The engine's buffer element type is diverse. In case of an
-engine running on ASCII codec, it may be an array of bytes (e.g. of type
+engine running on ASCII encoding, it may be an array of bytes (e.g. of type
 ``uint8_t``). In case of UTF16, the engine's array may be an array of 2-byte
 chunks (e.g. of type ``uint16_t``). On very small, or very optimized systems
 the memory placement may be an issue and whether dynamic allocation is allowed
