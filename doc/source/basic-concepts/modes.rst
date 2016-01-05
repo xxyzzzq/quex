@@ -70,7 +70,7 @@ set of function pointers. One of those function pointers is the *analyzer
 function* which runs the state machine that detects lexemes in incoming data
 streams.
 
-.. rubrik:: Footnotes
+.. rubric:: Footnotes
 
 .. [#f1] The funny analogy between people's moods and modes is 
          adapted from Donald Knuth's TexBook :cite:`Knuth1986texbook`,
