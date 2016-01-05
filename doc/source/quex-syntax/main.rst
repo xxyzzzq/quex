@@ -8,7 +8,7 @@ Quex's Syntax
    top-level.rst
    number-format.rst
    regular-expressions.rst
-
+   patterns/main.rst
    mode-and-related.rst
 .. mode, skippers, counters, inheritance, transition, regular expressions.
 
