@@ -7,23 +7,23 @@ of regular expressions. The regular expression syntax follows the scheme of
 what is usually called *traditional UNIX syntax* \cite{}, includes elements of
 *extended POSIX regular expressions* \cite{IEEE POSIX Standard 1003.2} and
 *POSIX bracket expressions* \cite{}. This facilitates the migration from and to
-other lexical analyzer generators and test environments. Additionally, quex
+other lexical analyzer generators and test environments. Additionally, Quex
 provides support for *Unicode Properties*. A compliance to *Unicode Regular
 Expressions* \cite{Unicode 5.0 Technical Report Standard #18} is currently
 not targeted, though, because this expressive power is usually not required for
 compiler generation.
 
-Nevertheless, quex provides features that, for example, flex does not. If it is
+Nevertheless, Quex provides features that, for example, flex does not. If it is
 intended to maintain compatibility of regular expressions with flex, then
 please refer to the flex manual \cite{}, section 'Patterns' and do not use
-quex-specific constructs. This section discusses pure quex syntax. The
+Quex-specific constructs. This section discusses pure Quex syntax. The
 explanation is divided into the consideration of context-free expressions and
 context-dependent expressions.
 
 Quex uses regular expressions to describe patterns and provides its own syntax
 for filtering and combining character sets. The development of applications 
 running unicode might impose the construction of larger descriptions for 
-patterns. In order to keep mode descriptions clean quex provides a `define`
+patterns. In order to keep mode descriptions clean Quex provides a `define`
 section where patterns can be defined and later on referred to by their
 identifiers in curly brackets. See the following example:
      

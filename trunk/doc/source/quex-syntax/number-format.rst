@@ -34,4 +34,5 @@ are meaningless for the parser, but may facilitate the reading for the human
 reader.  Octal numbers are preceded by '0o'.  Binary numbers are preceded by
 '0b'. Again, redundant dots may facilitate the human interpretation of the
 specified number.  Roman numbers must be preceded by a '0r' prefix.  Napier
-numbers (location arithmetic) must be preceded by a '0n' prefix.
+numbers, as used in location arithmetic :cite:`Napier1990R`, must be preceded
+by a '0n' prefix.
