@@ -1,22 +1,19 @@
 Context Free Regular Expressions
 ==================================
 
-Context free regular expressions match against an input independent on what 
-come before or after it. For example the regular expression ``for``
-will match against the letters `f`, `o`, and `r` independent
-if there was a white space or whatsoever before it or after it. This is
-the 'usual' way to define patterns. More sophisticated techniques are 
-explained in the subsequent section. This sections explains how to 
-define simple *chains of characters* and `operations`
-to combine them into powerful patterns.
-
-*Chains of Characters*
+Context free regular expressions match *taken by itself* against an input
+independent on what comes before or after it.  Context-free-ness in itself
+means, for example, that the regular expression ``for`` will match against the
+letter sequence `f`, `o`, and `r` independent of what comes before or after it. 
+Pre- and post-context for pattern matching are explained in the subsequent
+section. 
 
 .. describe:: x 
 
      matches the character 'x'.  That means, characters match simply the
      character that they represent.  This is true, as long as those characters
-     are not part of syntactic operator--as shown below.
+     are not part of the set of syntactic operators--such as ``.``, ``[``, 
+     and  ``]``.
 
 .. describe:: . 
 
@@ -29,7 +26,7 @@ to combine them into powerful patterns.
 
      a "character class" or "character set"; in this case, the pattern matches
      either an ``x``, a ``y``, or a ``z``. The brackets ``[`` and ``]`` are
-     examples for characters acting as  operators. If they are to be matched
+     examples for characters acting as syntactic operators. If they are to be matched
      quotes or backslashes have to be used as shown below. Character sets are a
      form of *alternative* expressions-- for one single character.  For more
      sophisticated alternative expressions see the paragraphs below. 
