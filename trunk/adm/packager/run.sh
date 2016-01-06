@@ -200,6 +200,8 @@ function collect_packages()
     cat > /tmp/quex-packages/sftp-frs.sourceforge.net.sh << EOF
 RSYNC:
 rsync -e ssh quex* fschaef@frs.sourceforge.net:/home/frs/project/quex/DOWNLOAD
+SSH:
+ssh fschaef,quex@shell.sourceforge.net  -t create
 FTP:
 cd uploads
 put quex-$1.7z                           /home/frs/project/quex/DOWNLOAD

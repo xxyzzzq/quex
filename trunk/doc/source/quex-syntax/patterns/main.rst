@@ -1,36 +1,43 @@
 Pattern Definition
 ==================
 
-In Quex patterns are specified by means of regular expressions.  Their syntax
-follows a scheme that has been popularized by the tool 'lex'
-:cite:`Lesk1975lex`, includes elements of *extended POSIX regular expressions*
-:cite:`Spencer1994regex` and POSIX bracket expressions. This facilitates the
-migration from and to other lexical analyzer generators and test environments.
-Additionally, support for *Unicode Properties* is provided. A compliance to
-*Unicode Regular Expressions* (Unicode UTR #18) is currently not targeted,
-though, because this expressive power is usually not required for compiler
-generation.  
+Patterns are specified by means of regular expressions
+:cite:`Friedl2006mastering`.  Their syntax follows a scheme that has been
+popularized by the tool 'lex' :cite:`Lesk1975lex`, includes elements of
+*extended POSIX regular expressions* :cite:`Spencer1994regex` and POSIX bracket
+expressions. This facilitates the migration from and to other lexical analyzer
+generators and test environments.  Additionally, there exist some special
+commands for using *Unicode Properties* to define character sets.
 
-The top-level section ``define`` facilitates the separation of larger regular
-expressions into smaller parts. Also, defining patterns only in this section
-supports clean mode descriptions--free of pattern definitions. This is
-especially handy when Unicode-related regular expression impose some larger
-specifications.  The following example displays pattern definition in a
-``define`` section and pattern expansion inside a ``mode``.
-     
-.. code-block:: cpp
+.. Compliance to *Unicode Regular Expressions* (Unicode UTR #18) is has 
+.. not been a design goal, though. 
 
-    define {
-       /* Eating white space                          */
-       WHITESPACE    [ \t\n]+
-       /* An identifier can never start with a number */
-       IDENTIFIER    [_a-zA-Z][_a-zA-Z0-9]*
-    }
+.. note::
 
-    mode MINE {
-        {WHITESPACE}  { /* do nothing */ }
-        {IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
-    }
+    The top-level section ``define`` exists to name patterns. This supports the
+    aggregation of complex pattern descriptions out of smaller parts.
+    Moreover, it supports the separation of *pattern definitions* and *pattern
+    matching behavior*, whereby the latter happens inside a mode. 
+
+    The following example shows patterns for ``WHITESPACE`` and ``IDENTIFIER``
+    defined in a ``define`` section. The ``mode`` defines clean pattern action
+    pairs by solely expanding the defined patterns.
+         
+    .. code-block:: cpp
+
+        define {
+           /* Eating white space                          */
+           WHITESPACE    [ \t\n]+
+           /* An identifier can never start with a number */
+           ID_BEGIN      [_a-zA-Z]
+           ID_CONTINUE   [_a-zA-Z0-9]*
+           IDENTIFIER    {ID_BEGIN}{ID_CONTINUE}
+        }
+
+        mode MINE {
+            {WHITESPACE}  { /* do nothing */ }
+            {IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
+        }
 
 The description of patterns by means of a formal language is the subject of the
 following subsections. The explanation is divided into the consideration of
@@ -45,4 +52,5 @@ context-free expressions and context-dependent expressions.
     context-dependent.rst
     context-dependent-pitfalls.rst
    
+.. rubric:: Footnotes
 

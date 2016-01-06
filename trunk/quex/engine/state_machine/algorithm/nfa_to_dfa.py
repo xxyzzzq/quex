@@ -1,3 +1,7 @@
+# TODO: Draw relation to Powerset Construction: 
+#       "https://en.wikipedia.org/wiki/Powerset_construction"
+#
+# (C) Frank-Rene Schaefer
 from   quex.engine.state_machine.core        import StateMachine
 from   quex.engine.state_machine.state.core  import State
 from   quex.engine.state_machine.index       import map_state_combination_to_index
