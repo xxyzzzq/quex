@@ -179,7 +179,8 @@ to combine them into powerful patterns.
      and matches therefore only "ab".
 
      Anti-Pattern
-        Let Q be the set of all lexemes which are not matched by P. Then, the
+        Let Q be the set of all lexemes which are not matched by P. Let
+        s(R) be the pattern that matches shortest alternatives in R. Then, the
         anti-pattern of P is the pattern which matches the set of lexemes
         given by 's(Q)'.
 
