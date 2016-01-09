@@ -10,6 +10,8 @@ in some dedicated syntax. Second, there are those elements which plainly *paste
 source* code into locations of the generated code. Each category is described
 in its subsection.
 
+.. _sec:top-level-configuration:
+
 Configuration
 #############
 
@@ -125,6 +127,8 @@ The following item list outlines top-level syntax elements
     .. code-block:: cpp
 
        start = START_MODE;
+
+.. _sec:top-level-paste:
 
 Pasting Source Code
 ###################

@@ -21,7 +21,7 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #______________________________________________________________________________
-sphinx_file = os.environ["QUEX_PATH"] + "/doc/source/invocation/command-line/intro.txt"
+sphinx_file = os.environ["QUEX_PATH"] + "/doc/source/appendix/command-line/intro.rst"
 man_file    = os.environ["QUEX_PATH"] + "/doc/manpage/quex.1"
 #______________________________________________________________________________
 
@@ -884,7 +884,7 @@ def doc(Formatter, TemplateFile, OutFile):
     print "Written: '%s'" % OutFile
 
 doc(VisitorSphinx(), 
-    "%s/doc/source/invocation/command-line/intro.template" % os.environ["QUEX_PATH"], 
+    "%s/doc/source/appendix/command-line/intro.template" % os.environ["QUEX_PATH"], 
     sphinx_file)
 
 doc(VisitorManPage(), 

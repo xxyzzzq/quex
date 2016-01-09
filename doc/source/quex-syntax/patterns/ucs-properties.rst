@@ -1,83 +1,73 @@
 Unicode Properties
-===================
+##################
 
-Unicode is distinguished from other coding standards not only with 
-respect to its level of completeness including all possibly used 
-character sets. Moreover, much effort has been accomplished in 
-categorizing characters, providing terminology for concepts related
-to letter systems and defining *character properties*. Unicode
-defines a fixed set of properties that a character can have.
-The most important property for a lexical analyzer
-is the 'code point', i.e. the integer value that represents a 
-character. However, there are other interesting properties that
-simplify the description of regular expressions.
+Unicode :cite:`Unicode2015` is distinguished from other coding standards not
+only with respect to its level of completeness including all possibly used
+character sets. Moreover, much effort has been accomplished in categorizing
+characters, providing terminology for concepts related to letter systems and
+defining *character properties*.  The most important property for a lexical
+analyzer is the 'code point', i.e. the integer value that represents a
+character. However, there are other interesting properties that simplify the
+description of regular expressions.
 
-Quex supports Unicode Standard Properties through the ``\P{..}``
-expressions, where the ``P`` stands for property. For a quex user
-properties can be devided into two categories: 
+Unicode Standard Properties can be accessed through the ``\P{..}`` expressions,
+where the ``P`` stands for property. Properties can be divided into two
+categories: 
 
-- Binary Properties, i.e. properties that a character either has
-  or has not. For example, a character is either a white space 
-  character or it is not. Sets of characters having a binary
-  property ``binary_property`` can be accessed through ``\P{binary_property}``.
+.. describe:: Binary Properties, 
+
+  i.e. properties that a character either has or has not. For example, a
+  character is either a white space character or it is not. Sets of characters
+  having a binary property ``binary_property`` can be accessed through
+  ``\P{binary_property}``.
  
-- Non-Binary Properties, i.e. properties that require a particular
-  value related to it. For example, each character belongs to a 
-  certain script. A character belonging to the greek script 
-  has the property 'Script=Greek'. Sets of characters that have
-  a certain property setting can be accessed via ``\P{property=value}``.
+.. describe:: Non-Binary Properties, 
 
-Note, that the result of a ``\P{...}`` expression is always
-a *set of characters*. Therefore, it cannot be used inside 
-a quotes string expression. For convinience, the properties
-'Name' and 'General_Category' are provided through the shortcuts
-``\N{...}`` and ``\G{...}``. Thus, ``\N{MIDDLE DOT}`` is a shorthand
-for ``\P{Name=MIDDLE DOT}`` and ``\G{Uppercase_Letter}`` is a shorthand
-for ``\P{General_Category=Uppercase_Letter}``. 
+  i.e. properties that require a particular value related to it. For example,
+  each character belongs to a certain script. A character belonging to the
+  Greek script has the property 'Script=Greek'. Sets of characters that have a
+  certain property setting can be accessed via ``\P{property=value}``.
 
-Unicode 5.0 provides more than 17000 character names, so please consult the
-standard literature for settings of the ``Name`` property
-footnote:[Alternatively, consider the file ``UnicodeData.txt`` that comes with
-the quex application]. Note also, that names as defined in Unicode 1.0
-can be accessed through the 'Unicode_1_Name' property. This property also 
-contains names of control functions according to ISO 6429 \cite{}.
+The result of a ``\P{...}`` expression is always a *set of characters*.
+Therefore, it cannot be used inside a quoted string expression.  For
+convenience, the properties 'Name' and 'General_Category' are provided through
+the shortcuts ``\N{...}`` and ``\G{...}``. Thus, ``\N{MIDDLE DOT}`` is a
+shorthand for ``\P{Name=MIDDLE DOT}`` and ``\G{Uppercase_Letter}`` is a
+shorthand for ``\P{General_Category=Uppercase_Letter}``. 
 
-As for the General_Category property, the appendix provides the list of 
-possible settings <<sec-appendix-property-general-category>>. At this place,
-more detailed information is specified about provided properties, their
-meaning, and settings of other likely-to-be-used properties.
+Unicode 8.0 provides more than 17000 character names. To review the complete
+list the standard literature may be referred [#f1]_ . Note also, that names as
+defined in Unicode 1.0 can be accessed through the 'Unicode_1_Name' property.
+This property also contains names of control functions according to ISO 6429
+:cite:`ISO1992_6429`.  Section :ref:`sec:appendix-property-general-category`
+provides detailed information about the property ``General_Category``. At this
+place, information about likely-to-be-used properties is listed. 
 
-When starting to write lexical analyzers using a wider range of unicode
-characters the reliance on properties becomes almost unavoidable. However, the
-huge volume of characters requires some sophisticated tool to browse through
-properties and related character sets. For this purpose quex provides a *query
-mode*. This mode allows the user to specify some queries on the command line
-and get the response immediately on the console. This subject is handled
-in section <<sec-query-intro>>.
+.. note:: 
 
-As an option to facilitate the specification of property values, quex allows
-you to use wildcards ``*``, ``?`` and simple character sets such as as
-``[AEIOUX-Z]`` for the characters ``A``, ``E``, ``I``, ``O``, ``U``, ``X``, ``Y``, and ``Z``. If the first
-character is an ``!`` then the complementary character set is considered.  This is
-conform with unix file name matching.  set specifications such as ``[a-z]``
-such to facilitate the search. It is advisable, though, to use quex's query
-functionality first <<sec-query-intro>> in order to get an impression to what
-value such a wild-card expression expands.
+    When writing lexical analyzers using a wider range of Unicode characters
+    the reliance on properties becomes almost unavoidable. However, the huge
+    volume of characters requires some sophisticated tool to browse through
+    properties and related character sets. Here again, Quex's command line
+    query comes handy. 
 
+As an option to facilitate the specification of property values, wildcards may
+be used inside the property expressions. The ``*``, ``?`` and simple character
+sets such as as ``[AEIOUX-Z]`` for the characters ``A``, ``E``, ``I``, ``O``,
+``U``, ``X``, ``Y``, and ``Z``. If the first character is an ``!`` then the
+complementary character set is considered.  This is conform with Unix file name
+matching :ref:`Robbins1995practical`.  
 
-UCS Property Descriptions
-#########################
-
-This section focuses on the Unicode Character Properties as they are supported by
-quex. The current version of Quex is based on Unicode 5.0. It uses the databases
-as provided by the Unicode Consortium and it is likely that Quex integrates the
-property system of any later standard as soon as it is in a major state. In
-particular, Unicode Character Properties are used to define _sets of characters_
-to be matched during lexical analysis. This excludes some properties from 
-consideration, namely the properties tagged as `string` property types and
-the 'quick-check' properties (see <<UCS#15>>). The following properties
-are explicitly supported by quex. The expressions in brackets are the aliases
-that can be used as a shorthand for the full name of the property.
+The following item list exposes some of the supported Unicode Character
+Properties.  The current version of Quex is based on Unicode 8.0. It uses the
+raw databases as provided by the Unicode Consortium and it is likely that 
+the property system of any later standard is integrated as soon as it is in a
+major state [#f2]_ . Unicode Character Properties are
+used to define *sets of characters* to be matched during lexical analysis. This
+excludes some properties from consideration, namely the properties tagged as
+`string` property types and the 'quick-check' properties (Unicode Technical
+Report UCS #15). The expressions in brackets are the aliases that may be used
+as a shorthand for the full name of the property.
 
 .. describe:: Binary Properties
 
@@ -92,8 +82,6 @@ Binary properties can simply be applied using an expression such as
 beginning of an identifier in usual programming languages. Non-binary
 properties require values and are specified in the form ``\P{Property=Value}``.
 The supported values for each non-binary property are the following:
-Some settings can be provided using shorthand value aliases. Those aliases
-are specified in brackets.
 
 .. describe:: Age
 
@@ -244,3 +232,10 @@ are specified in brackets.
     ``ALetter(LE)``, ``ExtendNumLet(EX)``, ``Format(FO)``, ``Katakana(KA)``, ``MidLetter(ML)``, ``MidNum(MN)``, ``Numeric(NU)``.
 
 
+.. rubric:: Footnotes
+
+.. [#f1] Alternatively, the file ``UnicodeData.txt`` that comes with the quex
+         application contains equally all possible character names.
+
+.. [#f2] Section :ref:`sec:update-unicode-db` explains how other (newer)
+         versions of the Unicode Database may be applied. 

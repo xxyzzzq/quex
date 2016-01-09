@@ -1,12 +1,13 @@
+.. _sec:re-context-free:
+
 Context Free Regular Expressions
 ==================================
 
-Context free regular expressions match *taken by itself* against an input
-independent on what comes before or after it.  Context-free-ness in itself
-means, for example, that the regular expression ``for`` will match against the
-letter sequence `f`, `o`, and `r` independent of what comes before or after it. 
-Pre- and post-context for pattern matching are explained in the subsequent
-section. 
+Context free regular expressions match  against an input independent on what
+comes before or after it.  Context-free-ness means, for example, that the
+regular expression ``for`` will match against the letter sequence `f`, `o`, and
+`r` independent of what comes before or after it.  Pre- and post-context for
+pattern matching are explained in the subsequent section. 
 
 .. describe:: x 
 
@@ -17,27 +18,24 @@ section.
 
 .. describe:: . 
 
-      matches any character in the current encoding except for the buffer limit
-      code and '0x0A' for newline.  On systems where newline is coded as
-      '0x0D, 0x0A' this does match the '0x0D' character whenever a newline
-      occurs.
+     (is a syntactic operator) The dot matches any character in the current
+     encoding except for the buffer limit code and '0x0A' for newline.  On
+     systems where newline is coded as '0x0D, 0x0A' this does match the '0x0D'
+     character whenever a newline occurs.
 
 .. describe:: [xyz]
 
      a "character class" or "character set"; in this case, the pattern matches
-     either an ``x``, a ``y``, or a ``z``. The brackets ``[`` and ``]`` are
-     examples for characters acting as syntactic operators. If they are to be matched
-     quotes or backslashes have to be used as shown below. Character sets are a
-     form of *alternative* expressions-- for one single character.  For more
-     sophisticated alternative expressions see the paragraphs below. 
+     either an ``x``, a ``y``, or a ``z``.  Character sets specify an
+     *alternative* expression for a single character.  If the brackets ``[``
+     and ``]`` are to be matched quotes or backslashes have to be used.
 
 .. describe:: [:expression:]
 
      matches a set of characters that result from a character set expression
-     `expression`.  Section <<formal/patterns/character-set-expressions>>
-     discusses this feature in detail.  In particular ``[:alnum:]``,
-     ``[:alpha:]`` and the like are the character sets as defined as POSIX
-     bracket expressions.
+     `expression`. Section :ref:`sec:re-character-sets` discusses this feature
+     in detail.  In particular ``[:alnum:]``, ``[:alpha:]`` and the like are
+     the character sets as defined as POSIX bracket expressions.
 
 .. describe:: [abj-oZ]
 
@@ -51,21 +49,20 @@ section.
 
 .. describe:: [^A-Z\\n]
 
-     a "negated character class", i.e., any character but those in the
-     class.  The ``^`` character indicates *negation* at this point. 
-     This expression matches any character *except* an uppercase letter or newline.
+     a "negated character class", i.e., any character but those in the class.
+     The ``^`` character indicates *negation* at this point.  This expression
+     matches any character *except* an uppercase letter or newline.
 
 .. describe:: "[xyz]\\"foo"
 
-     the literal string: ``[xyz]"foo``.
-     That is, inside quotes the characters which are used as operators for
-     regular expressions can be applied in their original sense. A ``[``
-     stands for code point 91 (hex. 5B), matches against a ``[`` and does
-     not mean 'open character set'. Note, than inside strings one can 
-     still use the ANSI-C backslash-ed characters ``\n``, ``\t``, etc. as
-     well as the Unicode name property ``\N``. However, general Unicode
-     property expression ``\P`` that result in *character sets* are not dealt
-     with inside strings.
+     matches the literal string: ``[xyz]"foo``.  Any character, that is not
+     backslash or backslash proceeded is applied in its original sense. A ``[``
+     stands for code point 91 (hex.  5B), matches against a ``[`` and does not
+     mean 'open character set'. Inside strings ANSI-C backslash-ed characters
+     ``\n``, ``\t``, etc. can be used. The quote can be specified by ``\"``.
+     The Unicode property ``\N{...}`` is also available since it results in a
+     *single character*. However, other operators such as ``\P{....}`` result
+     in *character sets*. They cannot be used inside strings.
       
 .. describe:: \\C{ R } or \\C(flags){ R }
 
@@ -95,7 +92,7 @@ section.
      The algorithm for case folding follows Unicode Standard Annex #21 
      "CASE MAPPINGS", Section 1.3. That is for example, the character 'k'
      is not only folded to 'k' (0x6B) and 'K' (0x4B) but also to 'K' (0x212A). 
-     Additionally, unicode defines case foldings to multi character sequences,
+     Additionally, Unicode defines case foldings to multi character sequences,
      such as::
 
             ΐ   (0390) --> ι(03B9)̈(0308)́(0301)
@@ -135,7 +132,8 @@ section.
 
 .. describe:: \\R{ ... }
 
-     Reverse the pattern specified in brackets. If for example, it is specified::
+     Reverse the pattern specified in brackets. If for example, it is
+     specified::
 
             "Hello "\R{dlroW} => QUEX_TKN_HELLO_WORD(Lexeme)
 
@@ -214,7 +212,7 @@ section.
 
      a NULL character (ASCII/Unicode code point 0). This is to be used with
      *extreme caution*!  The NULL character is also used a buffer delimiter!
-     See section <<sec-formal-command-line-options>> for specifying a different
+     See section :ref:`sec:formal-command-line-options` for specifying a different
      value for the buffer limit code.
 
 .. describe:: \\U11A0FF 
@@ -259,48 +257,43 @@ section.
 
      the code of the character with the given Unicode character name. This is 
      a shortcut for ``\P{Name=UNICODE CHARACTER NAME}``. For possible
-     settings of this character see \cite{Unicode 5.0}.
+     settings of this character see :cite:`Unicode2015`.
 
 .. describe:: \\G{ X }
 
      the code of the character with the given *General Category* \cite{}. This is 
      a shortcut for ``\P{General_Category=X}``. Note, that these expressions 
      cannot be used inside quoted strings. For possible settings of the 
-     ``General_Category`` property, see section <<sec-formal-unicode-properties>>.
+     ``General_Category`` property, see section :ref:`sec-formal-unicode-properties`.
 
 .. describe:: \\E{ Codec Name }
 
-     the subset of unicode characters which is covered by the given encoding. Using
-     this is particularly helpful to cut out uncovered characters when a encoding engine
-     is used (see :ref:`Engine Codec <sec-engine-encoding>`).
+     the subset of Unicode characters which is covered by the given encoding.
+     Using this is particularly helpful to cut out uncovered characters when a
+     encoding engine is used (see :ref:`sec:engine-encoding`).
 
 Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
-are considered to be unicode code points. For applications in English spoken
-cultures this is identical to the ASCII encoding. For details about unicode
-code tables consider the standard \cite{Unicode50}. Section
-<<sec-formal-ucs-properties>> is dedicated to an introduction to Unicode
-properties.
+are considered to be Unicode code points. For applications in English spoken
+cultures this is identical to the ASCII encoding. For details about Unicode
+code tables consider the standard :ref:`Unicode50`. Section
+:ref:`sec:ucs-properties` gives an overview over the Unicode property system.
 
-Two special rules have to appear isolatedly, out of the context of regular
-expressions. With the following two rules the actions for the incidence of end of
-file and the failure incidence can be specified:
+Two special expressions are due to the tradition of lex/flex. In Quex's 
+terminology they are actually event handlers. They are still present in 
+recognition of history and can only be used in the ``mode`` section:
 
 .. describe:: <<EOF>> 
 
-    the incidence of an end-of-file (end of data-stream). 
+    the incidence of an end-of-file (end of data-stream) it is a 
+    synonym for the incidence handler ``on_end_of_stream``. 
 
 .. describe:: <<FAIL>> 
 
-    the incidence of failure, i.e. no single pattern matched. 
-    Note, this rule is of the 'lex' style, but is only available with the 
-    quex core engine.
+    the incidence of failure, i.e. no single pattern matched. It is 
+    a synonym for ``on_failure``.
 
-
-This syntax is more 'in recognition' of the traditional `lex` syntax. In fact
-the two incidence handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
-a one-to-one correspondence to what is mentioned above. Possibly some later
-versions will totally dismiss the lex related engine core, and then also
-these constructs will disappear in favor of the mentioned two incidence handlers.
+The incidence handlers ``on_end_of_stream`` and ``on_failure`` are explained in
+section :ref:`sec:incidence-handlers`.
 
 .. note::
 
@@ -309,13 +302,15 @@ these constructs will disappear in favor of the mentioned two incidence handlers
    tokens such as ``=>``. Also, it cannot be backslash-ed.
    
    The backslash also does not suppress newline. A pattern must be completely
-   specified in a single line.
+   specified in a single line. The ``define`` section may be used to break
+   down patterns into smaller ones and combine them by expansion.
 
 *Operations*    
 
-Let ``R`` and ``S`` be regular expressions, i.e. a chain of characters specified in the
-way mentioned above, or a regular expression as a result from the operations below.
-Much of the syntax is directly based on POSIX extended regular expressions \cite{}.
+Let ``R`` and ``S`` be regular expressions, i.e. a chain of characters
+specified in the way mentioned above, or a regular expression as a result from
+the operations below.  Much of the syntax is directly based on POSIX extended
+regular expressions.
      
 .. describe:: R* 
 
@@ -360,5 +355,5 @@ Much of the syntax is directly based on POSIX extended regular expressions \cite
 .. describe:: {NAME} 
 
     the expansion of the defined pattern "NAME". Pattern names can
-    be defined in *define* sections (see section <<sec-practical-patterns>>).
+    be defined in *define* sections (see section :ref:`sec:top-level-configuration`).
 

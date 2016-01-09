@@ -32,7 +32,7 @@ def get_option_db():
 option_db = get_option_db()
 
 file_name = os.environ["QUEX_PATH"] + {
-    "sphinx": "/doc/source/invocation/command-line/intro.txt",
+    "sphinx": "/doc/source/appendix/command-line/intro.rst",
     "man":    "/doc/manpage/quex.1",
 }[sys.argv[1]]
 marker = {
@@ -46,9 +46,13 @@ print "##    %s" % file_name
 # Verify that every option is documented.
 print "(*) Options which are not documented (no output is good output)"
 command_line_doc = open(file_name).read()
+count_n = 0
 for option in option_db:
     if command_line_doc.find(option) == -1:
         print "error: %s is not documented" % option
+    else:
+        count_n += 1
+print "Documented options %i out of %i existing options." % (count_n, len(option_db))
 
 # Find things which are documented but do not exist
 print "(*) Options which are reported, but are not available in application  (no output is good output)"
@@ -63,3 +67,4 @@ for line_i, line in enumerate(command_line_doc.splitlines()):
         print "%s:%i:error: %s reported but does not exist" % \
               (file_name, line_i + 1, lexeme)
         print lexeme in option_db
+

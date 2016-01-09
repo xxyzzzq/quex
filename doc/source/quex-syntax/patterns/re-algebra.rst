@@ -1,8 +1,6 @@
 Basic Algebra
 =============
 
-(this section is in 'draft' status)
-
 Every regular expression can be associated with the set of lexemes which it
 matches.  Quex's algebra on regular expressions is defined in terms of
 set-theoretic operations on sets of lexemes.  The set operations of union and

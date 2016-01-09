@@ -1,5 +1,5 @@
 Incidence Handler Pitfalls
-======================
+==========================
 
 Note, that initiating explicitly mode transition inside ``on_exit`` *will* cause
 an infinite recursion! If this is intended the mode transition mechanism should

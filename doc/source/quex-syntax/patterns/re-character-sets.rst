@@ -1,20 +1,23 @@
+
+.. _sec:re-character-sets:
+
 Character Set Expressions
 ==========================
 
-Character set expression are a tool to combine, filter and or select character
-ranges conveniently. The result of a character set expression is a set of
-characters. Such a set of characters can then be used to express that any of
-them can occur at a given position of the input stream. The character set
-expression ``[:alpha:]``, for example matches all characters that are 
-letters, i.e. anything from `a` to `z` and `A` to `Z`. It belongs to the
-POSIX bracket expressions which are explained below. Further, this section
-explains how sets can be generated from other sets via the operations *union*,
-*intersection*, *difference*, and *inverse*.
+Character set expressions are a tool to combine, filter and or select character
+ranges conveniently. A resulting set of characters can then be used to express
+that any of them may occur at a given position of the input stream. The
+character set expression ``[:alpha:]``, for example matches all characters that
+are letters, i.e. anything from `a` to `z` and `A` to `Z`. It belongs to the
+POSIX bracket expressions :ref:`Burns2001real` which are explained below.
+Further, this section explains how sets can be generated from other sets via
+the operations *union*, *intersection*, *difference*, and *inverse*.
 
-POSIX bracket expressions are basically shortcuts for some more 
-regular expressions that would formally look a bit more clumsy. Quex
-provides those expressions bracketed in ``[:`` and ``:]`` brackets.
-They are specified in the table below.
+POSIX bracket expressions are basically shortcuts for some more regular
+expressions that would formally look a bit more clumsy. The expressions and
+what they stand for are shown in table :ref:`table:bracket-expressions`.
+
+.. _table:bracket-expressions:
 
 .. table::
 
@@ -36,9 +39,9 @@ They are specified in the table below.
     ==============  =================================  =====================================
 
 Caution has to be taken if these expressions are used for non-english
-languages. They are *solely* concerned with the ASCII character set. For more
+character encodings. They are *solely* concerned with the ASCII character set. For more
 sophisticated property processing it is advisable to use Unicode property
-expressions as explained in section <<formal/ucs-properties>>. In particular,
+expressions as explained in section :ref:`sec:ucs-properties`. In particular,
 it is advisable to use ``\P{ID_Start}``, ``\P{ID_Continue}``,
 ``\P{Hex_Digit}``, ``\P{White_Space}``, and ``\G{Nd}``.
 
@@ -47,17 +50,16 @@ it is advisable to use ``\P{ID_Start}``, ``\P{ID_Continue}``,
    If it is intended to use codings different from ASCII, e.g. UTF-8 or
    other Unicode character encodings, then the '--iconv' flag or '--icu'
    flag must be specified to enable the appropriate converter. See
-   section :ref:`Character Encodings <sec-character-encodings>`.
+   section :ref:`sec:character-encodings`.
 
-In the same way as patterns character sets can be defined in a ``define``
-section and replaced inside the ``[:`` ... ``:]`` brackets--provided
-that they are character sets and not complete state machines.
+Character sets do not related to state machines such as patterns do.
+Nevertheless, they might be defined and expanded in ``define`` sections the
+same way as regular expressions. Character set operations may then be applied
+to sequentially described complex set descriptions. The available operations
+correspond to those of *algebra of sets* :cite:`Quine1969set` and are listed in
+table :ref:`table:character-set-operations`.
 
-The use of Unicode character set potentially implies the handling of many
-different properties and character sets. For convenience, quex provides
-*operations on character sets* to combine and filter different character sets
-and create new adapted ones. The basic operations that quex allows are
-displayed in the following table:
+.. _table:character-set-operations:
 
 .. table::
 
@@ -83,31 +85,35 @@ in the given set but in the set of the currently considered encoding.  This
 function also takes more than one set, so one does not have to build the union
 first.
 
-Note, that the ``difference`` and ``intersection`` operation can be 
-used conveniently to filter different sets. For example
+.. note::
 
-.. code-block:: cpp
+    The ``difference`` and ``intersection`` operation can be used conveniently
+    to filter different sets. For example
 
-  [: difference(\P{Script=Greek}, \G{Nd}, \G{Lowercase_Letter} :]
+    .. code-block:: cpp
 
-results in the set of Greek characters except the digits and except the
-lowercase letters. To allow only the numbers from the Arabic code block
-``intersection`` can be used as follows:
+      [: difference(\P{Script=Greek}, \G{Nd}, \G{Lowercase_Letter} :]
 
-.. code-block:: cpp
+    results in the set of Greek characters except the digits and except the
+    lowercase letters. To allow only the numbers from the Arabic code block
+    ``intersection`` can be used as follows:
 
-  [: intersection(\P{Block=Arabic}, \G{Nd}) :]
+    .. code-block:: cpp
 
-The subsequent section elaborates on the concept of Unicode properties. At this
-point, it is worth mentioning that quex provides a sophisticated query feature. This
-allows to determine the result of such set operations and view the result sets. 
-For example, to see the results of the former set operation quex can be called the
-following way:
+      [: intersection(\P{Block=Arabic}, \G{Nd}) :]
+
+The result of character set expressions is not always easy to foresee. Quex,
+however, provides a command line functionality to display the results of
+regular expressions. For example, the following command line displays what
+characters remain if the numbers and lowercase letters are taken out of the set
+of Greek letters.
 
 .. code-block:: bash
 
    quex --set-by-expression 'difference(\P{Script=Greek}, \G{Nd}, \G{Lowercase_Letter})'
 
-In order to take full advantage of those set arithmetics the use should familiarize
-himself with Unicode properties and quex's query mode. 
+The command line query feature is discussed in a later chapter.  The subsequent
+section elaborates on the concept of Unicode properties and how they may be
+used to produce character sets.
+
 
