@@ -174,18 +174,18 @@ QUEX_MEMBER_FUNCTION1(reset, LexatomLoader,
     else {
         /* Assume, that buffer filler has been reset.                        */
     }
-    QUEX_NAME(Buffer_init_content)(&me->buffer, (QUEX_TYPE_CHARACTER*)0);
+    QUEX_NAME(Buffer_init_content)(&me->buffer, (QUEX_TYPE_LEXATOM*)0);
     QUEX_NAME(Buffer_init_analyzis)(&me->buffer); 
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);
 }
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE QUEX_TYPE_CHARACTER*
+QUEX_INLINE QUEX_TYPE_LEXATOM*
 QUEX_MEMBER_FUNCTION3(reset, memory,
-                      QUEX_TYPE_CHARACTER*    Memory,
+                      QUEX_TYPE_LEXATOM*    Memory,
                       const size_t            MemorySize,
-                      QUEX_TYPE_CHARACTER*    EndOfFileP)
+                      QUEX_TYPE_LEXATOM*    EndOfFileP)
 /* When memory is provided from extern, the 'external entity' is
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          
@@ -196,9 +196,9 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
  *               accordingly, it deleted it itself.                          */
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    QUEX_TYPE_CHARACTER*       previous_buffer_memory;
+    QUEX_TYPE_LEXATOM*       previous_buffer_memory;
     __quex_assert((! Memory) || (EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]));
-    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_CHARACTER*)0)); 
+    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_LEXATOM*)0)); 
 
     QUEX_NAME(Buffer_destruct)(&me->buffer); 
     /* In case, that the memory was owned by the analyzer, the destructor did

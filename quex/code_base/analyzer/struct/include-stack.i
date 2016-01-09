@@ -192,18 +192,18 @@ QUEX_MEMBER_FUNCTION2(include_push, LexatomLoader,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool                 verdict_f;
-    QUEX_TYPE_CHARACTER* memory;
+    QUEX_TYPE_LEXATOM* memory;
     QUEX_NAME(Buffer)    new_buffer_setup;
 
-    memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
-                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_CHARACTER), 
+    memory = (QUEX_TYPE_LEXATOM*)QUEXED(MemoryManager_allocate)(
+                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_LEXATOM), 
                        E_MemoryObjectType_BUFFER_MEMORY);
     /* NOT: Abort/return if memory == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
 
     QUEX_NAME(Buffer_construct)(&new_buffer_setup, filler,
                                 memory, QUEX_SETTING_BUFFER_SIZE, 
-                                (QUEX_TYPE_CHARACTER*)0,
+                                (QUEX_TYPE_LEXATOM*)0,
                                 E_Ownership_LEXICAL_ANALYZER);
 
     /* The 'new_buffer_setup' is only copied including the reference to the
@@ -220,9 +220,9 @@ QUEX_MEMBER_FUNCTION2(include_push, LexatomLoader,
 QUEX_INLINE bool
 QUEX_MEMBER_FUNCTION4(include_push, memory,
                       const char*             InputName,
-                      QUEX_TYPE_CHARACTER*    Memory,
+                      QUEX_TYPE_LEXATOM*    Memory,
                       const size_t            MemorySize,
-                      QUEX_TYPE_CHARACTER*    EndOfFileP)
+                      QUEX_TYPE_LEXATOM*    EndOfFileP)
 /* When memory is provided from extern, the 'external entity' is
  * responsible for filling it. There is no 'file/stream handle', no 'byte
  * loader', and 'no buffer filler'.                                          */

@@ -62,7 +62,7 @@ $$EXIT-PROCEDURE$$
 void
 QUEX_NAME($$MODE_NAME$$_on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                                         QUEX_TYPE_INDENTATION  Indentation, 
-                                        QUEX_TYPE_CHARACTER*   Begin) {
+                                        QUEX_TYPE_LEXATOM*   Begin) {
     (void)me;
     (void)Indentation;
     (void)Begin;
@@ -381,7 +381,7 @@ def __get_function_declaration(Modes, FriendF=False):
         # If one of the following events is specified, then we need an 'on_indentation' handler
         if mode.incidence_db.has_key(E_IncidenceIDs.INDENTATION_HANDLER): 
             on_indentation_txt = functions(prolog, "void", ["on_indentation"], 
-                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_CHARACTER*")
+                                 "QUEX_TYPE_ANALYZER*, QUEX_TYPE_INDENTATION, QUEX_TYPE_LEXATOM*")
 
         if mode.incidence_db.has_key(E_IncidenceIDs.MODE_ENTRY): 
             txt += functions(prolog, "void", ["on_entry"], 

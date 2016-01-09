@@ -25,4 +25,4 @@ BA.C3.BF.5C.C3.B7.53.54.55.56.57.58.59.5A.C2.B2.
 C3.94.C3.96.C3.92.C3.93.C3.95.30.31.32.33.34.35.
 36.37.38.39.C2.B3.C3.9B.C3.9C.C3.99.C3.9A.
 Check result (no response == OK)
-## g++ -ggdb -I./ -I$QUEX_PATH -DQUEX_TYPE_CHARACTER='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=cp037 -D__QUEX_OPTION_LITTLE_ENDIAN  converter-tester.cpp -o converter-tester
+## g++ -ggdb -I./ -I$QUEX_PATH -DQUEX_TYPE_LEXATOM='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=cp037 -D__QUEX_OPTION_LITTLE_ENDIAN  converter-tester.cpp -o converter-tester

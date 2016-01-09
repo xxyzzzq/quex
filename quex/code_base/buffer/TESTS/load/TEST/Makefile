@@ -30,13 +30,13 @@ hwut-end: clean
 	@echo Bye
 
 %-fb0.exe: %.c %-gen.c hwut_cursor.o # basic_functionality.c
-	$(CC) $(FALLBACK_0) -DQUEX_TYPE_CHARACTER=uint8_t $^ -o $@ 
+	$(CC) $(FALLBACK_0) -DQUEX_TYPE_LEXATOM=uint8_t $^ -o $@ 
 %-fb1.exe: %.c %-gen.c hwut_cursor.o # basic_functionality.c
-	$(CC) $(FALLBACK_1) -DQUEX_TYPE_CHARACTER=uint8_t $^ -o $@
+	$(CC) $(FALLBACK_1) -DQUEX_TYPE_LEXATOM=uint8_t $^ -o $@
 %-fb2.exe: %.c %-gen.c hwut_cursor.o # basic_functionality.c
-	$(CC) $(FALLBACK_2) -DQUEX_TYPE_CHARACTER=uint8_t $^ -o $@
+	$(CC) $(FALLBACK_2) -DQUEX_TYPE_LEXATOM=uint8_t $^ -o $@
 %-fb2-32.exe: %.c %-gen.c hwut_cursor.o # basic_functionality.c
-	$(CC) $(FALLBACK_2) -DQUEX_TYPE_CHARACTER=uint32_t $^ -o $@
+	$(CC) $(FALLBACK_2) -DQUEX_TYPE_LEXATOM=uint32_t $^ -o $@
 
 %-gen.h %-gen.c: %.c
 	hwut gen $< -o $(@:.c=)

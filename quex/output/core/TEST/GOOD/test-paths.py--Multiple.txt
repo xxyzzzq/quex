@@ -1,15 +1,15 @@
 --(Path Definitions)----------------------------------------------------
 
-    const QUEX_TYPE_CHARACTER      path_walker_23_base[23]        = {
+    const QUEX_TYPE_LEXATOM      path_walker_23_base[23]        = {
     111, 116, 116, 111, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'o''t''t''o' */
     103, 114, 117, 110, 105, 98, 97, 108, 100, 105, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'g''r''u''n''i''b''a''l''d''i' */
     102, 114, 105, 116, 122, QUEX_SETTING_PATH_TERMINATION_CODE, /* 'f''r''i''t''z' */
 
     };
-    const QUEX_TYPE_CHARACTER*     path_6                         = path_walker_23_base + 5;
-    const QUEX_TYPE_CHARACTER*     path_17                        = path_walker_23_base + 16;
+    const QUEX_TYPE_LEXATOM*     path_6                         = path_walker_23_base + 5;
+    const QUEX_TYPE_LEXATOM*     path_17                        = path_walker_23_base + 16;
     QUEX_TYPE_GOTO_LABEL           path_end_state                 = QUEX_GOTO_STATE_LABEL_INIT_VALUE;
-    const QUEX_TYPE_CHARACTER*     path_1                         = path_walker_23_base + 0;
+    const QUEX_TYPE_LEXATOM*     path_1                         = path_walker_23_base + 0;
 
 
 --(Pathwalker Code)-----------------------------------------------------

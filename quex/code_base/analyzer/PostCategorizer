@@ -18,8 +18,8 @@ QUEX_NAMESPACE_MAIN_OPEN
         /* Store the first character separately from the remainder. This might
          * help to avoid loading 'remotely allocated' strings into the cache if
          * they do not fit anyway (because of their first character).                 */ 
-        QUEX_TYPE_CHARACTER          name_first_character;
-        const QUEX_TYPE_CHARACTER*   name_remainder;
+        QUEX_TYPE_LEXATOM          name_first_character;
+        const QUEX_TYPE_LEXATOM*   name_remainder;
 
         QUEX_TYPE_TOKEN_ID           token_id;
 
@@ -32,10 +32,10 @@ QUEX_NAMESPACE_MAIN_OPEN
         QUEX_NAME(DictionaryNode)*  root;
 
 #       ifndef __QUEX_OPTION_PLAIN_C
-        void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
+        void                enter(const QUEX_TYPE_LEXATOM* Lexeme, 
                                   const QUEX_TYPE_TOKEN_ID TokenID);
-        void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
-        QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
+        void                remove(const QUEX_TYPE_LEXATOM* Lexeme);
+        QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_LEXATOM* Lexeme) const;
         void                clear();
         void                print_this();
 #       endif
@@ -56,26 +56,26 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE int
     QUEX_NAME(PostCategorizer_compare)(QUEX_NAME(DictionaryNode)*  me, 
-                                       QUEX_TYPE_CHARACTER         FirstCharacter, 
-                                       const QUEX_TYPE_CHARACTER*  Remainder);
+                                       QUEX_TYPE_LEXATOM         FirstCharacter, 
+                                       const QUEX_TYPE_LEXATOM*  Remainder);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_enter)(QUEX_NAME(Dictionary)*  me, 
-                                     const QUEX_TYPE_CHARACTER*   EntryName, 
+                                     const QUEX_TYPE_LEXATOM*   EntryName, 
                                      QUEX_TYPE_TOKEN_ID           TokenID);
 
     QUEX_INLINE QUEX_NAME(DictionaryNode)*
     QUEX_NAME(PostCategorizer_find)(const QUEX_NAME(Dictionary)* me, 
-                                    const QUEX_TYPE_CHARACTER*   EntryName);
+                                    const QUEX_TYPE_LEXATOM*   EntryName);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_insert)(QUEX_NAME(Dictionary)* me, 
-                                      const QUEX_TYPE_CHARACTER*  EntryName, 
+                                      const QUEX_TYPE_LEXATOM*  EntryName, 
                                       QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_remove)(QUEX_NAME(Dictionary)* me, 
-                                      const QUEX_TYPE_CHARACTER*  EntryName);
+                                      const QUEX_TYPE_LEXATOM*  EntryName);
 
     QUEX_INLINE void
     QUEX_NAME(PostCategorizer_clear)(QUEX_NAME(Dictionary)* me);

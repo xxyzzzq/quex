@@ -361,7 +361,7 @@ def __frame_of_all(Code, Setup):
     lexeme_null_definition = ""
     if Setup.external_lexeme_null_object == "":
         # LexemeNull has been defined elsewhere.
-        lexeme_null_definition = "QUEX_TYPE_CHARACTER  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_CHARACTER)0;\n"
+        lexeme_null_definition = "QUEX_TYPE_LEXATOM  QUEX_LEXEME_NULL_IN_ITS_NAMESPACE = (QUEX_TYPE_LEXATOM)0;\n"
 
     return "".join(["/* #include \"%s\"*/\n" % Setup.get_file_reference(Setup.output_header_file),
                     implementation_header_str,

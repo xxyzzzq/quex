@@ -86,7 +86,7 @@ token object consists of three regions:
       token_type {
           ...
            distinct {
-               my_name   std::basic_string<QUEX_TYPE_CHARACTER>;
+               my_name   std::basic_string<QUEX_TYPE_LEXATOM>;
            }
            constructor {
                std::cout << "Hello Constructor\n";
@@ -129,7 +129,7 @@ followed by ``}``.
    .. code-block:: cpp
 
        distinct {
-           name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+           name        :  std::basic_string<QUEX_TYPE_LEXATOM>;
            number_list :  std::vector<int>;
        }
 
@@ -177,7 +177,7 @@ class
 
 Those are then implicitly used in the token senders. Note, that it is
 particularly useful to have at least one member that can carry a
-``QUEX_TYPE_CHARACTER`` pointer so that it can catch the lexeme as a plain
+``QUEX_TYPE_LEXATOM`` pointer so that it can catch the lexeme as a plain
 argument. As mentioned, the setter must be identified via the type.
 The above setters would allow token senders inside a mode to be defined as
 
@@ -288,14 +288,14 @@ sections. The variable ``self`` is a reference to the token object itself.
 
        copy { 
            // Explicit Deletion of non-trivial members 
-           self.name.~std::basic_string<QUEX_TYPE_CHARACTER>();
+           self.name.~std::basic_string<QUEX_TYPE_LEXATOM>();
            self.number_list.~std::vector<int>();
 
            // Copy the plain memory chunk of the token object. 
            __STD_QUEX_memcpy((void*)&self, (void*)&Other), sizeof(QUEX_TYPE_TOKEN));
            
            // Call placement new for non-trivial types: 
-           new(&self.name)        std::basic_string<QUEX_TYPE_CHARACTER>(Other.name);
+           new(&self.name)        std::basic_string<QUEX_TYPE_LEXATOM>(Other.name);
            new(&self.number_list) std::vector<int>(Other.number_list);
        }
 
@@ -319,7 +319,7 @@ sections. The variable ``self`` is a reference to the token object itself.
 
    .. describe:: Begin, End
 
-      wich are both pointers of ``QUEX_TYPE_CHARACTER``. ``Begin`` points
+      wich are both pointers of ``QUEX_TYPE_LEXATOM``. ``Begin`` points
       to the first character in the text to be received by the token. ``End``
       points to the first character *after* the string to be received.
 
@@ -359,7 +359,7 @@ sections. The variable ``self`` is a reference to the token object itself.
                  if( self.text != 0x0 ) {
                      QUEX_NAME(MemoryManager_Text_free(self.text);
                  }
-                 self.text = QUEX_NAME(MemoryManager_Text_allocate)(sizeof(QUEX_TYPE_CHARACTER)*(End - Begin + 1));
+                 self.text = QUEX_NAME(MemoryManager_Text_allocate)(sizeof(QUEX_TYPE_LEXATOM)*(End - Begin + 1));
              } else {
                  /* Maybe, claim ownership. */
              }
@@ -403,7 +403,7 @@ implementation in ``CDefault.qx`` contains the sections
         #  if 0
            {
                /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
-               const QUEX_TYPE_CHARACTER* it = 0x0;
+               const QUEX_TYPE_LEXATOM* it = 0x0;
                printf("previous:  '");
                if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
                printf("'\n");
@@ -418,7 +418,7 @@ implementation in ``CDefault.qx`` contains the sections
         #  if 0
            {
                /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
-               const QUEX_TYPE_CHARACTER* it = 0x0;
+               const QUEX_TYPE_LEXATOM* it = 0x0;
                printf("after:     '");
                if( self.text != 0x0 ) for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
                printf("'\n");
@@ -440,7 +440,7 @@ code section:
    .. code-block:: cpp
 
       body {
-          typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
+          typedef std::basic_string<QUEX_TYPE_LEXATOM> __string;
 
           void    register();
           void    de_register();
@@ -560,7 +560,7 @@ can be specified. The following shows a sample definition of a ``token_type`` se
             column_number :    unsigned;
        }
        distinct {
-           name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+           name        :  std::basic_string<QUEX_TYPE_LEXATOM>;
            number_list :  std::vector<int>;
        }
        union {
@@ -614,7 +614,7 @@ which results in a generated token class in C++:
         virtual ~MeinToken();
 
         std::vector<int>                       number_list;
-        std::basic_string<QUEX_TYPE_CHARACTER> name;
+        std::basic_string<QUEX_TYPE_LEXATOM> name;
 
         union {
             struct {
@@ -629,9 +629,9 @@ which results in a generated token class in C++:
         } content;
 
     public:
-        std::basic_string<QUEX_TYPE_CHARACTER> get_name() const                                              
+        std::basic_string<QUEX_TYPE_LEXATOM> get_name() const                                              
         { return name; }
-        void                                   set_name(std::basic_string<QUEX_TYPE_CHARACTER>& Value)        
+        void                                   set_name(std::basic_string<QUEX_TYPE_LEXATOM>& Value)        
         { name = Value; }
         std::vector<int>                       get_number_list() const                                       
         { return number_list; }
@@ -661,11 +661,11 @@ which results in a generated token class in C++:
 
         void set(const QUEX_TYPE_TOKEN_ID ID) 
         { _id = ID; }
-        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_LEXATOM>& Value0)
         { _id = ID; name = Value0; }
         void set(const QUEX_TYPE_TOKEN_ID ID, const std::vector<int>& Value0)
         { _id = ID; number_list = Value0; }
-        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0, const std::vector<int>& Value1)
+        void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_LEXATOM>& Value0, const std::vector<int>& Value1)
         { _id = ID; name = Value0; number_list = Value1; }
         void set(const QUEX_TYPE_TOKEN_ID ID, const int16_t& Value0, const int16_t& Value1)
         { _id = ID; content.data_1.big_x = Value0; content.data_1.big_y = Value1; }
@@ -918,8 +918,8 @@ A hand written token class must comply to the following constraints:
     
       .. cfunction:: bool QUEX_NAME_TOKEN(take_text)(QUEX_TYPE_TOKEN*     me, 
                                                      QUEX_TYPE_ANALYZER*  analyzer, 
-                                                     const QUEX_TYPE_CHARACTER* Begin, 
-                                                     const QUEX_TYPE_CHARACTER* End)
+                                                     const QUEX_TYPE_LEXATOM* Begin, 
+                                                     const QUEX_TYPE_LEXATOM* End)
       
 
       The meaning and requirements of this functions are the same as for the ``take_text``
@@ -956,7 +956,7 @@ concepts.
 
 In case that the token class is specific in any way, it is a good idea to
 document this to the user. If the token class, for example, requires a special
-``QUEX_TYPE_CHARACTER``, i.e. buffer element type, then a certain value
+``QUEX_TYPE_LEXATOM``, i.e. buffer element type, then a certain value
 for ``--buffer-element-type`` must be specified to quex. A good place to
 do this is the header of the token class file. Even better, if this
 description is surrounded by the marker ``<<<QUEX-OPTIONS>>>`` then 
@@ -1019,7 +1019,7 @@ class, as they are:
   .. describe:: take_text(...)
 
      When the token send functions are used, the ``take_text(...)`` function
-     must accept arguments of type ``QUEX_TYPE_CHARACTER``. This type is specific
+     must accept arguments of type ``QUEX_TYPE_LEXATOM``. This type is specific
      to an analyzer.
 
   .. describe:: LexemeNull
@@ -1032,7 +1032,7 @@ class, as they are:
      The generated pretty printers depend on converter functions which are
      generated by the C/C++ Preprocessor during compile time.
 
-The ``QUEX_TYPE_CHARACTER`` macro is redefined depending when multiple
+The ``QUEX_TYPE_LEXATOM`` macro is redefined depending when multiple
 analyzers are used. Thus, when generating the isolated token class the buffer
 element type is used as can be specified by command line option
 ``--buffer-element-type``. 

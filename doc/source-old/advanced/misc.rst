@@ -10,8 +10,8 @@ specific id TKN_STRING. The accumulator provides the following functions:
 
 .. code-block:: cpp
 
-  void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
-  void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+  void   self_accumulator_add(const QUEX_TYPE_LEXATOM* Begin, const QUEX_TYPE_LEXATOM* End);
+  void   self_accumulator_add_chararacter(const QUEX_TYPE_LEXATOM);
   void   self_accumulator_flush(const token::id_type TokenID);
   void   self_accumulator_clear();
   void   self_accumulator_is_empty();
@@ -71,15 +71,15 @@ the line number of the occurence of the opening ``/*``.
 
    .. code-block:: cpp
 
-      void   self_accumulator_add_chararacter(const QUEX_TYPE_CHARACTER);
+      void   self_accumulator_add_chararacter(const QUEX_TYPE_LEXATOM);
 
    Even if one really wants to add only a single character.
    since it expects a fixed size character object. Instead, please use
 
    .. code-block:: cpp
 
-      void   self_accumulator_add(const QUEX_TYPE_CHARACTER* Begin, 
-                                  const QUEX_TYPE_CHARACTER* End);
+      void   self_accumulator_add(const QUEX_TYPE_LEXATOM* Begin, 
+                                  const QUEX_TYPE_LEXATOM* End);
 
    even if the added element is only one letter. This is so, since one
    character may consist of more than one 'chunk'.

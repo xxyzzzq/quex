@@ -23,10 +23,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 #if 0
     QUEX_INLINE void    
     QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*        me, 
-                             const QUEX_TYPE_CHARACTER* LexemeBegin, 
-                             const QUEX_TYPE_CHARACTER* LexemeEnd)
+                             const QUEX_TYPE_LEXATOM* LexemeBegin, 
+                             const QUEX_TYPE_LEXATOM* LexemeEnd)
     {
-        const QUEX_TYPE_CHARACTER* it = LexemeBegin;
+        const QUEX_TYPE_LEXATOM* it = LexemeBegin;
 
         __QUEX_COUNTER_SHIFT_VALUES(*me);
 
@@ -40,7 +40,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 #   if ! defined(__QUEX_COUNTER_RULES_NEWLINE)
 #   define __QUEX_COUNTER_RULES_NEWLINE(counter, iterator) \
-           if( *iterator == (QUEX_TYPE_CHARACTER)'\n' ) {  \
+           if( *iterator == (QUEX_TYPE_LEXATOM)'\n' ) {  \
                (counter)._line_number_at_end += 1;         \
                (counter)._column_number_at_end = 0;        \
            }
@@ -48,10 +48,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void    
     QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me, 
-                                      const QUEX_TYPE_CHARACTER* LexemeBegin, 
-                                      const QUEX_TYPE_CHARACTER* LexemeEnd)
+                                      const QUEX_TYPE_LEXATOM* LexemeBegin, 
+                                      const QUEX_TYPE_LEXATOM* LexemeEnd)
     {
-        const QUEX_TYPE_CHARACTER* it = LexemeBegin;
+        const QUEX_TYPE_LEXATOM* it = LexemeBegin;
 
         __QUEX_COUNTER_SHIFT_VALUES(*me);
 

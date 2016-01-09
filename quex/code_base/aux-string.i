@@ -18,16 +18,16 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE size_t 
-QUEX_NAME(strlen)(const QUEX_TYPE_CHARACTER* Str)
+QUEX_NAME(strlen)(const QUEX_TYPE_LEXATOM* Str)
 {
-    const QUEX_TYPE_CHARACTER* iterator = Str;
+    const QUEX_TYPE_LEXATOM* iterator = Str;
     while( *iterator != 0 ) ++iterator; 
     return (size_t)(iterator - Str);
 }
 
 QUEX_INLINE size_t 
-QUEX_NAME(strcmp)(const QUEX_TYPE_CHARACTER* it0, 
-                  const QUEX_TYPE_CHARACTER* it1)
+QUEX_NAME(strcmp)(const QUEX_TYPE_LEXATOM* it0, 
+                  const QUEX_TYPE_LEXATOM* it1)
 {
     for(; *it0 == *it1; ++it0, ++it1) {
         /* Both letters are the same and == 0?
@@ -38,7 +38,7 @@ QUEX_NAME(strcmp)(const QUEX_TYPE_CHARACTER* it0,
 }
 
 QUEX_INLINE void
-QUEX_NAME(to_utf8)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACTER* SourceEnd,
+QUEX_NAME(to_utf8)(const QUEX_TYPE_LEXATOM** source_p, const QUEX_TYPE_LEXATOM* SourceEnd,
                    uint8_t**                   drain_p,  const uint8_t*             DrainEnd)
 {
     QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,utf8)(
@@ -46,7 +46,7 @@ QUEX_NAME(to_utf8)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACT
 }
 
 QUEX_INLINE void
-QUEX_NAME(to_utf16)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACTER* SourceEnd,
+QUEX_NAME(to_utf16)(const QUEX_TYPE_LEXATOM** source_p, const QUEX_TYPE_LEXATOM* SourceEnd,
                     uint16_t**                  drain_p,  const uint16_t*            DrainEnd)
 {
     QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,utf16)(
@@ -54,7 +54,7 @@ QUEX_NAME(to_utf16)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARAC
 }
 
 QUEX_INLINE void
-QUEX_NAME(to_utf32)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACTER* SourceEnd,
+QUEX_NAME(to_utf32)(const QUEX_TYPE_LEXATOM** source_p, const QUEX_TYPE_LEXATOM* SourceEnd,
                     uint32_t**                  drain_p,  const uint32_t*            DrainEnd)
 {
     QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,utf32)(
@@ -62,7 +62,7 @@ QUEX_NAME(to_utf32)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARAC
 }
 
 QUEX_INLINE void
-QUEX_NAME(to_char)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACTER* SourceEnd,
+QUEX_NAME(to_char)(const QUEX_TYPE_LEXATOM** source_p, const QUEX_TYPE_LEXATOM* SourceEnd,
                    char**                      drain_p,  const char*                DrainEnd)
 {
     QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,char)(
@@ -71,7 +71,7 @@ QUEX_NAME(to_char)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACT
 
 #if ! defined(__QUEX_OPTION_WCHAR_T_DISABLED)
 QUEX_INLINE void
-QUEX_NAME(to_wchar)(const QUEX_TYPE_CHARACTER** source_p, const QUEX_TYPE_CHARACTER* SourceEnd,
+QUEX_NAME(to_wchar)(const QUEX_TYPE_LEXATOM** source_p, const QUEX_TYPE_LEXATOM* SourceEnd,
                     wchar_t**                   drain_p,  const wchar_t*             DrainEnd)
 {
     QUEX_CONVERTER_STRING(QUEX_SETTING_CHARACTER_CODEC,wchar)(

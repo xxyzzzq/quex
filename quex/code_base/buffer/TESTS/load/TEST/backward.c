@@ -49,7 +49,7 @@ main(int argc, char**argv)
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer_load_backward: (BPC=%i, FB=%i);\n", 
-               sizeof(QUEX_TYPE_CHARACTER),
+               sizeof(QUEX_TYPE_LEXATOM),
                (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
@@ -72,7 +72,7 @@ walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
     QUEX_NAME(ByteLoader_Memory)  loader;
     QUEX_NAME(LexatomLoader)*      filler;
     int                           count = 0;
-    QUEX_TYPE_CHARACTER           memory[5];
+    QUEX_TYPE_LEXATOM           memory[5];
     const int                     MemorySize = 5;
 
     QUEX_NAME(ByteLoader_Memory_construct)(&loader, 
@@ -83,7 +83,7 @@ walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
 
     QUEX_NAME(Buffer_construct)(&buffer, filler,
                                 &memory[0], MemorySize,
-                                (QUEX_TYPE_CHARACTER*)0, E_Ownership_EXTERNAL); 
+                                (QUEX_TYPE_LEXATOM*)0, E_Ownership_EXTERNAL); 
 
     load_forward_until_eos(&buffer);
 
@@ -123,12 +123,12 @@ static ptrdiff_t
 test_load_backward(QUEX_NAME(Buffer)* buffer) 
 {
     struct {
-        QUEX_TYPE_CHARACTER*      read_p;
-        QUEX_TYPE_CHARACTER*      lexeme_start_p;
-        QUEX_TYPE_CHARACTER       read;
-        QUEX_TYPE_CHARACTER       lexeme_start;
-        QUEX_TYPE_CHARACTER*      position_register_1;
-        QUEX_TYPE_CHARACTER*      position_register_3;
+        QUEX_TYPE_LEXATOM*      read_p;
+        QUEX_TYPE_LEXATOM*      lexeme_start_p;
+        QUEX_TYPE_LEXATOM       read;
+        QUEX_TYPE_LEXATOM       lexeme_start;
+        QUEX_TYPE_LEXATOM*      position_register_1;
+        QUEX_TYPE_LEXATOM*      position_register_3;
         QUEX_TYPE_STREAM_POSITION character_index_begin;
     } before;
     bool                 verdict_f;

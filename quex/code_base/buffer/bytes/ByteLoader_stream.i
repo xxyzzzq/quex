@@ -78,7 +78,7 @@ QUEX_NAME(ByteLoader_stream_delete_self)(QUEX_NAME(ByteLoader)* alter_ego)
 }
 
 /* The 'char_type' of a stream determines the atomic size of elements which are
- * read from the stream. It is unrelated to QUEX_TYPE_CHARACTER which
+ * read from the stream. It is unrelated to QUEX_TYPE_LEXATOM which
  * determines the size of a buffer element.                                  */
 template <class StreamType> QUEX_INLINE QUEX_TYPE_STREAM_POSITION    
 QUEX_NAME(ByteLoader_stream_tell)(QUEX_NAME(ByteLoader)* alter_ego)            

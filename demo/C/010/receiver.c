@@ -7,7 +7,7 @@
     static ELEMENT_TYPE receiver_data[] = 
        "Ελληνικά • Euskara • فارسی • Frysk • Galego • 한국어 • हिन्दी bye";
 #else
-    static QUEX_TYPE_CHARACTER   receiver_data[] = 
+    static QUEX_TYPE_LEXATOM   receiver_data[] = 
        "hello 4711 bonjour 0815 world 7777 le 31451 monde le monde 00 welt 1234567890 hallo 1212 hello bye";
 #endif
 
@@ -139,7 +139,7 @@ receiver_copy_syntax_chunk(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
 ELEMENT_TYPE   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 size_t
-receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN)
+receiver_copy_here(QUEX_TYPE_LEXATOM* place, size_t MaxN)
 /* Simulate a low level driver that iself has a hardware fixed position in
  * memory which it fills on demand.
  *                                                                           */
@@ -149,7 +149,7 @@ receiver_copy_here(QUEX_TYPE_CHARACTER* place, size_t MaxN)
     assert(MaxN >= ElementN);
 
     memcpy((void*)place, (void*)&receiver_data[0], 
-           LetterN * sizeof(QUEX_TYPE_CHARACTER));
+           LetterN * sizeof(QUEX_TYPE_LEXATOM));
     return LetterN;
 }
 

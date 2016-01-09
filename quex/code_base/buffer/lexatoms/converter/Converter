@@ -13,7 +13,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Converter_ta
 
     bool    (*convert)(struct QUEX_NAME(Converter_tag)*, 
                        uint8_t**             source, const uint8_t*             SourceEnd, 
-                       QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd);
+                       QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd);
     /* Tries to convert all characters given in 'source' with the coding specified
      * earlier to _open(...). 'source' and 'drain' are passed as pointers to pointers
      * so that the pointers can be changed. This way the converter can inform the
@@ -83,7 +83,7 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                                         const char* FromCodingName, const char* ToCodingName),  
                     bool        (*convert)(QUEX_NAME(Converter)*, 
                                            uint8_t**             source, const uint8_t*             SourceEnd, 
-                                           QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
+                                           QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd),
                     void        (*delete_self)(QUEX_NAME(Converter)*),
                     ptrdiff_t   (*stomach_byte_n)(QUEX_NAME(Converter)*),
                     void        (*stomach_clear)(QUEX_NAME(Converter)*));

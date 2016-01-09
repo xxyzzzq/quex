@@ -320,7 +320,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr,
 
     # Parameterize the common declarations
     txt  = "#define   __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
-    txt += "#define QUEX_TYPE_CHARACTER unsigned char\n" 
+    txt += "#define QUEX_TYPE_LEXATOM unsigned char\n" 
     txt += "#define __QUEX_OPTION_UNIT_TEST\n" 
 
     txt += test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", 
@@ -435,7 +435,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     pattern_list = [ pattern for pattern, action_str in pattern_action_list ]
     function_body, variable_definitions = cpp_generator.do_core(pattern_list, terminal_db)
-    function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_CHARACTER*)0, (QUEX_TYPE_CHARACTER*)0); }\n"
+    function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_LEXATOM*)0, (QUEX_TYPE_LEXATOM*)0); }\n"
     function_txt                        = cpp_generator.wrap_up(sm_name, function_body, 
                                                                 variable_definitions, 
                                                                 ModeNameList=[])
@@ -449,7 +449,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 def nonsense_default_counter(FirstModeF):
     if FirstModeF:
         return   "static void\n" \
-               + "__QUEX_COUNT_VOID(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd) {}\n" 
+               + "__QUEX_COUNT_VOID(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBegin, QUEX_TYPE_LEXATOM* LexemeEnd) {}\n" 
     else:
         return "" # Definition done before
 
@@ -460,7 +460,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
 #define QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
-#define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_LEXATOM)$$BUFFER_LIMIT_CODE$$)
 #define QUEX_OPTION_INCLUDE_STACK_DISABLED
 #define QUEX_OPTION_STRING_ACCUMULATOR_DISABLED
 
@@ -485,7 +485,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #endif
 
 QUEX_NAMESPACE_LEXEME_NULL_OPEN     
-QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+QUEX_TYPE_LEXATOM   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
 QUEX_NAMESPACE_LEXEME_NULL_CLOSE     
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -610,7 +610,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QUEX_TYPE_CHARACTER  TestString[] = "\\0$$TEST_STRING$$\\0";
+        QUEX_TYPE_LEXATOM  TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t         MemorySize   = strlen((const char*)TestString+1) + 2;
 
         DEAL_WITH_COMPUTED_GOTOS();

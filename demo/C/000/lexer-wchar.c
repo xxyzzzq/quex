@@ -53,9 +53,9 @@ get_wfile_input(quex_LexUtf8WChar* qlex)
     /* Normal File Input */
     printf("## FILE* (stdio.h):\n");
     printf("##    Note this works only when engine is generated with -b wchart_t\n");
-    printf("##    and therefore QUEX_TYPE_CHARACTER == uint16_t.\n");
+    printf("##    and therefore QUEX_TYPE_LEXATOM == uint16_t.\n");
 
-    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
+    assert(sizeof(QUEX_TYPE_LEXATOM) == sizeof(wchar_t));
 
     QUEX_NAME(from_file_name)(qlex, "wchar_t-example.txt", 0x0);
 }

@@ -8,7 +8,7 @@
  *                      * _lexeme_start_p
  *                      * whether the buffer contains the end of file or not.
  *                      * begin_character_index
- *                      * QUEX_TYPE_CHARACTER
+ *                      * QUEX_TYPE_LEXATOM
  *
  * The last one is controlled by a compile-time parameter. The others are
  * varried dynamically. The begin_character_index is dealt with by setting
@@ -19,7 +19,7 @@
  *
  * Multiple versions of compiled objects exist:
  *
- *        QUEX_TYPE_CHARACTER:  uint8_t, uint16_t, uint32_t           
+ *        QUEX_TYPE_LEXATOM:  uint8_t, uint16_t, uint32_t           
  *
  * The parameters '_read_p' and '_lexeme_start_p' are varried the following
  * way:
@@ -49,9 +49,9 @@
 #include <move_away_upfront_content-gen.h>
 #include "commonly-pasted.cpp" /* requires 'G_t' from above header. */
 
-static QUEX_TYPE_CHARACTER  content[] = { '6', '5', '4', '3', '2', '1' }; 
+static QUEX_TYPE_LEXATOM  content[] = { '6', '5', '4', '3', '2', '1' }; 
 ptrdiff_t                   ContentSize = sizeof(content)/sizeof(content[0]);
-static QUEX_TYPE_CHARACTER  memory[11];
+static QUEX_TYPE_LEXATOM  memory[11];
 const  ptrdiff_t            MemorySize = sizeof(memory)/sizeof(memory[0]);
 
 
@@ -61,22 +61,22 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer)         buffer;
     G_t                       it;
     struct {
-        QUEX_TYPE_CHARACTER* end_p;     
-        QUEX_TYPE_CHARACTER* read_p;     
-        QUEX_TYPE_CHARACTER  read_char;
-        QUEX_TYPE_CHARACTER* lexeme_start_p;     
-        QUEX_TYPE_CHARACTER  lexeme_start_char;
+        QUEX_TYPE_LEXATOM* end_p;     
+        QUEX_TYPE_LEXATOM* read_p;     
+        QUEX_TYPE_LEXATOM  read_char;
+        QUEX_TYPE_LEXATOM* lexeme_start_p;     
+        QUEX_TYPE_LEXATOM  lexeme_start_char;
     } before;
-    QUEX_TYPE_CHARACTER*      min_p;     
+    QUEX_TYPE_LEXATOM*      min_p;     
     QUEX_TYPE_STREAM_POSITION character_index_at_begin;
     bool                      end_of_stream_in_buffer_f;
     ptrdiff_t                 move_distance;
-    QUEX_TYPE_CHARACTER       backup[MemorySize * 2];
+    QUEX_TYPE_LEXATOM       backup[MemorySize * 2];
     int                       count = 0;
 
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("move_away_upfront_content: (BPC=%i);\n", 
-               sizeof(QUEX_TYPE_CHARACTER));
+               sizeof(QUEX_TYPE_LEXATOM));
         printf("CHOICES: cib=0, cib=1, cib=2, cib=0:EOS, cib=1:EOS, cib=2:EOS;\n");
         return 0;
     };

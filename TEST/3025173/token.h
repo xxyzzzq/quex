@@ -13,7 +13,7 @@ namespace blackray {
 struct Token {
 
     int                                    number_;
-    std::basic_string<QUEX_TYPE_CHARACTER> text_;
+    std::basic_string<QUEX_TYPE_LEXATOM> text_;
 
 
 public:
@@ -21,9 +21,9 @@ public:
     { return number_; }
     void                                   set_name(int number)
     { number_ = number; }
-    std::basic_string<QUEX_TYPE_CHARACTER> get_text() const
+    std::basic_string<QUEX_TYPE_LEXATOM> get_text() const
     { return text_; }
-    void                                   set_text(std::basic_string<QUEX_TYPE_CHARACTER>& text)
+    void                                   set_text(std::basic_string<QUEX_TYPE_LEXATOM>& text)
     { text_ = text; }
 
 
@@ -31,9 +31,9 @@ public:
     { _id = ID; }
     void set(const QUEX_TYPE_TOKEN_ID ID, int Value0)
     { _id = ID; number_ = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_CHARACTER>& Value0)
+    void set(const QUEX_TYPE_TOKEN_ID ID, const std::basic_string<QUEX_TYPE_LEXATOM>& Value0)
     { _id = ID; text_ = Value0; }
-    void set(const QUEX_TYPE_TOKEN_ID ID, int Value0, const std::basic_string<QUEX_TYPE_CHARACTER>& Value1)
+    void set(const QUEX_TYPE_TOKEN_ID ID, int Value0, const std::basic_string<QUEX_TYPE_LEXATOM>& Value1)
     { _id = ID; number_ = Value0; text_ = Value1; }
 
 

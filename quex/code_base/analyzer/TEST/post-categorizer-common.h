@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#define QUEX_TYPE_CHARACTER char
+#define QUEX_TYPE_LEXATOM char
 #define QUEX_OPTION_POST_CATEGORIZER
 #define QUEX_TKN_UNINITIALIZED   1
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>

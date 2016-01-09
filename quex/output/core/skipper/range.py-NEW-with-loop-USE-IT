@@ -140,7 +140,7 @@ $$LC_COUNT_BEFORE_RELOAD$$
      *    of the buffer, thus we record the current position in the lexeme start pointer and
      *    recover it after the loading. */
     me->buffer._read_p = text_end;
-    QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER_POSITION*)position, PositionRegisterN);
+    QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_LEXATOM_POSITION*)position, PositionRegisterN);
     /* Recover '_read_p' from lexeme start 
      * (inverse of what we just did before the loading) */
 """
@@ -352,8 +352,8 @@ def __lc_counting_replacements(code_str, ClosingSequence):
 
         
     if reference_p_required_f:
-        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME((QUEX_TYPE_CHARACTER*)(buffer->_read_p));\n"
-        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((QUEX_TYPE_CHARACTER*)(buffer->_read_p)(&me->buffer)\n" + \
+        reference_p_def = "    __QUEX_IF_COUNT_COLUMNS(reference_p = QUEX_NAME((QUEX_TYPE_LEXATOM*)(buffer->_read_p));\n"
+        before_reload   = "    __QUEX_IF_COUNT_COLUMNS_ADD((QUEX_TYPE_LEXATOM*)(buffer->_read_p)(&me->buffer)\n" + \
                           "                                - reference_p));\n" 
         after_reload    = "        __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer->_read_p);\n"
 

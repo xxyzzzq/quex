@@ -62,7 +62,7 @@ QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)* me, const ptrdiff_t CharacterN
  * RETURNS: True -- if positioning was successful,
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*       BeginP = &me->_memory._front[1];
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   me->input.character_index_begin
                                                        + (me->_read_p - BeginP);
     QUEX_TYPE_STREAM_POSITION  target = CharacterIndexAtReadP + CharacterN;
@@ -106,7 +106,7 @@ QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)* me,
  * RETURNS: True -- if positioning was successful, 
  *          False -- else.                                                   */
 {
-    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*       BeginP = &me->_memory._front[1];
     QUEX_TYPE_STREAM_POSITION  CharacterIndexAtReadP =   me->input.character_index_begin
                                                        + (me->_read_p - BeginP);
     QUEX_TYPE_STREAM_POSITION  target      = CharacterIndexAtReadP - CharacterN;
@@ -165,7 +165,7 @@ QUEX_NAME(Buffer_seek)(QUEX_NAME(Buffer)* me, const QUEX_TYPE_STREAM_POSITION Ch
 QUEX_INLINE bool
 QUEX_NAME(Buffer_finish_seek_based_on_read_p)(QUEX_NAME(Buffer)* me)
 {
-    QUEX_TYPE_CHARACTER* BeginP    = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM* BeginP    = &me->_memory._front[1];
     bool                 verdict_f = true;
 
     if( me->_read_p >= me->input.end_p ) {

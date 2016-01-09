@@ -12,7 +12,7 @@ main(int argc, char** argv)
     QUEX_NAME(ByteLoader)*      byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(file_name);
     QUEX_NAME(LexatomLoader)*    filler      = QUEX_NAME(LexatomLoader_new)(byte_loader, 0, 0);
     quex_UTF16Lex               qlex;
-    const QUEX_TYPE_CHARACTER*  iterator = 0x0;
+    const QUEX_TYPE_LEXATOM*  iterator = 0x0;
 
     if( argc == 1 ) {
         printf("Required at least one argument: 'LE' or 'BE'.\n");

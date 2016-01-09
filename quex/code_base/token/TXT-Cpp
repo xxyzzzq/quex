@@ -28,8 +28,8 @@ inline void    QUEX_NAME_TOKEN(destruct)($TOKEN_CLASS* __this);
 inline void    QUEX_NAME_TOKEN(copy)($TOKEN_CLASS* me, const $TOKEN_CLASS* That);
 inline bool    QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*            __this, 
                                           QUEX_TYPE_ANALYZER*         analyzer, 
-                                          const QUEX_TYPE_CHARACTER*  Begin, 
-                                          const QUEX_TYPE_CHARACTER*  End);
+                                          const QUEX_TYPE_LEXATOM*  Begin, 
+                                          const QUEX_TYPE_LEXATOM*  End);
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 inline size_t  QUEX_NAME_TOKEN(repetition_n_get)($TOKEN_CLASS* __this);
@@ -86,8 +86,8 @@ $$BODY$$
         friend void QUEX_NAME_TOKEN(copy)($TOKEN_CLASS* me, const $TOKEN_CLASS* That);
         friend bool QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*               __this, 
                                                QUEX_TYPE_ANALYZER*         analyzer, 
-                                               const QUEX_TYPE_CHARACTER*  Begin, 
-                                               const QUEX_TYPE_CHARACTER*  End);
+                                               const QUEX_TYPE_LEXATOM*  Begin, 
+                                               const QUEX_TYPE_LEXATOM*  End);
 };
 
 $$NAMESPACE_CLOSE$$

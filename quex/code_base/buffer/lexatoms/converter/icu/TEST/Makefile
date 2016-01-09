@@ -50,16 +50,16 @@ hwut-end: clean
 	@echo Bye
 
 %-1.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint8_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_LEXATOM=uint8_t 
 
 %-2.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint16_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_LEXATOM=uint16_t 
 
 %-4.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=uint32_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_LEXATOM=uint32_t 
 
 %-WC.exe: %.cpp $(BASIC_SOURCES)
-	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_CHARACTER=wchar_t 
+	$(CC) $^ $(ICU_LIBS) -o $@ -DQUEX_TYPE_LEXATOM=wchar_t 
 
 %.E: %.cpp
 	g++ $(DEFS) $(INCLUDES) -E $< -o $@

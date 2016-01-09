@@ -65,7 +65,7 @@
 
 typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG { 
     const size_t                         boundary_n;  
-    const QUEX_TYPE_CHARACTER* const     boundary;
+    const QUEX_TYPE_LEXATOM* const     boundary;
     QUEX_TYPE_STATISTICS_COUNTER* const  counter;     /* size = boundary_n + 1 */
 } QUEX_NAME(statistics_interval_list);
 
@@ -79,7 +79,7 @@ extern const QUEX_NAME(statistics_state)  QUEX_NAME(statistics_state_list)[];
 extern const QUEX_NAME(statistics_state)* QUEX_NAME(statistics_state_list_end);
 
 QUEX_INLINE void QUEX_NAME(statistics_state_count)(const QUEX_NAME(statistics_state)* S, 
-                                                   QUEX_TYPE_CHARACTER C);
+                                                   QUEX_TYPE_LEXATOM C);
 QUEX_INLINE void QUEX_NAME(statistics_save)(const char* Filename);
 
 #endif /* __INCLUDE_GUARD__ANALYZER__STATISTICS */

@@ -11,9 +11,9 @@
 QUEX_NAMESPACE_MAIN_OPEN
                     
 QUEX_INLINE void   QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
-                             QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                             QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                              size_t               BufferMemorySize,
-                             QUEX_TYPE_CHARACTER* BufferEndOfContentP  /* = 0x0   */);
+                             QUEX_TYPE_LEXATOM* BufferEndOfContentP  /* = 0x0   */);
 QUEX_INLINE void   QUEX_NAME(Asserts_construct)(const char* CodecName);
 QUEX_INLINE void   QUEX_NAME(Tokens_construct)(QUEX_TYPE_ANALYZER* me);
 QUEX_INLINE void   QUEX_NAME(Tokens_reset)(QUEX_TYPE_ANALYZER* me);
@@ -157,17 +157,17 @@ QUEX_MEMBER_FUNCTION1(from, LexatomLoader,
                       QUEX_NAME(LexatomLoader)* filler)
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    QUEX_TYPE_CHARACTER* memory;
+    QUEX_TYPE_LEXATOM* memory;
 
-    memory = (QUEX_TYPE_CHARACTER*)QUEXED(MemoryManager_allocate)(
-                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_CHARACTER), 
+    memory = (QUEX_TYPE_LEXATOM*)QUEXED(MemoryManager_allocate)(
+                       QUEX_SETTING_BUFFER_SIZE * sizeof(QUEX_TYPE_LEXATOM), 
                        E_MemoryObjectType_BUFFER_MEMORY);
     /* NOT: Abort/return if memory == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
 
     QUEX_NAME(Buffer_construct)(&me->buffer, filler,
                                 memory, QUEX_SETTING_BUFFER_SIZE, 
-                                (QUEX_TYPE_CHARACTER*)0,
+                                (QUEX_TYPE_LEXATOM*)0,
                                 E_Ownership_LEXICAL_ANALYZER);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);
 }
@@ -176,9 +176,9 @@ QUEX_MEMBER_FUNCTION1(from, LexatomLoader,
  *                                                                           */
 QUEX_INLINE void
 QUEX_MEMBER_FUNCTION3(from, memory,
-                      QUEX_TYPE_CHARACTER*    Memory,
+                      QUEX_TYPE_LEXATOM*    Memory,
                       const size_t            MemorySize,
-                      QUEX_TYPE_CHARACTER*    EndOfFileP)
+                      QUEX_TYPE_LEXATOM*    EndOfFileP)
 
 /* When memory is provided from extern, the 'external entity' is responsible
  * for filling it. There is no 'file/stream handle', no 'byte loader', and 'no
@@ -186,7 +186,7 @@ QUEX_MEMBER_FUNCTION3(from, memory,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     __quex_assert((! Memory) || (EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]));
-    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_CHARACTER*)0)); 
+    __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_LEXATOM*)0)); 
 
     QUEX_NAME(Buffer_construct)(&me->buffer, 
                                 (QUEX_NAME(LexatomLoader)*)0,
@@ -233,14 +233,14 @@ QUEX_DESTRUCTOR()
 
 QUEX_INLINE void
 QUEX_NAME(Asserts_user_memory)(QUEX_TYPE_ANALYZER*  me,
-                               QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                               QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                                size_t               BufferMemorySize,
-                               QUEX_TYPE_CHARACTER* BufferEndOfContentP  /* = 0x0   */)
+                               QUEX_TYPE_LEXATOM* BufferEndOfContentP  /* = 0x0   */)
 {
 #   ifdef QUEX_OPTION_ASSERTS
     size_t  memory_size = BufferMemoryBegin ? BufferMemorySize 
                           :                   QUEX_SETTING_BUFFER_SIZE;
-    QUEX_TYPE_CHARACTER*   iterator = 0x0;
+    QUEX_TYPE_LEXATOM*   iterator = 0x0;
 
     __quex_assert(memory_size == 0 || memory_size > 2);
     if( BufferMemoryBegin ) {

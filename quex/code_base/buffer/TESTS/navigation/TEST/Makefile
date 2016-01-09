@@ -9,14 +9,14 @@
 # check on different byte-loader types. Byte-loading is extensively tested
 # elsewhere.
 # 
-# QUEX_TYPE_CHARACTER and QUEX_SETTING_BUFFER_MIN_FALLBACK_N are controlled
+# QUEX_TYPE_LEXATOM and QUEX_SETTING_BUFFER_MIN_FALLBACK_N are controlled
 # at compile time. Thus, to variate those two, different test object files 
 # must be build from ONE source file. Therefore, for each combination a rule
 # exists that produces the object file. Rules follow the scheme:
 #
 #              %-SIZE-FALLBACK_.exe: %.cpp
 #
-# with SIZE as sizeof(QUEX_TYPE_CHARACTER) and FALLBACK_ as the value of 
+# with SIZE as sizeof(QUEX_TYPE_LEXATOM) and FALLBACK_ as the value of 
 # QUEX_SETTING_BUFFER_MIN_FALLBACK_N.
 #
 # (C) Frank-Rene Schaefer
@@ -33,10 +33,10 @@ DEFS       := -DQUEX_OPTION_ASSERTS \
 			  -DQUEX_OPTION_CONVERTER_ICU 
 INCLUDES   := -I. -I$(HWUT_PATH)/support/C -I$(QUEX_PATH)
 
-SIZE_1     := -DQUEX_TYPE_CHARACTER=uint8_t
-SIZE_2     := -DQUEX_TYPE_CHARACTER=uint16_t
-SIZE_4     := -DQUEX_TYPE_CHARACTER=uint32_t
-SIZE_WC    := -DQUEX_TYPE_CHARACTER=wchar_t
+SIZE_1     := -DQUEX_TYPE_LEXATOM=uint8_t
+SIZE_2     := -DQUEX_TYPE_LEXATOM=uint16_t
+SIZE_4     := -DQUEX_TYPE_LEXATOM=uint32_t
+SIZE_WC    := -DQUEX_TYPE_LEXATOM=wchar_t
 FALLBACK_0 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 
 FALLBACK_1 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=1 
 FALLBACK_2 := -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=2

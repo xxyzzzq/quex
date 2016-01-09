@@ -13,8 +13,8 @@ void test(const char* TestString, QUEX_NAME(Counter)& x)
 {
     x._line_number_at_begin   = x._line_number_at_end;
     x._column_number_at_begin = x._column_number_at_end;
-    QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
-                             (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_LEXATOM*)TestString, 
+                             (QUEX_TYPE_LEXATOM*)TestString + strlen(TestString));
 
     printf("__________________________\n");
     printf("  lexeme: '");

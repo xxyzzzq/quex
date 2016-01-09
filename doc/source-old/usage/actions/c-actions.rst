@@ -76,12 +76,12 @@ The following send macros are available:
 
     This allows to call the token's ``take_text`` function to set text content
     to what is specified by the zero terminated string ``Str``. ``Str`` must
-    be of type 'pointer to ``QUEX_TYPE_CHARACTER``'.
+    be of type 'pointer to ``QUEX_TYPE_LEXATOM``'.
 
 .. warning::
 
     The token passed to 'self_send1(...)' and the like *must* be of the 
-    type ``QUEX_TYPE_CHARACTER`` and *must* have the same coding as 
+    type ``QUEX_TYPE_LEXATOM`` and *must* have the same coding as 
     the internal buffer. You might want to consider '--bet wchar_t' 
     as buffer size when using converters. Then strings constants like 
     ``L"something"`` could be conveniently passed.
@@ -90,7 +90,7 @@ The following send macros are available:
 
     This corresponds to a call to the current token's ``take_text`` function
     where ``Begin`` and ``End`` define the boundaries of the string to be
-    taken. Both have to be of type 'pointer to ``QUEX_TYPE_CHARACTER``'.
+    taken. Both have to be of type 'pointer to ``QUEX_TYPE_LEXATOM``'.
 
 .. warning::
 

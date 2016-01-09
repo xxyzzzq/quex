@@ -10,7 +10,7 @@
 #include <quex/code_base/single.i>
 #include <hwut_unit.h>
 
-static const QUEX_TYPE_CHARACTER  PseudoFile[] = {
+static const QUEX_TYPE_LEXATOM  PseudoFile[] = {
    1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 
    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
 };
@@ -20,8 +20,8 @@ static const QUEX_TYPE_CHARACTER  PseudoFile[] = {
 static ptrdiff_t
 verify_content(QUEX_NAME(Buffer)* me)
 {
-    QUEX_TYPE_CHARACTER  expected;
-    QUEX_TYPE_CHARACTER* p;
+    QUEX_TYPE_LEXATOM  expected;
+    QUEX_TYPE_LEXATOM* p;
     ptrdiff_t            count = 0;
 
     /* If end_p does not stand on buffer boarder, then it must stand according

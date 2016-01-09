@@ -214,7 +214,7 @@
 
 #   define __quex_debug_path_walker_core(PathWalkerIdx, PathBase, PathIterator, Message)             \
            __quex_debug_core(__QUEX_DEBUG_MAP_STATE_KEY_TO_STATE(PathIterator-PathBase), (Message)); \
-           __quex_assert(PathIterator <  &PathBase[sizeof(PathBase)/sizeof(QUEX_TYPE_CHARACTER)]);   \
+           __quex_assert(PathIterator <  &PathBase[sizeof(PathBase)/sizeof(QUEX_TYPE_LEXATOM)]);   \
            __quex_assert(PathIterator >= &PathBase[0]);                                              \
            __quex_debug4("(path walker: %i, path: %i, offset: %i)",                                  \
                          (int)PathWalkerIdx,                                                         \
@@ -368,9 +368,9 @@
 
 #   define QUEX_LEXEME_TERMINATING_ZERO_UNDO(BUFFER)                   \
         /* only need to reset, in case that the terminating zero was set*/        \
-        if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) { \
+        if( (BUFFER)->_character_at_lexeme_start != (QUEX_TYPE_LEXATOM)'\0' ) { \
             *((BUFFER)->_read_p) = (BUFFER)->_character_at_lexeme_start;         \
-            (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     \
+            (BUFFER)->_character_at_lexeme_start = (QUEX_TYPE_LEXATOM)'\0';     \
         }
 #else
 

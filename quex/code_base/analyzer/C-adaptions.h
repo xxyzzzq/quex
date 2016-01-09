@@ -116,7 +116,7 @@
                                        (&QUEX_LEXEME_NULL) + 1);                          \
         }                                                                                 \
         else {                                                                            \
-            *(self.accumulator.text.end) = (QUEX_TYPE_CHARACTER)0; /* see above */        \
+            *(self.accumulator.text.end) = (QUEX_TYPE_LEXATOM)0; /* see above */        \
                                                                                           \
             if( QUEX_NAME_TOKEN(take_text)(__QUEX_CURRENT_TOKEN_P, &self,                 \
                                            self.accumulator.text.begin,                   \

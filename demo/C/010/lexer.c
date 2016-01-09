@@ -290,7 +290,7 @@ loop_arbitrary_chunks(CLexer* lexer, CToken** prev_token_p)
  *          false, if analysis may NOT continue; BYE has been received.      */
 {
     QUEX_TYPE_TOKEN_ID    token_id;
-    QUEX_TYPE_CHARACTER*  prev_lexeme_start_p;
+    QUEX_TYPE_LEXATOM*  prev_lexeme_start_p;
     PRINT_FUNCTION();
 
     /* Loop until 'TERMINATION' or 'BYE' is received.                   

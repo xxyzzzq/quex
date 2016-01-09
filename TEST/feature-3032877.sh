@@ -22,7 +22,7 @@ function perform_test() {
     echo
     quex -i simple.qx -o EasyLexer $argument_list # --debug-exception
     if [ -e EasyLexer-configuration ]; then
-        awk ' /QUEX_TYPE_CHARACTER/ && /define/ && !/SETTING/ ' EasyLexer-configuration \
+        awk ' /QUEX_TYPE_LEXATOM/ && /define/ && !/SETTING/ ' EasyLexer-configuration \
             >& tmp.txt
         cat tmp.txt
         rm -f tmp.txt

@@ -359,7 +359,7 @@ means of incidence handlers, as they are:
      .. describe:: BadCharacter
 
         A constant that contains the bad indentation character. It is of
-        type ``QUEX_TYPE_CHARACTER``.
+        type ``QUEX_TYPE_LEXATOM``.
 
      Quex does not forbid the definition of a pattern that contains the 
      bad character. The contrary, it is essential to define such a pattern

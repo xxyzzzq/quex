@@ -61,8 +61,8 @@ def do(Data, TheAnalyzer):
 #    # 'if i == CloserSequence[i]' --> continue with closing sequence
 
 template_str = """
-    Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
-    Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
+    Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
+    Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
     /* text_end                           = me->buffer.input.end_p; */
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
@@ -98,23 +98,23 @@ $$ENTRY$$
                     $$GOTO_AFTER_END_OF_SKIPPING$$ /* End of range reached. */
                 }
                 --counter;
-                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
-                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
+                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
+                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
                 goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
-            Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
+            Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
         }
         if( input == *Skipper$$SKIPPER_INDEX$$_Opener_it ) {
             ++Skipper$$SKIPPER_INDEX$$_Opener_it;
             if( Skipper$$SKIPPER_INDEX$$_Opener_it == Skipper$$SKIPPER_INDEX$$_OpenerEnd ) {
                 ++counter;
-                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
-                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Closer;
+                Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
+                Skipper$$SKIPPER_INDEX$$_Closer_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Closer;
                 goto CONTINUE_$$SKIPPER_INDEX$$;
             }
         } else {
-            Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_CHARACTER*)Skipper$$SKIPPER_INDEX$$_Opener;
+            Skipper$$SKIPPER_INDEX$$_Opener_it = (QUEX_TYPE_LEXATOM*)Skipper$$SKIPPER_INDEX$$_Opener;
         }
 CONTINUE_$$SKIPPER_INDEX$$:
 $$LC_COUNT_IN_LOOP$$

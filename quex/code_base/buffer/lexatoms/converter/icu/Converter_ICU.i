@@ -24,8 +24,8 @@ QUEX_INLINE bool
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       me, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
-                                 QUEX_TYPE_CHARACTER**       drain,  
-                                 const QUEX_TYPE_CHARACTER*  DrainEnd);
+                                 QUEX_TYPE_LEXATOM**       drain,  
+                                 const QUEX_TYPE_LEXATOM*  DrainEnd);
 QUEX_INLINE void
 QUEX_NAME(Converter_ICU_delete_self)(QUEX_NAME(Converter)* me);
 
@@ -112,7 +112,7 @@ QUEX_NAME(Converter_ICU_open)(QUEX_NAME(Converter)* alter_ego,
           * UTF-16's Base Multilingual Plane (BMP). The notion of UCS-2 is
           * deprecated and dead. Unicode 2.0 in 1996 changed its default
           * encoding to UTF-16." (userguide.icu-project.org/icufaq)      */
-        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        switch( sizeof(QUEX_TYPE_LEXATOM) ) {
         case 4:  ToCoding = little_endian_f ? "UTF32-LE" : "UTF32-LE"; break;
         case 2:  ToCoding = little_endian_f ? "UTF16-LE" : "UTF16-LE"; break;
         case 1:  ToCoding = "ISO-8859-1"; break;
@@ -136,8 +136,8 @@ QUEX_INLINE bool
 QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego, 
                                  uint8_t**                   source, 
                                  const uint8_t*              SourceEnd, 
-                                 QUEX_TYPE_CHARACTER**       drain,  
-                                 const QUEX_TYPE_CHARACTER*  DrainEnd)
+                                 QUEX_TYPE_LEXATOM**       drain,  
+                                 const QUEX_TYPE_LEXATOM*  DrainEnd)
 /* RETURNS: 'true'  if the drain was completely filled.
  *          'false' if the drain could not be filled completely and 
  *                  more source bytes are required.                      */
@@ -146,7 +146,7 @@ QUEX_NAME(Converter_ICU_convert)(QUEX_NAME(Converter)*       alter_ego,
     uint8_t*                  SourceBegin = *source;
     (void)SourceBegin;
 #   if 0
-    QUEX_TYPE_CHARACTER*      DEBUG_DrainBegin  = *drain;
+    QUEX_TYPE_LEXATOM*      DEBUG_DrainBegin  = *drain;
     int                       i = 0;
 #   endif
 

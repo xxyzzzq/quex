@@ -30,9 +30,9 @@ QUEX_NAMESPACE_MAIN_OPEN
 #       endif
 
         struct { 
-            QUEX_TYPE_CHARACTER* begin;
-            QUEX_TYPE_CHARACTER* end;
-            QUEX_TYPE_CHARACTER* memory_end;
+            QUEX_TYPE_LEXATOM* begin;
+            QUEX_TYPE_LEXATOM* end;
+            QUEX_TYPE_LEXATOM* memory_end;
         }                   text;
         QUEX_TYPE_ANALYZER* the_lexer;     
 
@@ -55,11 +55,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 
     QUEX_INLINE void 
     QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)*    me,
-                               const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+                               const QUEX_TYPE_LEXATOM* Begin, const QUEX_TYPE_LEXATOM* End);
 
     QUEX_INLINE void 
     QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
-                                         const QUEX_TYPE_CHARACTER  Character);
+                                         const QUEX_TYPE_LEXATOM  Character);
 
     QUEX_INLINE void  
     QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me);

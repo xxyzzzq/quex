@@ -19,7 +19,7 @@
  *
  *             ../generator/declarations.g
  *
- * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * These functions ARE DEPENDENT on QUEX_TYPE_LEXATOM.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * (C) 2012 Frank-Rene Schaefer. 
@@ -36,7 +36,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 #define __QUEX_FROM                cp866
-#define __QUEX_FROM_TYPE           QUEX_TYPE_CHARACTER
+#define __QUEX_FROM_TYPE           QUEX_TYPE_LEXATOM
 
 #include <quex/code_base/converter_helper/generator/declarations.g>
 
@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
  *          to implement each string converter from the given 
  *          character converters. 
  *
- * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * These functions ARE DEPENDENT on QUEX_TYPE_LEXATOM.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * 2010 (C) Frank-Rene Schaefer; 
@@ -88,11 +88,11 @@ QUEX_NAMESPACE_MAIN_CLOSE
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(cp866, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+QUEX_CONVERTER_CHAR_DEF(cp866, utf32)(const QUEX_TYPE_LEXATOM** input_pp,
                                           uint32_t**                  output_pp)
 {
     uint16_t             unicode = (uint32_t)0;
-    QUEX_TYPE_CHARACTER  input   = *(*input_pp)++;
+    QUEX_TYPE_LEXATOM  input   = *(*input_pp)++;
     if( input < 0x0000D1 ) {
         if( input < 0x0000C0 ) {
             if( input < 0x0000B8 ) {
@@ -394,7 +394,7 @@ QUEX_CONVERTER_CHAR_DEF(cp866, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(cp866, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+QUEX_CONVERTER_CHAR_DEF(cp866, utf16)(const QUEX_TYPE_LEXATOM** input_pp,
                                           uint16_t**                  output_pp)
 {
     uint32_t   unicode   = (uint32_t)0;
@@ -406,11 +406,11 @@ QUEX_CONVERTER_CHAR_DEF(cp866, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(cp866, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(cp866, utf8)(const QUEX_TYPE_LEXATOM**  input_pp, 
                                          uint8_t**                    output_pp)
 {
     uint32_t            unicode = (uint32_t)-1;
-    QUEX_TYPE_CHARACTER input   = *(*input_pp)++;
+    QUEX_TYPE_LEXATOM input   = *(*input_pp)++;
     
     if( input < 0x0000D1 ) {
         if( input < 0x0000C0 ) {
@@ -737,7 +737,7 @@ return;
 }
 
 #define __QUEX_FROM           cp866
-#define __QUEX_FROM_TYPE      QUEX_TYPE_CHARACTER
+#define __QUEX_FROM_TYPE      QUEX_TYPE_LEXATOM
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */

@@ -1,6 +1,6 @@
 
 struct tree_node_branch {
-    QUEX_TYPE_CHARACTER  char;
+    QUEX_TYPE_LEXATOM  char;
     ptrdiff_t            target;
 };
 

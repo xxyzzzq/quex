@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <assert.h>
 
-typedef DEF_CHARACTER_TYPE   QUEX_TYPE_CHARACTER;
-typedef QUEX_TYPE_CHARACTER* QUEX_TYPE_CHARACTER_POSITION;
+typedef DEF_CHARACTER_TYPE   QUEX_TYPE_LEXATOM;
+typedef QUEX_TYPE_LEXATOM* QUEX_TYPE_LEXATOM_POSITION;
 typedef long                 QUEX_TYPE_GOTO_LABEL;
 
 typedef struct {
@@ -14,8 +14,8 @@ typedef struct {
         size_t  _column_number_at_end;
     } counter;
     struct {
-        QUEX_TYPE_CHARACTER_POSITION _read_p;
-        QUEX_TYPE_CHARACTER_POSITION _lexeme_start_p;
+        QUEX_TYPE_LEXATOM_POSITION _read_p;
+        QUEX_TYPE_LEXATOM_POSITION _lexeme_start_p;
     } buffer;
 } QUEX_TYPE_ANALYZER;
 
@@ -52,6 +52,6 @@ typedef struct {
 
 void
 DEF_COUNTER_FUNCTION(QUEX_TYPE_ANALYZER*  me, 
-                     QUEX_TYPE_CHARACTER* LexemeBegin, 
-                     QUEX_TYPE_CHARACTER* LexemeEnd);
+                     QUEX_TYPE_LEXATOM* LexemeBegin, 
+                     QUEX_TYPE_LEXATOM* LexemeEnd);
 

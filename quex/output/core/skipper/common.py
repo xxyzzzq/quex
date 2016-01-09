@@ -4,7 +4,7 @@ from   quex.blackboard                   import setup as Setup, \
                                                 Lng
 
 __line_counter_in_loop = """
-    __QUEX_IF_COUNT_LINES_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 
+    __QUEX_IF_COUNT_LINES_IF( input == (QUEX_TYPE_LEXATOM)%s ) { 
         __QUEX_IF_COUNT_LINES_ADD((size_t)1);
     }
 """
@@ -19,7 +19,7 @@ def line_counter_in_loop():
 
 
 __line_column_counter_in_loop = """
-    __QUEX_IF_COUNT_IF( input == (QUEX_TYPE_CHARACTER)%s ) { 
+    __QUEX_IF_COUNT_IF( input == (QUEX_TYPE_LEXATOM)%s ) { 
         __QUEX_IF_COUNT_LINES_ADD((size_t)1);
         __QUEX_IF_COUNT_COLUMNS_SET((size_t)0);
         __QUEX_IF_COUNT_COLUMNS(reference_p = me->buffer._read_p);

@@ -12,8 +12,8 @@ main(int argc, char** argv)
 
     const size_t               Start      = 0x0;
     const size_t               CharacterN = 255;
-    QUEX_TYPE_CHARACTER        source[256];
-    const QUEX_TYPE_CHARACTER* source_p = source;
+    QUEX_TYPE_LEXATOM        source[256];
+    const QUEX_TYPE_LEXATOM* source_p = source;
     uint8_t                    drain[4096];
     uint8_t*                   drain_p = drain;
     uint8_t                    drain_ref[4096];

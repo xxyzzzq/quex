@@ -395,12 +395,12 @@ def __get_converter_configuration(IncludeGuardExtension):
     return declaration_include, implementation_include, string, wstring
 
 QUEX_strlen_re                = re.compile("QUEX_NAME\\(strlen\\)", re.UNICODE)
-QUEX_TYPE_CHARACTER_re        = re.compile("\\bQUEX_TYPE_CHARACTER\\b", re.UNICODE)
+QUEX_TYPE_LEXATOM_re        = re.compile("\\bQUEX_TYPE_LEXATOM\\b", re.UNICODE)
 QUEX_LEXEME_NULL_re           = re.compile("\\bQUEX_LEXEME_NULL\\b", re.UNICODE)
 QUEX_TYPE_ANALYZER_re         = re.compile("\\bQUEX_TYPE_ANALYZER\\b", re.UNICODE)
 QUEX_TYPE_TOKEN_ID_re         = re.compile("\\bQUEX_TYPE_TOKEN_ID\\b", re.UNICODE)
 QUEX_LexemeNullDeclaration_re = re.compile("QUEX_NAME\\(LexemeNullObject\\)", re.UNICODE)
-QUEX_TYPE_CHARACTER_safe_re   = re.compile("\\$\\$quex_type_character\\$\\$", re.UNICODE)
+QUEX_TYPE_LEXATOM_safe_re   = re.compile("\\$\\$quex_type_character\\$\\$", re.UNICODE)
 
 def clean_for_independence(txt):
     token_descr = blackboard.token_type_definition
@@ -408,20 +408,20 @@ def clean_for_independence(txt):
     global QUEX_MEMORY_FREE_re
     global QUEX_MEMORY_ALLOC_re
     global QUEX_strlen_re
-    global QUEX_TYPE_CHARACTER_re
+    global QUEX_TYPE_LEXATOM_re
     global QUEX_TYPE_ANALYZER_re
     global QUEX_TYPE_TOKEN_ID_re
     global QUEX_LexemeNullDeclaration_re
-    global QUEX_TYPE_CHARACTER_safe_re
+    global QUEX_TYPE_LEXATOM_safe_re
     global QUEX_LEXEME_NULL_re
 
-    txt = QUEX_TYPE_CHARACTER_re.sub(Setup.buffer_element_type, txt)
+    txt = QUEX_TYPE_LEXATOM_re.sub(Setup.buffer_element_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub(common_lexeme_null_str(), txt)
     # txt = QUEX_MEMORY_ALLOC_re.sub("malloc", txt)
     # txt = QUEX_MEMORY_FREE_re.sub("free", txt)
-    txt = QUEX_TYPE_CHARACTER_safe_re.sub("QUEX_TYPE_CHARACTER", txt)
+    txt = QUEX_TYPE_LEXATOM_safe_re.sub("QUEX_TYPE_LEXATOM", txt)
     txt = QUEX_strlen_re.sub("%s_strlen" % token_descr.class_name_safe, txt)
     txt = QUEX_LEXEME_NULL_re.sub(common_lexeme_null_str(), txt)
 
@@ -470,7 +470,7 @@ def lexeme_null_declaration():
         # The following should hold in any both cases:
         return "".join([
                     "QUEX_NAMESPACE_LEXEME_NULL_OPEN\n",
-                    "extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;\n" 
+                    "extern QUEX_TYPE_LEXATOM   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;\n" 
                     "QUEX_NAMESPACE_LEXEME_NULL_CLOSE\n",
                   ])
 

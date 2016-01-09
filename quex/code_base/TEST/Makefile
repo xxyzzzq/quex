@@ -28,11 +28,11 @@ bom-istream.exe: bom.cpp
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 strange_stream.exe: strange_stream.cpp 
-	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
+	g++ -DQUEX_TYPE_LEXATOM=uint8_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 strange_wstream.exe: strange_wstream.cpp 
-	g++ -DQUEX_TYPE_CHARACTER=wchar_t \
+	g++ -DQUEX_TYPE_LEXATOM=wchar_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 

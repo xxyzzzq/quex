@@ -464,8 +464,8 @@ function to do this is
 .. code-block:: cpp
 
     void  set_callback_on_buffer_content_change(
-                void (*callback)(QUEX_TYPE_CHARACTER* ContentBegin, 
-                                 QUEX_TYPE_CHARACTER* ContentEnd));
+                void (*callback)(QUEX_TYPE_LEXATOM* ContentBegin, 
+                                 QUEX_TYPE_LEXATOM* ContentEnd));
 
 As long as the provided callback is not called, all lexeme pointers 
 are safe. If the callback is called, then the current buffer content

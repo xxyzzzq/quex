@@ -13,7 +13,7 @@ token_type {
         * follow the function signature below.                                       */
        QUEX_NAMESPACE_MAIN_OPEN
        QUEX_INLINE uint8_t*
-       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_CHARACTER*  Source, 
+       QUEX_CONVERTER_OF_TEXT_TO_UTF8(const QUEX_TYPE_LEXATOM*  Source, 
                                       size_t                      SourceSize, 
                                       uint8_t*                    Drain, 
                                       size_t                      DrainSize);
@@ -25,7 +25,7 @@ token_type {
         column_number : size_t;
    }
    distinct {
-       text   :  std::basic_string<QUEX_TYPE_CHARACTER>;
+       text   :  std::basic_string<QUEX_TYPE_LEXATOM>;
        number :  size_t;
    }
 
@@ -46,7 +46,7 @@ token_type {
    }
 
    body {
-        typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
+        typedef std::basic_string<QUEX_TYPE_LEXATOM> __string;
 
         operator 
         const std::string() const
@@ -73,7 +73,7 @@ token_type {
             std::string                tmp;
             QUEX_TYPE_TOKEN::__string  tmp2 = self.text;
 
-            uint8_t* end = QUEX_CONVERTER_OF_TEXT_TO_UTF8((QUEX_TYPE_CHARACTER*)tmp2.c_str(),
+            uint8_t* end = QUEX_CONVERTER_OF_TEXT_TO_UTF8((QUEX_TYPE_LEXATOM*)tmp2.c_str(),
                                                           tmp2.length(),
                                                           utf8_buffer, 
                                                           QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
@@ -87,12 +87,12 @@ token_type {
 #       if 0
         {
             /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
-            QUEX_TYPE_CHARACTER* it = 0x0;
+            QUEX_TYPE_LEXATOM* it = 0x0;
             printf("previous:  '");
-            for(it = (QUEX_TYPE_CHARACTER*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            for(it = (QUEX_TYPE_LEXATOM*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
             printf("'\n");
             printf("take_text: '");
-            for(it = (QUEX_TYPE_CHARACTER*)Begin; it != End; ++it) printf("%04X.", (int)*it);
+            for(it = (QUEX_TYPE_LEXATOM*)Begin; it != End; ++it) printf("%04X.", (int)*it);
             printf("'\n");
         }
 #       endif
@@ -103,9 +103,9 @@ token_type {
 #       if 0
         {
             /* Hint for debug: To check take_text change "#if 0" to "#if 1". */
-            QUEX_TYPE_CHARACTER* it = 0x0;
+            QUEX_TYPE_LEXATOM* it = 0x0;
             printf("after:     '");
-            for(it = (QUEX_TYPE_CHARACTER*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
+            for(it = (QUEX_TYPE_LEXATOM*)self.text.c_str(); *it ; ++it) printf("%04X.", (int)*it);
             printf("'\n");
         }
 #       endif

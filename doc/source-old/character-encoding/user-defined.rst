@@ -33,8 +33,8 @@ described here in a simplified manner, without precise type definitions:
         bool    (*convert)(struct QuexConverter*, 
                            uint8_t**                  source, 
                            const uint8_t*             SourceEnd, 
-                           QUEX_TYPE_CHARACTER**      drain,  
-                           const QUEX_TYPE_CHARACTER* DrainEnd);
+                           QUEX_TYPE_LEXATOM**      drain,  
+                           const QUEX_TYPE_LEXATOM* DrainEnd);
 
         /* optional: can be set to 0x0 */
         void    (*on_conversion_discontinuity)(struct QuexConverter*);  
@@ -51,10 +51,10 @@ or the algorithm for character conversion. The role of each function is explaine
 
         This opens internally a conversion handle for the conversion from 'FromCodingName'
         to ``ToCodingName``. Pass ``0x0`` as ``ToCodingName`` in order to indicate a conversion
-        to Unicode of size sizeof(QUEX_TYPE_CHARACTER). 
+        to Unicode of size sizeof(QUEX_TYPE_LEXATOM). 
                 
         It is the task of the particular implementation to provide the 'to coding'
-        which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
+        which is appropriate for sizeof(QUEX_TYPE_LEXATOM), i.e. ASCII, UCS2, UCS4.
 
         Based on the ``FromCodingName`` this function needs to decide whether the
         character encoding is fixed size or dynamic size. According to this, the
@@ -181,8 +181,8 @@ converter functions be defined as
     CryptoConverter_convert(CryptoConverter*  me
                             uint8_t**       source, 
                             const uint8_t*  SourceEnd, 
-                            QUEX_TYPE_CHARACTER**       drain,  
-                            const QUEX_TYPE_CHARACTER*  DrainEnd);
+                            QUEX_TYPE_LEXATOM**       drain,  
+                            const QUEX_TYPE_LEXATOM*  DrainEnd);
     void 
     CryptoConverter_on_conversion_discontinuity(CryptoConverter*  me);
 
