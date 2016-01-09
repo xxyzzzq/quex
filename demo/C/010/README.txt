@@ -17,7 +17,7 @@ The example program can be controlled by the command line arguments:
   [2] "fill"      --> content is provided by user filling as dedicated region.
       "copy"      --> user provides content to be copied into its 'place'.
  
-The examples for without and with BufferFiller_Converter are 'compile-time'
+The examples for without and with LexatomLoader_Converter are 'compile-time'
 controlled by the macro '-DQUEX_EXAMPLE_WITH_CONVERTER'. If it is present
 a converter-based buffer filler is compiled, otherwise, a plain buffer filler
 is compiled.

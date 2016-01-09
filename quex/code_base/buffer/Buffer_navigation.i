@@ -10,7 +10,7 @@
  *
  * NOT TO CONFUSE with two other forms of seek:
  *
- *    -- BufferFiller's seek sets the input position of the next 
+ *    -- LexatomLoader's seek sets the input position of the next 
  *       character to be loaded into the buffer.
  *    -- QUEX_NAME(ByteLoader)'s seek sets the position in the low level input
  *       stream.

@@ -40,7 +40,7 @@ byte loading is abstracted through a byte loader class. Figure one depicts
 the entities related to buffer filling.
 
    file, stream,      .------------.      .--------------.     .--------.
-   message, or   <--->| QUEX_NAME(ByteLoader )|<---->| BufferFiller |---->| Buffer |
+   message, or   <--->| QUEX_NAME(ByteLoader )|<---->| LexatomLoader |---->| Buffer |
    signal, etc.       '------------'      '--------------'     '--------'
                         <File API>          <Conversion>       <Analysis>
 
@@ -63,7 +63,7 @@ character conversion before parsing. Internally, the most expected file handle
 type ``FILE`` is used to access the file with the given name. The abstracted
 loader interface is therefore ``QUEX_NAME(ByteLoader_FILE)`` nesting the opened file
 handle.  Together with the conversion codec's name a
-``BufferFiller_Conversion`` or a ``BufferFiller_Plain`` can be constructed.
+``LexatomLoader_Conversion`` or a ``LexatomLoader_Plain`` can be constructed.
 This object is then used to fill the buffer. 
 
                        
@@ -121,19 +121,19 @@ observed in the definitions of 'QUEX_NAME(QUEX_NAME(ByteLoader_FILE))', 'ByteLoa
 derived from 'QUEX_NAME(ByteLoader)' may then be used as input to the
 aforementioned constructor.
 
-Depending on the conversion codec name, a BufferFiller object is constructed.
-If the CodecName = 0, no conversion is applied and the 'BufferFiller_Plain'
+Depending on the conversion codec name, a LexatomLoader object is constructed.
+If the CodecName = 0, no conversion is applied and the 'LexatomLoader_Plain'
 is used. Else, the default conversion library is used to construct a 
-'BufferFiller_Converter'. If a dedicated BufferFiller is required, for example,
+'LexatomLoader_Converter'. If a dedicated LexatomLoader is required, for example,
 if the raw buffer size needs to be manually configured, then the constructor
-for level (4) needs to be called with an object derived from 'BufferFiller'.
+for level (4) needs to be called with an object derived from 'LexatomLoader'.
 
-    X(BufferFiller*);
+    X(LexatomLoader*);
 
 A dedicated buffer filler can be constructed by
 
-    QUEX_INLINE X_BufferFiller*
-    X_BufferFiller_new(byte_loader, 
+    QUEX_INLINE X_LexatomLoader*
+    X_LexatomLoader_new(byte_loader, 
                        QUEX_NAME(Converter)* (*converters_new)(void),
                        CodecName,
                        TranslationBufferSize,
@@ -148,7 +148,7 @@ QUEX_SETTING_TRANSLATION_BUFFER_SIZE.
 
 Quex allows also analyzers running on memory where the user points to. 
 In that case, it is assumed that the user takes care of all filling. The
-BufferFiller remains a pointer to ``NULL``. The constructor to be used
+LexatomLoader remains a pointer to ``NULL``. The constructor to be used
 is 
 
     X(MemoryBegin, MemorySize, EndOfContentP); 
@@ -171,7 +171,7 @@ The level (3) interface is
 
 The level (4) interface is
 
-    X_from_BufferFiller(me, buffer_filler)
+    X_from_LexatomLoader(me, buffer_filler)
 
 The level (5) interface is 
 
@@ -192,7 +192,7 @@ input from the beginning. C++ Interfaces are:
                                                            
     x.reset(QUEX_NAME(ByteLoader)*, CodecName);                      // Level (3)
                                                            
-    x.reset(BufferFiller*)                                // Level (4)
+    x.reset(LexatomLoader*)                                // Level (4)
 
     x.reset(MemoryBegin, MemorySize, EndOfContentP);      // Level (5)
 
@@ -205,7 +205,7 @@ The according 'C' functions are
                                                             
     X_reset_QUEX_NAME(ByteLoader)(me, QUEX_NAME(ByteLoader)*);           // Level (3)
                                                             
-    X_reset_BufferFiller(me, BufferFiller*);       // Level (4)
+    X_reset_LexatomLoader(me, LexatomLoader*);       // Level (4)
 
     X_reset_memory(me, MemoryBegin, MemorySize,    // Level (5)
                    EndOfContentP); 
@@ -236,9 +236,9 @@ A dedicated QUEX_NAME(ByteLoader )can be specified on level (3) by
 
     x.include_push(QUEX_NAME(ByteLoader)*, CodecName)
 
-A dedicated BufferFiller can be passed to the level (4) function
+A dedicated LexatomLoader can be passed to the level (4) function
 
-    x.include_push(BufferFiller*)
+    x.include_push(LexatomLoader*)
 
 Some external memory that is to be used as included input may be specified
 by the level (5) function
@@ -254,7 +254,7 @@ The according 'C' functions are
                                                             
     X_include_push_QUEX_NAME(ByteLoader)(me, QUEX_NAME(ByteLoader)*);           // Level (3)
                                                             
-    X_include_push_BufferFiller(me, BufferFiller*);       // Level (4)
+    X_include_push_LexatomLoader(me, LexatomLoader*);       // Level (4)
 
     X_include_push_memory(me, MemoryBegin, MemorySize,    // Level (5)
                           EndOfContentP); 

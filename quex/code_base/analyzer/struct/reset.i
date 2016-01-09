@@ -15,13 +15,13 @@ QUEX_INLINE void
 QUEX_MEMBER_FUNCTIONO(reset)  
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    QUEX_NAME(BufferFiller)* filler = me->buffer.filler;
+    QUEX_NAME(LexatomLoader)* filler = me->buffer.filler;
 
     if( filler ) {
-        QUEX_NAME(BufferFiller_reset)(filler, filler->byte_loader);
+        QUEX_NAME(LexatomLoader_reset)(filler, filler->byte_loader);
     }
 
-    QUEX_MEMBER_FUNCTION_CALL1(reset, BufferFiller, filler);
+    QUEX_MEMBER_FUNCTION_CALL1(reset, LexatomLoader, filler);
 }
 
 /* Level (1) __________________________________________________________________
@@ -140,14 +140,14 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
                       const char*             CodecName) 
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
-    QUEX_NAME(BufferFiller)* filler = me->buffer.filler;
+    QUEX_NAME(LexatomLoader)* filler = me->buffer.filler;
     QUEX_NAME(Asserts_construct)(CodecName);
     
     if( filler ) {
-        QUEX_NAME(BufferFiller_reset)(filler, byte_loader);
+        QUEX_NAME(LexatomLoader_reset)(filler, byte_loader);
     }
     else {
-        filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
+        filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(byte_loader, CodecName);
         /* NOT: Abort/return if filler == 0 !!
          *      Incomplete construction => propper destruction IMPOSSIBLE!   */
         if( filler ) {
@@ -155,14 +155,14 @@ QUEX_MEMBER_FUNCTION2(reset, ByteLoader,
         }
     }
 
-    QUEX_MEMBER_FUNCTION_CALL1(reset, BufferFiller, filler);
+    QUEX_MEMBER_FUNCTION_CALL1(reset, LexatomLoader, filler);
 }
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION1(reset, BufferFiller,
-                      QUEX_NAME(BufferFiller)* filler)
+QUEX_MEMBER_FUNCTION1(reset, LexatomLoader,
+                      QUEX_NAME(LexatomLoader)* filler)
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     if( filler != me->buffer.filler ) {
@@ -205,7 +205,7 @@ QUEX_MEMBER_FUNCTION3(reset, memory,
      * not delete it and did not set 'me->buffer._memory._front' to zero.    */
     previous_buffer_memory = me->buffer._memory._front;
     QUEX_NAME(Buffer_construct)(&me->buffer, 
-                                (QUEX_NAME(BufferFiller)*)0,
+                                (QUEX_NAME(LexatomLoader)*)0,
                                 Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
     QUEX_MEMBER_FUNCTION_CALLO(basic_reset);

@@ -35,12 +35,12 @@ the engine's buffer.
 The buffer filling procedure must cope with the specialities of operating
 systems, input stream procedures, and a variety of encodings. For this, the
 filling process is divided into two steps: byte loading and filling.
-Accordingly, there are two base classes ``ByteLoader`` and ``BufferFiller``.
+Accordingly, there are two base classes ``ByteLoader`` and ``LexatomLoader``.
 The task of a byte loader is to grab plain byte streams from an input source.
 The task of a filler is to deliver this data so that it fits the engine's
 buffer encoding and character width.
 
-TODO: When to use dedicated ByteLoader, BufferFiller (byte order reversion, 
+TODO: When to use dedicated ByteLoader, LexatomLoader (byte order reversion, 
 start position).
   
 Starting from a position X while not taking it as zero position:

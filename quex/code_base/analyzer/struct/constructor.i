@@ -5,7 +5,7 @@
 #define  __QUEX_INCLUDE_GUARD__ANALYZER__STRUCT__CONSTRUCTOR_I
 
 #include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/filler/BufferFiller.i>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader.i>
 #include <quex/code_base/analyzer/struct/include-stack>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -137,24 +137,24 @@ QUEX_MEMBER_FUNCTION2(from, ByteLoader,
                       QUEX_NAME(ByteLoader)*   byte_loader,
                       const char*   CodecName) 
 {
-    QUEX_NAME(BufferFiller)* filler;
+    QUEX_NAME(LexatomLoader)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
+    filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(byte_loader, CodecName);
     /* NOT: Abort/return if filler == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( filler ) {
         filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     }
 
-    QUEX_MEMBER_FUNCTION_CALL1(from, BufferFiller, filler);
+    QUEX_MEMBER_FUNCTION_CALL1(from, LexatomLoader, filler);
 }
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE void
-QUEX_MEMBER_FUNCTION1(from, BufferFiller,
-                      QUEX_NAME(BufferFiller)* filler)
+QUEX_MEMBER_FUNCTION1(from, LexatomLoader,
+                      QUEX_NAME(LexatomLoader)* filler)
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     QUEX_TYPE_CHARACTER* memory;
@@ -189,7 +189,7 @@ QUEX_MEMBER_FUNCTION3(from, memory,
     __quex_assert((  Memory) || (MemorySize == 0     && EndOfFileP == (QUEX_TYPE_CHARACTER*)0)); 
 
     QUEX_NAME(Buffer_construct)(&me->buffer, 
-                                (QUEX_NAME(BufferFiller)*)0,
+                                (QUEX_NAME(LexatomLoader)*)0,
                                 Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
     QUEX_MEMBER_FUNCTION_CALLO(basic_constructor);

@@ -14,8 +14,8 @@
 #endif
 
 #include    <quex/code_base/buffer/Buffer>
-#include    <quex/code_base/buffer/filler/BufferFiller>
-#include    <quex/code_base/buffer/loader/ByteLoader>
+#include    <quex/code_base/buffer/lexatoms/LexatomLoader>
+#include    <quex/code_base/buffer/bytes/ByteLoader>
 
 #include    <quex/code_base/MemoryManager>
 #include    <quex/code_base/analyzer/Mode>

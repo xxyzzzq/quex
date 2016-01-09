@@ -1,8 +1,8 @@
 
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
-#include <quex/code_base/buffer/filler/BufferFiller.i>
-#include <quex/code_base/buffer/loader/ByteLoader_Memory>
-#include <quex/code_base/buffer/loader/ByteLoader_Memory.i>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader.i>
+#include <quex/code_base/buffer/bytes/ByteLoader_Memory>
+#include <quex/code_base/buffer/bytes/ByteLoader_Memory.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/MemoryManager>

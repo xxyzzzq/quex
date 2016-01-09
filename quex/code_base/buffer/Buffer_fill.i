@@ -61,7 +61,7 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
                               const void*        FilledEndP)
 /* Uses the content that has been inserted until 'FilledEndP' to fill the
  * engine's character buffer (if it is not already done). A fille of type
- * 'BufferFiller_Converter' takes the content of the raw buffer and converts
+ * 'LexatomLoader_Converter' takes the content of the raw buffer and converts
  * it into the engine's buffer from 'me->input.end_p' to 'me->_memory._back'.
  *                                                                           */
 {
@@ -76,7 +76,7 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
     /* Assume: content from 'input.end_p' to 'input.end_p[CharN]'
      * has been filled with data.                                            */
     if( me->filler->_byte_order_reversion_active_f ) {
-        QUEX_NAME(BufferFiller_reverse_byte_order)(me->input.end_p, 
+        QUEX_NAME(LexatomLoader_reverse_byte_order)(me->input.end_p, 
                                                    &me->input.end_p[inserted_character_n]);
     }
 

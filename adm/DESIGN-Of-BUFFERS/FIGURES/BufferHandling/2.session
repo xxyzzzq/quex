@@ -9,7 +9,7 @@ open
   operation_ref 129282 // construct
   operation_ref 128898 // delete_self
   operation_ref 130690 // new
-  class_ref 129538 // BufferFiller_Converter
+  class_ref 129538 // LexatomLoader_Converter
   class_ref 129666 // Converter
   class_ref 129794 // Converter_ICU
   class_ref 129922 // Converter_IConv

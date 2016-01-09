@@ -7,7 +7,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/Buffer_debug.i>
-#include <quex/code_base/buffer/filler/BufferFiller>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader>
 #include <quex/code_base/MemoryManager>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -39,7 +39,7 @@ QUEX_INLINE void      QUEX_NAME(Buffer_on_content_change_DEFAULT)(const QUEX_TYP
 
 QUEX_INLINE void
 QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*        me, 
-                            QUEX_NAME(BufferFiller)*  filler,
+                            QUEX_NAME(LexatomLoader)*  filler,
                             QUEX_TYPE_CHARACTER*      memory,
                             const size_t              MemorySize,
                             QUEX_TYPE_CHARACTER*      EndOfFileP,
@@ -131,7 +131,7 @@ QUEX_NAME(Buffer_init_content)(QUEX_NAME(Buffer)* me, QUEX_TYPE_CHARACTER* EndOf
     else if( me->filler && me->filler->byte_loader ) {
         __quex_assert(! EndOfFileP);
 
-        loaded_n         = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, ContentSize,
+        loaded_n         = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, ContentSize,
                                                         0, &end_of_stream_f);
         ci_end_of_stream = ((! loaded_n) || end_of_stream_f) ? loaded_n 
                                                              : (QUEX_TYPE_STREAM_POSITION)-1;
@@ -328,7 +328,7 @@ QUEX_NAME(Buffer_move_and_load_forward)(QUEX_NAME(Buffer)*        me,
     __quex_assert(load_p >= BeginP);
     __quex_assert(&load_p[load_request_n] <= EndP);
     (void)EndP;
-    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, load_p, load_request_n,
+    loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, load_p, load_request_n,
                                             load_character_index,
                                             &end_of_stream_f);
 
@@ -384,7 +384,7 @@ QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)*        me,
     __quex_assert(&BeginP[load_request_n] <= EndP);
 
     /* (2) Move away content, so that previous content can be reloaded.      */
-    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
+    loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, load_request_n,
                                             NewCharacterIndexBegin,
                                             &end_of_stream_f);
 
@@ -549,7 +549,7 @@ QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
     /* Load new content.                                                     */
     ci_load_begin  = me->input.character_index_begin + (me->input.end_p - BeginP);
     load_request_n = ContentSize                     - (me->input.end_p - BeginP);
-    loaded_n       = QUEX_NAME(BufferFiller_load)(me->filler, 
+    loaded_n       = QUEX_NAME(LexatomLoader_load)(me->filler, 
                                                   me->input.end_p, load_request_n,
                                                   ci_load_begin, &end_of_stream_f);
     QUEX_NAME(Buffer_register_content)(me, &me->input.end_p[loaded_n], -1);
@@ -687,7 +687,7 @@ QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me)
     }
 
     /* Load new content.                                                     */
-    loaded_n      = QUEX_NAME(BufferFiller_load)(me->filler, 
+    loaded_n      = QUEX_NAME(LexatomLoader_load)(me->filler, 
                                                  BeginP, move_distance,
                                                  me->input.character_index_begin, 
                                                  &end_of_stream_f);
@@ -813,7 +813,7 @@ QUEX_NAME(Buffer_move_forward_undo)(QUEX_NAME(Buffer)* me,
     }
     __quex_assert(&BeginP[load_request_n] <= EndP);
     (void)EndP;
-    loaded_n = QUEX_NAME(BufferFiller_load)(me->filler, BeginP, load_request_n,
+    loaded_n = QUEX_NAME(LexatomLoader_load)(me->filler, BeginP, load_request_n,
                                             me->input.character_index_begin,
                                             &end_of_stream_f);
 
@@ -876,7 +876,7 @@ QUEX_NAME(Buffer_on_overflow_DEFAULT)(QUEX_NAME(Buffer)* me, bool ForwardF)
 
 QUEX_NAMESPACE_MAIN_CLOSE
 
-#include <quex/code_base/buffer/filler/BufferFiller.i>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/Buffer_navigation.i>
 #include <quex/code_base/buffer/Buffer_fill.i>

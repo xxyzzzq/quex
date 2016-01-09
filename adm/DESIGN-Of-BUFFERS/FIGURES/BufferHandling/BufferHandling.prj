@@ -139,7 +139,7 @@ format 63
       end
     end
 
-    class 129282 "BufferFiller"
+    class 129282 "LexatomLoader"
       abstract visibility package 
       cpp_decl ""
       java_decl ""
@@ -221,7 +221,7 @@ format 63
       end
     end
 
-    class 129410 "BufferFiller_Plain"
+    class 129410 "LexatomLoader_Plain"
       visibility package 
       cpp_decl ""
       java_decl ""
@@ -244,11 +244,11 @@ format 63
 	relation 128386 -_-|>
 	  a public
 	    classrelation_ref 128770 // <realization>
-	  b parent class_ref 129282 // BufferFiller
+	  b parent class_ref 129282 // LexatomLoader
       end
     end
 
-    class 129538 "BufferFiller_Converter"
+    class 129538 "LexatomLoader_Converter"
       visibility package 
       cpp_decl ""
       java_decl ""
@@ -261,7 +261,7 @@ format 63
 	relation 128514 -_-|>
 	  a public
 	    classrelation_ref 128898 // <realization>
-	  b parent class_ref 129282 // BufferFiller
+	  b parent class_ref 129282 // LexatomLoader
       end
 
       classrelation 129282 // converter (<aggregation>)

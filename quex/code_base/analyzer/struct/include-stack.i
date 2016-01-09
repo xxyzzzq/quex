@@ -166,19 +166,19 @@ QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool                     verdict_f;
-    QUEX_NAME(BufferFiller)* filler;
+    QUEX_NAME(LexatomLoader)* filler;
     QUEX_NAME(Asserts_construct)(CodecName);
 
-    filler = QUEX_NAME(BufferFiller_new_DEFAULT)(byte_loader, CodecName);
+    filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(byte_loader, CodecName);
     /* NOT: Abort/return if filler == 0 !!
      *      Incomplete construction => propper destruction IMPOSSIBLE!       */
     if( filler ) {
         filler->ownership = E_Ownership_LEXICAL_ANALYZER;
     }
-    verdict_f = QUEX_MEMBER_FUNCTION_CALL2(include_push, BufferFiller, InputName, filler);
+    verdict_f = QUEX_MEMBER_FUNCTION_CALL2(include_push, LexatomLoader, InputName, filler);
     if( ! verdict_f && filler->ownership == E_Ownership_LEXICAL_ANALYZER ) {
         me->buffer.filler->delete_self(me->buffer.filler); 
-        me->buffer.filler = (QUEX_NAME(BufferFiller)*)0;
+        me->buffer.filler = (QUEX_NAME(LexatomLoader)*)0;
     }
     return verdict_f;
 }
@@ -186,9 +186,9 @@ QUEX_MEMBER_FUNCTION3(include_push, ByteLoader,
 /* Level (4) __________________________________________________________________
  *                                                                           */
 QUEX_INLINE bool
-QUEX_MEMBER_FUNCTION2(include_push, BufferFiller,
+QUEX_MEMBER_FUNCTION2(include_push, LexatomLoader,
                       const char*              InputName,
-                      QUEX_NAME(BufferFiller)* filler)
+                      QUEX_NAME(LexatomLoader)* filler)
 {
     QUEX_MAP_THIS_TO_ME(QUEX_TYPE_ANALYZER)
     bool                 verdict_f;
@@ -232,7 +232,7 @@ QUEX_MEMBER_FUNCTION4(include_push, memory,
     __quex_assert(EndOfFileP > Memory && EndOfFileP <= &Memory[MemorySize]);
 
     QUEX_NAME(Buffer_construct)(&new_buffer_setup, 
-                                (QUEX_NAME(BufferFiller)*)0,
+                                (QUEX_NAME(LexatomLoader)*)0,
                                 Memory, MemorySize, EndOfFileP,
                                 E_Ownership_EXTERNAL);
 

@@ -52,14 +52,14 @@ base_buffer = """
 /buffer/BufferMemory.i
 /buffer/Buffer_navigation.i
 /buffer/Buffer_fill.i
-/buffer/loader/ByteLoader
-/buffer/loader/ByteLoader.i
-/buffer/loader/ByteLoader_FILE
-/buffer/loader/ByteLoader_FILE.i
-/buffer/loader/ByteLoader_POSIX
-/buffer/loader/ByteLoader_POSIX.i
-/buffer/loader/ByteLoader_stream
-/buffer/loader/ByteLoader_stream.i
+/buffer/bytes/ByteLoader
+/buffer/bytes/ByteLoader.i
+/buffer/bytes/ByteLoader_FILE
+/buffer/bytes/ByteLoader_FILE.i
+/buffer/bytes/ByteLoader_POSIX
+/buffer/bytes/ByteLoader_POSIX.i
+/buffer/bytes/ByteLoader_stream
+/buffer/bytes/ByteLoader_stream.i
 """
 
 base_analyzer = """
@@ -127,34 +127,34 @@ token_default_C = "/token/CDefault.qx"
 token_default_Cpp = "/token/CppDefault.qx"
 
 buffer_filler = """
-/buffer/filler/BufferFiller
-/buffer/filler/BufferFiller.i
-/buffer/filler/BufferFiller_navigation.i
+/buffer/lexatoms/LexatomLoader
+/buffer/lexatoms/LexatomLoader.i
+/buffer/lexatoms/LexatomLoader_navigation.i
 """
 
 buffer_filler_plain = """
-/buffer/filler/BufferFiller_Plain
-/buffer/filler/BufferFiller_Plain.i
+/buffer/lexatoms/LexatomLoader_Plain
+/buffer/lexatoms/LexatomLoader_Plain.i
 """
 
 buffer_filler_converter = """
-/buffer/filler/BufferFiller_Converter
-/buffer/filler/BufferFiller_Converter.i
-/buffer/filler/BufferFiller_Converter_RawBuffer.i
-/buffer/filler/converter/Converter
-/buffer/filler/converter/Converter.i
+/buffer/lexatoms/LexatomLoader_Converter
+/buffer/lexatoms/LexatomLoader_Converter.i
+/buffer/lexatoms/LexatomLoader_Converter_RawBuffer.i
+/buffer/lexatoms/converter/Converter
+/buffer/lexatoms/converter/Converter.i
 """
 
 buffer_filler_iconv = """
-/buffer/filler/converter/iconv/Converter_IConv
-/buffer/filler/converter/iconv/Converter_IConv.i
-/buffer/filler/converter/iconv/special_headers.h
+/buffer/lexatoms/converter/iconv/Converter_IConv
+/buffer/lexatoms/converter/iconv/Converter_IConv.i
+/buffer/lexatoms/converter/iconv/special_headers.h
 """
 
 buffer_filler_icu = """
-/buffer/filler/converter/icu/Converter_ICU
-/buffer/filler/converter/icu/Converter_ICU.i
-/buffer/filler/converter/icu/special_headers.h
+/buffer/lexatoms/converter/icu/Converter_ICU
+/buffer/lexatoms/converter/icu/Converter_ICU.i
+/buffer/lexatoms/converter/icu/special_headers.h
 """
 
 converter_helper = """
@@ -196,9 +196,9 @@ def do():
     # Buffer Filler ___________________________________________________________
     # 
     # The instance that is responsible for filling a buffer with content
-    BufferFillerF = True # Change this once we have 'buffer only' modes
+    LexatomLoaderF = True # Change this once we have 'buffer only' modes
 
-    if BufferFillerF:
+    if LexatomLoaderF:
         txt += buffer_filler
         txt += buffer_filler_converter
         if   Setup.converter_icu_f:                   txt += buffer_filler_icu

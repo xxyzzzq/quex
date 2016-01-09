@@ -116,7 +116,7 @@ public:
     void    from(std::wistream* istream_p, const char*  CodecName = 0x0);
 #   endif
     void    from(QUEX_NAME(ByteLoader)* byte_loader, const char*  CodecName = 0x0);
-    void    from(QUEX_NAME(BufferFiller)* filler);
+    void    from(QUEX_NAME(LexatomLoader)* filler);
     void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                  size_t               BufferMemorySize,
                  QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
@@ -157,7 +157,7 @@ public:
 
     /* Level (4) ______________________________________________________________
      *                                                                       */
-    $$LEXER_CLASS_NAME$$(QUEX_NAME(BufferFiller)* filler)
+    $$LEXER_CLASS_NAME$$(QUEX_NAME(LexatomLoader)* filler)
     $$___SPACE___$${ from(filler); }
 
     /* Level (5) ______________________________________________________________
@@ -201,7 +201,7 @@ public:
 
     /* Level (4) ______________________________________________________________
      *                                                                       */
-    void    reset(QUEX_NAME(BufferFiller)*  filler); 
+    void    reset(QUEX_NAME(LexatomLoader)*  filler); 
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
@@ -250,7 +250,7 @@ public:
     /* Level (4) ______________________________________________________________
      *                                                                       */
     bool    include_push(const char*               InputName, 
-                         QUEX_NAME(BufferFiller)*  filler); 
+                         QUEX_NAME(LexatomLoader)*  filler); 
 
     /* Level (5) ______________________________________________________________
      *                                                                       */

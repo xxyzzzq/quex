@@ -90,45 +90,45 @@
 */
 
 
-typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(BufferFillerExtern_tag) {
+typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(LexatomLoaderExtern_tag) {
 
-    QUEX_NAME(BufferFiller)* filler;
+    QUEX_NAME(LexatomLoader)* filler;
 
-    QUEX_TYPE_CHARACTER*  insert(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    QUEX_TYPE_CHARACTER*  insert(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
                                  QUEX_TYPE_CHARACTER*                insertion_p,
                                  QUEX_TYPE_EXT_CHARACTER*            ContentBegin,
                                  QUEX_TYPE_EXT_CHARACTER*            ContentEnd);
 
-    QUEX_TYPE_CHARACTER*  append(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    QUEX_TYPE_CHARACTER*  append(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
                                  QUEX_TYPE_CHARACTER*                ContentBegin, 
                                  QUEX_TYPE_CHARACTER*                ContentEnd);
 
-    uint8_t*              append_conversion(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    uint8_t*              append_conversion(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                             QUEX_TYPE_ANALYZER*                 the_lexer,
                                             uint8_t*                            ContentBegin, 
                                             uint8_t*                            ContentEnd);
 
-    uint8_t*              append_conversion_direct(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    uint8_t*              append_conversion_direct(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                                    QUEX_TYPE_ANALYZER*                 the_lexer,
                                                    uint8_t*                            ContentBegin, 
                                                    uint8_t*                            ContentEnd);
 
-    void                  prepare(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    void                  prepare(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                   QUEX_TYPE_ANALYZER*                 the_lexer);
 
-    void                  finish(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    void                  finish(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
                                  const size_t                        LoadedN);
 
     QUEX_TYPE_CHARACTER*  fill_region_begin(QUEX_TYPE_ANALYZER*               the_lexer);
-    QUEX_TYPE_CHARACTER*  fill_region_end(QUEX_NAME(BufferFillerExtern_tag)*  me,
+    QUEX_TYPE_CHARACTER*  fill_region_end(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                           QUEX_TYPE_ANALYZER*                 the_lexer);
-    size_t                fill_region_size(QUEX_NAME(BufferFillerExtern_tag)* me,
+    size_t                fill_region_size(QUEX_NAME(LexatomLoaderExtern_tag)* me,
                                            QUEX_TYPE_ANALYZER*                the_lexer);
 
-    void*                 delete_self(QUEX_NAME(BufferFillerExtern_tag)*);
+    void*                 delete_self(QUEX_NAME(LexatomLoaderExtern_tag)*);
     
-} QUEX_NAME(BufferFillerExtern);
+} QUEX_NAME(LexatomLoaderExtern);
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__DUMPSTER_I */

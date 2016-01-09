@@ -4,7 +4,7 @@
 user:External[pe]
 b:Buffer
 m:Content Memory
-f:BufferFiller
+f:LexatomLoader
 ih:Stream
 
 user:m.delete

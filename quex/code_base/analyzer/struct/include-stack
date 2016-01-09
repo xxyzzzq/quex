@@ -45,10 +45,10 @@ QUEX_INLINE bool QUEX_NAME(include_push_ByteLoader)(
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE bool QUEX_NAME(include_push_BufferFiller)(
+QUEX_INLINE bool QUEX_NAME(include_push_LexatomLoader)(
                            QUEX_TYPE_ANALYZER*      me,
                            const char*              InputName,
-                           QUEX_NAME(BufferFiller)* filler); 
+                           QUEX_NAME(LexatomLoader)* filler); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */
