@@ -27,13 +27,13 @@ main(int argc, char** argv)
     }
     if( strcmp(argv[1], "--hwut-info") == 0 ) {
 #       if   defined(QUEX_OPTION_ENABLED_ICONV)
-        printf("Reset w/ QuexBufferFiller: Converter_IConv;\n");
+        printf("Reset w/ QuexLexatomLoader: Converter_IConv;\n");
 #       elif defined(QUEX_OPTION_ENABLED_ICU)
-        printf("Reset w/ QuexBufferFiller: Converter_ICU;\n");
+        printf("Reset w/ QuexLexatomLoader: Converter_ICU;\n");
 #       elif defined(__QUEX_SETTING_TEST_UTF8)
-        printf("Reset w/ QuexBufferFiller: Plain w/ Engine Codec;\n");
+        printf("Reset w/ QuexLexatomLoader: Plain w/ Engine Codec;\n");
 #       else
-        printf("Reset w/ QuexBufferFiller: Plain;\n");
+        printf("Reset w/ QuexLexatomLoader: Plain;\n");
 #       endif
         printf("CHOICES:  0, 1, 2, 3, 20, 30, 50, 134, 135, 136, 1000;\n");
         printf("SAME;\n");

@@ -10,7 +10,7 @@ main(int argc, char** argv)
     bool                     BigEndianF  = (argc < 2 || (strcmp(argv[1], "BE") == 0)); 
     const char*              file_name   = BigEndianF ? "example-utf16be.txt" : "example-utf16le.txt";
     QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_FILE_new_from_file_name)(file_name);
-    QUEX_NAME(BufferFiller)* filler      = QUEX_NAME(BufferFiller_new)(byte_loader, 0, 0);
+    QUEX_NAME(LexatomLoader)* filler      = QUEX_NAME(LexatomLoader_new)(byte_loader, 0, 0);
     quex_UTF16Lex            qlex;
     size_t                   BufferSize = 1024;
     char                     buffer[1024];
@@ -24,7 +24,7 @@ main(int argc, char** argv)
      *                     is 'big'    => reversion if 'little' (not 'big'). */
     filler->_byte_order_reversion_active_f = QUEXED(system_is_little_endian)() ? 
                                              BigEndianF : ! BigEndianF;
-    QUEX_NAME(from_BufferFiller)(&qlex, filler);
+    QUEX_NAME(from_LexatomLoader)(&qlex, filler);
 
     printf("## input file           = %s\n", file_name);
     printf("## byte order reversion = %s\n", QUEX_NAME(byte_order_reversion)(&qlex) ? "true" : "false");

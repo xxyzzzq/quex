@@ -60,9 +60,9 @@ main(int argc, char** argv)
     char                     buffer[4096];
     char*                    p;
     ssize_t                  received_n;
-    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new_DEFAULT)(NULL, CODEC);
+    QUEX_NAME(LexatomLoader)* filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(NULL, CODEC);
 
-    QUEX_NAME(from_BufferFiller)(&qlex, filler);
+    QUEX_NAME(from_LexatomLoader)(&qlex, filler);
 
     while( 1 + 1 == 2 ) {
         printf("type here: ");

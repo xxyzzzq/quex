@@ -21,13 +21,13 @@ __QUEX_CORE = \
     ./token/TXT-Cpp.i \
     ./token/TokenQueue \
     ./token/TokenPolicy \
-    ./buffer/BufferFiller \
+    ./buffer/LexatomLoader \
     ./buffer/Buffer \
-    ./buffer/BufferFiller.i \
+    ./buffer/LexatomLoader.i \
     ./buffer/Buffer.i \
-    ./buffer/converter/BufferFiller_Converter.i \
+    ./buffer/converter/LexatomLoader_Converter.i \
     ./buffer/converter/Converter \
-    ./buffer/converter/BufferFiller_Converter \
+    ./buffer/converter/LexatomLoader_Converter \
     ./buffer/converter/icu/Converter_ICU \
     ./buffer/converter/icu/special_headers.h \
     ./buffer/converter/icu/Converter_ICU.i \
@@ -37,8 +37,8 @@ __QUEX_CORE = \
     ./buffer/converter/recode/Converter_Recode.i \
     ./buffer/converter/recode/Converter_Recode \
     ./buffer/Buffer_debug.i \
-    ./buffer/plain/BufferFiller_Plain \
-    ./buffer/plain/BufferFiller_Plain.i \
+    ./buffer/plain/LexatomLoader_Plain \
+    ./buffer/plain/LexatomLoader_Plain.i \
     ./buffer/asserts \
     ./converter_helper/from-unicode-buffer \
     ./converter_helper/from-unicode-buffer.i \

@@ -59,7 +59,7 @@ main(int argc, char** argv)
     LEXER_CLASS*             qlex;   
     char                     buffer[4096];
     ssize_t                  received_n;
-    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new_DEFAULT)(NULL, CODEC);
+    QUEX_NAME(LexatomLoader)* filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(NULL, CODEC);
 
     qlex = new LEXER_CLASS(filler);
 

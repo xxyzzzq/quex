@@ -6,7 +6,7 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/filler/BufferFiller>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader>
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/buffer/Buffer_debug>
 
@@ -16,7 +16,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE void 
     QUEX_NAME(Buffer_show_brief_content)(QUEX_NAME(Buffer)* buffer) 
     {
-        QUEX_NAME(BufferFiller)* me = buffer->filler;
+        QUEX_NAME(LexatomLoader)* me = buffer->filler;
 
         __quex_assert(buffer != 0x0);
         __quex_assert(me != 0x0);

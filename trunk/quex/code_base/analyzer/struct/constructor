@@ -51,9 +51,9 @@ QUEX_INLINE void QUEX_NAME(from_ByteLoader)(
 
 /* Level (4) __________________________________________________________________
  *                                                                           */
-QUEX_INLINE void QUEX_NAME(from_BufferFiller)(
+QUEX_INLINE void QUEX_NAME(from_LexatomLoader)(
                                   QUEX_TYPE_ANALYZER*,
-                                  QUEX_NAME(BufferFiller)*); 
+                                  QUEX_NAME(LexatomLoader)*); 
 
 /* Level (5) __________________________________________________________________
  *                                                                           */

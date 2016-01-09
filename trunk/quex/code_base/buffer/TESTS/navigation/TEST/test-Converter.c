@@ -1,4 +1,4 @@
-/* PURPOSE: Testing Buffer-Seeking with BufferFiller_Converter.
+/* PURPOSE: Testing Buffer-Seeking with LexatomLoader_Converter.
  *
  * Buffer-Seeking tries to set the 'read_p' to a specific character given by a
  * character index. For this, new content may be loaded into the buffer.  The
@@ -32,10 +32,10 @@
 #include <hwut_unit.h>
 #include <basic_functionality.h>
 #include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv>
-#include <quex/code_base/buffer/filler/converter/iconv/Converter_IConv.i>
-#include <quex/code_base/buffer/loader/ByteLoader_Memory>
-#include <quex/code_base/buffer/loader/ByteLoader_Memory.i>
+#include <quex/code_base/buffer/lexatoms/converter/iconv/Converter_IConv>
+#include <quex/code_base/buffer/lexatoms/converter/iconv/Converter_IConv.i>
+#include <quex/code_base/buffer/bytes/ByteLoader_Memory>
+#include <quex/code_base/buffer/bytes/ByteLoader_Memory.i>
 // #include <quex/code_base/MemoryManager.i>
 
 QUEX_NAMESPACE_MAIN_OPEN
@@ -53,7 +53,7 @@ main(int argc, char** argv)
     const size_t  BPC = sizeof(QUEX_TYPE_CHARACTER);
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        printf("Buffer Tell&Seek: BufferFiller_Converter_IConv (BPC=%i, FALLBACK=%i);\n", 
+        printf("Buffer Tell&Seek: LexatomLoader_Converter_IConv (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         printf("CHOICES: ICU-linear, ICU-stepping,\n"
                "         IConv-linear, IConv-stepping,\n"
@@ -100,7 +100,7 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
 {
     QUEX_NAME(Buffer)         buffer;
     QUEX_NAME(Converter)*     converter;
-    /* With 'BufferFiller_Plain()' no conversion takes place. Thus, the file
+    /* With 'LexatomLoader_Plain()' no conversion takes place. Thus, the file
      * containing the REFERENCE data and the INPUT file are the SAME.        */
     const char*               ref_file_name = find_reference(FileStem); 
 #   if 0
@@ -110,7 +110,7 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
 #   endif
     const size_t              MemorySize    = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
-    QUEX_NAME(BufferFiller)*  filler;  
+    QUEX_NAME(LexatomLoader)*  filler;  
 
     switch( CTT ) {
     case TEST_ICU:   converter = QUEX_NAME(Converter_ICU_new)(Codec, 0); break;
@@ -128,7 +128,7 @@ test_file(E_ConverterTestType CTT, const char* Codec, bool LinearF, bool ClueLes
         hwut_verify(false);
     }
 
-    filler = QUEX_NAME(BufferFiller_Converter_new)(byte_loader, converter, 7);
+    filler = QUEX_NAME(LexatomLoader_Converter_new)(byte_loader, converter, 7);
 
     /* If file was not opened in binary mode no converter filler is created! */
     __quex_assert(filler); 

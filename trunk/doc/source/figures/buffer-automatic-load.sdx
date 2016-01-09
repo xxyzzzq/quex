@@ -2,7 +2,7 @@
 <diagram>
 <source><![CDATA[user:A[a]   "User"
 lex:B[a]    "Lexical Analyzer"
-filler:C[a] "BufferFiller"
+filler:C[a] "LexatomLoader"
 loader:D[a] "ByteLoader"
 file:E[a]   "Data Source"
       

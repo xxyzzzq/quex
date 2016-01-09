@@ -22,7 +22,7 @@ main(int argc, char** argv)
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
     QUEX_TYPE_CHARACTER  memory[memory_size];
-    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(BufferFiller)*)0x0, 
+    QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(LexatomLoader)*)0x0, 
                                 &memory[0], memory_size, &memory[memory_size], E_Ownership_EXTERNAL);
 
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;

@@ -184,7 +184,7 @@ data.
    To avoid this, report one character less when using ``buffer_fill_region_finish``,
    or make sure that the terminating zero is not copied.
 
-TODO: Mention usage of 'BufferFiller*' constructor where the filler needs
+TODO: Mention usage of 'LexatomLoader*' constructor where the filler needs
       to be deleted manually. Or, better construct with (ByteLoader*)0.
 
 TODO: When 'reset' make sure that the right token is 'swapped' into the analyzer!

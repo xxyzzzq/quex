@@ -34,7 +34,7 @@ dereferencing the pointer.
    The path of data from the outside world until it arrives in the analyzer's
    lexatom buffer.
 
-Technically, there are two base classes ``ByteLoader`` and ``BufferFiller``
+Technically, there are two base classes ``ByteLoader`` and ``LexatomLoader``
 that implement the interfaces for byte and lexatom loading. Any concrete
 implementation is derived from those two. While the default API of a generated
 analyzer hides their existence, they become important when the input provision

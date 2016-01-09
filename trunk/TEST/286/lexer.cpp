@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 	using namespace quex;
 
 	quex::Token              token;
-    QUEX_NAME(BufferFiller)* filler = QUEX_NAME(BufferFiller_new_DEFAULT)(NULL, "UTF8");
+    QUEX_NAME(LexatomLoader)* filler = QUEX_NAME(LexatomLoader_new_DEFAULT)(NULL, "UTF8");
 	quex::tokenizer_it       qlex(filler); 
     uint8_t*                 begin_p;
     const uint8_t*           end_p;

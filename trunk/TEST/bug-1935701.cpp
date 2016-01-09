@@ -4,9 +4,9 @@
 #include<cstring>
 
 #include<quex/code_base/test_environment/TestAnalyzer-configuration>
-#include<quex/code_base/buffer/filler/BufferFiller>
-#include<quex/code_base/buffer/filler/BufferFiller_Plain>
-#include<quex/code_base/buffer/filler/BufferFiller_Plain.i>
+#include<quex/code_base/buffer/lexatoms/LexatomLoader>
+#include<quex/code_base/buffer/lexatoms/LexatomLoader_Plain>
+#include<quex/code_base/buffer/lexatoms/LexatomLoader_Plain.i>
 #include<quex/code_base/single.i>
 
 using namespace std;
@@ -40,7 +40,7 @@ main(int argc, char** argv)
         }
 
         QUEX_NAME(ByteLoader)*     byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
-        QUEX_NAME(BufferFiller)*   is = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+        QUEX_NAME(LexatomLoader)*   is = QUEX_NAME(LexatomLoader_Plain_new)(byte_loader);
 
         loaded_character_n = is->derived.load_characters(is, buffer, BufferSize, &end_of_stream_f);
         fclose(fh);
@@ -56,7 +56,7 @@ main(int argc, char** argv)
         }
         
         QUEX_NAME(ByteLoader)*   byte_loader = QUEX_NAME(ByteLoader_stream_new)(&fh);
-        QUEX_NAME(BufferFiller)* is          = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+        QUEX_NAME(LexatomLoader)* is          = QUEX_NAME(LexatomLoader_Plain_new)(byte_loader);
         loaded_character_n = is->derived.load_characters(is, buffer, BufferSize, &end_of_stream_f);
         
         fh.close();

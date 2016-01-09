@@ -32,7 +32,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
 /* Buffer of characters on which the analyzer runs. 
  *
  * Character Stream:
- * (by BufferFiller)     
+ * (by LexatomLoader)     
  *     
  *    character_index_end_of_stream ----------------------.
  *    character_index_begin ---------------.              |
@@ -77,7 +77,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
     QUEX_TYPE_CHARACTER      _character_before_lexeme_start;  
 #   endif
 
-    struct    QUEX_NAME(BufferFiller_tag)*  filler;
+    struct    QUEX_NAME(LexatomLoader_tag)*  filler;
 
     void*     (*fill)(struct QUEX_NAME(Buffer_tag)*  me, 
                       const void*                    ContentBegin,
@@ -102,7 +102,7 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
 } QUEX_NAME(Buffer);
 
 QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
-                                                struct QUEX_NAME(BufferFiller_tag)*  filler,
+                                                struct QUEX_NAME(LexatomLoader_tag)*  filler,
                                                 QUEX_TYPE_CHARACTER*                 memory,
                                                 const size_t                         MemorySize,
                                                 QUEX_TYPE_CHARACTER*                 EndOfFileP,
@@ -110,7 +110,7 @@ QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*              
 
 /* Constructor, destructor, reset. */
 QUEX_INLINE void  QUEX_NAME(Buffer_reset)(QUEX_NAME(Buffer)*                  me, 
-                                          struct QUEX_NAME(BufferFiller_tag)* filler); 
+                                          struct QUEX_NAME(LexatomLoader_tag)* filler); 
 
 QUEX_INLINE void  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
 
@@ -168,6 +168,6 @@ QUEX_INLINE bool       QUEX_NAME(Buffer_seek_forward)(QUEX_NAME(Buffer)*, const 
 QUEX_INLINE bool       QUEX_NAME(Buffer_seek_backward)(QUEX_NAME(Buffer)*, const ptrdiff_t CharacterN);
 
 QUEX_NAMESPACE_MAIN_CLOSE
-#include <quex/code_base/buffer/filler/BufferFiller>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader>
 
 #endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER */

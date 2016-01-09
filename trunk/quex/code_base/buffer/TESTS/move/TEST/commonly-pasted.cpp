@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD_TEST_MOVE_AWAY_PASSED_CONTENT_COMMON_H
 
 #include <quex/code_base/test_environment/TestAnalyzer-configuration>
-#include <quex/code_base/buffer/filler/BufferFiller.i>
+#include <quex/code_base/buffer/lexatoms/LexatomLoader.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/converter_helper/from-unicode-buffer.i>
@@ -78,7 +78,7 @@ instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
     assert(memory_size <= MemorySize);
     assert(end_p - &memory[1] < memory_size);
     QUEX_NAME(Buffer_construct)(buffer, 
-                                (QUEX_NAME(BufferFiller)*)0x0, 
+                                (QUEX_NAME(LexatomLoader)*)0x0, 
                                 &memory[0], memory_size, end_p, 
                                 E_Ownership_EXTERNAL);
 

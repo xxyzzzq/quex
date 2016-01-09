@@ -12,26 +12,26 @@ Buffer:
                 and navigation.
                
                
-BufferFiller: 
+LexatomLoader: 
 
    A set of function pointers used to navigate in the input stream
    and to fill a given buffer with data. Navigation is based on character
    indices (not byte positions, some codings have dynamic character widths).
 
    Derived Classes:
-     + BufferFiller_Plain
+     + LexatomLoader_Plain
        Loading plain data from a file. Character width is constant. This
        is practical for ASCII, UCS-2, UCS4, and similar codings.
 
-     + BufferFiller_Converter
+     + LexatomLoader_Converter
        Base class for all fillers that convert the input from an external format
        to an internal one.
 
-       + BufferFiller_Converter_IConv
-         BufferFiller doing the conversion with GNU's iconv library.
+       + LexatomLoader_Converter_IConv
+         LexatomLoader doing the conversion with GNU's iconv library.
 
-       + BufferFiller_Converter_ICU
-         BufferFiller based on IBM's ICU library.
+       + LexatomLoader_Converter_ICU
+         LexatomLoader based on IBM's ICU library.
 
 Converter:
 

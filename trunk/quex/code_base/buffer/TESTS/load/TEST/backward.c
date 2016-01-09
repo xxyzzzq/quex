@@ -70,7 +70,7 @@ walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
 {
     QUEX_NAME(Buffer)             buffer;
     QUEX_NAME(ByteLoader_Memory)  loader;
-    QUEX_NAME(BufferFiller)*      filler;
+    QUEX_NAME(LexatomLoader)*      filler;
     int                           count = 0;
     QUEX_TYPE_CHARACTER           memory[5];
     const int                     MemorySize = 5;
@@ -78,7 +78,7 @@ walk_backward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
     QUEX_NAME(ByteLoader_Memory_construct)(&loader, 
                                            (uint8_t*)&PseudoFile[0], 
                                            (const uint8_t*)&PseudoFile[sizeof(PseudoFile)/sizeof(PseudoFile[0])]);
-    filler = QUEX_NAME(BufferFiller_new)(&loader.base, 
+    filler = QUEX_NAME(LexatomLoader_new)(&loader.base, 
                                          (QUEX_NAME(Converter)*)0, 0);
 
     QUEX_NAME(Buffer_construct)(&buffer, filler,

@@ -17,7 +17,7 @@ main(int argc, char** argv)
 {
     const size_t   BPC = sizeof(QUEX_TYPE_CHARACTER);
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        printf("Buffer Tell&Seek: BufferFiller_Plain (BPC=%i, FALLBACK=%i);\n", 
+        printf("Buffer Tell&Seek: LexatomLoader_Plain (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         printf("CHOICES: linear, stepping;\n"
                "SAME;\n");
@@ -36,7 +36,7 @@ test(bool BinaryF, size_t BPC)
     QUEX_NAME(Buffer)         buffer;
     std::wstringstream        sh;
     QUEX_NAME(ByteLoader)*               byte_loader;
-    QUEX_NAME(BufferFiller*)  filler;
+    QUEX_NAME(LexatomLoader*)  filler;
     const size_t              MemorySize  = true ? 5 : 16;
     QUEX_TYPE_CHARACTER       memory[MemorySize];
 
@@ -46,7 +46,7 @@ test(bool BinaryF, size_t BPC)
     hwut_verify(byte_loader);
 
     byte_loader->binary_mode_f = BinaryF;
-    filler = QUEX_NAME(BufferFiller_Plain_new)(byte_loader);
+    filler = QUEX_NAME(LexatomLoader_Plain_new)(byte_loader);
     hwut_verify(filler);
 
     QUEX_NAME(Buffer_construct)(&buffer, filler, &memory[0], MemorySize, 0, E_Ownership_EXTERNAL);

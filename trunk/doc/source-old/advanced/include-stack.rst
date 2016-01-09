@@ -133,7 +133,7 @@ The complete include-push function group in C++ consists of the following list:
                       const char* CodecName = 0x0);
 
     bool include_push(const char* InputName, 
-                      QUEX_NAME(BufferFiller)*  filler); 
+                      QUEX_NAME(LexatomLoader)*  filler); 
 
     bool include_push(const char* InputName, 
                       QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
@@ -156,9 +156,9 @@ The corresponding C API is the following.
                                             ByteLoader* byte_loader, 
                                             const char* CodecName = 0x0);
 
-    bool QUEX_NAME(include_push_BufferFiller)(QUEX_TYPE_ANALYZER*,
+    bool QUEX_NAME(include_push_LexatomLoader)(QUEX_TYPE_ANALYZER*,
                                               const char* InputName, 
-                                              QUEX_NAME(BufferFiller)*  filler); 
+                                              QUEX_NAME(LexatomLoader)*  filler); 
 
     bool QUEX_NAME(include_push_memory)(QUEX_TYPE_ANALYZER*,
                                         const char*          InputName, 
