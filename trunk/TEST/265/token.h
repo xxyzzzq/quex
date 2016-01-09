@@ -68,7 +68,7 @@ extern uint32_t  Common_LexemeNullObject;
 #   undef  QUEX_CONVERTER_STRING
 #   undef  QUEX_NAMESPACE_MAIN_OPEN               
 #   undef  QUEX_NAMESPACE_MAIN_CLOSE              
-#   undef  QUEX_TYPE_CHARACTER
+#   undef  QUEX_TYPE_LEXATOM
 #   define __QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_COMMON___TOKEN
 #endif
 #define    __QUEX_CONVERTER_CHAR_DEF(FROM, TO)    Common_Token ##FROM ## _to_ ## TO ## _character
@@ -81,7 +81,7 @@ extern uint32_t  Common_LexemeNullObject;
 #define    QUEX_CONVERTER_STRING(FROM, TO)        __QUEX_CONVERTER_STRING(FROM, TO)
 #define    QUEX_NAMESPACE_MAIN_OPEN               
 #define    QUEX_NAMESPACE_MAIN_CLOSE              
-#define    QUEX_TYPE_CHARACTER                uint32_t
+#define    QUEX_TYPE_LEXATOM                uint32_t
 
 #define __QUEX_INCLUDE_GUARD__CONVERTER_HELPER__TMP_DISABLED
 #include <quex/code_base/converter_helper/from-unicode-buffer>
@@ -98,7 +98,7 @@ extern uint32_t  Common_LexemeNullObject;
 #undef     QUEX_CONVERTER_STRING
 #undef     QUEX_NAMESPACE_MAIN_OPEN               
 #undef     QUEX_NAMESPACE_MAIN_CLOSE              
-#undef     QUEX_TYPE_CHARACTER
+#undef     QUEX_TYPE_LEXATOM
 #if defined(__QUEX_SIGNAL_UNDEFINED_CONVERTER_MACROS_COMMON___TOKEN)
 #   define __QUEX_CONVERTER_CHAR_DEF    __QUEX_CONVERTER_CHAR_DEF_BACKUP
 #   define __QUEX_CONVERTER_STRING_DEF  __QUEX_CONVERTER_STRING_DEF_BACKUP
@@ -110,7 +110,7 @@ extern uint32_t  Common_LexemeNullObject;
 #   define QUEX_CONVERTER_STRING        QUEX_CONVERTER_STRING_BACKUP
 #   define QUEX_NAMESPACE_MAIN_OPEN     QUEX_NAMESPACE_MAIN_OPEN_BACKUP               
 #   define QUEX_NAMESPACE_MAIN_CLOSE    QUEX_NAMESPACE_MAIN_CLOSE_BACKUP              
-#   define QUEX_TYPE_CHARACTER          QUEX_TYPE_CHARACTER_BACKUP
+#   define QUEX_TYPE_LEXATOM          QUEX_TYPE_LEXATOM_BACKUP
 #endif
 
    

@@ -1,4 +1,4 @@
-#define QUEX_TYPE_CHARACTER uint32_t
+#define QUEX_TYPE_LEXATOM uint32_t
 #include<iostream>
 #include<fstream>
 #include<cstring>
@@ -26,7 +26,7 @@ main(int argc, char** argv)
     }
 
     const size_t         BufferSize = 512;
-    QUEX_TYPE_CHARACTER  buffer[BufferSize];
+    QUEX_TYPE_LEXATOM  buffer[BufferSize];
     size_t               loaded_character_n = 0;  
     bool                 end_of_stream_f;
 

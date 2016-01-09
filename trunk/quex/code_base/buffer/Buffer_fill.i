@@ -46,7 +46,7 @@ QUEX_NAME(Buffer_fill_prepare)(QUEX_NAME(Buffer)*  me,
  * The content may be filled into the engine's buffer or an intermediate 
  * 'raw' buffer which still needs to be converted.                          */
 {
-    (void)QUEX_NAME(Buffer_move_away_passed_content)(me, (QUEX_TYPE_CHARACTER**)0, 0);
+    (void)QUEX_NAME(Buffer_move_away_passed_content)(me, (QUEX_TYPE_LEXATOM**)0, 0);
 
     /* Get the pointers for the border where to fill content.               */
     me->filler->derived.fill_prepare(me->filler, 
@@ -65,7 +65,7 @@ QUEX_NAME(Buffer_fill_finish)(QUEX_NAME(Buffer)* me,
  * it into the engine's buffer from 'me->input.end_p' to 'me->_memory._back'.
  *                                                                           */
 {
-    QUEX_TYPE_CHARACTER*   BeginP = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*   BeginP = &me->_memory._front[1];
 
     /* Place new content in the engine's buffer.                             */
     ptrdiff_t inserted_character_n = me->filler->derived.fill_finish(me->filler, 

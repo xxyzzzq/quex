@@ -136,9 +136,9 @@ The complete include-push function group in C++ consists of the following list:
                       QUEX_NAME(LexatomLoader)*  filler); 
 
     bool include_push(const char* InputName, 
-                      QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                      QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                       size_t               BufferMemorySize,
-                      QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+                      QUEX_TYPE_LEXATOM* BufferEndOfContentP);  
 
 The corresponding C API is the following.
 
@@ -162,9 +162,9 @@ The corresponding C API is the following.
 
     bool QUEX_NAME(include_push_memory)(QUEX_TYPE_ANALYZER*,
                                         const char*          InputName, 
-                                        QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                        QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                                         size_t               BufferMemorySize,
-                                        QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+                                        QUEX_TYPE_LEXATOM* BufferEndOfContentP);  
 
 Notably, all functions take an input name as the first argument. When a file
 name is provided it automatically identifies the input source. In all other
@@ -434,7 +434,7 @@ mementos. First, let the memento be extended to carry a stream handle:
 When the analyzer state is frozen and a new input stream is initialized, the
 ``memento_pack`` section is executed. It must provide an input handle in the
 variable ``input_handle`` and receives the name of the input as a
-``QUEX_TYPE_CHARACTER`` string. The memento packer takes responsibility over
+``QUEX_TYPE_LEXATOM`` string. The memento packer takes responsibility over
 the memory management of the stream handle, so it stores it in ``included_sh``.
 
 .. code-block:: cpp

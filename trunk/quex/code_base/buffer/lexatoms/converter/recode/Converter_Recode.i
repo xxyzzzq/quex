@@ -27,7 +27,7 @@ QUEX_NAMESPACE_MAIN_OPEN
         if( ToCodingName != 0x0 ) {
             me->to_handle = ucnv_open(ToCodingName, &me->status);
         } else {
-            switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+            switch( sizeof(QUEX_TYPE_LEXATOM) ) {
             case 4:  
                 me->to_handle = ucnv_open("UTF32_PlatformEndian", &me->status); 
                 break;
@@ -49,7 +49,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE bool
     QuexConverter_ICU_convert(QuexConverter*        alter_ego, 
                               uint8_t**             source, const uint8_t*              SourceEnd, 
-                              QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
+                              QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM*  DrainEnd)
     {
         /* RETURNS: 'true'  if the drain was completely filled.
          *          'false' if the drain could not be filled completely and more source
@@ -60,11 +60,11 @@ QUEX_NAMESPACE_MAIN_OPEN
         me->status = U_ZERO_ERROR;
 
         if( me->to_handle == 0x0 ) {
-            /* Convert according to QUEX_TYPE_CHARACTER:
+            /* Convert according to QUEX_TYPE_LEXATOM:
              *
              * NOTE: The author did not find a better way to do non-16bit conversion than
              *       converting 'normally' and then shifting according to the size
-             *       of QUEX_TYPE_CHARACTER. If you read these lines and know of a better
+             *       of QUEX_TYPE_LEXATOM. If you read these lines and know of a better
              *       method, please, let me know (email: fschaef@users.sourceforge.net).   
              *
              * NOTE: 'UChar' is defined to be wchar_t, if sizeof(wchar_t) == 2 byte, 
@@ -72,7 +72,7 @@ QUEX_NAMESPACE_MAIN_OPEN
              *
              * We need to cast to UChar, since otherwise the code would not compile for sizeof() != 2.
              * Nevertheless, in this case the code would never be executed.                            */
-            __quex_assert( sizeof(QUEX_TYPE_CHARACTER) == 2 );
+            __quex_assert( sizeof(QUEX_TYPE_LEXATOM) == 2 );
 
             /* 16 bit --> nothing to be done */
             ucnv_toUnicode(me->from_handle, 

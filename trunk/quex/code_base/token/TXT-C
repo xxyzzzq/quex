@@ -53,7 +53,7 @@ extern const char*  $TOKEN_CLASS_map_id_to_name(const QUEX_TYPE_TOKEN_ID);
 QUEX_INLINE bool 
 $TOKEN_CLASS_take_text($TOKEN_CLASS*              __this, 
                        QUEX_TYPE_ANALYZER*        analyzer, 
-                       const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+                       const QUEX_TYPE_LEXATOM* Begin, const QUEX_TYPE_LEXATOM* End);
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 QUEX_INLINE size_t $TOKEN_CLASS_repetition_n_get($TOKEN_CLASS*);

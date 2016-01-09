@@ -91,9 +91,9 @@ QUEX_NAMESPACE_MAIN_OPEN
               from_StrangeStream(quex::StrangeStream<UnderlyingStreamT>*  istream_p, const char* CodecName = 0x0);
       void    from(QUEX_NAME(ByteLoader)* byte_loader, const char*  CodecName = 0x0);
       void    from(QUEX_NAME(LexatomLoader)* filler);
-      void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+      void    from(QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                    size_t               BufferMemorySize,
-                   QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
+                   QUEX_TYPE_LEXATOM* BufferEndOfContentP = 0x0);
       // (*) Common for constructor, reset, and include push ___________________________
       void    basic_constructor();
       void    basic_include_push(); 

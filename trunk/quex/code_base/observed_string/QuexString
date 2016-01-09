@@ -12,16 +12,16 @@
  *
  * /                   
 typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
-    QUEX_TYPE_CHARACTER* begin;
-    QUEX_TYPE_CHARACTER* end;
+    QUEX_TYPE_LEXATOM* begin;
+    QUEX_TYPE_LEXATOM* end;
 } QuexString; 
 
 QuexString_construct(QuexString*, ...);
 QuexString_destruct(QuexString*);
-QuexString_strcmp(QuexString*, QUEX_TYPE_CHARACTER*);
-QuexString_strcmpx(QuexString*, QUEX_TYPE_CHARACTER*);
+QuexString_strcmp(QuexString*, QUEX_TYPE_LEXATOM*);
+QuexString_strcmpx(QuexString*, QUEX_TYPE_LEXATOM*);
 QuexString_strlen(QuexString*);
-QuexString_find(QuexString*, QUEX_TYPE_CHARACTER*);
+QuexString_find(QuexString*, QUEX_TYPE_LEXATOM*);
 QuexString_findx(QuexString*, QuexString*);
 QuexString_atoi(QuexString*);
 QuexString_atof(QuexString*);
@@ -50,10 +50,10 @@ QuexStringObserver_relocate(QuexStringObserver*);
 int
 QuexString_cmp(QuexString* A, AStr* B)
 {
-   QUEX_TYPE_CHARACTER* it0 = A->begin;
-   QUEX_TYPE_CHARACTER* it0 = A->begin;
-   QUEX_TYPE_CHARACTER* it1 = B->begin;
-   QUEX_TYPE_CHARACTER* it1 = B->begin;
+   QUEX_TYPE_LEXATOM* it0 = A->begin;
+   QUEX_TYPE_LEXATOM* it0 = A->begin;
+   QUEX_TYPE_LEXATOM* it1 = B->begin;
+   QUEX_TYPE_LEXATOM* it1 = B->begin;
 
     for(; *it0 == *it1; ++it0, ++it1) {
         /* Both letters are the same and == 0?
@@ -65,7 +65,7 @@ QuexString_cmp(QuexString* A, AStr* B)
 
 QuexString*
 QuexString_construct(QuexString*           qstr,   QuexStringObserver*  observer, 
-                     QUEX_TYPE_CHARACTER*  LBegin, QUEX_TYPE_CHARACTER* LEnd)
+                     QUEX_TYPE_LEXATOM*  LBegin, QUEX_TYPE_LEXATOM* LEnd)
 {
     if( me->end == me->memory_end ) { 
         QuexStringObserver_get_new_list();

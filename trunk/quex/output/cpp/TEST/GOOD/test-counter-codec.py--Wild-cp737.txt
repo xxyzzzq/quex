@@ -1,8 +1,8 @@
 static void
-TEST_MODE_character_counter(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_CHARACTER* LexemeBegin, const QUEX_TYPE_CHARACTER* LexemeEnd)
+TEST_MODE_character_counter(QUEX_TYPE_ANALYZER* me, const QUEX_TYPE_LEXATOM* LexemeBegin, const QUEX_TYPE_LEXATOM* LexemeEnd)
 {
 #   define self (*me)
-    const QUEX_TYPE_CHARACTER* iterator = (void*)0;
+    const QUEX_TYPE_LEXATOM* iterator = (void*)0;
 
     for(iterator=LexemeBegin; iterator < LexemeEnd; ++iterator) {
         if( (*iterator) < 0x3D ) {

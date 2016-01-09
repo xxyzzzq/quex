@@ -160,7 +160,7 @@ QUEX_NAME(LexatomLoader_character_index_step_to)(QUEX_NAME(LexatomLoader)*      
  * RETURNS: true - success; false - else.                                    */
 { 
     const QUEX_TYPE_STREAM_POSITION ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-    QUEX_TYPE_CHARACTER             chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+    QUEX_TYPE_LEXATOM             chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
     QUEX_TYPE_STREAM_POSITION       remaining_n = TargetCI - me->character_index_next_to_fill;
     bool                            end_of_stream_f = false;
     size_t                          loaded_n;

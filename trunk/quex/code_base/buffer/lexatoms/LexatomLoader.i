@@ -20,8 +20,8 @@ QUEX_INLINE void       QUEX_NAME(LexatomLoader_character_index_reset_backup)(QUE
                                                           QUEX_TYPE_STREAM_POSITION Backup_character_index_next_to_fill, 
                                                           ptrdiff_t                 BackupStomachByteN, 
                                                           QUEX_TYPE_STREAM_POSITION BackupByteLoaderPosition);
-QUEX_INLINE void       QUEX_NAME(LexatomLoader_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
-                                                                  const QUEX_TYPE_CHARACTER* End);
+QUEX_INLINE void       QUEX_NAME(LexatomLoader_reverse_byte_order)(QUEX_TYPE_LEXATOM*       Begin, 
+                                                                  const QUEX_TYPE_LEXATOM* End);
 
 QUEX_INLINE void       QUEX_NAME(LexatomLoader_delete_self)(QUEX_NAME(LexatomLoader)*); 
 
@@ -99,20 +99,20 @@ QUEX_NAME(LexatomLoader_delete_self)(QUEX_NAME(LexatomLoader)* me)
 QUEX_INLINE void    
 QUEX_NAME(LexatomLoader_setup)(QUEX_NAME(LexatomLoader)*   me,
                               size_t       (*derived_load_characters)(QUEX_NAME(LexatomLoader)*,
-                                                                           QUEX_TYPE_CHARACTER*, 
+                                                                           QUEX_TYPE_LEXATOM*, 
                                                                            const size_t, 
                                                                            bool*),
                               ptrdiff_t    (*stomach_byte_n)(QUEX_NAME(LexatomLoader)*),
                               void         (*stomach_clear)(QUEX_NAME(LexatomLoader)*),
                               void         (*derived_destruct_self)(QUEX_NAME(LexatomLoader)*),
                               void         (*derived_fill_prepare)(QUEX_NAME(LexatomLoader)*  me,
-                                                                   QUEX_TYPE_CHARACTER*      RegionBeginP,
-                                                                   QUEX_TYPE_CHARACTER*      RegionEndP,
+                                                                   QUEX_TYPE_LEXATOM*      RegionBeginP,
+                                                                   QUEX_TYPE_LEXATOM*      RegionEndP,
                                                                    void**                    begin_p,
                                                                    const void**              end_p),
                               ptrdiff_t    (*derived_fill_finish)(QUEX_NAME(LexatomLoader)*   me,
-                                                                  QUEX_TYPE_CHARACTER*       BeginP,
-                                                                  const QUEX_TYPE_CHARACTER* EndP,
+                                                                  QUEX_TYPE_LEXATOM*       BeginP,
+                                                                  const QUEX_TYPE_LEXATOM* EndP,
                                                                   const void*                FilledEndP),
                               QUEX_NAME(ByteLoader)*  byte_loader,
                               ptrdiff_t    ByteNPerCharacter)
@@ -162,7 +162,7 @@ QUEX_NAME(LexatomLoader_reset)(QUEX_NAME(LexatomLoader)* me, QUEX_NAME(ByteLoade
 
 QUEX_INLINE ptrdiff_t       
 QUEX_NAME(LexatomLoader_load)(QUEX_NAME(LexatomLoader)*  me, 
-                             QUEX_TYPE_CHARACTER*      LoadP, 
+                             QUEX_TYPE_LEXATOM*      LoadP, 
                              const ptrdiff_t           LoadN,
                              QUEX_TYPE_STREAM_POSITION StartCharacterIndex,
                              bool*                     end_of_stream_f)
@@ -198,13 +198,13 @@ QUEX_NAME(LexatomLoader_load)(QUEX_NAME(LexatomLoader)*  me,
 
 
 QUEX_INLINE void
-QUEX_NAME(LexatomLoader_reverse_byte_order)(QUEX_TYPE_CHARACTER*       Begin, 
-                                           const QUEX_TYPE_CHARACTER* End)
+QUEX_NAME(LexatomLoader_reverse_byte_order)(QUEX_TYPE_LEXATOM*       Begin, 
+                                           const QUEX_TYPE_LEXATOM* End)
 {
     uint8_t              tmp = 0xFF;
-    QUEX_TYPE_CHARACTER* iterator = 0x0;
+    QUEX_TYPE_LEXATOM* iterator = 0x0;
 
-    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+    switch( sizeof(QUEX_TYPE_LEXATOM) ) {
     default:
         __quex_assert(false);
         break;

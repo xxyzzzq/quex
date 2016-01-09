@@ -7,7 +7,7 @@ main(int argc, char** argv)
 {
     FILE*                 fh = fopen(DEF_FILE_NAME, "rb");
     size_t                n  = 0;
-    QUEX_TYPE_CHARACTER   buffer[65536];
+    QUEX_TYPE_LEXATOM   buffer[65536];
     QUEX_TYPE_ANALYZER    me;
     int                   verbose_f = (argc > 1 && strcmp(argv[1], "verbose") == 0);
     
@@ -17,12 +17,12 @@ main(int argc, char** argv)
         return -1;
     }
 
-    n = fread((void*)buffer, sizeof(QUEX_TYPE_CHARACTER), 65536, fh);
+    n = fread((void*)buffer, sizeof(QUEX_TYPE_LEXATOM), 65536, fh);
 
     if( verbose_f ) {
         printf("file:     '%s';\n"
                "char_size: %i;\n" 
-               "byte_n:    %i;\n", DEF_FILE_NAME, sizeof(QUEX_TYPE_CHARACTER), (int)n);
+               "byte_n:    %i;\n", DEF_FILE_NAME, sizeof(QUEX_TYPE_LEXATOM), (int)n);
     }
 
     me.counter._column_number_at_end = 1;

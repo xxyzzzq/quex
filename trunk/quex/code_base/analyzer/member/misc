@@ -11,13 +11,13 @@ QUEX_NAMESPACE_MAIN_OPEN
 /* Callback on buffer content change --> user may safe its lexeme's away. */
 QUEX_INLINE void        
 QUEX_NAME(set_callback_on_buffer_content_change)(QUEX_TYPE_ANALYZER*  me,
-                                                 void               (*callback)(const QUEX_TYPE_CHARACTER*, 
-                                                                                const QUEX_TYPE_CHARACTER*));
+                                                 void               (*callback)(const QUEX_TYPE_LEXATOM*, 
+                                                                                const QUEX_TYPE_LEXATOM*));
 #if defined(__QUEX_OPTION_PLAIN_C)
-QUEX_INLINE QUEX_TYPE_CHARACTER*  
+QUEX_INLINE QUEX_TYPE_LEXATOM*  
 QUEX_NAME(lexeme_start_pointer_get)(QUEX_TYPE_ANALYZER*);
 QUEX_INLINE void
-QUEX_NAME(input_pointer_set)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER* Adr);
+QUEX_NAME(input_pointer_set)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_LEXATOM* Adr);
 #endif
 
 /* Activate/deactivate byte order reversion (big-/little-endian) */

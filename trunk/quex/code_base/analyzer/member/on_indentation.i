@@ -11,7 +11,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 QUEX_INLINE __QUEX_TYPE_ANALYZER_RETURN_VALUE  
 QUEX_NAME(on_indentation)(QUEX_TYPE_ANALYZER*    me, 
                           QUEX_TYPE_INDENTATION  Indentation, 
-                          QUEX_TYPE_CHARACTER*   Begin)
+                          QUEX_TYPE_LEXATOM*   Begin)
 {
 #   define self  (*me)
     QUEX_NAME(IndentationStack)*  stack = &me->counter._indentation_stack;

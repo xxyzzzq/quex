@@ -304,7 +304,7 @@ show_next_character(QUEX_TYPE_ANALYZER* me)
         if( QUEX_NAME(Buffer_is_end_of_file)(buffer) ) {
             return false;
         }
-        QUEX_NAME(Buffer_load_forward)(buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
+        QUEX_NAME(Buffer_load_forward)(buffer, (QUEX_TYPE_LEXATOM**)0x0, 0);
     }
     if( me->buffer._read_p != me->buffer.input.end_p ) {
         if( ((*buffer->_read_p) & 0x80) == 0 ) 
@@ -326,7 +326,7 @@ skip_irrelevant_characters_function_txt = """
 static bool
 skip_irrelevant_characters(QUEX_TYPE_ANALYZER* me)
 {
-    QUEX_TYPE_CHARACTER   input;
+    QUEX_TYPE_LEXATOM   input;
     (void)input;
 
     while(1 + 1 == 2) { 
@@ -337,7 +337,7 @@ $$MARKER_LIST$$
             if( QUEX_NAME(Buffer_is_end_of_file)(&me->buffer) ) {
                 return false;
             }
-            QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)0x0, 0);
+            QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_LEXATOM**)0x0, 0);
         }
         ++(me->buffer._read_p);
     }

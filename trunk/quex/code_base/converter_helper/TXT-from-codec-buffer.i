@@ -26,7 +26,7 @@
  *          to implement each string converter from the given 
  *          character converters. 
  *
- * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * These functions ARE DEPENDENT on QUEX_TYPE_LEXATOM.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * 2010 (C) Frank-Rene Schaefer; 
@@ -42,16 +42,16 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf32)(const QUEX_TYPE_CHARACTER** input_pp,
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf32)(const QUEX_TYPE_LEXATOM** input_pp,
                                           uint32_t**                  output_pp)
 {
     uint16_t             unicode = (uint32_t)0;
-    QUEX_TYPE_CHARACTER  input   = *(*input_pp)++;
+    QUEX_TYPE_LEXATOM  input   = *(*input_pp)++;
 $$BODY_UTF32$$
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf16)(const QUEX_TYPE_CHARACTER** input_pp,
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf16)(const QUEX_TYPE_LEXATOM** input_pp,
                                           uint16_t**                  output_pp)
 {
     uint32_t   unicode   = (uint32_t)0;
@@ -62,11 +62,11 @@ $$BODY_UTF16$$
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF($$CODEC$$, utf8)(const QUEX_TYPE_LEXATOM**  input_pp, 
                                          uint8_t**                    output_pp)
 {
     uint32_t            unicode = (uint32_t)-1;
-    QUEX_TYPE_CHARACTER input   = *(*input_pp)++;
+    QUEX_TYPE_LEXATOM input   = *(*input_pp)++;
     
 $$BODY_UTF8$$
 
@@ -74,7 +74,7 @@ $$EPILOG$$
 }
 
 #define __QUEX_FROM           $$CODEC$$
-#define __QUEX_FROM_TYPE      QUEX_TYPE_CHARACTER
+#define __QUEX_FROM_TYPE      QUEX_TYPE_LEXATOM
 
 /* (1b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */

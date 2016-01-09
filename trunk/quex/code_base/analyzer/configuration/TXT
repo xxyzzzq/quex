@@ -160,7 +160,7 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
  *
  * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.              */
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
-#   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#   define QUEX_SETTING_BUFFER_LIMIT_CODE  ((QUEX_TYPE_LEXATOM)$$BUFFER_LIMIT_CODE$$)
 #endif
 
 /* PTC -- Path Termination code:
@@ -173,7 +173,7 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
  *
  * IT IS NOT SUPPOSED TO APPEAR IN THE NORMAL CHARACTER STREAM.              */
 #ifndef    QUEX_SETTING_PATH_TERMINATION_CODE
-#   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_CHARACTER)$$PATH_TERMINATION_CODE$$)
+#   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_LEXATOM)$$PATH_TERMINATION_CODE$$)
 #endif
 
 /* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
@@ -275,19 +275,19 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_HELPER
  *
  * NOTE: If in parallel another engine is built with other bytes per character
  * settings, then the engines will also include their own header with their own
- * definition of QUEX_TYPE_CHARACTER. Thus there is no danger at all.
+ * definition of QUEX_TYPE_LEXATOM. Thus there is no danger at all.
  * Templatifying the lexer would be possible, but the author has in mind to
  * bring out a 'pure C' version of the quex generated engine. Thus templating
  * would make this goal harder achievable.
  *                                                                           */
-#ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER          $$QUEX_TYPE_CHARACTER$$
-#   define QUEX_TYPE_CHARACTER_BACKUP   $$QUEX_TYPE_CHARACTER$$
+#ifndef    QUEX_TYPE_LEXATOM
+#   define QUEX_TYPE_LEXATOM          $$QUEX_TYPE_LEXATOM$$
+#   define QUEX_TYPE_LEXATOM_BACKUP   $$QUEX_TYPE_LEXATOM$$
 #endif 
 #ifndef    QUEX_SETTING_CHARACTER_SIZE
-    /* Size of a QUEX_TYPE_CHARACTER in bytes. A numeric value is required
+    /* Size of a QUEX_TYPE_LEXATOM in bytes. A numeric value is required
      * here!  '-1' stands for 'Cannot be determined at code generation time'.
-     * In this case, it must be relied upon 'sizeof(QUEX_TYPE_CHARACTER)'.   */
+     * In this case, it must be relied upon 'sizeof(QUEX_TYPE_LEXATOM)'.   */
 #   define QUEX_SETTING_CHARACTER_SIZE  $$QUEX_SETTING_CHARACTER_SIZE$$
 #endif
 #ifndef    QUEX_SETTING_CHARACTER_CODEC   

@@ -213,7 +213,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     pattern_list = [ pattern for pattern, action_str in pattern_action_list ]
     function_body, variable_definitions = cpp_generator.do_core(pattern_list, terminal_db)
-    function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_CHARACTER*)0, (QUEX_TYPE_CHARACTER*)0); }\n"
+    function_body += "if(0) { __QUEX_COUNT_VOID((QUEX_TYPE_ANALYZER*)0, (QUEX_TYPE_LEXATOM*)0, (QUEX_TYPE_LEXATOM*)0); }\n"
     function_txt                        = cpp_generator.wrap_up(sm_name, function_body, 
                                                                 variable_definitions, 
                                                                 ModeNameList=[])
@@ -226,7 +226,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 test_program_common_declarations = """
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_UNIT_TEST
-#define QUEX_TYPE_CHARACTER unsigned char
+#define QUEX_TYPE_LEXATOM unsigned char
 
 $$__QUEX_OPTION_PLAIN_C$$
 $$QUEX_OPTION_INDENTATION_TRIGGER$$
@@ -236,7 +236,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #define QUEX_OPTION_INCLUDE_STACK_DISABLED
 #define QUEX_OPTION_STRING_ACCUMULATOR_DISABLED
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     ((size_t)$$BUFFER_FALLBACK_N$$)
-#define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+#define QUEX_SETTING_BUFFER_LIMIT_CODE         ((QUEX_TYPE_LEXATOM)$$BUFFER_LIMIT_CODE$$)
 
 #define QUEX_TKN_TERMINATION       0
 #define QUEX_TKN_UNINITIALIZED     1
@@ -258,7 +258,7 @@ $$__QUEX_OPTION_TOKEN_QUEUE$$
 #endif
 
 QUEX_NAMESPACE_LEXEME_NULL_OPEN     
-QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+QUEX_TYPE_LEXATOM   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
 QUEX_NAMESPACE_LEXEME_NULL_CLOSE     
 
 QUEX_NAMESPACE_MAIN_OPEN

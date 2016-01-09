@@ -28,7 +28,7 @@ $INCLUDE_CONVERTER_DECLARATION
         column_number : size_t;
    }
    distinct {
-       text   :  const QUEX_TYPE_CHARACTER*;
+       text   :  const QUEX_TYPE_LEXATOM*;
        number :  size_t;
    }
 
@@ -41,7 +41,7 @@ $INCLUDE_CONVERTER_DECLARATION
 
    destructor {
        if( self.text != LexemeNull ) {
-           QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
+           QUEXED(MemoryManager_free)((QUEX_TYPE_LEXATOM*)self.text, 
                                       E_MemoryObjectType_TEXT);
            self.text = LexemeNull;
        }
@@ -51,16 +51,16 @@ $INCLUDE_CONVERTER_DECLARATION
         self._id  = Other._id;
 
         if( self.text != LexemeNull ) {
-            QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
+            QUEXED(MemoryManager_free)((QUEX_TYPE_LEXATOM*)self.text, 
                                        E_MemoryObjectType_TEXT);
         }
         if( Other.text != LexemeNull ) {
             self.text = QUEXED(MemoryManager_allocate)(
-                                    sizeof(QUEX_TYPE_CHARACTER) 
+                                    sizeof(QUEX_TYPE_LEXATOM) 
                                   * (QUEX_NAME(strlen)(Other.text) + 1), 
                                   E_MemoryObjectType_TEXT);
             __QUEX_STD_memcpy((void*)self.text, (void*)Other.text, 
-                                sizeof(QUEX_TYPE_CHARACTER) 
+                                sizeof(QUEX_TYPE_LEXATOM) 
                               * (QUEX_NAME(strlen)(Other.text) + 1));
         }
         self.number = Other.number;
@@ -75,7 +75,7 @@ $INCLUDE_CONVERTER_DECLARATION
 #       if 0
         /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
         {
-            const QUEX_TYPE_CHARACTER* it = 0x0;
+            const QUEX_TYPE_LEXATOM* it = 0x0;
             printf("previous:  '");
             if( self.text != LexemeNull ) {
                 for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
@@ -90,17 +90,17 @@ $INCLUDE_CONVERTER_DECLARATION
 #       endif
 
         if( self.text != LexemeNull ) {
-            QUEXED(MemoryManager_free)((QUEX_TYPE_CHARACTER*)self.text, 
+            QUEXED(MemoryManager_free)((QUEX_TYPE_LEXATOM*)self.text, 
                                        E_MemoryObjectType_TEXT);
         }
         if( Begin != LexemeNull ) {
             self.text = QUEXED(MemoryManager_allocate)(
-                              sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin + 1), 
+                              sizeof(QUEX_TYPE_LEXATOM) * (size_t)(End - Begin + 1), 
                               E_MemoryObjectType_TEXT);
             __QUEX_STD_memcpy((void*)self.text, (void*)Begin, 
-                              sizeof(QUEX_TYPE_CHARACTER) * (size_t)(End - Begin));
+                              sizeof(QUEX_TYPE_LEXATOM) * (size_t)(End - Begin));
             /* The string is not necessarily zero terminated, so terminate it here. */
-            *((QUEX_TYPE_CHARACTER*)(self.text + (End - Begin))) = (QUEX_TYPE_CHARACTER)0;
+            *((QUEX_TYPE_LEXATOM*)(self.text + (End - Begin))) = (QUEX_TYPE_LEXATOM)0;
         } else {
             self.text = LexemeNull;
         }
@@ -108,7 +108,7 @@ $INCLUDE_CONVERTER_DECLARATION
 #       if 0
         /* Hint for debug: To check take_text change "#if 0" to "#if 1" */
         {
-            const QUEX_TYPE_CHARACTER* it = 0x0;
+            const QUEX_TYPE_LEXATOM* it = 0x0;
             printf("after:     '");
             if( self.text != LexemeNull ) { 
                 for(it = self.text; *it ; ++it) printf("%04X.", (int)*it);
@@ -180,11 +180,11 @@ $INCLUDE_CONVERTER_DECLARATION
                                           char*                   buffer, 
                                           size_t                  BufferSize) 
         {
-            const QUEX_TYPE_CHARACTER*  source    = me->text;
+            const QUEX_TYPE_LEXATOM*  source    = me->text;
             char*                       drain     = buffer;
             const char*                 DrainEnd  = buffer + BufferSize;
 
-            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
+            const QUEX_TYPE_LEXATOM*  SourceEnd = me->text + (size_t)(QUEX_NAME(strlen)(source)) + 1;
             $CONVERTER_STRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;
         }
@@ -197,8 +197,8 @@ $INCLUDE_CONVERTER_DECLARATION
         {
             wchar_t*                    drain     = buffer;
             const wchar_t*              DrainEnd  = buffer + (ptrdiff_t)BufferSize;
-            const QUEX_TYPE_CHARACTER*  source    = me->text;
-            const QUEX_TYPE_CHARACTER*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
+            const QUEX_TYPE_LEXATOM*  source    = me->text;
+            const QUEX_TYPE_LEXATOM*  SourceEnd = me->text + (ptrdiff_t)(QUEX_NAME(strlen)(source)) + 1;
 
             $CONVERTER_WSTRING(&source, SourceEnd, &drain, DrainEnd);
             return buffer;

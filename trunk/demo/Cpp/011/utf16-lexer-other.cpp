@@ -36,7 +36,7 @@ main(int argc, char** argv)
 
         /* Print the lexeme in hex format. */
         printf("%s\t", (char*)token->type_id_name().c_str());
-        for(QUEX_TYPE_CHARACTER* iterator = (QUEX_TYPE_CHARACTER*)(token->get_text()).c_str();
+        for(QUEX_TYPE_LEXATOM* iterator = (QUEX_TYPE_LEXATOM*)(token->get_text()).c_str();
             *iterator; ++iterator) {
             printf("%04X.", *iterator);
         }

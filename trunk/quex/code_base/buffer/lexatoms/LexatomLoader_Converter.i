@@ -28,20 +28,20 @@ QUEX_NAME(LexatomLoader_Converter_stomach_byte_n)(QUEX_NAME(LexatomLoader)* alte
 
 QUEX_INLINE size_t 
 QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  alter_ego,
-                                                       QUEX_TYPE_CHARACTER* RegionBeginP, 
+                                                       QUEX_TYPE_LEXATOM* RegionBeginP, 
                                                        const size_t         N,
                                                        bool*                end_of_stream_f);
 QUEX_INLINE void 
 QUEX_NAME(LexatomLoader_Converter_fill_prepare)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                               QUEX_TYPE_CHARACTER*       RegionEndP,
+                                               QUEX_TYPE_LEXATOM*       RegionBeginP,
+                                               QUEX_TYPE_LEXATOM*       RegionEndP,
                                                void**                     begin_p,
                                                const void**               end_p);
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                              QUEX_TYPE_CHARACTER*       insertion_p,
-                                              const QUEX_TYPE_CHARACTER* BufferEnd,
+                                              QUEX_TYPE_LEXATOM*       insertion_p,
+                                              const QUEX_TYPE_LEXATOM* BufferEnd,
                                               const void*                ContentEnd);
 
 QUEX_INLINE void   
@@ -57,8 +57,8 @@ QUEX_NAME(RawBuffer_load)(QUEX_NAME(RawBuffer)*  me,
 
 QUEX_INLINE void
 QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)* me,
-                                            QUEX_TYPE_CHARACTER**              buffer_insertion_p,
-                                            QUEX_TYPE_CHARACTER*               RegionBeginP);
+                                            QUEX_TYPE_LEXATOM**              buffer_insertion_p,
+                                            QUEX_TYPE_LEXATOM*               RegionBeginP);
 
 QUEX_INLINE QUEX_NAME(LexatomLoader)*
 QUEX_NAME(LexatomLoader_Converter_new)(QUEX_NAME(ByteLoader)* byte_loader,
@@ -189,7 +189,7 @@ QUEX_NAME(LexatomLoader_Converter_destruct_self)(QUEX_NAME(LexatomLoader)* alter
 
 QUEX_INLINE size_t 
 QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  alter_ego,
-                                                  QUEX_TYPE_CHARACTER*      RegionBeginP, 
+                                                  QUEX_TYPE_LEXATOM*      RegionBeginP, 
                                                   const size_t              N,
                                                   bool*                     end_of_stream_f)
 /* Loads content into the raw buffer, convert it and write it to the engine's
@@ -200,15 +200,15 @@ QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  al
 {
     QUEX_NAME(LexatomLoader_Converter)* me = (QUEX_NAME(LexatomLoader_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*              raw = &me->raw_buffer;
-    QUEX_TYPE_CHARACTER*               buffer_insertion_p = RegionBeginP;
-    const QUEX_TYPE_CHARACTER*         BufferRegionEnd    = &RegionBeginP[N];
+    QUEX_TYPE_LEXATOM*               buffer_insertion_p = RegionBeginP;
+    const QUEX_TYPE_LEXATOM*         BufferRegionEnd    = &RegionBeginP[N];
     ptrdiff_t                          converted_character_n;
     bool                               drain_filled_f;
     bool                               load_complete_f;
     bool                               raw_end_of_stream_f;
 #   if 0
     int                                i;
-    QUEX_TYPE_CHARACTER*               buffer_insertion_begin_p;
+    QUEX_TYPE_LEXATOM*               buffer_insertion_begin_p;
 #   endif
 
     __quex_assert(me->converter);
@@ -276,8 +276,8 @@ QUEX_NAME(LexatomLoader_Converter_load_characters)(QUEX_NAME(LexatomLoader)*  al
 
 QUEX_INLINE void 
 QUEX_NAME(LexatomLoader_Converter_fill_prepare)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                               QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                               QUEX_TYPE_CHARACTER*       RegionEndP,
+                                               QUEX_TYPE_LEXATOM*       RegionBeginP,
+                                               QUEX_TYPE_LEXATOM*       RegionEndP,
                                                void**                     begin_p,
                                                const void**               end_p)
 {
@@ -293,15 +293,15 @@ QUEX_NAME(LexatomLoader_Converter_fill_prepare)(QUEX_NAME(LexatomLoader)*   alte
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                              QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                              const QUEX_TYPE_CHARACTER* RegionEndP,
+                                              QUEX_TYPE_LEXATOM*       RegionBeginP,
+                                              const QUEX_TYPE_LEXATOM* RegionEndP,
                                               const void*                FilledEndP_raw)
 /* Converts what has been filled into the 'raw_buffer' until 'FilledEndP
  * and stores it into the buffer.                                            */
 {
     QUEX_NAME(LexatomLoader_Converter)*  me  = (QUEX_NAME(LexatomLoader_Converter)*)alter_ego;
     QUEX_NAME(RawBuffer)*               raw = &me->raw_buffer;
-    QUEX_TYPE_CHARACTER*                insertion_p = RegionBeginP;
+    QUEX_TYPE_LEXATOM*                insertion_p = RegionBeginP;
     uint8_t*                            FilledEndP = (uint8_t*)FilledEndP_raw;
 
     __quex_assert(FilledEndP >= raw->next_to_convert_p);
@@ -329,8 +329,8 @@ QUEX_NAME(LexatomLoader_Converter_fill_finish)(QUEX_NAME(LexatomLoader)*   alter
 
 QUEX_INLINE void
 QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)* me,
-                                            QUEX_TYPE_CHARACTER**              buffer_insertion_p,
-                                            QUEX_TYPE_CHARACTER*               RegionBeginP)
+                                            QUEX_TYPE_LEXATOM**              buffer_insertion_p,
+                                            QUEX_TYPE_LEXATOM*               RegionBeginP)
 {
     uint32_t  first_character;
 
@@ -346,7 +346,7 @@ QUEX_NAME(LexatomLoader_remove_spurious_BOM)(QUEX_NAME(LexatomLoader_Converter)*
     }
 
     __QUEX_STD_memmove(RegionBeginP, &RegionBeginP[1], 
-                       (size_t)(*buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_CHARACTER)); 
+                       (size_t)(*buffer_insertion_p - &RegionBeginP[1]) * sizeof(QUEX_TYPE_LEXATOM)); 
 
     *buffer_insertion_p = &(*buffer_insertion_p)[-1];
 }

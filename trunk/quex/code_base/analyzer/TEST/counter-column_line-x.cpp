@@ -31,7 +31,7 @@ test(const char* TestString, QUEX_NAME(Counter)& x)
 {
     __QUEX_IF_COUNT_LINES(x._line_number_at_begin     = x._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(x._column_number_at_begin = x._column_number_at_end);
-    QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_LEXATOM*)TestString, (QUEX_TYPE_LEXATOM*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
@@ -43,8 +43,8 @@ test_NoNewline(const char* TestString, QUEX_NAME(Counter)& x)
     __QUEX_IF_COUNT_LINES(x._line_number_at_begin     = x._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(x._column_number_at_begin = x._column_number_at_end);
     // Previously:    QUEX_NAME(Counter_count_NoNewline)(&x, strlen(TestString));
-    /* Replacement: */QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
-                                               (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    /* Replacement: */QUEX_NAME(Counter_count)(&x, (QUEX_TYPE_LEXATOM*)TestString, 
+                                               (QUEX_TYPE_LEXATOM*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
@@ -56,8 +56,8 @@ test_FixedNewlineN(const char* TestString, QUEX_NAME(Counter)& x)
 
     __QUEX_IF_COUNT_LINES(x._line_number_at_begin     = x._line_number_at_end);
     __QUEX_IF_COUNT_COLUMNS(x._column_number_at_begin = x._column_number_at_end);
-    QUEX_NAME(Counter_count_FixNewlineN)(&x, (QUEX_TYPE_CHARACTER*)TestString, 
-                                         (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString), line_n);
+    QUEX_NAME(Counter_count_FixNewlineN)(&x, (QUEX_TYPE_LEXATOM*)TestString, 
+                                         (QUEX_TYPE_LEXATOM*)TestString + strlen(TestString), line_n);
     print(x, TestString);
 }
 
@@ -73,7 +73,7 @@ main(int  argc, char** argv)
         return 0;
     }
 
-    // x.__buffer->__the_end = (QUEX_TYPE_CHARACTER*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_TYPE_LEXATOM*)0xFFFFFFFFL;
 
     test_NoNewline("12345", x);
     test("\n", x);

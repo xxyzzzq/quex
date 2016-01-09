@@ -5,7 +5,7 @@ Types
 
    Function pointer type of the analyzer function. Best not to be changed.
 
-.. cmacro:: QUEX_TYPE_CHARACTER
+.. cmacro:: QUEX_TYPE_LEXATOM
 
    Internal carrier type for characters. This is set automatically by quex
    if the command line option ``-b`` or ``--buffer-element-size`` is specified.

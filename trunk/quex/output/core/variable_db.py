@@ -20,24 +20,24 @@ class Variable:
 
 candidate_db = {
 # Name                             Type(0),                         InitialValue(2),               PriorityF(3)
-"input":                          ["QUEX_TYPE_CHARACTER",           "(QUEX_TYPE_CHARACTER)(0x00)", False],
+"input":                          ["QUEX_TYPE_LEXATOM",           "(QUEX_TYPE_LEXATOM)(0x00)", False],
 "target_state_index":             ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_LABEL_VOID",        False],
 "target_state_else_index":        ["QUEX_TYPE_GOTO_LABEL",          "QUEX_GOTO_LABEL_VOID",        False],
 "last_acceptance":                ["QUEX_TYPE_ACCEPTANCE_ID",       None,                          False],
 "PositionRegisterN":              ["const size_t",                  None,                          False],
-"position":                       ["QUEX_TYPE_CHARACTER*",  None,                          False],
+"position":                       ["QUEX_TYPE_LEXATOM*",  None,                          False],
 "pre_context_%i_fulfilled_f":     ["int",                           "0",                           False], 
 "counter":                        ["size_t",                        "0",                           False],
-"end_of_core_pattern_position":   ["QUEX_TYPE_CHARACTER*",  "((QUEX_TYPE_CHARACTER*)0x0)", False],
+"end_of_core_pattern_position":   ["QUEX_TYPE_LEXATOM*",  "((QUEX_TYPE_LEXATOM*)0x0)", False],
 #                                 
 # (*) Path Compression
-"path_iterator":                  ["const QUEX_TYPE_CHARACTER*",       "((const QUEX_TYPE_CHARACTER*)0x0)", False],
+"path_iterator":                  ["const QUEX_TYPE_LEXATOM*",       "((const QUEX_TYPE_LEXATOM*)0x0)", False],
 "path_end_state":                 ["QUEX_TYPE_GOTO_LABEL",             "QUEX_GOTO_LABEL_VOID",  False], 
-"path_walker_%i_path_%i":         ["const QUEX_TYPE_CHARACTER* const", None,                                False],
-"path_walker_%i_path_base":       ["const QUEX_TYPE_CHARACTER",        None,                                True],
+"path_walker_%i_path_%i":         ["const QUEX_TYPE_LEXATOM* const", None,                                False],
+"path_walker_%i_path_base":       ["const QUEX_TYPE_LEXATOM",        None,                                True],
 "path_walker_%i_path_%i_states":  ["const QUEX_TYPE_GOTO_LABEL* const",None,                                False],
 "path_walker_%i_state_base":      ["const QUEX_TYPE_GOTO_LABEL",       None,                                True],
-"path_walker_%i_reference":       ["const QUEX_TYPE_CHARACTER* const", None,                                False],
+"path_walker_%i_reference":       ["const QUEX_TYPE_LEXATOM* const", None,                                False],
 #
 # (*) Template Compression
 "state_key":                                    ["ptrdiff_t",                     "(ptrdiff_t)0",           False],
@@ -45,19 +45,19 @@ candidate_db = {
 "template_%i_map_state_key_to_recursive_entry": ["const QUEX_TYPE_GOTO_LABEL",    None,                     False],
 #
 # (*) Skipper etc.
-"reference_p":                    ["QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0", False],
-"character_begin_p":              ["QUEX_TYPE_CHARACTER*", "(QUEX_TYPE_CHARACTER*)0x0", False],
-"text_end":                       ["QUEX_TYPE_CHARACTER*",         "(QUEX_TYPE_CHARACTER*)0x0",         False],
+"reference_p":                    ["QUEX_TYPE_LEXATOM*", "(QUEX_TYPE_LEXATOM*)0x0", False],
+"character_begin_p":              ["QUEX_TYPE_LEXATOM*", "(QUEX_TYPE_LEXATOM*)0x0", False],
+"text_end":                       ["QUEX_TYPE_LEXATOM*",         "(QUEX_TYPE_LEXATOM*)0x0",         False],
 #     Character Set Skipper:
-"Skipper%i":                      ["const QUEX_TYPE_CHARACTER",    None,                                False],
+"Skipper%i":                      ["const QUEX_TYPE_LEXATOM",    None,                                False],
 "Skipper%iL":                     ["const size_t",                 None,                                False],
 #     Range Skipper (from string to string)
-"Skipper%i_Opener":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
-"Skipper%i_OpenerEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
-"Skipper%i_Opener_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
-"Skipper%i_Closer":               ["const QUEX_TYPE_CHARACTER",    None,                                True],
-"Skipper%i_CloserEnd":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
-"Skipper%i_Closer_it":            ["const QUEX_TYPE_CHARACTER*",   None,                                False],
+"Skipper%i_Opener":               ["const QUEX_TYPE_LEXATOM",    None,                                True],
+"Skipper%i_OpenerEnd":            ["const QUEX_TYPE_LEXATOM*",   None,                                False],
+"Skipper%i_Opener_it":            ["const QUEX_TYPE_LEXATOM*",   None,                                False],
+"Skipper%i_Closer":               ["const QUEX_TYPE_LEXATOM",    None,                                True],
+"Skipper%i_CloserEnd":            ["const QUEX_TYPE_LEXATOM*",   None,                                False],
+"Skipper%i_Closer_it":            ["const QUEX_TYPE_LEXATOM*",   None,                                False],
 }
 
 def enter(local_variable_db, Name, InitialValue=None, ElementN=None, Condition=None, ConditionNegatedF=False, Index=None):

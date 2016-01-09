@@ -73,7 +73,7 @@ which are available to access the matched lexeme. In detail they are:
                 
                     .. code-block:: cpp 
                    
-                       *LexemeEnd = (QUEX_TYPE_CHARACTER)0;
+                       *LexemeEnd = (QUEX_TYPE_LEXATOM)0;
 
                  or one might rely on the borders ``LexemeBegin`` and
                  ``LexemeEnd``, or on ``LexemeBegin`` and ``LexemeL`` for
@@ -126,7 +126,7 @@ are allowed that do not require named attribute assignments:
     .. cfunction:: QUEX_TKN_XYZ(Begin, End)
 
        This special call requires ``Begin`` and ``End`` to be pointers 
-       to ``QUEX_TYPE_CHARACTER``. Their name does not play a role. The
+       to ``QUEX_TYPE_LEXATOM``. Their name does not play a role. The
        shorthand triggers a call to 
 
        .. code-block:: cpp

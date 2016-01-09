@@ -25,7 +25,7 @@ Following lines are suppossed to be accepted:
 ./output/core/loop.py:46:    first character which is not in CharacterSet (or the LexemeEnd).
 ./output/core/loop.py:99:              --->| Count Op |-------< LexemeEnd? >------> DoorIdOk
 ./output/cpp/counter.py:100:       + "     __quex_assert(%s == LexemeEnd); /* Otherwise, lexeme violates codec character boundaries. */\n" \
-./output/cpp/counter.py:71:        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+./output/cpp/counter.py:71:        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBegin, QUEX_TYPE_LEXATOM* LexemeEnd)\n" \
 ./output/cpp/counter.py:84:        "    /* Allow LexemeBegin == LexemeEnd (e.g. END_OF_STREAM)\n"
 ./output/cpp/counter.py:87:        "    __quex_assert(LexemeBegin <= LexemeEnd);\n"
 ./output/cpp/counter.py:88:        "    if(LexemeBegin == LexemeEnd) return;\n"

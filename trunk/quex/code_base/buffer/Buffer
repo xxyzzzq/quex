@@ -16,14 +16,14 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
      *      ...
      *      memory[BUFFER_SIZE-2] = last char of content
      *      memory[BUFFER_SIZE-1] = upper buffer limit code character             */
-    QUEX_TYPE_CHARACTER*  _front;         /* first character in buffer (BLC)      */
-    QUEX_TYPE_CHARACTER*  _back;          /* last character in buffer  (BLC)      */
+    QUEX_TYPE_LEXATOM*  _front;         /* first character in buffer (BLC)      */
+    QUEX_TYPE_LEXATOM*  _back;          /* last character in buffer  (BLC)      */
 
 } QUEX_NAME(BufferMemory);
 
 QUEX_INLINE size_t  QUEX_NAME(BufferMemory_size)(QUEX_NAME(BufferMemory)*);
 QUEX_INLINE void    QUEX_NAME(BufferMemory_construct)(QUEX_NAME(BufferMemory)*  me, 
-                                                      QUEX_TYPE_CHARACTER*      Memory, 
+                                                      QUEX_TYPE_LEXATOM*      Memory, 
                                                       const size_t              Size,
                                                       E_Ownership               Ownership);
 QUEX_INLINE void    QUEX_NAME(BufferMemory_destruct)(QUEX_NAME(BufferMemory)* me);
@@ -54,11 +54,11 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
     QUEX_NAME(BufferMemory)  _memory;                                        
                                                                              
     /* (*) Iterator positions for lexical analysis                           */
-    QUEX_TYPE_CHARACTER*     _read_p;                                        
-    QUEX_TYPE_CHARACTER*     _lexeme_start_p;                                
+    QUEX_TYPE_LEXATOM*     _read_p;                                        
+    QUEX_TYPE_LEXATOM*     _lexeme_start_p;                                
                                                                              
     struct {                                                                 
-        QUEX_TYPE_CHARACTER*      end_p;                                     
+        QUEX_TYPE_LEXATOM*      end_p;                                     
         QUEX_TYPE_STREAM_POSITION character_index_begin;                     
         /* Character index + 1 of the last character in the stream.          */
         QUEX_TYPE_STREAM_POSITION character_index_end_of_stream; 
@@ -72,9 +72,9 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
      * _character_at_lexeme_start: Used to check whether the lexeme's 
      *                             preceeding character was newline. 
      *                             (i.e. for begin-of-line pre-context).     */
-    QUEX_TYPE_CHARACTER      _character_at_lexeme_start;      
+    QUEX_TYPE_LEXATOM      _character_at_lexeme_start;      
 #   ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    QUEX_TYPE_CHARACTER      _character_before_lexeme_start;  
+    QUEX_TYPE_LEXATOM      _character_before_lexeme_start;  
 #   endif
 
     struct    QUEX_NAME(LexatomLoader_tag)*  filler;
@@ -95,17 +95,17 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(Buffer_tag) 
      * on_overflow: Distance between current '_read_p' and the lexeme start
      *              plus the fallback region are too big for the current 
      *              buffer's size.                                           */
-    void      (*on_content_change)(const QUEX_TYPE_CHARACTER*  BeginP,
-                                          const QUEX_TYPE_CHARACTER*  EndP);
+    void      (*on_content_change)(const QUEX_TYPE_LEXATOM*  BeginP,
+                                          const QUEX_TYPE_LEXATOM*  EndP);
     void      (*on_overflow)(struct QUEX_NAME(Buffer_tag)*, bool ForwardF);
 
 } QUEX_NAME(Buffer);
 
 QUEX_INLINE void    QUEX_NAME(Buffer_construct)(QUEX_NAME(Buffer)*                   me, 
                                                 struct QUEX_NAME(LexatomLoader_tag)*  filler,
-                                                QUEX_TYPE_CHARACTER*                 memory,
+                                                QUEX_TYPE_LEXATOM*                 memory,
                                                 const size_t                         MemorySize,
-                                                QUEX_TYPE_CHARACTER*                 EndOfFileP,
+                                                QUEX_TYPE_LEXATOM*                 EndOfFileP,
                                                 E_Ownership                          Ownership);
 
 /* Constructor, destructor, reset. */
@@ -116,13 +116,13 @@ QUEX_INLINE void  QUEX_NAME(Buffer_destruct)(QUEX_NAME(Buffer)* me);
 
 /* Moving buffer content. */
 QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_passed_content)(QUEX_NAME(Buffer)*    me,
-                                                                  QUEX_TYPE_CHARACTER** position_register,
+                                                                  QUEX_TYPE_LEXATOM** position_register,
                                                                   const size_t          PositionRegisterN);
 QUEX_INLINE ptrdiff_t  QUEX_NAME(Buffer_move_away_upfront_content)(QUEX_NAME(Buffer)* me);
                       
 /* Automatic loading of buffer content (during analysis). */
 QUEX_INLINE bool       QUEX_NAME(Buffer_load_forward)(QUEX_NAME(Buffer)*    me,
-                                                      QUEX_TYPE_CHARACTER** position_register,
+                                                      QUEX_TYPE_LEXATOM** position_register,
                                                       const size_t          PositionRegisterN);
 QUEX_INLINE bool       QUEX_NAME(Buffer_load_backward)(QUEX_NAME(Buffer)* me);
 QUEX_INLINE bool       QUEX_NAME(Buffer_move_and_load_backward)(QUEX_NAME(Buffer)* me, 
@@ -149,7 +149,7 @@ QUEX_INLINE bool       QUEX_NAME(Buffer_is_end_of_file)(QUEX_NAME(Buffer)*);
 QUEX_INLINE bool       QUEX_NAME(Buffer_is_begin_of_file)(QUEX_NAME(Buffer)*);
 
 QUEX_INLINE void       QUEX_NAME(Buffer_register_content)(QUEX_NAME(Buffer)* me,
-                                                          QUEX_TYPE_CHARACTER*      EndOfInputP,
+                                                          QUEX_TYPE_LEXATOM*      EndOfInputP,
                                                           QUEX_TYPE_STREAM_POSITION CharacterIndexBegin);
 QUEX_INLINE void       QUEX_NAME(Buffer_register_eos)(QUEX_NAME(Buffer)* me,
                                                       QUEX_TYPE_STREAM_POSITION CharacterIndexEndOfStream);

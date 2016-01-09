@@ -9,7 +9,7 @@
     inline void
     trim_rear(QUEX_LEXEME_CHARACTER_TYPE*     text, 
               const int Length,
-              int       (*condition)(const QUEX_TYPE_CHARACTER))
+              int       (*condition)(const QUEX_TYPE_LEXATOM))
         // PURPOSE:
         //    Inserts a terminating zero after the first letter where a
         //    condition hold. This is useful, for example, if strings have 
@@ -33,7 +33,7 @@
 
     inline const QUEX_LEXEME_CHARACTER_TYPE*
     trim_front(QUEX_LEXEME_CHARACTER_TYPE* text, 
-               int   (*condition)(const QUEX_TYPE_CHARACTER))
+               int   (*condition)(const QUEX_TYPE_LEXATOM))
         // PURPOSE:
         //    Like insert_term_zero_after_condition(...) treating the string
         //    from front to back (i.e. vice versa). Does not insert terminating
@@ -51,7 +51,7 @@
     inline const QUEX_LEXEME_CHARACTER_TYPE*
     trim(QUEX_LEXEME_CHARACTER_TYPE*     text, 
          const int Length,
-         int       (*condition)(const QUEX_TYPE_CHARACTER))
+         int       (*condition)(const QUEX_TYPE_LEXATOM))
         // PURPOSE:
         //    Delivers a string that has no whitespace at front and none at end.
         //    For example, the string "  hello world!    " becomes "hello world!".
@@ -94,16 +94,16 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(LexatomLoade
 
     QUEX_NAME(LexatomLoader)* filler;
 
-    QUEX_TYPE_CHARACTER*  insert(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
+    QUEX_TYPE_LEXATOM*  insert(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
-                                 QUEX_TYPE_CHARACTER*                insertion_p,
+                                 QUEX_TYPE_LEXATOM*                insertion_p,
                                  QUEX_TYPE_EXT_CHARACTER*            ContentBegin,
                                  QUEX_TYPE_EXT_CHARACTER*            ContentEnd);
 
-    QUEX_TYPE_CHARACTER*  append(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
+    QUEX_TYPE_LEXATOM*  append(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
-                                 QUEX_TYPE_CHARACTER*                ContentBegin, 
-                                 QUEX_TYPE_CHARACTER*                ContentEnd);
+                                 QUEX_TYPE_LEXATOM*                ContentBegin, 
+                                 QUEX_TYPE_LEXATOM*                ContentEnd);
 
     uint8_t*              append_conversion(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                             QUEX_TYPE_ANALYZER*                 the_lexer,
@@ -122,8 +122,8 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG QUEX_NAME(LexatomLoade
                                  QUEX_TYPE_ANALYZER*                 the_lexer,
                                  const size_t                        LoadedN);
 
-    QUEX_TYPE_CHARACTER*  fill_region_begin(QUEX_TYPE_ANALYZER*               the_lexer);
-    QUEX_TYPE_CHARACTER*  fill_region_end(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
+    QUEX_TYPE_LEXATOM*  fill_region_begin(QUEX_TYPE_ANALYZER*               the_lexer);
+    QUEX_TYPE_LEXATOM*  fill_region_end(QUEX_NAME(LexatomLoaderExtern_tag)*  me,
                                           QUEX_TYPE_ANALYZER*                 the_lexer);
     size_t                fill_region_size(QUEX_NAME(LexatomLoaderExtern_tag)* me,
                                            QUEX_TYPE_ANALYZER*                the_lexer);

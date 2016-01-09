@@ -1,7 +1,7 @@
 (*) 'char' and 'wstring'
 
 test.qx:2:warning: The implemented token type does not have a member which can
-test.qx:2:warning: directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
+test.qx:2:warning: directly accept a QUEX_TYPE_LEXATOM pointer, i.e like
 test.qx:2:warning: 
 test.qx:2:warning:     content : const QUEX_TYPE_TOKEN*;
 test.qx:2:warning: 
@@ -18,7 +18,7 @@ test.qx:2:warning:
 test.qx:2:warning: Note, that the stringless check is not perfect and is not
 test.qx:2:warning: aware of the conversions and constructors of all the member
 test.qx:2:warning: types. If you are sure that one of your members can receive
-test.qx:2:warning: the QUEX_TYPE_CHARACTER pointer through a conversion
+test.qx:2:warning: the QUEX_TYPE_LEXATOM pointer through a conversion
 test.qx:2:warning: operator or a constructor, please, disable this warning 
 test.qx:2:warning: as mentioned above.
 test.qx:2:warning: 
@@ -38,7 +38,7 @@ command line: -- deactivate the accumulator feature using command line options:
 command line:    '--no-string-accumulator' or  '--nsacc'.
 command line: 
 command line: -- specify at least one member in the token class that can 
-command line:    receive a QUEX_TYPE_CHARACTER pointer.
+command line:    receive a QUEX_TYPE_LEXATOM pointer.
 command line: 
 (*) 'wchar_t' and 'wstring'
 

@@ -7,8 +7,8 @@ header {
 	#include <unicode/uidna.h>
 	#include <unicode/uniset.h>
 
-    typedef std::basic_string<QUEX_TYPE_CHARACTER>             uXa_String;
-    typedef std::basic_string<QUEX_TYPE_CHARACTER>::iterator   uXa_StringIterator;
+    typedef std::basic_string<QUEX_TYPE_LEXATOM>             uXa_String;
+    typedef std::basic_string<QUEX_TYPE_LEXATOM>::iterator   uXa_StringIterator;
 
 	typedef enum PointieValueID {
 		POINTIE_VALUE_COMPUTED,
@@ -25,27 +25,27 @@ body {
 			float bnCount;
 		} comment;
 
-		float parseBinInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		float parseBinInteger(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
             return 3.0;
 		}
 
-		float parseOctInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		float parseOctInteger(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
             return 2.0;
 		}
 
-		float parseDecInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		float parseDecInteger(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
             return 1.0;
 		}
 
-		float parseHexInteger(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		float parseHexInteger(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
             return 0.0;
 		}
 
-		double parseDecPointie(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		double parseDecPointie(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
 			return -1.0;
 		}
 
-		double parseHexPointie(QUEX_TYPE_CHARACTER * lexemeString, size_t lexemeLength) {
+		double parseHexPointie(QUEX_TYPE_LEXATOM * lexemeString, size_t lexemeLength) {
             return -2.0;
 		}
 }

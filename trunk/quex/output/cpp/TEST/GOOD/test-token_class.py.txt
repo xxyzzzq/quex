@@ -12,7 +12,7 @@
 
 /* LexemeNull object may be used for 'take_text'. */
 QUEX_NAMESPACE_LEXEME_NULL_OPEN
-extern QUEX_TYPE_CHARACTER   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
+extern QUEX_TYPE_LEXATOM   QUEX_LEXEME_NULL_IN_ITS_NAMESPACE;
 QUEX_NAMESPACE_LEXEME_NULL_CLOSE
 
 
@@ -35,8 +35,8 @@ inline void    QUEX_NAME_TOKEN(destruct)(MeinToken* __this);
 inline void    QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
 inline bool    QUEX_NAME_TOKEN(take_text)(MeinToken*            __this, 
                                           QUEX_TYPE_ANALYZER*         analyzer, 
-                                          const QUEX_TYPE_CHARACTER*  Begin, 
-                                          const QUEX_TYPE_CHARACTER*  End);
+                                          const QUEX_TYPE_LEXATOM*  Begin, 
+                                          const QUEX_TYPE_LEXATOM*  End);
 
 #ifdef QUEX_OPTION_TOKEN_REPETITION_SUPPORT
 inline size_t  QUEX_NAME_TOKEN(repetition_n_get)(MeinToken* __this);
@@ -183,8 +183,8 @@ public:
         friend void QUEX_NAME_TOKEN(copy)(MeinToken* me, const MeinToken* That);
         friend bool QUEX_NAME_TOKEN(take_text)(MeinToken*               __this, 
                                                QUEX_TYPE_ANALYZER*         analyzer, 
-                                               const QUEX_TYPE_CHARACTER*  Begin, 
-                                               const QUEX_TYPE_CHARACTER*  End);
+                                               const QUEX_TYPE_LEXATOM*  Begin, 
+                                               const QUEX_TYPE_LEXATOM*  End);
 };
 
 } /* Closing Namespace 'europa' */

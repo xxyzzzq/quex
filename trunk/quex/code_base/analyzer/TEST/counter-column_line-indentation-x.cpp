@@ -29,7 +29,7 @@ void
 test(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 {
     QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
-    QUEX_NAME(CounterLineColumnIndentation_count)(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    QUEX_NAME(CounterLineColumnIndentation_count)(&x, (QUEX_TYPE_LEXATOM*)TestString, (QUEX_TYPE_LEXATOM*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
@@ -37,7 +37,7 @@ void
 test_NoNewline(const char* TestString, QUEX_NAME(CounterLineColumnIndentation)& x)
 {
     QUEX_NAME(CounterBase_shift_end_values_to_start_values)((QUEX_NAME(CounterBase)*)&x);
-    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
+    QUEX_NAME(CounterLineColumnIndentation_count_NoNewline)(&x, (QUEX_TYPE_LEXATOM*)TestString, strlen(TestString));
     print(x, TestString);
 }
 
@@ -78,7 +78,7 @@ main(int  argc, char** argv)
         return 0;
     }
 
-    // x.__buffer->__the_end = (QUEX_TYPE_CHARACTER*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_TYPE_LEXATOM*)0xFFFFFFFFL;
 
     // indentation[i] is going to be filled by: mini_mode::on_indentation(my_tester* x, int Indentation) 
     for(int i=0; i < 64; ++i) indentation[i] = 66;

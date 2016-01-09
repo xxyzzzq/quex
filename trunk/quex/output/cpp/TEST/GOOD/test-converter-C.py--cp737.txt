@@ -29,4 +29,4 @@ CE.8F.C2.B1.E2.89.A5.E2.89.A4.CE.AA.CE.AB.C3.B7.
 E2.89.88.C2.B0.E2.88.99.C2.B7.E2.88.9A.E2.81.BF.
 C2.B2.E2.96.A0.
 Check result (no response == OK)
-## g++ -ggdb -I./ -I$QUEX_PATH -DCONVERT_TO_UTF8=Quex_cp737_to_utf8_string -DQUEX_TYPE_CHARACTER='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=\"cp737\" -D__QUEX_OPTION_LITTLE_ENDIAN converter-tester.cpp -o converter-tester
+## g++ -ggdb -I./ -I$QUEX_PATH -DCONVERT_TO_UTF8=Quex_cp737_to_utf8_string -DQUEX_TYPE_LEXATOM='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=\"cp737\" -D__QUEX_OPTION_LITTLE_ENDIAN converter-tester.cpp -o converter-tester

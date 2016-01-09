@@ -59,9 +59,9 @@ QUEX_INLINE void QUEX_NAME(from_LexatomLoader)(
  *                                                                           */
 QUEX_INLINE void QUEX_NAME(from_memory)(
                                   QUEX_TYPE_ANALYZER*,
-                                  QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                  QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                                   size_t               BufferMemorySize,
-                                  QUEX_TYPE_CHARACTER* BufferEndOfFileP); 
+                                  QUEX_TYPE_LEXATOM* BufferEndOfFileP); 
 
 /* Basic constructions ________________________________________________________
  *                                                                           */

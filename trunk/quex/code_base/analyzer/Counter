@@ -45,11 +45,11 @@ QUEX_NAMESPACE_MAIN_OPEN
 #if 0
     /* General Count: All involved characters for column counting do have the same width. */
     QUEX_INLINE void  QUEX_NAME(Counter_count)(QUEX_NAME(Counter)*                   me, 
-                                                         const QUEX_TYPE_CHARACTER*  Lexeme, 
-                                                         const QUEX_TYPE_CHARACTER*  LexemeEnd);
+                                                         const QUEX_TYPE_LEXATOM*  Lexeme, 
+                                                         const QUEX_TYPE_LEXATOM*  LexemeEnd);
     QUEX_INLINE void  QUEX_NAME(Counter_count_newlines)(QUEX_NAME(Counter)*        me,
-                                                        const QUEX_TYPE_CHARACTER* Lexeme,
-                                                        const QUEX_TYPE_CHARACTER* LexemeEnd);
+                                                        const QUEX_TYPE_LEXATOM* Lexeme,
+                                                        const QUEX_TYPE_LEXATOM* LexemeEnd);
 #endif
 
 

@@ -31,7 +31,7 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-static QUEX_TYPE_CHARACTER       reference[8192];
+static QUEX_TYPE_LEXATOM       reference[8192];
 static QUEX_TYPE_STREAM_POSITION reference_load(const char* file_stem);
 static bool                      verify_content(QUEX_NAME(Buffer)* me, 
                                                 QUEX_TYPE_STREAM_POSITION Position, 
@@ -124,7 +124,7 @@ verify_content(QUEX_NAME(Buffer)* me,
  * text and can be compared with what is stored about 'begin_character_index'.
  */ 
 {
-    QUEX_TYPE_CHARACTER*       BeginP = &me->_memory._front[1];
+    QUEX_TYPE_LEXATOM*       BeginP = &me->_memory._front[1];
     ptrdiff_t                  ContentSize = me->input.end_p - BeginP;
     QUEX_TYPE_STREAM_POSITION  begin_character_index = QUEX_NAME(Buffer_input_character_index_begin)(me);
 
@@ -233,11 +233,11 @@ find_reference(const char* file_stem)
 {
     static char file_name[256];
 
-    if( sizeof(QUEX_TYPE_CHARACTER) == 1 ) {
+    if( sizeof(QUEX_TYPE_LEXATOM) == 1 ) {
         snprintf(&file_name[0], 255, "%s.dat", file_stem);
     }
     else {
-        snprintf(&file_name[0], 255, "%s-%i-%s.dat", file_stem, sizeof(QUEX_TYPE_CHARACTER)*8, 
+        snprintf(&file_name[0], 255, "%s-%i-%s.dat", file_stem, sizeof(QUEX_TYPE_LEXATOM)*8, 
                  QUEXED(system_is_little_endian)() ? "le" : "be");
     }
     return &file_name[0];
@@ -260,7 +260,7 @@ reference_load(const char* FileName)
 
     loaded_byte_n = fread(&reference[0], 1, sizeof(reference), fh);
     fclose(fh);
-    return loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
+    return loaded_byte_n / sizeof(QUEX_TYPE_LEXATOM);
 }
 
 static bool 

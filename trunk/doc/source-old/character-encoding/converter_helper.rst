@@ -29,7 +29,7 @@ and::
 
 These headers depend on the definitions of::
 
-     QUEX_TYPE_CHARACTER
+     QUEX_TYPE_LEXATOM
      QUEX_SETTING_CHARACTER_SIZE
      QUEX_SETTING_CHARACTER_CODEC
 
@@ -107,7 +107,7 @@ are available, which are possibly not as fast but more convenient.
     QUEX_INLINE string<wchar_t>   unicode_to_wchar(string<qtc>);
 
 where ``string<X>`` is a shorthand for ``std::basic_string<X>`` and
-``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_CHARACTER>``.
+``string<qtc>`` is a shorthand for ``std::basic_string<QUEX_TYPE_LEXATOM>``.
 This means, that they can take a string of the type of the lexeme and
 return a string which is appropriate for the drain's encoding. Fortunately,
 there is nothing compared to ``std::basic_string`` in plain C. So, in 
@@ -116,7 +116,7 @@ this case those functions do not exist.
 When the internal engine is designed using ``--encoding`` then the buffer encoding is
 some dedicated character encoding. The ``Lexeme`` that is presented to the user
 has exactly the coding of the internal buffer. Precisely, it is a chain of
-``QUEX_TYPE_CHARACTER`` objects that are encoded in the buffer's character
+``QUEX_TYPE_LEXATOM`` objects that are encoded in the buffer's character
 encoding. Then quex has to generate the converters towards UTF8, UTF16, and
 UTF32. The converters follow the same scheme as for Unicode, only that 
 'unicode' is replaced by the encoding's name, e.g.

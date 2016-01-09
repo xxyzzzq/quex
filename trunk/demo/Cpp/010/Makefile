@@ -32,7 +32,7 @@ CC       := $(COMPILER) -I./ -I$(QUEX_PATH) $(CCFLAG_ASSERTS)
             # -DQUEX_OPTION_ASSERTS_DISABLED
    	        # -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
-CC_UTF8  := $(CC) -DQUEX_TYPE_CHARACTER=wchar_t \
+CC_UTF8  := $(CC) -DQUEX_TYPE_LEXATOM=wchar_t \
 				  -DQUEX_EXAMPLE_WITH_CONVERTER
 
 # (*) RULES ____________________________________________________________________

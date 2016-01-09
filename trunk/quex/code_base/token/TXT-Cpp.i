@@ -73,8 +73,8 @@ $$COPY$$
 QUEX_INLINE bool 
 QUEX_NAME_TOKEN(take_text)($TOKEN_CLASS*              __this, 
                            QUEX_TYPE_ANALYZER*        __analyzer, 
-                           const QUEX_TYPE_CHARACTER* Begin, 
-                           const QUEX_TYPE_CHARACTER* End)
+                           const QUEX_TYPE_LEXATOM* Begin, 
+                           const QUEX_TYPE_LEXATOM* End)
 /* RETURNS: true -- if the token claims ownership over the given memory.
  *          false -- if no ownership is claimed.                             */
 {

@@ -34,7 +34,7 @@ lexical analyzer engine. The compile options split into the following groups
    By means of those macros types are defined. The following overrides Quex's
    definition for the internal character type::
 
-      $CC ... -DQUEX_TYPE_CHARACTER=UChar
+      $CC ... -DQUEX_TYPE_LEXATOM=UChar
 
 
 None of the following compile options is necessary to get a working analyser.

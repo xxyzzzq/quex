@@ -40,7 +40,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 int
 main(int argc, char** argv)
 {
-    const size_t              BPC         = sizeof(QUEX_TYPE_CHARACTER);
+    const size_t              BPC         = sizeof(QUEX_TYPE_LEXATOM);
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer Tell&Seek: LexatomLoader_Plain (BPC=%i, FALLBACK=%i);\n", 
                BPC, QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
@@ -78,7 +78,7 @@ test_file(bool BinaryF, const char* FileStem)
     QUEX_NAME(ByteLoader)*               byte_loader = QUEX_NAME(ByteLoader_FILE_new)(fh, true);
     QUEX_NAME(LexatomLoader)*  filler;
     const size_t              MemorySize  = true ? 5 : 16;
-    QUEX_TYPE_CHARACTER       memory[MemorySize];
+    QUEX_TYPE_LEXATOM       memory[MemorySize];
 
     if( ! fh ) {
         printf("Failed to open '%s'.", file_name);

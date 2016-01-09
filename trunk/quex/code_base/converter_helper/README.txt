@@ -122,7 +122,7 @@ separate namespaces.
     IS DEPENDENT on the analyzer. Those are the functions with the 'buffer'
     in the 'from' field. In particular their implementation depends on 
     
-        QUEX_TYPE_CHARACTER
+        QUEX_TYPE_LEXATOM
         QUEX_SETTING_CHARACTER_SIZE 
         QUEX_SETTING_CHARACTER_CODEC
 

@@ -2,7 +2,7 @@
 #define __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
 #include <quex/code_base/compatibility/stdint.h>
 
-#define QUEX_TYPE_CHARACTER           uint8_t  
+#define QUEX_TYPE_LEXATOM           uint8_t  
 
 #include <cstdio>
 

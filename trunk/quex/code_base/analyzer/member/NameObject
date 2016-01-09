@@ -12,20 +12,20 @@ typedef struct QUEX_SETTING_USER_CLASS_DECLARATION_EPILOG {
 QUEX_INLINE NameObject*
 QUEX_NAME(NameObject_new)(const void* Name, 
                           const void* NameEnd /* = 0 */)
-/* If NameEnd == 0, then Name is considered QUEX_TYPE_CHARACTER based
+/* If NameEnd == 0, then Name is considered QUEX_TYPE_LEXATOM based
  * and zero terminated.                                                      */
 {
     NameObject*                result;
     const uint8_t*             begin_p = (const uint8_t*)Name;
     const uint8_t*             end_p;
     const uint8_t*             p;
-    const QUEX_TYPE_CHARACTER* qtc_p;
+    const QUEX_TYPE_LEXATOM* qtc_p;
     size_t                     size;
     long                       hash = QUEX_HASH_INIT_VALUE;
     uint8_t*                   memory;
 
     if( ! NameEnd ) {
-        qtc_p = (QUEX_TYPE_CHARACTER*)Name;
+        qtc_p = (QUEX_TYPE_LEXATOM*)Name;
         while( *qtc_p ) { 
             hash = QUEX_HASH_NEXT(hash, *qtc_p);
            ++qtc_p; 

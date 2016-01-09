@@ -15,7 +15,7 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
                                                    const char* FromCodec, const char* ToCodec),  
                                bool        (*convert)(struct QUEX_NAME(Converter_tag)*, 
                                                       uint8_t**             source, const uint8_t*             SourceEnd, 
-                                                      QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd),
+                                                      QUEX_TYPE_LEXATOM** drain,  const QUEX_TYPE_LEXATOM* DrainEnd),
                                void        (*delete_self)(struct QUEX_NAME(Converter_tag)*),
                                ptrdiff_t   (*stomach_byte_n)(struct QUEX_NAME(Converter_tag)*),
                                void        (*stomach_clear)(struct QUEX_NAME(Converter_tag)*))
@@ -33,10 +33,10 @@ QUEX_NAME(Converter_construct)(QUEX_NAME(Converter)* me,
 
     /* Opens internally a conversion handle for the conversion from 'FromCodec'
      * to 'ToCodec'. Pass '0x0' as 'ToCodec' in order to indicate a conversion
-     * to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
+     * to unicode of size sizeof(QUEX_TYPE_LEXATOM). 
      *
      * It is the task of the particular implementation to provide the 'ToCodec'
-     * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e.  ASCII, UCS2,
+     * which is appropriate for sizeof(QUEX_TYPE_LEXATOM), i.e.  ASCII, UCS2,
      * UCS4.                                                                 */
 
     return open(me, FromCodec, ToCodec);

@@ -12,7 +12,7 @@
  *             "character-converter-from-utf16.i"
  *             "character-converter-from-utf32.i"
  *
- *     Sometimes the size of QUEX_TYPE_CHARACTER could not be determined at 
+ *     Sometimes the size of QUEX_TYPE_LEXATOM could not be determined at 
  *     code generation time, therefore all need to be included.
  *
  * (2) Map the functions of the pattern
@@ -31,7 +31,7 @@
  *
  *        generator/implementations.gi
  *
- * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * These functions ARE DEPENDENT on QUEX_TYPE_LEXATOM.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * 2010 (C) Frank-Rene Schaefer; 
@@ -54,10 +54,10 @@ QUEX_NAMESPACE_MAIN_OPEN
 
 /* (2) Route the converters from 'unicode' to the implementing converter.    */
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(unicode, utf8)(const QUEX_TYPE_CHARACTER**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(unicode, utf8)(const QUEX_TYPE_LEXATOM**  input_pp, 
                                        uint8_t**                    output_pp)
 { 
-    switch( sizeof(QUEX_TYPE_CHARACTER) )
+    switch( sizeof(QUEX_TYPE_LEXATOM) )
     {
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf8)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf8)((const uint16_t**)input_pp, output_pp); break;
@@ -67,10 +67,10 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf8)(const QUEX_TYPE_CHARACTER**  input_pp,
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(unicode, utf16)(const QUEX_TYPE_CHARACTER**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(unicode, utf16)(const QUEX_TYPE_LEXATOM**  input_pp, 
                                         uint16_t**                   output_pp)
 { 
-    switch( sizeof(QUEX_TYPE_CHARACTER) )
+    switch( sizeof(QUEX_TYPE_LEXATOM) )
     {
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf16)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf16)((const uint16_t**)input_pp, output_pp); break;
@@ -80,10 +80,10 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf16)(const QUEX_TYPE_CHARACTER**  input_pp,
 }
 
 QUEX_INLINE void
-QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_CHARACTER**  input_pp, 
+QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_LEXATOM**  input_pp, 
                                         uint32_t**                   output_pp)
 { 
-    switch( sizeof(QUEX_TYPE_CHARACTER) )
+    switch( sizeof(QUEX_TYPE_LEXATOM) )
     {
     case 1:  QUEX_CONVERTER_CHAR(utf8, utf32)((const uint8_t**)input_pp, output_pp);   break;
     case 2:  QUEX_CONVERTER_CHAR(utf16, utf32)((const uint16_t**)input_pp, output_pp); break;
@@ -96,7 +96,7 @@ QUEX_CONVERTER_CHAR_DEF(unicode, utf32)(const QUEX_TYPE_CHARACTER**  input_pp,
 /* (2b) Derive converters to char and wchar_t from the given set 
  *      of converters. (Generator uses __QUEX_FROM and QUEX_FROM_TYPE)      */
 #define  __QUEX_FROM       unicode
-#define  __QUEX_FROM_TYPE  QUEX_TYPE_CHARACTER
+#define  __QUEX_FROM_TYPE  QUEX_TYPE_LEXATOM
 #include <quex/code_base/converter_helper/generator/character-converter-to-char-wchar_t.gi>
 
 /* (3) Generate string converters to utf8, utf16, utf32 based on the

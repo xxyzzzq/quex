@@ -17,15 +17,15 @@ using namespace quex; /* One should not do this in a header ...              */
 
 
 static void self_print(QUEX_NAME(Buffer)* buffer);
-static void memory_fill_with_content(QUEX_TYPE_CHARACTER* memory, size_t MemorySize, 
-                                     QUEX_TYPE_CHARACTER* content, size_t ContentSize);
+static void memory_fill_with_content(QUEX_TYPE_LEXATOM* memory, size_t MemorySize, 
+                                     QUEX_TYPE_LEXATOM* content, size_t ContentSize);
 static int  cl_has(int argc, char** argv, const char* What);
 static void instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
                                  bool EndOfStreamInBufferF,
-                                 QUEX_TYPE_CHARACTER* memory, ptrdiff_t MemorySize,
-                                 QUEX_TYPE_CHARACTER* content, ptrdiff_t ContentSize);
-static void self_on_content_change(const QUEX_TYPE_CHARACTER* BeginP, 
-                                   const QUEX_TYPE_CHARACTER* EndP);
+                                 QUEX_TYPE_LEXATOM* memory, ptrdiff_t MemorySize,
+                                 QUEX_TYPE_LEXATOM* content, ptrdiff_t ContentSize);
+static void self_on_content_change(const QUEX_TYPE_LEXATOM* BeginP, 
+                                   const QUEX_TYPE_LEXATOM* EndP);
 static void self_on_overflow(QUEX_NAME(Buffer)* me, bool ForwardF);
 
 
@@ -33,13 +33,13 @@ static int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }
 
 static void
-memory_fill_with_content(QUEX_TYPE_CHARACTER* memory, size_t MemorySize, 
-                         QUEX_TYPE_CHARACTER* content, size_t ContentSize)
+memory_fill_with_content(QUEX_TYPE_LEXATOM* memory, size_t MemorySize, 
+                         QUEX_TYPE_LEXATOM* content, size_t ContentSize)
 {
     memset((void*)&memory[1], 0xFF, 
-           (MemorySize - 2)*sizeof(QUEX_TYPE_CHARACTER));
+           (MemorySize - 2)*sizeof(QUEX_TYPE_LEXATOM));
     memcpy((void*)&memory[1], (void*)content, 
-           ContentSize*sizeof(QUEX_TYPE_CHARACTER)); 
+           ContentSize*sizeof(QUEX_TYPE_LEXATOM)); 
 }
 
 static void
@@ -59,16 +59,16 @@ self_print(QUEX_NAME(Buffer)* buffer)
 static void
 instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
                      bool EndOfStreamInBufferF,
-                     QUEX_TYPE_CHARACTER* memory, ptrdiff_t MemorySize,
-                     QUEX_TYPE_CHARACTER* content, ptrdiff_t ContentSize)
+                     QUEX_TYPE_LEXATOM* memory, ptrdiff_t MemorySize,
+                     QUEX_TYPE_LEXATOM* content, ptrdiff_t ContentSize)
 /* Sets the buffer up according to what is specified in the iterator:
  *
  *  it.read_i         --> position of the buffer's _read_p.
  *  it.lexeme_start_i --> position of the buffer's _lexeme_start_p.
  *                                                                           */
 {
-    QUEX_TYPE_CHARACTER*   BeginP;
-    QUEX_TYPE_CHARACTER*   end_p;
+    QUEX_TYPE_LEXATOM*   BeginP;
+    QUEX_TYPE_LEXATOM*   end_p;
     ptrdiff_t              memory_size = EndOfStreamInBufferF ? MemorySize : ContentSize + 2;
 
     end_p  = &memory[ContentSize + 1];
@@ -102,8 +102,8 @@ instantiate_iterator(QUEX_NAME(Buffer)* buffer, G_t* it,
 }
 
 static void
-self_on_content_change(const QUEX_TYPE_CHARACTER* BeginP, 
-                       const QUEX_TYPE_CHARACTER* EndP)
+self_on_content_change(const QUEX_TYPE_LEXATOM* BeginP, 
+                       const QUEX_TYPE_LEXATOM* EndP)
 { 
     printf("on_content_change: size: %i;\n", (int)(EndP - BeginP));
 }

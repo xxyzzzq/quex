@@ -4,14 +4,14 @@
 #include "lexPlain"
 #include "receiver.h"
 
-static void  test(quex::lexPlain* qlex, QUEX_TYPE_CHARACTER* memory);
+static void  test(quex::lexPlain* qlex, QUEX_TYPE_LEXATOM* memory);
 
 /* Memory size = much bigger than required to hold the complete content.     */
 #define  MEMORY_SIZE  (MESSAGING_FRAMEWORK_BUFFER_SIZE*2)
 
-QUEX_TYPE_CHARACTER   memory_a[MEMORY_SIZE];
-QUEX_TYPE_CHARACTER   memory_b[MEMORY_SIZE];
-QUEX_TYPE_CHARACTER   memory_c[MEMORY_SIZE];
+QUEX_TYPE_LEXATOM   memory_a[MEMORY_SIZE];
+QUEX_TYPE_LEXATOM   memory_b[MEMORY_SIZE];
+QUEX_TYPE_LEXATOM   memory_c[MEMORY_SIZE];
 
 int 
 main(int argc, char** argv) 
@@ -39,7 +39,7 @@ main(int argc, char** argv)
 }
 
 static void 
-test(quex::lexPlain* qlex, QUEX_TYPE_CHARACTER* memory)
+test(quex::lexPlain* qlex, QUEX_TYPE_LEXATOM* memory)
 {
     QUEX_TYPE_TOKEN       token;           
     size_t                received_n;

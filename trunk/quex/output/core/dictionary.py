@@ -933,7 +933,7 @@ cpp_reload_forward_str = [
         __quex_assert(false); /* Later: on codec error! */
     }
     __quex_debug_reload_before();                 /* Report source position. */
-    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_CHARACTER**)position, PositionRegisterN) ) {
+    if( QUEX_NAME(Buffer_load_forward)(&me->buffer, (QUEX_TYPE_LEXATOM**)position, PositionRegisterN) ) {
         __quex_debug_reload_after();
         QUEX_GOTO_STATE(target_state_index);      /* may use 'computed goto' */
     }

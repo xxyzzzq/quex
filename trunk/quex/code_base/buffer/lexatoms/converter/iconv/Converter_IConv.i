@@ -30,8 +30,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*       me, 
                                        uint8_t**                   source, 
                                        const uint8_t*              SourceEnd,
-                                       QUEX_TYPE_CHARACTER**       drain,  
-                                       const QUEX_TYPE_CHARACTER*  DrainEnd);
+                                       QUEX_TYPE_LEXATOM**       drain,  
+                                       const QUEX_TYPE_LEXATOM*  DrainEnd);
     QUEX_INLINE void 
     QUEX_NAME(Converter_IConv_delete_self)(QUEX_NAME(Converter)* me);
 
@@ -78,7 +78,7 @@ QUEX_NAMESPACE_MAIN_OPEN
 
         /* Setup conversion handle */
         if( ! ToCodec ) {
-            switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+            switch( sizeof(QUEX_TYPE_LEXATOM) ) {
             case 4:  ToCodec = little_endian_f ? "UCS-4LE" : "UCS-4BE"; break;
             case 2:  ToCodec = little_endian_f ? "UCS-2LE" : "UCS-2BE"; break;
             case 1:  ToCodec = "ASCII"; break;
@@ -108,7 +108,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     QUEX_INLINE bool 
     QUEX_NAME(Converter_IConv_convert)(QUEX_NAME(Converter)*  alter_ego, 
                                        uint8_t**              source, const uint8_t*              SourceEnd,
-                                       QUEX_TYPE_CHARACTER**  drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
+                                       QUEX_TYPE_LEXATOM**  drain,  const QUEX_TYPE_LEXATOM*  DrainEnd)
     /* RETURNS:  true  --> User buffer is filled as much as possible with 
      *                     converted characters.
      *           false --> More raw bytes are needed to fill the user buffer.           
@@ -129,7 +129,7 @@ QUEX_NAMESPACE_MAIN_OPEN
     {
         QUEX_NAME(Converter_IConv)* me                  = (QUEX_NAME(Converter_IConv)*)alter_ego;
         size_t                      source_bytes_left_n = (size_t)(SourceEnd - *source);
-        size_t                      drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
+        size_t                      drain_bytes_left_n  = (size_t)(DrainEnd - *drain)*sizeof(QUEX_TYPE_LEXATOM);
         size_t                      report;
         
         /* Avoid strange error reports from 'iconv' in case that the source 

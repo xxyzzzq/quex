@@ -29,4 +29,4 @@ D0.81.D1.91.D0.84.D1.94.D0.87.D1.97.D0.8E.D1.9E.
 C2.B0.E2.88.99.C2.B7.E2.88.9A.E2.84.96.C2.A4.E2.
 96.A0.
 Check result (no response == OK)
-## g++ -ggdb -I./ -I$QUEX_PATH -DCONVERT_TO_UTF8=Quex_cp866_to_utf8_string -DQUEX_TYPE_CHARACTER='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=\"cp866\" -D__QUEX_OPTION_LITTLE_ENDIAN converter-tester.cpp -o converter-tester
+## g++ -ggdb -I./ -I$QUEX_PATH -DCONVERT_TO_UTF8=Quex_cp866_to_utf8_string -DQUEX_TYPE_LEXATOM='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=\"cp866\" -D__QUEX_OPTION_LITTLE_ENDIAN converter-tester.cpp -o converter-tester

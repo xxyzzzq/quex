@@ -46,9 +46,9 @@ QUEX_NAME(Accumulator_init_memory)(QUEX_NAME(Accumulator)*   me)
         me->text.begin = 0x0;
     } else {
         me->text.begin = \
-            (QUEX_TYPE_CHARACTER*)
+            (QUEX_TYPE_LEXATOM*)
             QUEXED(MemoryManager_allocate)(
-                      QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_CHARACTER),
+                      QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE * sizeof(QUEX_TYPE_LEXATOM),
                       E_MemoryObjectType_TEXT);
         if( me->text.begin == 0x0 ) {
             QUEX_ERROR_EXIT("Quex engine: out of memory--cannot allocate Accumulator.");
@@ -66,9 +66,9 @@ QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
     const size_t  AddSize = (size_t)((float)Size * (float)QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR);
     const size_t  NewSize = Size + (AddSize < MinAddSize ? MinAddSize : AddSize);
 
-    QUEX_TYPE_CHARACTER*  chunk = \
-          (QUEX_TYPE_CHARACTER*)
-          QUEXED(MemoryManager_allocate)(NewSize*sizeof(QUEX_TYPE_CHARACTER),
+    QUEX_TYPE_LEXATOM*  chunk = \
+          (QUEX_TYPE_LEXATOM*)
+          QUEXED(MemoryManager_allocate)(NewSize*sizeof(QUEX_TYPE_LEXATOM),
                                          E_MemoryObjectType_TEXT);
 
     if( chunk == 0x0 ) return false;
@@ -76,7 +76,7 @@ QUEX_NAME(Accumulator_extend)(QUEX_NAME(Accumulator)* me, size_t MinAddSize)
     __quex_assert(me->text.end >= me->text.begin);
     __quex_assert(me->text.memory_end >= me->text.begin);
 
-    __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_CHARACTER) * Size);
+    __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_LEXATOM) * Size);
 
     QUEXED(MemoryManager_free)((void*)me->text.begin, E_MemoryObjectType_TEXT);
 
@@ -96,7 +96,7 @@ QUEX_NAME(Accumulator_clear)(QUEX_NAME(Accumulator)* me)
 
 QUEX_INLINE void 
 QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)* me,
-                           const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+                           const QUEX_TYPE_LEXATOM* Begin, const QUEX_TYPE_LEXATOM* End)
 { 
     const size_t L = (size_t)(End - Begin);
     __quex_assert(End > Begin);
@@ -118,14 +118,14 @@ QUEX_NAME(Accumulator_add)(QUEX_NAME(Accumulator)* me,
         }
     }
 
-    __QUEX_STD_memcpy(me->text.end, Begin, L * sizeof(QUEX_TYPE_CHARACTER));
+    __QUEX_STD_memcpy(me->text.end, Begin, L * sizeof(QUEX_TYPE_LEXATOM));
     me->text.end += L;
 }
 
 
 QUEX_INLINE void 
 QUEX_NAME(Accumulator_add_character)(QUEX_NAME(Accumulator)*     me,
-                                     const QUEX_TYPE_CHARACTER  Character)
+                                     const QUEX_TYPE_LEXATOM  Character)
 { 
     /* If it is the first string to be appended, the store the location */
 #   ifdef __QUEX_OPTION_COUNTER
@@ -160,7 +160,7 @@ QUEX_NAME(Accumulator_flush)(QUEX_NAME(Accumulator)*    me,
     /* If no text is to be flushed, return undone */
     if( me->text.begin == me->text.end ) return;
 
-    *(me->text.end) = (QUEX_TYPE_CHARACTER)0; /* see above '__quex_assert()' */
+    *(me->text.end) = (QUEX_TYPE_LEXATOM)0; /* see above '__quex_assert()' */
 
 #   define self (*me->the_lexer)
     self_token_set_id(TokenID);
@@ -185,7 +185,7 @@ QUEX_NAME(Accumulator_print_this)(QUEX_NAME(Accumulator)* me)
     /* All functions must ensure that there is one cell left to store the terminating zero. */
     __quex_assert(me->text.end < me->text.memory_end);
 
-    *(me->text.end) = (QUEX_TYPE_CHARACTER)0; /* see above '__quex_assert()' */
+    *(me->text.end) = (QUEX_TYPE_LEXATOM)0; /* see above '__quex_assert()' */
 
     __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)me->text.begin);
 }

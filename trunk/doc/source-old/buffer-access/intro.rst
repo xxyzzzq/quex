@@ -203,7 +203,7 @@ functions of the filler
 
     .. code-block:: cpp
 
-        QUEX_TYPE_CHARACTER*  fill_prepare(ContentBegin, ContentEnd);
+        QUEX_TYPE_LEXATOM*  fill_prepare(ContentBegin, ContentEnd);
         void                  fill_finish();
 
 Analyzers that work directly on user managed memory should use 
@@ -211,7 +211,7 @@ the following constructor:
 
     .. code-block:: cpp
 
-        MyLexer(QUEX_TYPE_CHARACTER* MemoryBegin, size_t Size, 
+        MyLexer(QUEX_TYPE_LEXATOM* MemoryBegin, size_t Size, 
                 const char*  CharacterEncodingName       = 0x0,
                 const sizt_t TranslationBufferMemorySize = 0);
 
@@ -293,8 +293,8 @@ are copied to the buffer.
 .. code-block:: cpp
 
     typedef struct {
-        QUEX_TYPE_CHARACTER* begin;
-        QUEX_TYPE_CHARACTER* end;
+        QUEX_TYPE_LEXATOM* begin;
+        QUEX_TYPE_LEXATOM* end;
     } MemoryChunk;
 
 A ``chunk`` of type ``MemoryChunk`` later contains information about the
@@ -309,9 +309,9 @@ required for the analysis process.
     int
     main(int argc, char** argv)
     {
-        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
+        quex::tiny_lexer      qlex((QUEX_TYPE_LEXATOM*)0x0, 0); 
         quex::Token*          token = 0x0;           
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
+        QUEX_TYPE_LEXATOM*  rx_buffer = 0x0; // receive buffer
         MemoryChunk           chunk;
 
         ...
@@ -380,8 +380,8 @@ input frames:
     #include "messaging-framework.h"
 
     typedef struct {
-        QUEX_TYPE_CHARACTER* begin;
-        QUEX_TYPE_CHARACTER* end;
+        QUEX_TYPE_LEXATOM* begin;
+        QUEX_TYPE_LEXATOM* end;
     } MemoryChunk;
 
     int 
@@ -390,9 +390,9 @@ input frames:
         using namespace std;
 
         // Zero pointer to constructor --> memory managed by user
-        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   
+        quex::tiny_lexer      qlex((QUEX_TYPE_LEXATOM*)0x0, 0);   
         quex::Token*          token = 0x0;           
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // receive buffer
+        QUEX_TYPE_LEXATOM*  rx_buffer = 0x0; // receive buffer
         MemoryChunk           chunk;
 
         // -- trigger reload of memory
@@ -463,18 +463,18 @@ The following code fragment shows all required variables and their initializatio
     int
     main(int argc, char**) {
     
-        quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
+        quex::tiny_lexer  qlex((QUEX_TYPE_LEXATOM*)0x0, 0); 
 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
 
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // A pointer to the receive buffer that
+        QUEX_TYPE_LEXATOM*  rx_buffer = 0x0;  // A pointer to the receive buffer that
         //                                      // the messaging framework provides.
 
         MemoryChunk           chunk;      // Pointers to the memory positions under
         //                                // consideration.
 
-        QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Store the start of the 
+        QUEX_TYPE_LEXATOM*  prev_lexeme_start_p = 0x0; // Store the start of the 
         //                                               // lexeme for possible 
         //                                               // backup.
 
@@ -595,8 +595,8 @@ shown below.
     #include "messaging-framework.h"
 
     typedef struct {
-        QUEX_TYPE_CHARACTER* begin;
-        QUEX_TYPE_CHARACTER* end;
+        QUEX_TYPE_LEXATOM* begin;
+        QUEX_TYPE_LEXATOM* end;
     } MemoryChunk;
 
     int 
@@ -604,15 +604,15 @@ shown below.
     {        
         using namespace std;
 
-        quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
+        quex::tiny_lexer  qlex((QUEX_TYPE_LEXATOM*)0x0, 0); 
         quex::Token       token_bank[2]; // 2 tokens--one for look-ahead
         quex::Token*      prev_token;    // Token swap helper.
 
-        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // Pointer to receive buffer 
+        QUEX_TYPE_LEXATOM*  rx_buffer = 0x0;  // Pointer to receive buffer 
         //                                      // of messaging framework.
         MemoryChunk           chunk;  // Pointers indicating the range 
         //                            // of the content.
-        QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Backup start of 
+        QUEX_TYPE_LEXATOM*  prev_lexeme_start_p = 0x0; // Backup start of 
         //                                               // current lexeme.
 
         // -- initialize the token pointers
@@ -682,8 +682,8 @@ accessed via the member functions:
 
 .. code-block:: cpp
 
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
+        QUEX_TYPE_LEXATOM*  buffer_fill_region_begin();
+        QUEX_TYPE_LEXATOM*  buffer_fill_region_end();
         size_t                buffer_fill_region_size();
 
 In order to get rid of content that has already been treated the function
@@ -733,9 +733,9 @@ used by the lexical analyzer. A constructor call
 
 .. code-block:: cpp
 
-    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BeginOfMemory, 
+    quex::MyLexer   qlex((QUEX_TYPE_LEXATOM*)BeginOfMemory, 
                          MemorySize,
-                         (QUEX_TYPE_CHARACTER*)EndOfContent); 
+                         (QUEX_TYPE_LEXATOM*)EndOfContent); 
 
 announces the memory to be used by the engine. Note, that the first position to
 be written to must be ``BeginOfMemory + 1``, because the first element of
@@ -792,7 +792,7 @@ the name of the character set as the third argument, e.g.
 
     .. code-block:: cpp
 
-        quex::MyLexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, "UTF-8");
+        quex::MyLexer  qlex((QUEX_TYPE_LEXATOM*)0x0, 0, "UTF-8");
 
 And the engine must be created with a converter flag (``--iconv`` or ``--icu``)
 or one of the macros ``-DQUEX_OPTION_CONVERTER_ICONV`` or
@@ -848,7 +848,7 @@ allows to fill the conversion buffer directly and perform the conversions.
         void       buffer_conversion_fill_region_finish(const size_t ByteN);
 
 The functions work on ``uint8_t`` data, i.e. 'bytes' rather than
-``QUEX_TYPE_CHARACTER``.  The interact directly with the 'raw' buffer on
+``QUEX_TYPE_LEXATOM``.  The interact directly with the 'raw' buffer on
 which the converter works.
 
 For all three methods, there a sample applications in the ``demo/010``

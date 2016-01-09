@@ -148,7 +148,7 @@ main_template = """
  * reached.                                                                  */
 #include <quex/code_base/compatibility/stdint.h> 
 #include <stdio.h>
-#define QUEX_TYPE_CHARACTER              $$QUEX_TYPE_CHARACTER$$
+#define QUEX_TYPE_LEXATOM              $$QUEX_TYPE_LEXATOM$$
 #define __QUEX_OPTION_PLAIN_C
 #define QUEX_NAMESPACE_MAIN_OPEN
 #define QUEX_NAMESPACE_MAIN_CLOSE
@@ -163,12 +163,12 @@ main_template = """
 
 typedef struct {
     struct {
-        QUEX_TYPE_CHARACTER*  _read_p;
-        QUEX_TYPE_CHARACTER*  _lexeme_start_p;
+        QUEX_TYPE_LEXATOM*  _read_p;
+        QUEX_TYPE_LEXATOM*  _lexeme_start_p;
     } buffer;
 } MiniAnalyzer;
 
-int transition(QUEX_TYPE_CHARACTER* buffer);
+int transition(QUEX_TYPE_LEXATOM* buffer);
 
 typedef struct { 
     uint32_t begin; 
@@ -187,7 +187,7 @@ $$ENTRY_LIST$$
     int                  output          = -1;
     int                  output_expected = -1;
     uint32_t             input;
-    QUEX_TYPE_CHARACTER  buffer[8];
+    QUEX_TYPE_LEXATOM  buffer[8];
     
     printf("No output is good output!\\n");
     for(iterator=&db[0]; iterator != db_last; iterator = next) {
@@ -212,11 +212,11 @@ $$ENTRY_LIST$$
 }
 
 int 
-transition(QUEX_TYPE_CHARACTER* buffer)
+transition(QUEX_TYPE_LEXATOM* buffer)
 {
     MiniAnalyzer         self;
     MiniAnalyzer*        me = &self;
-    QUEX_TYPE_CHARACTER  input = 0;
+    QUEX_TYPE_LEXATOM  input = 0;
 
     me->buffer._read_p = buffer;
 
@@ -239,7 +239,7 @@ def get_main_function(tm0, TranstionTxt, Codec):
     expected_array = [ "        { 0x%06X, %s },\n" % (begin, target) for begin, target in entry_list ]
 
     txt = main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
-    txt = txt.replace("$$QUEX_TYPE_CHARACTER$$", qtc_str)
+    txt = txt.replace("$$QUEX_TYPE_LEXATOM$$", qtc_str)
     txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 12))
     txt = txt.replace("$$PREPARE_INPUT$$", input_preperation)
 
@@ -250,7 +250,7 @@ def get_read_preparation(Codec):
     if Codec == "UTF8":
         txt = [
             "{\n"
-            "    QUEX_TYPE_CHARACTER* buffer_p = &buffer[0];\n"
+            "    QUEX_TYPE_LEXATOM* buffer_p = &buffer[0];\n"
             "    const uint32_t*      input_p = &input;\n"
             "    convert_utf32_to_utf8(&input_p, &buffer_p);\n"
             "}\n"

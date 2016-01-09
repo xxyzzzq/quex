@@ -30,21 +30,21 @@ QUEX_NAME(LexatomLoader_Plain_destruct_self)(QUEX_NAME(LexatomLoader)* alter_ego
 
 QUEX_INLINE size_t 
 QUEX_NAME(LexatomLoader_Plain_load_characters)(QUEX_NAME(LexatomLoader)* alter_ego,
-                                                   QUEX_TYPE_CHARACTER*     RegionBeginP, 
+                                                   QUEX_TYPE_LEXATOM*     RegionBeginP, 
                                                    const size_t             N,
                                                    bool*                    end_of_stream_f);
 
 QUEX_INLINE void 
 QUEX_NAME(LexatomLoader_Plain_fill_prepare)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                           QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                           QUEX_TYPE_CHARACTER*       RegionEndP,
+                                           QUEX_TYPE_LEXATOM*       RegionBeginP,
+                                           QUEX_TYPE_LEXATOM*       RegionEndP,
                                            void**                     begin_p,
                                            const void**               end_p);
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(LexatomLoader_Plain_fill_finish)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                          QUEX_TYPE_CHARACTER*       insertion_p,
-                                          const QUEX_TYPE_CHARACTER* BufferEnd,
+                                          QUEX_TYPE_LEXATOM*       insertion_p,
+                                          const QUEX_TYPE_LEXATOM* BufferEnd,
                                           const void*                ContentEnd);
 
 QUEX_INLINE QUEX_NAME(LexatomLoader)*
@@ -71,7 +71,7 @@ QUEX_NAME(LexatomLoader_Plain_construct)(QUEX_NAME(LexatomLoader_Plain)* me,
      * stream position is proportional to the number of bytes that lie 
      * behind.                                                               */
     ptrdiff_t   byte_n_per_character = byte_loader && byte_loader->binary_mode_f ? 
-                                       (ptrdiff_t)sizeof(QUEX_TYPE_CHARACTER) : -1;
+                                       (ptrdiff_t)sizeof(QUEX_TYPE_LEXATOM) : -1;
     QUEX_NAME(LexatomLoader_setup)(&me->base,
                                   QUEX_NAME(LexatomLoader_Plain_load_characters),
                                   QUEX_NAME(LexatomLoader_Plain_stomach_byte_n),
@@ -108,7 +108,7 @@ QUEX_NAME(LexatomLoader_Plain_destruct_self)(QUEX_NAME(LexatomLoader)* alter_ego
 
 QUEX_INLINE size_t   
 QUEX_NAME(LexatomLoader_Plain_load_characters)(QUEX_NAME(LexatomLoader)*  alter_ego,
-                                                   QUEX_TYPE_CHARACTER* RegionBeginP, 
+                                                   QUEX_TYPE_LEXATOM* RegionBeginP, 
                                                    const size_t         N,
                                                    bool*                end_of_stream_f)  
 /* Loads content into a region of memory. Does NOT effect any of the buffer's
@@ -127,21 +127,21 @@ QUEX_NAME(LexatomLoader_Plain_load_characters)(QUEX_NAME(LexatomLoader)*  alter_
      * The buffer must remain intact, in case that not all is loaded.        */
     loaded_byte_n = me->base.byte_loader->load(me->base.byte_loader, 
                                                RegionBeginP, 
-                                               N * sizeof(QUEX_TYPE_CHARACTER),
+                                               N * sizeof(QUEX_TYPE_LEXATOM),
                                                end_of_stream_f);
 
-    if( loaded_byte_n % sizeof(QUEX_TYPE_CHARACTER) ) {
+    if( loaded_byte_n % sizeof(QUEX_TYPE_LEXATOM) ) {
         __QUEX_STD_printf("Error: End of file cuts in the middle a multi-byte character.");
     }
-    loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_CHARACTER);
+    loaded_n = loaded_byte_n / sizeof(QUEX_TYPE_LEXATOM);
 
     return loaded_n;
 }
 
 QUEX_INLINE void 
 QUEX_NAME(LexatomLoader_Plain_fill_prepare)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                           QUEX_TYPE_CHARACTER*       RegionBeginP,
-                                           QUEX_TYPE_CHARACTER*       RegionEndP,
+                                           QUEX_TYPE_LEXATOM*       RegionBeginP,
+                                           QUEX_TYPE_LEXATOM*       RegionEndP,
                                            void**                     begin_p,
                                            const void**               end_p)
 {
@@ -154,11 +154,11 @@ QUEX_NAME(LexatomLoader_Plain_fill_prepare)(QUEX_NAME(LexatomLoader)*   alter_eg
 
 QUEX_INLINE ptrdiff_t 
 QUEX_NAME(LexatomLoader_Plain_fill_finish)(QUEX_NAME(LexatomLoader)*   alter_ego,
-                                          QUEX_TYPE_CHARACTER*       insertion_p,
-                                          const QUEX_TYPE_CHARACTER* BufferEnd,
+                                          QUEX_TYPE_LEXATOM*       insertion_p,
+                                          const QUEX_TYPE_LEXATOM* BufferEnd,
                                           const void*                FilledEndP_raw)
 {
-    const QUEX_TYPE_CHARACTER*  FilledEndP = (const QUEX_TYPE_CHARACTER*)FilledEndP_raw;
+    const QUEX_TYPE_LEXATOM*  FilledEndP = (const QUEX_TYPE_LEXATOM*)FilledEndP_raw;
     (void)alter_ego;
     (void)BufferEnd;
 

@@ -19,7 +19,7 @@
  *
  *             ../generator/declarations.g
  *
- * These functions ARE DEPENDENT on QUEX_TYPE_CHARACTER.
+ * These functions ARE DEPENDENT on QUEX_TYPE_LEXATOM.
  * => Thus, they are placed in the analyzer's namespace.
  *
  * (C) 2012 Frank-Rene Schaefer. 
@@ -35,7 +35,7 @@
 QUEX_NAMESPACE_MAIN_OPEN
 
 #define __QUEX_FROM       unicode
-#define __QUEX_FROM_TYPE  QUEX_TYPE_CHARACTER
+#define __QUEX_FROM_TYPE  QUEX_TYPE_LEXATOM
 
 #include <quex/code_base/converter_helper/generator/declarations.g>
 

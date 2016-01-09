@@ -5,7 +5,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Move by Offset: Forward (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
+        printf("Move by Offset: Forward (BPC=%i);\n", sizeof(QUEX_TYPE_LEXATOM));
         printf("CHOICES:  1, 2, 3, 4, 5;\n");
         return 0;
     }
@@ -21,7 +21,7 @@ main(int argc, char** argv)
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
-    QUEX_TYPE_CHARACTER  memory[memory_size];
+    QUEX_TYPE_LEXATOM  memory[memory_size];
     QUEX_NAME(Buffer_construct)(&buffer, (QUEX_NAME(LexatomLoader)*)0x0, 
                                 &memory[0], memory_size, &memory[memory_size], E_Ownership_EXTERNAL);
 

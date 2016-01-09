@@ -31,11 +31,11 @@ cl_has(int argc, char** argv, const char* What)
 #define QUEX_DEFINED_FUNC_cl_has
 
 inline void
-show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos, char Appendix)
+show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_LEXATOM* Pos, char Appendix)
 {
     static uint8_t      utf8_char_str[7];
     uint8_t*            p  = 0x0;
-    QUEX_TYPE_CHARACTER UC = *Pos;
+    QUEX_TYPE_LEXATOM UC = *Pos;
     int                 ci = (int)(Pos - &buffer->_memory._front[1] + QUEX_NAME(Buffer_input_character_index_begin)(buffer)); 
 
     if( UC == '\0' ) { 
@@ -45,9 +45,9 @@ show_this(const char* Name, QUEX_NAME(Buffer)* buffer, QUEX_TYPE_CHARACTER* Pos,
         printf("%s: %i (--> '\\n')%c", (char*)Name, ci, Appendix);
     } else {
         p = utf8_char_str;
-        const QUEX_TYPE_CHARACTER* input_p = Pos;
+        const QUEX_TYPE_LEXATOM* input_p = Pos;
 
-        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        switch( sizeof(QUEX_TYPE_LEXATOM) ) {
         case 1:  quex::utf8_to_utf8_character((const uint8_t**)&input_p, &p); break;
         case 2:  quex::utf16_to_utf8_character((const uint16_t**)&input_p, &p); break;
         case 4:  quex::utf32_to_utf8_character((const uint32_t**)&input_p, &p); break;

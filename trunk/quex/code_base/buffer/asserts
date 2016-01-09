@@ -58,10 +58,10 @@ QUEX_BUFFER_ASSERT_CONSISTENCY(QUEX_NAME(Buffer)* B)
 }
 
 QUEX_INLINE void
-QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(const QUEX_TYPE_CHARACTER* Begin, 
-                                        const QUEX_TYPE_CHARACTER* End)
+QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(const QUEX_TYPE_LEXATOM* Begin, 
+                                        const QUEX_TYPE_LEXATOM* End)
 {
-    const QUEX_TYPE_CHARACTER* iterator = 0x0;
+    const QUEX_TYPE_LEXATOM* iterator = 0x0;
     __quex_assert(Begin <= End);
 
     for(iterator = Begin; iterator != End; ++iterator) {

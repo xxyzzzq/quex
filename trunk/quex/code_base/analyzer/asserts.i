@@ -19,7 +19,7 @@
 
 #define __QUEX_LEXEME_VALID_CHECK()                                                        \
     __QUEX_LEXEME_VALID_BASIC_CHECK()                                                      \
-    else if( *(buffer->_read_p) != (QUEX_TYPE_CHARACTER)0 ) {                             \
+    else if( *(buffer->_read_p) != (QUEX_TYPE_LEXATOM)0 ) {                             \
         __QUEX_STD_printf("%s:%i:\n", FileName, (int)LineN);                               \
         QUEX_ERROR_EXIT("Tried to access lexeme while terminating zero was not set.\n"     \
                         "This happens, for example, if navigation commands (undo, seek,\n" \
@@ -29,14 +29,14 @@
 
 QUEX_NAMESPACE_MAIN_OPEN
 
-QUEX_INLINE QUEX_TYPE_CHARACTER*  
+QUEX_INLINE QUEX_TYPE_LEXATOM*  
 QUEX_NAME(access_Lexeme)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)* buffer)
 {
     __QUEX_LEXEME_VALID_CHECK();
     return buffer->_lexeme_start_p;
 }
 
-QUEX_INLINE QUEX_TYPE_CHARACTER*  
+QUEX_INLINE QUEX_TYPE_LEXATOM*  
 QUEX_NAME(access_LexemeBegin)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)* buffer)
 {
     __QUEX_LEXEME_VALID_BASIC_CHECK(); /* IMPORTANT: THAT IS THE DIFFERENCE TO 'accessLexeme()' */
@@ -50,7 +50,7 @@ QUEX_NAME(access_LexemeL)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)*
     return (size_t)(buffer->_read_p - buffer->_lexeme_start_p);
 }
 
-QUEX_INLINE QUEX_TYPE_CHARACTER*  
+QUEX_INLINE QUEX_TYPE_LEXATOM*  
 QUEX_NAME(access_LexemeEnd)(const char* FileName, size_t LineN, QUEX_NAME(Buffer)* buffer)
 {
     __QUEX_LEXEME_VALID_BASIC_CHECK();

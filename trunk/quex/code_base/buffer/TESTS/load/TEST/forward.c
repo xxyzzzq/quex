@@ -35,7 +35,7 @@
 
 
 static ptrdiff_t            test_load_forward(QUEX_NAME(Buffer)* buffer);
-static QUEX_TYPE_CHARACTER* random_between(QUEX_TYPE_CHARACTER* A, QUEX_TYPE_CHARACTER* B);
+static QUEX_TYPE_LEXATOM* random_between(QUEX_TYPE_LEXATOM* A, QUEX_TYPE_LEXATOM* B);
 static ptrdiff_t            walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta);
 
 int
@@ -46,7 +46,7 @@ main(int argc, char**argv)
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Buffer_load_forward: (BPC=%i, FB=%i);\n", 
-               sizeof(QUEX_TYPE_CHARACTER),
+               sizeof(QUEX_TYPE_LEXATOM),
                (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
@@ -69,7 +69,7 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
     QUEX_NAME(ByteLoader_Memory)  loader;
     QUEX_NAME(LexatomLoader)*      filler;
     int                           count = 0;
-    QUEX_TYPE_CHARACTER           memory[5];
+    QUEX_TYPE_LEXATOM           memory[5];
     const int                     MemorySize = 5;
 
     QUEX_NAME(ByteLoader_Memory_construct)(&loader, 
@@ -80,7 +80,7 @@ walk_forward(ptrdiff_t ReadPDelta, ptrdiff_t LexemeStartPDelta)
 
     QUEX_NAME(Buffer_construct)(&buffer, filler,
                                 &memory[0], MemorySize,
-                                (QUEX_TYPE_CHARACTER*)0, E_Ownership_EXTERNAL); 
+                                (QUEX_TYPE_LEXATOM*)0, E_Ownership_EXTERNAL); 
 
     for(buffer._read_p = &buffer._memory._front[1]; 
         buffer._read_p < buffer._memory._back; 
@@ -103,20 +103,20 @@ static ptrdiff_t
 test_load_forward(QUEX_NAME(Buffer)* buffer) 
 {
     struct {
-        QUEX_TYPE_CHARACTER*      read_p;
-        QUEX_TYPE_CHARACTER*      lexeme_start_p;
-        QUEX_TYPE_CHARACTER       read;
-        QUEX_TYPE_CHARACTER       lexeme_start;
-        QUEX_TYPE_CHARACTER*      position_register_1;
-        QUEX_TYPE_CHARACTER*      position_register_3;
+        QUEX_TYPE_LEXATOM*      read_p;
+        QUEX_TYPE_LEXATOM*      lexeme_start_p;
+        QUEX_TYPE_LEXATOM       read;
+        QUEX_TYPE_LEXATOM       lexeme_start;
+        QUEX_TYPE_LEXATOM*      position_register_1;
+        QUEX_TYPE_LEXATOM*      position_register_3;
         QUEX_TYPE_STREAM_POSITION character_index_begin;
     } before;
     bool                 verdict_f;
     ptrdiff_t            delta;
-    QUEX_TYPE_CHARACTER* PoisonP = (QUEX_TYPE_CHARACTER*)0x5A5A5A5A; 
-    QUEX_TYPE_CHARACTER* NullP   = (QUEX_TYPE_CHARACTER*)0; 
+    QUEX_TYPE_LEXATOM* PoisonP = (QUEX_TYPE_LEXATOM*)0x5A5A5A5A; 
+    QUEX_TYPE_LEXATOM* NullP   = (QUEX_TYPE_LEXATOM*)0; 
     size_t               PositionRegisterN = 3;
-    QUEX_TYPE_CHARACTER* (position_register[5]);
+    QUEX_TYPE_LEXATOM* (position_register[5]);
     ptrdiff_t            count = 0;
 
     position_register[0]       = PoisonP; 
@@ -171,11 +171,11 @@ test_load_forward(QUEX_NAME(Buffer)* buffer)
     return count + 1;
 }
 
-static QUEX_TYPE_CHARACTER*
-random_between(QUEX_TYPE_CHARACTER* A, QUEX_TYPE_CHARACTER* B)
+static QUEX_TYPE_LEXATOM*
+random_between(QUEX_TYPE_LEXATOM* A, QUEX_TYPE_LEXATOM* B)
 {
-    QUEX_TYPE_CHARACTER* min   = A > B ? B : A;
-    QUEX_TYPE_CHARACTER* max   = A > B ? A : B;
+    QUEX_TYPE_LEXATOM* min   = A > B ? B : A;
+    QUEX_TYPE_LEXATOM* max   = A > B ? A : B;
     ptrdiff_t            delta = max - min;
     static uint32_t      seed  = 971;
 

@@ -24,8 +24,8 @@ QUEX_NAMESPACE_MAIN_OPEN
 #   if ! defined(QUEX_OPTION_INDENTATION_DEFAULT_HANDLER)
     QUEX_INLINE void
     QUEX_NAME(Mode_on_indentation_null_function)(QUEX_TYPE_ANALYZER*  me, 
-                                                 QUEX_TYPE_CHARACTER* LexemeBegin, 
-                                                 QUEX_TYPE_CHARACTER* LexemeEnd)
+                                                 QUEX_TYPE_LEXATOM* LexemeBegin, 
+                                                 QUEX_TYPE_LEXATOM* LexemeEnd)
     { (void)me; (void)LexemeBegin; (void)LexemeEnd; }
 #   endif
 

@@ -8,7 +8,7 @@
  *                      * _lexeme_start_p
  *                      * whether the buffer contains the end of file or not.
  *                      * QUEX_SETTING_BUFFER_MIN_FALLBACK_N
- *                      * QUEX_TYPE_CHARACTER
+ *                      * QUEX_TYPE_LEXATOM
  *
  * The last two are compile-time parameters. The first three may be
  * varried dynamically. 
@@ -18,7 +18,7 @@
  * Let this file be compiled with '-DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=3'
  * for all experiments. Multiple versions of compiled objects may exist:
  *
- *        QUEX_TYPE_CHARACTER  QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+ *        QUEX_TYPE_LEXATOM  QUEX_SETTING_BUFFER_MIN_FALLBACK_N
  *          uint8_t             0
  *          uint8_t             1
  *          uint8_t             2
@@ -50,9 +50,9 @@
 #include <move_away_passed_content-gen.h>
 #include "commonly-pasted.cpp" /* requires 'G_t' from above header. */
 
-static QUEX_TYPE_CHARACTER  content[] = { '5', '4', '3', '2', '1' }; 
+static QUEX_TYPE_LEXATOM  content[] = { '5', '4', '3', '2', '1' }; 
 const  ptrdiff_t            ContentSize = sizeof(content)/sizeof(content[0]);
-static QUEX_TYPE_CHARACTER  memory[12];
+static QUEX_TYPE_LEXATOM  memory[12];
 const  ptrdiff_t            MemorySize = sizeof(memory)/sizeof(memory[0]);
 
 int
@@ -61,21 +61,21 @@ main(int argc, char** argv)
     QUEX_NAME(Buffer)    buffer;
     G_t                  it;
     struct {
-        QUEX_TYPE_CHARACTER* end_p;     
-        QUEX_TYPE_CHARACTER* read_p;     
-        QUEX_TYPE_CHARACTER  read_char;
-        QUEX_TYPE_CHARACTER* lexeme_start_p;     
-        QUEX_TYPE_CHARACTER  lexeme_start_char;
+        QUEX_TYPE_LEXATOM* end_p;     
+        QUEX_TYPE_LEXATOM* read_p;     
+        QUEX_TYPE_LEXATOM  read_char;
+        QUEX_TYPE_LEXATOM* lexeme_start_p;     
+        QUEX_TYPE_LEXATOM  lexeme_start_char;
     } before;
-    QUEX_TYPE_CHARACTER* min_p;     
+    QUEX_TYPE_LEXATOM* min_p;     
     bool                 end_of_stream_in_buffer_f;
     ptrdiff_t            move_distance;
-    QUEX_TYPE_CHARACTER  backup[MemorySize*2];
+    QUEX_TYPE_LEXATOM  backup[MemorySize*2];
     int                  count = 0;
 
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("move_away_passed_content: (BPC=%i, FB=%i);\n", 
-               sizeof(QUEX_TYPE_CHARACTER),
+               sizeof(QUEX_TYPE_LEXATOM),
                (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         printf("CHOICES: EoS, NoEoS;\n");
         return 0;
@@ -106,7 +106,7 @@ main(int argc, char** argv)
         min_p                    = QUEX_MIN(buffer._read_p, buffer._lexeme_start_p);
         memcpy(&backup[0], min_p, buffer.input.end_p - min_p);
 
-        move_distance = QUEX_NAME(Buffer_move_away_passed_content)(&buffer, (QUEX_TYPE_CHARACTER**)0, 0);
+        move_distance = QUEX_NAME(Buffer_move_away_passed_content)(&buffer, (QUEX_TYPE_LEXATOM**)0, 0);
 
         self_print(&buffer);
 

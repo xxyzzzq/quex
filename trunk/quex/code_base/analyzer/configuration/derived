@@ -218,11 +218,11 @@
 #   if QUEX_SETTING_CHAR_CODEC == utf8
 #       define __QUEX_COUNTER_RULES(counter, iterator)                    \
                switch( (int)(*iterator) ) {                               \
-               case (int)(QUEX_TYPE_CHARACTER)'\t':                       \
+               case (int)(QUEX_TYPE_LEXATOM)'\t':                       \
                    (counter)._column_number_at_end &= (~(size_t)0x3) + 4; \
                    ++(iterator);                                          \
                    break;                                                 \
-               case (int)(QUEX_TYPE_CHARACTER)'\n':                       \
+               case (int)(QUEX_TYPE_LEXATOM)'\n':                       \
                    (counter)._line_number_at_end   += 1;                  \
                    (counter)._column_number_at_end  = 1;                  \
                    ++(iterator);                                          \
@@ -242,12 +242,12 @@
                }
 #   elif QUEX_SETTING_CHAR_CODEC == utf16
 #       define __QUEX_COUNTER_RULES(counter, iterator) \
-               switch( (int)(QUEX_TYPE_CHARACTER)(*iterator) ) {         \
-               case (int)(QUEX_TYPE_CHARACTER)'\t':                      \
+               switch( (int)(QUEX_TYPE_LEXATOM)(*iterator) ) {         \
+               case (int)(QUEX_TYPE_LEXATOM)'\t':                      \
                    (counter)._column_number_at_end &= (~(size_t)0x3) + 4;\
                    ++(iterator);                            \
                    break;                                   \
-               case (int)(QUEX_TYPE_CHARACTER)'\n':         \
+               case (int)(QUEX_TYPE_LEXATOM)'\n':         \
                    (counter)._line_number_at_end  += 1;     \
                    (counter)._column_number_at_end  = 1;    \
                    ++(iterator);                            \
@@ -262,9 +262,9 @@
 #   else
 #       define __QUEX_COUNTER_RULES(counter, iterator) \
                switch( (int)(*iterator) ) {                                      \
-               case (int)(QUEX_TYPE_CHARACTER)'\t':    \
+               case (int)(QUEX_TYPE_LEXATOM)'\t':    \
                    (counter)._column_number_at_end &= (~(size_t)0x3) + 4; break; \
-               case (int)(QUEX_TYPE_CHARACTER)'\n':    \
+               case (int)(QUEX_TYPE_LEXATOM)'\n':    \
                    (counter)._line_number_at_end   += 1;                         \
                    (counter)._column_number_at_end  = 1;                  break; \
                default:                                \

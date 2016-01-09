@@ -14,7 +14,7 @@ token_type {
         column_number :    unsigned;
    }
    distinct {
-       name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+       name        :  std::basic_string<QUEX_TYPE_LEXATOM>;
        number_list :  std::vector<int>;
    }
    union {

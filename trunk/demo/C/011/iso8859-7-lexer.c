@@ -23,7 +23,7 @@ main(int argc, char** argv)
         printf("%s \n", QUEX_NAME_TOKEN(get_string)(token_p, buffer, BufferSize));
 #       if 0
         cout << "\t\t plain bytes: ";
-        for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
+        for(QUEX_TYPE_LEXATOM* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
             printf("%02X.", (int)*iterator);
         }
 #       endif

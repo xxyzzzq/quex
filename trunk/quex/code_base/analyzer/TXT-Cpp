@@ -102,7 +102,7 @@ public:
 public:
     typedef QUEX_TYPE_TOKEN      token_type;
     typedef QUEX_TYPE_TOKEN_ID   token_id_type;
-    typedef QUEX_TYPE_CHARACTER  char_type;
+    typedef QUEX_TYPE_LEXATOM  char_type;
 
     /*_________________________________________________________________________
      * Constructor:
@@ -117,9 +117,9 @@ public:
 #   endif
     void    from(QUEX_NAME(ByteLoader)* byte_loader, const char*  CodecName = 0x0);
     void    from(QUEX_NAME(LexatomLoader)* filler);
-    void    from(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    void    from(QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                  size_t               BufferMemorySize,
-                 QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0);
+                 QUEX_TYPE_LEXATOM* BufferEndOfContentP = 0x0);
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT> 
     void    from_StrangeStream(quex::StrangeStream<UnderlyingStreamT>*  istream_p, 
@@ -162,9 +162,9 @@ public:
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
-    $$LEXER_CLASS_NAME$$(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    $$LEXER_CLASS_NAME$$(QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
     $$___SPACE___$$size_t               BufferMemorySize,
-    $$___SPACE___$$QUEX_TYPE_CHARACTER* BufferEndOfContentP = 0x0)
+    $$___SPACE___$$QUEX_TYPE_LEXATOM* BufferEndOfContentP = 0x0)
     $$___SPACE___$${ from(BufferMemoryBegin, BufferMemorySize, BufferEndOfContentP); }
 
     virtual ~$$LEXER_CLASS_NAME$$();
@@ -205,10 +205,10 @@ public:
 
     /* Level (5) ______________________________________________________________
      *                                                                       */
-    QUEX_TYPE_CHARACTER*
-            reset(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    QUEX_TYPE_LEXATOM*
+            reset(QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                   size_t               BufferMemorySize,
-                  QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+                  QUEX_TYPE_LEXATOM* BufferEndOfContentP);  
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     /*_________________________________________________________________________
@@ -255,17 +255,17 @@ public:
     /* Level (5) ______________________________________________________________
      *                                                                       */
     bool    include_push(const char*          InputName, 
-                         QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                         QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                          size_t               BufferMemorySize,
-                         QUEX_TYPE_CHARACTER* BufferEndOfContentP);  
+                         QUEX_TYPE_LEXATOM* BufferEndOfContentP);  
 
     bool    include_pop();
     void    include_stack_delete();
     bool    include_detect_recursion(const char* InputName);
 #   endif
 
-    QUEX_TYPE_CHARACTER*  lexeme_start_pointer_get();
-    void                  input_pointer_set(QUEX_TYPE_CHARACTER*);
+    QUEX_TYPE_LEXATOM*  lexeme_start_pointer_get();
+    void                  input_pointer_set(QUEX_TYPE_LEXATOM*);
 
     /* -- activate/deactivate byte order reversion (big-/little-endian)      */
     bool                  byte_order_reversion();
@@ -381,8 +381,8 @@ public:
 
 public:
 
-    void    set_callback_on_buffer_content_change(void (*callback)(const QUEX_TYPE_CHARACTER*, 
-                                                                   const QUEX_TYPE_CHARACTER*));
+    void    set_callback_on_buffer_content_change(void (*callback)(const QUEX_TYPE_LEXATOM*, 
+                                                                   const QUEX_TYPE_LEXATOM*));
 
 public:
     void    print_this();

@@ -41,9 +41,9 @@ following signatures
 
         void 
         reset_buffer(QUEX_TYPE_ANALYZER*  me,
-                     QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                     QUEX_TYPE_LEXATOM* BufferMemoryBegin, 
                      size_t               BufferMemorySize,
-                     QUEX_TYPE_CHARACTER* BufferEndOfContentP,  
+                     QUEX_TYPE_LEXATOM* BufferEndOfContentP,  
                      const char*          CharacterEncodingName = 0x0);
 
 .. describe:: reset(...)

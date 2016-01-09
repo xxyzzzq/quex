@@ -18,7 +18,7 @@ def test(CodecName):
     fh = open("converter-tester.h", "w")
     fh.write(code_str + "\n" + code0_str)
     fh.close()
-    define_str = "-DQUEX_TYPE_CHARACTER='unsigned char' " + \
+    define_str = "-DQUEX_TYPE_LEXATOM='unsigned char' " + \
                  "-DQUEX_INLINE=inline " + \
                  ("-D__QUEX_CODEC=%s " % CodecName) + \
                  "-D__QUEX_OPTION_LITTLE_ENDIAN " 

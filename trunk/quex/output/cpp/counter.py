@@ -68,7 +68,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
     txt = [  \
           "#ifdef __QUEX_OPTION_COUNTER\n" \
         + "static void\n" \
-        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_CHARACTER* LexemeBegin, QUEX_TYPE_CHARACTER* LexemeEnd)\n" \
+        + "%s(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_LEXATOM* LexemeBegin, QUEX_TYPE_LEXATOM* LexemeEnd)\n" \
           % FunctionName \
         + "{\n" \
         + "#   define self (*me)\n" \

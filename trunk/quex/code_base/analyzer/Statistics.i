@@ -4,13 +4,13 @@
 #include <quex/code_base/analyzer/Statistics>
 
 QUEX_INLINE void
-QUEX_NAME(statistics_state_count)(const QUEX_NAME(statistics_state)* S, QUEX_TYPE_CHARACTER C)
+QUEX_NAME(statistics_state_count)(const QUEX_NAME(statistics_state)* S, QUEX_TYPE_LEXATOM C)
 {
-    const QUEX_TYPE_CHARACTER*  BeginP   = S->interval_list.boundary;
-    const QUEX_TYPE_CHARACTER*  EndP     = BeginP + S->interval_list.boundary_n;
-    const QUEX_TYPE_CHARACTER*  low      = BeginP;
-    const QUEX_TYPE_CHARACTER*  up       = EndP;
-    const QUEX_TYPE_CHARACTER*  iterator = (const QUEX_TYPE_CHARACTER*)0x0; 
+    const QUEX_TYPE_LEXATOM*  BeginP   = S->interval_list.boundary;
+    const QUEX_TYPE_LEXATOM*  EndP     = BeginP + S->interval_list.boundary_n;
+    const QUEX_TYPE_LEXATOM*  low      = BeginP;
+    const QUEX_TYPE_LEXATOM*  up       = EndP;
+    const QUEX_TYPE_LEXATOM*  iterator = (const QUEX_TYPE_LEXATOM*)0x0; 
 
     /* Binary Search for the interval where 'C' belongs:
      * Find iterator so that: *(iterator-1) <= C < *(iterator) */

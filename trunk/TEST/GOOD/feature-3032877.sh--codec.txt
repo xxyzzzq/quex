@@ -1,8 +1,8 @@
 _____________________________________________________________________
 ARGUMENT_LIST: --bet u8 --codec utf8
 
-#   define QUEX_TYPE_CHARACTER          u8
-#   define QUEX_TYPE_CHARACTER_BACKUP   u8
+#   define QUEX_TYPE_LEXATOM          u8
+#   define QUEX_TYPE_LEXATOM_BACKUP   u8
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet u16 --codec utf8
@@ -21,8 +21,8 @@ File EasyLexer-configuration does not exits.
 _____________________________________________________________________
 ARGUMENT_LIST: --bet uint8_t --codec utf8
 
-#   define QUEX_TYPE_CHARACTER          uint8_t
-#   define QUEX_TYPE_CHARACTER_BACKUP   uint8_t
+#   define QUEX_TYPE_LEXATOM          uint8_t
+#   define QUEX_TYPE_LEXATOM_BACKUP   uint8_t
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet uint16_t --codec utf8
@@ -62,8 +62,8 @@ File EasyLexer-configuration does not exits.
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --codec utf8 -b 1
 
-#   define QUEX_TYPE_CHARACTER          UChar
-#   define QUEX_TYPE_CHARACTER_BACKUP   UChar
+#   define QUEX_TYPE_LEXATOM          UChar
+#   define QUEX_TYPE_LEXATOM_BACKUP   UChar
 
 _____________________________________________________________________
 ARGUMENT_LIST: --bet UChar --codec utf8 -b 2

@@ -83,7 +83,7 @@ def do(ModeDescriptionDB):
     codec_name = make_safe_identifier(Setup.buffer_codec.name).lower()
 
     # Setup.buffer_element_size can be '-1'. This signals then that 
-    # sizeof(QUEX_TYPE_CHARACTER) needs to be used. A numeric value 
+    # sizeof(QUEX_TYPE_LEXATOM) needs to be used. A numeric value 
     # is required here.
     character_size_str = "%i" % Setup.buffer_element_size
 
@@ -116,7 +116,7 @@ def do(ModeDescriptionDB):
              ["$$NAMESPACE_TOKEN_OPEN$$",       Lng.NAMESPACE_OPEN(token_descr.name_space).replace("\n", "\\\n")],
              ["$$PATH_TERMINATION_CODE$$",      "0x%X" % Setup.path_limit_code],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
-             ["$$QUEX_TYPE_CHARACTER$$",        Setup.buffer_element_type],
+             ["$$QUEX_TYPE_LEXATOM$$",        Setup.buffer_element_type],
              ["$$QUEX_SETTING_CHARACTER_SIZE$$", character_size_str],
              ["$$QUEX_NAMESPACE_LEXEME_NULL_OPEN$$",   Lng.NAMESPACE_OPEN(Setup.lexeme_null_namespace).replace("\n", "\\\n")],
              ["$$QUEX_NAMESPACE_LEXEME_NULL_CLOSE$$",  Lng.NAMESPACE_CLOSE(Setup.lexeme_null_namespace).replace("\n", "\\\n")],

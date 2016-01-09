@@ -27,4 +27,4 @@ AE.C3.AF.D9.8B.D9.8C.D9.8D.D9.8E.C3.B4.D9.8F.D9.
 90.C3.B7.D9.91.C3.B9.D9.92.C3.BB.C3.BC.E2.80.8E.
 E2.80.8F.
 Check result (no response == OK)
-## g++ -ggdb -I./ -I$QUEX_PATH -DQUEX_TYPE_CHARACTER='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=cp1256 -D__QUEX_OPTION_LITTLE_ENDIAN  converter-tester.cpp -o converter-tester
+## g++ -ggdb -I./ -I$QUEX_PATH -DQUEX_TYPE_LEXATOM='unsigned char' -DQUEX_INLINE=inline -D__QUEX_CODEC=cp1256 -D__QUEX_OPTION_LITTLE_ENDIAN  converter-tester.cpp -o converter-tester
