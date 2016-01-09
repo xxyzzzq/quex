@@ -2,4 +2,6 @@
 ##    /home/fschaef/prj/quex/trunk/doc/manpage/quex.1
 (*) Options which are not documented (no output is good output)
 error: --debug-exception is not documented
+Documented options 101 out of 102 existing options.
 (*) Options which are reported, but are not available in application  (no output is good output)
+

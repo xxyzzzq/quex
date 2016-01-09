@@ -1,29 +1,31 @@
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'Age']
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 7.0, 8.0.
 
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 7.0, 8.0.
 
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 7.0, 8.0.
 
 command line: Property 'Age' requires a value setting.
-command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0.
+command line: Possible Values: 1.1, 2.0, 2.1, 3.0, 3.1, 3.2, 4.0, 4.1, 5.0, 5.1, 5.2, 6.0, 6.1, 6.2, 6.3, 7.0, 8.0.
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'Script=Runic']
 Characters:
+
+
 ...
 016A0: ᚠ ᚡ ᚢ ᚣ ᚤ ᚥ ᚦ ᚧ ᚨ ᚩ ᚪ ᚫ ᚬ ᚭ ᚮ ᚯ ᚰ ᚱ ᚲ ᚳ ᚴ ᚵ ᚶ ᚷ ᚸ ᚹ ᚺ ᚻ ᚼ ᚽ ᚾ ᚿ 
-
 016C0: ᛀ ᛁ ᛂ ᛃ ᛄ ᛅ ᛆ ᛇ ᛈ ᛉ ᛊ ᛋ ᛌ ᛍ ᛎ ᛏ ᛐ ᛑ ᛒ ᛓ ᛔ ᛕ ᛖ ᛗ ᛘ ᛙ ᛚ ᛛ ᛜ ᛝ ᛞ ᛟ 
-016E0: ᛠ ᛡ ᛢ ᛣ ᛤ ᛥ ᛦ ᛧ ᛨ ᛩ ᛪ       ᛮ ᛯ ᛰ 
+016E0: ᛠ ᛡ ᛢ ᛣ ᛤ ᛥ ᛦ ᛧ ᛨ ᛩ ᛪ       ᛮ ᛯ ᛰ ᛱ ᛲ ᛳ ᛴ ᛵ ᛶ ᛷ ᛸ 
+
 Characters:
+
+
 ...
-
 016A0: 016A0 016A1 016A2 016A3 016A4 016A5 016A6 016A7 
-
 016A8: 016A8 016A9 016AA 016AB 016AC 016AD 016AE 016AF 
 016B0: 016B0 016B1 016B2 016B3 016B4 016B5 016B6 016B7 
 016B8: 016B8 016B9 016BA 016BB 016BC 016BD 016BE 016BF 
@@ -33,12 +35,16 @@ Characters:
 016D8: 016D8 016D9 016DA 016DB 016DC 016DD 016DE 016DF 
 016E0: 016E0 016E1 016E2 016E3 016E4 016E5 016E6 016E7 
 016E8: 016E8 016E9 016EA                   016EE 016EF 
-016F0: 016F0 
+016F0: 016F0 016F1 016F2 016F3 016F4 016F5 016F6 016F7 
+016F8: 016F8 
+
 Characters:
-[16A0-16EA], [16EE-16F0], 
+
+[16A0-16EA], [16EE-16F8], 
 
 
 Characters:
+
 0016A0: RUNIC_LETTER_FEHU_FEOH_FE_F
 0016A1: RUNIC_LETTER_V
 0016A2: RUNIC_LETTER_URUZ_UR_U
@@ -117,12 +123,20 @@ Characters:
 0016EE: RUNIC_ARLAUG_SYMBOL
 0016EF: RUNIC_TVIMADUR_SYMBOL
 0016F0: RUNIC_BELGTHOR_SYMBOL
+0016F1: RUNIC_LETTER_K
+0016F2: RUNIC_LETTER_SH
+0016F3: RUNIC_LETTER_OO
+0016F4: RUNIC_LETTER_FRANKS_CASKET_OS
+0016F5: RUNIC_LETTER_FRANKS_CASKET_IS
+0016F6: RUNIC_LETTER_FRANKS_CASKET_EH
+0016F7: RUNIC_LETTER_FRANKS_CASKET_AC
+0016F8: RUNIC_LETTER_FRANKS_CASKET_AESC
 
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'bc=EN']
-
-
 Characters:
+
+
 ...
 00020:                               0 1 2 3 4 5 6 7 8 9 
 ...
@@ -137,11 +151,16 @@ Characters:
 ...
 0FF00:                               ０ １ ２ ３ ４ ５ ６ ７ ８ ９ 
 ...
+102E0: 𐋡 𐋢 𐋣 𐋤 𐋥 𐋦 𐋧 𐋨 𐋩 𐋪 𐋫 𐋬 𐋭 𐋮 𐋯 𐋰 𐋱 𐋲 𐋳 𐋴 𐋵 𐋶 𐋷 𐋸 𐋹 𐋺 𐋻 
+...
 1D7C0:                           𝟎 𝟏 𝟐 𝟑 𝟒 𝟓 𝟔 𝟕 𝟖 𝟗 𝟘 𝟙 𝟚 𝟛 𝟜 𝟝 𝟞 𝟟 
 1D7E0: 𝟠 𝟡 𝟢 𝟣 𝟤 𝟥 𝟦 𝟧 𝟨 𝟩 𝟪 𝟫 𝟬 𝟭 𝟮 𝟯 𝟰 𝟱 𝟲 𝟳 𝟴 𝟵 𝟶 𝟷 𝟸 𝟹 𝟺 𝟻 𝟼 𝟽 𝟾 𝟿 
 ...
 1F100: 🄀 🄁 🄂 🄃 🄄 🄅 🄆 🄇 🄈 🄉 🄊 
+
 Characters:
+
+
 ...
 00030: 00030 00031 00032 00033 00034 00035 00036 00037 
 00038: 00038 00039 
@@ -164,6 +183,11 @@ Characters:
 0FF10: 0FF10 0FF11 0FF12 0FF13 0FF14 0FF15 0FF16 0FF17 
 0FF18: 0FF18 0FF19 
 ...
+102E0: 102E1 102E2 102E3 102E4 102E5 102E6 102E7 
+102E8: 102E8 102E9 102EA 102EB 102EC 102ED 102EE 102EF 
+102F0: 102F0 102F1 102F2 102F3 102F4 102F5 102F6 102F7 
+102F8: 102F8 102F9 102FA 102FB 
+...
 1D7C8:                               1D7CE 1D7CF 
 1D7D0: 1D7D0 1D7D1 1D7D2 1D7D3 1D7D4 1D7D5 1D7D6 1D7D7 
 1D7D8: 1D7D8 1D7D9 1D7DA 1D7DB 1D7DC 1D7DD 1D7DE 1D7DF 
@@ -174,12 +198,15 @@ Characters:
 ...
 1F100: 1F100 1F101 1F102 1F103 1F104 1F105 1F106 1F107 
 1F108: 1F108 1F109 1F10A 
+
 Characters:
+
 [0030-0039], [00B2-00B3], [00B9], [06F0-06F9], [2070], [2074-2079], 
-[2080-2089], [2488-249B], [FF10-FF19], [1D7CE-1D7FF], [1F100-1F10A], 
+[2080-2089], [2488-249B], [FF10-FF19], [102E1-102FB], [1D7CE-1D7FF], [1F100-1F10A], 
 
 
 Characters:
+
 000030: DIGIT_ZERO
 000031: DIGIT_ONE
 000032: DIGIT_TWO
@@ -250,6 +277,33 @@ Characters:
 00FF17: FULLWIDTH_DIGIT_SEVEN
 00FF18: FULLWIDTH_DIGIT_EIGHT
 00FF19: FULLWIDTH_DIGIT_NINE
+0102E1: COPTIC_EPACT_DIGIT_ONE
+0102E2: COPTIC_EPACT_DIGIT_TWO
+0102E3: COPTIC_EPACT_DIGIT_THREE
+0102E4: COPTIC_EPACT_DIGIT_FOUR
+0102E5: COPTIC_EPACT_DIGIT_FIVE
+0102E6: COPTIC_EPACT_DIGIT_SIX
+0102E7: COPTIC_EPACT_DIGIT_SEVEN
+0102E8: COPTIC_EPACT_DIGIT_EIGHT
+0102E9: COPTIC_EPACT_DIGIT_NINE
+0102EA: COPTIC_EPACT_NUMBER_TEN
+0102EB: COPTIC_EPACT_NUMBER_TWENTY
+0102EC: COPTIC_EPACT_NUMBER_THIRTY
+0102ED: COPTIC_EPACT_NUMBER_FORTY
+0102EE: COPTIC_EPACT_NUMBER_FIFTY
+0102EF: COPTIC_EPACT_NUMBER_SIXTY
+0102F0: COPTIC_EPACT_NUMBER_SEVENTY
+0102F1: COPTIC_EPACT_NUMBER_EIGHTY
+0102F2: COPTIC_EPACT_NUMBER_NINETY
+0102F3: COPTIC_EPACT_NUMBER_ONE_HUNDRED
+0102F4: COPTIC_EPACT_NUMBER_TWO_HUNDRED
+0102F5: COPTIC_EPACT_NUMBER_THREE_HUNDRED
+0102F6: COPTIC_EPACT_NUMBER_FOUR_HUNDRED
+0102F7: COPTIC_EPACT_NUMBER_FIVE_HUNDRED
+0102F8: COPTIC_EPACT_NUMBER_SIX_HUNDRED
+0102F9: COPTIC_EPACT_NUMBER_SEVEN_HUNDRED
+0102FA: COPTIC_EPACT_NUMBER_EIGHT_HUNDRED
+0102FB: COPTIC_EPACT_NUMBER_NINE_HUNDRED
 01D7CE: MATHEMATICAL_BOLD_DIGIT_ZERO
 01D7CF: MATHEMATICAL_BOLD_DIGIT_ONE
 01D7D0: MATHEMATICAL_BOLD_DIGIT_TWO
@@ -315,22 +369,30 @@ Characters:
 ----------------------------------------------------------------------
 ARGS:  ['', '--set-by-property', 'ASCII_Hex_Digit']
 Characters:
+
+
 ...
 00020:                               0 1 2 3 4 5 6 7 8 9 
 00040: A B C D E F 
 00060: a b c d e f 
+
 Characters:
+
+
 ...
 00030: 00030 00031 00032 00033 00034 00035 00036 00037 
 00038: 00038 00039 
 00040: 00041 00042 00043 00044 00045 00046 
 ...
 00060: 00061 00062 00063 00064 00065 00066 
+
 Characters:
+
 [0030-0039], [0041-0046], [0061-0066], 
 
 
 Characters:
+
 000030: DIGIT_ZERO
 000031: DIGIT_ONE
 000032: DIGIT_TWO

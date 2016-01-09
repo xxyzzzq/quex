@@ -1,7 +1,10 @@
+warning: no database file for property `Indic_Positional_Category'.
+warning: no database file for property `Indic_Syllabic_Category'.
 warning: no database file for property `NFC_Quick_Check'.
 warning: no database file for property `NFD_Quick_Check'.
 warning: no database file for property `NFKC_Quick_Check'.
 warning: no database file for property `NFKD_Quick_Check'.
+warning: no database file for property `Bidi_Paired_Bracket_Type'.
 # Abbreviation, Name, Type
 AHex,                    ASCII_Hex_Digit,                    Binary
 Alpha,                   Alphabetic,                         Binary
@@ -34,6 +37,8 @@ IDS,                     ID_Start,                           Binary
 IDSB,                    IDS_Binary_Operator,                Binary
 IDST,                    IDS_Trinary_Operator,               Binary
 Ideo,                    Ideographic,                        Binary
+InPC,                    Indic_Positional_Category,          Enumerated,    <unsupported>
+InSC,                    Indic_Syllabic_Category,            Enumerated,    <unsupported>
 JSN,                     Jamo_Short_Name,                    Miscellaneous, <unsupported>
 Join_C,                  Join_Control,                       Binary
 LOE,                     Logical_Order_Exception,            Binary
@@ -76,7 +81,9 @@ XO_NFKD,                 Expands_On_NFKD,                    Binary
 age,                     Age,                                Catalog
 bc,                      Bidi_Class,                         Enumerated
 blk,                     Block,                              Catalog
-bmg,                     Bidi_Mirroring_Glyph,               String,        <unsupported>
+bmg,                     Bidi_Mirroring_Glyph,               Miscellaneous, <unsupported>
+bpb,                     Bidi_Paired_Bracket,                Miscellaneous, <unsupported>
+bpt,                     Bidi_Paired_Bracket_Type,           Enumerated,    <unsupported>
 ccc,                     Canonical_Combining_Class,          Enumerated
 cf,                      Case_Folding,                       String,        <unsupported>
 cjkAccountingNumeric,    kAccountingNumeric,                 Numeric,       <unsupported>
@@ -110,6 +117,7 @@ nt,                      Numeric_Type,                       Enumerated
 nv,                      Numeric_Value,                      Numeric
 sc,                      Script,                             Catalog
 scf,                     Simple_Case_Folding,                String,        <unsupported>
+scx,                     Script_Extensions,                  Miscellaneous, <unsupported>
 slc,                     Simple_Lowercase_Mapping,           String,        <unsupported>
 stc,                     Simple_Titlecase_Mapping,           String,        <unsupported>
 suc,                     Simple_Uppercase_Mapping,           String,        <unsupported>

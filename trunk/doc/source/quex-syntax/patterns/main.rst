@@ -9,8 +9,8 @@ expressions. This facilitates the migration from and to other lexical analyzer
 generators and test environments.  Additionally, there exist some special
 commands for using *Unicode Properties* to define character sets.
 
-.. Compliance to *Unicode Regular Expressions* (Unicode UTR #18) is has 
-.. not been a design goal, though. 
+.. TODO: Draw relations to *Unicode Regular Expressions* (Unicode UTR #18) is has 
+.. i.e. where it is compliant, and where not.
 
 .. note::
 
@@ -36,21 +36,23 @@ commands for using *Unicode Properties* to define character sets.
 
         mode MINE {
             {WHITESPACE}  { /* do nothing */ }
-            {IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
+            {IDENTIFIER}  => QUEX_TKN_IDENTIFIER(Lexeme);
         }
 
-The description of patterns by means of a formal language is the subject of the
-following subsections. The explanation is divided into the consideration of
-context-free expressions and context-dependent expressions.
+The following sections describe the formal language used to specify patterns.
+First, syntactic means to specify context free regular expressions are
+introduced. Second, two sections elaborate on the specification of character
+sets and the use of queries into the Unicode database. Third, a section
+elaborates on pre- and post-contexts for regular expressions. Eventually, a
+final section introduces *regular expression algebra*. 
 
 .. toctree::
    
-    context-free.rst
-    character-set-expressions.rst
+    re-context-free.rst
+    re-character-sets.rst
     ucs-properties.rst
-    context-free-pitfalls.rst
-    context-dependent.rst
-    context-dependent-pitfalls.rst
+    re-context-dependent.rst
+    re-algebra.rst
+    summary.rst
    
-.. rubric:: Footnotes
 
