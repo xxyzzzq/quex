@@ -18,7 +18,7 @@ point in time.
 .. toctree::
 
    lexical-state-machine.rst
-   byte-lexatom-buffer.rst
+   input.rst
    output.rst
    modes.rst
    summary.rst
