@@ -49,11 +49,7 @@ lexical analyzer generators. In flex, for example, the end-user does not see
 more than a token stream. He has no insight into the current lexical analyzer
 mode. He cannot sense or control the mode transitions that are currently being
 made. The mode transitions are hidden somewhere in the pattern match actions.
-GNU Flex's *start conditions* are similar to modes, but the only way two modes,
-A and B, can be related in flex is via 'inclusion', i.e. by letting a
-pattern be active in A and B. There is no convenient mechanism to say:
-'let B override all patterns of A'.  This is where the mode inheritance
-relationships of Quex provide clear and convenient advantages to be
-explained in the chapters to come.
+
+--cut--
 
 
