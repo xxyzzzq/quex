@@ -9,7 +9,7 @@ worry, be happy ... this matches at _any_ begin of line"--well, it does not!
 The important thing to understand is that it matches when the lexical analysis
 step _starts_ at the beginning of a line. The alarm signal should ring if
 begin-of-line is triggered and a white space pattern is defined that includes
-newline.  Consider the following patterns being defined:
+newline.  Consider the following patterns being defined as:
 
 .. code-block:: cpp
 

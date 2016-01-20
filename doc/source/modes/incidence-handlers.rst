@@ -1,0 +1,252 @@
+Incidence Handlers
+==================
+
+Several incidences [#f1]_ may occur during lexical analysis. The user may
+react to those incidences with hand written code in so called 'incidence
+handlers'. They are specified inside a mode definition and follow the
+example of ``on_some_incidence`` shown below in the mode 'MINE'.::
+
+    mode MINE {
+        ...
+        on_some_incidence {
+            /* user code */
+        }
+        ...
+    }
+
+Some incidence handlers require additional information. Such information is
+passed as 'implicit arguments'. Those are variables which are prepared by the
+generated analyzer, but they are not defined explicitly in the source code
+fragment itself. In the documentation below implicit variables are explained
+once at their first occurrence. An implicit argument of a distinct name has the
+same meaning in all incidence handlers where it appears. The incidence handlers
+are the following:
+
+.. data:: on_entry
+
+    Implicit Argument: ``FromMode``
+
+    Incidence handler to be executed on entrance of the mode. This happens as a
+    reaction to mode transitions. ``FromMode`` is the mode from which the
+    current mode is entered.
+
+.. data:: on_exit
+
+    Implicit Argument: ``ToMode``
+
+    Incidence handler to be executed on exit of the mode. This happens as a
+    reaction to mode transitions. The variable ``ToMode`` contains the mode to
+    which the mode is left.
+    
+.. data:: on_match
+
+    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
+
+    This incidence handler is executed on every match that every happens while this
+    mode is active. It is executed *before* the pattern-action is executed that is
+    related to the matching pattern. The implicit arguments allow access to
+    the matched lexeme and correspond to what is passed to pattern-actions.
+
+    ``Lexeme`` gives a pointer to a zero-terminated string that carries the
+    matching lexeme. ``LexemeL`` is the lexeme's length. ``LexemeBegin`` gives
+    a pointer to the begin of the lexeme which is not necessarily
+    zero-terminated.  ``LexemeEnd`` points to the first lexatom after the last
+    lexatom in the lexeme.
+
+.. data:: on_after_match
+
+    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
+
+    The ``on_after_match`` handler is executed at every pattern match. It
+    differs from ``on_match`` in that it is executed *after* the
+    pattern-action. To make sure that the handler is executed, it is essential
+    that ``return`` is never a used in any pattern action directly. If a forced 
+    return is required, ``RETURN`` must be used. 
+
+    .. warning::
+
+        When using the token policy 'queue' and sending tokens from inside the 
+        ``on_after_match`` function, then it is highly advisable to set the safety
+        margin of the queue to the maximum number of tokens which are expected to
+        be sent from inside this handler. Define::
+
+               -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=...some number...
+     
+        on the command line to your compiler. Alternatively, quex can be passed the 
+        command line option ``--token-policy-queue-safety-border`` followed by the
+        specific number.
+
+    .. note::
+
+       Since ``on_after_match`` is executed after pattern actions have been done.
+       This includes a possible sending of the termination token. When asserts
+       are enabled, any token sending after the termination token may trigger 
+       an error. This can be disabled by the definition of the macro::
+       
+                QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
+
+
+.. data:: on_failure
+
+   Incidence handler for the case that a character stream does not match any
+   pattern in the mode. This is equivalent to the ``<<FAIL>>`` pattern in the
+   'lex' family of lexical analyzer generators. ``on_failure``, though, eats
+   one character. The lexical analyzer may retry matching from what follows.
+
+   .. note:: ``on_failure`` catches unexpected lexemes--lexemes where there is
+             no match. This may be due to a syntax error in the data stream, 
+             or due to an incomplete mode definition. In the first case, failure
+             handling helps the user to reflect on what it feeds into the 
+             interpreter. In the second case, it helps the developer of the 
+             interpreter to debug its specification. It is always a good idea 
+             to implement this handler.
+
+   .. note:: The ``on_match`` and ``on_after_match`` handlers are not executed
+             before and after the ``on_failure``. The reason is obvious, because 
+             ``on_failure`` is executed because nothing matched. If nothing matched 
+             then there is no incidence triggering ``on_match`` and ``on_after_match``.
+
+   .. note:: Quex does not allow the definition of patterns which accept nothing.
+             Actions, such as mode changes on the incidence of 'nothing has matched'
+             can be implemented by ``on_failure`` and ``undo()`` as
+
+             .. code-block:: cpp
+              
+                ...
+                on_failure { self.undo(); self << NEW_MODE; }
+                ...
+
+             If ``undo()`` is not used, the letter consumed by ``on_failure`` is not
+             available to the patterns of mode ``NEW_MODE``. In C, 
+
+   .. note::
+
+      A lesser intuitive behavior may occur when the token policy 'queue' is
+      used, as it is by default. If the ``on_failure`` handler reports a
+      ``FAILURE`` token it is appended to the token queue. The analysis does
+      not necessarily stop immediately, but it continues until the queue is
+      filled or the stream ends.  To implement an immediate exception like
+      behavior, an additional member variable may be used, e.g.
+
+      .. code-block:: cpp
+
+         body {
+             bool   on_failure_exception_f;
+         } 
+         init {
+             on_failure_exception_f = false;
+         }
+         ...
+         mode MINE {
+            ...
+            on_failure { self.on_failure_exception_f = true; }
+         }
+
+      Then, in the code fragment that receives the tokens the flag could be
+      checked, i.e.
+
+      .. code-block:: cpp
+
+         ...
+         my_lexer.receive(&token);
+         ...
+         if( my_lexer.on_failure_exception_f ) abort();
+         ...
+
+.. data:: on_encoding_error
+
+   Implicit Arguments: ``BadCharacter``
+
+   ``BadCharacter`` contains the lexatom that violates the coding rules.  When
+   a converter or a encoding engine is used it is conceivable that the input
+   stream contains data which is not a valid code point. To deal with that, the
+   'on_encoding_error' handler can be specified.
+
+.. data:: on_end_of_stream
+
+   Incidence handler for the case that the end of file, or end of stream is reached.
+   By means of this handler the termination of lexical analysis, or the return
+   to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
+   pattern.
+
+.. data:: on_skip_range_open
+
+   Implicit Arguments: ``Delimiter`` [``Counter``]
+
+   A range skipper skips until it find the closing delimiter. The event handler 
+   ``on_skip_range_open`` handles the event that end of stream is reached before
+   the closing delimiter. In case of a plain range skipper, the argument ``Delimiter``
+   provides the string of the delimiter. For a nested range skipper the ``Counter``
+   argument notifies additionally about the nesting level, i.e. the number of
+   missing closing delimiters. Example:
+
+       .. code-block:: cpp
+
+          mode X : <skip_range: "/*" "*/"> { 
+              ... 
+          }
+
+   skips over anything in between ``/*`` and ``*/``. However, if an analyzed
+   file contains:
+
+       .. code-block:: cpp
+
+          /* Some comment without a closing delimiter
+
+
+   where the closing ``*/`` is not present in the file, then the incidence
+   handler is called on the incidence of end of file. The argument ``Delimiter`` 
+   contains the string ``*/``.
+      
+There are incidence handlers which are concerned with indentation detection, in
+case that the user wants to build indentation based languages. They are
+discussed in detail in section :ref:`sec:advanced-indentation-blocks`.  Here,
+there are listed only to provide in overview.
+
+.. data:: on_indent
+
+   Implicit Arguments: ``Indentation``
+
+   If an opening indentation incidence occurs. 
+
+.. data:: on_dedent
+
+   Implicit Arguments: ``First``, ``Indentation``
+
+   If an closing indentation incidence occurs. If a line closes
+   multiple indentation blocks, the handler is called *multiple*
+   times.
+
+.. data:: on_n_dedent
+
+   Implicit Arguments: ``ClosedN``, ``Indentation``
+
+   If an closing indentation incidence occurs. If a line closes multiple
+   indentation blocks, the handler is called only *once* with the number of
+   closed domains.
+
+.. data:: on_nodent
+
+   Implicit Arguments: ``Indentation``
+
+   In case that the previous line had the same indentation as the current line.
+
+.. data:: on_indentation_error
+
+   Implicit Arguments: ``IndentationStackSize``, ``IndentationStack(I)``, ``IndentationUpper``, ``IndentationLower``, ``ClosedN``.
+
+   In case that a indentation block was closed, but did not fit any open
+   indentation domains.
+
+.. data:: on_indentation_bad
+
+   Implicit Arguments: ``BadCharacter``
+
+   In case that a character occurred in the indentation which was specified by
+   the user as being *bad*.
+
+.. rubric:: Footnotes
+
+.. [#f1] Lexical analysis is closely tight with the theory of state machines. 
+         For that reason, the term 'incidence' has been chosen instead of 'event'
+         which has a established meaning in the context of state machines.

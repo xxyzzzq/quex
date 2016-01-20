@@ -1,3 +1,6 @@
+Transitions
+===========
+
 Modes can be changed in two ways: *revertive* and *non-revertive*. A revertive mode
 change can be undone. That is the previous mode is retained and can be
 re-activated. This is analogous to the call of a function and the return from
@@ -90,5 +93,99 @@ return to the embedding language by ``GOUP`` without known what it was.
    To avoid that, it must be assured that no path along ``GOSUB`` commands
    reaches a node along the path itself.
 
-TODO: Passing tokens along with ``GOSUB``, ``GOUP``, and ``GOTO``.
+   The size of the mode stack is constant and configured by the macro
+   ``QUEX_SETTING_MODE_STACK_SIZE``.
+
+If a token is to be sent along a mode change, it can be passed as an argument.
+The argument passed along the mode transition command follows the same syntax
+as it in token sending.  For example,
+
+.. code-block:: cpp
+
+    "%%" => GOSUB(COMMENT, QUEX_TKN_COMMENT_BEGIN);
+
+transits to 'COMMENT' and sends ``QUEX_TKN_COMMENT_BEGIN``. Passing, for
+example, the lexeme along a ``GOUP`` is done by,
+
+.. code-block:: cpp
+
+    [a-z]+ => GOUP(QUEX_TKN_IDENTIFIER(Lexeme));
+
+The ``GOTO`` command may carry a second argument for the token to be sent in
+the same way as ``GOSUB`` does.  Transitions can be restricted by means of mode
+tags. This allows for a safe design of mode transitions. The mode tags are the
+following
+
+.. data::  <exit: M0 M1 ... MN>      
+
+   Restricts the set of modes towards the mode may exit to ``M0``, ``M1``,
+   until ``MN``. An empty list specifies that the mode cannot be left. If the
+   ``exit`` tag is not present, the mode may be left towards any mode.
+
+.. data::  <entry: M0 M1 ... MN>      
+
+   Restricts to set of modes from where the mode may be entered  to ``M0``,
+   ``M1``, until ``MN``.  An empty list specifies that the mode cannot be
+   entered. If the ``entry`` tag is not present, the mode may be entered from
+   any mode.
+   
+.. note::
+
+   The usage of entry and exit tags is not mandatory. The specification of mode
+   transitions in that way, however, supports a proper design. Quex detects
+   inconsistencies and, in that case, exits with an error message. 
+
+Two incidence handlers can be specified related to mode transitions:
+
+.. data:: on_entry
+
+    Implicit Argument: ``FromMode``
+
+    Incidence handler to be executed on entrance of the mode. This happens as a
+    reaction to mode transitions. ``FromMode`` is the mode from which the
+    current mode is entered.
+
+.. data:: on_exit
+
+    Implicit Argument: ``ToMode``
+
+    Incidence handler to be executed on exit of the mode. This happens as a
+    reaction to mode transitions. The variable ``ToMode`` contains the mode to
+    which the mode is left.
+    
+The implicit arguments ``FromMode`` and ``ToMode`` are pointers to objects of
+type ``QUEX_NAME(Mode)``.  The incidence handlers are independent of pattern
+matching. They are not able to directly report a token. Thus, tokens in mode
+transition handlers can only be sent, if the token policy 'queue' (see section
+:ref:`sec:token-policy`) is applied. The following code fragment demonstrates
+the usage of entry and exit tags together with ``on_entry`` and ``on_exit``
+handlers.
+
+.. code-block:: cpp
+
+   mode TEXT : 
+      <entry: COMMENT> 
+      <exit:  COMMENT> 
+   {
+      on_exit  { printf("exit:  TEXT; to    %s;\n", ToMode->name); }
+      on_entry { printf("entry: TEXT; from: %s;\n", FromMode->name); }
+      ...
+      "/*"   => GOTO(COMMENT);
+      ...
+   }
+
+   mode COMMENT : 
+       <entry: TEXT> 
+       <exit:  TEXT> 
+   {
+      on_exit  { printf("exit:  TEXT; to    %s;\n", ToMode->name); }
+      on_entry { printf("entry: TEXT; from: %s;\n", FromMode->name); }
+      ...
+      "*/"   => GOTO(TEXT);
+      ...
+   }
+
+Both modes 'TEXT' and 'COMMENT' mutually enter themselves. Upon entry they
+print their name and the mode towards they leave, and respectively, the mode
+from where they are entered.
 

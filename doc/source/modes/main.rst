@@ -42,6 +42,9 @@ appropriate in order to avoid unexpected behavior.
 .. toctree::
 
    transitions.rst
+   inheritance.rst
+   match-precedence.rst
+   incidence-handlers.rst
 
 
 .. rubric:: Footnotes
