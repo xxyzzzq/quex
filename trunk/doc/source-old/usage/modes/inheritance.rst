@@ -74,14 +74,19 @@ Incidence Handlers
 
 Figure :ref:`(this) <fig-mode-inheritance>` shows an example where a mode ``B``
 is derived from  mode ``A``. The mode ``B*`` represents the internal result of
-the result of inheritance: patterns of the base mode *overrule* patterns of the derived mode,
-incidence handlers of the base mode *precede* incidence handlers of the derived mode.
+the result of inheritance: patterns of the base mode *overrule* patterns of the
+derived mode, incidence handlers of the base mode *precede* incidence handlers
+of the derived mode.
 
 .. _fig-mode-inheritance:
 
 .. image:: ../../figures/mode-inheritance.*
    :align: center
    :alt:   Mode inheritance.
+
+.. _sec-multiple-inheritance:
+
+-- cut --<<<<<c
 
 .. toctree::
 
