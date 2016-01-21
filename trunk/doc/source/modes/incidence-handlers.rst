@@ -112,12 +112,16 @@ are the following:
 
              .. code-block:: cpp
               
-                ...
-                on_failure { self.undo(); self << NEW_MODE; }
-                ...
+                on_failure { self.undo(); self.enter_mode(NEW_MODE); }
 
-             If ``undo()`` is not used, the letter consumed by ``on_failure`` is not
-             available to the patterns of mode ``NEW_MODE``. In C, 
+             Or, in plain C
+
+             .. code-block:: cpp
+              
+                on_failure { self_undo(); self_enter_mode(NEW_MODE); }
+
+             If ``undo()`` is not used, the letter consumed by ``on_failure``
+             is not available to the patterns of mode ``NEW_MODE``. 
 
    .. note::
 
@@ -149,15 +153,14 @@ are the following:
 
          ...
          my_lexer.receive(&token);
-         ...
          if( my_lexer.on_failure_exception_f ) abort();
          ...
 
 .. data:: on_encoding_error
 
-   Implicit Arguments: ``BadCharacter``
+   Implicit Arguments: ``BadLexatom``
 
-   ``BadCharacter`` contains the lexatom that violates the coding rules.  When
+   ``BadLexatom`` contains the lexatom that violates the coding rules.  When
    a converter or a encoding engine is used it is conceivable that the input
    stream contains data which is not a valid code point. To deal with that, the
    'on_encoding_error' handler can be specified.
@@ -173,41 +176,27 @@ are the following:
 
    Implicit Arguments: ``Delimiter`` [``Counter``]
 
-   A range skipper skips until it find the closing delimiter. The event handler 
-   ``on_skip_range_open`` handles the event that end of stream is reached before
-   the closing delimiter. In case of a plain range skipper, the argument ``Delimiter``
-   provides the string of the delimiter. For a nested range skipper the ``Counter``
-   argument notifies additionally about the nesting level, i.e. the number of
-   missing closing delimiters. Example:
+   The ``Delimiter`` contains a zero terminated string with the delimter that
+   is missing.  For a nested range skipper the ``Counter`` argument notifies
+   additionally about the nesting level, i.e. the number of missing closing
+   delimiters.
 
-       .. code-block:: cpp
+   A range skipper skips until it find the closing delimiter. The event handler
+   ``on_skip_range_open`` handles the event that end of stream is reached
+   before the closing delimiter. This is the case, for example if a range
+   skipper scans for a terminating string "*/" but the end of file is reached
+   before it is found. 
 
-          mode X : <skip_range: "/*" "*/"> { 
-              ... 
-          }
-
-   skips over anything in between ``/*`` and ``*/``. However, if an analyzed
-   file contains:
-
-       .. code-block:: cpp
-
-          /* Some comment without a closing delimiter
-
-
-   where the closing ``*/`` is not present in the file, then the incidence
-   handler is called on the incidence of end of file. The argument ``Delimiter`` 
-   contains the string ``*/``.
       
-There are incidence handlers which are concerned with indentation detection, in
-case that the user wants to build indentation based languages. They are
-discussed in detail in section :ref:`sec:advanced-indentation-blocks`.  Here,
-there are listed only to provide in overview.
+In case that indentation based scopes are activated and that the default
+behavior needs modification, the following handlers may be implemented.
 
 .. data:: on_indent
 
    Implicit Arguments: ``Indentation``
 
-   If an opening indentation incidence occurs. 
+   If an opening indentation incidence occurs. The ``Indentation`` tells about
+   the level of indentation. Usually, it is enough to send an ``INDENT`` token.
 
 .. data:: on_dedent
 
@@ -215,7 +204,8 @@ there are listed only to provide in overview.
 
    If an closing indentation incidence occurs. If a line closes
    multiple indentation blocks, the handler is called *multiple*
-   times.
+   times. The argument ``First`` tells whether the first level of 
+   indentation is reached. Sending a ``DEDENT`` token, should be enough.
 
 .. data:: on_n_dedent
 
@@ -223,27 +213,37 @@ there are listed only to provide in overview.
 
    If an closing indentation incidence occurs. If a line closes multiple
    indentation blocks, the handler is called only *once* with the number of
-   closed domains.
+   closed domains. ``ClosedN`` tells about the number of levels that have been
+   closed.
+
+   The handler should send ``ClosedN`` of ``DEDENT`` tokens, or if repeated
+   tokens are enabled, ``send_self_n(ClosedN, DEDENT)`` might be used to 
+   communicate several closings in a single token.
 
 .. data:: on_nodent
 
    Implicit Arguments: ``Indentation``
 
-   In case that the previous line had the same indentation as the current line.
+   This handler is executed in case that the previous line had the same
+   indentation as the current line.
 
 .. data:: on_indentation_error
 
    Implicit Arguments: ``IndentationStackSize``, ``IndentationStack(I)``, ``IndentationUpper``, ``IndentationLower``, ``ClosedN``.
 
-   In case that a indentation block was closed, but did not fit any open
-   indentation domains.
+   Handler for the incidence that an indentation block was closed, but did not
+   fit any open indentation domains. ``IndentationStackSize`` tells about
+   the total size of the indentation stack. ``IndentationStack(I)`` delivers
+   the indentation on level ``I``, ``IndentationUpper`` delivers the highest
+   indentation and ``IndentationLower`` the lowest.
 
 .. data:: on_indentation_bad
 
    Implicit Arguments: ``BadCharacter``
 
    In case that a character occurred in the indentation which was specified by
-   the user as being *bad*.
+   the user as being *bad*. ``BadCharacter`` contains the inadmissible
+   indentation character.
 
 .. rubric:: Footnotes
 

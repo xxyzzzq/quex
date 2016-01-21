@@ -45,6 +45,7 @@ appropriate in order to avoid unexpected behavior.
    inheritance.rst
    match-precedence.rst
    incidence-handlers.rst
+   tags.rst
 
 
 .. rubric:: Footnotes
