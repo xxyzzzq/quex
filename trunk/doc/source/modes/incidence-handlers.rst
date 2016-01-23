@@ -4,23 +4,25 @@ Incidence Handlers
 Several incidences [#f1]_ may occur during lexical analysis. The user may
 react to those incidences with hand written code in so called 'incidence
 handlers'. They are specified inside a mode definition and follow the
-example of ``on_some_incidence`` shown below in the mode 'MINE'.::
+example of ``on_some_incidence`` shown below in the mode 'EXAMPLE'.::
 
-    mode MINE {
-        ...
+    mode EXAMPLE {
         on_some_incidence {
             /* user code */
         }
-        ...
     }
 
-Some incidence handlers require additional information. Such information is
-passed as 'implicit arguments'. Those are variables which are prepared by the
-generated analyzer, but they are not defined explicitly in the source code
-fragment itself. In the documentation below implicit variables are explained
-once at their first occurrence. An implicit argument of a distinct name has the
-same meaning in all incidence handlers where it appears. The incidence handlers
-are the following:
+Some incidence handlers receive additional information delivered as 'implicit
+arguments'. Those are accessible variables are prepared without being
+explicitly defined in the source code fragment itself.  In the documentation
+below implicit variables are explained once at their first occurrence. An
+implicit argument of a distinct name has the same meaning in all incidence
+handlers where it appears. 
+
+Mode Entry and Exit
+^^^^^^^^^^^^^^^^^^^
+
+Upon mode entry and exit the following two incidence handlers are executed.
 
 .. data:: on_entry
 
@@ -37,15 +39,22 @@ are the following:
     Incidence handler to be executed on exit of the mode. This happens as a
     reaction to mode transitions. The variable ``ToMode`` contains the mode to
     which the mode is left.
+
+The incidence handlers are called from inside the member function
+``self_enter_mode()``. ``on_exit`` is called before the mode transition is
+accomplished. ``on_entry`` is called when the new mode has been set.
+
+Pattern Matching
+^^^^^^^^^^^^^^^^
     
 .. data:: on_match
 
-    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
+    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``.
 
-    This incidence handler is executed on every match that every happens while this
-    mode is active. It is executed *before* the pattern-action is executed that is
-    related to the matching pattern. The implicit arguments allow access to
-    the matched lexeme and correspond to what is passed to pattern-actions.
+    This incidence handler is executed on every match.  It is executed *before*
+    the pattern-action is executed that is related to the matching pattern. The
+    implicit arguments allow access to the matched lexeme and correspond to
+    what is passed to pattern-actions.
 
     ``Lexeme`` gives a pointer to a zero-terminated string that carries the
     matching lexeme. ``LexemeL`` is the lexeme's length. ``LexemeBegin`` gives
@@ -55,11 +64,12 @@ are the following:
 
 .. data:: on_after_match
 
-    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``
+    Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``.
 
-    The ``on_after_match`` handler is executed at every pattern match. It
-    differs from ``on_match`` in that it is executed *after* the
-    pattern-action. To make sure that the handler is executed, it is essential
+    The ``on_after_match`` handler is executed at every pattern match. 
+    Contrary to ``on_match`` it is executed *after* the action of the winning
+    pattern. 
+    To make sure that the handler is executed, it is essential
     that ``return`` is never a used in any pattern action directly. If a forced 
     return is required, ``RETURN`` must be used. 
 
@@ -85,6 +95,8 @@ are the following:
        
                 QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
 
+Failure and End of Stream
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. data:: on_failure
 
@@ -172,6 +184,9 @@ are the following:
    to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
    pattern.
 
+Skippers
+^^^^^^^^
+
 .. data:: on_skip_range_open
 
    Implicit Arguments: ``Delimiter`` [``Counter``]
@@ -187,9 +202,14 @@ are the following:
    skipper scans for a terminating string "*/" but the end of file is reached
    before it is found. 
 
+
+Indentation Based Scopes
+^^^^^^^^^^^^^^^^^^^^^^^^
       
-In case that indentation based scopes are activated and that the default
-behavior needs modification, the following handlers may be implemented.
+Indentation based scope already sends ``INDENT``, ``DEDENT`` and ``NODENT``
+tokens as soon as it is activated by the mode tag ``<indentation:>``.  If the
+behavior needs to be controlled in more detail, the following incidence
+handlers may be used. 
 
 .. data:: on_indent
 
@@ -229,7 +249,8 @@ behavior needs modification, the following handlers may be implemented.
 
 .. data:: on_indentation_error
 
-   Implicit Arguments: ``IndentationStackSize``, ``IndentationStack(I)``, ``IndentationUpper``, ``IndentationLower``, ``ClosedN``.
+   Implicit Arguments: ``IndentationStackSize``, ``IndentationStack(I)``, 
+                       ``IndentationUpper``, ``IndentationLower``, ``ClosedN``.
 
    Handler for the incidence that an indentation block was closed, but did not
    fit any open indentation domains. ``IndentationStackSize`` tells about
@@ -247,6 +268,6 @@ behavior needs modification, the following handlers may be implemented.
 
 .. rubric:: Footnotes
 
-.. [#f1] Lexical analysis is closely tight with the theory of state machines. 
+.. [#f1] Lexical analysis is closely tied with the theory of state machines. 
          For that reason, the term 'incidence' has been chosen instead of 'event'
          which has a established meaning in the context of state machines.

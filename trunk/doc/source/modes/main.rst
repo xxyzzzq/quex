@@ -46,7 +46,7 @@ appropriate in order to avoid unexpected behavior.
    match-precedence.rst
    incidence-handlers.rst
    tags.rst
-   pitfalls.rst
+   pitfalls/main.rst
 
 
 .. rubric:: Footnotes

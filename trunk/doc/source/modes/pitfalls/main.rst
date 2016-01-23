@@ -8,5 +8,5 @@ and solutions are presented such that these kinds of pitfalls are avoided.
 
 .. toctree::
 
-    pattern-pifalls.rst
+    pattern-matching.rst
     incidence-handler.rst
