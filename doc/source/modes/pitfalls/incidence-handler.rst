@@ -1,7 +1,18 @@
-Incidence Handler Pitfalls
-==========================
+Incidence Handlers
+------------------
 
-Note, that initiating explicitly mode transition inside ``on_exit`` *will* cause
+Pattern-actions are executed inside an analyzer function, but not all incidence
+handlers are 'live' inside that environment. Some incidence handlers, if they
+return, they prevent others from being executed. Dependent on the token passing
+policy, some incidence handlers may obstruct token sends of others. The way of
+returning from the analyser function may be crucial: ``return`` is not equal to
+``RETURN``. Finally, mode transitions may be considered with caution. These
+pitfalls are discussed in the following paragraphs.
+
+To understand the issues, it is worthwhile to understand the environment in 
+which incidence handlers may be executed and in what sequence.
+
+Initiating explicitly mode transition inside ``on_exit`` *will* cause
 an infinite recursion! If this is intended the mode transition mechanism should
 be circumvented using the member function ``set_mode_brutally()``. Note also,
 that initiating an explicit mode transition inside ``on_entry`` *may* cause an
