@@ -46,6 +46,8 @@ accomplished. ``on_entry`` is called when the new mode has been set.
 
 Pattern Matching
 ^^^^^^^^^^^^^^^^
+
+Some actions may appear 
     
 .. data:: on_match
 
@@ -66,11 +68,10 @@ Pattern Matching
 
     Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``.
 
-    The ``on_after_match`` handler is executed at every pattern match. 
+    The ``on_after_match`` handler is executed at every pattern match.
     Contrary to ``on_match`` it is executed *after* the action of the winning
-    pattern. 
-    To make sure that the handler is executed, it is essential
-    that ``return`` is never a used in any pattern action directly. If a forced 
+    pattern.  To make sure that the handler is executed, it is essential that
+    ``return`` is never a used in any pattern action directly. If a forced
     return is required, ``RETURN`` must be used. 
 
     .. warning::

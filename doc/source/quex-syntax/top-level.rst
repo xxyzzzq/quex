@@ -44,7 +44,6 @@ The following item list outlines top-level syntax elements
    itself are a subject that is described in its dedicated chapter
    :ref:`sec:modes`.
 
-
 .. data:: define
 
    Definition of shorthands for patterns given as regular expressions [#f1]
