@@ -43,7 +43,7 @@ appropriate in order to avoid unexpected behavior.
 
    transitions.rst
    inheritance.rst
-   match-precedence.rst
+   matching/main.rst 
    incidence-handlers.rst
    tags.rst
    pitfalls/main.rst

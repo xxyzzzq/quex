@@ -1,6 +1,8 @@
-================
-Match Precedence
-================
+Precedence Rules 
+----------------
+
+A precise interpretation of data requires that the relation between
+the data and its meaning is distinct. 
 
 Matching is about executing program code as reaction to a detected pattern in
 an incoming lexatom stream.  For a given position in the stream, only a
