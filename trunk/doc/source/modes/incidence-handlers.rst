@@ -42,13 +42,20 @@ Upon mode entry and exit the following two incidence handlers are executed.
 
 The incidence handlers are called from inside the member function
 ``self_enter_mode()``. ``on_exit`` is called before the mode transition is
-accomplished. ``on_entry`` is called when the new mode has been set.
+accomplished. ``on_entry`` is called when the new mode has been set. Sending
+tokens from inside the entry/exit handlers is is possible. However, the lexical
+analyzer does not return immediately. If the 'single token' policy is used, a
+token being sent might be overwritten if another sending occurs before return
+from the token-receive function.  If the 'token queue' policy is used, it must
+be chosen large enough to store tokens of all possible transition scenarios.
+
 
 Pattern Matching
 ^^^^^^^^^^^^^^^^
 
-Some actions may appear 
-    
+The following two incidence handlers make it possible to specify actions to be
+executed before and after the match specific actions. 
+
 .. data:: on_match
 
     Implicit Arguments: ``Lexeme``, ``LexemeL``, ``LexemeBegin``, ``LexemeEnd``.
@@ -96,8 +103,25 @@ Some actions may appear
        
                 QUEX_OPTION_SEND_AFTER_TERMINATION_ADMISSIBLE 
 
+If a pattern matches, the following sequence of execution takes place. First,
+``on_match`` of the mode is executed independently on what pattern matched.
+Second, the pattern-specific action is executed. Third, the ``on_after_match``
+is executed. Any handler that uses the ``return`` command breaks that sequence.
+Using ``RETURN`` or ``CONTINUE`` triggers a direct jump to the
+``on_after_match`` handler.
+
+.. note::
+
+   The ``on_failure`` handler, or the ``<<FAIL>>`` pattern handle actually
+   'mismatches'.  Consequently, the ``on_match`` and ``on_after_match`` are not
+   executed in that case.
+
+
 Failure and End of Stream
 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The events of a input stream termination, or a match failure can be handled by
+the ``on_failure`` and ``on_end_of_stream`` as shown below.
 
 .. data:: on_failure
 
@@ -169,6 +193,21 @@ Failure and End of Stream
          if( my_lexer.on_failure_exception_f ) abort();
          ...
 
+.. data:: on_end_of_stream
+
+   Incidence handler for the case that the end of file, or end of stream is reached.
+   By means of this handler the termination of lexical analysis, or the return
+   to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
+   pattern.
+
+Character Encoding
+^^^^^^^^^^^^^^^^^^
+
+It may appear that lexatoms (or characters) occur which are outside the encoding
+for which the engine has been designed, or for which the input converter has been
+setup. A generated analyzer cannot operate on such input. If this appears, the
+following handler is executed.
+
 .. data:: on_encoding_error
 
    Implicit Arguments: ``BadLexatom``
@@ -178,21 +217,18 @@ Failure and End of Stream
    stream contains data which is not a valid code point. To deal with that, the
    'on_encoding_error' handler can be specified.
 
-.. data:: on_end_of_stream
-
-   Incidence handler for the case that the end of file, or end of stream is reached.
-   By means of this handler the termination of lexical analysis, or the return
-   to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
-   pattern.
 
 Skippers
 ^^^^^^^^
+
+In the case of range skipping, it is conceivable that the closing delimiter never
+appear in the stream. In that case the following handler is executed.
 
 .. data:: on_skip_range_open
 
    Implicit Arguments: ``Delimiter`` [``Counter``]
 
-   The ``Delimiter`` contains a zero terminated string with the delimter that
+   The ``Delimiter`` contains a zero terminated string with the delimiter that
    is missing.  For a nested range skipper the ``Counter`` argument notifies
    additionally about the nesting level, i.e. the number of missing closing
    delimiters.
@@ -207,10 +243,10 @@ Skippers
 Indentation Based Scopes
 ^^^^^^^^^^^^^^^^^^^^^^^^
       
-Indentation based scope already sends ``INDENT``, ``DEDENT`` and ``NODENT``
-tokens as soon as it is activated by the mode tag ``<indentation:>``.  If the
-behavior needs to be controlled in more detail, the following incidence
-handlers may be used. 
+The default indentation handler already sends ``INDENT``, ``DEDENT`` and
+``NODENT`` tokens as soon as it is activated by the mode tag
+``<indentation:>``.  If the behavior needs to be controlled in more detail, the
+following incidence handlers may be used. 
 
 .. data:: on_indent
 

@@ -19,6 +19,9 @@
 #   undef self_pop_mode
 #   undef self_pop_drop_mode
 #   undef self_push_mode
+/* Undo lexeme match */
+#   undef self_undo
+#   undef self_undo_n
 
 /* Accumulator ______________________________________________________________*/
 #   undef self_accumulator_add
@@ -131,5 +134,8 @@
         QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                 \
     } while(0)
 
+/* Undo lexeme match */
+#   define self_undo()       QUEX_NAME(undo)(&self)
+#   define self_undo_n(N)    QUEX_NAME(undo_n)(&self, N)
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__C_ADAPTIONS_H */

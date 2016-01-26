@@ -138,22 +138,16 @@ def  get_implementation_of_mode_functions(mode, Modes):
         has_base_mode_str = "    return false;"
         
     # (*) has entry from
-    if mode.entry_mode_name_list is None:
-        has_entry_from_str = "    return true; /* default */"        
-    else:
-        # check whether the mode we come from is an allowed mode
-        entry_list         = __filter_out_abstract_modes(mode.entry_mode_name_list)
-        has_entry_from_str = get_IsOneOfThoseCode(entry_list,
-                                                  ConsiderDerivedClassesF=True)
+    #     check whether the source mode is a permissible 'entry' mode
+    entry_list         = __filter_out_abstract_modes(mode.entry_mode_name_list)
+    has_entry_from_str = get_IsOneOfThoseCode(entry_list,
+                                              ConsiderDerivedClassesF=True)
 
     # (*) has exit to
-    if mode.exit_mode_name_list is None:
-        has_exit_to_str = "    return true; /* default */"
-    else:
-        # By default: one can exit to all modes.
-        exit_list       = __filter_out_abstract_modes(mode.exit_mode_name_list)
-        has_exit_to_str = get_IsOneOfThoseCode(exit_list,
-                                               ConsiderDerivedClassesF=True)
+    #     check whether the target mode is a permissible 'exit' mode
+    exit_list       = __filter_out_abstract_modes(mode.exit_mode_name_list)
+    has_exit_to_str = get_IsOneOfThoseCode(exit_list,
+                                           ConsiderDerivedClassesF=True)
     
     txt = blue_print(mode_function_implementation_str,
                      [

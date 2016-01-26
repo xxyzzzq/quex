@@ -698,7 +698,8 @@ def __general_validate(fh, Mode, Name, pos):
         fh.seek(pos)
         error.log("Definition of 'on_indentation' is no longer supported since version 0.51.1.\n"
                   "Please, use 'on_indent' for the event of an opening indentation, 'on_dedent'\n"
-                  "for closing indentation, and 'on_nodent' for no change in indentation.", fh) 
+                  "for closing indentation, and 'on_nodent' for no change in indentation.\n"
+                  "If you want to match 'on_indentation' as a string, use quotes.", fh) 
 
 
     def error_dedent_and_ndedent(code, A, B):

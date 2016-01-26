@@ -1,0 +1,72 @@
+(1) A <-> B
+    not all implicit transitions allowed explicitly
+    File: 'good-1.qx': {
+        bad-1.qx:5:error: Mode 'A' permits the exit to mode 'A' but mode 'A' does not
+        bad-1.qx:5:error: permit the entry from mode 'A' or any of its base modes.
+        bad-1.qx:5:error: May be, use explicitly mode tag '<exit: ...>' for restriction.
+    }
+
+(2) A <-> B
+    not all explicit transitions allowed explicitly
+    File: 'good-2.qx': {
+        bad-2.qx:5:error: Mode 'B' permits the exit to mode 'B' but mode 'B' does not
+        bad-2.qx:5:error: permit the entry from mode 'B' or any of its base modes.
+        bad-2.qx:5:error: May be, use explicitly mode tag '<exit: ...>' for restriction.
+    }
+
+(3) A1 derived from A;
+    A1 -> Z; A -> Z;
+    Z -> A;
+    Entry A -> Z disallowed; Entry A1 -> Z allowed
+    File: 'good-3.qx': {
+        bad-3.qx:3:error: Mode 'A' permits the entry from mode 'Z' but mode 'Z' does not
+        bad-3.qx:5:error: permit the exit to mode 'A' or any of its base modes.
+        bad-3.qx:3:error: May be, use explicitly mode tag '<entry: ...>' for restriction.
+    }
+
+(4) A1 derived from A;
+    A1 -> Z;
+    Z -> A1;
+    A inheritable only; Z disallows entry from A1
+    File: 'good-4.qx': {
+        bad-4.qx:4:error: Mode 'A1' permits the exit to mode 'Z' but mode 'Z' does not
+        bad-4.qx:5:error: permit the entry from mode 'A1' or any of its base modes.
+        bad-4.qx:4:error: May be, use explicitly mode tag '<exit: ...>' for restriction.
+    }
+
+(5) Derived mode inherits entry permissions from base
+    File: 'good-5.qx': {
+        bad-5.qx:6:error: Mode 'X' permits the exit to mode 'B' but mode 'B' does not
+        bad-5.qx:4:error: permit the entry from mode 'X' or any of its base modes.
+        bad-5.qx:6:error: May be, use explicitly mode tag '<exit: ...>' for restriction.
+    }
+
+(6) Inclusive aggregation of exit permissions
+    File: 'good-6.qx': {
+        bad-6.qx:5:error: Mode 'A' permits the exit to mode 'X' but mode 'X' does not
+        bad-6.qx:11:error: permit the entry from mode 'A' or any of its base modes.
+        bad-6.qx:5:error: May be, use explicitly mode tag '<exit: ...>' for restriction.
+    }
+
+(7) Exclusive aggregation of entry permissions
+    File: 'good-7.qx': {
+        bad-7.qx:7:error: Mode 'Y' permits the entry from mode 'A' but mode 'A' does not
+        bad-7.qx:3:error: permit the exit to mode 'Y' or any of its base modes.
+        bad-7.qx:7:error: May be, use explicitly mode tag '<entry: ...>' for restriction.
+    }
+
+(8) Exit mode does not exist
+    File: 'good-8.qx': {
+        bad-8.qx:3:error: Mode 'A' permits the exit to mode 'X'
+        bad-8.qx:3:error: but no such mode exists.
+        bad-8.qx:3:error: Did you mean 'A'?
+    }
+
+(9) Entry mode does not exist
+    File: 'good-9.qx': {
+        bad-9.qx:3:error: Mode 'A' permits the entry from mode 'X'
+        bad-9.qx:3:error: but no such mode exists.
+        bad-9.qx:3:error: Did you mean 'A'?
+    }
+
+<terminated>

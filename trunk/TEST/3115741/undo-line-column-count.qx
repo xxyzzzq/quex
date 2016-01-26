@@ -12,7 +12,7 @@ mode MINE : <skip: [ \t\n] > {
   }
   ([:alpha:]|[\r])([:alpha:]|[\r\n])* { 
       self_send1(QUEX_TKN_UNDO_THIS, Lexeme);
-      QUEX_NAME(undo)(&self); 
+      self_undo(); 
       self_enter_mode(&STEP_OVER_UNDONE);
   }
   <<EOF>> => QUEX_TKN_TERMINATION(LexemeNull); 

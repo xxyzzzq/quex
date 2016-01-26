@@ -4,57 +4,112 @@ Pragmas
 __________________________________________________________________
 Implementations
 
-LineNumberPragma.cpp:62: printf("((A)) 17");  printf("((A)) 31"); 
-LineNumberPragma.cpp:72: printf("((A)) 18");  printf("((A)) 32"); 
-LineNumberPragma.cpp:103: printf("((A)) 19");  printf("((A)) 33"); 
-LineNumberPragma.cpp:107: printf("((A)) 20");  printf("((A)) 34"); 
-LineNumberPragma.cpp:129: printf("((A)) 21"); 
-LineNumberPragma.cpp:137: printf("((A)) 22");  printf("((A)) 35"); 
-LineNumberPragma.cpp:200: printf("((A)) 17");  printf("((A)) 31"); 
-LineNumberPragma.cpp:210: printf("((A)) 18");  printf("((A)) 32"); 
-LineNumberPragma.cpp:241: printf("((A)) 19");  printf("((A)) 33"); 
-LineNumberPragma.cpp:245: printf("((A)) 20");  printf("((A)) 34"); 
-LineNumberPragma.cpp:267: printf("((A)) 21"); 
-LineNumberPragma.cpp:275: printf("((A)) 22");  printf("((A)) 35"); 
-LineNumberPragma.cpp:781: printf("((A)) 24"); {
-LineNumberPragma.cpp:782:printf("((A)) 28");
-LineNumberPragma.cpp:796:printf("((A)) 26");
-LineNumberPragma.cpp:935:/**/printf("((A)) 27");
-LineNumberPragma.cpp:947: printf("((A)) 24"); {
-LineNumberPragma.cpp:951:    printf("((A)) 29");
-LineNumberPragma.cpp:963: printf("((A)) 24"); {
-LineNumberPragma.cpp:967:    printf("((A)) 30");
-LineNumberPragma.cpp:1064: printf("((A)) 25");     __QUEX_PURE_RETURN;
-LineNumberPragma.cpp:1069: printf("((A)) 25"); 
-LineNumberPragma.cpp:1434: printf("((A)) 24");  printf("((A)) 37"); {
-LineNumberPragma.cpp:1435:printf("((A)) 28");
-LineNumberPragma.cpp:1436:printf("((A)) 41");
-LineNumberPragma.cpp:1450:printf("((A)) 26");
-LineNumberPragma.cpp:1451:printf("((A)) 39");
-LineNumberPragma.cpp:1590:/**/printf("((A)) 27");
-LineNumberPragma.cpp:1591:printf("((A)) 40");
-LineNumberPragma.cpp:1603: printf("((A)) 24");  printf("((A)) 37"); {
-LineNumberPragma.cpp:1607:    printf("((A)) 29");
-LineNumberPragma.cpp:1619: printf("((A)) 24");  printf("((A)) 37"); {
-LineNumberPragma.cpp:1623:    printf("((A)) 30");
-LineNumberPragma.cpp:1634: printf("((A)) 24");  printf("((A)) 37"); {
-LineNumberPragma.cpp:1638:    printf("((A)) 42");
-LineNumberPragma.cpp:1736: printf("((A)) 25");  printf("((A)) 38");     __QUEX_PURE_RETURN;
-LineNumberPragma.cpp:1741: printf("((A)) 25");  printf("((A)) 38"); 
-LineNumberPragma:61:    { printf("((A)) 1"); }
-LineNumberPragma:118: printf("((A)) 5"); 
-LineNumberPragma:463:    { printf("((A)) 2"); }
-LineNumberPragma:501: printf("((A)) 3"); 
-LineNumberPragma:517: printf("((A)) 4"); 
-LineNumberPragma:538: printf("((A)) 6"); 
-LineNumberPragma:556: printf("((A)) 7"); 
-LineNumberPragma-token:23:        { printf("((A)) 15"); }
-LineNumberPragma-token:101:        { printf("((A)) 14"); }
-LineNumberPragma-token:123:        { printf("((A)) 16"); }
-LineNumberPragma-token:156: printf("((A)) 8"); 
-LineNumberPragma-token:170: printf("((A)) 8"); 
-LineNumberPragma-token:183: printf("((A)) 9"); 
-LineNumberPragma-token:212: printf("((A)) 10"); 
-LineNumberPragma-token:243: printf("((A)) 11"); 
-LineNumberPragma-token:261: printf("((A)) 13"); 
-LineNumberPragma-token:276: printf("((A)) 12"); 
+LineNumberPragma.cpp
+
+LineNumberPragma.cpp:63:#   line 45 "line-number-pragma.qx"
+LineNumberPragma.cpp:66:#   line 67 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:77:#   line 46 "line-number-pragma.qx"
+LineNumberPragma.cpp:80:#   line 81 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:113:#   line 47 "line-number-pragma.qx"
+LineNumberPragma.cpp:116:#   line 117 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:122:#   line 48 "line-number-pragma.qx"
+LineNumberPragma.cpp:125:#   line 126 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:149:#   line 49 "line-number-pragma.qx"
+LineNumberPragma.cpp:152:#   line 153 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:162:#   line 50 "line-number-pragma.qx"
+LineNumberPragma.cpp:165:#   line 166 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:230:#   line 45 "line-number-pragma.qx"
+LineNumberPragma.cpp:233:#   line 234 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:244:#   line 46 "line-number-pragma.qx"
+LineNumberPragma.cpp:247:#   line 248 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:280:#   line 47 "line-number-pragma.qx"
+LineNumberPragma.cpp:283:#   line 284 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:289:#   line 48 "line-number-pragma.qx"
+LineNumberPragma.cpp:292:#   line 293 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:316:#   line 49 "line-number-pragma.qx"
+LineNumberPragma.cpp:319:#   line 320 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:329:#   line 50 "line-number-pragma.qx"
+LineNumberPragma.cpp:332:#   line 333 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:849:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:852:#   line 853 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:855:#   line 56 "line-number-pragma.qx"
+LineNumberPragma.cpp:858:#   line 859 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:870:#   line 54 "line-number-pragma.qx"
+LineNumberPragma.cpp:873:#   line 874 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1007:#   line 55 "line-number-pragma.qx"
+LineNumberPragma.cpp:1011:#   line 1012 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1024:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1027:#   line 1028 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1030:#   line 62 "line-number-pragma.qx"
+LineNumberPragma.cpp:1037:#   line 1038 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1046:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1049:#   line 1050 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1052:#   line 66 "line-number-pragma.qx"
+LineNumberPragma.cpp:1058:#   line 1059 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1142:#   line 53 "line-number-pragma.qx"
+LineNumberPragma.cpp:1145:#   line 1146 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1152:#   line 53 "line-number-pragma.qx"
+LineNumberPragma.cpp:1155:#   line 1156 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1530:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1533:#   line 1534 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1536:#   line 56 "line-number-pragma.qx"
+LineNumberPragma.cpp:1539:#   line 1540 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1551:#   line 54 "line-number-pragma.qx"
+LineNumberPragma.cpp:1554:#   line 1555 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1688:#   line 55 "line-number-pragma.qx"
+LineNumberPragma.cpp:1692:#   line 1693 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1705:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1708:#   line 1709 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1711:#   line 62 "line-number-pragma.qx"
+LineNumberPragma.cpp:1718:#   line 1719 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1727:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1730:#   line 1731 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1733:#   line 66 "line-number-pragma.qx"
+LineNumberPragma.cpp:1739:#   line 1740 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1748:#   line 52 "line-number-pragma.qx"
+LineNumberPragma.cpp:1751:#   line 1752 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1754:#   line 100 "line-number-pragma.qx"
+LineNumberPragma.cpp:1761:#   line 1762 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1845:#   line 53 "line-number-pragma.qx"
+LineNumberPragma.cpp:1848:#   line 1849 "LineNumberPragma.cpp"
+LineNumberPragma.cpp:1855:#   line 53 "line-number-pragma.qx"
+LineNumberPragma.cpp:1858:#   line 1859 "LineNumberPragma.cpp"
+LineNumberPragma
+
+LineNumberPragma:58:#   line 4 "line-number-pragma.qx"
+LineNumberPragma:64:#   line 65 "LineNumberPragma"
+LineNumberPragma:117:#   line 13 "line-number-pragma.qx"
+LineNumberPragma:120:#   line 121 "LineNumberPragma"
+LineNumberPragma:459:#   line 9 "line-number-pragma.qx"
+LineNumberPragma:465:#   line 466 "LineNumberPragma"
+LineNumberPragma:498:#   line 11 "line-number-pragma.qx"
+LineNumberPragma:501:#   line 502 "LineNumberPragma"
+LineNumberPragma:516:#   line 12 "line-number-pragma.qx"
+LineNumberPragma:519:#   line 520 "LineNumberPragma"
+LineNumberPragma:538:#   line 14 "line-number-pragma.qx"
+LineNumberPragma:541:#   line 542 "LineNumberPragma"
+LineNumberPragma:557:#   line 15 "line-number-pragma.qx"
+LineNumberPragma:560:#   line 561 "LineNumberPragma"
+LineNumberPragma-token
+
+LineNumberPragma-token:20:#   line 36 "line-number-pragma.qx"
+LineNumberPragma-token:26:#   line 27 "LineNumberPragma-token"
+LineNumberPragma-token:66:#   line 67 "LineNumberPragma-token"
+LineNumberPragma-token:98:#   line 32 "line-number-pragma.qx"
+LineNumberPragma-token:104:#   line 105 "LineNumberPragma-token"
+LineNumberPragma-token:120:#   line 40 "line-number-pragma.qx"
+LineNumberPragma-token:126:#   line 127 "LineNumberPragma-token"
+LineNumberPragma-token:155:#   line 23 "line-number-pragma.qx"
+LineNumberPragma-token:158:#   line 159 "LineNumberPragma-token"
+LineNumberPragma-token:169:#   line 23 "line-number-pragma.qx"
+LineNumberPragma-token:172:#   line 173 "LineNumberPragma-token"
+LineNumberPragma-token:182:#   line 24 "line-number-pragma.qx"
+LineNumberPragma-token:185:#   line 186 "LineNumberPragma-token"
+LineNumberPragma-token:211:#   line 25 "line-number-pragma.qx"
+LineNumberPragma-token:214:#   line 215 "LineNumberPragma-token"
+LineNumberPragma-token:242:#   line 26 "line-number-pragma.qx"
+LineNumberPragma-token:245:#   line 246 "LineNumberPragma-token"
+LineNumberPragma-token:260:#   line 28 "line-number-pragma.qx"
+LineNumberPragma-token:263:#   line 264 "LineNumberPragma-token"
+LineNumberPragma-token:275:#   line 27 "line-number-pragma.qx"
+LineNumberPragma-token:278:#   line 279 "LineNumberPragma-token"

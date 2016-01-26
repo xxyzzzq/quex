@@ -53,7 +53,8 @@ def do(ModeDB):
     # (*) Entry/Exit Transitions
     for mode in ModeDB.values():
         if mode.abstract_f(): continue
-        __entry_exit_transitions(mode, mode_name_list)
+        __entry_transitions(mode, mode_name_list)
+        __exit_transitions(mode, mode_name_list)
 
     for mode in ModeDB.values():
         # (*) [Optional] Warnings on Outrun
@@ -111,46 +112,45 @@ def __start_mode(implemented_mode_name_list, mode_name_list):
                         "Start mode '%s' is inheritable only and cannot be instantiated." % start_mode,
                         blackboard.initial_mode.sr)
 
-def __entry_exit_transitions(mode, mode_name_list):
-    for mode_name in mode.exit_mode_name_list:
-        error.verify_word_in_list(mode_name, mode_name_list,
-                            "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                            (mode.name, mode_name), mode.sr)
+def __access_mode(Mode, OtherModeName, ModeNameList, EntryF):
+    type_str = { True: "entry from", False: "exit to" }[EntryF]
 
-        that_mode = blackboard.mode_db[mode_name]
+    error.verify_word_in_list(OtherModeName, ModeNameList,
+              "Mode '%s' permits the %s mode '%s'\nbut no such mode exists." % \
+              (Mode.name, type_str, OtherModeName), Mode.sr)
+    result = blackboard.mode_db[OtherModeName]
+    assert result is not None
+    return result
 
-        # Other mode allows all entries => don't worry.
-        if len(that_mode.entry_mode_name_list) == 0: continue
+def __error_transition(Mode, OtherMode, EntryF):
+    type_str  = { True: "entry",      False: "exit" }[EntryF]
+    type0_str = { True: "entry from", False: "exit to" }[EntryF]
+    type1_str = { True: "exit to",    False: "entry from" }[EntryF]
 
-        # Other mode restricts the entries from other modes
-        # => check if this mode or one of the base modes can enter
+    error.log("Mode '%s' permits the %s mode '%s' but mode '%s' does not" % (Mode.name, type0_str, OtherMode.name, OtherMode.name),
+              Mode.sr, DontExitF=True)
+    error.log("permit the %s mode '%s' or any of its base modes." % (type1_str, Mode.name),
+              OtherMode.sr, DontExitF=True)
+    error.log("May be, use explicitly mode tag '<%s: ...>' for restriction." % type_str, 
+              Mode.sr)
+
+def __exit_transitions(mode, mode_name_list):
+    for exit_mode_name in mode.exit_mode_name_list:
+        exit_mode = __access_mode(mode, exit_mode_name, mode_name_list, EntryF=False)
+
+        # Check if this mode or one of the base modes can enter
         for base_mode in mode.get_base_mode_sequence():
-            if base_mode.name in that_mode.entry_mode_name_list: break
+            if base_mode.name in exit_mode.entry_mode_name_list: break
         else:
-            error.log("Mode '%s' has an exit to mode '%s' but" % (mode.name, mode_name),
-                      base_mode.sr, DontExitF=True)
-            error.log("mode '%s' has no entry for mode '%s'\n" % (mode_name, mode.name) + \
-                      "or any of its base modes.",
-                      that_mode.sr)
+            __error_transition(mode, exit_mode, EntryF=False)
 
-    for mode_name in mode.entry_mode_name_list:
-        # Does that mode exist?
-        error.verify_word_in_list(mode_name, mode_name_list,
-                            "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                            (mode.name, mode_name), mode.sr)
+def __entry_transitions(mode, mode_name_list):
+    for entry_mode_name in mode.entry_mode_name_list:
+        entry_mode = __access_mode(mode, entry_mode_name, mode_name_list, EntryF=True)
 
-        that_mode = blackboard.mode_db[mode_name]
-        # Other mode allows all exits => don't worry.
-        if len(that_mode.exit_mode_name_list) == 0: continue
-
-        # Other mode restricts the exits to other modes
-        # => check if this mode or one of the base modes can be reached
+        # Check if this mode or one of the base modes can be reached
         for base_mode in mode.get_base_mode_sequence():
-            if base_mode.name in that_mode.exit_mode_name_list: break
+            if base_mode.name in entry_mode.exit_mode_name_list: break
         else:
-            error.log("Mode '%s' has an entry for mode '%s' but" % (mode.name, mode_name),
-                      base_mode.sr, DontExitF=True)
-            error.log("mode '%s' has no exit to mode '%s'\n" % (mode_name, mode.name) + \
-                      "or any of its base modes.",
-                      that_mode.sr)
+            __error_transition(mode, entry_mode, EntryF=True)
            
