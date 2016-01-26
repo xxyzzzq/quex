@@ -17,7 +17,11 @@ case $1 in
         echo __________________________________________________________________
         echo Implementations
         echo
-        grep -sHIne '((A))' LineNumberPragma.cpp LineNumberPragma LineNumberPragma-token 
+        for file in LineNumberPragma.cpp LineNumberPragma LineNumberPragma-token; do
+            echo $file
+            echo
+            grep -sHIne '# *line' $file;
+        done
 
         rm -f LineNumberPragma* tmp.txt
         ;;

@@ -21,6 +21,8 @@ Unix-token_ids
 (*) Dos-configuration vs Unix-configuration (no output is good output)
 
 (*) Dos.cpp vs Unix.cpp (no output is good output)
+< #   line 16 "dos.qx"
+> #   line 16 "unix.qx"
 < #   line 18 "dos.qx"
 > #   line 18 "unix.qx"
 < #   line 19 "dos.qx"
@@ -45,28 +47,8 @@ Unix-token_ids
 > #   line 28 "unix.qx"
 (*) Dos-token vs Unix-token (no output is good output)
 (*) Dos-token_ids vs Unix-token_ids (no output is good output)
+
 DONE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

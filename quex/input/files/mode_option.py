@@ -15,6 +15,7 @@ import quex.blackboard as     blackboard
 
 from   collections import namedtuple
 import types
+from   copy import copy
 
 def __get_mode_name_list():
     return mode_description_db.keys()
@@ -75,10 +76,7 @@ mode_option_info_db = {
    #    the list of explicitly stated exits, an error occurs.
    #    entrys work respectively.
    "exit":              ModeOptionInfo(True, False, Default=__get_mode_name_list, ListF=True),
-   "entry":             ModeOptionInfo(True, False, Default=__get_mode_name_list, ListF=True),
-   # -- a mode can restrict the exits and entrys explicitly mentioned then, a
-   #    derived mode cannot add new exits or entrys.
-   "restrict":          ModeOptionInfo(True, False, ["exit", "entry"], Default=[], ListF=True),
+   "entry":             ModeOptionInfo(True, True,  Default=__get_mode_name_list, ListF=True),
    # -- a mode can have 'skippers' that effectively skip ranges that are out 
    #    of interest.
    "skip":              ModeOptionInfo(True, False), # "multiple: RE-character-set
@@ -174,7 +172,7 @@ class OptionDB(dict):
         of base modes. Enter the given setting list, or extend.
         """
         info = mode_option_info_db[Name]
-        if   Name not in self:           dict.__setitem__(self, Name, SettingList)
+        if   Name not in self:           dict.__setitem__(self, Name, copy(SettingList))
         elif info.derived_overwrite_f:   dict.__setitem__(self, Name, SettingList)
         elif info.multiple_definition_f: dict.__getitem__(self, Name).extend(SettingList)
         else:                            self.__error_double_definition(Name, SettingList[0])
@@ -269,7 +267,7 @@ def parse(fh, new_mode):
     elif identifier == "counter":
         value = counter.parse_line_column_counter(fh)
 
-    elif identifier in ("entry", "exit", "restrict"):
+    elif identifier in ("entry", "exit"):
         value = read_option_value(fh, ListF=True) # A 'list' of strings
     else:
         value = read_option_value(fh)             # A single string

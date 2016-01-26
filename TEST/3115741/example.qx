@@ -18,7 +18,7 @@ mode THE_MODE : <skip: [ \t\n] > {
 mode SECOND_EXPERIMENT : <skip: [ \t\n] > {
   [:alnum:]+   { 
       self_send1(QUEX_TKN_B, Lexeme);
-      QUEX_NAME(undo)(&self); 
+      self_undo(); 
       self_enter_mode(&THIRD_EXPERIMENT);
   }
 }

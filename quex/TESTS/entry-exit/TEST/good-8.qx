@@ -1,0 +1,12 @@
+start = Z;
+
+token { LETTER; }
+
+mode A :   <entry:>       <exit: X> { a  => 'a'; }
+mode B : A <entry:>       <exit: Y> { b  => 'b'; }
+mode C : B <entry:>       <exit: Z> { c  => 'c'; }
+
+mode X :   <entry: A B C> <exit:>   { x  => 'x'; }
+mode Y :   <entry: B C>   <exit:>   { y  => 'y'; }
+mode Z :   <entry: C>     <exit:>   { z  => 'z'; }
+

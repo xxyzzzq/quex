@@ -79,6 +79,7 @@ token {
 start = BASE;
 
 mode DERIVED : BASE {
+    /*
     on_entry             { printf("((A)) 31"); }
     on_exit              { printf("((A)) 32"); }
     on_indent            { printf("((A)) 33"); }
@@ -90,6 +91,7 @@ mode DERIVED : BASE {
     on_failure           { printf("((A)) 39"); }
     on_skip_range_open   { printf("((A)) 40"); }
     on_end_of_stream     { printf("((A)) 41"); }
+    */
 
     ":" {
         self_send(TKN_ABC);

@@ -155,8 +155,9 @@ class Lng_Cpp(dict):
 
     @typed(Txt=(CodeFragment))
     def SOURCE_REFERENCED(self, Cf, PrettyF=False):
-        if not PrettyF: text = Cf.get_text()
-        else:           text = "".join(pretty_code(Cf.get_code()))
+        if Cf is None:    return ""
+        elif not PrettyF: text = Cf.get_text()
+        else:             text = "".join(pretty_code(Cf.get_code()))
 
         return "%s%s%s" % (
             self._SOURCE_REFERENCE_BEGIN(Cf.sr),

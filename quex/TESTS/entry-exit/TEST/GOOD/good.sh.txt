@@ -1,0 +1,49 @@
+(1) A <-> B
+    all transitions allowed explicitly
+    File: 'good-1.qx': {
+        (No Output is Good Output)
+    }
+
+(2) A <-> B
+    only required transitions allowed explicitly
+    File: 'good-2.qx': {
+        (No Output is Good Output)
+    }
+
+(3) A1 derived from A;
+    A1 -> Z; A -> Z;
+    Z -> A;
+    explicit permissions
+    File: 'good-3.qx': {
+        (No Output is Good Output)
+    }
+
+(4) A1 derived from A;
+    A1 -> Z;
+    Z -> A1;
+    A inheritable only; explicit permissions
+    File: 'good-4.qx': {
+        (No Output is Good Output)
+    }
+
+(5) Derived mode inherits entry permissions from base
+    File: 'good-5.qx': {
+        (No Output is Good Output)
+    }
+
+(6) Derived mode inherits exit permissions from base
+    File: 'good-6.qx': {
+        (No Output is Good Output)
+    }
+
+(7) Exclusive aggregation of entry permissions
+    File: 'good-7.qx': {
+        (No Output is Good Output)
+    }
+
+(8) Inclusive aggregation of exit permissions
+    File: 'good-8.qx': {
+        (No Output is Good Output)
+    }
+
+<terminated>

@@ -2,10 +2,9 @@
 from   quex.input.regular_expression.construct     import Pattern
 from   quex.engine.analyzer.terminal.core          import Terminal, TerminalGenerated
 from   quex.engine.analyzer.door_id_address_label  import DoorID
-from   quex.input.code.core             import CodeTerminal
-from   quex.engine.misc.tools                           import typed
-from   quex.engine.misc.string_handling            import safe_string, \
-                                                          pretty_code
+from   quex.input.code.core                        import CodeTerminal
+from   quex.engine.misc.tools                      import typed
+from   quex.engine.misc.string_handling            import safe_string
 
 import quex.output.cpp.counter_for_pattern         as     counter_for_pattern
 
@@ -83,11 +82,7 @@ class TerminalFactory:
            -- add the 'on_match' event handler in front, if match is relevant.
            -- adding source reference information.
         """
-        code_user = "%s%s%s" % (
-            Lng._SOURCE_REFERENCE_BEGIN(Code.sr),
-            pretty_code(Code.get_code()),
-            Lng._SOURCE_REFERENCE_END()
-        )
+        code_user = Lng.SOURCE_REFERENCED(Code)
 
         lexeme_begin_f, \
         terminating_zero_f = self.get_lexeme_flags(Code)

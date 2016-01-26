@@ -41,6 +41,10 @@ class CodeTerminal(CodeFragment):
         if PureCode is not None: self.__pure_code = PureCode
         else:                    self.__pure_code = Code
 
+    @staticmethod
+    def from_CodeFragment(CF, LexemeRelevanceF=False):
+        return CodeTerminal(CF.get_code(), CF.sr, LexemeRelevanceF=LexemeRelevanceF)
+
     def requires_lexeme_begin_f(self):            
         # NOT: if self.__requires_lexeme_begin_f is None: ...
         #      The construction is too dynamic.

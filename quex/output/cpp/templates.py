@@ -314,13 +314,9 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
     """Reentry preperation (without returning from the function."""
     # (*) Unset all pre-context flags which may have possibly been set
     unset_pre_context_flags_str = Lng.PRE_CONTEXT_RESET(PreConditionIDList)
+    on_after_match_str          = Lng.SOURCE_REFERENCED(OnAfterMatchCode)
 
-    if OnAfterMatchCode is not None:
-        on_after_match_str = Lng.SOURCE_REFERENCED(OnAfterMatchCode)
-    else:
-        on_after_match_str = ""
-
-    txt = [ 
+    return [ 
         "\n%s\n"  % Lng.LABEL(DoorID.return_with_on_after_match()), 
         Lng.COMMENT("RETURN -- after executing 'on_after_match' code."),
         on_after_match_str,
@@ -339,8 +335,6 @@ def reentry_preparation(Lng, PreConditionIDList, OnAfterMatchCode):
         unset_pre_context_flags_str,
         "\n%s\n" % Lng.GOTO(DoorID.global_reentry()), 
     ]
-
-    return txt
 
 def __frame_of_all(Code, Setup):
     # namespace_ref   = Lng.NAMESPACE_REFERENCE(Setup.analyzer_name_space)

@@ -1,5 +1,6 @@
 from   quex.engine.misc.tools                import typed
 from   quex.engine.analyzer.terminal.factory import TerminalFactory
+import quex.engine.misc.error                as     error
 from   quex.input.code.base                  import CodeFragment, \
                                                     SourceRef_DEFAULT
 from   quex.input.code.core                  import CodeTerminal
@@ -41,34 +42,58 @@ class IncidenceDB(dict):
     @staticmethod
     def from_BaseModeSequence(BaseModeSequence):
         """Collects the content of the 'incidence_db' member of this mode and
-        its base modes. 
+        its base modes. Incidence handlers can only defined ONCE in a mode
+        hierarchy.
 
         RETURNS:      map:    incidence_id --> [ CodeFragment ]
         """
-        assert len(BaseModeSequence) > 0
-
-        # Special incidences from 'standard_incidence_db'
-        result = IncidenceDB()
-        for incidence_name, info in standard_incidence_db.iteritems():
-            incidence_id, comment = info
-            code = None
+        def find_in_mode_hierarchy(BaseModeSequence, incidence_name):
+            """Find incidence handler in the mode hierarchy. An incidence handler
+            can only be defined once. If none is found 'None' is returned.
+            """
+            found      = None
+            found_mode = None
             for mode_descr in BaseModeSequence:
                 code_fragment = mode_descr.incidence_db.get(incidence_name)
-                if   code_fragment is None:         continue
-                elif code_fragment.is_whitespace(): continue
+                if code_fragment is None:         
+                    continue
+                elif found is not None:
+                    error.log("Second definition of incidence handler '%s' in mode '%s'." \
+                              % (incidence_name, mode_descr.name), code_fragment.sr, DontExitF=True)
+                    error.log("First, defined in mode '%s'." % found_mode, found.sr)
+                else:
+                    found = code_fragment
+                    found_mode = mode_descr.name
+            return found
 
-                if code is None: code = code_fragment.get_code()
-                else:            code.extend(code_fragment.get_code())
+        def ensure_implementation_of_mandatory(IncidenceId, Code, ModeName):
+            """If IncidenceId relates to a mandatory incidence handler, and
+            'Code' is not defined by the user, refer to the default 
+            implementation.
+            """
+            if   Code is not None:                               return Code
+            elif incidence_id not in IncidenceDB.mandatory_list: return Code
 
-            if code is not None:
-                result[incidence_id] = CodeFragment(code)
+            return IncidenceDB.__default_code_fragment(incidence_id, ModeName)
 
-        # Make sure, that all mandatory incidences are implemented!
+        assert len(BaseModeSequence) > 0
         mode_name = BaseModeSequence[-1].name
-        for incidence_id in IncidenceDB.mandatory_list:
-            if incidence_id in result: continue
-            result[incidence_id] = IncidenceDB.__default_code_fragment(incidence_id, 
-                                                                       mode_name)
+        result    = IncidenceDB()
+
+        # Collect all possible incidence handlers.
+        for incidence_name, info in standard_incidence_db.iteritems():
+
+            # (1) Find handler definition in base mode sequence
+            code = find_in_mode_hierarchy(BaseModeSequence, incidence_name)
+
+            # (2) Add default handler for undefined mandatory handlers
+            incidence_id, comment = info
+            code = ensure_implementation_of_mandatory(incidence_id, code, mode_name)
+
+            # (3) Add incidence handler to result database
+            if code is None: continue
+
+            result[incidence_id] = code
 
         return result
 
@@ -114,7 +139,7 @@ class IncidenceDB(dict):
                and not ReloadRequiredF:
                 continue
             terminal_type = IncidenceDB.terminal_type_db[incidence_id]
-            code_terminal = CodeTerminal(code_fragment.get_code())
+            code_terminal = CodeTerminal.from_CodeFragment(code_fragment)
             assert terminal_type not in result
             terminal = factory.do(terminal_type, code_terminal)
             terminal.set_incidence_id(incidence_id)
@@ -123,10 +148,10 @@ class IncidenceDB(dict):
         return result
 
     def get_CodeTerminal(self, IncidenceId):
-        if IncidenceId not in self:
-            return CodeTerminal([""])
-        else:
-            return CodeTerminal(self[IncidenceId].get_code(), LexemeRelevanceF=True)
+        if IncidenceId not in self: return CodeTerminal([""])
+
+        return CodeTerminal.from_CodeFragment(self[IncidenceId], 
+                                              LexemeRelevanceF=True)
 
     def get_text(self, IncidenceId):
         code_fragment = self.get(IncidenceId)

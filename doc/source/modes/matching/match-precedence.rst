@@ -1,14 +1,14 @@
 Precedence Rules 
 ----------------
 
-A precise interpretation of data requires that the relation between
-the data and its meaning is distinct. 
-
-Matching is about executing program code as reaction to a detected pattern in
-an incoming lexatom stream.  For a given position in the stream, only a
-*single* pattern may win in the sense that its correspondent action is
-executed, and that the next analysis step starts right behind the last lexatom
-of the lexeme.
+Precise interpretation of data requires a distinct relation between data and
+its meaning :cite:`Sproat2000computational`. For lexical analysis, this means
+that relation between a stream of lexatoms and the stream of produced tokens
+must be *distinct*. The input data is processed sequentially.  An analysis step
+results in token sending and the increment of the input position.  Both are
+accomplished as reactions to pattern matches. Consequently, to maintain a
+distinct relation between the lexatom stream and the token stream, only one
+pattern is allowed to match for a given position in the input. 
 
 Patterns such as ``[0-9]+`` for numbers and ``[a-z]+`` for identifiers cannot
 even partly match a common lexeme. Caution, however, is appropriate if the set
@@ -33,14 +33,14 @@ true for post-contexts. If the patterns ``for`` and ``for/est`` were lurking,
 then ``for/est`` would win with the matching lexeme "forester". The core
 lexeme, though, is "for" and the next analysis step starts with "ester".
 
-Two patterns may match the exact same lexeme. For example, give the two
+Two patterns may match the exact same lexeme. For example, given the two
 patterns ``[a-z]+``, ``print``, and the input "print()", then the lexeme
 "print" matches both patterns. In that case, the pattern wins which appears
 first. If the patterns are located in different modes of an inheritance
 hierarchy the pattern that comes first in the linearization wins.
 
 Precedence Modifications
-########################
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The attribute *length* of matching lexeme is determined at run-time. So it
 cannot be subject to predence modifications. However, the *position* of the
