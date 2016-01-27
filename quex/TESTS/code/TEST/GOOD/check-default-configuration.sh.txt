@@ -84,8 +84,6 @@
 > #   define QUEX_SETTING_PATH_TERMINATION_CODE  ((QUEX_TYPE_LEXATOM)0x1)
 <  *       pre-processor comparisons.                                          */
 >  *       pre-processor comparisons.                                       */
-< $$SWITCH$$ QUEX_OPTION_BUFFER_BASED_ANALYZIS
-> /* #define QUEX_OPTION_BUFFER_BASED_ANALYZIS */
 <       * be some pre-processor comparison operations depending on it.         */
 >       * be some pre-processor comparison operations depending on it.      */
 < $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR

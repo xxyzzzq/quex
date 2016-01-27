@@ -233,7 +233,6 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
     "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
     "buffer_element_type":            [["--buffer-element-type", "--bet"],     ""],
-    "buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             SetupParTypes.FLAG],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
     "comment_state_machine_f":        [["--comment-state-machine"],            SetupParTypes.FLAG],
     "comment_transitions_f":          [["--comment-transitions"],              SetupParTypes.FLAG],
@@ -366,6 +365,7 @@ SETUP_INFO = {
     "XX_mode_files":                        [["--mode-files"], None],
     "XX_engine":                            [["--engine"], None],
     "XX_token_class_take_text_check_f":  [["--token-type-no-take_text-check",     "--ttnttc"], SetupParTypes.NEGATED_FLAG], 
+    "XX_buffer_based_analyzis_f":        [["--buffer-based", "--bb"],             SetupParTypes.FLAG],
 }
 
 class NotificationDB:
@@ -538,6 +538,9 @@ DEPRECATED = {
       ("Option '--token-type-no-take_text-check' or '--ttnttc' is replaced by '--suppress %i'."
        % NotificationDB.warning_on_no_token_class_take_text,
        "0.65.1"),
+    "XX_buffer_based_analyzis_f":        
+      ("Option '--buffer-base' and '--bb' are deprecated. Buffer fillers are\n"
+       "used for manual filling.", "0.65.1"),
 }
  
 global_character_type_db = {
@@ -610,7 +613,6 @@ DOC = {
     "buffer_limit_code":              ("Buffer limit code.", ""),
     "buffer_element_size":            ("Buffer element size.", ""),
     "buffer_element_type":            ("Buffer element type.", ""),
-    "buffer_based_analyzis_f":        ("No reload required. Analysis is buffer based.", ""),
     "buffer_byte_order":              ("Byte order of buffer elements.", ""),
     "comment_state_machine_f":        ("Provide state machine description in comment of generated code.", ""),
     "comment_transitions_f":          ("Provided UTF8 representation of transition characters in comments of generated code.", ""),

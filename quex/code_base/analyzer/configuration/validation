@@ -47,12 +47,4 @@
 #   endif
 #endif
 
-#ifdef  QUEX_OPTION_BUFFER_BASED_ANALYZIS
-#    if QUEX_SETTING_BUFFER_SIZE != 0
-#       error "Buffer based analyzis has been activated but the macro QUEX_SETTING_BUFFER_SIZE is not set to zero. Buffer based analyzis relies on dynamically user defined memory."
-#    endif
-#    if QUEX_SETTING_BUFFER_MIN_FALLBACK_N != 0
-#       error "Buffer based analyzis has been activated but the macro QUEX_SETTING_BUFFER_MIN_FALLBACK_N is not set to zero. Fallback regions are only interesting if buffer reload happens automatically. Buffer based analyzis relies on the user's buffer reloading."
-#    endif
-#endif
 

@@ -164,15 +164,6 @@ Default: utf8
 
 Default: false (disabled)
 
-.. cmdoption:: --buffer-based, --bb 
-
-    Generates an analyzer that does not read from an input stream, but runs instead only on a buffer. 
-     
-
-    
-
-Default: false (disabled)
-
 .. cmdoption:: --version-id string
 
     ``string`` = arbitrary name of the version that was generated. This string is reported by the 
