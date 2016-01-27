@@ -120,8 +120,16 @@ Using ``RETURN`` or ``CONTINUE`` triggers a direct jump to the
 Failure and End of Stream
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The events of a input stream termination, or a match failure can be handled by
-the ``on_failure`` and ``on_end_of_stream`` as shown below.
+The incident of a input stream termination or a match failure can be handled by
+the three handlers shown below.
+
+.. data:: on_end_of_stream
+
+   Incidence handler for the case that the end of file, or end of stream is reached.
+   By means of this handler the termination of lexical analysis, or the return
+   to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
+   pattern.
+
 
 .. data:: on_failure
 
@@ -193,29 +201,20 @@ the ``on_failure`` and ``on_end_of_stream`` as shown below.
          if( my_lexer.on_failure_exception_f ) abort();
          ...
 
-.. data:: on_end_of_stream
-
-   Incidence handler for the case that the end of file, or end of stream is reached.
-   By means of this handler the termination of lexical analysis, or the return
-   to an including file can be handled. This is equivalent to the ``<<EOF>>`` 
-   pattern.
-
-Character Encoding
-^^^^^^^^^^^^^^^^^^
-
-It may appear that lexatoms (or characters) occur which are outside the encoding
-for which the engine has been designed, or for which the input converter has been
-setup. A generated analyzer cannot operate on such input. If this appears, the
-following handler is executed.
-
 .. data:: on_encoding_error
 
    Implicit Arguments: ``BadLexatom``
 
-   ``BadLexatom`` contains the lexatom that violates the coding rules.  When
-   a converter or a encoding engine is used it is conceivable that the input
-   stream contains data which is not a valid code point. To deal with that, the
-   'on_encoding_error' handler can be specified.
+   ``BadLexatom`` contains the lexatom beyond what is admissible according to the
+   specified character encoding. If an input converter is specified, then the
+   error is triggered during conversion and depends on the specified input 
+   encoding. If no input converter is specified, the specified encoding of the
+   engine itself determines whether a lexatom is admissible or not.
+   
+The ``on_encoding_error`` has always precedence over ``on_failure``. That is,
+if '--codec ASCII' is specified as engine encoding and a value greater than
+0x7F appears, and encoding error is issued even if at the same time no pattern
+matches.
 
 
 Skippers
