@@ -144,7 +144,6 @@ def require_position_registers(TheAnalyzer):
         initial_array  = "{ " + ("0, " * (position_register_n - 1) + "0") + "}"
     else:
         # Implement a dummy array (except that there is no reload)
-        if Setup.buffer_based_analyzis_f: return
         initial_array = "(void*)0"
 
     variable_db.require_array("position", ElementN = position_register_n,

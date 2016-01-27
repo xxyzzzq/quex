@@ -4,8 +4,7 @@ from   quex.engine.operations.operation_list                  import Op
 import quex.output.core.loop                      as     loop
 import quex.engine.analyzer.engine_supply_factory as     engine
 from   quex.engine.analyzer.door_id_address_label import DoorID
-from   quex.blackboard                            import setup as Setup, \
-                                                         Lng
+from   quex.blackboard                            import Lng
 
 def do(Data, TheAnalyzer):
     """Fast implementation of character set skipping machine.
@@ -68,10 +67,7 @@ def do(Data, TheAnalyzer):
     counter_db    = Data["counter_db"]
     character_set = Data["character_set"]
 
-    if Setup.buffer_based_analyzis_f:
-        reload_state = None
-    else:
-        reload_state = TheAnalyzer.reload_state
+    reload_state = TheAnalyzer.reload_state
         
     result,        \
     door_id_beyond = loop.do(CountOpFactory.from_ParserDataLineColumn(counter_db, character_set, Lng.INPUT_P()), 

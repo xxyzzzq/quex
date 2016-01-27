@@ -216,7 +216,7 @@ def finalize_terminal_db(ModeName, SortedPPT_List, IncidenceDb, ExtraTerminalLis
     # THEIR INCIDENCE ID REMAINS FIXED!
     terminal_db.update(
         IncidenceDb.extract_terminal_db(factory,
-                              ReloadRequiredF=not Setup.buffer_based_analyzis_f)
+                                        ReloadRequiredF=True) 
     )
 
     terminal_db.update(

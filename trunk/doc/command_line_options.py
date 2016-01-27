@@ -123,11 +123,6 @@ Option("normalize_f", None,
     state machine. That is, the state numbers will start from zero. If this flag 
     is not set, the state indices are the same as in the generated code.
     """),
-Option("buffer_based_analyzis_f", None,
-    """
-    Generates an analyzer that does not read from an input stream, but runs instead
-    only on a buffer. 
-    """),
 Option("user_application_version_id", "string",
     """
     \\v{string} = arbitrary name of the version that was generated. This string

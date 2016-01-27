@@ -93,8 +93,7 @@ def do(Data, TheAnalyzer):
     #    explicitly disallowed to be used as indentation.
     bad_indentation_iid = dial_db.new_incidence_id() 
 
-    if Setup.buffer_based_analyzis_f: reload_state = None
-    else:                             reload_state = TheAnalyzer.reload_state
+    reload_state = TheAnalyzer.reload_state
 
     sm_terminal_list = _get_state_machine_vs_terminal_list(sm_suppressed_newline, 
                                                            isetup.sm_newline.get(),
