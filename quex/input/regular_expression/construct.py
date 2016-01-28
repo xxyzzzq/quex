@@ -1,16 +1,15 @@
-#from   quex.input.files.parser_data.counter           import ParserDataLineColumn
-from   quex.input.code.base                import SourceRef_VOID, \
-                                                             SourceRef
-from   quex.engine.state_machine.core                 import StateMachine
-from   quex.engine.state_machine.character_counter    import CountInfo
-import quex.engine.state_machine.construction.setup_post_context   as     setup_post_context
-import quex.engine.state_machine.construction.setup_pre_context    as     setup_pre_context
-import quex.engine.state_machine.transformation.core  as     transformation
-import quex.engine.state_machine.algorithm.beautifier as     beautifier
-import quex.engine.state_machine.algebra.reverse      as     reverse
-import quex.engine.misc.error                         as     error
-#                                                         
-from   quex.engine.misc.tools               import typed
+# (C) Frank-Rene Schaefer
+from   quex.input.code.base                                      import SourceRef_VOID, \
+                                                                        SourceRef
+from   quex.engine.state_machine.core                            import StateMachine
+from   quex.engine.state_machine.character_counter               import CountInfo
+import quex.engine.state_machine.construction.setup_post_context as     setup_post_context
+import quex.engine.state_machine.construction.setup_pre_context  as     setup_pre_context
+import quex.engine.state_machine.transformation.core             as     transformation
+import quex.engine.state_machine.algorithm.beautifier            as     beautifier
+import quex.engine.state_machine.algebra.reverse                 as     reverse
+import quex.engine.misc.error                                    as     error
+from   quex.engine.misc.tools                                    import typed
 
 class Pattern(object):
     __slots__ = ("__sr", # Source Reference (filename, line_n)

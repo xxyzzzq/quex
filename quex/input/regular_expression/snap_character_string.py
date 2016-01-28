@@ -1,7 +1,7 @@
-import quex.engine.misc.utf8                                         as     utf8
-import quex.input.regular_expression.snap_backslashed_character as     snap_backslashed_character
+import quex.engine.misc.utf8                                    as     utf8
 from   quex.engine.state_machine.core                           import StateMachine
-from   quex.input.regular_expression.exception                                           import RegularExpressionException
+import quex.input.regular_expression.snap_backslashed_character as     snap_backslashed_character
+from   quex.input.regular_expression.exception                  import RegularExpressionException
 
 
 def do(sh):

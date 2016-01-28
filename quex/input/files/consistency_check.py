@@ -36,12 +36,12 @@ def do(ModeDB):
         mode.check_consistency()
 
     # (*) If a conversion or a codec engine is specified, then the 
-    #     'on_codec_error' handler must be specified in every mode.
+    #     'on_bad_lexatom' handler must be specified in every mode.
     if False and (Setup.buffer_codec.name != "unicode" or Setup.converter_f):
         for mode in ModeDB.values():
             # Later ... 
             if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
-                error.warning("Missing 'on_codec_error' handler in mode '%s' (or its base modes).\n" % mode.name + \
+                error.warning("Missing 'on_bad_lexatom' handler in mode '%s' (or its base modes).\n" % mode.name + \
                               "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
                               "The feature is not yet supported, but the infrastructure is currently setup for it.",
                               mode.sr, 
