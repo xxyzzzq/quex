@@ -760,7 +760,7 @@ Item("9",
      """),
 Item("10",
      """
-    Warning if there is no 'on_codec_error' handler while a   
+    Warning if there is no 'on_bad_lexatom' handler while a   
     codec different from Unicode is used.                     
      """),
 Item("11",
