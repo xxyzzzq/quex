@@ -201,7 +201,7 @@ the three handlers shown below.
          if( my_lexer.on_failure_exception_f ) abort();
          ...
 
-.. data:: on_encoding_error
+.. data:: on_bad_lexatom
 
    Implicit Arguments: ``BadLexatom``
 
@@ -211,7 +211,7 @@ the three handlers shown below.
    encoding. If no input converter is specified, the specified encoding of the
    engine itself determines whether a lexatom is admissible or not.
    
-The ``on_encoding_error`` has always precedence over ``on_failure``. That is,
+The ``on_bad_lexatom`` has always precedence over ``on_failure``. That is,
 if '--codec ASCII' is specified as engine encoding and a value greater than
 0x7F appears, and encoding error is issued even if at the same time no pattern
 matches.
