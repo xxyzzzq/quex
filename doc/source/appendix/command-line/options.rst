@@ -953,7 +953,7 @@ The following enumerates suppress codes together with their associated messages.
 
 .. describe:: 10
 
-    Warning if there is no 'on_encoding_error' handler while a encoding different from Unicode is used. 
+    Warning if there is no 'on_bad_lexatom' handler while a encoding different from Unicode is used. 
      
 
     

@@ -968,7 +968,8 @@ The following enumerates suppress codes together with their associated messages.
 
 .. describe:: 10
 
-    Warning if there is no 'on_codec_error' handler while a codec different from Unicode is used. 
+    Warning if there is no 'on_bad_lexatom' handler while a codec 
+    different from Unicode is used. 
      
 
     
