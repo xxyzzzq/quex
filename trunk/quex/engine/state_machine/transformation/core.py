@@ -1,10 +1,10 @@
 # (C) Frank-Rene Schaefer
 from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.algorithm.beautifier  as beautifier
+import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.blackboard                                 import setup as Setup
 
 from   quex.engine.misc.tools import typed, \
-                                flatten_list_of_lists
+                                     flatten_list_of_lists
 
 @typed(SmIn=(StateMachine,None))
 def do_state_machine(SmIn):

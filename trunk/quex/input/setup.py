@@ -101,6 +101,7 @@ class QuexSetup:
         if   BufferCodecName in ("utf8", "utf16"):
             assert Module is not None
             result = codec_db.CodecDynamicInfo(BufferCodecName, Module)
+
         elif BufferCodecFileName:
             os.path.splitext(os.path.basename(BufferCodecFileName))
             try: 
@@ -108,6 +109,7 @@ class QuexSetup:
             except:
                 error.log("cannot interpret string following '--codec-file'")
             result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
+
         elif BufferCodecName == "unicode":
             # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
             # If the internal buffer is 'unicode', then the pattern's state 
@@ -116,6 +118,7 @@ class QuexSetup:
             result = codec_db.CodecInfo("unicode", 
                                 NumberSet.from_range(0, self.get_character_value_limit()), 
                                 NumberSet.from_range(0, self.get_character_value_limit()))
+
         elif BufferCodecName == "unit-test":
             result = codec_db.CodecInfo("unicode", 
                                 NumberSet.from_range(-sys.maxint, sys.maxint),

@@ -59,6 +59,7 @@ E_StateIndices = Enum("DROP_OUT",
                       "RECURSIVE",
                       "ALL", 
                       "ANALYZER_REENTRY", 
+                      "ON_BAD_LEXATOM",     # Executes the 'on_bad_lexatom' handler
                       "BEFORE_ENTRY", 
                       "VOID") 
 

@@ -274,7 +274,7 @@ class TargetMap:
                 del self.__db[target]
 
         # All code points which are not available in the drain's range must
-        # trigger an 'on_codec_error'.
+        # trigger an 'on_bad_lexatom'.
         return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):
