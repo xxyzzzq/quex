@@ -117,24 +117,37 @@ the analyzer would always stop at 'for' and never recognize a 'forest'. It
 follows that the 'greedy match' approach is obligatory for a general
 pattern match solution.
 
-In times of ASCII encoding, there never was a problem calling the events that
-cause state transitions 'characters'. Due to the fact that Quex can also
-generate engines that work on other character encodings. In some encodings,
-such as UTF8 or UTF16, a character may be made up of more a varying number of
-bytes or double-bytes. The state machine transitions trigger then no longer on
-characters but on sub-chunks that make up those characters. In these cases, the
-term 'character' has led to a great deal of confusion. 
+In times of prevalent ASCII encoding, there never was a problem calling the
+events that cause state transitions 'characters'. However, things become
+difficult, with encodings such as UTF8 and UTF16 where characters are composed
+of varying number of bytes. There, the term 'code unit' :cite:`Unicode2015`
+must be considered.
+
+Code Unit
+    A code unit is a bit sequence used to encode each single character unit
+    of a repertoire within an encoding form.
+
+For UTF8, the code unit is a byte. To encode a 'A' one single byte, i.e.  one
+code unit, is required. To encode the Egyptian Hieroglyph P002 four bytes, four
+code units are required. A code unit in UTF16 is two byte large and characters
+are represented by one or two code units. Lexical analyzers might run in
+Unicode with converted input. Further, the lexical analyzers might be fed with
+streams that have nothing to do with character encodings [#f2]_. To clarify the
+entities on which the analyzing state machine triggers, the term 'lexatom' is
+introduced.
 
 Lexatom
    A lexatom is one element in a sequence of data that make up the
    representation of a character. It is an integer value that describes an
    event in a pattern matching state machine. 
 
+
 .. _fig:lexatom-explanation:
 
 .. figure:: ../figures/lexatom-explanation.png
    
-   Egyptian Hieroglyph P002 and lexatoms according to UTF32, UTF16, and UTF8.
+   Egyptian Hieroglyph P002 and lexatoms/code units according to UTF32, 
+   UTF16, and UTF8.
 
 In an ASCII text, every character is made up out of a single byte which carries
 a single character. In that case, a lexatom is the ASCII value of a character.
@@ -157,6 +170,12 @@ Lexeme
     A lexeme is a sequence of lexatoms that matches a pattern associated 
     with a category of meaning.
 
+If the input into an analyzer state machine is text and it is not converted,
+then the lexatom is equivalent to the established term 'code unit'. If further,
+the input encoding describes characters by a code unit each, then the term
+lexatom is equivalent to 'character' in its very traditional meaning. Under
+all circumstances, a 'lexatom' denotes what triggers state transitions in
+the analyzer's state machine.
 
 Lexatoms are stored as a sequence in a buffer, so that they can be accessed
 quickly by the analyzer. Loading greater chunks of lexatoms into a buffer is

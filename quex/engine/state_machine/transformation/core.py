@@ -1,5 +1,34 @@
-# (C) Frank-Rene Schaefer
-from   quex.engine.misc.interval_handling import NumberSet, Interval
+"""
+Encoding Transformations:
+
+A state machine is originally defined in terms of pure numbers. When dealing
+with text, those numbers correspond to ASCII or Unicode Code Points. Input,
+however, may appear in different formats, i.e. encodings. There are two ways to
+cope with that: (i) converting input at run-time and (ii) converting a state
+machine to treat the encoded content directly. The classes of this module
+support the second solution, i.e. the transformation of a state machine that
+runs on a specific encoding. All classes are derived from 'EncodingTrafo' 
+which implements the interfaces to be obeyed by all.
+
+  * EncodingTrafoUnicode:    lexatom --> same lexatom
+
+    Mapping holds as long as the lexatom is in the range defined by the
+    buffer's lexatom size and the encoding (e.g. ASCII <= 0x7F).
+
+  * EncodingTrafoByTable:    lexatom --> other lexatom
+
+    A given lexatom has a distinct resulting lexatom as described in a 
+    table. Some lexatoms, may be exempted and cannot be transformed.
+
+  * EncodingTrafoByFunction: lexatom sequence = function(lexatom)
+
+    A lexatom in the original state machine is converted into a lexatom 
+    sequence of the result. This type of transformations is required to
+    construct state machines running of UTF8, for example.
+
+(C) Frank-Rene Schaefer
+"""
+from   quex.engine.misc.interval_handling import NumberSet
 from   quex.engine.misc.tools             import typed, \
                                                  flatten_list_of_lists
 import quex.engine.codec_db.core          as     codec_db
@@ -8,6 +37,15 @@ import quex.engine.codec_db.core          as     codec_db
 import os
 
 class EncodingTrafo:
+    """Maintains information about a encoding transformation and functions that
+    transform numbers and state machines from the 'pure' encoding to a target
+    encoding.
+
+        .name       = Name of the codec.
+        .source_set = NumberSet of unicode code points which have a representation 
+                      the given codec.
+        .drain_set  = NumberSet of available code points in the given codec.
+    """
     def __init__(self, Name, SourceSet, DrainSet):
         self.name       = Name
         self.source_set = SourceSet
@@ -44,9 +82,13 @@ class EncodingTrafo:
             self.transform_Number(x) for x in Sequence
         )
 
+    def transform_Number(self, number):
+        result = self.transform_NumberSet(NumberSet(number))
+        if result is None: return None
+        else:              return result.get_intervals(PromiseToTreatWellF=True)
+
     def transform(self, sm):                                assert False
     def transform_NumberSet(self, number_set):              assert False
-    def transform_Number(self, number):                     assert False
     def lexatom_n_per_character(self, CharacterSet):        assert False
     def lexatom_n_per_character_in_state_machine(self, SM): assert False
 
@@ -59,7 +101,6 @@ class EncodingTrafo:
 class EncodingTrafoUnicode(EncodingTrafo):
     def __init__(self, SourceSet, DrainSet):
         EncodingTrafo.__init__(self, "unicode", SourceSet, DrainSet)
-
 
     def transform(self, sm):
         """Cut any number that is not in drain_set from the transition trigger
@@ -85,10 +126,6 @@ class EncodingTrafoUnicode(EncodingTrafo):
     def transform_NumberSet(self, number_set):
         return self.drain_set.intersection(number_set)
 
-    def transform_Number(self, number):
-        if self.drain_set.contains(number): return [ Interval(number) ]
-        return None
-
     def lexatom_n_per_character(self, CharacterSet):
         return 1 # In non-dynamic character codecs each chunk element is a character
 
@@ -96,6 +133,8 @@ class EncodingTrafoUnicode(EncodingTrafo):
         return 1
 
 class EncodingTrafoByFunction(EncodingTrafo):
+    """Transformation that takes a lexatom and produces a lexatom sequence.
+    """
     def __init__(self, Name, ImplementingModule):
         EncodingTrafo.__init__(self, Name,
                                ImplementingModule.get_unicode_range(), 
@@ -116,11 +155,6 @@ class EncodingTrafoByFunction(EncodingTrafo):
                "Operation 'number set transformation' failed.\n" + \
                "The given number set results in a state sequence not a single transition."
         return result
-
-    def transform_Number(self, number):
-        result = self.transform_NumberSet(NumberSet(number))
-        if result is None: return None
-        else:              return result.get_intervals(PromiseToTreatWellF=True)
 
     def lexatom_n_per_character(self, CharacterSet):
         """Consider a given state machine (pattern). If all characters involved in the 
@@ -144,32 +178,19 @@ class EncodingTrafoByFunction(EncodingTrafo):
                 elif chunk_n != candidate_chunk_n: return None
         return chunk_n
 
-#______________________________________________________________________________
-#
-# EncodingTrafoByTable(list):
-#
-# Provides the information about the relation of character codes in a particular 
-# coding to unicode character codes. It is provided in the following form:
-#
-#   # Codec Values                 Unicode Values
-#   [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
-#     (Source1_Begin, Source1_End, TargetInterval1_Begin),
-#     (Source2_Begin, Source2_End, TargetInterval2_Begin), 
-#     ... 
-#   ]
-#
-# .name           = Name of the codec.
-# .file_name      = Name of file where the codec was taken from.
-# .source_set     = NumberSet of unicode code points which have a representation 
-#                   the given codec.
-# .drain_set      = NumberSet of available code points in the given codec.
-#
-# NOTE: If the content of the file was not a valid codec transformation info,
-#       then the following holds:
-#
-#       .source_set = .drain_set = None
-#______________________________________________________________________________
 class EncodingTrafoByTable(EncodingTrafo, list):
+    """Provides the information about the relation of character codes in a 
+    particular coding to unicode character codes. It is provided in the 
+    following form:
+
+           # Codec Values                 Unicode Values
+           [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
+             (Source1_Begin, Source1_End, TargetInterval1_Begin),
+             (Source2_Begin, Source2_End, TargetInterval2_Begin), 
+             ... 
+           ]
+
+    """
     def __init__(self, Codec=None, FileName=None, ExitOnErrorF=True):
         assert Codec is not None or FileName is not None
 
@@ -208,11 +229,6 @@ class EncodingTrafoByTable(EncodingTrafo, list):
 
     def transform_NumberSet(self, number_set):
         return number_set.transform(self)
-
-    def transform_Number(self, number):
-        result = self.transform_NumberSet(NumberSet(number)).get_intervals()
-        if result is None: return None
-        else:              return result.get_intervals(PromiseToTreatWellF=True)
 
     def __set_invalid(self):
         list.clear(self)                  
