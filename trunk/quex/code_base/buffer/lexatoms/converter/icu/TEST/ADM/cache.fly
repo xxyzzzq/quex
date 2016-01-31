@@ -1,132 +1,132 @@
 {
 title: uint16_t;
 title_group: Convert all in one beat;
-build_time: 0.98797607421875;
+build_time: 0.9519779682159424;
 file_name: one-beat-2.exe;
-hwut_info_time: 1454196558L;
+hwut_info_time: 1454274742L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006189; 0; ]
+  [ ; OK; 0.006863; 0; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert all in one beat;
-build_time: 1.1634478569030762;
+build_time: 0.952625036239624;
 file_name: one-beat-4.exe;
-hwut_info_time: 1454196548L;
+hwut_info_time: 1454274733L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.007854; 0; ]
+  [ ; OK; 0.008598; 0; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert all in one beat;
-build_time: 1.1290202140808105;
+build_time: 0.948652982711792;
 file_name: one-beat-1.exe;
-hwut_info_time: 1454196549L;
+hwut_info_time: 1454274734L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006571; 0; ]
+  [ ; OK; 0.005069; 0; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert all in one beat;
-build_time: 0.9646668434143066;
+build_time: 0.9504950046539307;
 file_name: one-beat-WC.exe;
-hwut_info_time: 1454196559L;
+hwut_info_time: 1454274743L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006784; 0; ]
+  [ ; OK; 0.006157; 0; ]
 ]
 }
 {
 title: uint16_t;
 title_group: Convert drain character by drain character;
-build_time: 1.0581450462341309;
+build_time: 0.9520161151885986;
 file_name: stepwise-drain-2.exe;
-hwut_info_time: 1454196555L;
+hwut_info_time: 1454274739L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.005978; 0; ]
+  [ ; OK; 0.005037; 0; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert drain character by drain character;
-build_time: 1.0964839458465576;
+build_time: 0.9468839168548584;
 file_name: stepwise-drain-4.exe;
-hwut_info_time: 1454196553L;
+hwut_info_time: 1454274737L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.012499; 0; ]
+  [ ; OK; 0.011155; 0; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert drain character by drain character;
-build_time: 0.9818859100341797;
+build_time: 1.1279549598693848;
 file_name: stepwise-drain-1.exe;
-hwut_info_time: 1454196554L;
+hwut_info_time: 1454274738L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006650; 0; ]
+  [ ; OK; 0.005015; 0; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert drain character by drain character;
-build_time: 1.1541228294372559;
+build_time: 0.9488890171051025;
 file_name: stepwise-drain-WC.exe;
-hwut_info_time: 1454196547L;
+hwut_info_time: 1454274732L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.008319; 0; ]
+  [ ; OK; 0.006901; 0; ]
 ]
 }
 {
 title: uint16_t;
 title_group: Convert source byte by source byte;
-build_time: 0.9873759746551514;
+build_time: 0.9482219219207764;
 file_name: stepwise-source-2.exe;
-hwut_info_time: 1454196557L;
+hwut_info_time: 1454274741L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006738; 0; ]
+  [ ; OK; 0.005829; 0; ]
 ]
 }
 {
 title: uint32_t;
 title_group: Convert source byte by source byte;
-build_time: 1.1998460292816162;
+build_time: 0.950408935546875;
 file_name: stepwise-source-4.exe;
-hwut_info_time: 1454196550L;
+hwut_info_time: 1454274735L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.019050; 0; ]
+  [ ; OK; 0.010803; 0; ]
 ]
 }
 {
 title: uint8_t;
 title_group: Convert source byte by source byte;
-build_time: 1.1151809692382812;
+build_time: 1.026885986328125;
 file_name: stepwise-source-1.exe;
-hwut_info_time: 1454196556L;
+hwut_info_time: 1454274740L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.006099; 0; ]
+  [ ; OK; 0.006401; 0; ]
 ]
 }
 {
 title: wchar_t;
 title_group: Convert source byte by source byte;
-build_time: 1.1723029613494873;
+build_time: 1.1425859928131104;
 file_name: stepwise-source-WC.exe;
-hwut_info_time: 1454196551L;
+hwut_info_time: 1454274736L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.008385; 0; ]
+  [ ; OK; 0.019283; 0; ]
 ]
 }
