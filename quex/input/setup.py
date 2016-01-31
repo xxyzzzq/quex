@@ -1,10 +1,12 @@
 #! /usr/bin/env python
+from   quex.engine.state_machine.transformation.core import EncodingTrafoUnicode, \
+                                                            EncodingTrafoByTable, \
+                                                            EncodingTrafoByFunction
 import quex.engine.misc.error             as     error
 import quex.engine.misc.file_in           as     file_in
 from   quex.engine.misc.file_operations   import get_propperly_slash_based_file_name
 from   quex.engine.misc.enum              import Enum
 from   quex.engine.misc.interval_handling import NumberSet
-import quex.engine.codec_db.core          as     codec_db
 from   quex.DEFINITIONS                   import QUEX_PATH
 
 import os  
@@ -18,8 +20,41 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo):
         self.init(SetupInfo)
-        self.buffer_codec_prepare("unit-test") # Default: be prepared for unit tests
         self.__buffer_element_specification_done_f = False
+        self.buffer_codec_prepare("unit-test")                   # Default
+
+    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName=None, Module=None):
+        self.buffer_codec = self.buffer_codec_determine(BufferCodecName, BufferCodecFileName, Module)
+
+    def buffer_codec_determine(self, BufferCodecName, BufferCodecFileName, Module):
+        if   BufferCodecName in ("utf8", "utf16"):
+            assert Module is not None
+            return EncodingTrafoByFunction(BufferCodecName, Module)
+
+        elif BufferCodecFileName:
+            os.path.splitext(os.path.basename(BufferCodecFileName))
+            try: 
+               os.path.splitext(os.path.basename(BufferCodecFileName))
+            except:
+                error.log("cannot interpret string following '--codec-file'")
+            return EncodingTrafoByTable(FileName=BufferCodecFileName)
+
+        elif BufferCodecName == "unicode":
+            # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
+            # If the internal buffer is 'unicode', then the pattern's state 
+            # machines are not converted. The requirement for the pattern's
+            # range is the same as for the 'buffer element chunks'.
+            return EncodingTrafoUnicode(
+                                NumberSet.from_range(0, self.get_character_value_limit()), 
+                                NumberSet.from_range(0, self.get_character_value_limit()))
+
+        elif BufferCodecName == "unit-test":
+            return EncodingTrafoUnicode(
+                                NumberSet.from_range(-sys.maxint, sys.maxint),
+                                NumberSet.from_range(-sys.maxint, sys.maxint))
+
+        else:
+            return EncodingTrafoByTable(BufferCodecName)
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -90,47 +125,6 @@ class QuexSetup:
                           "has been specified by '-b' or '--buffer-element-size'.")
 
         self.__buffer_element_specification_done_f = True
-
-    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName=None, Module=None):
-        """Determines: Setup.buffer_codec_name
-                       Setup.buffer_codec
-        """
-        assert    BufferCodecName == "unit-test" \
-               or self.__buffer_element_specification_done_f == True
-
-        if   BufferCodecName in ("utf8", "utf16"):
-            assert Module is not None
-            result = codec_db.CodecDynamicInfo(BufferCodecName, Module)
-
-        elif BufferCodecFileName:
-            os.path.splitext(os.path.basename(BufferCodecFileName))
-            try: 
-               os.path.splitext(os.path.basename(BufferCodecFileName))
-            except:
-                error.log("cannot interpret string following '--codec-file'")
-            result = codec_db.CodecTransformationInfo(FileName=BufferCodecFileName)
-
-        elif BufferCodecName == "unicode":
-            # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
-            # If the internal buffer is 'unicode', then the pattern's state 
-            # machines are not converted. The requirement for the pattern's
-            # range is the same as for the 'buffer element chunks'.
-            result = codec_db.CodecInfo("unicode", 
-                                NumberSet.from_range(0, self.get_character_value_limit()), 
-                                NumberSet.from_range(0, self.get_character_value_limit()))
-
-        elif BufferCodecName == "unit-test":
-            result = codec_db.CodecInfo("unicode", 
-                                NumberSet.from_range(-sys.maxint, sys.maxint),
-                                NumberSet.from_range(-sys.maxint, sys.maxint))
-
-        else:
-            result = codec_db.CodecTransformationInfo(BufferCodecName)
-
-        self.buffer_codec = result
-        #print "#Setup.name", self.buffer_codec.name
-        #print "#Setup.buffer_codec.source_set", self.buffer_codec.source_set
-        #print "#Setup.buffer_codec.drain_set ", self.buffer_codec.drain_set
 
     def get_character_value_limit(self):
         """A buffer element is a chunk of memory of the size of the granularity

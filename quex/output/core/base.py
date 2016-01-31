@@ -1,18 +1,18 @@
 # (C) Frank Rene Schaefer
 import quex.output.core.state_machine_coder       as     state_machine_coder
 import quex.output.core.state_router              as     state_router_generator
-from   quex.output.core.variable_db     import variable_db
-from   quex.engine.analyzer.door_id_address_label      import DoorID, \
-                                                              dial_db
+from   quex.output.core.variable_db               import variable_db
+from   quex.engine.analyzer.door_id_address_label import DoorID, \
+                                                         dial_db
 import quex.output.core.reload_state              as     reload_state_coder
-import quex.engine.analyzer.engine_supply_factory      as     engine
-from   quex.engine.analyzer.terminal.core              import Terminal
-import quex.engine.analyzer.core                       as     analyzer_generator
+import quex.engine.analyzer.engine_supply_factory as     engine
+from   quex.engine.analyzer.terminal.core         import Terminal
+import quex.engine.analyzer.core                  as     analyzer_generator
 
-from   quex.engine.misc.tools                               import typed
-from   quex.blackboard import E_IncidenceIDs, \
-                              setup as Setup, \
-                              Lng
+from   quex.engine.misc.tools import typed
+from   quex.blackboard        import E_IncidenceIDs, \
+                                     setup as Setup, \
+                                     Lng
 
 # MAIN:      sm --> analyzer
 #            sm_txt --> code_analyzer

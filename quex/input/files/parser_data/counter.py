@@ -222,7 +222,7 @@ class CountOpMap(object):
             return column_incr_per_character
 
         chunk_n_per_character = \
-            Setup.buffer_codec.homogeneous_chunk_n_per_character(number_set) 
+            Setup.buffer_codec.lexatom_n_per_character(number_set) 
         if chunk_n_per_character is None:
             return None
         else:
