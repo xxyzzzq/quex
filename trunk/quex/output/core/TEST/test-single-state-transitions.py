@@ -27,7 +27,6 @@ from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
 from   quex.engine.analyzer.door_id_address_label         import dial_db
 from   quex.engine.analyzer.transition_map                import TransitionMap  
-from   quex.engine.codec_db.core                          import CodecDynamicInfo, CodecInfo
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_MapImplementationType, \
                                                                  E_IncidenceIDs, \

@@ -5,11 +5,12 @@ from   quex.engine.state_machine.core                            import StateMac
 from   quex.engine.state_machine.character_counter               import CountInfo
 import quex.engine.state_machine.construction.setup_post_context as     setup_post_context
 import quex.engine.state_machine.construction.setup_pre_context  as     setup_pre_context
-import quex.engine.state_machine.transformation.core             as     transformation
 import quex.engine.state_machine.algorithm.beautifier            as     beautifier
 import quex.engine.state_machine.algebra.reverse                 as     reverse
 import quex.engine.misc.error                                    as     error
 from   quex.engine.misc.tools                                    import typed
+
+from   quex.blackboard  import setup as Setup
 
 class Pattern(object):
     __slots__ = ("__sr", # Source Reference (filename, line_n)
@@ -212,9 +213,12 @@ class Pattern(object):
         # must remain the same! This will not be necessary, if state machines 
         # do not carray ids any longer.
         backup_incidence_id = self.incidence_id()
-        c0, self.__sm                            = transformation.do_state_machine(self.__sm)
-        c1, self.__pre_context_sm_to_be_inverted = transformation.do_state_machine(self.__pre_context_sm_to_be_inverted)
-        c2, self.__post_context_sm               = transformation.do_state_machine(self.__post_context_sm)
+        c0, self.__sm                            = Setup.buffer_codec.do_state_machine(self.__sm, 
+                                                                                       beautifier)
+        c1, self.__pre_context_sm_to_be_inverted = Setup.buffer_codec.do_state_machine(self.__pre_context_sm_to_be_inverted, 
+                                                                                       beautifier)
+        c2, self.__post_context_sm               = Setup.buffer_codec.do_state_machine(self.__post_context_sm, 
+                                                                                       beautifier)
         self.set_incidence_id(backup_incidence_id)
 
         # Only if all transformations have been complete, then the transformation

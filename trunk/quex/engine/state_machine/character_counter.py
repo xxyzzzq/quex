@@ -1,7 +1,7 @@
 # (C) 2012 Frank-Rene Schaefer
-from   quex.engine.misc.tree_walker import TreeWalker
-from   quex.engine.codec_db.core    import CodecDynamicInfo
-from   quex.blackboard              import E_Count
+from   quex.engine.misc.tree_walker                  import TreeWalker
+from   quex.engine.state_machine.transformation.core import EncodingTrafoByFunction
+from   quex.blackboard                               import E_Count
 
 class CountInfo:
     """Information on character counting characteristics of lexeme that match a 
@@ -41,9 +41,6 @@ class CountInfo:
          is E_Count.VOID if there is no relation between lexeme length and
          column number increment.
     """
-
-    chunk_n_per_char = None
-
     def __init__(self, Result, CodecTrafoInfo, SM):
         self.column_n_increment                  = CountInfo.get_real(Result.column_n_increment)
         self.line_n_increment                    = CountInfo.get_real(Result.line_n_increment)
@@ -54,7 +51,7 @@ class CountInfo:
         self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
         self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
 
-        if isinstance(CodecTrafoInfo, CodecDynamicInfo):
+        if isinstance(CodecTrafoInfo, EncodingTrafoByFunction):
             self._consider_variable_character_sizes(SM, CodecTrafoInfo)
 
     @staticmethod
@@ -148,14 +145,6 @@ class CountInfo:
         elif self.grid_step_size_by_lexeme_length     != E_Count.VOID: return True
         return False
 
-    @staticmethod
-    def _get_chunk_n_per_character(SM, CodecTrafoInfo):
-        if CountInfo.chunk_n_per_char != -1:
-            return CountInfo.chunk_n_per_char
-        CountInfo.chunk_n_per_char = \
-             CodecTrafoInfo.homogeneous_chunk_n_per_character_in_state_machine(SM)
-        return CountInfo.chunk_n_per_char
-
     def _consider_variable_character_sizes(self, SM, CodecTrafoInfo):
         """UTF8 and UTF16 counters may have different numbers of chunks that
         represent a single character. In such cases, it cannot be concluded from
@@ -176,7 +165,7 @@ class CountInfo:
         
                 self.column_n_increment_by_lexeme_length /= 2.
         """
-        CountInfo.chunk_n_per_char = -1
+        lexatom_n_per_char = -1
 
         # If the internal engine is not running on Unicode, considerations
         # may be made about the byte number per character (e.g. UTF8).
@@ -190,28 +179,29 @@ class CountInfo:
             # In this case, the column number increment is a function of
             # the lexeme length. This is only valid if all characters in the
             # pattern actually have the same number of 'chunks' (e.g. bytes in UTF8).
-            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
-            if chunk_n_per_char is None:
+            lexatom_n_per_char = CodecTrafoInfo.lexatom_n_per_character_in_state_machine(SM)
+            if lexatom_n_per_char is None:
                 # One cannot conclude from the number of bytes of a lexeme to 
                 # the number of columns to be incremented.
                 self.column_n_increment_by_lexeme_length = E_Count.VOID
                 self.grid_step_size_by_lexeme_length     = E_Count.VOID
             else:
                 if self.column_n_increment_by_lexeme_length  != E_Count.VOID:
-                    self.column_n_increment_by_lexeme_length = float(self.column_n_increment_by_lexeme_length) / chunk_n_per_char
+                    self.column_n_increment_by_lexeme_length = float(self.column_n_increment_by_lexeme_length) / lexatom_n_per_char
                 elif self.grid_step_size_by_lexeme_length    != E_Count.VOID:
-                    self.grid_step_size_by_lexeme_length     = float(self.grid_step_size_by_lexeme_length) / chunk_n_per_char
+                    self.grid_step_size_by_lexeme_length     = float(self.grid_step_size_by_lexeme_length) / lexatom_n_per_char
 
         if self.line_n_increment != E_Count.VOID:
             # No problem in this case; increment does not depend on the lexeme length.
             pass
         
         elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
-            chunk_n_per_char = CountInfo._get_chunk_n_per_character(SM, CodecTrafoInfo)
-            if chunk_n_per_char is None:
+            if lexatom_n_per_char == -1: # If not yet determined, determine!
+                lexatom_n_per_char = CodecTrafoInfo.lexatom_n_per_character_in_state_machine(SM)
+            if lexatom_n_per_char is None:
                 self.line_n_increment_by_lexeme_length  = E_Count.VOID
             elif self.line_n_increment_by_lexeme_length != E_Count.VOID:
-                self.line_n_increment_by_lexeme_length  = float(self.line_n_increment_by_lexeme_length) / chunk_n_per_char
+                self.line_n_increment_by_lexeme_length  = float(self.line_n_increment_by_lexeme_length) / lexatom_n_per_char
 
     def counting_required_f(self):
         """Determine whether the line and column number increment needs to be

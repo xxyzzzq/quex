@@ -1,10 +1,9 @@
 from   quex.input.regular_expression.construct         import Pattern
 import quex.engine.state_machine.algorithm.beautifier  as     beautifier
 from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.construction.parallelize           as     parallelize
-import quex.engine.state_machine.transformation.core   as     transformation
+import quex.engine.state_machine.construction.parallelize as     parallelize
 from   quex.engine.analyzer.door_id_address_label      import dial_db
-from   quex.engine.operations.operation_list                       import Op
+from   quex.engine.operations.operation_list           import Op
 import quex.engine.misc.error                          as     error
 from   quex.engine.misc.tools                          import all_isinstance, \
                                                               all_true, \
@@ -108,7 +107,7 @@ class CharacterSetStateMachine:
                  BeyondIid=None):
 
         def trafo(SM):
-            dummy, sm = transformation.do_state_machine(SM)
+            dummy, sm = Setup.buffer_codec.do_state_machine(SM, beautifier)
             assert sm is not None
             return sm
 

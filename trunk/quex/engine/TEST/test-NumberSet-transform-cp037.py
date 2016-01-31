@@ -6,7 +6,7 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from   quex.engine.misc.interval_handling import Interval, NumberSet
-import quex.engine.codec_db.core     as     codec_db
+from   quex.engine.state_machine.transformation.core import EncodingTrafoByTable
 
 
 if "--hwut-info" in sys.argv:
@@ -17,7 +17,7 @@ if "--hwut-info" in sys.argv:
 # The codec cp037 is so wonderful, because it shuffles all unicode
 # code points nicely.
 
-trafo_cp037 = codec_db.CodecTransformationInfo("cp037")
+trafo_cp037 = EncodingTrafoByTable("cp037")
 
 if "1" in sys.argv:
     def test(UC):

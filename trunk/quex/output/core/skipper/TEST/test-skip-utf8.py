@@ -7,7 +7,6 @@ from   helper import *
 import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split
 from   quex.engine.misc.interval_handling               import NumberSet, Interval
 from   quex.output.core.TEST.generator_test   import __Setup_init_language_database
-from   quex.engine.codec_db.core                   import CodecDynamicInfo
 from   quex.blackboard                             import setup as Setup
 
 if "--hwut-info" in sys.argv:
@@ -30,7 +29,7 @@ Language = "Cpp"
 __Setup_init_language_database(Language)
 
 trigger_set = NumberSet([Interval(0x600, 0x700)]) 
-Setup.buffer_codec = CodecDynamicInfo("utf8", utf8_state_split)
+Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
 
 def make(TriggerSet, BufferSize):
     Language = "ANSI-C-from-file"

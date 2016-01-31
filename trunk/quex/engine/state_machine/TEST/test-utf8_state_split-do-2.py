@@ -13,6 +13,7 @@ from   quex.engine.state_machine.engine_state_machine_set                  impor
 
 if "--hwut-info" in sys.argv:
     print "UTF8 State Split: Larger Number Sets"
+    sys.exit()
 
 
 sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {}).sm

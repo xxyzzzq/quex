@@ -6,7 +6,6 @@ from   quex.output.core.skipper.common        import line_counter_in_loop, \
                                                           get_on_skip_range_open, \
                                                           line_column_counter_in_loop
 import quex.engine.state_machine.index             as     sm_index
-import quex.engine.state_machine.transformation.core    as     transformation
 from   quex.engine.misc.string_handling            import blue_print
 from   quex.engine.misc.tools                           import r_enumerate, \
                                                           typed, \
@@ -158,7 +157,7 @@ def get_skipper(EndSequence, CloserPattern, ModeName, OnSkipRangeOpen, DoorIdAft
 
     delimiter_str, delimiter_comment_str = get_character_sequence(EndSequence)
 
-    end_sequence_transformed = transformation.do_sequence(EndSequence)
+    end_sequence_transformed = Setup.buffer_codec.do_sequence(EndSequence)
 
     # Determine the $$DELIMITER$$
     delimiter_length = len(end_sequence_transformed)
@@ -317,8 +316,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 
     # Trasform letter by letter.
     sequence = flatten_list_of_lists(
-        transformation.do_character(x, Setup.buffer_codec)
-        for x in UnicodeSequence
+        Setup.buffer_codec.transform_Number(x) for x in UnicodeSequence
     )
 
     EndSequenceChunkN = len(sequence)

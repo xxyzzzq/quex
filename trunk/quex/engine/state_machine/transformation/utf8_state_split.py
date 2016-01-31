@@ -127,7 +127,7 @@ def do_set(NSet):
         if interval.end > 0x80: return None
     return NSet
 
-def homogeneous_chunk_n_per_character(CharacterSet):
+def lexatom_n_per_character(CharacterSet):
     """If all characters in a unicode character set state machine require the
     same number of bytes to be represented this number is returned.  Otherwise,
     'None' is returned.
