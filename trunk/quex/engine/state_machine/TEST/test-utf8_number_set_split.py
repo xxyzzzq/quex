@@ -27,7 +27,7 @@ def test(Begin, End):
 
     L = len(trafo.unicode_to_utf8(X.begin))
     assert L == len(trafo.unicode_to_utf8(X.end - 1))
-    result, p = trafo.split_interval_into_contigous_byte_sequence_range(X, L)
+    result = trafo.get_contiguous_interval_sequences(X, L)
     print "Result:"
     previous_end = X.begin
     for interval in result:

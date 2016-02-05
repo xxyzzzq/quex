@@ -14,6 +14,7 @@ from   quex.engine.state_machine.engine_state_machine_set                 import
 
 if "--hwut-info" in sys.argv:
     print "UTF8 State Split: Larger Number Sets"
+    sys.exit()
 
 
 class X:

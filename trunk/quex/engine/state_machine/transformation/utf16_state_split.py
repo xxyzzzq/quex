@@ -31,48 +31,22 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.engine.misc.utf16                    import utf16_to_unicode, unicode_to_utf16
-from   quex.engine.misc.interval_handling        import Interval, NumberSet
-import quex.engine.state_machine.algorithm.beautifier as beautifier
+from   quex.engine.misc.utf16                          import utf16_to_unicode, \
+                                                              unicode_to_utf16
+from   quex.engine.misc.interval_handling              import Interval, NumberSet
+import quex.engine.state_machine.algorithm.beautifier  as     beautifier
+import quex.engine.state_machine.transformation.common as     common 
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
 def do(sm):
+    return common.do(sm, 0x10000, create_intermediate_states, prune_forbidden_range)
+
+def prune_forbidden_range(number_set):
     global ForbiddenRange
-
-    state_list = sm.states.items()
-    for state_index, state in state_list:
-        # Get the 'transition_list', i.e. a list of pairs (TargetState, NumberSet)
-        # which indicates what target state is reached via what number set.
-        transition_list = state.target_map.get_map().items()
-        # Clear the state's transitions, now. This way it can absorb new
-        # transitions to intermediate states.
-        state.target_map.clear()
-        # Loop over all transitions
-        for target_state_index, number_set in transition_list:
-            # -- 1st check whether a modification is necessary
-            if number_set.supremum() <= 0x10000:
-                sm.states[state_index].add_transition(number_set, target_state_index)
-                continue
-
-            # -- We help: General regular expressions may not bother with 
-            #    the 'ForbiddenRange'. Let us be so kind and cut it here.
-            number_set.subtract(ForbiddenRange)
-            number_set.cut_lesser(0)
-            number_set.cut_greater_or_equal(0x110000)
-
-            # -- Add intermediate States
-            #    We take the intervals with 'PromiseToTreatWellF' even though they
-            #    are changed. This is because the intervals would be lost anyway
-            #    after the state split, so we use the same memory and do not 
-            #    cause a time consuming memory copy and constructor calls.
-            interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
-
-            for interval in interval_list:
-                create_intermediate_states(sm, state_index, target_state_index, interval)
-    
-    result = beautifier.do(sm)
-    return result
+    number_set.subtract(ForbiddenRange)
+    number_set.cut_lesser(0)
+    number_set.cut_greater_or_equal(0x110000)
 
 def do_set(NSet):
     """Unicode values > 0xFFFF are translated into byte sequences, thus, only number

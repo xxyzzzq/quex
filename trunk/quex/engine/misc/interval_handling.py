@@ -298,6 +298,9 @@ class Interval(object):
         elif self.end   > Other.end:   return  1
         return 0
 
+    def __hash__(self):
+        return hash(self.begin) ^ hash(self.end)
+
 class NumberSet(object):
     """Represents an arbitrary set of numbers. The set is described
        in terms of intervals, i.e. objects of class 'Interval'. This
