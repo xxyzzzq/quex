@@ -224,7 +224,7 @@ def plug_interval_sequences(sm, StateIndex, TargetIndex, IntervalSequenceList):
     sm.states[StateIndex].set_target_map(tmp_init_state.target_map)
     sm.states[StateIndex].target_map.replace_target_index(tmp_target_index, TargetIndex)
 
-def hopcrift_mini_construction():
+def plug_interval_sequences(sm, StateIndex, TargetIndex, IntervalSequenceList):
     def iseq_db_find_tail(iseq_db, IntervalSequence, TargetIndex):
         """Find a state that has already been created from where some tail
         of 'IntervalSequence' triggers to the 'TargetIndex'.
@@ -233,28 +233,42 @@ def hopcrift_mini_construction():
         found_state_index = None
         # Iterate from rear to front. 
         for i in reversed(range(len(IntervalSequence))):
+            print "#    check:", tuple(IntervalSequence[i:])
             state_index = iseq_db.get(tuple(IntervalSequence[i:]))
-            if state_index is None: break
+            if state_index is None: 
+                print "#    failed"
+                for key in iseq_db.keys():
+                    print "#    key:", key
+                break
             found_i = i
             found_state_index = state_index
 
+        print "#  found_i:", found_i
         if found_i is None: return IntervalSequence, TargetIndex
         else:               return IntervalSequence[:found_i], found_state_index
 
     def plug(iseq_db, sm, IntervalSequence, StateIndex, TargetIndex):
+        print "#search:", IntervalSequence
         start_seq, \
         end_state_index = iseq_db_find_tail(iseq_db, IntervalSequence, TargetIndex)
-        #print "#IntervalSequence:", IntervalSequence
-        #print "#Head:", start_seq
-        #print "#end_state:", end_state_index
+        print "#  found:", end_state_index, start_seq
 
         # add transition ...
-        s_idx  = StateIndex
+        si     = StateIndex
         last_i = len(start_seq) - 1
         for i, interval in enumerate(start_seq):
-            if i != last_i: s_idx = sm.add_transition(s_idx, interval)
-            else:           sm.add_transition(s_idx, interval, end_state_index)
-            iseq_db[tuple(IntervalSequence[i:])] = s_idx 
+            iseq_db[tuple(IntervalSequence[i:])] = si
+            print "#enter:", tuple(IntervalSequence[i:]), si 
+            if i == last_i: 
+                sm.add_transition(si, interval, end_state_index)
+                break
+            state   = sm.states[si]
+            next_si = state.target_map.target_of_exact_interval(interval)
+            if next_si is None:
+                next_si = sm.add_transition(si, interval)
+            si = next_si
+
+        print "#sm:", sm.get_string(Option="hex", NormalizeF=False)
 
     iseq_db = {}
     for interval_sequence in IntervalSequenceList:

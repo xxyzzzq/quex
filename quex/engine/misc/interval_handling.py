@@ -1000,6 +1000,10 @@ class NumberSet(object):
         if x.end - x.begin != 1: return None
         else:                    return x.begin
 
+    def get_the_only_interval(self):
+        if len(self.__intervals) != 1: return None
+        else:                          return self.__intervals[0]
+
     def get_string(self, Option="", Delimiter=", "):
         txt = ""
         if len(self.__intervals) == 0:

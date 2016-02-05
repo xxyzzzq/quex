@@ -297,6 +297,15 @@ class TargetMap:
         if self.get_resulting_target_state_index(CharCode) is None: return False
         else:                                                       return True
 
+    def target_of_exact_interval(self, Intvl):
+        """RETURNS: Target State Index, if there is a target that triggers 
+                                        exactly on the given interval.
+                    None, else.
+        """
+        for target, number_set in self.__db.iteritems():
+            if number_set.get_the_only_interval() == Intvl: return target
+        return None
+
     def has_target(self, TargetState):
         if self.__db.has_key(TargetState):                    return True
         elif TargetState in self.__epsilon_target_index_list: return True
