@@ -131,9 +131,11 @@ class StateMachine(object):
         """
         work_set      = set([ self.init_state_index ])
         connected_set = set()
-        while len(work_set) != 0:
+        while work_set:
             state_index = work_set.pop()
-            state       = self.states[state_index]
+            # may be the 'state_index' is not even in state machine
+            state       = self.states.get(state_index) 
+            if state is None: continue
             connected_set.add(state_index)
 
             work_set.update((i for i in state.target_map.get_target_state_index_list()

@@ -25,7 +25,7 @@ def test(X):
     print "   .back  --> " + pretty_sequence(X.end - 1)
     print
 
-    result = trafo.split_interval_according_to_utf8_byte_sequence_length(X)
+    result = trafo.split_by_transformed_sequence_length(X)
     print "Result:"
     for n, interval in result.items():
         print "      SubInterval (bytes=%i): %s " % (n, interval.get_string(Option="hex"))

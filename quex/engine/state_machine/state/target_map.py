@@ -226,6 +226,15 @@ class TargetMap:
         if self.__db.has_key(TargetIdx): return self.__db[TargetIdx]
         else:                            return NumberSet()
 
+    def replace_target_index(self, Original, Replacement):
+        trigger_set = self.__db.get(Original)
+        if trigger_set is not None:
+            del self.__db[Original]
+            self.__db[Replacement] = trigger_set
+        if Original in self.__epsilon_target_index_list:
+            self.__epsilon_target_index_list.remove(Original)
+            self.__epsilon_target_index_list.append(Replacement)
+
     def replace_target_indices(self, ReplacementDict):
         new_db = {}
         for target_idx, trigger_set in self.__db.iteritems():

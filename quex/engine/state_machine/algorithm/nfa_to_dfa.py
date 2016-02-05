@@ -38,7 +38,7 @@ def do(SM, Class_StateMachine=StateMachine, Class_State=State):
 
     epsilon_closure_db = SM.get_epsilon_closure_db()
 
-    while len(worklist) != 0:
+    while worklist:
         # 'start_state_index' is the index of an **existing** state in the state machine.
         # It was either created above, in StateMachine's constructor, or as a target
         # state index.
