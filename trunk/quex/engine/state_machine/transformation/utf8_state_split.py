@@ -1,71 +1,4 @@
 """
-ABSTRACT:
-
-    The UTF8-State-Split is a procedure introcuded by Frank-Rene Schaefer that
-    allows to transform a state machine that triggers on unicode characters
-    into a state machine that triggers on the correspondent UTF8 Byte
-    Sequences.
-
-PRINCIPLE:
-
-    An elementary trigger in quex state machine is a unicode interval. That
-    means, that if a character appears that falls into the interval a state
-    transition is triggered. Each of those intervals needs now to be translated
-    into interval sequences of the correspondent utf8 byte sequences. A unicode
-    transition from state A to state B:
-
-         [ A ]-->(x0, x1)-->[ B ]
-
-    is translated into a chain of utf8-byte sequence transitions that might
-    look like this
-
-         [ A ]-->(b0)-->[ 1 ]-->(c0,c1)-->[ B ] 
-             \                             /
-              `->(d1)-->[ 2 ]---(e0,e1)---' 
-
-    That means that intermediate states may be introduced to reflect the
-    different byte sequences that represent the original interval.
-
-IDEAS:
-    
-    In a simple approach one would translate each element of a interval into an
-    utf8-byte sequence and generate state transitions between A and B.  Such an
-    approach, however, produces a huge computational overhead and charges the
-    later Hopcroft Minimization with a huge state machine.
-
-    To avoid such an overflow, the Hopcroft Minimzation can be prepared on the
-    basis of transition intervals. 
-    
-    (A) Backwards: In somewhat greater intervals, the following might occur:
-
-
-                 .-->(d1)-->[ 1 ]---(A3,BF)---. 
-                /                              \
-               /  ,->(d1)-->[ 2 ]---(80,BF)--.  \
-              /  /                            \  \
-             [ A ]-->(b0)-->[ 3 ]-->(80,BF)-->[ B ] 
-                 \                             /
-                  `->(d1)-->[ 4 ]---(80,81)---' 
-
-        That means, that for states 2 and 3 the last transition is on [80, BF]
-        to state B. Thus, the intermediate states 2 and 3 are equivalent. Both
-        can be replaced by a single state. 
-
-    (B) Forwards: The first couple of bytes in the correspondent utf8 sequences
-        might be the same. Then, no branch is required until the first differing
-        byte.
-
-PROCESS:
-
-    (1) The original interval is split into sub-intervals that have the same 
-        length of utf8-byte sequences.
-
-    (2) Each sub-interval is split into further sub-intervals where as 
-        many trailing [80,BF] ranges are combined.
-
-    (3) The interval sequences are plugged in between the state A and B
-        of the state machine.
-
 (C) 2009 Frank-Rene Schaefer
 """
 import os
@@ -73,15 +6,12 @@ import sys
 from   copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.engine.misc.utf8                           import utf8_to_unicode, unicode_to_utf8, UTF8_MAX, UTF8_BORDERS
-from   quex.engine.misc.interval_handling              import Interval, NumberSet
-import quex.engine.state_machine                       as     state_machine
-from   quex.engine.state_machine.state.core            import State
-from   quex.engine.state_machine.core                  import StateMachine
-import quex.engine.state_machine.algorithm.beautifier  as     beautifier
-import quex.engine.state_machine.transformation.common as     common 
-
-utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
+from   quex.engine.misc.utf8                                import utf8_to_unicode, \
+                                                                   unicode_to_utf8, \
+                                                                   UTF8_MAX, \
+                                                                   UTF8_BORDERS
+from   quex.engine.misc.interval_handling                   import Interval, NumberSet
+import quex.engine.state_machine.transformation.state_split as     state_split 
 
 def do(sm):
     """The UTF8 encoding causes a single unicode character code being translated
@@ -101,7 +31,24 @@ def do(sm):
        x1, x2, and x3 can trigger. Note, that the UTF8 sequence ends
        at the same state '2' as the previous single trigger 'X'.
     """
-    return common.do(sm, 0x7F, create_intermediate_states)
+    return state_split.do(sm, 0x7F, get_interval_sequences)
+
+def get_interval_sequences(Orig):
+    """Orig = Unicode Trigger Set. It is transformed into a sequence of intervals
+    that cover all elements of Orig in a representation as UTF8 code units.
+    A transition from state '1' to state '2' on 'Orig' is then equivalent to 
+    the transitions along the code unit sequence.
+    """
+    db = split_by_transformed_sequence_length(Orig)
+    if db is None: return None
+
+    result = []
+    for seq_length, interval in db.items():
+        interval_list = get_contiguous_interval_sequences(interval, seq_length)
+        result.extend(
+            _get_trigger_sequence_for_contigous_byte_range_interval(interval, seq_length)
+            for interval in interval_list)
+    return result
 
 def do_set(NSet):
     """Unicode values > 0x7F are translated into byte sequences, thus, only number
@@ -134,145 +81,6 @@ def lexatom_n_per_character(CharacterSet):
     back_chunk_n  = len(unicode_to_utf8(back))
     if front_chunk_n != back_chunk_n: return None
     else:                             return front_chunk_n
-
-def create_intermediate_states(sm, StateIndex, TargetIndex, Orig):
-    transformed_interval_sequence_list = get_interval_sequences(Orig)
-    if transformed_interval_sequence_list is None: return False
-
-    plug_interval_sequences(sm, StateIndex, TargetIndex, 
-                            transformed_interval_sequence_list)
-
-    return True
-
-def get_interval_sequences(Orig):
-    """Orig = Unicode Trigger Set. It is transformed into a sequence of intervals
-    that cover all elements of Orig in a representation as UTF8 code units.
-    A transition from state '1' to state '2' on 'Orig' is then equivalent to 
-    the transitions along the code unit sequence.
-    """
-    db = split_by_transformed_sequence_length(Orig)
-    if db is None: return None
-
-    result = []
-    for seq_length, interval in db.items():
-        interval_list = get_contiguous_interval_sequences(interval, seq_length)
-        result.extend(
-            get_trigger_sequence_for_contigous_byte_range_interval(interval, seq_length)
-            for interval in interval_list)
-    return result
-
-def plug_interval_sequences(sm, StateIndex, TargetIndex, IntervalSequenceList):
-    """Plug the 'IntervalSequenceList' into state machine so that it guides 
-    from 'StateIndex' to 'TargetIndex'. If the list is greater than '1' it 
-    involves the creation of intermediate states.
-
-    ADAPTS: sm[StateIndex] 
-            sm, i.e. generates possible new states.
-    ___________________________________________________________________________
-    Avoiding excessive Hopcroft minimization, the 'IntervalSequenceList' is 
-    plugged with some consideration. Imagine two sequences end with [0x80,0xBF]
-    triggering to the target state. If for each sequence a separate state
-    sequence is implemented this looks like below.
-
-                   (2)---(some)--->(3)---[0x80-0xBF]-->--.
-                                                        (4)
-                   (5)---(other)-->(6)---[0x80-0xBF]-->--'
-
-    However, state 3 and 6 are equivalent, so the above is equivalent to 
-
-                   (2)---(some)--->(3)---[0x80-0xBF]-->--(4)
-                                   /                        
-                   (5)---(other)--'                       
-
-    This configuration would also be achieved by Hopcroft Minimization. However,
-    here it can be done with a minimal effort. The algorithm stores for each 
-    generated state the interval sequence by which the target state is reached, 
-    i.e. a database 'iseq_db' maps
-
-           iseq_db:   terminating interval sequence ---> state 'i'
-
-    where state 'i' triggers solely on the 'terminating interval sequence' to 
-    'TargetIndex'.
-    ___________________________________________________________________________
-    """
-    tmp_sm = StateMachine()
-    for interval_sequence in IntervalSequenceList:
-        s_idx  = tmp_sm.init_state_index
-        last_i = len(interval_sequence) - 1
-        for i, interval in enumerate(interval_sequence):
-            if i != last_i: 
-                s_idx = tmp_sm.add_transition(s_idx, interval)
-            else:           
-                tmp_sm.add_transition(s_idx, interval, TargetIndex, AcceptanceF=True)
-
-    tmp_sm = beautifier.do(tmp_sm)
-    tmp_target_index = None
-    for state_index, state in tmp_sm.states.iteritems():
-        if not state.target_map.is_empty(): continue
-        tmp_target_index = state_index
-        break
-    assert tmp_target_index is not None
-
-    # Copy states into the state machine
-    for state_index, state in tmp_sm.states.iteritems():
-        if   state_index == tmp_sm.init_state_index: continue
-        elif state_index == tmp_target_index: continue
-        state.target_map.replace_target_index(tmp_target_index, TargetIndex)
-        sm.states[state_index] = state
-
-    tmp_init_state = tmp_sm.get_init_state()
-    sm.states[StateIndex].set_target_map(tmp_init_state.target_map)
-    sm.states[StateIndex].target_map.replace_target_index(tmp_target_index, TargetIndex)
-
-def plug_interval_sequences(sm, StateIndex, TargetIndex, IntervalSequenceList):
-    def iseq_db_find_tail(iseq_db, IntervalSequence, TargetIndex):
-        """Find a state that has already been created from where some tail
-        of 'IntervalSequence' triggers to the 'TargetIndex'.
-        """
-        found_i = None
-        found_state_index = None
-        # Iterate from rear to front. 
-        for i in reversed(range(len(IntervalSequence))):
-            print "#    check:", tuple(IntervalSequence[i:])
-            state_index = iseq_db.get(tuple(IntervalSequence[i:]))
-            if state_index is None: 
-                print "#    failed"
-                for key in iseq_db.keys():
-                    print "#    key:", key
-                break
-            found_i = i
-            found_state_index = state_index
-
-        print "#  found_i:", found_i
-        if found_i is None: return IntervalSequence, TargetIndex
-        else:               return IntervalSequence[:found_i], found_state_index
-
-    def plug(iseq_db, sm, IntervalSequence, StateIndex, TargetIndex):
-        print "#search:", IntervalSequence
-        start_seq, \
-        end_state_index = iseq_db_find_tail(iseq_db, IntervalSequence, TargetIndex)
-        print "#  found:", end_state_index, start_seq
-
-        # add transition ...
-        si     = StateIndex
-        last_i = len(start_seq) - 1
-        for i, interval in enumerate(start_seq):
-            iseq_db[tuple(IntervalSequence[i:])] = si
-            print "#enter:", tuple(IntervalSequence[i:]), si 
-            if i == last_i: 
-                sm.add_transition(si, interval, end_state_index)
-                break
-            state   = sm.states[si]
-            next_si = state.target_map.target_of_exact_interval(interval)
-            if next_si is None:
-                next_si = sm.add_transition(si, interval)
-            si = next_si
-
-        print "#sm:", sm.get_string(Option="hex", NormalizeF=False)
-
-    iseq_db = {}
-    for interval_sequence in IntervalSequenceList:
-        plug(iseq_db, sm, interval_sequence, StateIndex, TargetIndex)
 
 def split_by_transformed_sequence_length(X):
     """Split Unicode interval into intervals where all values have the same 
@@ -427,70 +235,12 @@ def get_contiguous_interval_sequences(X, L):
 
     return result
 
-def get_trigger_sequence_for_contigous_byte_range_interval(X, L):
+def _get_trigger_sequence_for_contigous_byte_range_interval(X, L):
     front_sequence = unicode_to_utf8(X.begin)
     back_sequence  = unicode_to_utf8(X.end - 1)
     # If the interval is contigous it must produce equal length utf8 sequences
 
     return [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
-
-# For byte n > 1, the max byte range is always 0x80-0xBF (including 0xBF)
-FullRange = Interval(0x80, 0xC0)
-def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx, XList, L, DIdx):
-    """Create a state machine sequence for trigger set list of the same length.
-
-       L      Length of the trigger set list.
-       DIdx   Index of first byte that differs, i.e. byte[i] == byte[k] for i, k < DIdx.
-       XList  The trigger set list.
-
-                                    .          .              .
-                       [A,         B,         C,         80-BF  ] 
-
-              [Start]--(A)-->[1]--(B)-->[2]--(C)-->[3]--(80-BF)-->[End]
-    """
-    global FullRange
-    assert L <= 6
-
-    s_idx = StartStateIdx
-    # For the common bytes it is not essential what list is considered, take list no. 0.
-    for trigger_set in XList[0][:DIdx]:
-        s_idx = sm.add_transition(s_idx, trigger_set)
-    # Store the last state where all bytes are the same
-    sDIdx = s_idx
-
-    # Indeces of the states that run on 'full range' (frs=full range state)
-    def get_sm_index(frs_db, Key):
-        result = frs_db.get(Key)
-        if result is None: 
-            result      = state_machine.index.get()
-            frs_db[Key] = result
-        return result
-
-    frs_db = {}
-    for trigger_set_seq in XList:
-        # How many bytes at the end trigger on 'Min->Max'
-        sbw_idx  = EndStateIdx
-        last_idx = EndStateIdx
-        i = L - 1
-        while i > DIdx and i != 0:
-            if not trigger_set_seq[i].is_equal(FullRange): break
-            last_idx = get_sm_index(frs_db, i-1)
-            if not sm.states.has_key(last_idx): sm.states[last_idx] = State()
-            sm.add_transition(last_idx, trigger_set_seq[i], sbw_idx)
-            sbw_idx = last_idx
-            i -= 1
-
-        sbw_idx = last_idx
-        while i > DIdx:
-            # Maybe, it has already a transition on trigger_set .. (TO DO)
-            last_idx = state_machine.index.get()
-            sm.add_transition(last_idx, trigger_set_seq[i], sbw_idx)
-            sbw_idx = last_idx
-            i -= 1
-
-        sm.add_transition(sDIdx, trigger_set_seq[i], last_idx)
-
-    return       
 
 def get_unicode_range():
     return NumberSet.from_range(0, 0x110000)

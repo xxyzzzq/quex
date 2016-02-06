@@ -31,16 +31,29 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.engine.misc.utf16                          import utf16_to_unicode, \
-                                                              unicode_to_utf16
-from   quex.engine.misc.interval_handling              import Interval, NumberSet
-import quex.engine.state_machine.algorithm.beautifier  as     beautifier
-import quex.engine.state_machine.transformation.common as     common 
+from   quex.engine.misc.utf16                               import utf16_to_unicode, \
+                                                                   unicode_to_utf16
+from   quex.engine.misc.interval_handling                   import Interval, NumberSet
+import quex.engine.state_machine.transformation.state_split as     state_split 
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
 def do(sm):
-    return common.do(sm, 0x10000, create_intermediate_states, prune_forbidden_range)
+    return state_split.do(sm, 0x10000, get_interval_sequences, prune_forbidden_range)
+
+def get_interval_sequences(Orig):
+    interval_1word, intervals_2word = get_contigous_intervals(Orig)
+
+    result = []
+    if interval_1word is not None:
+        result.append([interval_1word])
+
+    if intervals_2word is not None:
+        result.extend(
+            get_trigger_sequence_for_interval(interval)
+            for interval in intervals_2word
+        )
+    return result
 
 def prune_forbidden_range(number_set):
     global ForbiddenRange
@@ -79,21 +92,6 @@ def lexatom_n_per_character(CharacterSet):
     back_chunk_n  = len(unicode_to_utf16(back))
     if front_chunk_n != back_chunk_n: return None
     else:                             return front_chunk_n
-
-def create_intermediate_states(sm, StartStateIdx, EndStateIdx, X):
-    # Split the interval into a range below and above 0xFFFF. This corresponds
-    # unicode values that are represented in utf16 via 2 and 4 bytes (1 and 2 words).
-    interval_1word, intervals_2word = get_contigous_intervals(X)
-
-    if interval_1word is not None:
-        sm.add_transition(StartStateIdx, interval_1word, EndStateIdx)
-
-    if intervals_2word is not None:
-        for interval in intervals_2word:
-            # Introduce intermediate state
-            trigger_seq = get_trigger_sequence_for_interval(interval)
-            s_idx = sm.add_transition(StartStateIdx, trigger_seq[0])
-            sm.add_transition(s_idx, trigger_seq[1], EndStateIdx)
 
 def get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values
