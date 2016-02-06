@@ -5,6 +5,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.engine.misc.interval_handling         import NumberSet, Interval
 import quex.engine.state_machine.transformation.utf8_state_split as trafo
+import quex.engine.state_machine.transformation.state_split      as state_split
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.state_machine.state.core       import State
 import quex.engine.state_machine                  as state_machine
@@ -63,7 +64,7 @@ def test(ByteSequenceDB):
     end_index = state_machine.index.get()
     sm.states[end_index] = State()
 
-    trafo.plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB)
+    state_split.plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB)
 
     if len(sm.get_orphaned_state_index_list()) != 0:
         print "Error: Orphaned States Detected!"
