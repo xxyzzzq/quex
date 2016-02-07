@@ -4,72 +4,15 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from StringIO import StringIO
-import quex.input.regular_expression.engine           as regex
-from   quex.engine.state_machine.state.single_entry   import SeAccept     
-from   quex.engine.state_machine.core                 import StateMachine
-from   quex.engine.misc.interval_handling                  import NumberSet, Interval
-import quex.engine.state_machine.transformation.utf16_state_split    as trafo
-from   quex.engine.state_machine.transformation.utf16_state_split    import unicode_to_utf16
-from   quex.engine.state_machine.engine_state_machine_set  import get_combined_state_machine
+from   quex.engine.misc.interval_handling                         import NumberSet, Interval
+import quex.engine.state_machine.transformation.utf16_state_split as     trafo
+from   quex.engine.state_machine.transformation.utf16_state_split import unicode_to_utf16
+from   quex.engine.state_machine.engine_state_machine_set         import get_combined_state_machine
+from   quex.engine.state_machine.transformation.TEST.helper       import X, check_negative
 
 if "--hwut-info" in sys.argv:
     print "UTF16 State Split: Larger Number Sets"
     sys.exit()
-
-
-class X:
-    def __init__(self, Name):
-        sh = StringIO("[:\\P{Script=%s}:]" % Name)
-        self.name = Name
-        self.charset = regex.snap_set_expression(sh, {})
-        self.sm = StateMachine()
-        self.sm.add_transition(self.sm.init_state_index, self.charset, AcceptanceF=True)
-        self.id = self.sm.get_id()
-
-    def check(self, SM):
-        """This function throws an exception as soon as one single value
-           is not matched according to the expectation.
-        """
-        print "Name = " + self.name, 
-        for interval in self.charset.get_intervals(PromiseToTreatWellF=True):
-            for i in range(interval.begin, interval.end):
-                utf16_seq = unicode_to_utf16(i)
-
-                # Apply sequence to state machine
-                state = result.apply_sequence(utf16_seq)
-                assert state is not None, \
-                       "No acceptance for %X in [%X,%X] --> %s" % \
-                       (i, interval.begin, interval.end - 1, repr(map(lambda x: "%04X." % x, utf16_seq)))
-
-                # All acceptance flags must belong to the original state machine
-                if not any(cmd.acceptance_id() == self.id 
-                           for cmd in state.single_entry.get_iterable(SeAccept)):
-                    print 
-                    print "#sm.orig:  ", self.sm.get_string(NormalizeF=False, Option="hex")
-                    print "#sm.result:", SM.get_string(NormalizeF=False, Option="hex")
-                    print "#UCS: { interval: %s; value: %s; }" % (interval.get_string(Option="hex"), i)
-                    print "#Seq: ", ["0x%02X" % x for x in utf8_seq]
-                    print "#expected:", self.id
-                    print "#found:", cmd_list
-
-        print " (OK=%i)" % self.id
-
-def check_negative(SM, ImpossibleIntervals):
-    """None of the given unicode values shall reach an acceptance state.
-    """
-    print "Inverse Union Check:",
-    for interval in ImpossibleIntervals:
-        for i in [interval.begin, (interval.end + interval.begin) / 2, interval.end - 1]:
-            utf16_seq = unicode_to_utf16(i)
-
-            # Apply sequence to state machine
-            state = result.apply_sequence(utf16_seq)
-            if state is None: continue
-
-            # An acceptance state cannot be reached by a unicode value in ImpossibleIntervals
-            assert not any(state.single_entry.get_iterable(SeAccept))
-
-    print " (OK)"
 
 sets = map(lambda name: X(name),
            [ "Arabic", "Armenian", "Balinese", "Bengali", "Bopomofo",
@@ -87,12 +30,12 @@ orig = get_combined_state_machine(map(lambda x: x.sm, sets))
 print "# Number of states in state machine:"
 print "#   Unicode:       %i" % len(orig.states)
 result = trafo.do(orig)
-print "#   UTF8-Splitted: %i" % len(result.states)
+print "#   UTF16-Splitted: %i" % len(result.states)
 
 # print result.get_graphviz_string(Option="hex")
 
 for set in sets:
-    set.check(result)
+    set.check(result, unicode_to_utf16)
 
 union = NumberSet()
 for nset in map(lambda set: set.charset, sets):
@@ -101,5 +44,6 @@ for nset in map(lambda set: set.charset, sets):
 inverse_union = NumberSet(Interval(0, 0x110000))
 inverse_union.subtract(union)
 # print inverse_union.get_string(Option="hex")
-check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True))
+check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True), 
+               unicode_to_utf16)
 
