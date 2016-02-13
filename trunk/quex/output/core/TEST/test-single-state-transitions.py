@@ -17,16 +17,15 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
                                                    
 from   quex.engine.state_machine.engine_state_machine_set import CharacterSetStateMachine
-import quex.engine.state_machine.transformation.utf8_state_split         as utf8_state_split
-import quex.engine.state_machine.transformation.utf16_state_split        as utf16_state_split 
 import quex.engine.analyzer.engine_supply_factory         as     engine
-from   quex.engine.misc.interval_handling                      import Interval, NumberSet
-import quex.output.core.dictionary               as     languages
-from   quex.output.core.base                         import do_analyzer
+from   quex.engine.misc.interval_handling                 import Interval, NumberSet
+import quex.output.core.dictionary                        as     languages
+from   quex.output.core.base                              import do_analyzer
 from   quex.engine.analyzer.door_id_address_label         import DoorID
 import quex.engine.analyzer.core                          as     analyzer_generator
 from   quex.engine.analyzer.door_id_address_label         import dial_db
 from   quex.engine.analyzer.transition_map                import TransitionMap  
+import quex.engine.state_machine.transformation.core      as     bc_factory
 from   quex.blackboard                                    import setup as Setup, \
                                                                  E_MapImplementationType, \
                                                                  E_IncidenceIDs, \
@@ -36,7 +35,7 @@ from   collections import defaultdict
 Setup.language_db = languages.db["C++"]
 Setup.buffer_element_type = "uint32_t"
 Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_prepare("unicode", None)
+Setup.buffer_codec_set(bc_factor.do(Setup, "unicode", None))
 
 dial_db.clear()
 
@@ -126,8 +125,8 @@ def prepare(tm):
     return iid_map
 
 def get_transition_function(iid_map, Codec):
-    if Codec == "UTF8": Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
-    else:               Setup.buffer_codec_prepare("unicode") 
+    if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"))
+    else:               Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"))
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)

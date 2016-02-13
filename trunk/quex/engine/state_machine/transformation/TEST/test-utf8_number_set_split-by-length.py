@@ -25,7 +25,7 @@ def test(X):
     print "   .back  --> " + pretty_sequence(X.end - 1)
     print
 
-    result = trafo.split_by_transformed_sequence_length(X)
+    result = trafo._split_by_transformed_sequence_length(X)
     print "Result:"
     for n, interval in result.items():
         print "      SubInterval (bytes=%i): %s " % (n, interval.get_string(Option="hex"))

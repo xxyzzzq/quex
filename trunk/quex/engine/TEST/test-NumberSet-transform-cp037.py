@@ -6,7 +6,7 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from   quex.engine.misc.interval_handling import Interval, NumberSet
-from   quex.engine.state_machine.transformation.core import EncodingTrafoByTable
+from   quex.engine.state_machine.transformation.table import EncodingTrafoByTable
 
 
 if "--hwut-info" in sys.argv:

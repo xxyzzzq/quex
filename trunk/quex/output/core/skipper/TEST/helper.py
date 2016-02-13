@@ -15,9 +15,10 @@ from   quex.engine.analyzer.door_id_address_label  import get_plain_strings
 from   quex.input.files.parser_data.counter        import CounterSetupLineColumn_Default
 from   quex.input.regular_expression.construct     import Pattern
 import quex.engine.analyzer.engine_supply_factory  as     engine
+import quex.engine.state_machine.transformation.core             as     bc_factory
 
 Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_prepare("unicode", None)
+Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
 
 class MiniAnalyzer:
     def __init__(self):

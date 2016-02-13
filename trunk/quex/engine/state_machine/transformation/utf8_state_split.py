@@ -11,78 +11,77 @@ from   quex.engine.misc.utf8                                import utf8_to_unico
                                                                    UTF8_MAX, \
                                                                    UTF8_BORDERS
 from   quex.engine.misc.interval_handling                   import Interval, NumberSet
-import quex.engine.state_machine.transformation.state_split as     state_split 
+from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
 
-def do(sm):
-    """The UTF8 encoding causes a single unicode character code being translated
-       into a sequence of bytes. A state machine triggering on unicode characters
-       can be converted into a state machine triggering on UTF8 bytes.
+class EncodingTrafoUTF8(EncodingTrafoByFunction):
+    UnchangedRange = 0x7F
+    def __init__(self):
+        EncodingTrafoByFunction.__init__(self, "utf_8")
 
-       For this a simple transition on a character 'X':
+    def prune(self, X):
+        pass
 
-            [ 1 ]---( X )--->[ 2 ]
+    def get_interval_sequences(self, Orig):
+        """Orig = Unicode Trigger Set. It is transformed into a sequence of intervals
+        that cover all elements of Orig in a representation as UTF8 code units.
+        A transition from state '1' to state '2' on 'Orig' is then equivalent to 
+        the transitions along the code unit sequence.
+        """
+        db = _split_by_transformed_sequence_length(Orig)
+        if db is None: return None
 
-       needs to be translated into a sequence of state transitions
+        result = []
+        for seq_length, interval in db.items():
+            interval_list = _get_contiguous_interval_sequences(interval, seq_length)
+            result.extend(
+                _get_trigger_sequence_for_contigous_byte_range_interval(interval, seq_length)
+                for interval in interval_list)
+        return result
 
-            [ 1 ]---(x0)--->[ S0 ]---(x1)--->[ S1 ]---(x2)--->[ 2 ]
+    def transform_NumberSet(self, NSet):
+        """Unicode values > 0x7F are translated into byte sequences, thus, only number
+           sets below that value can be transformed into number sets. They, actually
+           remain the same.
+        """
+        for interval in NSet.get_intervals(PromiseToTreatWellF=True):
+            if interval.end >= self.UnchangedRange:
+                assert False, \
+                       "Operation 'number set transformation' failed.\n" + \
+                       "The given number set results in a state sequence not a single transition."
+                return None
+        return NSet
 
-       where, x0, x1, x2 are the UTF8 bytes that represent unicode 'X'. 
-       States S0 and S1 are intermediate states created only so that
-       x1, x2, and x3 can trigger. Note, that the UTF8 sequence ends
-       at the same state '2' as the previous single trigger 'X'.
-    """
-    return state_split.do(sm, 0x7F, get_interval_sequences)
+    def lexatom_n_per_character(self, CharacterSet):
+        """If all characters in a unicode character set state machine require the
+        same number of bytes to be represented this number is returned.  Otherwise,
+        'None' is returned.
 
-def get_interval_sequences(Orig):
-    """Orig = Unicode Trigger Set. It is transformed into a sequence of intervals
-    that cover all elements of Orig in a representation as UTF8 code units.
-    A transition from state '1' to state '2' on 'Orig' is then equivalent to 
-    the transitions along the code unit sequence.
-    """
-    db = split_by_transformed_sequence_length(Orig)
-    if db is None: return None
+        RETURNS:   N > 0  number of bytes required to represent any character in the 
+                          given state machine.
+                   None   characters in the state machine require different numbers of
+                          bytes.
+        """
+        assert isinstance(CharacterSet, NumberSet)
 
-    result = []
-    for seq_length, interval in db.items():
-        interval_list = get_contiguous_interval_sequences(interval, seq_length)
-        result.extend(
-            _get_trigger_sequence_for_contigous_byte_range_interval(interval, seq_length)
-            for interval in interval_list)
-    return result
+        interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
+        front = interval_list[0].begin     # First element of number set
+        back  = interval_list[-1].end - 1  # Last element of number set
+        # Determine number of bytes required to represent the first and the 
+        # last character of the number set. The number of bytes per character
+        # increases monotonously, so only borders have to be considered.
+        front_chunk_n = len(unicode_to_utf8(front))
+        back_chunk_n  = len(unicode_to_utf8(back))
+        if front_chunk_n != back_chunk_n: return None
+        else:                             return front_chunk_n
 
-def do_set(NSet):
-    """Unicode values > 0x7F are translated into byte sequences, thus, only number
-       sets below that value can be transformed into number sets. They, actually
-       remain the same.
-    """
-    for interval in NSet.get_intervals(PromiseToTreatWellF=True):
-        if interval.end > 0x80: return None
-    return NSet
+    def get_unicode_range(self):
+        return NumberSet.from_range(0, 0x110000)
 
-def lexatom_n_per_character(CharacterSet):
-    """If all characters in a unicode character set state machine require the
-    same number of bytes to be represented this number is returned.  Otherwise,
-    'None' is returned.
+    def get_code_unit_range(self):
+        """Codec element's size is 1 byte."""
+        return NumberSet.from_range(0, 0x100)
 
-    RETURNS:   N > 0  number of bytes required to represent any character in the 
-                      given state machine.
-               None   characters in the state machine require different numbers of
-                      bytes.
-    """
-    assert isinstance(CharacterSet, NumberSet)
-
-    interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
-    front = interval_list[0].begin     # First element of number set
-    back  = interval_list[-1].end - 1  # Last element of number set
-    # Determine number of bytes required to represent the first and the 
-    # last character of the number set. The number of bytes per character
-    # increases monotonously, so only borders have to be considered.
-    front_chunk_n = len(unicode_to_utf8(front))
-    back_chunk_n  = len(unicode_to_utf8(back))
-    if front_chunk_n != back_chunk_n: return None
-    else:                             return front_chunk_n
-
-def split_by_transformed_sequence_length(X):
+def _split_by_transformed_sequence_length(X):
     """Split Unicode interval into intervals where all values have the same 
     utf8-byte sequence length.
 
@@ -108,8 +107,15 @@ def split_by_transformed_sequence_length(X):
         current_begin = current_end
 
     return db
-    
-def get_contiguous_interval_sequences(X, L):
+
+def _get_trigger_sequence_for_contigous_byte_range_interval(X, L):
+    front_sequence = unicode_to_utf8(X.begin)
+    back_sequence  = unicode_to_utf8(X.end - 1)
+    # If the interval is contigous it must produce equal length utf8 sequences
+
+    return [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
+
+def _get_contiguous_interval_sequences(X, L):
     """
     A contiguous interval in the domain is an interval where all 'N' first
     lexatoms in the range the same. The last 'N-2' lexatoms cover the whole
@@ -234,17 +240,3 @@ def get_contiguous_interval_sequences(X, L):
         result.append(Interval(current_begin, X.end))
 
     return result
-
-def _get_trigger_sequence_for_contigous_byte_range_interval(X, L):
-    front_sequence = unicode_to_utf8(X.begin)
-    back_sequence  = unicode_to_utf8(X.end - 1)
-    # If the interval is contigous it must produce equal length utf8 sequences
-
-    return [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
-
-def get_unicode_range():
-    return NumberSet.from_range(0, 0x110000)
-
-def get_codec_element_range():
-    """Codec element's size is 1 byte."""
-    return NumberSet.from_range(0, 0x100)

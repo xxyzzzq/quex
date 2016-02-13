@@ -1,6 +1,7 @@
 # This file is an attempt to simplify the generation of tests. 
 # The currently used generator_test is flooded with work-arounds
 # and adaptions that make the process intransparent.
+import quex.engine.state_machine.transformation.core  as     bc_factory
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, 
        Language="ANSI-C-PlainMemory", 
@@ -34,7 +35,7 @@ def setup_buffer(BufferLimitCode):
     BufferLimitCode = 0
     Setup.buffer_limit_code = BufferLimitCode
     Setup.buffer_element_specification_prepare()
-    Setup.buffer_codec_prepare("unicode", None)
+    Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
 
 def setup_language(Language):
     __Setup_init_language_database(Language)

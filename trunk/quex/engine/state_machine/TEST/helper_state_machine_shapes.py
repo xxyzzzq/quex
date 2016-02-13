@@ -2,9 +2,17 @@ from quex.engine.state_machine.core import StateMachine
 
 def line(sm, *StateIndexSequence):
     prev_si = long(StateIndexSequence[0])
-    for si in StateIndexSequence[1:]:
-        si = long(si)
-        sm.add_transition(prev_si, 66, si)
+    for info in StateIndexSequence[1:]:
+        if type(info) != tuple:
+            si = long(info)
+            sm.add_transition(prev_si, 66, si)
+        elif info[0] is None:
+            si = long(info[1])
+            sm.add_epsilon_transition(prev_si, si)
+        else:
+            trigger, si = info
+            si = long(si)
+            sm.add_transition(prev_si, trigger, si)
         prev_si = si
     return sm, len(StateIndexSequence)
 

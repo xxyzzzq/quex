@@ -1,6 +1,6 @@
 # Best To be Displayed by:
 #
-#  > ./test-utf8_state_split.py 4.3 | dot -Tsvg -o tmp.svg
+#  > ./test-plug-interval-sequence.py 4.3 | dot -Tsvg -o tmp.svg
 #
 # -------------------------
 # Byte Sequences:     
@@ -14,12 +14,11 @@ rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 
 node [shape = circle];
-0 -> 2 [label ="[00F0, 00F1] "];
-0 -> 5 [label ="[00F2] "];
-2 -> 3 [label ="[0080, 00BF] "];
-3 -> 4 [label ="[0080, 00BF] "];
-4 -> 1 [label ="[0080, 00BF] "];
-5 -> 6 [label ="[0082] "];
-6 -> 4 [label ="[0080, 00BE] "];
+((0)) -> ((13)) [label ="[00F0, 00F1] "];
+((0)) -> ((15)) [label ="[00F2] "];
+((13)) -> ((19)) [label ="[0080, 00BF] "];
+((15)) -> ((16)) [label ="[0082] "];
+((19)) -> ((17)) [label ="[0080, 00BF] "];
+((17)) -> ((1)) [label ="[0080, 00BF] "];
+((16)) -> ((17)) [label ="[0080, 00BE] "];
 }
-

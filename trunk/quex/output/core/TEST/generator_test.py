@@ -12,6 +12,7 @@ from   quex.input.regular_expression.auxiliary     import PatternShorthand
 import quex.input.regular_expression.engine        as     regex
 from   quex.input.regular_expression.exception     import RegularExpressionException
 from   quex.input.code.core                        import CodeTerminal
+import quex.engine.state_machine.transformation.core  as     bc_factory
 from   quex.engine.analyzer.door_id_address_label  import DoorID
 from   quex.engine.analyzer.door_id_address_label  import dial_db
 from   quex.engine.analyzer.terminal.core          import Terminal
@@ -117,7 +118,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     BufferLimitCode = 0
     Setup.buffer_limit_code = BufferLimitCode
     Setup.buffer_element_specification_prepare()
-    Setup.buffer_codec_prepare("unicode", None)
+    Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
 
     __Setup_init_language_database(Language)
 

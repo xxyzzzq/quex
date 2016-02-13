@@ -156,7 +156,7 @@ Figure :ref:`fig:lexatom-explanation` shows the example of a Unicode character:
 the Egyptian Hieroglyph P002. When the state machine runs on Unicode (UTF32)
 there is only one lexatom given as '0x1329D'. The cells that carry lexatoms may
 be 4 byte wide. When the dynamic length encoding UTF16 is used, the character
-is represented by two lexatoms '0xD80c' followed by '0xDE9E'. Then, a cell
+is represented by two lexatoms '0xD80C' followed by '0xDE9E'. Then, a cell
 carrying a lexatom must be at least 2 byte wide. In UTF8, the same character is
 represented by a sequences of lexatoms namely '0xF0',  '0x93', '0x8A', and
 '0x9D' which can be carried in bytes. 
