@@ -31,69 +31,79 @@ import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
+from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
 from   quex.engine.misc.utf16                               import utf16_to_unicode, \
                                                                    unicode_to_utf16
 from   quex.engine.misc.interval_handling                   import Interval, NumberSet
-import quex.engine.state_machine.transformation.state_split as     state_split 
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
-def do(sm):
-    return state_split.do(sm, 0x10000, get_interval_sequences, prune_forbidden_range)
+class EncodingTrafoUTF16(EncodingTrafoByFunction):
+    UnchangedRange = 0x10000
+    def __init__(self):
+        EncodingTrafoByFunction.__init__(self, "utf_16")
 
-def get_interval_sequences(Orig):
-    interval_1word, intervals_2word = get_contigous_intervals(Orig)
+    def prune(self, number_set):
+        global ForbiddenRange
+        number_set.subtract(ForbiddenRange)
+        number_set.cut_lesser(0)
+        number_set.cut_greater_or_equal(0x110000)
 
-    result = []
-    if interval_1word is not None:
-        result.append([interval_1word])
+    def get_interval_sequences(self, Orig):
+        interval_1word, intervals_2word = _get_contigous_intervals(Orig)
 
-    if intervals_2word is not None:
-        result.extend(
-            get_trigger_sequence_for_interval(interval)
-            for interval in intervals_2word
-        )
-    return result
+        result = []
+        if interval_1word is not None:
+            result.append([interval_1word])
 
-def prune_forbidden_range(number_set):
-    global ForbiddenRange
-    number_set.subtract(ForbiddenRange)
-    number_set.cut_lesser(0)
-    number_set.cut_greater_or_equal(0x110000)
+        if intervals_2word is not None:
+            result.extend(
+                _get_trigger_sequence_for_interval(interval)
+                for interval in intervals_2word
+            )
+        return result
 
-def do_set(NSet):
-    """Unicode values > 0xFFFF are translated into byte sequences, thus, only number
-       sets below that value can be transformed into number sets. They, actually
-       remain the same.
-    """
-    for interval in NSet.get_intervals(PromiseToTreatWellF=True):
-        if interval.end > 0x10000: return None
-    return NSet
+    def transform_NumberSet(self, NSet):
+        """Unicode values > 0xFFFF are translated into byte sequences, thus,
+        only number sets below that value can be transformed into number sets.
+        They, actually remain the same.  
+        """
 
-def lexatom_n_per_character(CharacterSet):
-    """If all characters in a unicode character set state machine require the
-    same number of bytes to be represented this number is returned.  Otherwise,
-    'None' is returned.
+        for interval in NSet.get_intervals(PromiseToTreatWellF=True):
+            if interval.end > self.UnchangedRange: return None
+        return NSet
 
-    RETURNS:   N > 0  number of bytes required to represent any character in the 
-                      given state machine.
-               None   characters in the state machine require different numbers of
-                      bytes.
-    """
-    assert isinstance(CharacterSet, NumberSet)
+    def lexatom_n_per_character(self, CharacterSet):
+        """If all characters in a unicode character set state machine require the
+        same number of bytes to be represented this number is returned.  Otherwise,
+        'None' is returned.
 
-    interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
-    front = interval_list[0].begin     # First element of number set
-    back  = interval_list[-1].end - 1  # Last element of number set
-    # Determine number of bytes required to represent the first and the 
-    # last character of the number set. The number of bytes per character
-    # increases monotonously, so only borders have to be considered.
-    front_chunk_n = len(unicode_to_utf16(front))
-    back_chunk_n  = len(unicode_to_utf16(back))
-    if front_chunk_n != back_chunk_n: return None
-    else:                             return front_chunk_n
+        RETURNS:   N > 0  number of bytes required to represent any character in the 
+                          given state machine.
+                   None   characters in the state machine require different numbers of
+                          bytes.
+        """
+        assert isinstance(CharacterSet, NumberSet)
 
-def get_contigous_intervals(X):
+        interval_list = CharacterSet.get_intervals(PromiseToTreatWellF=True)
+        front = interval_list[0].begin     # First element of number set
+        back  = interval_list[-1].end - 1  # Last element of number set
+        # Determine number of bytes required to represent the first and the 
+        # last character of the number set. The number of bytes per character
+        # increases monotonously, so only borders have to be considered.
+        front_chunk_n = len(unicode_to_utf16(front))
+        back_chunk_n  = len(unicode_to_utf16(back))
+        if front_chunk_n != back_chunk_n: return None
+        else:                             return front_chunk_n
+
+    def get_unicode_range(self):
+        return NumberSet.from_range(0, 0x110000)
+
+    def get_code_unit_range(self):
+        """Codec element's size is 2 bytes."""
+        return NumberSet.from_range(0, 0x10000)
+
+def _get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values
        have the same utf16-byte sequence length. This is fairly 
        simple in comparison with utf8-byte sequence length: There
@@ -117,11 +127,14 @@ def get_contigous_intervals(X):
     assert X.end <= 0x110000    # Interval must lie in unicode range
     assert not X.check_overlap(ForbiddenRange) # The 'forbidden range' is not to be covered.
 
-    if   X.end   <= 0x10000: return [X, None]
-    elif X.begin >= 0x10000: return [None, split_contigous_intervals_for_surrogates(X.begin, X.end)]
-    else:                    return [Interval(X.begin, 0x10000), split_contigous_intervals_for_surrogates(0x10000, X.end)]
+    if   X.end   <= 0x10000: 
+        return [X, None]
+    elif X.begin >= 0x10000: 
+        return [None, _split_contigous_intervals_for_surrogates(X.begin, X.end)]
+    else:                    
+        return [Interval(X.begin, 0x10000), _split_contigous_intervals_for_surrogates(0x10000, X.end)]
 
-def split_contigous_intervals_for_surrogates(Begin, End):
+def _split_contigous_intervals_for_surrogates(Begin, End):
     """Splits the interval X into sub interval so that no interval runs over a 'surrogate'
        border of the last word. For that, it is simply checked if the End falls into the
        same 'surrogate' domain of 'front' (start value of front = Begin). If it does not
@@ -177,7 +190,7 @@ def split_contigous_intervals_for_surrogates(Begin, End):
 
     return result
     
-def get_trigger_sequence_for_interval(X):
+def _get_trigger_sequence_for_interval(X):
     # The interval either lies entirely >= 0x10000 or entirely < 0x10000
     assert X.begin >= 0x10000 or X.end < 0x10000
 
@@ -192,9 +205,3 @@ def get_trigger_sequence_for_interval(X):
     return [ Interval(front_seq[0], back_seq[0] + 1), 
              Interval(front_seq[1], back_seq[1] + 1) ]
 
-def get_unicode_range():
-    return NumberSet.from_range(0, 0x110000)
-
-def get_codec_element_range():
-    """Codec element's size is 2 bytes."""
-    return NumberSet.from_range(0, 0x10000)

@@ -1,13 +1,11 @@
 #! /usr/bin/env python
-from   quex.engine.state_machine.transformation.core import EncodingTrafoUnicode, \
-                                                            EncodingTrafoByTable, \
-                                                            EncodingTrafoByFunction
-import quex.engine.misc.error             as     error
-import quex.engine.misc.file_in           as     file_in
-from   quex.engine.misc.file_operations   import get_propperly_slash_based_file_name
-from   quex.engine.misc.enum              import Enum
-from   quex.engine.misc.interval_handling import NumberSet
-from   quex.DEFINITIONS                   import QUEX_PATH
+import quex.engine.misc.error                        as     error
+import quex.engine.misc.file_in                      as     file_in
+from   quex.engine.misc.file_operations              import get_propperly_slash_based_file_name
+from   quex.engine.misc.enum                         import Enum
+from   quex.engine.misc.interval_handling            import NumberSet
+from   quex.DEFINITIONS                              import QUEX_PATH
+from   quex.engine.state_machine.transformation.base import EncodingTrafoUnicode
 
 import os  
 import sys
@@ -18,43 +16,15 @@ E_Files = Enum("HEADER",
                "_DEBUG_Files")
 
 class QuexSetup:
-    def __init__(self, SetupInfo):
+    def __init__(self, SetupInfo, BcFactory):
         self.init(SetupInfo)
         self.__buffer_element_specification_done_f = False
-        self.buffer_codec_prepare("unit-test")                   # Default
+        range_max    = NumberSet.from_range(-sys.maxint, sys.maxint)
+        unit_test_bc = EncodingTrafoUnicode(range_max, range_max)
+        self.buffer_codec_set(unit_test_bc)
 
-    def buffer_codec_prepare(self, BufferCodecName, BufferCodecFileName=None, Module=None):
-        self.buffer_codec = self.buffer_codec_determine(BufferCodecName, BufferCodecFileName, Module)
-
-    def buffer_codec_determine(self, BufferCodecName, BufferCodecFileName, Module):
-        if   BufferCodecName in ("utf8", "utf16"):
-            assert Module is not None
-            return EncodingTrafoByFunction(BufferCodecName, Module)
-
-        elif BufferCodecFileName:
-            os.path.splitext(os.path.basename(BufferCodecFileName))
-            try: 
-               os.path.splitext(os.path.basename(BufferCodecFileName))
-            except:
-                error.log("cannot interpret string following '--codec-file'")
-            return EncodingTrafoByTable(FileName=BufferCodecFileName)
-
-        elif BufferCodecName == "unicode":
-            # (Still, 'icu' or 'iconv' may provide converted content, but ...) 
-            # If the internal buffer is 'unicode', then the pattern's state 
-            # machines are not converted. The requirement for the pattern's
-            # range is the same as for the 'buffer element chunks'.
-            return EncodingTrafoUnicode(
-                                NumberSet.from_range(0, self.get_character_value_limit()), 
-                                NumberSet.from_range(0, self.get_character_value_limit()))
-
-        elif BufferCodecName == "unit-test":
-            return EncodingTrafoUnicode(
-                                NumberSet.from_range(-sys.maxint, sys.maxint),
-                                NumberSet.from_range(-sys.maxint, sys.maxint))
-
-        else:
-            return EncodingTrafoByTable(BufferCodecName)
+    def buffer_codec_set(self, BufferCodec): 
+        self.buffer_codec = BufferCodec
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():

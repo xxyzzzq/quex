@@ -34,15 +34,14 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.input.regular_expression.engine    as     core
-import quex.input.files.counter                as     counter_parser
-from   quex.input.files.parser_data.counter    import CounterSetupLineColumn_Default
-from   quex.engine.counter                     import CountOpFactory
-from   quex.engine.misc.interval_handling           import NumberSet, Interval, NumberSet_All
-import quex.output.core.dictionary    as     languages
-import quex.engine.codec_db.core               as     codec_db
-import quex.output.cpp.counter                 as     counter
-import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split
+import quex.input.regular_expression.engine           as     core
+import quex.input.files.counter                       as     counter_parser
+from   quex.input.files.parser_data.counter           import CounterSetupLineColumn_Default
+from   quex.engine.counter                            import CountOpFactory
+from   quex.engine.misc.interval_handling             import NumberSet, Interval, NumberSet_All
+import quex.output.core.dictionary                    as     languages
+import quex.output.cpp.counter                        as     counter
+import quex.engine.state_machine.transformation.core  as     bc_factory
 import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split
 
 from   quex.blackboard                         import setup as Setup, Lng
@@ -139,13 +138,14 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
 def get_test_application(counter_db, ReferenceP, CT):
     Setup.buffer_element_specification_prepare()
     if   codec == "utf_32_le" or codec == "ascii":  
-        Setup.buffer_codec_prepare("unicode")
+        Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"))
     elif codec == "utf_8": 
-        Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
+        Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"))
     elif codec == "utf_16_le":
-        Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
+        Setup.buffer_codec_set(bc_factory.do(Setup, "utf16"))
     else:                 
-        Setup.buffer_codec_prepare(codec)
+        Setup.buffer_codec_set(bc_factory.do(Setup, codec))
+
     # (*) Generate Code 
     ccfactory = CountOpFactory.from_ParserDataLineColumn(counter_db, 
                                                           Setup.buffer_codec.source_set,

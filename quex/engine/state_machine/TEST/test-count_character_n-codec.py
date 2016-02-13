@@ -6,8 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine        as     core
 import quex.input.files.counter                    as     counter
-import quex.engine.state_machine.transformation.utf8_state_split  as     utf8_state_split
-import quex.engine.state_machine.transformation.utf16_state_split as     utf16_state_split
+import quex.engine.state_machine.transformation.core             as     bc_factory
 from   quex.blackboard import setup as Setup
 from   StringIO                                    import StringIO
 
@@ -35,9 +34,9 @@ def test(TestString):
     # Prepare transformation info according to choice.
     Setup.buffer_element_specification_prepare()
     if "UTF8" in sys.argv: 
-        Setup.buffer_codec_prepare("utf8", Module=utf8_state_split)
+        Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"))
     else:                  
-        Setup.buffer_codec_prepare("utf16", Module=utf16_state_split)
+        Setup.buffer_codec_set(bc_factory.do(Setup, "utf16"))
 
     # Count
     pattern.prepare_count_info(counter_db, Setup.buffer_codec)

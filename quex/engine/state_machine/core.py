@@ -1,18 +1,18 @@
 from   quex.engine.misc.string_handling             import blue_print
 #
-from   quex.engine.misc.interval_handling                import NumberSet, Interval
+from   quex.engine.misc.interval_handling           import NumberSet, Interval
 import quex.engine.state_machine.index              as     state_machine_index
 from   quex.engine.state_machine.state.core         import State
 from   quex.engine.state_machine.state.single_entry import SeAccept
 
 from   quex.engine.misc.tools  import flatten_list_of_lists, typed
-from   quex.blackboard    import E_IncidenceIDs, \
-                                 E_PreContextIDs, \
-                                 E_Border
+from   quex.blackboard         import E_IncidenceIDs, \
+                                      E_PreContextIDs, \
+                                      E_Border
 
-from   copy      import deepcopy, copy
-from   operator  import attrgetter, itemgetter
-from   itertools import ifilter, imap
+from   copy        import deepcopy, copy
+from   operator    import attrgetter, itemgetter
+from   itertools   import ifilter, imap
 from   collections import defaultdict
 import sys
 
@@ -49,6 +49,50 @@ class StateMachine(object):
         assert type(Sequence) == list
         result = StateMachine()
         result.add_transition_sequence(result.init_state_index, Sequence)
+        return result
+
+    @staticmethod
+    def from_interval_sequences(IntervalSequenceList):
+        """Build state machine that consists of transitions defined by interval
+        sequences. The interval sequences start all at the init state and end at
+        a common end state.
+        """
+        # Trick to facilitate later NFA-to-DFA procedure: ----------------------
+        # (Reduce number of states)
+        #
+        # If two or more states are entered by the same trigger (and none else), 
+        # their target maps must be combined and a new state is created. Thus,
+        # at least consider the first interval in a 'first_state_db':
+        # 
+        #   first_state_db:  interval ---> state that is reached by interval
+        #
+        # Then, if a sequence starts with an interval that is already in there,
+        # step directly to the state 'first_state_db[interval]'.
+        # 
+        # This can be extended to consider later states also! Already, this
+        # trick reduced *overall* computation time by about 20%!
+        #-----------------------------------------------------------------------
+        result         = StateMachine()
+        init_si        = result.init_state_index
+        first_state_db = {}
+        end_si         = None # It is set upon first '.add_transition()'
+        for sequence in IntervalSequenceList:
+            if not sequence: continue
+            interval = sequence[0]
+            first_si = first_state_db.get(interval)
+            if first_si is not None: 
+                si = first_si
+            elif len(sequence) == 1: 
+                end_si = result.add_transition(init_si, interval, end_si)
+                continue
+            else:
+                si = result.add_transition(init_si, interval)
+                first_state_db[interval] = si
+
+            for interval in sequence[1:-1]:
+                si = result.add_transition(si, interval)
+            end_si = result.add_transition(si, sequence[-1], end_si)
+
         return result
 
     @staticmethod
@@ -189,7 +233,7 @@ class StateMachine(object):
 
         return db
 
-    def get_epsilon_closure_of_state_set(self, StateIdxList, EC_DB):
+    def get_epsilon_closure_of_state_set(self, TargetStateIndiceDb, EC_DB):
         """Returns the epsilon closure of a set of states, i.e. the union
            of the epsilon closures of the single states.
            
@@ -198,9 +242,8 @@ class StateMachine(object):
                          'get_epsilon_closure_db()'.
         """
         result = set()
-        for index in StateIdxList:
+        for index in TargetStateIndiceDb.iterkeys():
             result.update(EC_DB[index])
-
         return result
 
     def get_epsilon_closure(self, StateIdx):
@@ -323,11 +366,8 @@ class StateMachine(object):
 
                 interval = Interval(current_interval_begin, item.position)
 
-                # current_target_epsilon_closure.sort()             
+                # key = tuple(current_target_epsilon_closure) 
                 key = tuple(sorted(current_target_epsilon_closure))
-                ## Caused 3 failures in unit test:
-                ## if len(current_target_epsilon_closure) == 1: key = current_target_epsilon_closure[0]  
-                ## else:                                        key = tuple(sorted(current_target_epsilon_closure))
                 combination = combinations.get(key)
                 if combination is None:
                     combinations[key] = NumberSet(interval, ArgumentIsYoursF=True)
@@ -351,7 +391,7 @@ class StateMachine(object):
     
             # -- re-compute the epsilon closure of the target states
             current_target_epsilon_closure = \
-                self.get_epsilon_closure_of_state_set(current_target_indices.iterkeys(),
+                self.get_epsilon_closure_of_state_set(current_target_indices,
                                                       epsilon_closure_db)
             # -- set the begin of interval to come
             current_interval_begin = item.position                      
@@ -894,6 +934,52 @@ class StateMachine(object):
         """
         self.mount_cloned(OtherSM, OperationIndex, OtherStartIndex, None)
 
+    def mount_absorbed_states_between(self, BeginIndex, EndIndex, 
+                                      state_db, ASBeginIndex, ASEndIndex):
+        """Absorb the states from 'state_db' into this state machine and
+        plug them between 'BeginIndex' and 'EndIndex'. The absorbed state's
+        begin 'ASBeginIndex' is placed in the state 'BeginIndex' and all
+        transitions to 'ASEndIndex' end in 'EndIndex'.
+
+        The result is not necessarily a DFA!
+
+        EXAMPLE: 
+            
+            To-be-absorbed state machine:
+
+                      [ 0 ]---( a )--->[ 1 ]---( b )--->[ 2 ]
+
+            which is to be mounted between state '8' and '10' in
+
+                      [ 8 ]---( c )--->[ 9 ]---( d )--->[ 10 ]
+
+            becomes
+
+                      [ 8 ]---( c )--->[ 9 ]---( d )--->[ 10 ]
+                         \                               /
+                          '---( a )--->[ 1 ]---( b )-->-'
+
+        Note, that the globally unique state indices makes it possible to 
+        absorb the states without having to clone them.
+        """
+
+        # Replace the 'end_index' in the 'to-be-absorbed' states
+        # with the 'EndIndex' of this state machine.
+        for state in state_db.itervalues():
+            state.target_map.replace_target_index(ASEndIndex, EndIndex)
+
+        # Mount the first state's transitions to the first 'begin state'
+        # of this state machine, i.e. absorb its transitions.
+        self.states[BeginIndex].target_map.get_map().update(
+            state_db[ASBeginIndex].target_map.get_map()
+        )
+
+        # Absorb states from 'state_db'
+        for si, state in state_db.iteritems():
+            if   si == ASBeginIndex: continue
+            elif si == ASEndIndex:   continue
+            self.states[si] = state
+
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.single_entry.delete_dominated()
@@ -923,7 +1009,21 @@ class StateMachine(object):
         for target_index in original_acceptance_state_index_list:
             del self.states[target_index]
 
-    def match_sequence(self, UserSequence):
+    @typed(Sequence=list)
+    def apply_sequence(self, Sequence):
+        """RETURNS: Resulting target state if 'Sequence' is applied on 
+                    state machine.
+
+           This works ONLY on DFA!
+        """
+        si = self.init_state_index
+        for x in Sequence:
+            si = self.states[si].target_map.get_resulting_target_state_index(x)
+            if si is None: return None
+        return self.states[si]
+
+    @typed(Sequence=list)
+    def match_sequence(self, Sequence):
         """RETURNS: True, if the sequences ends in an acceptance state.
                     False, if not.
 
@@ -932,8 +1032,6 @@ class StateMachine(object):
         '__dive' --> consider implementing with TreeWalker to avoid stack allocation
         trouble.
         """
-        assert type(UserSequence) == list
-
         def dive(StateIndex, Sequence):
             if len(Sequence) == 0:
                 return self.states[StateIndex].is_acceptance()
@@ -946,7 +1044,7 @@ class StateMachine(object):
             return False
 
         # Walk with the sequence the state machine
-        return dive(self.init_state_index, UserSequence)
+        return dive(self.init_state_index, Sequence)
 
     def iterable_target_state_indices(self, StateIndex):
         return self.state_db[StateIndex].iterable_target_state_indices(StateIndex)

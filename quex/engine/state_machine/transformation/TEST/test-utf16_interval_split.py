@@ -26,7 +26,7 @@ def test(Begin, End):
     print "   .back  --> " + pretty_sequence(X.end - 1)
     print
 
-    x0, list1 = trafo.get_contigous_intervals(X)
+    x0, list1 = trafo._get_contigous_intervals(X)
     print "Result:"
     print "   Interval < 0x10000:    ", 
     if x0 is not None: print "%s" % x0.get_string(Option="hex")

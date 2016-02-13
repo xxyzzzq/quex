@@ -9,18 +9,13 @@ import quex.engine.state_machine.transformation.state_split      as state_split
 from   quex.engine.state_machine.core             import StateMachine
 from   quex.engine.state_machine.state.core       import State
 import quex.engine.state_machine                  as state_machine
+import quex.engine.state_machine.algorithm.beautifier     as     beautifier
 
 if "--hwut-info" in sys.argv:
-    print "UTF8 State Split: Plug Intermediate States"
+    print "State Split: Plug Interval Sequence;"
     print "CHOICES: 1.1, 1.2, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4;"
     sys.exit(0)
 
-def pretty_sequence(Value):
-    txt = ""
-    for byte in trafo.unicode_to_utf8(Value):
-        txt += "%02X." % byte
-    return txt
-    
 def test(ByteSequenceDB):
 
     L = len(ByteSequenceDB[0])
@@ -58,18 +53,26 @@ def test(ByteSequenceDB):
     print "#    L    = %i" % L
     print "#    DIdx = %i" % first_different_byte_index
 
-
-
     sm = StateMachine()
     end_index = state_machine.index.get()
     sm.states[end_index] = State()
 
-    state_split.plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB)
+    state_split._plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB, beautifier)
 
     if len(sm.get_orphaned_state_index_list()) != 0:
         print "Error: Orphaned States Detected!"
 
-    print sm.get_graphviz_string(Option="hex")
+    gv_str = sm.get_graphviz_string(Option="hex")
+    for line in gv_str.splitlines():
+        if "->" not in line or "label" not in line: print line; continue
+        fields = line.split()
+        if len(fields) < 3: 
+            print line; continue;
+        if len(fields) > 3:
+            remainder = reduce(lambda x,y: "%s %s" % (x, y), fields[3:])
+        else:
+            remainder = ""
+        print "((%s)) -> ((%s)) %s" % (fields[0], fields[2], remainder)
 
 # 0x00000000 - 0x0000007F: 1 byte  - 0xxxxxxx
 # 0x00000080 - 0x000007FF: 2 bytes - 110xxxxx 10xxxxxx

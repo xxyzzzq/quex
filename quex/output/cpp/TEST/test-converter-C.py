@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 import quex.output.cpp.codec_converter_helper as codec_converter_helper
 import quex.output.core.dictionary as languages
-from   quex.engine.state_machine.transformation.core import EncodingTrafoByTable
+from   quex.engine.state_machine.transformation.table import EncodingTrafoByTable
 import quex.blackboard
 
 if "--hwut-info" in sys.argv:

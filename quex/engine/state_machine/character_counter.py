@@ -1,6 +1,5 @@
 # (C) 2012 Frank-Rene Schaefer
 from   quex.engine.misc.tree_walker                  import TreeWalker
-from   quex.engine.state_machine.transformation.core import EncodingTrafoByFunction
 from   quex.blackboard                               import E_Count
 
 class CountInfo:
@@ -51,7 +50,7 @@ class CountInfo:
         self.line_n_increment_by_lexeme_length   = CountInfo.get_real(Count.line_n_increment_by_lexeme_length)
         self.grid_step_size_by_lexeme_length     = CountInfo.get_real(Count.grid_step_size_by_lexeme_length)
 
-        if isinstance(CodecTrafoInfo, EncodingTrafoByFunction):
+        if CodecTrafoInfo is not None and CodecTrafoInfo.variable_character_sizes_f():
             self._consider_variable_character_sizes(SM, CodecTrafoInfo)
 
     @staticmethod

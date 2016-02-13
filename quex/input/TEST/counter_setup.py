@@ -9,9 +9,10 @@ import quex.input.files.counter as counter
 import quex.engine.misc.error   as     error
 from   quex.engine.misc.file_in import EndOfStreamException
 from   quex.blackboard import setup as Setup
+import quex.engine.state_machine.transformation.core             as     bc_factory
 
 Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_prepare("unicode")
+Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"))
 
 if "--hwut-info" in sys.argv:
     print "Parse Counter Setup;"

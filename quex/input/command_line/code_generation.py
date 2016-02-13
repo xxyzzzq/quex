@@ -7,6 +7,7 @@ from   quex.input.setup                     import global_extension_db,      \
 from   quex.input.files.token_type          import TokenTypeDescriptorManual
 from   quex.input.files.token_id_file       import parse as token_id_file_parse
 from   quex.output.core.dictionary import db as output_language_db
+import quex.engine.state_machine.transformation.core             as     bc_factory
 import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split      
 import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split      
 from   quex.engine.misc.file_in             import read_namespaced_name
@@ -55,11 +56,8 @@ def prepare(command_line, argv):
 
     Setup.buffer_element_specification_prepare()
 
-    if   Setup.buffer_codec_name == "utf8":  module = utf8_state_split
-    elif Setup.buffer_codec_name == "utf16": module = utf16_state_split
-    else:                                    module = None
-    Setup.buffer_codec_prepare(Setup.buffer_codec_name, 
-                               Setup.buffer_codec_file, module)
+    Setup.buffer_codec_set(bc_factory.do(Setup, Setup.buffer_codec_name, 
+                                         Setup.buffer_codec_file))
 
     # AFTER: Setup.buffer_codec_prepare() !!!
     if Setup.language not in ["DOT"]:
