@@ -1,309 +1,309 @@
 {
 title: LexatomLoader_Converter_IConv (BPC=1, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.7449431419372559;
+build_time: 1.2449729442596436;
 file_name: test-Converter-1-0.exe;
-hwut_info_time: 1455360691L;
+hwut_info_time: 1455574525L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.502105; 0; ]
-  [ ICU-stepping; OK; 0.281634; 0; ]
-  [ IConv-linear; OK; 0.285254; 0; ]
-  [ IConv-stepping; OK; 0.343846; 0; ]
-  [ IConv-stepping-cls; OK; 0.337917; 0; ]
-  [ ICU-stepping-cls; OK; 0.356412; 0; ]
+  [ ICU-linear; OK; 0.279373; 0; ]
+  [ ICU-stepping; OK; 0.280247; 0; ]
+  [ IConv-linear; OK; 0.273955; 0; ]
+  [ IConv-stepping; OK; 0.270581; 0; ]
+  [ IConv-stepping-cls; OK; 0.282614; 0; ]
+  [ ICU-stepping-cls; OK; 0.279568; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=1, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.7848730087280273;
+build_time: 1.5101768970489502;
 file_name: test-Converter-1-1.exe;
-hwut_info_time: 1455360709L;
+hwut_info_time: 1455574536L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.307965; 0; ]
-  [ ICU-stepping; OK; 0.330915; 0; ]
-  [ IConv-linear; OK; 0.282110; 0; ]
-  [ IConv-stepping; OK; 0.339197; 0; ]
-  [ IConv-stepping-cls; OK; 0.356134; 0; ]
-  [ ICU-stepping-cls; OK; 0.357747; 0; ]
+  [ ICU-linear; OK; 0.273169; 0; ]
+  [ ICU-stepping; OK; 0.290992; 0; ]
+  [ IConv-linear; OK; 0.278020; 0; ]
+  [ IConv-stepping; OK; 0.271026; 0; ]
+  [ IConv-stepping-cls; OK; 0.268410; 0; ]
+  [ ICU-stepping-cls; OK; 0.272462; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=1, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.7532038688659668;
+build_time: 1.244866132736206;
 file_name: test-Converter-1-2.exe;
-hwut_info_time: 1455360688L;
+hwut_info_time: 1455574522L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.278119; 0; ]
-  [ ICU-stepping; OK; 0.332738; 0; ]
-  [ IConv-linear; OK; 0.282997; 0; ]
-  [ IConv-stepping; OK; 0.262576; 0; ]
-  [ IConv-stepping-cls; OK; 0.325392; 0; ]
-  [ ICU-stepping-cls; OK; 0.328411; 0; ]
+  [ ICU-linear; OK; 0.269784; 0; ]
+  [ ICU-stepping; OK; 0.303246; 0; ]
+  [ IConv-linear; OK; 0.274539; 0; ]
+  [ IConv-stepping; OK; 0.259848; 0; ]
+  [ IConv-stepping-cls; OK; 0.260690; 0; ]
+  [ ICU-stepping-cls; OK; 0.264231; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=2, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.7439310550689697;
+build_time: 1.253539800643921;
 file_name: test-Converter-2-0.exe;
-hwut_info_time: 1455360693L;
+hwut_info_time: 1455574526L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.540966; 0; ]
-  [ ICU-stepping; OK; 0.810156; 0; ]
-  [ IConv-linear; OK; 0.631354; 0; ]
-  [ IConv-stepping; OK; 0.743676; 0; ]
-  [ IConv-stepping-cls; OK; 1.123134; 0; ]
-  [ ICU-stepping-cls; OK; 1.034587; 0; ]
+  [ ICU-linear; OK; 0.545251; 0; ]
+  [ ICU-stepping; OK; 0.819161; 0; ]
+  [ IConv-linear; OK; 0.520594; 0; ]
+  [ IConv-stepping; OK; 0.748525; 0; ]
+  [ IConv-stepping-cls; OK; 0.746487; 0; ]
+  [ ICU-stepping-cls; OK; 0.809452; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=2, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.8170549869537354;
+build_time: 1.2573518753051758;
 file_name: test-Converter-2-1.exe;
-hwut_info_time: 1455360689L;
+hwut_info_time: 1455574523L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.546556; 0; ]
-  [ ICU-stepping; OK; 0.792932; 0; ]
-  [ IConv-linear; OK; 0.530908; 0; ]
-  [ IConv-stepping; OK; 0.770818; 0; ]
-  [ IConv-stepping-cls; OK; 0.957424; 0; ]
-  [ ICU-stepping-cls; OK; 0.786719; 0; ]
+  [ ICU-linear; OK; 0.537309; 0; ]
+  [ ICU-stepping; OK; 0.815961; 0; ]
+  [ IConv-linear; OK; 0.529735; 0; ]
+  [ IConv-stepping; OK; 0.723333; 0; ]
+  [ IConv-stepping-cls; OK; 0.732226; 0; ]
+  [ ICU-stepping-cls; OK; 0.785198; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=2, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.653904914855957;
+build_time: 1.5278050899505615;
 file_name: test-Converter-2-2.exe;
-hwut_info_time: 1455360682L;
+hwut_info_time: 1455574518L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.700685; 0; ]
-  [ ICU-stepping; OK; 0.758356; 0; ]
-  [ IConv-linear; OK; 0.679509; 0; ]
-  [ IConv-stepping; OK; 0.751914; 0; ]
-  [ IConv-stepping-cls; OK; 0.915524; 0; ]
-  [ ICU-stepping-cls; OK; 0.757086; 0; ]
+  [ ICU-linear; OK; 0.530457; 0; ]
+  [ ICU-stepping; OK; 0.763289; 0; ]
+  [ IConv-linear; OK; 0.529967; 0; ]
+  [ IConv-stepping; OK; 0.703357; 0; ]
+  [ IConv-stepping-cls; OK; 0.705290; 0; ]
+  [ ICU-stepping-cls; OK; 0.767296; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 2.0272011756896973;
+build_time: 1.2622959613800049;
 file_name: test-Converter-4-0.exe;
-hwut_info_time: 1455360686L;
+hwut_info_time: 1455574521L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.910073; 0; ]
-  [ ICU-stepping; OK; 25.906322; 0; ]
-  [ IConv-linear; OK; 1.093738; 0; ]
-  [ IConv-stepping; OK; 17.209584; 0; ]
-  [ IConv-stepping-cls; OK; 17.367209; 0; ]
-  [ ICU-stepping-cls; OK; 20.779046; 0; ]
+  [ ICU-linear; OK; 0.917478; 0; ]
+  [ ICU-stepping; OK; 19.275451; 0; ]
+  [ IConv-linear; OK; 0.860987; 0; ]
+  [ IConv-stepping; OK; 17.028097; 0; ]
+  [ IConv-stepping-cls; OK; 17.186470; 0; ]
+  [ ICU-stepping-cls; OK; 19.937292; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.8242321014404297;
+build_time: 1.282879114151001;
 file_name: test-Converter-4-1.exe;
-hwut_info_time: 1455360695L;
+hwut_info_time: 1455574527L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 0.997561; 0; ]
-  [ ICU-stepping; OK; 18.673451; 0; ]
-  [ IConv-linear; OK; 1.120905; 0; ]
-  [ IConv-stepping; OK; 16.796832; 0; ]
-  [ IConv-stepping-cls; OK; 17.076220; 0; ]
-  [ ICU-stepping-cls; OK; 18.690584; 0; ]
+  [ ICU-linear; OK; 0.850460; 0; ]
+  [ ICU-stepping; OK; 20.194276; 0; ]
+  [ IConv-linear; OK; 0.939992; 0; ]
+  [ IConv-stepping; OK; 19.657678; 0; ]
+  [ IConv-stepping-cls; OK; 19.175296; 0; ]
+  [ ICU-stepping-cls; OK; 21.028296; 0; ]
 ]
 }
 {
 title: LexatomLoader_Converter_IConv (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 2.0956568717956543;
+build_time: 1.4771628379821777;
 file_name: test-Converter-4-2.exe;
-hwut_info_time: 1455360707L;
+hwut_info_time: 1455574535L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ ICU-linear; OK; 1.094751; 0; ]
-  [ ICU-stepping; OK; 20.685252; 0; ]
-  [ IConv-linear; OK; 0.850688; 0; ]
-  [ IConv-stepping; OK; 16.868828; 0; ]
-  [ IConv-stepping-cls; OK; 20.944181; 0; ]
-  [ ICU-stepping-cls; OK; 19.052732; 0; ]
+  [ ICU-linear; OK; 0.923896; 0; ]
+  [ ICU-stepping; OK; 20.784507; 0; ]
+  [ IConv-linear; OK; 1.004658; 0; ]
+  [ IConv-stepping; OK; 20.259918; 0; ]
+  [ IConv-stepping-cls; OK; 20.261987; 0; ]
+  [ ICU-stepping-cls; OK; 20.619790; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=1, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 1.6140530109405518;
+build_time: 1.1990411281585693;
 file_name: test-Plain-1-0.exe;
-hwut_info_time: 1455360672L;
+hwut_info_time: 1455574512L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.165576; 0; ]
-  [ stepping; OK; 0.170605; 0; ]
+  [ linear; OK; 0.182810; 0; ]
+  [ stepping; OK; 0.179853; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=1, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.866297960281372;
+build_time: 1.2962169647216797;
 file_name: test-Plain-1-1.exe;
-hwut_info_time: 1455360697L;
+hwut_info_time: 1455574529L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.179930; 0; ]
-  [ stepping; OK; 0.166862; 0; ]
+  [ linear; OK; 0.156763; 0; ]
+  [ stepping; OK; 0.177747; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=1, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.8241941928863525;
+build_time: 1.2004420757293701;
 file_name: test-Plain-1-2.exe;
-hwut_info_time: 1455360670L;
+hwut_info_time: 1455574511L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.177235; 0; ]
-  [ stepping; OK; 0.167719; 0; ]
+  [ linear; OK; 0.160443; 0; ]
+  [ stepping; OK; 0.168114; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=2, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 2.043599843978882;
+build_time: 1.193392038345337;
 file_name: test-Plain-2-0.exe;
-hwut_info_time: 1455360684L;
+hwut_info_time: 1455574520L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.370216; 0; ]
-  [ stepping; OK; 0.331987; 0; ]
+  [ linear; OK; 0.355413; 0; ]
+  [ stepping; OK; 0.336405; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=2, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 1.763850212097168;
+build_time: 1.225126028060913;
 file_name: test-Plain-2-1.exe;
-hwut_info_time: 1455360676L;
+hwut_info_time: 1455574515L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.355926; 0; ]
-  [ stepping; OK; 0.320363; 0; ]
+  [ linear; OK; 0.302162; 0; ]
+  [ stepping; OK; 0.336401; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=2, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 2.0618178844451904;
+build_time: 1.2044899463653564;
 file_name: test-Plain-2-2.exe;
-hwut_info_time: 1455360703L;
+hwut_info_time: 1455574532L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.331039; 0; ]
-  [ stepping; OK; 0.310716; 0; ]
+  [ linear; OK; 0.317623; 0; ]
+  [ stepping; OK; 0.330313; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=4, FALLBACK=0);
 title_group: Buffer Tell&Seek;
-build_time: 2.499931812286377;
-file_name: test-Plain-wiostream-2-0.exe;
-hwut_info_time: 1455360674L;
-make_dependent_f: True;
-same_f: True;
-result_list: [
-  [ linear; OK; 0.183699; 0; ]
-  [ stepping; OK; 0.208207; 0; ]
-]
-}
-{
-title: LexatomLoader_Plain (BPC=4, FALLBACK=0);
-title_group: Buffer Tell&Seek;
-build_time: 1.7260010242462158;
+build_time: 1.2489800453186035;
 file_name: test-Plain-4-0.exe;
-hwut_info_time: 1455360705L;
+hwut_info_time: 1455574534L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.639260; 0; ]
-  [ stepping; OK; 3.649988; 0; ]
+  [ linear; OK; 0.529430; 0; ]
+  [ stepping; OK; 3.188134; 0; ]
+]
+}
+{
+title: LexatomLoader_Plain (BPC=4, FALLBACK=0);
+title_group: Buffer Tell&Seek;
+build_time: 1.828808069229126;
+file_name: test-Plain-wiostream-2-0.exe;
+hwut_info_time: 1455574514L;
+make_dependent_f: True;
+same_f: True;
+result_list: [
+  [ linear; OK; 0.171841; 0; ]
+  [ stepping; OK; 0.204959; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 4.116549968719482;
+build_time: 1.9189119338989258;
 file_name: test-Plain-wiostream-2-1.exe;
-hwut_info_time: 1455360680L;
+hwut_info_time: 1455574517L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.157038; 0; ]
-  [ stepping; OK; 0.203036; 0; ]
+  [ linear; OK; 0.151390; 0; ]
+  [ stepping; OK; 0.213473; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=4, FALLBACK=1);
 title_group: Buffer Tell&Seek;
-build_time: 2.4129750728607178;
+build_time: 1.208240032196045;
 file_name: test-Plain-4-1.exe;
-hwut_info_time: 1455360701L;
+hwut_info_time: 1455574531L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.515795; 0; ]
-  [ stepping; OK; 2.784692; 0; ]
+  [ linear; OK; 0.567833; 0; ]
+  [ stepping; OK; 3.125150; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 1.7032420635223389;
+build_time: 1.2668521404266357;
 file_name: test-Plain-4-2.exe;
-hwut_info_time: 1455360698L;
+hwut_info_time: 1455574530L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.521593; 0; ]
-  [ stepping; OK; 2.783149; 0; ]
+  [ linear; OK; 0.550641; 0; ]
+  [ stepping; OK; 2.957845; 0; ]
 ]
 }
 {
 title: LexatomLoader_Plain (BPC=4, FALLBACK=2);
 title_group: Buffer Tell&Seek;
-build_time: 3.1734681129455566;
+build_time: 1.8251209259033203;
 file_name: test-Plain-wiostream-2-2.exe;
-hwut_info_time: 1455360712L;
+hwut_info_time: 1455574538L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ linear; OK; 0.148590; 0; ]
-  [ stepping; OK; 0.161927; 0; ]
+  [ linear; OK; 0.171740; 0; ]
+  [ stepping; OK; 0.181890; 0; ]
 ]
 }

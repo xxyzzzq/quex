@@ -132,30 +132,36 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
         previous single trigger 'X'.
         """
         for state_index, state in sm.states.items():
-            target_map = state.target_map.get_map()
-            for target_state_index, number_set in state.target_map.get_map().items():
-                # Check whether a modification is necessary
-                if number_set.supremum() <= self.UnchangedRange: continue
-
-                # Cut out any forbiddin range. Assume, that is has been checked
-                # before, or is tolerated to be omitted.
-                self.prune(number_set)
-
-                transformed_interval_sequence_list = flatten_list_of_lists(
-                    self.get_interval_sequences(interval)
-                    for interval in number_set.get_intervals(PromiseToTreatWellF=True)
-                )
-
-                # First, remove the original transition.
-                del target_map[target_state_index]
-
-                # Second, enter the new transitions.
-                _plug_interval_sequences(sm, state_index, target_state_index, 
-                                         transformed_interval_sequence_list, beautifier)
+            self.__transform_state(sm, state_index, beautifier)
 
         # [0] allways complete
         # [1] transformed state machine (DFA)
         return True, beautifier.do(sm)
+
+    def __transform_state(self, sm, SI, beautifier):
+        state      = sm.states[SI]
+        target_map = state.target_map.get_map()
+        for target_state_index, number_set in state.target_map.get_map().items():
+            # Check whether a modification is necessary
+            if number_set.supremum() <= self.UnchangedRange: continue
+
+            # Cut out any forbiddin range. Assume, that is has been checked
+            # before, or is tolerated to be omitted.
+            self.prune(number_set)
+
+            transformed_interval_sequence_list = flatten_list_of_lists(
+                self.get_interval_sequences(interval)
+                for interval in number_set.get_intervals(PromiseToTreatWellF=True)
+            )
+
+            # First, remove the original transition.
+            del target_map[target_state_index]
+
+            # Second, enter the new transitions.
+            _plug_interval_sequences(sm, SI, target_state_index, 
+                                     transformed_interval_sequence_list, beautifier)
+
+        return True, False
 
 def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, beautifier):
     sub_sm = StateMachine.from_interval_sequences(IntervalSequenceList)

@@ -41,7 +41,7 @@ ForbiddenRange = Interval(0xD800, 0xE000)
 class EncodingTrafoUTF16(EncodingTrafoByFunction):
     UnchangedRange = 0x10000
     def __init__(self):
-        EncodingTrafoByFunction.__init__(self, "utf_16")
+        EncodingTrafoByFunction.__init__(self, "utf16")
 
     def prune(self, number_set):
         global ForbiddenRange

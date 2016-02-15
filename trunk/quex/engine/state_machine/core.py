@@ -261,6 +261,11 @@ class StateMachine(object):
         """NOTE: 'epsilon_closure_db' must previously be calculcated by 
                  self.get_epsilon_closure_db(). This has to happen once
                  and for all in order to save computation time.
+           TODO: Performance--at the bottom of this file there is a class 
+                 that might be directly used for indexing into a dictionary
+                 for caching the epsilon closures: MultiOccurrenceNumberList.
+                 (Tests showed that in average the a state combination requires
+                  6x to evaluate into a closure).
         
            Considers the trigger dictionary that contains a mapping from target state index 
            to the trigger set that triggers to it: 
@@ -327,13 +332,17 @@ class StateMachine(object):
         ##    return combination_list
 
         ## Special Case -- Quickly Done: One State, One Target State
-        ##        proposal = None
-        ##        if len(StateIdxList) == 1:
-        ##           state_idx = list(StateIdxList)[0]
-        ##            if len(epsilon_closure_db[state_idx]) == 1:
-        ##                if len(self.states[state_idx].target_map.get_map()) == 1:
-        ##                    target, trigger_set = self.states[state_idx].target_map.get_map().items()[0]
-        ##                    proposal = { (target,): NumberSet(trigger_set) }
+        ##  (Improvement is merely measurable).
+        ##  if len(StateIdxList) == 1:
+        ##      state_idx = list(StateIdxList)[0]
+        ##      if len(epsilon_closure_db[state_idx]) == 1:
+        ##           tm = self.states[state_idx].target_map.get_map()
+        ##           if not tm:
+        ##               return {}
+        ##           elif len(tm) == 1:
+        ##               target, trigger_set = tm.iteritems().next()
+        ##               current_target_epsilon_closure = epsilon_closure_db[target]
+        ##               return { tuple(sorted(current_target_epsilon_closure)): trigger_set }
 
         # (*) Accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.
@@ -1069,3 +1078,39 @@ class StateMachine(object):
             for number_set in state.target_map.get_map().itervalues():
                 number_set.assert_range(Range.minimum(), Range.supremum())
            
+# NO USES YET: 'MultiOccurrenceNumberList'
+# Candidate to support list based-indexing for caches.
+# in "StateMachine.get_elementary_trigger_sets(self, StateIdxList, ...)"
+class MultiOccurrenceNumberList(object):
+    __slots__ = ("db", "hash_value")
+
+    def __init__(self):
+        self.db         = defaultdict(int)
+        self.hash_value = 0
+
+    def enter(self, X):
+        if X not in self.db:
+            self.hash_value ^= X
+        else:
+            self.db[X] += 1
+
+    def remove(self, X):
+        self.db[X] -= 1
+        if not self.db[X]:
+            self.hash_value ^= X
+
+    def __hash__(self):
+        return self.hash_value
+
+    def __eq__(self, Other):
+        # Clean self and other.
+        for x, occurrence_n in self.db.keys():
+            if not occurrence_n: del self.db[x]
+            other_occurrence = Other.db.get(x)
+            # '0' or 'None'
+            if not other_occurrence: return False
+
+        for x, occurrence_n in Other.db.iterkeys():
+            if not occurrence_n: continue
+            if x not in self.db: return False
+        return True

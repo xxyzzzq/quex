@@ -9,7 +9,7 @@ case $1 in
         rm -f Simple*
         quex -i           customized_codec.qx  \
              --codec-file customized_codec.dat \
-             -o           Simple
+             -o           Simple --debug-exception
         awk '/customized_codec/' Simple-*customized_codec*
         rm -f Simple*
         ;;

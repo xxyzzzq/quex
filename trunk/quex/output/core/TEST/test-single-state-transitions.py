@@ -35,7 +35,7 @@ from   collections import defaultdict
 Setup.language_db = languages.db["C++"]
 Setup.buffer_element_type = "uint32_t"
 Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factor.do(Setup, "unicode", None))
+Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
 
 dial_db.clear()
 
