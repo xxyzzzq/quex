@@ -74,20 +74,30 @@ class EncodingTrafoUnicode(EncodingTrafo):
         """
         complete_f         = True
         orphans_possible_f = False
-        for state in sm.states.itervalues():
-            target_map = state.target_map.get_map()
-            for target_index, number_set in target_map.items():
-                if self.drain_set.is_superset(number_set): continue
-                complete_f = False
-                number_set.intersect_with(self.drain_set)
-                if number_set.is_empty(): 
-                    del target_map[target_index]
-                    orphans_possible_f = True
+        for si in sm.states.keys():
+            c_f, op_f = self.__transform_state(sm, si, UnusedBeatifier)
+            if not c_f: complete_f         = False
+            if op_f:    orphans_possible_f = True
 
         if orphans_possible_f:
             sm.delete_orphaned_states()
 
         return complete_f, sm
+
+    def __transform_state(self, sm, SI, UnusedBeatifier):
+        state              = sm.states[SI]
+        target_map         = state.target_map.get_map()
+        complete_f         = True
+        orphans_possible_f = False
+        for target_index, number_set in target_map.items():
+            if self.drain_set.is_superset(number_set): continue
+            complete_f = False
+            number_set.intersect_with(self.drain_set)
+            if number_set.is_empty(): 
+                del target_map[target_index]
+                orphans_possible_f = True
+
+        return complete_f, orphans_possible_f
 
     def transform_NumberSet(self, number_set):
         return self.drain_set.intersection(number_set)

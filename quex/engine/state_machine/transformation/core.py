@@ -29,6 +29,7 @@ which implements the interfaces to be obeyed by all.
 (C) Frank-Rene Schaefer
 """
 from   quex.engine.misc.interval_handling                         import NumberSet
+import os
 
 
 def do(setup, BufferCodecName, BufferCodecFileName=""):

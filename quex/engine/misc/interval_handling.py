@@ -565,10 +565,10 @@ class NumberSet(object):
             self.add_interval(Other)
             return
 
-        elif len(Other.__intervals) == 0:
+        elif not Other.__intervals:
             return
 
-        elif len(self.__intervals) == 0:
+        elif not self.__intervals:
             self.__intervals = [
                 copy(other) for other in Other.__intervals
             ]

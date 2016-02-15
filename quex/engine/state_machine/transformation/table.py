@@ -38,12 +38,10 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         """
         complete_f         = True
         orphans_possible_f = False
-        for state in sm.states.itervalues():
-            L = len(state.target_map.get_map())
-            if not state.target_map.transform(self):
-                complete_f = False
-                if L != len(state.target_map.get_map()):
-                    orphans_possible_f = True
+        for si in sm.states.keys():
+            c_f, op_f = self.__transform_state(sm, si, UnusedBeatifier)
+            if not c_f: complete_f         = False
+            if op_f:    orphans_possible_f = True
 
         # If some targets have been deleted from target maps, then a orphan state 
         # deletion operation is necessary.
@@ -51,6 +49,19 @@ class EncodingTrafoByTable(EncodingTrafo, list):
             sm.delete_orphaned_states()
 
         return complete_f, sm
+
+    def __transform_state(self, sm, SI, UnusedBeatifier):
+        state              = sm.states[SI]
+        target_map         = state.target_map.get_map()
+        complete_f         = True
+        orphans_possible_f = False
+        L = len(state.target_map.get_map())
+        if not state.target_map.transform(self):
+            complete_f = False
+            if L != len(state.target_map.get_map()):
+                orphans_possible_f = True
+
+        return complete_f, orphans_possible_f
 
     def transform_NumberSet(self, number_set):
         return number_set.transform(self)

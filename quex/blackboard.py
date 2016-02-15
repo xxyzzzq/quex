@@ -171,7 +171,13 @@ E_MapImplementationType = Enum("STATE_MACHINE_TRIVIAL",
                                "PLAIN_MAP", 
                                "_DEBUG_MapImplementationType")
 
-E_Border = Enum("BEGIN", "END", "UNDEFINED", "_DEBUG_Border")
+# E_Border's speed is critical for performance of NFA to DFA conversion.
+# => implement as class
+# E_Border = Enum("BEGIN", "END", "UNDEFINED", "_DEBUG_Border")
+class E_Border:
+    BEGIN     = 1
+    END       = 0
+    UNDEFINED = -1
 
 E_DoorIdIndex = Enum("DROP_OUT", 
                      "TRANSITION_BLOCK", 

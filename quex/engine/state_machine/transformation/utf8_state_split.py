@@ -16,7 +16,7 @@ from   quex.engine.state_machine.transformation.state_split import EncodingTrafo
 class EncodingTrafoUTF8(EncodingTrafoByFunction):
     UnchangedRange = 0x7F
     def __init__(self):
-        EncodingTrafoByFunction.__init__(self, "utf_8")
+        EncodingTrafoByFunction.__init__(self, "utf8")
 
     def prune(self, X):
         pass
