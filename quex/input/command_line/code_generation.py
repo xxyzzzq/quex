@@ -1,17 +1,15 @@
-import quex.input.command_line.validation   as     validation
-from   quex.input.setup                     import global_extension_db,      \
-                                                   global_character_type_db, \
-                                                   command_line_args_defined, \
-                                                   command_line_arg_position, \
-                                                   E_Files
-from   quex.input.files.token_type          import TokenTypeDescriptorManual
-from   quex.input.files.token_id_file       import parse as token_id_file_parse
-from   quex.output.core.dictionary import db as output_language_db
-import quex.engine.state_machine.transformation.core             as     bc_factory
-import quex.engine.state_machine.transformation.utf8_state_split  as utf8_state_split      
-import quex.engine.state_machine.transformation.utf16_state_split as utf16_state_split      
-from   quex.engine.misc.file_in             import read_namespaced_name
-import quex.engine.misc.error               as     error 
+import quex.input.command_line.validation            as     validation
+from   quex.input.setup                              import global_extension_db,      \
+                                                            global_character_type_db, \
+                                                            command_line_args_defined, \
+                                                            command_line_arg_position, \
+                                                            E_Files
+from   quex.input.files.token_type                   import TokenTypeDescriptorManual
+from   quex.input.files.token_id_file                import parse as token_id_file_parse
+from   quex.output.core.dictionary                   import db as output_language_db
+from   quex.engine.misc.file_in                      import read_namespaced_name
+import quex.engine.misc.error                        as     error 
+import quex.engine.state_machine.transformation.core as     bc_factory
 
 
 from   quex.blackboard import setup as Setup, E_Compression

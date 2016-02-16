@@ -38,19 +38,6 @@ class EncodingTrafoUTF8(EncodingTrafoByFunction):
                 for interval in interval_list)
         return result
 
-    def transform_NumberSet(self, NSet):
-        """Unicode values > 0x7F are translated into byte sequences, thus, only number
-           sets below that value can be transformed into number sets. They, actually
-           remain the same.
-        """
-        for interval in NSet.get_intervals(PromiseToTreatWellF=True):
-            if interval.end >= self.UnchangedRange:
-                assert False, \
-                       "Operation 'number set transformation' failed.\n" + \
-                       "The given number set results in a state sequence not a single transition."
-                return None
-        return NSet
-
     def lexatom_n_per_character(self, CharacterSet):
         """If all characters in a unicode character set state machine require the
         same number of bytes to be represented this number is returned.  Otherwise,
