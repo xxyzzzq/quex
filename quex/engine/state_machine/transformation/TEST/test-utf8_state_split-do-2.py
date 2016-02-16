@@ -18,7 +18,7 @@ if "--hwut-info" in sys.argv:
 
 sm1 = regex.do("[ΆΈΉΊΌΎ-Ϋ]+", {}).sm
 sm2 = regex.do("[ \\t\\n]", {}).sm
-verdict_f, result = EncodingTrafoUTF8().transform(get_combined_state_machine([sm1, sm2]), beautifier)
+verdict_f, result = EncodingTrafoUTF8().do_state_machine(get_combined_state_machine([sm1, sm2]), beautifier)
 for line in result.get_graphviz_string(NormalizeF=True, Option="hex").splitlines():
     if line.find("digraph") != -1:
         print "digraph state_machine {"
