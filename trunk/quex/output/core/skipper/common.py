@@ -1,5 +1,6 @@
-import quex.engine.misc.utf8                  as     utf8
+import quex.engine.misc.utf8             as     utf8
 from   quex.engine.misc.string_handling  import safe_string
+import quex.engine.misc.error            as     error
 from   quex.blackboard                   import setup as Setup, \
                                                 Lng
 
@@ -39,8 +40,11 @@ def get_newline_in_codec(TrafoInfo):
 
        RETURNS: None if the transformation is not possible.
     """
-    result = TrafoInfo.transform_Number(ord('\n'))
-    if result is None or len(result) != 1: return None
+    result = TrafoInfo.do_Number(ord('\n'))
+    if len(result) > 1 or result[0].size() > 1:
+        error.log("Cannot detect newline with buffer encodings where '0xA'\n"
+                  "is represented by more than one lexatom.")
+
     return result[0].begin
 
 def get_on_skip_range_open(OnSkipRangeOpen, CloserPattern, NestedF=False):

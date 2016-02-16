@@ -31,21 +31,31 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         source_set, drain_set = codec_db.load(self, file_name, ExitOnErrorF)
         EncodingTrafo.__init__(self, codec_name, source_set, drain_set)
 
-    def _transform_state(self, sm, SI, UnusedBeatifier):
+    def do_state(self, sm, SI, UnusedBeatifier):
         state              = sm.states[SI]
         target_map         = state.target_map.get_map()
         complete_f         = True
         orphans_possible_f = False
-        L = len(state.target_map.get_map())
-        if not state.target_map.transform(self):
-            complete_f = False
-            if L != len(state.target_map.get_map()):
-                orphans_possible_f = True
+        for target, number_set in target_map.items(): # NOT '.iteritems()'
+            assert not number_set.is_empty()
+            if number_set.transform(self): 
+                assert not number_set.is_empty()
+            else:
+                complete_f = False
+                if number_set.is_empty(): 
+                    orphans_possible_f = True
+                    del self.__db[target]
 
         return complete_f, orphans_possible_f
 
-    def transform_NumberSet(self, number_set):
-        return number_set.transform(self)
+    def do_NumberSet(self, number_set):
+        """RETURNS: List of interval sequences that implement the number set.
+        """
+        transformed = number_set.transform(self)
+        return [ 
+            [ interval ]
+            for interval in transformed.get_intervals(PromiseToTreatWellF=True) 
+        ]
 
     def __set_invalid(self):
         list.clear(self)                  

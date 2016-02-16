@@ -103,7 +103,7 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
                                     self.get_unicode_range(), 
                                     self.get_code_unit_range())
 
-    def _transform_state(self, sm, SI, beautifier):
+    def do_state(self, sm, SI, beautifier):
         state      = sm.states[SI]
         target_map = state.target_map.get_map()
         for target_state_index, number_set in state.target_map.get_map().items():
@@ -114,10 +114,7 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
             # before, or is tolerated to be omitted.
             self.prune(number_set)
 
-            transformed_interval_sequence_list = flatten_list_of_lists(
-                self.get_interval_sequences(interval)
-                for interval in number_set.get_intervals(PromiseToTreatWellF=True)
-            )
+            transformed_interval_sequence_list = self.do_NumberSet(number_set)
 
             # First, remove the original transition.
             del target_map[target_state_index]
@@ -127,6 +124,14 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
                                      transformed_interval_sequence_list, beautifier)
 
         return True, False
+
+    def do_NumberSet(self, NSet):
+        """RETURNS: List of interval sequences that implement the number set.
+        """
+        return flatten_list_of_lists(
+            self.get_interval_sequences(interval)
+            for interval in NSet.get_intervals(PromiseToTreatWellF=True)
+        )
 
     def variable_character_sizes_f(self):
         return True

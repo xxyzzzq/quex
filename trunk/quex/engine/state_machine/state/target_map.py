@@ -272,6 +272,7 @@ class TargetMap:
                  do a 'delete_orphaned_states()' operation, because states
                  may have been deleted from the map.
         """
+        assert False
         complete_f = True
         for target, number_set in self.__db.items(): # NOT '.iteritems()'
             assert not number_set.is_empty()

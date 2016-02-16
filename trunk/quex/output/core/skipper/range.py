@@ -316,7 +316,7 @@ def TRY_terminal_delimiter_sequence(Mode, UnicodeSequence, UnicodeEndSequencePat
 
     # Trasform letter by letter.
     sequence = flatten_list_of_lists(
-        Setup.buffer_codec.transform_Number(x) for x in UnicodeSequence
+        Setup.buffer_codec.do_Number(x) for x in UnicodeSequence
     )
 
     EndSequenceChunkN = len(sequence)

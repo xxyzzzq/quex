@@ -28,8 +28,10 @@ which implements the interfaces to be obeyed by all.
 
 (C) Frank-Rene Schaefer
 """
-from   quex.engine.misc.interval_handling                         import NumberSet
+from   quex.engine.misc.interval_handling  import NumberSet
+import quex.engine.misc.error              as error
 import os
+import sys
 
 
 def do(setup, BufferCodecName, BufferCodecFileName=""):

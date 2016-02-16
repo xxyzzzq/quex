@@ -16,7 +16,7 @@ class EncodingTrafo:
         self.source_set = SourceSet
         self.drain_set  = DrainSet
 
-    def do_state_machine(self, SmIn, beautifier):
+    def do_state_machine(self, sm, beautifier):
         """Transforms a given state machine from 'Unicode Driven' to another
            character encoding type.
         
@@ -28,50 +28,45 @@ class EncodingTrafo:
            It is ensured that the result of this function is a DFA compliant
            state machine.
         """
-        if SmIn is None: return True, None
-        assert SmIn.is_DFA_compliant()
+        if sm is None: return True, None
+        assert sm.is_DFA_compliant()
 
-        # BEFORE: Forgive characters not in source range. What comes out is 
-        #         important. It is checked in 'transform()' of the Pattern.
-        complete_f, sm_out = self.transform(SmIn, beautifier)
-
-        # AFTER: Whatever happend, the transitions in the state machine MUST
-        #        lie in the drain_set.
-        sm_out.assert_range(self.drain_set)
-
-        if not sm_out.is_DFA_compliant(): 
-            return complete_f, beautifier.do(sm_out)
-        elif self.hopcroft_minimization_always_makes_sense():                         
-            return complete_f, beautifier.do(sm_out, NfaToDfaF=False)
-        else:                         
-            return complete_f, sm_out
-
-    def transform(self, sm, beautifier):
-        """Cut any number that is not in drain_set from the transition trigger
-        sets. Possible orphaned states are deleted.
-        """
         complete_f         = True
         orphans_possible_f = False
         for si in sm.states.keys():
-            c_f, op_f = self._transform_state(sm, si, beautifier)
+            c_f, op_f = self.do_state(sm, si, beautifier)
             if not c_f: complete_f         = False
             if op_f:    orphans_possible_f = True
 
-        if orphans_possible_f:
-            sm.delete_orphaned_states()
+        if orphans_possible_f: sm.delete_orphaned_states()
 
-        return complete_f, sm
+        # AFTER: Whatever happend, the transitions in the state machine MUST
+        #        lie in the drain_set.
+        sm.assert_range(self.drain_set)
 
-    def transform_Number(self, number):
-        result = self.transform_NumberSet(NumberSet(number))
+        if not sm.is_DFA_compliant(): 
+            return complete_f, beautifier.do(sm)
+        elif self.hopcroft_minimization_always_makes_sense():                         
+            return complete_f, beautifier.do(sm, NfaToDfaF=False)
+        else:                         
+            return complete_f, sm
+
+    def do_Number(self, number):
+        """RETURNS: A interval sequence that implements the given number.
+        """
+        result = self.do_NumberSet(NumberSet(number))
+        # result: list of interval sequences that implement number set.
+        # number set contains only one element.
+        # => one interval sequence and 
+        #    the interval size must be one.
         if result is None: return None
-        else:              return result.get_intervals(PromiseToTreatWellF=True)
+        else:              return result[0]
 
-    def transform_NumberSet(self, number_set):              assert False
+    def do_NumberSet(self, number_set):              assert False
 
     def do_sequence(self, Sequence, fh=-1):
         return flatten_list_of_lists(
-            self.transform_Number(x) for x in Sequence
+            self.do_Number(x) for x in Sequence
         )
 
     def lexatom_n_per_character(self, CharacterSet):        assert False
@@ -91,7 +86,7 @@ class EncodingTrafoUnicode(EncodingTrafo):
     def __init__(self, SourceSet, DrainSet):
         EncodingTrafo.__init__(self, "unicode", SourceSet, DrainSet)
 
-    def _transform_state(self, sm, SI, UnusedBeatifier):
+    def do_state(self, sm, SI, UnusedBeatifier):
         state              = sm.states[SI]
         target_map         = state.target_map.get_map()
         complete_f         = True
@@ -106,8 +101,12 @@ class EncodingTrafoUnicode(EncodingTrafo):
 
         return complete_f, orphans_possible_f
 
-    def transform_NumberSet(self, number_set):
-        return self.drain_set.intersection(number_set)
+    def do_NumberSet(self, number_set):
+        transformed = self.drain_set.intersection(number_set)
+        return [ 
+            [ interval ]
+            for interval in transformed.get_intervals(PromiseToTreatWellF=True) 
+        ]
 
     def lexatom_n_per_character(self, CharacterSet):
         return 1 # In non-dynamic character codecs each chunk element is a character

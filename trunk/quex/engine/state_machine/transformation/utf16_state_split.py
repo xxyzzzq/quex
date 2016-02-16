@@ -63,16 +63,6 @@ class EncodingTrafoUTF16(EncodingTrafoByFunction):
             )
         return result
 
-    def transform_NumberSet(self, NSet):
-        """Unicode values > 0xFFFF are translated into byte sequences, thus,
-        only number sets below that value can be transformed into number sets.
-        They, actually remain the same.  
-        """
-
-        for interval in NSet.get_intervals(PromiseToTreatWellF=True):
-            if interval.end > self.UnchangedRange: return None
-        return NSet
-
     def lexatom_n_per_character(self, CharacterSet):
         """If all characters in a unicode character set state machine require the
         same number of bytes to be represented this number is returned.  Otherwise,
