@@ -85,7 +85,7 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     orig = get_combined_state_machine(map(lambda x: x.sm, sets))
     print "# Number of states in state machine:"
     print "#   Unicode:       %i" % len(orig.states)
-    verdict_f, result = Trafo.transform(orig, beautifier)
+    verdict_f, result = Trafo.do_state_machine(orig, beautifier)
     print "#   UTF16-Splitted: %i" % len(result.states)
 
     # print result.get_graphviz_string(Option="hex")

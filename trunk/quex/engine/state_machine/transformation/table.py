@@ -31,26 +31,7 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         source_set, drain_set = codec_db.load(self, file_name, ExitOnErrorF)
         EncodingTrafo.__init__(self, codec_name, source_set, drain_set)
 
-    def transform(self, sm, UnusedBeatifier):
-        """RETURNS: True  transformation for all states happend completely.
-                    False transformation may not have transformed all elements because
-                          the target codec does not cover them.
-        """
-        complete_f         = True
-        orphans_possible_f = False
-        for si in sm.states.keys():
-            c_f, op_f = self.__transform_state(sm, si, UnusedBeatifier)
-            if not c_f: complete_f         = False
-            if op_f:    orphans_possible_f = True
-
-        # If some targets have been deleted from target maps, then a orphan state 
-        # deletion operation is necessary.
-        if orphans_possible_f:
-            sm.delete_orphaned_states()
-
-        return complete_f, sm
-
-    def __transform_state(self, sm, SI, UnusedBeatifier):
+    def _transform_state(self, sm, SI, UnusedBeatifier):
         state              = sm.states[SI]
         target_map         = state.target_map.get_map()
         complete_f         = True

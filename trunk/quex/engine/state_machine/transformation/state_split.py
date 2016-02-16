@@ -103,42 +103,7 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
                                     self.get_unicode_range(), 
                                     self.get_code_unit_range())
 
-    def variable_character_sizes_f(self):
-        return True
-
-    def lexatom_n_per_character_in_state_machine(self, SM):
-        chunk_n = None
-        for state in SM.states.itervalues():
-            for number_set in state.target_map.get_map().itervalues():
-                candidate_chunk_n = self.lexatom_n_per_character(number_set)
-                if   candidate_chunk_n is None:    return None
-                elif chunk_n is None:              chunk_n = candidate_chunk_n
-                elif chunk_n != candidate_chunk_n: return None
-        return chunk_n
-
-    def transform(self, sm, beautifier):
-        """A single unicode character code is translated into a sequence of 
-        bytes. Example: For this a simple transition on a character 'X':
-
-                [ 1 ]---( X )--->[ 2 ]
-
-        needs to be translated into a sequence of state transitions
-
-                [ 1 ]---(x0)--->[ S0 ]---(x1)--->[ S1 ]---(x2)--->[ 2 ]
-
-        where, x0, x1, x2 are the UTF8 bytes that represent unicode 'X'.
-        States S0 and S1 are intermediate states created only so that x1, x2,
-        and x3 can trigger. UTF8 sequence ends at the same state '2' as the 
-        previous single trigger 'X'.
-        """
-        for state_index, state in sm.states.items():
-            self.__transform_state(sm, state_index, beautifier)
-
-        # [0] allways complete
-        # [1] transformed state machine (DFA)
-        return True, beautifier.do(sm)
-
-    def __transform_state(self, sm, SI, beautifier):
+    def _transform_state(self, sm, SI, beautifier):
         state      = sm.states[SI]
         target_map = state.target_map.get_map()
         for target_state_index, number_set in state.target_map.get_map().items():
@@ -162,6 +127,22 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
                                      transformed_interval_sequence_list, beautifier)
 
         return True, False
+
+    def variable_character_sizes_f(self):
+        return True
+
+    def lexatom_n_per_character_in_state_machine(self, SM):
+        chunk_n = None
+        for state in SM.states.itervalues():
+            for number_set in state.target_map.get_map().itervalues():
+                candidate_chunk_n = self.lexatom_n_per_character(number_set)
+                if   candidate_chunk_n is None:    return None
+                elif chunk_n is None:              chunk_n = candidate_chunk_n
+                elif chunk_n != candidate_chunk_n: return None
+        return chunk_n
+
+    def hopcroft_minimization_always_makes_sense(self): 
+        return True
 
 def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, beautifier):
     sub_sm = StateMachine.from_interval_sequences(IntervalSequenceList)

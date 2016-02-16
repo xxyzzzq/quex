@@ -39,21 +39,41 @@ class EncodingTrafo:
         #        lie in the drain_set.
         sm_out.assert_range(self.drain_set)
 
-        if sm_out.is_DFA_compliant(): return complete_f, sm_out
-        else:                         return complete_f, beautifier.do(sm_out)
+        if not sm_out.is_DFA_compliant(): 
+            return complete_f, beautifier.do(sm_out)
+        elif self.hopcroft_minimization_always_makes_sense():                         
+            return complete_f, beautifier.do(sm_out, NfaToDfaF=False)
+        else:                         
+            return complete_f, sm_out
 
-    def do_sequence(self, Sequence, fh=-1):
-        return flatten_list_of_lists(
-            self.transform_Number(x) for x in Sequence
-        )
+    def transform(self, sm, beautifier):
+        """Cut any number that is not in drain_set from the transition trigger
+        sets. Possible orphaned states are deleted.
+        """
+        complete_f         = True
+        orphans_possible_f = False
+        for si in sm.states.keys():
+            c_f, op_f = self._transform_state(sm, si, beautifier)
+            if not c_f: complete_f         = False
+            if op_f:    orphans_possible_f = True
+
+        if orphans_possible_f:
+            sm.delete_orphaned_states()
+
+        return complete_f, sm
 
     def transform_Number(self, number):
         result = self.transform_NumberSet(NumberSet(number))
         if result is None: return None
         else:              return result.get_intervals(PromiseToTreatWellF=True)
 
-    def transform(self, sm, beautifier):                    assert False
     def transform_NumberSet(self, number_set):              assert False
+
+    def do_sequence(self, Sequence, fh=-1):
+        return flatten_list_of_lists(
+            self.transform_Number(x) for x in Sequence
+        )
+
     def lexatom_n_per_character(self, CharacterSet):        assert False
 
     def lexatom_n_per_character_in_state_machine(self, SM): assert False
@@ -64,27 +84,14 @@ class EncodingTrafo:
         """
         return False
 
+    def hopcroft_minimization_always_makes_sense(self): 
+        return False
+
 class EncodingTrafoUnicode(EncodingTrafo):
     def __init__(self, SourceSet, DrainSet):
         EncodingTrafo.__init__(self, "unicode", SourceSet, DrainSet)
 
-    def transform(self, sm, UnusedBeatifier):
-        """Cut any number that is not in drain_set from the transition trigger
-        sets. Possible orphaned states are deleted.
-        """
-        complete_f         = True
-        orphans_possible_f = False
-        for si in sm.states.keys():
-            c_f, op_f = self.__transform_state(sm, si, UnusedBeatifier)
-            if not c_f: complete_f         = False
-            if op_f:    orphans_possible_f = True
-
-        if orphans_possible_f:
-            sm.delete_orphaned_states()
-
-        return complete_f, sm
-
-    def __transform_state(self, sm, SI, UnusedBeatifier):
+    def _transform_state(self, sm, SI, UnusedBeatifier):
         state              = sm.states[SI]
         target_map         = state.target_map.get_map()
         complete_f         = True
