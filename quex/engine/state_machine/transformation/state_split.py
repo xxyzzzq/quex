@@ -92,6 +92,8 @@ PROCESS:
 """
 from   quex.engine.state_machine.core                import StateMachine
 import quex.engine.state_machine.transformation.base as     base
+from   quex.engine.misc.interval_handling            import NumberSet, \
+                                                            Interval
 
 from   quex.engine.misc.tools import flatten_list_of_lists
 
@@ -103,26 +105,28 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
                                     self.get_unicode_range(), 
                                     self.get_code_unit_range())
 
-    def do_state(self, sm, SI, beautifier):
-        state      = sm.states[SI]
-        target_map = state.target_map.get_map()
-        for target_state_index, number_set in state.target_map.get_map().items():
-            # Check whether a modification is necessary
-            if number_set.supremum() <= self.UnchangedRange: continue
+    def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
+        """RETURNS: [0] True if complete, False else.
+                    [1] True if orphan states possibly generated, False else.
+        """
+        number_set = from_target_map[ToSi]
 
-            # Cut out any forbiddin range. Assume, that is has been checked
-            # before, or is tolerated to be omitted.
-            self.prune(number_set)
+        # Check whether a modification is necessary
+        if number_set.supremum() <= self.UnchangedRange: 
+            return True, False
 
-            transformed_interval_sequence_list = self.do_NumberSet(number_set)
+        # Cut out any forbiddin range. Assume, that is has been checked
+        # before, or is tolerated to be omitted.
+        self.prune(number_set)
 
-            # First, remove the original transition.
-            del target_map[target_state_index]
+        transformed_interval_sequence_list = self.do_NumberSet(number_set)
 
-            # Second, enter the new transitions.
-            _plug_interval_sequences(sm, SI, target_state_index, 
-                                     transformed_interval_sequence_list, beautifier)
+        # First, remove the original transition.
+        del from_target_map[ToSi]
 
+        # Second, enter the new transitions.
+        _plug_interval_sequences(sm, FromSi, ToSi, 
+                                 transformed_interval_sequence_list, beautifier)
         return True, False
 
     def do_NumberSet(self, NSet):
@@ -137,20 +141,21 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
         return True
 
     def lexatom_n_per_character_in_state_machine(self, SM):
-        chunk_n = None
+        lexatom_n = None
         for state in SM.states.itervalues():
             for number_set in state.target_map.get_map().itervalues():
-                candidate_chunk_n = self.lexatom_n_per_character(number_set)
-                if   candidate_chunk_n is None:    return None
-                elif chunk_n is None:              chunk_n = candidate_chunk_n
-                elif chunk_n != candidate_chunk_n: return None
-        return chunk_n
+                candidate_lexatom_n = self.lexatom_n_per_character(number_set)
+                if   candidate_lexatom_n is None:      return None
+                elif lexatom_n is None:                lexatom_n = candidate_lexatom_n
+                elif lexatom_n != candidate_lexatom_n: return None
+        return lexatom_n
 
     def hopcroft_minimization_always_makes_sense(self): 
         return True
 
 def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, beautifier):
     sub_sm = StateMachine.from_interval_sequences(IntervalSequenceList)
+    # sub_sm = _plug_encoding_error_detectors(sub_sm)
     sub_sm = beautifier.do(sub_sm)
 
     # The 'End State' is the state where there are no further transitions.
@@ -162,3 +167,52 @@ def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, bea
     # Mount the states inside the state machine
     sm.mount_absorbed_states_between(BeginIndex, EndIndex, 
                                      sub_sm.states, sub_sm.init_state_index, new_end_si)
+
+error_lexatom0 = NumberSet([
+    Interval(0x00, 0x7F+1),
+    Interval(0xC0, 0xDF+1),
+    Interval(0xE0, 0xEF+1),
+    Interval(0xF0, 0xF7+1),
+    Interval(0xF8, 0xFB+1),
+    Interval(0xFC, 0xFD+1),
+])
+
+error_lexatomN = NumberSet(Interval(0x80, 0xBF+1))
+
+def _plug_encoding_error_detectors(sm):
+    """Adorn states with transitions to the 'on_encoding_error' handler if the 
+    input value lies beyond the limits. The state machine is an implementation
+    of linear sequences of intervals. Thus, the 'byte position' can be 
+    be determined by the number of transitions from the init state.
+
+    sm = mini state machine that implements the transition sequences.
+
+    UTF8 Encodings in binary look like the following (see 'man utf8').
+
+        0xxxxxxx
+        110xxxxx 10xxxxxx
+        1110xxxx 10xxxxxx 10xxxxxx
+        11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+        1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxx
+
+    For UTF8, admissible values are dependent on the byte position:
+
+        Byte[0]:    [00-7F], [C0-DF], [E0-EF], [F0-F7], [F8-FB], [FC-FD]
+        Byte[>0]:   [80-BF]
+    """
+    # 'Byte[0]' appears at the init state
+    init_tm = sm.get_init_state().target_map.get_map()
+    init_tm[E_StateIndices.ON_BAD_LEXATOM] = error_lexatom0
+
+    # 'Byte[>0]' appear all at later states
+    workset = set(init_tm.iterkeys())
+    done    = set()
+    while workset:
+        si = worklist.pop()
+        tm = sm.states[si].target_map.get_map()
+        tm[E_StateIndices.ON_BAD_LEXATOM] = error_lexatomN
+        done_set.add(si)
+        workset.update(new_si for new_si in tm.iterkeys() 
+                       if new_si not in done_set)
+

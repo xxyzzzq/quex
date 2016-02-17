@@ -1,113 +1,113 @@
 {
 title: Accumulator;
-build_time: 0.005517005920410156;
+build_time: 0.008105993270874023;
 file_name: accumulator.exe;
 hwut_info_time: 1455573966L;
 make_dependent_f: True;
 result_list: [
-  [ String; OK; 0.005142; 0; ]
-  [ Character; OK; 0.005087; 0; ]
-  [ N-Character; OK; 0.005360; 0; ]
-  [ N-String; OK; 0.006725; 0; ]
-  [ Mix; OK; 0.005279; 0; ]
+  [ String; OK; 0.006380; 0; ]
+  [ Character; OK; 0.003859; 0; ]
+  [ N-Character; OK; 0.005526; 0; ]
+  [ N-String; OK; 0.006380; 0; ]
+  [ Mix; OK; 0.003706; 0; ]
 ]
 }
 {
 title: Statistics Module;
-build_time: 0.006452083587646484;
+build_time: 0.007144927978515625;
 file_name: statistics.exe;
 hwut_info_time: 1455573965L;
 make_dependent_f: True;
 result_list: [
-  [ ; OK; 0.004363; 0; ]
+  [ ; OK; 0.005192; 0; ]
 ]
 }
 {
 title: Enter;
 title_group: Post Categorizer;
-build_time: 0.007314920425415039;
+build_time: 0.005199909210205078;
 file_name: post-categorizer-find.exe;
 hwut_info_time: 1455573965L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 0; OK; 0.003961; 0; ]
-  [ 1; OK; 0.004154; 0; ]
-  [ 2; OK; 0.004184; 0; ]
-  [ 3; OK; 0.004770; 0; ]
-  [ 4; OK; 0.005803; 0; ]
-  [ 5; OK; 0.003917; 0; ]
-  [ 6; OK; 0.003919; 0; ]
+  [ 0; OK; 0.004917; 0; ]
+  [ 1; OK; 0.005187; 0; ]
+  [ 2; OK; 0.004174; 0; ]
+  [ 3; OK; 0.004290; 0; ]
+  [ 4; OK; 0.005133; 0; ]
+  [ 5; OK; 0.005113; 0; ]
+  [ 6; OK; 0.004194; 0; ]
 ]
 }
 {
 title: Enter;
 title_group: Post Categorizer;
-build_time: 0.0074880123138427734;
+build_time: 0.007097005844116211;
 file_name: post-categorizer-enter.exe;
 hwut_info_time: 1455573969L;
 make_dependent_f: True;
 result_list: [
-  [ 0; OK; 0.004415; 0; ]
-  [ 1; OK; 0.004674; 0; ]
-  [ 2; OK; 0.004940; 0; ]
-  [ 3; OK; 0.004214; 0; ]
-  [ 4; OK; 0.003908; 0; ]
-  [ 5; OK; 0.004651; 0; ]
-  [ 6; OK; 0.008386; 0; ]
+  [ 0; OK; 0.005132; 0; ]
+  [ 1; OK; 0.005123; 0; ]
+  [ 2; OK; 0.005101; 0; ]
+  [ 3; OK; 0.005388; 0; ]
+  [ 4; OK; 0.005355; 0; ]
+  [ 5; OK; 0.004376; 0; ]
+  [ 6; OK; 0.004328; 0; ]
 ]
 }
 {
 title: Remove Existent Node;
 title_group: Post Categorizer;
-build_time: 0.006165027618408203;
+build_time: 0.007153034210205078;
 file_name: post-categorizer-remove-2.exe;
 hwut_info_time: 1455573967L;
 make_dependent_f: True;
 result_list: [
-  [ Ab; OK; 0.003734; 0; ]
-  [ Ad; OK; 0.005073; 0; ]
-  [ Af; OK; 0.004775; 0; ]
-  [ Ah; OK; 0.005320; 0; ]
-  [ Bb; OK; 0.005273; 0; ]
-  [ Bd; OK; 0.005506; 0; ]
-  [ Bf; OK; 0.004443; 0; ]
+  [ Ab; OK; 0.004318; 0; ]
+  [ Ad; OK; 0.004277; 0; ]
+  [ Af; OK; 0.005181; 0; ]
+  [ Ah; OK; 0.004930; 0; ]
+  [ Bb; OK; 0.004327; 0; ]
+  [ Bd; OK; 0.004295; 0; ]
+  [ Bf; OK; 0.005111; 0; ]
 ]
 }
 {
 title: Remove Non-Existent Node;
 title_group: Post Categorizer;
-build_time: 0.0056040287017822266;
+build_time: 0.007122993469238281;
 file_name: post-categorizer-remove.exe;
 hwut_info_time: 1455573968L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ Aa; OK; 0.003906; 0; ]
-  [ Ac; OK; 0.003376; 0; ]
-  [ Ae; OK; 0.005106; 0; ]
-  [ Ag; OK; 0.004786; 0; ]
-  [ Ai; OK; 0.004656; 0; ]
-  [ Ba; OK; 0.004379; 0; ]
-  [ Bc; OK; 0.004396; 0; ]
-  [ Be; OK; 0.004601; 0; ]
+  [ Aa; OK; 0.005226; 0; ]
+  [ Ac; OK; 0.006831; 0; ]
+  [ Ae; OK; 0.003771; 0; ]
+  [ Ag; OK; 0.003644; 0; ]
+  [ Ai; OK; 0.003651; 0; ]
+  [ Ba; OK; 0.005218; 0; ]
+  [ Bc; OK; 0.005374; 0; ]
+  [ Be; OK; 0.004653; 0; ]
 ]
 }
 {
 title: Remove Total;
 title_group: Post Categorizer;
-build_time: 0.006564140319824219;
+build_time: 0.007094144821166992;
 file_name: post-categorizer-remove-total.exe;
 hwut_info_time: 1455573966L;
 make_dependent_f: True;
 same_f: True;
 result_list: [
-  [ 1; OK; 0.004044; 0; ]
-  [ 2; OK; 0.003924; 0; ]
-  [ 3; OK; 0.003815; 0; ]
-  [ 4; OK; 0.006478; 0; ]
-  [ 5; OK; 0.007709; 0; ]
-  [ 6; OK; 0.004763; 0; ]
-  [ 7; OK; 0.003583; 0; ]
+  [ 1; OK; 0.003227; 0; ]
+  [ 2; OK; 0.003708; 0; ]
+  [ 3; OK; 0.004098; 0; ]
+  [ 4; OK; 0.005157; 0; ]
+  [ 5; OK; 0.003730; 0; ]
+  [ 6; OK; 0.003662; 0; ]
+  [ 7; OK; 0.004974; 0; ]
 ]
 }

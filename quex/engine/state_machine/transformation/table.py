@@ -31,22 +31,22 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         source_set, drain_set = codec_db.load(self, file_name, ExitOnErrorF)
         EncodingTrafo.__init__(self, codec_name, source_set, drain_set)
 
-    def do_state(self, sm, SI, UnusedBeatifier):
-        state              = sm.states[SI]
-        target_map         = state.target_map.get_map()
-        complete_f         = True
-        orphans_possible_f = False
-        for target, number_set in target_map.items(): # NOT '.iteritems()'
-            assert not number_set.is_empty()
-            if number_set.transform(self): 
-                assert not number_set.is_empty()
-            else:
-                complete_f = False
-                if number_set.is_empty(): 
-                    orphans_possible_f = True
-                    del self.__db[target]
+    def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
+        """RETURNS: [0] True if complete, False else.
+                    [1] True if orphan states possibly generated, False else.
+        """
+        number_set = from_target_map[ToSi]
 
-        return complete_f, orphans_possible_f
+        if number_set.transform(self): 
+            assert not number_set.is_empty()
+            return True, False
+
+        if number_set.is_empty(): 
+            orphans_possible_f = True
+            del target_map[ToSi]
+            return False, True
+        else:
+            return False, False
 
     def do_NumberSet(self, number_set):
         """RETURNS: List of interval sequences that implement the number set.
