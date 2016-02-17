@@ -33,10 +33,13 @@ class EncodingTrafo:
 
         complete_f         = True
         orphans_possible_f = False
-        for si in sm.states.keys():
-            c_f, op_f = self.do_state(sm, si, beautifier)
-            if not c_f: complete_f         = False
-            if op_f:    orphans_possible_f = True
+        for from_si, state in sm.states.items():
+            target_map = state.target_map.get_map()
+            for to_si in target_map.keys():
+                c_f, op_f = self.do_transition(sm, from_si, target_map, to_si, 
+                                               beautifier)
+                complete_f         &= c_f
+                orphans_possible_f |= op_f
 
         if orphans_possible_f: sm.delete_orphaned_states()
 
@@ -51,6 +54,11 @@ class EncodingTrafo:
         else:                         
             return complete_f, sm
 
+    def do_sequence(self, Sequence, fh=-1):
+        return flatten_list_of_lists(
+            self.do_Number(x) for x in Sequence
+        )
+
     def do_Number(self, number):
         """RETURNS: A interval sequence that implements the given number.
         """
@@ -62,44 +70,43 @@ class EncodingTrafo:
         if result is None: return None
         else:              return result[0]
 
-    def do_NumberSet(self, number_set):              assert False
+    def do_NumberSet(self, number_set):              
+        assert False, "Must be implemented by derived class"
 
-    def do_sequence(self, Sequence, fh=-1):
-        return flatten_list_of_lists(
-            self.do_Number(x) for x in Sequence
-        )
+    def lexatom_n_per_character(self, CharacterSet):
+        return 1     # Default behavior (e.g. UTF8 differs here)
 
-    def lexatom_n_per_character(self, CharacterSet):        assert False
-
-    def lexatom_n_per_character_in_state_machine(self, SM): assert False
+    def lexatom_n_per_character_in_state_machine(self, SM):
+        return 1     # Default behavior (e.g. UTF8 differs here)
 
     def variable_character_sizes_f(self): 
-        """By default, character sizes are fixed. In case of exception
-        this virtual function has to be re-implemented by derived class.
-        """
-        return False
+        return False # Default behavior (e.g. UTF8 differs here)
 
     def hopcroft_minimization_always_makes_sense(self): 
+        # Default-wise no intermediate states are generated
+        # => hopcroft minimization does not make sense.
         return False
+        
 
 class EncodingTrafoUnicode(EncodingTrafo):
     def __init__(self, SourceSet, DrainSet):
         EncodingTrafo.__init__(self, "unicode", SourceSet, DrainSet)
 
-    def do_state(self, sm, SI, UnusedBeatifier):
-        state              = sm.states[SI]
-        target_map         = state.target_map.get_map()
-        complete_f         = True
-        orphans_possible_f = False
-        for target_index, number_set in target_map.items():
-            if self.drain_set.is_superset(number_set): continue
-            complete_f = False
-            number_set.intersect_with(self.drain_set)
-            if number_set.is_empty(): 
-                del target_map[target_index]
-                orphans_possible_f = True
+    def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
+        """RETURNS: [0] True if complete, False else.
+                    [1] True if orphan states possibly generated, False else.
+        """
+        number_set = from_target_map[ToSi]
 
-        return complete_f, orphans_possible_f
+        if self.drain_set.is_superset(number_set): 
+            return True, False
+
+        number_set.intersect_with(self.drain_set)
+        if number_set.is_empty(): 
+            del target_map[ToSi]
+            return False, True
+        else:
+            return False, False
 
     def do_NumberSet(self, number_set):
         transformed = self.drain_set.intersection(number_set)
@@ -107,10 +114,4 @@ class EncodingTrafoUnicode(EncodingTrafo):
             [ interval ]
             for interval in transformed.get_intervals(PromiseToTreatWellF=True) 
         ]
-
-    def lexatom_n_per_character(self, CharacterSet):
-        return 1 # In non-dynamic character codecs each chunk element is a character
-
-    def lexatom_n_per_character_in_state_machine(self, SM):
-        return 1
 

@@ -253,39 +253,6 @@ class TargetMap:
             new_idx = ReplacementDict.get(target_idx)
             if new_idx is None: continue
             self.__epsilon_target_index_list[i] = new_idx
-
-    def transform(self, TrafoInfo):
-        """Transforms all related NumberSets from Unicode to a given Target 
-           Encoding according to the given TransformationInfo. The 
-           TransformationInfo is a list of elements consisting of 
-
-           [ SourceInterval_Begin, SourceInterval_End, TargetInterval_Begin ]
-
-           For example an element '[ 32, 49, 256 ]' means that all characters 
-           from 32 to 48 are transformed into 256 to 372. The function assumes
-           that the entries are sorted with respect to SourceInterval_Begin.
-
-           RETURNS: True  transformation of all elements successful.
-                    False transformation was not possible for all elements.
-
-           NOTE: If 'False' is returned, for safety, it may be necessary to 
-                 do a 'delete_orphaned_states()' operation, because states
-                 may have been deleted from the map.
-        """
-        assert False
-        complete_f = True
-        for target, number_set in self.__db.items(): # NOT '.iteritems()'
-            assert not number_set.is_empty()
-            if number_set.transform(TrafoInfo): 
-                assert not number_set.is_empty()
-                continue
-            complete_f = False
-            if number_set.is_empty():
-                del self.__db[target]
-
-        # All code points which are not available in the drain's range must
-        # trigger an 'on_bad_lexatom'.
-        return complete_f
             
     def has_one_of_triggers(self, CharacterCodeList):
         assert type(CharacterCodeList) == list
