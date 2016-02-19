@@ -210,6 +210,9 @@ the three handlers shown below.
    error is triggered during conversion and depends on the specified input 
    encoding. If no input converter is specified, the specified encoding of the
    engine itself determines whether a lexatom is admissible or not.
+
+   The bad lexatom detection can be disabled by the command line options
+   ``--no-bad-lexatom-detection`` or ``--nbld``.
    
 The ``on_bad_lexatom`` has always precedence over ``on_failure``. That is,
 if '--codec ASCII' is specified as engine encoding and a value greater than

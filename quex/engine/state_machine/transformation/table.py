@@ -42,8 +42,7 @@ class EncodingTrafoByTable(EncodingTrafo, list):
             return True, False
 
         if number_set.is_empty(): 
-            orphans_possible_f = True
-            del target_map[ToSi]
+            del from_target_map[ToSi]
             return False, True
         else:
             return False, False

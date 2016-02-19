@@ -64,9 +64,7 @@ def do(setup, BufferCodecName, BufferCodecFileName=""):
                             NumberSet.from_range(0, setup.get_character_value_limit()))
 
     elif BufferCodecName == "unit-test":
-        return EncodingTrafoUnicode(
-                            NumberSet.from_range(-sys.maxint, sys.maxint),
-                            NumberSet.from_range(-sys.maxint, sys.maxint))
+        return EncodingTrafoUnicode(NumberSet_All(), NumberSet_All())
 
     else:
         return EncodingTrafoByTable(BufferCodecName)
