@@ -3,7 +3,7 @@ import quex.engine.misc.error                        as     error
 import quex.engine.misc.file_in                      as     file_in
 from   quex.engine.misc.file_operations              import get_propperly_slash_based_file_name
 from   quex.engine.misc.enum                         import Enum
-from   quex.engine.misc.interval_handling            import NumberSet
+from   quex.engine.misc.interval_handling            import NumberSet, NumberSet_All
 from   quex.DEFINITIONS                              import QUEX_PATH
 from   quex.engine.state_machine.transformation.base import EncodingTrafoUnicode
 
@@ -19,7 +19,7 @@ class QuexSetup:
     def __init__(self, SetupInfo, BcFactory):
         self.init(SetupInfo)
         self.__buffer_element_specification_done_f = False
-        range_max    = NumberSet.from_range(-sys.maxint, sys.maxint)
+        range_max    = NumberSet_All()
         unit_test_bc = EncodingTrafoUnicode(range_max, range_max)
         self.buffer_codec_set(unit_test_bc)
 
@@ -195,6 +195,7 @@ SETUP_INFO = {
     "analyzer_class":                 [["-o", "--analyzer-class"],             "Lexer"],    
     "analyzer_derived_class_file":    [["--derived-class-file"],               ""],
     "analyzer_derived_class_name":    [["--derived-class", "--dc"],            ""],
+    "bad_lexatom_detection_f":        [["--no-bad-lexatom-detection", "--nbld"], SetupParTypes.NEGATED_FLAG],
     "buffer_codec_name":              [["--codec"],                            "unicode"],
     "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],

@@ -13,10 +13,10 @@ import quex.engine.state_machine.algorithm.beautifier     as     beautifier
 
 from   quex.blackboard import setup as Setup
 
-Setup.bad_lexatom_detection_f = False
+Setup.bad_lexatom_detection_f = True
 
 if "--hwut-info" in sys.argv:
-    print "State Split: Plug Interval Sequence;"
+    print "State Split: Plug Interval Sequence - With BL Detection;"
     print "CHOICES: 1.1, 1.2, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4;"
     sys.exit(0)
 

@@ -90,12 +90,15 @@ PROCESS:
 (2) The interval sequences are plugged in between the state A and B
     of the state machine.
 """
-from   quex.engine.state_machine.core                import StateMachine
+from   quex.engine.state_machine.core                import StateMachine, State
 import quex.engine.state_machine.transformation.base as     base
 from   quex.engine.misc.interval_handling            import NumberSet, \
+                                                            NumberSet_All, \
                                                             Interval
+    
 
 from   quex.engine.misc.tools import flatten_list_of_lists
+from   quex.blackboard        import E_StateIndices, setup as Setup
 
 class EncodingTrafoByFunction(base.EncodingTrafo):
     """Transformation that takes a lexatom and produces a lexatom sequence.
@@ -155,7 +158,8 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
 
 def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, beautifier):
     sub_sm = StateMachine.from_interval_sequences(IntervalSequenceList)
-    # sub_sm = _plug_encoding_error_detectors(sub_sm)
+    if Setup.bad_lexatom_detection_f: 
+        _plug_encoding_error_detectors(sub_sm)
     sub_sm = beautifier.do(sub_sm)
 
     # The 'End State' is the state where there are no further transitions.
@@ -169,15 +173,12 @@ def _plug_interval_sequences(sm, BeginIndex, EndIndex, IntervalSequenceList, bea
                                      sub_sm.states, sub_sm.init_state_index, new_end_si)
 
 error_lexatom0 = NumberSet([
-    Interval(0x00, 0x7F+1),
-    Interval(0xC0, 0xDF+1),
-    Interval(0xE0, 0xEF+1),
-    Interval(0xF0, 0xF7+1),
-    Interval(0xF8, 0xFB+1),
-    Interval(0xFC, 0xFD+1),
-])
+    Interval(0b00000000, 0b01111111+1), Interval(0b11000000, 0b11011111+1),
+    Interval(0b11100000, 0b11101111+1), Interval(0b11110000, 0b11110111+1),
+    Interval(0b11111000, 0b11111011+1), Interval(0b11111100, 0b11111101+1),
+]).get_complement(NumberSet_All())
 
-error_lexatomN = NumberSet(Interval(0x80, 0xBF+1))
+error_lexatomN = NumberSet(Interval(0b10000000, 0b10111111+1)).get_complement(NumberSet_All())
 
 def _plug_encoding_error_detectors(sm):
     """Adorn states with transitions to the 'on_encoding_error' handler if the 
@@ -189,30 +190,35 @@ def _plug_encoding_error_detectors(sm):
 
     UTF8 Encodings in binary look like the following (see 'man utf8').
 
-        0xxxxxxx
-        110xxxxx 10xxxxxx
-        1110xxxx 10xxxxxx 10xxxxxx
-        11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-        111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-        1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxx
+        1 byte: 0xxxxxxx
+        2 byte: 110xxxxx 10xxxxxx
+        3 byte: 1110xxxx 10xxxxxx 10xxxxxx
+        4 byte: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        5 byte: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+        6 byte: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxxx
 
-    For UTF8, admissible values are dependent on the byte position:
-
-        Byte[0]:    [00-7F], [C0-DF], [E0-EF], [F0-F7], [F8-FB], [FC-FD]
-        Byte[>0]:   [80-BF]
+    The resulting byte ranges can be observed in 'error_lexatom0' for Byte[0]
+    and 'error_lexatomN' for Byte[>0].
     """
+    sm.states[E_StateIndices.ON_BAD_LEXATOM] = State()
     # 'Byte[0]' appears at the init state
     init_tm = sm.get_init_state().target_map.get_map()
+    workset = set(init_tm.iterkeys()) # before '.ON_BAD_LEXATOM' is entered
+    for si, trigger_set in init_tm.iteritems():
+        assert not trigger_set.has_intersection(error_lexatom0)
+
     init_tm[E_StateIndices.ON_BAD_LEXATOM] = error_lexatom0
 
     # 'Byte[>0]' appear all at later states
-    workset = set(init_tm.iterkeys())
     done    = set()
     while workset:
-        si = worklist.pop()
+        si = workset.pop()
         tm = sm.states[si].target_map.get_map()
+        for si, trigger_set in tm.iteritems():
+            assert not trigger_set.has_intersection(error_lexatomN)
         tm[E_StateIndices.ON_BAD_LEXATOM] = error_lexatomN
-        done_set.add(si)
+        done.add(si)
         workset.update(new_si for new_si in tm.iterkeys() 
-                       if new_si not in done_set)
+                       if new_si not in done and new_si != E_StateIndices.ON_BAD_LEXATOM)
+
 

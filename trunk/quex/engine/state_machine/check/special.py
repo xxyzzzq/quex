@@ -2,7 +2,7 @@ import quex.engine.state_machine.algorithm.beautifier as     beautifier
 from   quex.engine.state_machine.core                 import StateMachine
 from   quex.engine.state_machine.state.core           import State
 import quex.engine.state_machine.index                as     index
-from   quex.engine.misc.interval_handling                  import NumberSet, Interval
+from   quex.engine.misc.interval_handling             import NumberSet, NumberSet_All, Interval
 
 import sys
 
@@ -20,10 +20,10 @@ def get_all():
 
     i      = index.get()
     state  = State(AcceptanceF=True)
-    state.add_transition(NumberSet(Interval(-sys.maxint, sys.maxint)), i)
+    state.add_transition(NumberSet_All(), i)
     result.states[i] = state
 
-    result.get_init_state().add_transition(NumberSet(Interval(-sys.maxint, sys.maxint)), i)
+    result.get_init_state().add_transition(NumberSet_All(), i)
 
     return result
 
@@ -35,7 +35,7 @@ def get_any():
            (0)--- \Any --->(( 0 ))
     """
     result = StateMachine()
-    result.add_transition(result.init_state_index, NumberSet(Interval(-sys.maxint, sys.maxint)), AcceptanceF=True)
+    result.add_transition(result.init_state_index, NumberSet_All(), AcceptanceF=True)
 
     return result
 

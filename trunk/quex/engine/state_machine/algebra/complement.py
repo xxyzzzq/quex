@@ -10,7 +10,7 @@
 """
 import quex.engine.state_machine.index      as     index
 from   quex.engine.state_machine.state.core import State
-from   quex.engine.misc.interval_handling        import NumberSet, Interval
+from   quex.engine.misc.interval_handling   import NumberSet, NumberSet_All, Interval
 from   quex.blackboard                      import setup as Setup
 from   copy import deepcopy
 import sys
@@ -33,8 +33,7 @@ def do(SM):
 
     accept_all_state_index = index.get()
     state = State(AcceptanceF=True)
-    state.add_transition(NumberSet(Interval(-sys.maxint, sys.maxint)), 
-                         accept_all_state_index)
+    state.add_transition(NumberSet_All(), accept_all_state_index)
     result.states[accept_all_state_index] = state
 
     def is_accept_all_state(sm, StateIndex):

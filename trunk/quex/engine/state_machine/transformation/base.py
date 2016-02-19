@@ -45,7 +45,7 @@ class EncodingTrafo:
 
         # AFTER: Whatever happend, the transitions in the state machine MUST
         #        lie in the drain_set.
-        sm.assert_range(self.drain_set)
+        # sm.assert_range(self.drain_set)
 
         if not sm.is_DFA_compliant(): 
             return complete_f, beautifier.do(sm)
@@ -103,7 +103,7 @@ class EncodingTrafoUnicode(EncodingTrafo):
 
         number_set.intersect_with(self.drain_set)
         if number_set.is_empty(): 
-            del target_map[ToSi]
+            del from_target_map[ToSi]
             return False, True
         else:
             return False, False
