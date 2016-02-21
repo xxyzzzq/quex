@@ -3,13 +3,14 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.engine.misc.interval_handling         import NumberSet, Interval
-import quex.engine.state_machine.transformation.utf8_state_split as trafo
-import quex.engine.state_machine.transformation.state_split      as state_split
-from   quex.engine.state_machine.core             import StateMachine
-from   quex.engine.state_machine.state.core       import State
-import quex.engine.state_machine                  as state_machine
-import quex.engine.state_machine.algorithm.beautifier     as     beautifier
+from   quex.engine.misc.interval_handling                        import NumberSet, Interval
+import quex.engine.state_machine.transformation.utf8_state_split as     trafo
+import quex.engine.state_machine.transformation.state_split      as     state_split
+import quex.engine.state_machine.transformation.TEST.helper      as     helper
+from   quex.engine.state_machine.core                            import StateMachine
+from   quex.engine.state_machine.state.core                      import State
+import quex.engine.state_machine                                 as     state_machine
+import quex.engine.state_machine.algorithm.beautifier            as     beautifier
 
 from   quex.blackboard import setup as Setup
 
@@ -66,17 +67,7 @@ def test(ByteSequenceDB):
     if len(sm.get_orphaned_state_index_list()) != 0:
         print "Error: Orphaned States Detected!"
 
-    gv_str = sm.get_graphviz_string(Option="hex")
-    for line in gv_str.splitlines():
-        if "->" not in line or "label" not in line: print line; continue
-        fields = line.split()
-        if len(fields) < 3: 
-            print line; continue;
-        if len(fields) > 3:
-            remainder = reduce(lambda x,y: "%s %s" % (x, y), fields[3:])
-        else:
-            remainder = ""
-        print "((%s)) -> ((%s)) %s" % (fields[0], fields[2], remainder)
+    helper.show_graphviz(sm)
 
 # 0x00000000 - 0x0000007F: 1 byte  - 0xxxxxxx
 # 0x00000080 - 0x000007FF: 2 bytes - 110xxxxx 10xxxxxx

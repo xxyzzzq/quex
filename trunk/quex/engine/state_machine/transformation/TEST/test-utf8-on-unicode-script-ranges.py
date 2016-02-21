@@ -8,7 +8,7 @@ from   quex.engine.state_machine.transformation.utf8_state_split import unicode_
 from   quex.engine.state_machine.transformation.TEST.helper      import test_on_UCS_sample_sets
 
 if "--hwut-info" in sys.argv:
-    print "UTF8 State Split: Larger Number Sets"
+    print "UTF8 Split: Unicode Language-Scripts as Examplary Ranges"
     sys.exit()
 
 test_on_UCS_sample_sets(EncodingTrafoUTF8(), unicode_to_utf8)
