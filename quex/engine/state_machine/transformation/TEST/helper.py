@@ -107,3 +107,15 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True), 
                    unicode_to_transformed_sequence)
 
+def show_graphviz(sm):
+    gv_str = sm.get_graphviz_string(Option="hex")
+    for line in gv_str.splitlines():
+        if "->" not in line or "label" not in line: print line; continue
+        fields = line.split()
+        if len(fields) < 3: 
+            print line; continue;
+        if len(fields) > 3:
+            remainder = reduce(lambda x,y: "%s %s" % (x, y), fields[3:])
+        else:
+            remainder = ""
+        print "((%s)) -> ((%s)) %s" % (fields[0], fields[2], remainder)

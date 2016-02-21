@@ -10,13 +10,24 @@ from   quex.engine.misc.utf8                                import utf8_to_unico
                                                                    unicode_to_utf8, \
                                                                    UTF8_MAX, \
                                                                    UTF8_BORDERS
-from   quex.engine.misc.interval_handling                   import Interval, NumberSet
+from   quex.engine.misc.interval_handling                   import Interval, NumberSet, NumberSet_All
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
 
 class EncodingTrafoUTF8(EncodingTrafoByFunction):
-    UnchangedRange = 0x7F
     def __init__(self):
         EncodingTrafoByFunction.__init__(self, "utf8")
+
+        self.UnchangedRange = 0x7F
+
+        self.NumberSetErrorByte0 = NumberSet([
+            Interval(0b00000000, 0b01111111+1), Interval(0b11000000, 0b11011111+1),
+            Interval(0b11100000, 0b11101111+1), Interval(0b11110000, 0b11110111+1),
+            Interval(0b11111000, 0b11111011+1), Interval(0b11111100, 0b11111101+1),
+        ]).get_complement(NumberSet_All())
+
+        self.NumberSetErrorByteN = NumberSet(
+            Interval(0b10000000, 0b10111111+1)
+        ).get_complement(NumberSet_All())
 
     def prune(self, X):
         pass
@@ -67,6 +78,58 @@ class EncodingTrafoUTF8(EncodingTrafoByFunction):
     def get_code_unit_range(self):
         """Codec element's size is 1 byte."""
         return NumberSet.from_range(0, 0x100)
+
+    def _plug_encoding_error_detectors(self, sm):
+        """Adorn states with transitions to the 'on_encoding_error' handler if the 
+        input value lies beyond the limits. The state machine is an implementation
+        of linear sequences of intervals. Thus, the 'byte position' can be 
+        be determined by the number of transitions from the init state.
+
+        sm = mini state machine that implements the transition sequences.
+
+        UTF8 Encodings in binary look like the following (see 'man utf8').
+
+            1 byte: 0xxxxxxx
+            2 byte: 110xxxxx 10xxxxxx
+            3 byte: 1110xxxx 10xxxxxx 10xxxxxx
+            4 byte: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            5 byte: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            6 byte: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxxx
+
+        The resulting byte ranges can be observed in 'NumberSetErrorByte0' for Byte[0]
+        and 'NumberSetErrorByteN' for Byte[>0].
+        """
+        # 'Byte[0]' appears at the init state
+        # (Adapt trigger map before entering the 'on bad lexatom state'
+        init_tm = sm.get_init_state().target_map.get_map()
+        workset = set(init_tm.iterkeys()) 
+        for si, trigger_set in init_tm.iteritems():
+            assert not trigger_set.has_intersection(self.NumberSetErrorByte0)
+
+        bad_lexatom_state_index = self._plug_encoding_error_detector_single_state(sm, init_tm)
+
+        # 'Byte[>0]' appear all at later states
+        done = set([bad_lexatom_state_index])
+        while workset:
+            si = workset.pop()
+            tm = sm.states[si].target_map.get_map()
+            done.add(si)
+
+            # Only add bad lexatom detection to state that transit on lexatoms
+            # (Bad lexatom states, btw. do not have transitions)
+            if not tm: continue
+
+            for trigger_set in tm.itervalues():
+                assert not trigger_set.has_intersection(self.NumberSetErrorByteN)
+            workset.update(new_si for new_si in tm.iterkeys() if new_si not in done) 
+            tm[bad_lexatom_state_index] = self.NumberSetErrorByteN
+
+    def _plug_encoding_error_detector_single_state(self, sm, target_map):
+        bad_lexatom_state_index = sm.access_bad_lexatom_state()
+        if target_map: 
+            target_map[bad_lexatom_state_index] = self.NumberSetErrorByte0
+        return bad_lexatom_state_index
+
 
 def _split_by_transformed_sequence_length(X):
     """Split Unicode interval into intervals where all values have the same 
