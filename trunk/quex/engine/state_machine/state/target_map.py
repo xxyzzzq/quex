@@ -1,5 +1,7 @@
 from   quex.engine.misc.interval_handling import NumberSet, Interval
-from   quex.blackboard               import E_Border, setup as Setup
+from   quex.blackboard                    import E_Border, \
+                                                 E_StateIndices, \
+                                                 setup as Setup
 from   operator import attrgetter
 
 class TargetMap:
@@ -73,7 +75,8 @@ class TargetMap:
            RETURNS: The target state index (may be created newly).
         """
         assert type(TargetStateIdx) == long \
-               or TargetStateIdx is None, "%s" % TargetStateIdx.__class__.__name__
+               or TargetStateIdx is None \
+               or TargetStateIdx in E_StateIndices, "%s" % TargetStateIdx.__class__.__name__
         assert Trigger.__class__ in (int, long, list, Interval, NumberSet) or Trigger is None
 
         if Trigger is None: # This is a shorthand to trigger via the remaining triggers
@@ -290,7 +293,9 @@ class TargetMap:
             if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
             else:                trigger_str = trigger_set.get_string(Option)
             if StateIndexMap is None: target_str = "%05i" % target_state_index
-            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
+            else:                     
+                try:    target_str = "%05i" % StateIndexMap[target_state_index]
+                except: target_str = "%s" % StateIndexMap[target_state_index]
                 
             msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
 

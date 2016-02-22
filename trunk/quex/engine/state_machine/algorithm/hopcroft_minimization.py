@@ -440,17 +440,14 @@ def create_state_machine(SM, Result, Class_StateMachine, Class_State):
 def adapt_state_machine(sm, Result):
     # If all states are of size one, this means, that there were no states that
     # could have been combined. In this case nothing is to be done.
-    for dummy in (state_set for state_set in Result.state_set_list if len(state_set) != 1):
-        break
-    else:
+    if all(len(state_set) == 1 for state_set in Result.state_set_list):
         return sm
     
     # We know, that all states in a state set are equivalent. Thus, all but one
     # of each set can be thrown away.
     replacement_dict = {}
     for state_set in Result.state_set_list:
-        if len(state_set) == 1: 
-            continue
+        if len(state_set) == 1: continue
 
         # Merge all core information of the states inside the state set.
         # Do not delete the init state

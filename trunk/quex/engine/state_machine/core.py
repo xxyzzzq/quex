@@ -8,6 +8,7 @@ from   quex.engine.state_machine.state.single_entry import SeAccept
 from   quex.engine.misc.tools  import flatten_list_of_lists, typed
 from   quex.blackboard         import E_IncidenceIDs, \
                                       E_PreContextIDs, \
+                                      E_StateIndices, \
                                       E_Border
 
 from   copy        import deepcopy, copy
@@ -155,6 +156,23 @@ class StateMachine(object):
         return self.clone(index_map, 
                           ReplDbPreContext=pre_context_map, 
                           ReplDbAcceptance=pattern_id_map)
+
+    def access_bad_lexatom_state(self):
+        """Find or create a 'bad lexatom' state in the state machine. Such a
+        state 'accepts' the incidencen 'BAD_LEXATOM' and causes an immediate
+        transition to the 'on_bad_lexatom' handler.
+
+        RETURNS: Index of the 'bad lexatom state'.
+        """
+        for si, state in self.states.iteritems():
+            if state.has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM):
+                return si
+
+        si    = state_machine_index.get()
+        state = State(AcceptanceF=True)
+        state.mark_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
+        self.states[si] = state
+        return si
 
     def get_id(self):
         assert isinstance(self.__id, long) or self.__id == E_IncidenceIDs.INDENTATION_HANDLER
@@ -624,7 +642,9 @@ class StateMachine(object):
         for state_i in index_sequence:
             printed_state_i = index_map[state_i]
             state           = self.states[state_i]
-            msg += "%05i" % printed_state_i + state.get_string(index_map, Option, OriginalStatesF)
+            try:    state_str = "%05i" % printed_state_i
+            except: state_str = "%s"   % printed_state_i
+            msg += "%s%s" % (state_str, state.get_string(index_map, Option, OriginalStatesF))
 
         return msg
 
@@ -810,7 +830,7 @@ class StateMachine(object):
         """
         # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
         #       assert TriggerSet.__class__.__name__ == "NumberSet"
-        assert type(TargetStateIdx) == long or TargetStateIdx is None
+        assert type(TargetStateIdx) == long or TargetStateIdx is None or TargetStateIdx in E_StateIndices
 
         # If target state is undefined (None) then a new one has to be created
         if TargetStateIdx is None:                       TargetStateIdx = state_machine_index.get()
@@ -971,6 +991,10 @@ class StateMachine(object):
         Note, that the globally unique state indices makes it possible to 
         absorb the states without having to clone them.
         """
+        assert not self.states[BeginIndex].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
+        assert not self.states[EndIndex].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
+        assert not state_db[ASBeginIndex].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
+        assert not state_db[ASEndIndex].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM)
 
         # Replace the 'end_index' in the 'to-be-absorbed' states
         # with the 'EndIndex' of this state machine.
@@ -1019,7 +1043,7 @@ class StateMachine(object):
             del self.states[target_index]
 
     @typed(Sequence=list)
-    def apply_sequence(self, Sequence):
+    def apply_sequence(self, Sequence, StopAtBadLexatomF=True):
         """RETURNS: Resulting target state if 'Sequence' is applied on 
                     state machine.
 
@@ -1029,6 +1053,8 @@ class StateMachine(object):
         for x in Sequence:
             si = self.states[si].target_map.get_resulting_target_state_index(x)
             if si is None: return None
+            elif self.states[si].has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM):
+                break
         return self.states[si]
 
     @typed(Sequence=list)

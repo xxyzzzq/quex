@@ -2,16 +2,15 @@
 # 
 # PURPOSE: Check transition generation at 'codec boarder'.
 #
-# UTF8 codes unicode characters in byte sequences of different length. The
+# UTF16 codes unicode characters in byte sequences of different length. The
 # length of a byte sequence is determined by the range in the Unicode
 # representation.
 #
-#    0x00000080 - 0x000007FF: 1 byte: 0xxxxxxx
-#    0x00000800 - 0x0000FFFF: 2 byte: 110xxxxx 10xxxxxx
-#    0x00010000 - 0x001FFFFF: 3 byte: 1110xxxx 10xxxxxx 10xxxxxx
-#    0x00200000 - 0x03FFFFFF: 4 byte: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-#    0x04000000 - 0x7FFFFFFF: 5 byte: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-#                             6 byte: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxxx
+#    0x000000 - 0x00D7FF: 1 code unit = 2 byte = original UCS code
+#    0x00E000 - 0x00FFFF: (same)
+#    0x010000 - 0x110000: 2 code units = 4 byte = constructed from UCS code
+#                         Range of 1st code unit: 0xD800..0xDBFF
+#                                  2nd code unit: 0xDC00..0xDFFF
 #
 # From the above mapping 10 boarders (the first column) are extracted and coded
 # in a state machine. The state machine is double-checked by stimulating it
@@ -31,14 +30,17 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.input.regular_expression.engine                       as     regex
 from   quex.engine.misc.interval_handling                         import NumberSet, Interval
-from   quex.engine.state_machine.transformation.utf8_state_split  import EncodingTrafoUTF8
+from   quex.engine.state_machine.transformation.utf16_state_split import EncodingTrafoUTF16
 from   quex.engine.state_machine.core                             import StateMachine
-from   quex.engine.misc.utf8                                      import unicode_to_utf8
+from   quex.engine.misc.utf16                                     import unicode_to_utf16
+import quex.engine.state_machine.index                            as     index
+import quex.engine.state_machine.TEST.helper_state_machine_shapes as     sms
 import quex.engine.state_machine.transformation.TEST.helper       as     helper
 
 
 from   quex.blackboard import setup as Setup, \
                               E_IncidenceIDs
+from   copy            import copy
 
 if "--hwut-info" in sys.argv:
     print "UTF8 Split: Repetition at Codec Boarders"
@@ -50,23 +52,32 @@ if "error-detect" in sys.argv:
 else:
     Setup.bad_lexatom_detection_f = False
 
+#   0x000000 - 0x00D7FF: 1 code unit = 2 byte = original UCS code
+#   0x00E000 - 0x00FFFF: (same)
+#   0x010000 - 0x110000: 2 code units = 4 byte = constructed from UCS code
+#                        Range of 1st code unit: 0xD800..0xDBFF
+#                                 2nd code unit: 0xDC00..0xDFFF
 boarders = [ 
-    0x00000080, 0x000007FF, 0x00000800, 0x0000FFFF, 
-    0x00010000, 0x001FFFFF, 0x00200000, 0x03FFFFFF,
-    0x04000000, 0x7FFFFFFF
+    0x000080, 0x00D7FF, 0x00E000, 0x00FFFF, 
+    0x010000, 0x10FFFF
 ]
 
 good_sequences = [
-    unicode_to_utf8(x) for x in boarders
+    unicode_to_utf16(x) for x in boarders
 ]
 
 # Boarders of code unit ragnes which are encoding errors:
-bad_byte0s = [ 0x80, 0xBF, 0xFE, 0xFF ] # boarders of disallowed Byte[0]
-bad_byteNs = [ 0x00, 0x7F, 0xC0, 0xFF ] # boarders of disallowed Byte[>0]
+bad_1st_s = [ 0xDC00, 0xDFFF ]                   # boarders of disallowed CodeUnit[0]
+bad_2nd_s = [ 0x0000, 0xDBFF, 0xE000, 0x110000 ] # boarders of disallowed CodeUnit[1]
 
-sm = helper.generate_sm_for_boarders(boarders, EncodingTrafoUTF8())
+good_sequences = [
+    unicode_to_utf16(x) for x in boarders
+]
 
-bad_sequence_list = helper.get_bad_sequences(good_sequences, bad_byte0s, bad_byteNs)
+sm = helper.generate_sm_for_boarders(boarders, EncodingTrafoUTF16())
+
+bad_sequence_list = helper.get_bad_sequences(good_sequences, bad_1st_s, bad_2nd_s)
+
 
 if True:
     helper.test_good_and_bad_sequences(sm, good_sequences, bad_sequence_list)
@@ -82,4 +93,5 @@ else:
         if si is None: break
         print "#si:", si, sm.states[si]
 
-#helper.show_graphviz(sm)
+
+# helper.show_graphviz(sm)

@@ -117,7 +117,8 @@ class EncodingTrafoByFunction(base.EncodingTrafo):
 
         # Check whether a modification is necessary
         if number_set.supremum() <= self.UnchangedRange: 
-            self._plug_encoding_error_detector_single_state(sm, from_target_map)
+            if Setup.bad_lexatom_detection_f: 
+                self._plug_encoding_error_detector_single_state(sm, from_target_map)
             return True, False
 
         # Cut out any forbiddin range. Assume, that is has been checked

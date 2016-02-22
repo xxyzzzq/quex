@@ -3,7 +3,8 @@ from   quex.engine.state_machine.state.single_entry import SingleEntry, \
                                                            SeStoreInputPosition
 from   quex.engine.state_machine.state.target_map   import TargetMap
 from   quex.engine.misc.tools import typed 
-from   quex.blackboard        import E_PreContextIDs
+from   quex.blackboard        import E_PreContextIDs, \
+                                     E_IncidenceIDs
 
 class State:
     """A state consisting of ONE entry and multiple transitions to other
@@ -105,6 +106,14 @@ class State:
         for cmd in self.single_entry:
             if not hasattr(cmd, "set_acceptance_id"): continue
             cmd.set_acceptance_id(AcceptanceID)
+
+    def has_acceptance_id(self, AcceptanceID):
+        return any(cmd.acceptance_id() == AcceptanceID 
+                   for cmd in self.single_entry)
+
+    def accepts_incidence(self):
+        return any(cmd.acceptance_id() in E_IncidenceIDs
+                   for cmd in self.single_entry)
 
     def set_read_position_restore_f(self, Value=True):
         accept_cmd = self.single_entry.find(SeAccept)

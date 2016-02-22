@@ -40,7 +40,7 @@ def do(ModeDB):
     if False and (Setup.buffer_codec.name != "unicode" or Setup.converter_f):
         for mode in ModeDB.values():
             # Later ... 
-            if False and E_IncidenceIDs.CODEC_ERROR not in mode.incidence_db:
+            if False and E_IncidenceIDs.BAD_LEXATOM not in mode.incidence_db:
                 error.warning("Missing 'on_bad_lexatom' handler in mode '%s' (or its base modes).\n" % mode.name + \
                               "This is dangerous while using a codec engine or a converter (iconv, icu, ...).\n" + \
                               "The feature is not yet supported, but the infrastructure is currently setup for it.",

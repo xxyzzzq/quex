@@ -7,7 +7,7 @@ from   quex.engine.misc.interval_handling              import NumberSet, Interva
 import quex.engine.state_machine.transformation.utf8_state_split as trafo
 
 if "--hwut-info" in sys.argv:
-    print "UTF8 State Split: Contigous Byte Sequence Ranges"
+    print "UTF8 Split: Contigous Byte Sequence Ranges"
     print "CHOICES: 1, 2, 3, 4, 4b, misc;"
     sys.exit(0)
 

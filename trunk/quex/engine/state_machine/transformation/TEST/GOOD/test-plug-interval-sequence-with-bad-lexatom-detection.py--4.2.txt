@@ -1,6 +1,6 @@
 # Best To be Displayed by:
 #
-#  > ./test-plug-interval-sequence.py 4.2 | dot -Tsvg -o tmp.svg
+#  > ./test-plug-interval-sequence-with-bad-lexatom-detection.py 4.2 | dot -Tsvg -o tmp.svg
 #
 # -------------------------
 # Byte Sequences:     
@@ -12,14 +12,20 @@
 digraph state_machine_0 {
 rankdir=LR;
 size="8,5"
-node [shape = doublecircle]; 
+node [shape = doublecircle]; 14;
 node [shape = circle];
-((0)) -> ((2)) [label ="[00F1] "];
-((2)) -> ((3)) [label ="[0080] "];
-((2)) -> ((5)) [label ="[0081] "];
-((2)) -> ((6)) [label ="[0082] "];
-((5)) -> ((4)) [label ="[0081, 00BF] "];
-((6)) -> ((4)) [label ="[0080, 0083] "];
-((3)) -> ((4)) [label ="[0080] "];
-((4)) -> ((1)) [label ="[0080, 00BF] "];
+((0)) -> ((14)) [label ="[-oo, -001] [0080, 00BF] [00FE, oo] "];
+((0)) -> ((13)) [label ="[00F1] "];
+((13)) -> ((14)) [label ="[-oo, 007F] [00C0, oo] "];
+((13)) -> ((17)) [label ="[0080] "];
+((13)) -> ((15)) [label ="[0081] "];
+((13)) -> ((16)) [label ="[0082] "];
+((15)) -> ((14)) [label ="[-oo, 007F] [00C0, oo] "];
+((15)) -> ((18)) [label ="[0081, 00BF] "];
+((16)) -> ((14)) [label ="[-oo, 007F] [00C0, oo] "];
+((16)) -> ((18)) [label ="[0080, 0083] "];
+((17)) -> ((14)) [label ="[-oo, 007F] [00C0, oo] "];
+((17)) -> ((18)) [label ="[0080] "];
+((18)) -> ((14)) [label ="[-oo, 007F] [00C0, oo] "];
+((18)) -> ((1)) [label ="[0080, 00BF] "];
 }
