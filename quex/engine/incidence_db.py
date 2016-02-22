@@ -128,7 +128,7 @@ class IncidenceDB(dict):
     def extract_terminal_db(self, factory, ReloadRequiredF):
         """SpecialTerminals: END_OF_STREAM
                              FAILURE
-                             CODEC_ERROR
+                             BAD_LEXATOM
                              ...
         """
         result = {}

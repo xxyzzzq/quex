@@ -1,3 +1,4 @@
+from quex.blackboard import E_StateIndices
 
 # special states:
 def clear():
@@ -29,13 +30,13 @@ def map_state_combination_to_index(cc_combination):
     """Returns index for the given combination. If the given combination
     does **not** have an index, it gets a new one. Else the existing one is
     returned."""
-    key_str = tuple(sorted(cc_combination))
+    key = tuple(sorted(cc_combination))
 
-    if not __map_combination_to_index.has_key(key_str):
+    if not __map_combination_to_index.has_key(key):
         # use state_machine.index.get() to get a new unique index for the combination
-        __map_combination_to_index[key_str] = get()  
+        __map_combination_to_index[key] = get()  
     
-    return __map_combination_to_index[key_str]
+    return __map_combination_to_index[key]
 
 __internal_state_machine_id_counter = long(-1)
 def get_state_machine_id():

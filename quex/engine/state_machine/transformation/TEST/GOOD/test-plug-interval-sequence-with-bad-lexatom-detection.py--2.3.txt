@@ -1,6 +1,6 @@
 # Best To be Displayed by:
 #
-#  > ./test-plug-interval-sequence.py 2.3 | dot -Tsvg -o tmp.svg
+#  > ./test-plug-interval-sequence-with-bad-lexatom-detection.py 2.3 | dot -Tsvg -o tmp.svg
 #
 # -------------------------
 # Byte Sequences:     
@@ -11,10 +11,13 @@
 digraph state_machine_0 {
 rankdir=LR;
 size="8,5"
-node [shape = doublecircle]; 
+node [shape = doublecircle]; 10;
 node [shape = circle];
-((0)) -> ((2)) [label ="[0000, 0070] "];
-((0)) -> ((3)) [label ="[0071] "];
-((3)) -> ((1)) [label ="[0080, 00BF] "];
-((2)) -> ((1)) [label ="[0081, 00BF] "];
+((0)) -> ((10)) [label ="[-oo, -001] [0080, 00BF] [00FE, oo] "];
+((0)) -> ((9)) [label ="[0000, 0070] "];
+((0)) -> ((8)) [label ="[0071] "];
+((8)) -> ((10)) [label ="[-oo, 007F] [00C0, oo] "];
+((8)) -> ((1)) [label ="[0080, 00BF] "];
+((9)) -> ((10)) [label ="[-oo, 007F] [00C0, oo] "];
+((9)) -> ((1)) [label ="[0081, 00BF] "];
 }

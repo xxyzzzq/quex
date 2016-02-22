@@ -18,6 +18,7 @@ class SeOp:
         self.__acceptance_id = AcceptanceId
 
     def set_acceptance_id(self, PatternId):
+        if self.__acceptance_id == E_IncidenceIDs.BAD_LEXATOM: return
         self.__acceptance_id = PatternId
 
     def acceptance_id(self):

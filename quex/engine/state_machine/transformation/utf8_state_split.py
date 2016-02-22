@@ -10,7 +10,9 @@ from   quex.engine.misc.utf8                                import utf8_to_unico
                                                                    unicode_to_utf8, \
                                                                    UTF8_MAX, \
                                                                    UTF8_BORDERS
-from   quex.engine.misc.interval_handling                   import Interval, NumberSet, NumberSet_All
+from   quex.engine.misc.interval_handling                   import Interval, \
+                                                                   NumberSet, \
+                                                                   NumberSet_All
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
 
 class EncodingTrafoUTF8(EncodingTrafoByFunction):

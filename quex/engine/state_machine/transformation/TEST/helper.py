@@ -4,8 +4,16 @@ from   quex.engine.state_machine.state.single_entry       import SeAccept
 from   quex.engine.state_machine.engine_state_machine_set import get_combined_state_machine
 import quex.engine.state_machine.algorithm.beautifier     as     beautifier
 from   quex.engine.state_machine.core                     import StateMachine
+from   quex.engine.state_machine.state.core               import State
+import quex.engine.state_machine                          as     state_machine
+from   quex.engine.state_machine.transformation.utf8_state_split  import EncodingTrafoUTF8
+import quex.engine.state_machine.TEST.helper_state_machine_shapes as     sms
+import quex.engine.state_machine.index                            as     index
+from   quex.blackboard import setup as Setup, \
+                              E_IncidenceIDs
 from   StringIO import StringIO
 import sys
+from   copy            import copy
 
 class X:
     def __init__(self, Name):
@@ -106,6 +114,116 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     # print inverse_union.get_string(Option="hex")
     check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True), 
                    unicode_to_transformed_sequence)
+
+def generate_sm_for_boarders(Boarders, Trafo):
+    sm = StateMachine()
+    for ucs_char in Boarders:
+        target_idx = index.get() 
+        sms.line(sm, sm.init_state_index, 
+                 (ucs_char, target_idx), (ucs_char, target_idx))
+        sm.states[target_idx].set_acceptance()
+
+    verdict_f, result = Trafo.do_state_machine(sm, beautifier)
+    assert verdict_f
+    return result
+
+def get_bad_sequences(GoodSequenceList, Bad1st_list, BadOther_list):
+    """Take each good sequence and implant a codec error at any possible byte
+    position.
+
+    RETURNS: List of bad sequences.
+    """
+    result = []
+    for sequence in GoodSequenceList:
+        # Implement a couple of bad sequences based on the good sequence.
+        for i, lexatom in enumerate(sequence):
+            if i == 0: bad_lexatoms = Bad1st_list
+            else:      bad_lexatoms = BadOther_list
+            for bad in bad_lexatoms:
+                bad_copy    = copy(sequence)
+                bad_copy[i] = bad
+                result.append(bad_copy)
+    return result
+
+def test_good_and_bad_sequences(sm, good_sequences, bad_sequence_list):
+    print
+    print "Good Sequences: ________________________________________________________"
+    print
+    for sequence in good_sequences:
+        state = sm.apply_sequence(sequence, StopAtBadLexatomF=True)
+        print_sequence_result(state, sequence)
+           
+    print
+    print "Bad Sequences: _________________________________________________________"
+    print
+    for sequence in bad_sequence_list:
+        state = sm.apply_sequence(sequence, StopAtBadLexatomF=True)
+        print_sequence_result(state, sequence)
+
+
+def sequence_string(Sequence):
+    return "".join("%02X." % x for x in Sequence)[:-1]
+
+def result_string(state):
+    if state is None:
+        return "None"
+    elif state.has_acceptance_id(E_IncidenceIDs.BAD_LEXATOM):
+        return "Bad Lexatom"
+    elif state.is_acceptance():
+        return "Accept"
+    else:
+        return "No Accept"
+
+def print_sequence_result(state, sequence):
+    print "%s: %s" % (result_string(state), sequence_string(sequence))
+
+def test_plug_sequence(ByteSequenceDB):
+    L = len(ByteSequenceDB[0])
+
+    for seq in ByteSequenceDB:
+        assert len(seq) == L
+        for x in seq:
+            assert isinstance(x, Interval)
+
+    first_different_byte_index = -1
+    for i in range(L):
+        x0 = ByteSequenceDB[0][i]
+        for seq in ByteSequenceDB[1:]:
+            if not seq[i].is_equal(x0): 
+                first_different_byte_index = i
+                break
+        if first_different_byte_index != -1: 
+            break
+    if first_different_byte_index == -1:
+        first_different_byte_index = 0
+
+    print "# Best To be Displayed by:"
+    print "#"
+    print "#  > " + sys.argv[0] + " " + sys.argv[1] + " | dot -Tsvg -o tmp.svg"
+    print "#"
+    print "# -------------------------"
+    print "# Byte Sequences:     "
+    i = -1
+    for seq in ByteSequenceDB:
+        i += 1
+        print "# (%i) " % i,
+        for x in seq:
+            print "    " + x.get_string(Option="hex"), 
+        print
+    print "#    L    = %i" % L
+    print "#    DIdx = %i" % first_different_byte_index
+
+    sm = StateMachine()
+    end_index = state_machine.index.get()
+    sm.states[end_index] = State()
+
+    EncodingTrafoUTF8()._plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB, beautifier)
+
+    if len(sm.get_orphaned_state_index_list()) != 0:
+        print "Error: Orphaned States Detected!"
+
+    show_graphviz(sm)
+
 
 def show_graphviz(sm):
     gv_str = sm.get_graphviz_string(Option="hex")

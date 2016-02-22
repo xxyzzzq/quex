@@ -361,10 +361,10 @@ class NumberSet(object):
         return [ Interval(x.begin, x.end) for x in self.__intervals ]
 
     def __bisect(self, Value):
-        if len(self.__intervals) == 0:
+        upper = len(self.__intervals)
+        if upper == 0:
             return None
         lower = 0
-        upper = len(self.__intervals)
         while upper - lower > 1:
             i = (upper + lower) >> 1
             if   self.__intervals[i].begin >  Value: upper = i

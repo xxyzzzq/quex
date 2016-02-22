@@ -7,7 +7,7 @@ from   quex.engine.misc.interval_handling              import NumberSet, Interva
 import quex.engine.state_machine.transformation.utf8_state_split as trafo
 
 if "--hwut-info" in sys.argv:
-    print "UTF8 State Split: Intervals"
+    print "UTF8 Split: Intervals"
     print "CHOICES: 1, 2, Overlap1, Overlap2;"
     sys.exit(0)
 

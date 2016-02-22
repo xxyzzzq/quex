@@ -60,7 +60,6 @@ E_StateIndices = Enum("DROP_OUT",
                       "RECURSIVE",
                       "ALL", 
                       "ANALYZER_REENTRY", 
-                      "ON_BAD_LEXATOM",     # Executes the 'on_bad_lexatom' handler
                       "BEFORE_ENTRY", 
                       "VOID") 
 
@@ -123,7 +122,7 @@ E_IncidenceIDs = Enum(
 # mentioned below. IncidenceID-s are keys to the standard_incidence_db.
     "AFTER_MATCH",
     "BIPD_TERMINATED",
-    "CODEC_ERROR",
+    "BAD_LEXATOM",
     "CONTEXT_FREE_MATCH",
     "DEDENT",
     "END_OF_STREAM",

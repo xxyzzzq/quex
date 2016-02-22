@@ -8,7 +8,7 @@ import quex.engine.state_machine.transformation.utf16_state_split as trafo
 from   quex.engine.state_machine.transformation.utf16_state_split import unicode_to_utf16
 
 if "--hwut-info" in sys.argv:
-    print "UTF16 State Split: Contigous Word Sequence Ranges"
+    print "UTF16 Split: Contigous Word Sequence Ranges"
     print "CHOICES: 1, 2, 3, 4, 5;"
     sys.exit(0)
 
