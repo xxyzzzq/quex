@@ -96,7 +96,10 @@ class QuexSetup:
 
         self.__buffer_element_specification_done_f = True
 
-    def get_character_value_limit(self):
+    def get_lexatom_range(self):
+        return NumberSet.from_range(0, self.__get_lexatom_value_limit())
+
+    def __get_lexatom_value_limit(self):
         """A buffer element is a chunk of memory of the size of the granularity
         of which the input pointer increases. For fixed size codecs, such as
         ASCII or UCS32, the BUFFER ELEMENT VALUE LIMIT is exactly the same as

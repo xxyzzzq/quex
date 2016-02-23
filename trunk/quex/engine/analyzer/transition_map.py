@@ -411,7 +411,7 @@ class TransitionMap(list):
         End   -- end of range of intervals.
         """
         size  = len(self)
-        if size == 0:
+        if not size:
             self.append((Interval(Begin, End), Target))
             return
 
