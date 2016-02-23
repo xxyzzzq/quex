@@ -15,6 +15,8 @@ from   quex.engine.misc.interval_handling                   import Interval, \
                                                                    NumberSet_All
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
 
+from   quex.blackboard import setup as Setup
+
 class EncodingTrafoUTF8(EncodingTrafoByFunction):
     def __init__(self):
         EncodingTrafoByFunction.__init__(self, "utf8")
@@ -26,10 +28,12 @@ class EncodingTrafoUTF8(EncodingTrafoByFunction):
             Interval(0b11100000, 0b11101111+1), Interval(0b11110000, 0b11110111+1),
             Interval(0b11111000, 0b11111011+1), Interval(0b11111100, 0b11111101+1),
         ]).get_complement(NumberSet_All())
+        self.NumberSetErrorByte0.intersect_with(Setup.get_lexatom_range())
 
         self.NumberSetErrorByteN = NumberSet(
             Interval(0b10000000, 0b10111111+1)
         ).get_complement(NumberSet_All())
+        self.NumberSetErrorByteN.intersection(Setup.get_lexatom_range())
 
     def prune(self, X):
         pass

@@ -36,6 +36,8 @@ from   quex.engine.misc.utf16                               import utf16_to_unic
                                                                    unicode_to_utf16
 from   quex.engine.misc.interval_handling                   import Interval, NumberSet
 
+from   quex.blackboard import setup as Setup
+
 ForbiddenRange = Interval(0xD800, 0xE000)
 
 class EncodingTrafoUTF16(EncodingTrafoByFunction):
@@ -43,10 +45,15 @@ class EncodingTrafoUTF16(EncodingTrafoByFunction):
     def __init__(self):
         EncodingTrafoByFunction.__init__(self, "utf16")
 
-        self.NumberSetErrorCodeUnit0 = NumberSet(Interval(0xDC00, 0xE000))
+        self.NumberSetErrorCodeUnit0 = NumberSet(
+            Interval(0xDC00, 0xE000)
+        )
+        self.NumberSetErrorCodeUnit0.intersect_with(Setup.get_lexatom_range())
+
         self.NumberSetErrorCodeUnit1 = NumberSet([
             Interval(0x0000, 0xDC00), Interval(0xE000, sys.maxint)
         ])
+        self.NumberSetErrorCodeUnit1.intersect_with(Setup.get_lexatom_range())
 
     def prune(self, number_set):
         global ForbiddenRange

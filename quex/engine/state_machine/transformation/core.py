@@ -59,9 +59,7 @@ def do(setup, BufferCodecName, BufferCodecFileName=""):
         # If the internal buffer is 'unicode', then the pattern's state 
         # machines are not converted. The requirement for the pattern's
         # range is the same as for the 'buffer element chunks'.
-        return EncodingTrafoUnicode(
-                            NumberSet.from_range(0, setup.get_character_value_limit()), 
-                            NumberSet.from_range(0, setup.get_character_value_limit()))
+        return EncodingTrafoUnicode(setup.get_lexatom_range(), setup.get_lexatom_range())
 
     elif BufferCodecName == "unit-test":
         return EncodingTrafoUnicode(NumberSet_All(), NumberSet_All())
