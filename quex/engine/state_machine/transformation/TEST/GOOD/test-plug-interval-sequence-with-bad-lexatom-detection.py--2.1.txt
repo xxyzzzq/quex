@@ -12,8 +12,8 @@ rankdir=LR;
 size="8,5"
 node [shape = doublecircle]; 7;
 node [shape = circle];
-((0)) -> ((7)) [label ="[-oo, -001] [0080, 00BF] [00FE, oo] "];
 ((0)) -> ((8)) [label ="[0000, 007F] "];
-((8)) -> ((7)) [label ="[-oo, 007F] [00C0, oo] "];
+((0)) -> ((7)) [label ="[0080, 00BF] [00FE, 00FF] "];
+((8)) -> ((7)) [label ="[0000, 007F] [00C0, 00FF] "];
 ((8)) -> ((1)) [label ="[0080, 00BF] "];
 }

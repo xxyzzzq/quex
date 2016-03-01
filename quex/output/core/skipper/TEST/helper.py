@@ -17,8 +17,8 @@ from   quex.input.regular_expression.construct     import Pattern
 import quex.engine.analyzer.engine_supply_factory  as     engine
 import quex.engine.state_machine.transformation.core             as     bc_factory
 
-Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
+# Setup.buffer_element_specification_prepare()
+Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None), 1)
 
 class MiniAnalyzer:
     def __init__(self):
@@ -186,10 +186,11 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
     if type(SourceCode) == list:
         plain_code = "".join(Lng.GET_PLAIN_STRINGS(SourceCode))
 
-    label_failure  = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
-    label_eos      = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
-    label_reentry  = dial_db.get_label_by_door_id(DoorID.global_reentry())
-    label_reentry2 = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
+    label_failure     = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
+    label_bad_lexatom = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM))
+    label_eos         = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.END_OF_STREAM))
+    label_reentry     = dial_db.get_label_by_door_id(DoorID.global_reentry())
+    label_reentry2    = dial_db.get_label_by_door_id(DoorID.continue_without_on_after_match())
     if DoorIdOnSkipRangeOpen is not None:
         label_sro = dial_db.get_label_by_door_id(DoorIdOnSkipRangeOpen)
     else:
@@ -208,6 +209,7 @@ def my_own_mr_unit_test_function(SourceCode, EndStr,
                        ("$$COUNTER_PRINT$$",          counter_print_str),
                        ("$$TERMINAL_END_OF_STREAM$$", label_eos),
                        ("$$TERMINAL_FAILURE$$",       label_failure),
+                       ("$$BAD_LEXATOM$$",            label_bad_lexatom),
                        ("$$REENTRY$$",                label_reentry),
                        ("$$LEXEME_MACRO_SETUP$$",     Lng.LEXEME_MACRO_SETUP()),
                        ("$$LEXEME_MACRO_CLEAN_UP$$",  Lng.LEXEME_MACRO_CLEAN_UP()),
@@ -270,6 +272,7 @@ $$REENTRY2$$:
     goto ENTRY;
 
 $$TERMINAL_FAILURE$$:
+$$BAD_LEXATOM$$:
 $$TERMINAL_END_OF_STREAM$$:
 $$SKIP_RANGE_OPEN$$:
 $$END_STR$$
@@ -278,6 +281,7 @@ $$END_STR$$
     if( 0 ) {
         /* Avoit undefined label warnings: */
         goto $$TERMINAL_FAILURE$$;
+        goto $$BAD_LEXATOM$$;
         goto $$TERMINAL_END_OF_STREAM$$;
         goto $$SKIP_RANGE_OPEN$$;
         goto $$REENTRY$$;

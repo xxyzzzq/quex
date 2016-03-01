@@ -9,8 +9,8 @@ def relate_to_TransitionCode(tm):
     assert tm is not None
     tm.assert_continuity()
     tm.assert_adjacency()
-    tm.assert_boundary(Setup.buffer_codec.drain_set.minimum(), 
-                       Setup.buffer_codec.drain_set.supremum()) 
+    tm.assert_boundary(Setup.get_lexatom_range().minimum(),
+                       Setup.get_lexatom_range().supremum()) 
 
     def make_str(X):
         txt = X.code()

@@ -33,7 +33,7 @@ from   quex.blackboard                                    import setup as Setup,
 from   collections import defaultdict
 
 Setup.language_db = languages.db["C++"]
-Setup.buffer_element_type = "uint32_t"
+Setup.buffer_lexatom_type = "uint32_t"
 Setup.buffer_element_specification_prepare()
 Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
 
@@ -117,6 +117,7 @@ def prepare(tm):
     tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE, 
                  Setup.buffer_codec.drain_set.minimum(), 
                  Setup.buffer_codec.drain_set.supremum())
+    print "#tm:", tm
 
     iid_db = defaultdict(NumberSet)
     for interval, iid in tm:
@@ -133,7 +134,7 @@ def get_transition_function(iid_map, Codec):
     tm_txt   = do_analyzer(analyzer)
     tm_txt   = Lng.GET_PLAIN_STRINGS(tm_txt)
     tm_txt.append("\n")
-    label    = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
+    #label   = dial_db.get_label_by_door_id(DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE))
 
     for character_set, iid in iid_map:
         tm_txt.append("%s return (int)%s;\n" % (Lng.LABEL(DoorID.incidence(iid)), iid))
@@ -218,7 +219,7 @@ transition(QUEX_TYPE_LEXATOM* buffer)
 
     me->buffer._read_p = buffer;
 
-    $$TRANSITION$$
+$$TRANSITION$$
 }
 
 """
@@ -238,7 +239,7 @@ def get_main_function(tm0, TranstionTxt, Codec):
 
     txt = main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
     txt = txt.replace("$$QUEX_TYPE_LEXATOM$$", qtc_str)
-    txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 12))
+    txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 4))
     txt = txt.replace("$$PREPARE_INPUT$$", input_preperation)
 
     txt = txt.replace("MATCH_FAILURE", "((int)-1)")
@@ -259,18 +260,21 @@ def get_read_preparation(Codec):
         ]
     return "".join("        %s" % line for line in txt)
 
-iid_map           = prepare(tm0)
-transition_txt    = get_transition_function(iid_map, codec)
-txt               = get_main_function(tm0, transition_txt, codec)
+iid_map        = prepare(tm0)
+transition_txt = get_transition_function(iid_map, codec)
+txt            = get_main_function(tm0, transition_txt, codec)
 
 Lng.REPLACE_INDENT(txt)
 
 fh = open("test.c", "wb")
 fh.write("".join(txt))
 fh.close()
-os.system("gcc -I$QUEX_PATH test.c -o test")
-os.system("./test")
-os.remove("./test.c")
+try:    os.remove("./test")
+except: pass
+# os.system("gcc -I$QUEX_PATH test.c -o test")
+# os.system("./test")
+try:    os.remove("./test.c")
+except: pass
 
 
 

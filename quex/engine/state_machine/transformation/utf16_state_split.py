@@ -26,12 +26,14 @@ ABSTRACT:
     the probability that a range runs over multiple such ranges is low, it does
     not make sense to try to combine them. The later Hopcroft Minimization will
     not be overwhelmed by a little extra work.
+
+(C) Frank-Rene Schaefer
 """
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
+from   quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 from   quex.engine.misc.utf16                               import utf16_to_unicode, \
                                                                    unicode_to_utf16
 from   quex.engine.misc.interval_handling                   import Interval, NumberSet
@@ -40,10 +42,11 @@ from   quex.blackboard import setup as Setup
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
-class EncodingTrafoUTF16(EncodingTrafoByFunction):
+class EncodingTrafoUTF16(EncodingTrafoBySplit):
     UnchangedRange = 0x10000
     def __init__(self):
-        EncodingTrafoByFunction.__init__(self, "utf16")
+        EncodingTrafoBySplit.__init__(self, "utf16", 
+                                         CodeUnitRange=NumberSet.from_range(0, 0x10000))
 
         self.NumberSetErrorCodeUnit0 = NumberSet(
             Interval(0xDC00, 0xE000)
@@ -142,12 +145,12 @@ class EncodingTrafoUTF16(EncodingTrafoByFunction):
             target_map[bad_lexatom_state_index] = self.NumberSetErrorCodeUnit0
         return bad_lexatom_state_index
 
-    def get_unicode_range(self):
-        return NumberSet.from_range(0, 0x110000)
-
-    def get_code_unit_range(self):
-        """Codec element's size is 2 bytes."""
-        return NumberSet.from_range(0, 0x10000)
+    def adapt_source_and_drain_range(self, LexatomByteN):
+        EncodingTrafoBySplit.adapt_source_and_drain_range(self, LexatomByteN)
+        if LexatomByteN >= 2: return
+        # if there are less than 2 byte for the lexatoms, then only the 
+        # unicode range from 0x00 to 0xFF can be treated.
+        self.source_set.mask(0x00, 0x100)
 
 def _get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values

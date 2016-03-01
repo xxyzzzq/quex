@@ -18,13 +18,14 @@ E_Files = Enum("HEADER",
 class QuexSetup:
     def __init__(self, SetupInfo, BcFactory):
         self.init(SetupInfo)
-        self.__buffer_element_specification_done_f = False
         range_max    = NumberSet_All()
         unit_test_bc = EncodingTrafoUnicode(range_max, range_max)
-        self.buffer_codec_set(unit_test_bc)
+        self.buffer_codec_set(unit_test_bc, -1)
 
-    def buffer_codec_set(self, BufferCodec): 
+    def buffer_codec_set(self, BufferCodec, LexatomSizeInBytes): 
         self.buffer_codec = BufferCodec
+        self.buffer_lexatom_size_in_byte = LexatomSizeInBytes
+        self.buffer_codec.adapt_source_and_drain_range(LexatomSizeInBytes)
 
     def init(self, SetupInfo):
         for key, entry in SetupInfo.items():
@@ -61,76 +62,9 @@ class QuexSetup:
         else:
             self.__dict__[Name] = Value
 
-    def buffer_element_specification_prepare(self):
-        global global_character_type_db
-        if self.buffer_element_size == "wchar_t":
-            error.log("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
-                      "with option '--buffer-element-size' or '-bes'. Please, specify\n"
-                      "'--buffer-element-type wchar_t' or '--bet'.")
-
-        if self.buffer_element_type == "wchar_t":
-            self.converter_ucs_coding_name = "WCHAR_T"
-
-        # (*) Determine buffer element type and size (in bytes)
-        if self.buffer_element_size == -1:
-            if global_character_type_db.has_key(self.buffer_element_type):
-                self.buffer_element_size = global_character_type_db[self.buffer_element_type][3]
-            elif self.buffer_element_type == "":
-                self.buffer_element_size = 1
-            else:
-                # Buffer element type is not identified in 'global_character_type_db'.
-                # => here Quex cannot know its size on its own.
-                self.buffer_element_size = -1
-
-        if self.buffer_element_type == "":
-            if self.buffer_element_size in [1, 2, 4]:
-                self.buffer_element_type = { 
-                    1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
-                }[self.buffer_element_size]
-            elif self.buffer_element_size == -1:
-                pass
-            else:
-                error.log("Buffer element type cannot be determined for size '%i' which\n" \
-                          % self.buffer_element_size + 
-                          "has been specified by '-b' or '--buffer-element-size'.")
-
-        self.__buffer_element_specification_done_f = True
-
     def get_lexatom_range(self):
-        return NumberSet.from_range(0, self.__get_lexatom_value_limit())
-
-    def __get_lexatom_value_limit(self):
-        """A buffer element is a chunk of memory of the size of the granularity
-        of which the input pointer increases. For fixed size codecs, such as
-        ASCII or UCS32, the BUFFER ELEMENT VALUE LIMIT is exactly the same as
-        the CHARACTER VALUE LIMIT. 
-
-        However, for dynamic sized codecs, such as UTF8 or UTF16, they are
-        different. In UTF8, the input pointer increments by one byte on each
-        state transition. However, a character may consist out of multiple
-        bytes. The buffer element value limit is 256, but the character value
-        limit is the whole range.
-        
-        
-        RETURNS: Integer = supremum of possible character range, i.e.
-                           one character behind the last possible.
-
-                 sys.maxint, if no such limit exists.
-        """
-        buffer_element_size = self.buffer_element_size
-
-        if buffer_element_size == -1: return sys.maxint
-
-        try:
-            result = 256 ** buffer_element_size
-        except:
-            error.log("Error while trying to compute 256 to the 'buffer-element-size' (%i bytes)\n"   \
-                      % buffer_element_size + \
-                      "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
-                      "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
-
-        if result > sys.maxint: return sys.maxint
-        else:                   return result
+        return NumberSet.from_range(self.buffer_codec.lexatom_min_value(), 
+                                    self.buffer_codec.lexatom_max_value()+1)
 
     def set_all_character_set_UNIT_TEST(self, Begin, End):
         self.buffer_codec.source_set = NumberSet.from_range(Begin, End)
@@ -202,8 +136,8 @@ SETUP_INFO = {
     "buffer_codec_name":              [["--codec"],                            "unicode"],
     "buffer_codec_file":              [["--codec-file"],                       ""],
     "buffer_limit_code":              [["--buffer-limit"],                     0x0],
-    "buffer_element_size":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
-    "buffer_element_type":            [["--buffer-element-type", "--bet"],     ""],
+    "buffer_lexatom_size_in_byte":            [["--buffer-element-size", "-b", "--bes"], -1],  # [Bytes]
+    "buffer_lexatom_type":            [["--buffer-element-type", "--bet"],     ""],
     "buffer_byte_order":              [["--endian"],                           "<system>"],
     "comment_state_machine_f":        [["--comment-state-machine"],            SetupParTypes.FLAG],
     "comment_transitions_f":          [["--comment-transitions"],              SetupParTypes.FLAG],
@@ -582,8 +516,8 @@ DOC = {
     "buffer_codec_name":              ("Buffer internal codec.", ""),
     "buffer_codec_file":              ("Codec file describing mapping to unicode code points.", ""),
     "buffer_limit_code":              ("Buffer limit code.", ""),
-    "buffer_element_size":            ("Buffer element size.", ""),
-    "buffer_element_type":            ("Buffer element type.", ""),
+    "buffer_lexatom_size_in_byte":            ("Buffer element size.", ""),
+    "buffer_lexatom_type":            ("Buffer element type.", ""),
     "buffer_byte_order":              ("Byte order of buffer elements.", ""),
     "comment_state_machine_f":        ("Provide state machine description in comment of generated code.", ""),
     "comment_transitions_f":          ("Provided UTF8 representation of transition characters in comments of generated code.", ""),

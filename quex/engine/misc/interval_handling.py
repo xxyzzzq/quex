@@ -59,6 +59,8 @@ class Interval(object):
                 else:                        self.end = self.begin
             else:    
                 self.end = End
+
+        assert self.begin <= self.end
             
     def clone(self):
         return Interval(self.begin, self.end)
@@ -487,7 +489,7 @@ class NumberSet(object):
         for interval in self.__intervals:
             if interval.is_empty() == False: return False
         return True
-        
+
     def is_all(self):
         """Returns True if this NumberSet covers all numbers, False if not.
            

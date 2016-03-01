@@ -20,7 +20,7 @@ which implements the interfaces to be obeyed by all.
     A given lexatom has a distinct resulting lexatom as described in a 
     table. Some lexatoms, may be exempted and cannot be transformed.
 
-  * EncodingTrafoByFunction: lexatom sequence = function(lexatom)
+  * EncodingTrafoBySplit: lexatom sequence = function(lexatom)
 
     A lexatom in the original state machine is converted into a lexatom 
     sequence of the result. This type of transformations is required to
@@ -28,10 +28,9 @@ which implements the interfaces to be obeyed by all.
 
 (C) Frank-Rene Schaefer
 """
-from   quex.engine.misc.interval_handling  import NumberSet
+from   quex.engine.misc.interval_handling  import NumberSet_All
 import quex.engine.misc.error              as error
 import os
-import sys
 
 
 def do(setup, BufferCodecName, BufferCodecFileName=""):

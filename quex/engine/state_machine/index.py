@@ -1,4 +1,3 @@
-from quex.blackboard import E_StateIndices
 
 # special states:
 def clear():

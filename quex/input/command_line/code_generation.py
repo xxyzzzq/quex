@@ -52,25 +52,26 @@ def prepare(command_line, argv):
     else:
         Setup.byte_order_is_that_of_current_system_f = False
 
-    Setup.buffer_element_specification_prepare()
+    lexatom_size_in_byte = __prepare_buffer_element_specification(Setup)
 
-    Setup.buffer_codec_set(bc_factory.do(Setup, Setup.buffer_codec_name, 
-                                         Setup.buffer_codec_file))
+    buffer_codec = bc_factory.do(Setup, Setup.buffer_codec_name, 
+                                 Setup.buffer_codec_file)
+    Setup.buffer_codec_set(buffer_codec, lexatom_size_in_byte)
 
     # AFTER: Setup.buffer_codec_prepare() !!!
     if Setup.language not in ["DOT"]:
         prepare_file_names(Setup)
 
-    type_info = global_character_type_db.get(Setup.buffer_element_type)
+    type_info = global_character_type_db.get(Setup.buffer_lexatom_type)
     if     type_info is not None and len(type_info) >= 4 \
-       and type_info[3] != -1 and Setup.buffer_element_size != -1 \
-       and type_info[3] != Setup.buffer_element_size:
+       and type_info[3] != -1 and Setup.buffer_lexatom_size_in_byte != -1 \
+       and type_info[3] != Setup.buffer_lexatom_size_in_byte:
         error.log("\nBuffer element type ('--bet' or '--buffer-element-type') was set to '%s'.\n" \
-                  % Setup.buffer_element_type \
+                  % Setup.buffer_lexatom_type \
                   + "It is well known to be of size %s[byte]. However, the buffer element size\n" \
                   % type_info[3] \
                   + "('-b' or '--buffer-element-type') was specified as '%s'.\n\n" \
-                  % Setup.buffer_element_size \
+                  % Setup.buffer_lexatom_size_in_byte \
                   + "Quex can continue, but the result is questionable.\n", \
                   DontExitF=True)
 
@@ -81,16 +82,16 @@ def prepare(command_line, argv):
     # The only case where no converter helper is required is where ASCII 
     # (Unicode restricted to [0, FF] is used.
     Setup.converter_helper_required_f = True
-    if Setup.converter_f == False and Setup.buffer_element_size == 1 and Setup.buffer_codec.name == "unicode":
+    if Setup.converter_f == False and Setup.buffer_lexatom_size_in_byte == 1 and Setup.buffer_codec.name == "unicode":
         Setup.converter_helper_required_f = False
 
     validation.do(Setup, command_line, argv)
 
     if Setup.converter_ucs_coding_name == "": 
-        if global_character_type_db.has_key(Setup.buffer_element_type):
+        if global_character_type_db.has_key(Setup.buffer_lexatom_type):
             if Setup.buffer_byte_order == "little": index = 1
             else:                                   index = 2
-            Setup.converter_ucs_coding_name = global_character_type_db[Setup.buffer_element_type][index]
+            Setup.converter_ucs_coding_name = global_character_type_db[Setup.buffer_lexatom_type][index]
 
     if len(Setup.token_id_foreign_definition) != 0: 
         if len(Setup.token_id_foreign_definition) > 3: 
@@ -309,4 +310,40 @@ def __prepare_file_name(Suffix, ContentType):
 
     if not Setup.output_directory: return file_name
     else:                          return os.path.normpath(Setup.output_directory + "/" + file_name)
+
+def __prepare_buffer_element_specification(setup):
+    global global_character_type_db
+    if Setup.buffer_lexatom_size_in_byte == "wchar_t":
+        error.log("Since Quex version 0.53.5, 'wchar_t' can no longer be specified\n"
+                  "with option '--buffer-element-size' or '-bes'. Please, specify\n"
+                  "'--buffer-element-type wchar_t' or '--bet'.")
+
+    if Setup.buffer_lexatom_type == "wchar_t":
+        Setup.converter_ucs_coding_name = "WCHAR_T"
+
+    # (*) Determine buffer element type and size (in bytes)
+    lexatom_size_in_byte = Setup.buffer_lexatom_size_in_byte
+    if lexatom_size_in_byte == -1:
+        if global_character_type_db.has_key(Setup.buffer_lexatom_type):
+            lexatom_size_in_byte = global_character_type_db[Setup.buffer_lexatom_type][3]
+        elif Setup.buffer_lexatom_type == "":
+            lexatom_size_in_byte = 1
+        else:
+            # Buffer element type is not identified in 'global_character_type_db'.
+            # => here Quex cannot know its size on its own.
+            lexatom_size_in_byte = -1
+
+    if Setup.buffer_lexatom_type == "":
+        if lexatom_size_in_byte in [1, 2, 4]:
+            Setup.buffer_lexatom_type = { 
+                1: "uint8_t", 2: "uint16_t", 4: "uint32_t",
+            }[lexatom_size_in_byte]
+        elif lexatom_size_in_byte == -1:
+            pass
+        else:
+            error.log("Buffer element type cannot be determined for size '%i' which\n" \
+                      % lexatom_size_in_byte + 
+                      "has been specified by '-b' or '--buffer-element-size'.")
+
+    return lexatom_size_in_byte
 

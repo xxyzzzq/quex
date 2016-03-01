@@ -91,9 +91,11 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
 
     txt.extend(CodeTxt)
 
-    door_id_failure = DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE)
+    door_id_failure     = DoorID.incidence(E_IncidenceIDs.MATCH_FAILURE)
+    door_id_bad_lexatom = DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM)
     txt.append(
-        "%s /* TERMINAL: FAILURE */\n%s\n" % (Lng.LABEL(door_id_failure), Lng.GOTO(DoorIdBeyond))
+          "%s /* TERMINAL: BAD_LEXATOM */\n;\n" % Lng.LABEL(door_id_bad_lexatom)
+        + "%s /* TERMINAL: FAILURE     */\n%s\n" % (Lng.LABEL(door_id_failure), Lng.GOTO(DoorIdBeyond))
     )
     txt.append(
          "%s:\n" % dial_db.get_label_by_door_id(DoorIdReturn) \
@@ -108,6 +110,7 @@ def __frame(FunctionName, IteratorName, CodeTxt, DoorIdReturn, DoorIdBeyond):
        # referenced.
        + "#    if ! defined(QUEX_OPTION_COMPUTED_GOTOS)\n"
        + "     %s /* in QUEX_GOTO_STATE       */\n" % Lng.GOTO(DoorID.global_state_router())
+       + "     %s /* to BAD_LEXATOM           */\n" % Lng.GOTO(DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM))
        + "#    endif\n"
        + "    /* Avoid compiler warning: Unused label for 'TERMINAL <BEYOND>' */\n" \
        + "    %s\n" % Lng.GOTO(DoorIdBeyond) \
