@@ -1,6 +1,7 @@
 import quex.engine.codec_db.core as codec_db
 from   quex.engine.state_machine.transformation.base import EncodingTrafo
 
+from   quex.blackboard import setup as Setup
 import os
 
 class EncodingTrafoByTable(EncodingTrafo, list):
@@ -31,6 +32,8 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         source_set, drain_set = codec_db.load(self, file_name, ExitOnErrorF)
         EncodingTrafo.__init__(self, codec_name, source_set, drain_set)
 
+        self.BadLexatomSet = drain_set.complement(Setup.get_lexatom_range())
+
     def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
         """RETURNS: [0] True if complete, False else.
                     [1] True if orphan states possibly generated, False else.
@@ -40,6 +43,10 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         if number_set.transform(self): 
             assert not number_set.is_empty()
             return True, False
+
+        if self.BadLexatomSet:
+            bad_lexatom_state_index = sm.access_bad_lexatom_state()
+            from_target_map[bad_lexatom_state_index] = self.BadLexatomSet
 
         if number_set.is_empty(): 
             del from_target_map[ToSi]

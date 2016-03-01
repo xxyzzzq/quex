@@ -24,12 +24,14 @@ class IncidenceDB(dict):
     terminal_type_db = {
         E_IncidenceIDs.MATCH_FAILURE:   E_TerminalType.MATCH_FAILURE,
         E_IncidenceIDs.END_OF_STREAM:   E_TerminalType.END_OF_STREAM,
+        E_IncidenceIDs.BAD_LEXATOM:     E_TerminalType.BAD_LEXATOM,
         # NOT: E_IncidenceIDs.SKIP_RANGE_OPEN: E_TerminalType.SKIP_RANGE_OPEN
         # Otherwise, it would try to make terminals for that in 'extract_terminal_db()'
     }
     mandatory_list = [
         E_IncidenceIDs.MATCH_FAILURE, 
         E_IncidenceIDs.END_OF_STREAM,
+        E_IncidenceIDs.BAD_LEXATOM,      # i.e. encoding error
         E_IncidenceIDs.SKIP_RANGE_OPEN,
         E_IncidenceIDs.INDENTATION_BAD,
     ]
@@ -119,6 +121,9 @@ class IncidenceDB(dict):
         elif IncidenceId == E_IncidenceIDs.INDENTATION_BAD:
             txt =   'QUEX_ERROR_EXIT("Mode \'%s\': bad indentation character detected!\\n"' % ModeName \
                   + '                "No \'on_indentation_bad\' handler has been specified.\\n");'
+        elif IncidenceId == E_IncidenceIDs.BAD_LEXATOM:
+            txt =   'QUEX_ERROR_EXIT("Mode \'%s\': bad lexatom (character encoding error) detected!\\n"' % ModeName \
+                  + '                "No \'on_bad_lexatom\' handler has been specified.\\n");'
         else:
             assert False
 

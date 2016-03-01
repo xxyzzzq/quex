@@ -46,7 +46,7 @@ class X:
                     for cmd in state.single_entry.get_iterable(SeAccept)
                 ]
                 if acceptance_id_list and self.id not in acceptance_id_list: 
-                    print "\n#UCS:  ", i #, unichr(i)
+                    print eval("u'\U%08X'" % i) 
                     print "#Seq:  ", ["%02X" % x for x in lexatom_seq]
                     print "#acceptance-ids:", acceptance_id_list
                     error(self.sm, SM, lexatom_seq)
@@ -115,6 +115,47 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True), 
                    unicode_to_transformed_sequence)
 
+def test_UCS_range(Trafo, RangeBegin, RangeEnd, CharacterTrafo):
+    sm     = StateMachine()
+    acc_i  = 0
+    acc_db = {}
+    for x in range(RangeBegin, RangeEnd):
+        sm.add_transition(self.sm.init_state_index, x, AcceptanceF=True)
+        sm.states[ti].mark_acceptance(acc_i)
+        acc_db[x]  = acc_i
+        acc_i     += 1
+
+    print "# Number of states in state machine:"
+    print "#   Unicode:       %i" % len(orig.states)
+    state_n_before = len(orig.states)
+    verdict_f, result = Trafo.do_state_machine(orig, beautifier)
+    print "#   %s:            %i" % len(result.states)
+    assert state_n_before == len(result.states)
+
+    init_state = result.get_init_state()
+    count      = 0
+    for x in range(RangeBegin, RangeEnd):
+        translated = CharacterTrafo(x)
+        if translated is None:
+            if Setup.bad_lexatom_detection_f:
+                expected = E_IncidenceIDs.BAD_LEXATOM
+            else:
+                expected = None
+        else:
+            expected = translated
+
+        ti = init_state.get_target_state_index(x)
+        if expected is None:
+            assert ti is None
+        elif expected == E_IncidenceIDs.BAD_LEXATOM:
+            assert sm[ti].acceptance_id() == E_IncidenceIDs.BAD_LEXATOM
+        else:
+            assert sm[ti].acceptance_id() == acc_db[x]
+
+        count += 1
+
+    print "<terminated: %i transitions ok>" % count
+
 def generate_sm_for_boarders(Boarders, Trafo):
     sm = StateMachine()
     for ucs_char in Boarders:
@@ -159,7 +200,6 @@ def test_good_and_bad_sequences(sm, good_sequences, bad_sequence_list):
     for sequence in bad_sequence_list:
         state = sm.apply_sequence(sequence, StopAtBadLexatomF=True)
         print_sequence_result(state, sequence)
-
 
 def sequence_string(Sequence):
     return "".join("%02X." % x for x in Sequence)[:-1]
@@ -217,6 +257,7 @@ def test_plug_sequence(ByteSequenceDB):
     end_index = state_machine.index.get()
     sm.states[end_index] = State()
 
+    Setup.buffer_codec_set(EncodingTrafoUTF8(), 1)
     EncodingTrafoUTF8()._plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB, beautifier)
 
     if len(sm.get_orphaned_state_index_list()) != 0:

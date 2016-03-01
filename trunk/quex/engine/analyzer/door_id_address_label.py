@@ -141,6 +141,17 @@ class DialDB(object):
         print "#Used %s" % Address
         print_callstack()
 
+    def __debug_incidence_generation(self, IncidenceId, StateIndex):
+        print "#Generated: %s -> state: %s" % (IncidenceId, StateIndex)
+        print_callstack()
+
+    def __debug_gotoed_address(self, Address, *SuspectAdrList):
+        if Address not in SuspectAdrList:
+            return
+        print "#Gotoed Address: %s" % Address
+        print_callstack()
+
+
     def clear(self):
         # Database: [DoorID] [Address] [Label] 
         # 
@@ -238,13 +249,14 @@ class DialDB(object):
         """
         sub_db = self.__door_id_db.get(StateIndex)
         if sub_db is None:
-            return self.new_door_id(StateIndex, DoorSubIndex)
-
-        door_id = sub_db.get(DoorSubIndex)
-        if door_id is None:
-            return self.new_door_id(StateIndex, DoorSubIndex)
+            result = self.new_door_id(StateIndex, DoorSubIndex)
         else:
-            return door_id
+            door_id = sub_db.get(DoorSubIndex)
+            if door_id is None:
+                result = self.new_door_id(StateIndex, DoorSubIndex)
+            else:
+                result = door_id
+        return result
 
     def new_incidence_id(self):
         self.__incidence_id_i += 1
@@ -298,9 +310,9 @@ class DialDB(object):
         return None
 
     def mark_address_as_gotoed(self, Address):
+        if False:
+            self.__debug_gotoed_address(Address, 39)
         self.__gotoed_address_set.add(Address)
-        if False: # True/False switches debug output
-             self.__debug_address_usage(Address, 18)
 
     def mark_label_as_gotoed(self, Label):
         self.mark_address_as_gotoed(self.get_address_by_label(Label))
@@ -329,6 +341,8 @@ class DialDB(object):
             index = sm_index.get()
             self.__map_incidence_id_to_state_index[IncidenceId] = index
 
+        if False:
+            self.__debug_incidence_generation(IncidenceId, index)
         return index
     
 dial_db = DialDB()

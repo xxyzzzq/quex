@@ -455,7 +455,7 @@ dynamic, e.g. UTF8, then state transitions happen on parts of a character.
 The check mark sign is coded in three bytes 0xE2, 0x9C, and 0x93. Each
 byte is read separately and causes a separate state transition.
 """,
-Option("buffer_element_size", "1|2|4",
+Option("buffer_lexatom_size_in_byte", "1|2|4",
      """
      With this option the number of bytes is specified that a buffer 
      element occupies. 
@@ -477,7 +477,7 @@ Option("buffer_element_size", "1|2|4",
         does not result in a nicely printable UTF8 string. Use
         the member \\v{.utf8_text()} instead."""),
       ),
-Option("buffer_element_type", "type name",
+Option("buffer_lexatom_type", "type name",
      """
      A flexible approach to specify the buffer element size and type is by
      specifying the name of the buffer element's type, which is the purpose

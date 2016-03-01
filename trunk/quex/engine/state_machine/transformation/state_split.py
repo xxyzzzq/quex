@@ -90,24 +90,19 @@ PROCESS:
 (2) The interval sequences are plugged in between the state A and B
     of the state machine.
 """
-from   quex.engine.state_machine.core                import StateMachine, State
-import quex.engine.state_machine.index               as     index
+from   quex.engine.state_machine.core                import StateMachine
 import quex.engine.state_machine.transformation.base as     base
-from   quex.engine.misc.interval_handling            import NumberSet, \
-                                                            NumberSet_All, \
-                                                            Interval
-    
+from   quex.engine.misc.interval_handling            import NumberSet
 
 from   quex.engine.misc.tools import flatten_list_of_lists
-from   quex.blackboard        import E_StateIndices, E_IncidenceIDs, setup as Setup
+from   quex.blackboard        import setup as Setup
 
-class EncodingTrafoByFunction(base.EncodingTrafo):
+class EncodingTrafoBySplit(base.EncodingTrafo):
     """Transformation that takes a lexatom and produces a lexatom sequence.
     """
-    def __init__(self, Name):
-        base.EncodingTrafo.__init__(self, Name,
-                                    self.get_unicode_range(), 
-                                    self.get_code_unit_range())
+    def __init__(self, Name, CodeUnitRange):
+        base.EncodingTrafo.__init__(self, Name, NumberSet.from_range(0, 0x110000),
+                                    CodeUnitRange)
 
     def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
         """RETURNS: [0] True if complete, False else.

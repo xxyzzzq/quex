@@ -451,15 +451,15 @@ class Lng_Cpp(dict):
             t_txt.append("\n")
 
             text.extend(t_txt)
-        #text.append(
-        #    "if(0) {\n"
-        #    "    /* Avoid unreferenced labels. */\n"
-        #)
-        #text.extend(
-        #    "    %s\n" % self.GOTO(door_id)
-        #    for door_id in terminal_door_id_list
-        #)
-        #text.append("}\n")
+        text.append(
+            "if(0) {\n"
+            "    /* Avoid unreferenced labels. */\n"
+        )
+        text.extend(
+            "    %s\n" % self.GOTO(door_id)
+            for door_id in terminal_door_id_list
+        )
+        text.append("}\n")
         return text
 
     def ANALYZER_FUNCTION(self, ModeName, Setup, VariableDefs, 
@@ -603,8 +603,9 @@ class Lng_Cpp(dict):
         return "QUEX_NAME(pop_mode)(&self);"
 
     def ACCEPTANCE(self, AcceptanceID):
-        if AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
-        else:                                            return "%i" % AcceptanceID
+        if   AcceptanceID == E_IncidenceIDs.MATCH_FAILURE: return "((QUEX_TYPE_ACCEPTANCE_ID)-1)"
+        elif AcceptanceID == E_IncidenceIDs.BAD_LEXATOM:   return "((QUEX_TYPE_ACCEPTANCE_ID)-2)"
+        else:                                              return "%i" % AcceptanceID
 
     def IF(self, LValue, Operator, RValue, FirstF=True, SimpleF=False, SpaceF=False):
         if isinstance(RValue, (str,unicode)): decision = "%s %s %s"   % (LValue, Operator, RValue)

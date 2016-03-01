@@ -10,9 +10,9 @@ tmp=`pwd`
 cd $bug/ 
 echo "##No output is good output"
 if [[ $1 == "utf8" ]]; then
-    quex -i simple.qx -o EasyLexer --language C --codec utf8
+    quex -i simple.qx -o EasyLexer --language C --codec utf8 --debug-exception
 elif [[ $1 == "utf16" ]]; then
-    quex -i simple.qx -o EasyLexer --language C --codec utf16 -b 2
+    quex -i simple.qx -o EasyLexer --language C --codec utf16 -b 2 --debug-exception
 fi
 
 g++ -c EasyLexer.c -I$QUEX_PATH  

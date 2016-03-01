@@ -136,7 +136,7 @@ def _do(Descr):
     txt   = blue_print(txt, helper_variable_replacements)
 
     if Setup.language.upper() != "C++" and Setup.token_class_only_f:
-        extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_element_type, Setup.buffer_element_type)
+        extra_at_begin_str += local_strlen_str % (Descr.class_name_safe, Setup.buffer_lexatom_type, Setup.buffer_lexatom_type)
 
     txt_i = blue_print(template_i_str, 
             [
@@ -378,7 +378,7 @@ def __get_converter_configuration(IncludeGuardExtension):
                 function_def_prefix, function_def_prefix,   \
                 function_prefix,     function_prefix,       \
                 namespace_token_open, namespace_token_close,\
-                Setup.buffer_element_type)
+                Setup.buffer_lexatom_type)
     after  = frame_end \
              % IncludeGuardExtension
 
@@ -415,7 +415,7 @@ def clean_for_independence(txt):
     global QUEX_TYPE_LEXATOM_safe_re
     global QUEX_LEXEME_NULL_re
 
-    txt = QUEX_TYPE_LEXATOM_re.sub(Setup.buffer_element_type, txt)
+    txt = QUEX_TYPE_LEXATOM_re.sub(Setup.buffer_lexatom_type, txt)
     txt = QUEX_TYPE_ANALYZER_re.sub("void", txt)
     txt = QUEX_TYPE_TOKEN_ID_re.sub(Setup.token_id_type, txt)
     txt = QUEX_LexemeNullDeclaration_re.sub(common_lexeme_null_str(), txt)
@@ -463,7 +463,7 @@ def lexeme_null_declaration():
         namespace_open, namespace_close = __namespace_brackets()
         return "".join([
                     "%s\n" % namespace_open,
-                    "extern %s  %s;\n" % (Setup.buffer_element_type, common_lexeme_null_str()),
+                    "extern %s  %s;\n" % (Setup.buffer_lexatom_type, common_lexeme_null_str()),
                     "%s\n\n" % namespace_close,
                   ])
     else:
@@ -479,7 +479,7 @@ def lexeme_null_implementation():
 
     return "".join([
                 "%s\n" % namespace_open,
-                "%s  %s = (%s)0;\n" % (Setup.buffer_element_type, common_lexeme_null_str(), Setup.buffer_element_type),
+                "%s  %s = (%s)0;\n" % (Setup.buffer_lexatom_type, common_lexeme_null_str(), Setup.buffer_lexatom_type),
                 "%s\n\n" % namespace_close,
               ])
 

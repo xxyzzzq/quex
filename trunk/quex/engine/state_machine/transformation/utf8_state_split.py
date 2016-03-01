@@ -1,5 +1,5 @@
 """
-(C) 2009 Frank-Rene Schaefer
+(C) 2009-2016 Frank-Rene Schaefer
 """
 import os
 import sys
@@ -11,29 +11,26 @@ from   quex.engine.misc.utf8                                import utf8_to_unico
                                                                    UTF8_MAX, \
                                                                    UTF8_BORDERS
 from   quex.engine.misc.interval_handling                   import Interval, \
-                                                                   NumberSet, \
-                                                                   NumberSet_All
-from   quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
+                                                                   NumberSet
+from   quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 
 from   quex.blackboard import setup as Setup
 
-class EncodingTrafoUTF8(EncodingTrafoByFunction):
+class EncodingTrafoUTF8(EncodingTrafoBySplit):
     def __init__(self):
-        EncodingTrafoByFunction.__init__(self, "utf8")
-
+        EncodingTrafoBySplit.__init__(self, "utf8",
+                                         CodeUnitRange=NumberSet.from_range(0, 0x100))
         self.UnchangedRange = 0x7F
 
         self.NumberSetErrorByte0 = NumberSet([
             Interval(0b00000000, 0b01111111+1), Interval(0b11000000, 0b11011111+1),
             Interval(0b11100000, 0b11101111+1), Interval(0b11110000, 0b11110111+1),
             Interval(0b11111000, 0b11111011+1), Interval(0b11111100, 0b11111101+1),
-        ]).get_complement(NumberSet_All())
-        self.NumberSetErrorByte0.intersect_with(Setup.get_lexatom_range())
+        ]).get_complement(Setup.get_lexatom_range())
 
         self.NumberSetErrorByteN = NumberSet(
             Interval(0b10000000, 0b10111111+1)
-        ).get_complement(NumberSet_All())
-        self.NumberSetErrorByteN.intersection(Setup.get_lexatom_range())
+        ).get_complement(Setup.get_lexatom_range())
 
     def prune(self, X):
         pass
@@ -77,13 +74,6 @@ class EncodingTrafoUTF8(EncodingTrafoByFunction):
         back_chunk_n  = len(unicode_to_utf8(back))
         if front_chunk_n != back_chunk_n: return None
         else:                             return front_chunk_n
-
-    def get_unicode_range(self):
-        return NumberSet.from_range(0, 0x110000)
-
-    def get_code_unit_range(self):
-        """Codec element's size is 1 byte."""
-        return NumberSet.from_range(0, 0x100)
 
     def _plug_encoding_error_detectors(self, sm):
         """Adorn states with transitions to the 'on_encoding_error' handler if the 
@@ -135,7 +125,6 @@ class EncodingTrafoUTF8(EncodingTrafoByFunction):
         if target_map: 
             target_map[bad_lexatom_state_index] = self.NumberSetErrorByte0
         return bad_lexatom_state_index
-
 
 def _split_by_transformed_sequence_length(X):
     """Split Unicode interval into intervals where all values have the same 

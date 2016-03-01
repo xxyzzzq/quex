@@ -174,7 +174,7 @@ def do_token_class_info():
         "  --token-class-file      %s" % Setup.output_token_class_file,
         "  --token-class           %s" % Setup.token_class,
         "  --token-id-type         %s" % Setup.token_id_type,
-        "  --buffer-element-type   %s" % Setup.buffer_element_type,
+        "  --buffer-element-type   %s" % Setup.buffer_lexatom_type,
         "  --lexeme-null-object    %s" % Setup.lexeme_null_full_name_cpp,
         "  --foreign-token-id-file %s" % Setup.output_token_id_file,
     ]

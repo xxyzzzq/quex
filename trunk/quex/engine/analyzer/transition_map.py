@@ -40,11 +40,10 @@ class TransitionMap(list):
             assert len(result) != 0 # Empty target maps have been handled before
             result.sort()
 
-        result.fill_gaps(E_StateIndices.DROP_OUT, 
-                         Setup.buffer_codec.drain_set.minimum(),  
-                         Setup.buffer_codec.drain_set.supremum())
-        result.assert_boundary(Setup.buffer_codec.drain_set.minimum(), 
-                               Setup.buffer_codec.drain_set.supremum()) 
+        begin = Setup.get_lexatom_range().minimum()
+        end   = Setup.get_lexatom_range().supremum()
+        result.fill_gaps(E_StateIndices.DROP_OUT, begin, end)
+        result.assert_boundary(begin, end)
         result.assert_continuity()
         return result
 
@@ -410,20 +409,26 @@ class TransitionMap(list):
         Begin -- begin of range of intervals
         End   -- end of range of intervals.
         """
+        assert Begin <= End
+
         size  = len(self)
         if not size:
             self.append((Interval(Begin, End), Target))
             return
 
-        assert self[0][0].begin >= Begin, "FAILED: begin %x >= %s" % (self[0][0].begin, Begin)
-        assert self[-1][0].end  <= End,   "FAILED: end   %x <= %s" % (self[-1][0].end, End)
+        # Following asserts cannot be made, because the 'on_bad_lexatom' 
+        # triggers lie beyond the range of the encoding!
+        ## assert self[0][0].begin >= Begin, "FAILED: begin %x >= %s" % (self[0][0].begin, Begin)
+        ## assert self[-1][0].end  <= End,   "FAILED: end   %x <= %s" % (self[-1][0].end, End)
 
         # If outer borders are lacking, then add them
         if self[0][0].begin != Begin: 
+            assert self[0][0].begin > Begin 
             self.insert(0, (Interval(Begin, self[0][0].begin), Target))
             size += 1
 
         if self[-1][0].end != End: 
+            assert self[0][0].end < End 
             self.append((Interval(self[-1][0].end, End), Target))
             size += 1
 

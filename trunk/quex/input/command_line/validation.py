@@ -72,9 +72,9 @@ def do(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    if setup.buffer_element_size not in [-1, 1, 2, 4]:
+    if setup.buffer_lexatom_size_in_byte not in [-1, 1, 2, 4]:
         error.log("The setting of '--buffer-element-size' (or '-b') can only be\n" 
-                  "1, 2, or 4 (found %s)." % repr(setup.buffer_element_size))
+                  "1, 2, or 4 (found %s)." % repr(setup.buffer_lexatom_size_in_byte))
 
     if setup.buffer_byte_order not in ["<system>", "little", "big"]:
         error.log("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
@@ -130,21 +130,21 @@ def do(setup, command_line, argv):
     # If a converter has been specified and no bytes-element-size has been specified,
     # it defaults to '1 byte' which is most likely not what is desired for unicode.
     if     converter_n == 1 \
-       and setup.buffer_element_size == 1 \
-       and not command_line_args_defined(command_line, "buffer_element_size") \
-       and not command_line_args_defined(command_line, "buffer_element_type"):
+       and setup.buffer_lexatom_size_in_byte == 1 \
+       and not command_line_args_defined(command_line, "buffer_lexatom_size_in_byte") \
+       and not command_line_args_defined(command_line, "buffer_lexatom_type"):
         error.log("A converter has been specified, but the default buffer element size\n" + \
                   "is left to 1 byte. Consider %s or %s." \
-                  % (command_line_args_string("buffer_element_size"),
-                     command_line_args_string("buffer_element_type")))
+                  % (command_line_args_string("buffer_lexatom_size_in_byte"),
+                     command_line_args_string("buffer_lexatom_type")))
 
     # If a user defined type is specified for 'engine character type' and 
     # a converter, then the name of the target type must be specified explicitly.
-    if         setup.buffer_element_type != "" \
-       and not global_character_type_db.has_key(setup.buffer_element_type) \
+    if         setup.buffer_lexatom_type != "" \
+       and not global_character_type_db.has_key(setup.buffer_lexatom_type) \
        and     setup.converter_ucs_coding_name == "" \
        and     converter_n != 0:
-        tc = setup.buffer_element_type
+        tc = setup.buffer_lexatom_type
         error.log("A character code converter has been specified. It is supposed to convert\n" + \
                   "incoming data into an internal buffer of unicode characters. The size of\n" + \
                   "each character is determined by '%s' which is a user defined type.\n" % tc  + \
@@ -166,26 +166,26 @@ def do(setup, command_line, argv):
         error.log("Token policy 'users_queue' has be deprecated since 0.49.1\n")
 
     # Internal engine character encoding
-    def __codec_vs_buffer_element_size(CodecName, RequiredBufferElementSize):
+    def __codec_vs_buffer_lexatom_size_in_byte(CodecName, RequiredBufferElementSize):
         if   setup.buffer_codec.name   != CodecName:                 return
-        elif setup.buffer_element_size == RequiredBufferElementSize: return
+        elif setup.buffer_lexatom_size_in_byte == RequiredBufferElementSize: return
 
-        if setup.buffer_element_size == -1: 
-            msg_str = "undetermined (found type '%s')" % setup.buffer_element_type
+        if setup.buffer_lexatom_size_in_byte == -1: 
+            msg_str = "undetermined (found type '%s')" % setup.buffer_lexatom_type
         else:
-            msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_element_size)
+            msg_str = "is not %i (found %i)" % (RequiredBufferElementSize, setup.buffer_lexatom_size_in_byte)
 
         error.log("Using codec '%s' while buffer element size %s.\n" % (CodecName, msg_str) + 
                   "Consult command line argument %s" \
-                  % command_line_args_string("buffer_element_size"))
+                  % command_line_args_string("buffer_lexatom_size_in_byte"))
 
     if setup.buffer_codec.name != "unicode":
         if not setup.buffer_codec_file:
             error.verify_word_in_list(setup.buffer_codec_name,
                                       codec_db.get_supported_codec_list() + ["utf8", "utf16"],
                                       "Codec '%s' is not supported." % setup.buffer_codec.name)
-        __codec_vs_buffer_element_size("utf8", 1)
-        __codec_vs_buffer_element_size("utf16", 2)
+        __codec_vs_buffer_lexatom_size_in_byte("utf8", 1)
+        __codec_vs_buffer_lexatom_size_in_byte("utf16", 2)
 
     if setup.external_lexeme_null_object and setup.token_class_only_f:
         error.log("Specifying an external lexeme null object signalizes an\n"

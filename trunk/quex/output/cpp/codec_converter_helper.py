@@ -6,14 +6,14 @@ from quex.DEFINITIONS                                     import QUEX_PATH
 from quex.engine.misc.string_handling                     import blue_print
 from quex.engine.misc.file_in                             import make_safe_identifier
 from quex.engine.misc.file_operations                     import get_file_content_or_die
-from quex.engine.state_machine.transformation.state_split import EncodingTrafoByFunction
+from quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 from quex.blackboard                                      import setup as Setup, \
                                                                  Lng
 
 def do():
     if Setup.buffer_codec.name == "unicode": 
         return None, None
-    elif isinstance(Setup.buffer_codec, EncodingTrafoByFunction):
+    elif isinstance(Setup.buffer_codec, EncodingTrafoBySplit):
         return None, None
 
     return _do(Setup.buffer_codec) 

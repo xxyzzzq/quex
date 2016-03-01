@@ -59,5 +59,5 @@ def _assert_consistency(TM):
 
     # The transition map MUST be designed to cover exactly the range of 
     # of possible values given by the buffer element type!
-    TM.assert_boundary(Setup.buffer_codec.drain_set.minimum(), 
-                       Setup.buffer_codec.drain_set.supremum()) 
+    TM.assert_boundary(Setup.get_lexatom_range().minimum(),
+                       Setup.get_lexatom_range().supremum()) 

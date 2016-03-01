@@ -156,7 +156,7 @@ def finalize_pattern_list(SortedPPT_List, CounterDb):
     for pattern in pattern_list:
         if not pattern.transform(Setup.buffer_codec):
             error.warning("Pattern contains elements not found in engine codec '%s'.\n" % Setup.buffer_codec.name \
-                          + "(Buffer element size is %s [byte])" % Setup.buffer_element_size,
+                          + "(Buffer element size is %s [byte])" % Setup.buffer_lexatom_size_in_byte,
                           pattern.sr)
 
     # (*) Cut the signalling characters from any pattern or state machine
