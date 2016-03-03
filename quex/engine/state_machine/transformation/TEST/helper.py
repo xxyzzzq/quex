@@ -257,8 +257,9 @@ def test_plug_sequence(ByteSequenceDB):
     end_index = state_machine.index.get()
     sm.states[end_index] = State()
 
-    Setup.buffer_codec_set(EncodingTrafoUTF8(), 1)
-    EncodingTrafoUTF8()._plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB, beautifier)
+    trafo = EncodingTrafoUTF8() 
+    Setup.buffer_codec_set(trafo, 1)
+    trafo._plug_interval_sequences(sm, sm.init_state_index, end_index, ByteSequenceDB, beautifier)
 
     if len(sm.get_orphaned_state_index_list()) != 0:
         print "Error: Orphaned States Detected!"

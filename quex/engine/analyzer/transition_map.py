@@ -40,8 +40,8 @@ class TransitionMap(list):
             assert len(result) != 0 # Empty target maps have been handled before
             result.sort()
 
-        begin = Setup.get_lexatom_range().minimum()
-        end   = Setup.get_lexatom_range().supremum()
+        begin = Setup.buffer_codec.lexatom_range.begin
+        end   = Setup.buffer_codec.lexatom_range.end
         result.fill_gaps(E_StateIndices.DROP_OUT, begin, end)
         result.assert_boundary(begin, end)
         result.assert_continuity()

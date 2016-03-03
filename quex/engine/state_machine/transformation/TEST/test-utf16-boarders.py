@@ -74,6 +74,10 @@ good_sequences = [
     unicode_to_utf16(x) for x in boarders
 ]
 
+trafo = EncodingTrafoUTF16()
+trafo.adapt_source_and_drain_range(LexatomByteN=4)
+print "#dd", trafo.drain_set
+print "#de", trafo.source_set
 sm = helper.generate_sm_for_boarders(boarders, EncodingTrafoUTF16())
 
 bad_sequence_list = helper.get_bad_sequences(good_sequences, bad_1st_s, bad_2nd_s)

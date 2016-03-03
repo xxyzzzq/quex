@@ -11,26 +11,32 @@ from   quex.engine.misc.utf8                                import utf8_to_unico
                                                                    UTF8_MAX, \
                                                                    UTF8_BORDERS
 from   quex.engine.misc.interval_handling                   import Interval, \
-                                                                   NumberSet
+                                                                   NumberSet, \
+                                                                   NumberSet_All
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 
 from   quex.blackboard import setup as Setup
 
 class EncodingTrafoUTF8(EncodingTrafoBySplit):
     def __init__(self):
-        EncodingTrafoBySplit.__init__(self, "utf8",
-                                         CodeUnitRange=NumberSet.from_range(0, 0x100))
+        drain_set = NumberSet.from_range(0, 0x100)
+        EncodingTrafoBySplit.__init__(self, "utf8", CodeUnitRange=drain_set)
         self.UnchangedRange = 0x7F
 
-        self.NumberSetErrorByte0 = NumberSet([
+        self.error_range_byte0 = NumberSet([
             Interval(0b00000000, 0b01111111+1), Interval(0b11000000, 0b11011111+1),
             Interval(0b11100000, 0b11101111+1), Interval(0b11110000, 0b11110111+1),
             Interval(0b11111000, 0b11111011+1), Interval(0b11111100, 0b11111101+1),
-        ]).get_complement(Setup.get_lexatom_range())
+        ]).get_complement(NumberSet_All())
 
-        self.NumberSetErrorByteN = NumberSet(
+        self.error_range_byteN = NumberSet(
             Interval(0b10000000, 0b10111111+1)
-        ).get_complement(Setup.get_lexatom_range())
+        ).get_complement(NumberSet_All())
+
+    def adapt_source_and_drain_range(self, LexatomByteN):
+        EncodingTrafoBySplit.adapt_source_and_drain_range(self, LexatomByteN)
+        self.error_range_byte0.mask_interval(self.lexatom_range)
+        self.error_range_byteN.mask_interval(self.lexatom_range)
 
     def prune(self, X):
         pass
@@ -92,15 +98,15 @@ class EncodingTrafoUTF8(EncodingTrafoBySplit):
             5 byte: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
             6 byte: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxxx
 
-        The resulting byte ranges can be observed in 'NumberSetErrorByte0' for Byte[0]
-        and 'NumberSetErrorByteN' for Byte[>0].
+        The resulting byte ranges can be observed in 'error_range_byte0' for Byte[0]
+        and 'error_range_byteN' for Byte[>0].
         """
         # 'Byte[0]' appears at the init state
         # (Adapt trigger map before entering the 'on bad lexatom state'
         init_tm = sm.get_init_state().target_map.get_map()
         workset = set(init_tm.iterkeys()) 
         for si, trigger_set in init_tm.iteritems():
-            assert not trigger_set.has_intersection(self.NumberSetErrorByte0)
+            assert not trigger_set.has_intersection(self.error_range_byte0)
 
         bad_lexatom_state_index = self._plug_encoding_error_detector_single_state(sm, init_tm)
 
@@ -116,14 +122,14 @@ class EncodingTrafoUTF8(EncodingTrafoBySplit):
             if not tm: continue
 
             for trigger_set in tm.itervalues():
-                assert not trigger_set.has_intersection(self.NumberSetErrorByteN)
+                assert not trigger_set.has_intersection(self.error_range_byteN)
             workset.update(new_si for new_si in tm.iterkeys() if new_si not in done) 
-            tm[bad_lexatom_state_index] = self.NumberSetErrorByteN
+            tm[bad_lexatom_state_index] = self.error_range_byteN
 
     def _plug_encoding_error_detector_single_state(self, sm, target_map):
         bad_lexatom_state_index = sm.access_bad_lexatom_state()
         if target_map: 
-            target_map[bad_lexatom_state_index] = self.NumberSetErrorByte0
+            target_map[bad_lexatom_state_index] = self.error_range_byte0
         return bad_lexatom_state_index
 
 def _split_by_transformed_sequence_length(X):

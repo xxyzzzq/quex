@@ -1,5 +1,5 @@
-from   quex.engine.misc.interval_handling import NumberSet
-from   quex.engine.misc.tools             import flatten_list_of_lists
+from   quex.engine.misc.interval_handling import NumberSet, Interval_All, Interval
+from   quex.engine.misc.tools             import flatten_list_of_lists, typed
 
 import sys
 
@@ -19,8 +19,7 @@ class EncodingTrafo:
         self.drain_set  = DrainSet    # 'Range of all code units'.
 
         # To be adapted later by 'adapt_source_and_drain_range()'
-        self.__lexatom_min_value = DrainSet.minimum()
-        self.__lexatom_max_value = DrainSet.supremum() - 1
+        self.lexatom_range = None
 
     def do_state_machine(self, sm, beautifier):
         """Transforms a given state machine from 'Unicode Driven' to another
@@ -50,8 +49,7 @@ class EncodingTrafo:
         for from_si, state in sm.states.items():
             target_map = state.target_map.get_map()
             for trigger_set in target_map.itervalues():
-                trigger_set.mask(self.__lexatom_min_value,
-                                 self.__lexatom_max_value+1)
+                trigger_set.mask_interval(self.lexatom_range)
 
         if orphans_possible_f: sm.delete_orphaned_states()
 
@@ -102,6 +100,13 @@ class EncodingTrafo:
         DERIVED CLASS MAY HAVE TO WRITE A DEDICATED VERSION OF THIS FUNCTION
         TO MODIFY THE SOURCE RANGE '.source_set'.
         """
+        if LexatomByteN == -1:
+            self.lexatom_range = Interval_All()
+            return 
+
+        assert LexatomByteN >= 1
+        lexatom_min_value = self.drain_set.minimum()
+        lexatom_max_value = self.drain_set.supremum() - 1
         if LexatomByteN != -1:
             try:    
                 value_n = 256 ** LexatomByteN
@@ -110,18 +115,16 @@ class EncodingTrafo:
                           % buffer_lexatom_size_in_byte + \
                           "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
                           "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
-            self.__lexatom_min_value = 0
-            self.__lexatom_max_value = min(self.__lexatom_max_value, value_n - 1)
+            lexatom_min_value = 0
+            lexatom_max_value = min(lexatom_max_value, value_n - 1)
 
-        self.__lexatom_max_value = min(self.__lexatom_max_value, sys.maxint)
-        assert self.__lexatom_max_value > self.__lexatom_min_value
-        self.drain_set.mask(self.__lexatom_min_value, self.__lexatom_max_value + 1)
+        lexatom_max_value = min(lexatom_max_value, sys.maxint)
 
-    def lexatom_max_value(self):
-        return self.__lexatom_max_value
+        assert lexatom_max_value > lexatom_min_value
 
-    def lexatom_min_value(self):
-        return self.__lexatom_min_value
+        self.lexatom_range = Interval(lexatom_min_value, lexatom_max_value + 1)
+        self.drain_set.mask_interval(self.lexatom_range)
+        # Source can only be adapted if the codec is known.
 
     def hopcroft_minimization_always_makes_sense(self): 
         # Default-wise no intermediate states are generated
@@ -129,6 +132,7 @@ class EncodingTrafo:
         return False
 
 class EncodingTrafoUnicode(EncodingTrafo):
+    @typed(SourceSet=NumberSet, DrainSet=NumberSet)
     def __init__(self, SourceSet, DrainSet):
         EncodingTrafo.__init__(self, "unicode", SourceSet, DrainSet)
 
@@ -157,5 +161,4 @@ class EncodingTrafoUnicode(EncodingTrafo):
 
     def adapt_source_and_drain_range(self, LexatomByteN):
         EncodingTrafo.adapt_source_and_drain_range(self, LexatomByteN)
-        self.source_set.mask(self.lexatom_min_value(), 
-                             self.lexatom_max_value() + 1)
+        self.source_set.mask_interval(self.lexatom_range)

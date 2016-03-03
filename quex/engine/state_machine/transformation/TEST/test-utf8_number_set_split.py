@@ -78,7 +78,7 @@ elif "misc" in sys.argv:
     test(0x800, 0x810)
     sys.exit()
     
-test(begin,      begin + 1)
+test(begin, begin + 1)
 test(begin,      begin + 2)
 test(begin + 1,  begin + 2)
 test(end - 1,    end)
