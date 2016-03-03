@@ -36,7 +36,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 from   quex.engine.misc.utf16                               import utf16_to_unicode, \
                                                                    unicode_to_utf16
-from   quex.engine.misc.interval_handling                   import Interval, NumberSet
+from   quex.engine.misc.interval_handling                   import Interval, NumberSet, NumberSet_All
 
 from   quex.blackboard import setup as Setup
 
@@ -47,22 +47,17 @@ class EncodingTrafoUTF16(EncodingTrafoBySplit):
     def __init__(self):
         EncodingTrafoBySplit.__init__(self, "utf16", 
                                          CodeUnitRange=NumberSet.from_range(0, 0x10000))
-
-        self.NumberSetErrorCodeUnit0 = NumberSet(
+        self.error_range_code_unit0 = NumberSet([
+            Interval(0x0000, 0xDC00), Interval(0xE000, 0x10000)
+        ]).get_complement(NumberSet_All())
+        self.error_range_code_unit1 = NumberSet([
             Interval(0xDC00, 0xE000)
-        )
-        self.NumberSetErrorCodeUnit0.intersect_with(Setup.get_lexatom_range())
-
-        self.NumberSetErrorCodeUnit1 = NumberSet([
-            Interval(0x0000, 0xDC00), Interval(0xE000, sys.maxint)
-        ])
-        self.NumberSetErrorCodeUnit1.intersect_with(Setup.get_lexatom_range())
+        ]).get_complement(NumberSet_All())
 
     def prune(self, number_set):
         global ForbiddenRange
         number_set.subtract(ForbiddenRange)
-        number_set.cut_lesser(0)
-        number_set.cut_greater_or_equal(0x110000)
+        number_set.mask(0, 0x110000)
 
     def get_interval_sequences(self, Orig):
         interval_1word, intervals_2word = _get_contigous_intervals(Orig)
@@ -118,7 +113,7 @@ class EncodingTrafoUTF16(EncodingTrafoBySplit):
         init_tm = sm.get_init_state().target_map.get_map()
         workset = set(init_tm.iterkeys()) 
         for si, trigger_set in init_tm.iteritems():
-            assert not trigger_set.has_intersection(self.NumberSetErrorCodeUnit0)
+            assert not trigger_set.has_intersection(self.error_range_code_unit0)
 
         bad_lexatom_state_index = self._plug_encoding_error_detector_single_state(sm, init_tm)
 
@@ -134,23 +129,29 @@ class EncodingTrafoUTF16(EncodingTrafoBySplit):
             if not tm: continue
 
             for trigger_set in tm.itervalues():
-                assert not trigger_set.has_intersection(self.NumberSetErrorCodeUnit1)
+                assert not trigger_set.has_intersection(self.error_range_code_unit1)
 
             workset.update(new_si for new_si in tm.iterkeys() if new_si not in done) 
-            tm[bad_lexatom_state_index] = self.NumberSetErrorCodeUnit1
+            tm[bad_lexatom_state_index] = self.error_range_code_unit1
 
     def _plug_encoding_error_detector_single_state(self, sm, target_map):
         bad_lexatom_state_index = sm.access_bad_lexatom_state()
         if target_map: 
-            target_map[bad_lexatom_state_index] = self.NumberSetErrorCodeUnit0
+            target_map[bad_lexatom_state_index] = self.error_range_code_unit0
         return bad_lexatom_state_index
 
     def adapt_source_and_drain_range(self, LexatomByteN):
         EncodingTrafoBySplit.adapt_source_and_drain_range(self, LexatomByteN)
-        if LexatomByteN >= 2: return
-        # if there are less than 2 byte for the lexatoms, then only the 
-        # unicode range from 0x00 to 0xFF can be treated.
-        self.source_set.mask(0x00, 0x100)
+        self.error_range_code_unit0.mask_interval(self.lexatom_range)
+        self.error_range_code_unit1.mask_interval(self.lexatom_range)
+        if LexatomByteN == -1:
+            return
+        elif LexatomByteN >= 2: 
+            return
+        else:
+            # if there are less than 2 byte for the lexatoms, then only the 
+            # unicode range from 0x00 to 0xFF can be treated.
+            self.source_set.mask(0x00, 0x100)
 
 def _get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values

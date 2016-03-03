@@ -62,10 +62,6 @@ class QuexSetup:
         else:
             self.__dict__[Name] = Value
 
-    def get_lexatom_range(self):
-        return NumberSet.from_range(self.buffer_codec.lexatom_min_value(), 
-                                    self.buffer_codec.lexatom_max_value()+1)
-
     def set_all_character_set_UNIT_TEST(self, Begin, End):
         self.buffer_codec.source_set = NumberSet.from_range(Begin, End)
 

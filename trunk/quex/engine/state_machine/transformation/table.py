@@ -32,7 +32,7 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         source_set, drain_set = codec_db.load(self, file_name, ExitOnErrorF)
         EncodingTrafo.__init__(self, codec_name, source_set, drain_set)
 
-        self.BadLexatomSet = drain_set.complement(Setup.get_lexatom_range())
+        self.BadLexatomSet = drain_set.complement(Setup.buffer_codec.lexatom_range)
 
     def do_transition(self, sm, FromSi, from_target_map, ToSi, beautifier):
         """RETURNS: [0] True if complete, False else.

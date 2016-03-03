@@ -34,8 +34,7 @@ from   collections import defaultdict
 
 Setup.language_db = languages.db["C++"]
 Setup.buffer_lexatom_type = "uint32_t"
-Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None))
+Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None), -1)
 
 dial_db.clear()
 
@@ -126,8 +125,8 @@ def prepare(tm):
     return iid_map
 
 def get_transition_function(iid_map, Codec):
-    if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"))
-    else:               Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"))
+    if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"), 1)
+    else:               Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"), -1)
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)

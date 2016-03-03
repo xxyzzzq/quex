@@ -18,8 +18,8 @@
 # import quex.output.core.dictionary as languages
 import quex.engine.misc.utf8 as utf8
 from   quex.engine.misc.tools import r_enumerate, \
-                                typed, \
-                                flatten_list_of_lists
+                                     typed, \
+                                     flatten_list_of_lists
 
 import sys
 from   copy      import copy
@@ -744,6 +744,9 @@ class NumberSet(object):
         self.cut_lesser(Begin)
         self.cut_greater_or_equal(End)
 
+    def mask_interval(self, X):
+        self.mask(X.begin, X.end)
+
     def covers_range(self, Begin, End):
         """Begin = first element in range to include.
            End   = first element after the range to include.
@@ -1050,7 +1053,11 @@ class NumberSet(object):
 def UnicodeInterval():
     return Interval(0x0, 0x110000)
 
+def Interval_All():
+    return Interval(-sys.maxint, sys.maxint)
+
 def NumberSet_All():
-    return NumberSet(Interval(-sys.maxint, sys.maxint))
+    return NumberSet(Interval_All())
+
 
 
