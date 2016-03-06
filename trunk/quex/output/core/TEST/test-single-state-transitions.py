@@ -34,7 +34,7 @@ from   collections import defaultdict
 
 Setup.language_db = languages.db["C++"]
 Setup.buffer_lexatom_type = "uint32_t"
-Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None), -1)
+Setup.buffer_codec_set(bc_factory.do("unicode", None), -1)
 
 dial_db.clear()
 
@@ -116,7 +116,6 @@ def prepare(tm):
     tm.fill_gaps(E_IncidenceIDs.MATCH_FAILURE, 
                  Setup.buffer_codec.drain_set.minimum(), 
                  Setup.buffer_codec.drain_set.supremum())
-    print "#tm:", tm
 
     iid_db = defaultdict(NumberSet)
     for interval, iid in tm:
@@ -125,8 +124,8 @@ def prepare(tm):
     return iid_map
 
 def get_transition_function(iid_map, Codec):
-    if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"), 1)
-    else:               Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"), -1)
+    if Codec == "UTF8": Setup.buffer_codec_set(bc_factory.do("utf8"), 1)
+    else:               Setup.buffer_codec_set(bc_factory.do("unicode"), -1)
 
     cssm     = CharacterSetStateMachine(iid_map, MaintainLexemeF=False)
     analyzer = analyzer_generator.do(cssm.sm, engine.CHARACTER_COUNTER)
@@ -219,6 +218,14 @@ transition(QUEX_TYPE_LEXATOM* buffer)
     me->buffer._read_p = buffer;
 
 $$TRANSITION$$
+
+    if( 0 ) {
+        goto $$ON_BAD_LEXATOM$$; /* Avoid unreferenced label */
+    }
+    return 0;
+
+$$ON_BAD_LEXATOM$$:
+    return -1;
 }
 
 """
@@ -238,8 +245,11 @@ def get_main_function(tm0, TranstionTxt, Codec):
 
     txt = main_template.replace("$$ENTRY_LIST$$", "".join(expected_array))
     txt = txt.replace("$$QUEX_TYPE_LEXATOM$$", qtc_str)
-    txt = txt.replace("$$TRANSITION$$", indent(TranstionTxt, 4))
+    txt = txt.replace("$$TRANSITION$$",    indent(TranstionTxt, 4))
     txt = txt.replace("$$PREPARE_INPUT$$", input_preperation)
+
+    door_id = DoorID.incidence(E_IncidenceIDs.BAD_LEXATOM)
+    txt = txt.replace("$$ON_BAD_LEXATOM$$", dial_db.get_label_by_door_id(door_id))
 
     txt = txt.replace("MATCH_FAILURE", "((int)-1)")
     return txt
@@ -270,10 +280,10 @@ fh.write("".join(txt))
 fh.close()
 try:    os.remove("./test")
 except: pass
-# os.system("gcc -I$QUEX_PATH test.c -o test")
-# os.system("./test")
-try:    os.remove("./test.c")
-except: pass
+os.system("gcc -I$QUEX_PATH test.c -o test")
+os.system("./test")
+#try:    os.remove("./test.c")
+#except: pass
 
 
 

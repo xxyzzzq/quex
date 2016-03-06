@@ -10,8 +10,9 @@ from   quex.blackboard                               import setup as Setup
 
 Setup.buffer_limit_code = -1
 Setup.path_limit_code   = -1
-Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"))
+# Setup.buffer_element_specification_prepare()
+Setup.bad_lexatom_detection_f = False
+Setup.buffer_codec_set(bc_factory.do("utf8"), 1)
 
 if "--hwut-info" in sys.argv:
     print "Transformations"

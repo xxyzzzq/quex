@@ -40,7 +40,7 @@ class EncodingTrafoByTable(EncodingTrafo, list):
         """
         number_set = from_target_map[ToSi]
 
-        if number_set.transform(self): 
+        if number_set.transform_by_table(self): 
             assert not number_set.is_empty()
             return True, False
 
@@ -57,7 +57,7 @@ class EncodingTrafoByTable(EncodingTrafo, list):
     def do_NumberSet(self, number_set):
         """RETURNS: List of interval sequences that implement the number set.
         """
-        transformed = number_set.transform(self)
+        transformed = number_set.transform_by_table(self)
         return [ 
             [ interval ]
             for interval in transformed.get_intervals(PromiseToTreatWellF=True) 

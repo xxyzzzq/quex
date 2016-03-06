@@ -895,8 +895,8 @@ class StateMachine(object):
         for state_idx, state in self.states.iteritems():
             # -- only handle only acceptance states
             # -- only consider state other than the state to be mounted
-            if not state.is_acceptance():    continue
-            if state_idx == MountedStateIdx: continue
+            if not state.is_acceptance():                             continue
+            elif state_idx == MountedStateIdx:                        continue
             # add the MountedStateIdx to the list of epsilon transition targets
             state.target_map.add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status

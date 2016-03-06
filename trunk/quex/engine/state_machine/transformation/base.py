@@ -1,3 +1,4 @@
+import quex.engine.misc.error             as     error
 from   quex.engine.misc.interval_handling import NumberSet, Interval_All, Interval
 from   quex.engine.misc.tools             import flatten_list_of_lists, typed
 
@@ -19,7 +20,7 @@ class EncodingTrafo:
         self.drain_set  = DrainSet    # 'Range of all code units'.
 
         # To be adapted later by 'adapt_source_and_drain_range()'
-        self.lexatom_range = None
+        self.lexatom_range = Interval_All()
 
     def do_state_machine(self, sm, beautifier):
         """Transforms a given state machine from 'Unicode Driven' to another
@@ -112,7 +113,7 @@ class EncodingTrafo:
                 value_n = 256 ** LexatomByteN
             except:
                 error.log("Error while trying to compute 256 power the 'lexatom-size' (%i bytes)\n"   \
-                          % buffer_lexatom_size_in_byte + \
+                          % LexatomByteN + \
                           "Adapt \"--buffer-element-size\" or \"--buffer-element-type\",\n"       + \
                           "or specify '--buffer-element-size-irrelevant' to ignore the issue.")
             lexatom_min_value = 0

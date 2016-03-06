@@ -1,11 +1,11 @@
-import quex.input.regular_expression.engine               as     regex
-from   quex.engine.misc.interval_handling                 import NumberSet, Interval
-from   quex.engine.state_machine.state.single_entry       import SeAccept     
-from   quex.engine.state_machine.engine_state_machine_set import get_combined_state_machine
-import quex.engine.state_machine.algorithm.beautifier     as     beautifier
-from   quex.engine.state_machine.core                     import StateMachine
-from   quex.engine.state_machine.state.core               import State
-import quex.engine.state_machine                          as     state_machine
+import quex.input.regular_expression.engine                       as     regex
+from   quex.engine.misc.interval_handling                         import NumberSet, Interval
+from   quex.engine.state_machine.state.single_entry               import SeAccept     
+from   quex.engine.state_machine.engine_state_machine_set         import get_combined_state_machine
+import quex.engine.state_machine.algorithm.beautifier             as     beautifier
+from   quex.engine.state_machine.core                             import StateMachine
+from   quex.engine.state_machine.state.core                       import State
+import quex.engine.state_machine                                  as     state_machine
 from   quex.engine.state_machine.transformation.utf8_state_split  import EncodingTrafoUTF8
 import quex.engine.state_machine.TEST.helper_state_machine_shapes as     sms
 import quex.engine.state_machine.index                            as     index
@@ -94,10 +94,7 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     sets = [ X(name) for name in script_list ]
 
     orig = get_combined_state_machine(map(lambda x: x.sm, sets))
-    print "# Number of states in state machine:"
-    print "#   Unicode:       %i" % len(orig.states)
-    verdict_f, result = Trafo.do_state_machine(orig, beautifier)
-    print "#   UTF*-Splitted: %i" % len(result.states)
+    state_n_before, result = transform(Trafo, orig)
 
     # print result.get_graphviz_string(Option="hex")
 
@@ -115,46 +112,62 @@ def test_on_UCS_sample_sets(Trafo, unicode_to_transformed_sequence):
     check_negative(result, inverse_union.get_intervals(PromiseToTreatWellF=True), 
                    unicode_to_transformed_sequence)
 
-def test_UCS_range(Trafo, RangeBegin, RangeEnd, CharacterTrafo):
-    sm     = StateMachine()
-    acc_i  = 0
-    acc_db = {}
-    for x in range(RangeBegin, RangeEnd):
-        sm.add_transition(self.sm.init_state_index, x, AcceptanceF=True)
-        sm.states[ti].mark_acceptance(acc_i)
-        acc_db[x]  = acc_i
-        acc_i     += 1
-
+def transform(Trafo, orig):
     print "# Number of states in state machine:"
     print "#   Unicode:       %i" % len(orig.states)
     state_n_before = len(orig.states)
     verdict_f, result = Trafo.do_state_machine(orig, beautifier)
-    print "#   %s:            %i" % len(result.states)
-    assert state_n_before == len(result.states)
+    print "#   %s:            %i" % (Trafo.name, len(result.states))
+    return state_n_before, result
+
+def test_on_UCS_range(Trafo, Source, Drain, CharacterBackwardTrafo):
+
+    sm     = StateMachine()
+    acc_db = {}
+    for x in range(Source.begin, Source.end):
+        ti = sm.add_transition(sm.init_state_index, x, AcceptanceF=True)
+        acc_id    = len(acc_db)
+        sm.states[ti].mark_acceptance_id(acc_id)
+        acc_db[x] = acc_id
+
+    if Setup.bad_lexatom_detection_f:
+        acc_db[None] = E_IncidenceIDs.BAD_LEXATOM
+    else:
+        acc_db[None] = None
+
+    state_n_before, result = transform(Trafo, sm)
+    # assert state_n_before == len(result.states)
 
     init_state = result.get_init_state()
     count      = 0
-    for x in range(RangeBegin, RangeEnd):
-        translated = CharacterTrafo(x)
-        if translated is None:
-            if Setup.bad_lexatom_detection_f:
-                expected = E_IncidenceIDs.BAD_LEXATOM
-            else:
-                expected = None
-        else:
-            expected = translated
-
-        ti = init_state.get_target_state_index(x)
-        if expected is None:
-            assert ti is None
-        elif expected == E_IncidenceIDs.BAD_LEXATOM:
-            assert sm[ti].acceptance_id() == E_IncidenceIDs.BAD_LEXATOM
-        else:
-            assert sm[ti].acceptance_id() == acc_db[x]
+    for y in range(Drain.begin, Drain.end):
+        # Translate character into 
+        x  = CharacterBackwardTrafo(y)
+        # Transit on the translated charater
+        ti = init_state.target_map.get_resulting_target_state_index(y)
+        # Compare resulting state with the expected state's acceptance
+        assert_only_acceptance_id(sm.states, ti, acc_db, x, y)
 
         count += 1
 
     print "<terminated: %i transitions ok>" % count
+
+def assert_only_acceptance_id(states, TargetIndex, AcceptanceDb, FromChar, ToChar):
+    if TargetIndex is None:
+        assert FromChar is None, \
+               "(from: %s; to: %s;)" % (FromChar, ToChar)
+    else:
+        state = states[TargetIndex]
+        expected_acceptance_id = AcceptanceDb[FromChar]
+        acceptance_id_list = [
+            cmd.acceptance_id()
+            for cmd in state.single_entry.get_iterable(SeAccept)
+        ]
+        assert len(acceptance_id_list) == 1, \
+               "(from: %s; to: %s;) acceptance_id_list: %s" % (FromChar, ToChar, acceptance_id_list)
+        assert acceptance_id_list[0] == expected_acceptance_id, \
+                "(from: %s; to: %s;) Expected: %s; Found: %s;" % \
+                (FromChar, ToChar, expected_acceptance_id, acceptance_id_list)
 
 def generate_sm_for_boarders(Boarders, Trafo):
     sm = StateMachine()
@@ -164,6 +177,7 @@ def generate_sm_for_boarders(Boarders, Trafo):
                  (ucs_char, target_idx), (ucs_char, target_idx))
         sm.states[target_idx].set_acceptance()
 
+    Trafo.adapt_source_and_drain_range(-1)
     verdict_f, result = Trafo.do_state_machine(sm, beautifier)
     assert verdict_f
     return result
@@ -265,7 +279,6 @@ def test_plug_sequence(ByteSequenceDB):
         print "Error: Orphaned States Detected!"
 
     show_graphviz(sm)
-
 
 def show_graphviz(sm):
     gv_str = sm.get_graphviz_string(Option="hex")

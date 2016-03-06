@@ -11,7 +11,7 @@
 digraph state_machine_0 {
 rankdir=LR;
 size="8,5"
-node [shape = doublecircle]; 10;
+node [shape = doublecircle]; 
 node [shape = circle];
 ((0)) -> ((9)) [label ="[0000, 0070] "];
 ((0)) -> ((8)) [label ="[0071] "];

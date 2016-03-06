@@ -1,0 +1,4 @@
+# Number of states in state machine:
+#   Unicode:       257
+#   iso8859_8:            191
+<terminated: 256 transitions ok>

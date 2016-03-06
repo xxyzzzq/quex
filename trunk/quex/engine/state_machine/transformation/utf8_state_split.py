@@ -15,8 +15,6 @@ from   quex.engine.misc.interval_handling                   import Interval, \
                                                                    NumberSet_All
 from   quex.engine.state_machine.transformation.state_split import EncodingTrafoBySplit
 
-from   quex.blackboard import setup as Setup
-
 class EncodingTrafoUTF8(EncodingTrafoBySplit):
     def __init__(self):
         drain_set = NumberSet.from_range(0, 0x100)
@@ -48,7 +46,7 @@ class EncodingTrafoUTF8(EncodingTrafoBySplit):
         the transitions along the code unit sequence.
         """
         db = _split_by_transformed_sequence_length(Orig)
-        if db is None: return None
+        if db is None: return []
 
         result = []
         for seq_length, interval in db.items():

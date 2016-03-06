@@ -138,13 +138,13 @@ def prepare_test_input_file(TestStr, Codec, ChunkN):
 def get_test_application(counter_db, ReferenceP, CT):
     # Setup.buffer_element_specification_prepare()
     if   codec == "utf_32_le" or codec == "ascii":  
-        Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"), LexatomSizeInBytes=4)
+        Setup.buffer_codec_set(bc_factory.do("unicode"), LexatomSizeInBytes=4)
     elif codec == "utf_8": 
-        Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"), LexatomSizeInBytes=1)
+        Setup.buffer_codec_set(bc_factory.do("utf8"), LexatomSizeInBytes=1)
     elif codec == "utf_16_le":
-        Setup.buffer_codec_set(bc_factory.do(Setup, "utf16"), LexatomSizeInBytes=2)
+        Setup.buffer_codec_set(bc_factory.do("utf16"), LexatomSizeInBytes=2)
     else:                 
-        Setup.buffer_codec_set(bc_factory.do(Setup, codec), LexatomSizeInBytes=1)
+        Setup.buffer_codec_set(bc_factory.do(codec), LexatomSizeInBytes=1)
 
     # (*) Generate Code 
     ccfactory = CountOpFactory.from_ParserDataLineColumn(counter_db, 

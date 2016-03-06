@@ -12,7 +12,7 @@ from   quex.blackboard import setup as Setup
 import quex.engine.state_machine.transformation.core             as     bc_factory
 
 # Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factory.do(Setup, "unicode"), 1)
+Setup.buffer_codec_set(bc_factory.do("unicode"), 1)
 
 if "--hwut-info" in sys.argv:
     print "Parse Counter Setup;"

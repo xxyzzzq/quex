@@ -861,6 +861,20 @@ to see if the mapping is in fact as desired.
 .RE
 
 
+.TP
+.BI "--no-bad-lexatom-detection, --nbld "
+
+.RS
+If present, the encoding error detection is turned off. That also means, that the 'on_bad_lexatom' handler is never possibly be called. 
+
+
+.RE
+
+\.RS
+Default: true (not disabled)
+.RE
+
+
 The buffer on which a generated analyzer runs is characterized by its size (macro QUEX_SETTING_BUFFER_SIZE), by its element's size, and their type. The latter two can be specified on the command line. 
 
 In general, a buffer element contains what causes a state transition in the analyzer. In ASCII code, a state transition happens on one byte which contains a character. If converters are used, the internal buffer runs on plain Unicode. Here also, a character occupies a fixed number of bytes. The check mark in 4 byte Unicode is coded as as 0x00001327. It is treated as one chunk and causes a single state transition. 
@@ -1409,6 +1423,20 @@ The following options allow to query on character sets and the result of regular
 Displays the characters that are covered by the given codec's name. If the name is omitted, a list of all supported codecs is printed. 
 
 
+.RE
+
+
+.TP
+.BI "--codec-list, --cl "
+
+.RS
+Displays all character encodings that can be implemented directly in the analyzer state machine without using a converter. Additionally, the encodings 'utf8' and 'utf16' are always supported. 
+
+
+.RE
+
+\.RS
+Default: false (disabled)
 .RE
 
 

@@ -2,7 +2,7 @@
 --version
 
 Quex - Fast Universal Lexical Analyzer Generator
-Version 0.65.5-pre
+Version 0.65.10
 (C) Frank-Rene Schaefer
 ABSOLUTELY NO WARRANTY
 -----------------------------------------------------------------------
@@ -26,8 +26,11 @@ QUERY MODE (selected options):
   --help, -h            Brief help.
   --version, -v         Version information.
   --codec-info, 
-  --ci                  Display Unicode characters of codec. If no name is 
-                        specified, a list of all supported codecs is printed.
+  --ci                  Display Unicode characters of codec. 
+  --codec-list, 
+  --cl                  Display all fixed size character encodings that can be 
+                        implemented in a state machine without a converter.
+                        (Additionally, 'utf8' and 'utf16' are supported)
   --codec-for-language, 
   --cil                 Lists Unicode codecs supported human language. If no
                         language is specified, all available languages are 
@@ -76,7 +79,4 @@ GENERATOR MODE (selected options):
                           installation.
 
 Please, report bugs at http://quex.sourceforge.net.
-
-
-
 

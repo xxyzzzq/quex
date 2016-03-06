@@ -8,14 +8,17 @@ import quex.engine.misc.error             as     error
 from   quex.engine.misc.file_operations   import get_file_content_or_die, \
                                                  open_file_or_die
 
+from   copy import copy
+
 
 _supported_codec_list              = []
 _supported_codec_list_plus_aliases = []
 
 def get_supported_codec_list(IncludeAliasesF=False):
+    global _supported_codec_list
+    global _supported_codec_list_plus_aliases
     assert type(IncludeAliasesF) == bool
 
-    global _supported_codec_list
     if len(_supported_codec_list) != 0: 
         if IncludeAliasesF: return _supported_codec_list_plus_aliases
         else:               return _supported_codec_list
@@ -24,6 +27,8 @@ def get_supported_codec_list(IncludeAliasesF=False):
     content   = get_file_content_or_die(file_name)
 
     _supported_codec_list = content.split()
+    _supported_codec_list_plus_aliases = copy(_supported_codec_list)
+
     _supported_codec_list.sort()
     codec_db_list = parser.get_codec_list_db()
     for codec_name, aliases_list, dummy in codec_db_list:

@@ -439,6 +439,10 @@ Option("buffer_codec_file", "file name",
      find out whether Quex directly supports a specific codec. If a \\v{--codec-file}
      is required, it is advisable to use \\v{--codec-file-info  file-name.dat} to
      see if the mapping is in fact as desired.""")),
+Option("bad_lexatom_detection_f", None, 
+       """If present, the encoding error detection is turned off. That also 
+       means, that the 'on_bad_lexatom' handler is never possibly be called.
+       """),
 """The buffer on which a generated analyzer runs is characterized by its size 
 (macro QUEX_SETTING_BUFFER_SIZE), by its element's size, and their type. The latter
 two can be specified on the command line.
@@ -814,6 +818,12 @@ Option("query_codec", "name",
        """
    Displays the characters that are covered by the given codec's name. If the
    name is omitted, a list of all supported codecs is printed. 
+       """),
+Option("query_codec_list", None,
+       """
+   Displays all character encodings that can be implemented directly in the
+   analyzer state machine without using a converter. Additionally, the encodings 
+   'utf8' and 'utf16' are always supported.
        """),
 Option("query_codec_file", "file name", 
        """

@@ -33,7 +33,7 @@ def test(Comment, A, TrafoInfo):
     x = deepcopy(A)
     print "#  A       = " + repr(x)
     print "#  Trafo   = " + repr(TrafoInfo)
-    x.transform(TrafoInfo)
+    x.transform_by_table(TrafoInfo)
     x.assert_consistency()
     print "#  Result  = " + repr(x)
     result = verify(A, TrafoInfo)
@@ -41,7 +41,7 @@ def test(Comment, A, TrafoInfo):
     print "#  CheckF  = " + repr(x.is_equal(result))
     x = deepcopy(A)
     #  Adding unrelated transformations:
-    x.transform([[0, 1, 5]] + TrafoInfo + [[30, 40, 200]])
+    x.transform_by_table([[0, 1, 5]] + TrafoInfo + [[30, 40, 200]])
     print "#  ResultX = " + repr(x)
 
 choice_i = int(sys.argv[1])

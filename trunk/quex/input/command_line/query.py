@@ -38,8 +38,9 @@ def run(cl, Argv):
     Setup.buffer_limit_code = -1
     Setup.path_limit_code   = -1
 
-    try:
+    try: 
         if   Setup.query_codec:                __handle_codec(cl)
+        elif Setup.query_codec_list:           __handle_codec_list(cl)
         elif Setup.query_codec_file:           __handle_codec_file(cl)
         elif Setup.query_codec_language:       __handle_codec_for_language(cl)
         elif Setup.query_property is not None: __handle_property(cl)
@@ -77,18 +78,7 @@ def search_and_validate(CL, Option):
     return True
 
 def __handle_codec(cl):
-    codec_name = cl.follow("", "--codec-info")
-    supported_codec_list = codec_db.get_supported_codec_list(IncludeAliasesF=True)
-
-    if codec_name == "":
-        txt      = "Missing argument after '--codec-info'. Supported codecs are:\n\n"
-        line_txt = ""
-        for name in supported_codec_list:
-            line_txt += name + ", "
-            if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
-        txt += line_txt
-        txt = txt[:-2] + "."
-        error.log(txt)
+    codec_name = Setup.query_codec
 
     character_set = codec_db.get_supported_unicode_character_set(CodecAlias=codec_name)
     __display_set(character_set, cl)
@@ -96,6 +86,27 @@ def __handle_codec(cl):
     print
     print "Codec is designed for:"
     print repr(codec_db.get_supported_language_list(codec_name))[1:-1]
+
+def __handle_codec_list(cl):
+    codec_list = codec_db.get_supported_codec_list(IncludeAliasesF=True)
+    txt = ["  "]
+    length = 2
+    Last = len(codec_list) - 1
+    for i, name in enumerate(codec_list):
+        if not name: continue
+        L = len(name)
+        if length + L > 80: 
+            txt.append("\n  ")
+            length = 2
+        txt.append(name)
+        length += L
+        if i != Last:       
+            txt.append(", ")
+            length += 2
+    txt.append(".\n")
+
+    print "List of supported engine encodings:\n"
+    print "".join(txt)
 
 def __handle_codec_file(cl):
     file_name = cl.follow("", "--codec-file-info")
@@ -364,8 +375,11 @@ QUERY MODE (selected options):
   --help, -h            Brief help.
   --version, -v         Version information.
   --codec-info, 
-  --ci                  Display Unicode characters of codec. If no name is 
-                        specified, a list of all supported codecs is printed.
+  --ci                  Display Unicode characters of codec. 
+  --codec-list, 
+  --cl                  Display all fixed size character encodings that can be 
+                        implemented in a state machine without a converter.
+                        (Additionally, 'utf8' and 'utf16' are supported)
   --codec-for-language, 
   --cil                 Lists Unicode codecs supported human language. If no
                         language is specified, all available languages are 
