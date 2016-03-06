@@ -7,7 +7,7 @@ CC = g++ -I$(QUEX_PATH) \
  # -DQUEX_OPTION_DEBUG_SHOW 
 
 codec-lexer: lexer.cpp 
-	quex -i simple-hindi.qx -o Simple --token-policy single --codec utf8 --debug-exception
+	quex -i simple-hindi.qx -o Simple --token-policy single --codec utf8 #--debug-exception
 	$(CC) lexer.cpp Simple.cpp  -o $@ \
 		  -DQUEX_SETTING_BUFFER_SIZE=39                     \
 	      -D__QUEX_SETTING_TEST_UTF8 

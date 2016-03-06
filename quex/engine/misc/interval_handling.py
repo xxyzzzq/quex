@@ -163,7 +163,7 @@ class Interval(object):
                     #                
                     return [ Interval(self.begin, Other.begin) ]
 
-    def transform(self, TrafoInfo):
+    def transform_by_table(self, TrafoInfo):
         """RETURNS: verdict, list
 
            where 'verdict' indicates whether the interval has been completely
@@ -918,7 +918,7 @@ class NumberSet(object):
         return result
         
     @typed(TrafoInfo=list)
-    def transform(self, TrafoInfo):
+    def transform_by_table(self, TrafoInfo):
         """Transforms the given NumberSet from into a new NumberSet according 
            to the given TransformationInfo. The TransformationInfo is a list of
            elements consisting of 
@@ -935,7 +935,7 @@ class NumberSet(object):
         total_verdict = True
         result        = []
         for interval in self.__intervals:
-            verdict, transformed = interval.transform(TrafoInfo)
+            verdict, transformed = interval.transform_by_table(TrafoInfo)
             if verdict == False: total_verdict = False
             result.extend(transformed)
         result.sort(key=lambda x: x.begin)

@@ -893,7 +893,9 @@ quex/input/TEST                                                      <no date>
     Character Sets for Property Settings II
         test-query-character-set-by-expression.py ....................[OK]
     Information about Properties
-        test-query.py PropertyInfo ...................................[OK]
+        test-query.py CodecInfo ......................................[OK]
+                      CodecList ......................................[OK]
+                      PropertyInfo ...................................[OK]
                       PropertyList ...................................[OK]
     Wildcard Property Values
         test-query-property-wildcard-values.py .......................[OK]
@@ -955,7 +957,7 @@ quex/TESTS/code/TEST                                                 <no date>
  * Check that 'Lexeme' macro is not used.
         no-use-of-lexeme-macro.sh ....................................[OK]
  * Code Check with pyflakes
-        pyflakes-check.sh ..........................................[FAIL]
+        pyflakes-check.sh ............................................[OK]
  * Command Line Option Documentation
         command_line_options-verify-doc.py man .......................[OK]
                                            sphinx ....................[OK]
@@ -971,12 +973,10 @@ quex/TESTS/code/TEST                                                 <no date>
 
     __parse_token_id_file
         test-token_id_file-find_ids.py ...............................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] pyflakes-check.sh
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                               Command Line Checks                              
@@ -1836,7 +1836,7 @@ quex/input/regular_expression/TEST                                   <no date>
  * State Machine Pattern Matching
         test-pattern-matching.py .....................................[OK]
  * Transformations
-        test-transformation.py .....................................[FAIL]
+        test-transformation.py .......................................[OK]
 
  * Backslashed Characters:
 
@@ -1889,12 +1889,10 @@ quex/input/regular_expression/TEST                                   <no date>
         test-properties-2.py .........................................[OK]
     Simple
         test-properties.py ...........................................[OK]
-                                                           ___   _    _   _    
-                                                          |  _| / \  | | | |   
-                                                          | |_|/ - \ | | | |_  
-                                                          |_|  |_|_| |_| |___| 
--------------------------------------------------------------------------------
-    [FAIL] test-transformation.py
+                                                                    ___  _  _  
+                                                                   / _ \| |/ ) 
+                                                                  ( (_) | _ <  
+                                                                   \___/|_|\_) 
 ===============================================================================
                                                                                
                              Output Core Generator                             
@@ -2396,8 +2394,33 @@ quex/engine/state_machine/transformation/TEST                        <no date>
                                        4.2 ...........................[OK]
                                        4.3 ...........................[OK]
                                        4.4 ...........................[OK]
+    Plug Interval Sequence - With BL Detection
+        test-plug-interval-sequence-with-bad-lexatom-detection.py 1.1 [OK]
+                                                                  1.2 [OK]
+                                                                  2.1 [OK]
+                                                                  2.2 [OK]
+                                                                  2.3 [OK]
+                                                                  3.1 [OK]
+                                                                  3.2 [OK]
+                                                                  3.3 [OK]
+                                                                  4.1 [OK]
+                                                                  4.2 [OK]
+                                                                  4.3 [OK]
+                                                                  4.4 [OK]
 
- * UTF16 State Split:
+ * Table-Based Transformations (fixed size):
+
+    Examplary Unicode Ranges
+        test-codec-on-ucs-range.py EBCDIC-CP-BE ......................[OK]
+                                   arabic ............................[OK]
+                                   ascii .............................[OK]
+                                   cp037 .............................[OK]
+                                   cp1140 ............................[OK]
+                                   hebrew ............................[OK]
+                                   iso8859_10 ........................[OK]
+                                   macgreek ..........................[OK]
+
+ * UTF16 Split:
 
     Contigous Word Sequence Ranges
         test-utf16_interval_split.py 1 ...............................[OK]
@@ -2405,10 +2428,10 @@ quex/engine/state_machine/transformation/TEST                        <no date>
                                      3 ...............................[OK]
                                      4 ...............................[OK]
                                      5 ...............................[OK]
-    Larger Number Sets
-        test-utf16_state_split-do.py .................................[OK]
+    Unicode Language-Scripts as Examplary Ranges
+        test-utf16-on-unicode-script-ranges.py .......................[OK]
 
- * UTF8 State Split:
+ * UTF8 Split:
 
     Contigous Byte Sequence Ranges
         test-utf8_number_set_split.py 1 ..............................[OK]
@@ -2422,10 +2445,14 @@ quex/engine/state_machine/transformation/TEST                        <no date>
                                                 2 ....................[OK]
                                                 Overlap1 .............[OK]
                                                 Overlap2 .............[OK]
-    Larger Number Sets
-        test-utf8_state_split-do-2.py ................................[OK]
-    Larger Number Sets
-        test-utf8_state_split-do.py ..................................[OK]
+    Repetition at Codec Boarders
+        test-utf16-boarders.py error-detect ..........................[OK]
+                               plain .................................[OK]
+    Repetition at Codec Boarders
+        test-utf8-boarders.py error-detect ...........................[OK]
+                              plain ..................................[OK]
+    Unicode Language-Scripts as Examplary Ranges
+        test-utf8-on-unicode-script-ranges.py ........................[OK]
                                                                     ___  _  _  
                                                                    / _ \| |/ ) 
                                                                   ( (_) | _ <  
@@ -2904,7 +2931,7 @@ SUMMARY:
            235     [OK] TEST                                                
            70      [OK] demo/C/TEST                                         
            57      [OK] ..../Cpp/TEST                                       
-        1  10    [FAIL] quex/TESTS/code/TEST                                
+           10      [OK] quex/TESTS/code/TEST                                
            2       [OK] ........../command-line/TEST                        
            2       [OK] ........../did-you-mean/TEST                        
            6       [OK] ........../drop-outs/TEST                           
@@ -2938,19 +2965,19 @@ SUMMARY:
            51      [OK] ........................./algebra/TEST              
            9       [OK] ........................./algorithm/TEST            
            13      [OK] ........................./check/TEST                
-           30      [OK] ........................./transformation/TEST       
-           56      [OK] ..../input/TEST                                     
-        1  27    [FAIL] ........../regular_expression/TEST                  
+           53      [OK] ........................./transformation/TEST       
+           58      [OK] ..../input/TEST                                     
+           27      [OK] ........../regular_expression/TEST                  
            196     [OK] ..../output/core/TEST                               
            29      [OK] ................/skipper/TEST                       
            22      [OK] ................/state/transition_map/TEST          
            30      [OK] .........../cpp/TEST                                
 
 -------------------------------------------------------------------------------
-     _____     _ _       _____          _          
-    |  ___|_ _(_) |___  |_   _|_      _(_) ___ ___ 
-    | |_ / _` | | / __|   | | \ \ /\ / / |/ __/ _ \
-    |  _| (_| | | \__ \   | |  \ V  V /| | (__| __/
-    |_|  \__,_|_|_|___/   |_|   \_/\_/ |_|\___\___|
-                                                                   (1536 tests)
+     ___  _ _   _  __                        _      _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_   | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|  | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_)
+                                                                   (1561 tests)
 ===============================================================================

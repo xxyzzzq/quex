@@ -20,11 +20,11 @@
 < 
 > goto _7;
 <     /* BEGIN: STATE MACHINE
-<      * init-state = 12L
-<      * 00012 
-<      *      == 'a' ==> 00013
+<      * init-state = 13L
+<      * 00013 
+<      *      == 'a' ==> 00014
 <      *     
-<      * 00013 A(0)
+<      * 00014 A(0)
 <      *     
 <      * END: STATE MACHINE
 <      */

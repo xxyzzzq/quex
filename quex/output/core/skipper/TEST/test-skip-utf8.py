@@ -29,7 +29,7 @@ Language = "Cpp"
 __Setup_init_language_database(Language)
 
 trigger_set = NumberSet([Interval(0x600, 0x700)]) 
-Setup.buffer_codec_set(bc_factory.do(Setup, "utf8"), 1)
+Setup.buffer_codec_set(bc_factory.do("utf8"), 1)
 
 def make(TriggerSet, BufferSize):
     Language = "ANSI-C-from-file"

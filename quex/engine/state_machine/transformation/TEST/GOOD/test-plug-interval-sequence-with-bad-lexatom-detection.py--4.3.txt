@@ -12,7 +12,7 @@
 digraph state_machine_0 {
 rankdir=LR;
 size="8,5"
-node [shape = doublecircle]; 17;
+node [shape = doublecircle]; 
 node [shape = circle];
 ((0)) -> ((17)) [label ="[0080, 00BF] [00FE, 00FF] "];
 ((0)) -> ((15)) [label ="[00F0, 00F1] "];

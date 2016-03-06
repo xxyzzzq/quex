@@ -77,7 +77,10 @@ class State:
         self.__target_map = TM
 
     def is_acceptance(self):
-        return self.single_entry.find(SeAccept) is not None
+        cmd = self.single_entry.find(SeAccept) 
+        if cmd is None: return False 
+        return not any(cmd.acceptance_id() == E_IncidenceIDs.BAD_LEXATOM
+                       for cmd in self.single_entry)
 
     def input_position_store_f(self):
         return self.single_entry.find(SeStoreInputPosition) is not None

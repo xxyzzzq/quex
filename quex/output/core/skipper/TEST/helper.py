@@ -18,7 +18,7 @@ import quex.engine.analyzer.engine_supply_factory  as     engine
 import quex.engine.state_machine.transformation.core             as     bc_factory
 
 # Setup.buffer_element_specification_prepare()
-Setup.buffer_codec_set(bc_factory.do(Setup, "unicode", None), 1)
+Setup.buffer_codec_set(bc_factory.do("unicode", None), 1)
 
 class MiniAnalyzer:
     def __init__(self):

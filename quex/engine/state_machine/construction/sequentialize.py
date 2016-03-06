@@ -8,16 +8,15 @@ def do(the_state_machine_list,
        LeaveIntermediateAcceptanceStatesF = False, 
        MountToFirstStateMachineF          = False, 
        CloneRemainingStateMachinesF       = True):
-    """Creates a state machine connecting all state machines in the array 
-       'state_machine_list'. When the flag 'LeaveIntermediateAcceptanceStatesF'
-       is given as True, the connection points between the state machines
-       will remain  acceptances states. In any other case (e.g. the normal
-       sequentialization) the connection points leave there acceptance 
-       status and only the last state machine in the list keeps its
-       acceptance states.
+    """Creates a state machine connecting all state machines in the array
+    'state_machine_list'. When the flag 'LeaveIntermediateAcceptanceStatesF' is
+    given as True, the connection points between the state machines will remain
+    acceptances states. In any other case (e.g. the normal sequentialization)
+    the connection points leave there acceptance status and only the last state
+    machine in the list keeps its acceptance states.
 
-       If MountToFirstStateMachineF is set, then the first state machine will
-       contain the result of the concatination.
+    If MountToFirstStateMachineF is set, then the first state machine will
+    contain the result of the concatination.
     """
     assert len(the_state_machine_list) != 0
 

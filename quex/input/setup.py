@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import quex.engine.misc.error                        as     error
 import quex.engine.misc.file_in                      as     file_in
 from   quex.engine.misc.file_operations              import get_propperly_slash_based_file_name
 from   quex.engine.misc.enum                         import Enum
@@ -187,6 +186,7 @@ SETUP_INFO = {
     "query_version_f":                [["--version", "-v"],               SetupParTypes.FLAG],
     "query_help_f":                   [["--help", "-h"],                  SetupParTypes.FLAG],
     "query_codec":                    [["--codec-info", "--ci"],          ""],
+    "query_codec_list":               [["--codec-list", "--cl"],          SetupParTypes.FLAG],
     "query_codec_file":               [["--codec-info-file", "--cif"],    ""], 
     "query_codec_language":           [["--codec-for-language", "--cil"], ""],
     "query_property":                 [["--property", "--pr"],            SetupParTypes.OPTIONAL_STRING],

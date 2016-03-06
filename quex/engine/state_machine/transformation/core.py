@@ -28,12 +28,12 @@ which implements the interfaces to be obeyed by all.
 
 (C) Frank-Rene Schaefer
 """
-from   quex.engine.misc.interval_handling  import NumberSet_All, NumberSet
+from   quex.engine.misc.interval_handling  import NumberSet_All, NumberSet, Interval
 import quex.engine.misc.error              as error
 import os
 
 
-def do(setup, BufferCodecName, BufferCodecFileName=""):
+def do(BufferCodecName, BufferCodecFileName=""):
     from   quex.engine.state_machine.transformation.base              import EncodingTrafoUnicode
     from   quex.engine.state_machine.transformation.table             import EncodingTrafoByTable
     from   quex.engine.state_machine.transformation.utf8_state_split  import EncodingTrafoUTF8
@@ -58,8 +58,8 @@ def do(setup, BufferCodecName, BufferCodecFileName=""):
         # If the internal buffer is 'unicode', then the pattern's state 
         # machines are not converted. The requirement for the pattern's
         # range is the same as for the 'buffer element chunks'.
-        return EncodingTrafoUnicode(NumberSet(setup.buffer_codec.lexatom_range), 
-                                    NumberSet(setup.buffer_codec.lexatom_range))
+        return EncodingTrafoUnicode(NumberSet(Interval(0, 0x110000)), 
+                                    NumberSet(Interval(0, 0x110000))) 
 
     elif BufferCodecName == "unit-test":
         return EncodingTrafoUnicode(NumberSet_All(), NumberSet_All())

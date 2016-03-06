@@ -54,7 +54,7 @@ def prepare(command_line, argv):
 
     lexatom_size_in_byte = __prepare_buffer_element_specification(Setup)
 
-    buffer_codec = bc_factory.do(Setup, Setup.buffer_codec_name, 
+    buffer_codec = bc_factory.do(Setup.buffer_codec_name, 
                                  Setup.buffer_codec_file)
     Setup.buffer_codec_set(buffer_codec, lexatom_size_in_byte)
 

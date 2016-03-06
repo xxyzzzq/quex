@@ -578,6 +578,15 @@ Default: unicode
             
 
 
+.. cmdoption:: --no-bad-lexatom-detection, --nbld 
+
+    If present, the encoding error detection is turned off. That also means, that the 'on_bad_lexatom' 
+    handler is never possibly be called.  
+
+    
+
+Default: true (not disabled)
+
 The buffer on which a generated analyzer runs is characterized by its size (macro QUEX_SETTING_BUFFER_SIZE), 
 by its element's size, and their type. The latter two can be specified 
 on the command line.  
@@ -968,8 +977,7 @@ The following enumerates suppress codes together with their associated messages.
 
 .. describe:: 10
 
-    Warning if there is no 'on_bad_lexatom' handler while a codec 
-    different from Unicode is used. 
+    Warning if there is no 'on_bad_lexatom' handler while a codec different from Unicode is used. 
      
 
     
@@ -1042,6 +1050,16 @@ The following options allow to query on character sets and the result of regular
     list of all supported codecs is printed.  
 
     
+
+.. cmdoption:: --codec-list, --cl 
+
+    Displays all character encodings that can be implemented directly in the analyzer state machine 
+    without using a converter. Additionally, the encodings 'utf8' and 'utf16' are always 
+    supported.  
+
+    
+
+Default: false (disabled)
 
 .. cmdoption:: --codec-info-file, --cif file name
 

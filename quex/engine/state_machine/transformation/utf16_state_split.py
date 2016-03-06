@@ -38,7 +38,6 @@ from   quex.engine.misc.utf16                               import utf16_to_unic
                                                                    unicode_to_utf16
 from   quex.engine.misc.interval_handling                   import Interval, NumberSet, NumberSet_All
 
-from   quex.blackboard import setup as Setup
 
 ForbiddenRange = Interval(0xD800, 0xE000)
 
